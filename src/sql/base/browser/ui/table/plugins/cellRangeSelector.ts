@@ -26,13 +26,13 @@ export interface ICellRangeSelectorOptions {
 }
 
 export interface ICellRangeSelector<T> extends Slick.Plugin<T> {
-	onCellRangeSelected: Slick.Event<{ range: Slick.Range }>;
+	onCellRangeSelected: Slick.Event<Slick.Range>;
 	onBeforeCellRangeSelected: Slick.Event<Slick.Cell>;
 }
 
 export interface ICellRangeDecorator {
-	show(range: Slick.Range);
-	hide();
+	show(range: Slick.Range): void;
+	hide(): void;
 }
 
 export class CellRangeSelector<T> implements ICellRangeSelector<T> {
@@ -44,7 +44,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 	private currentlySelectedRange: { start: Slick.Cell, end?: Slick.Cell };
 
 	public onBeforeCellRangeSelected = new Slick.Event<Slick.Cell>();
-	public onCellRangeSelected = new Slick.Event<{ range: Slick.Range }>();
+	public onCellRangeSelected = new Slick.Event<Slick.Range>();
 
 	constructor(private options: ICellRangeSelectorOptions) {
 		require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
@@ -58,9 +58,9 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		this.canvas = this.grid.getCanvasNode();
 		this.handler
 			.subscribe(this.grid.onDragInit, e => this.handleDragInit(e))
-			.subscribe(this.grid.onDragStart, (e, dd) => this.handleDragStart(e, dd))
-			.subscribe(this.grid.onDrag, (e, dd) => this.handleDrag(e, dd))
-			.subscribe(this.grid.onDragEnd, (e, dd) => this.handleDragEnd(e, dd));
+			.subscribe(this.grid.onDragStart, (e: MouseEvent, dd) => this.handleDragStart(e, dd))
+			.subscribe(this.grid.onDrag, (e: MouseEvent, dd) => this.handleDrag(e, dd))
+			.subscribe(this.grid.onDragEnd, (e: MouseEvent, dd) => this.handleDragEnd(e, dd));
 	}
 
 	public destroy() {
@@ -138,13 +138,11 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		if (!dd || !dd.range || !dd.range.start || !dd.range.end) {
 			return;
 		}
-		this.onCellRangeSelected.notify({
-			range: new Slick.Range(
-				dd.range.start.row,
-				dd.range.start.cell,
-				dd.range.end.row,
-				dd.range.end.cell
-			)
-		});
+		this.onCellRangeSelected.notify(new Slick.Range(
+			dd.range.start.row,
+			dd.range.start.cell,
+			dd.range.end.row,
+			dd.range.end.cell
+		));
 	}
 }

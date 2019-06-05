@@ -75,8 +75,11 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					} else {
 						return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
 					}
-
 				}
+			}, (error) => {
+				let errorText = localize('cms.errors.expandCmsFail', 'The Central Management Server {0} could not be found or is offline', this.name);
+				this.appContext.apiWrapper.showErrorMessage(error ? error : errorText);
+				return [];
 			});
 		} catch {
 			return [];

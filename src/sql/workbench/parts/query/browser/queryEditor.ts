@@ -251,6 +251,7 @@ export class QueryEditor extends BaseEditor {
 
 		if (oldInput) {
 			this.currentTextEditor.clearInput();
+			this.resultsEditor.clearInput();
 		}
 
 		// If we're switching editor types switch out the views

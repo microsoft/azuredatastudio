@@ -143,9 +143,6 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				if (filteredKeys && filteredKeys.length > 0) {
 					defaultProvider = filteredKeys[0];
 				}
-				else {
-					defaultProvider = keys[0];
-				}
 			}
 		}
 		if (!defaultProvider && this._configurationService) {
@@ -284,7 +281,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-						}, providerName, this._inputModel ? this._inputModel.options.authTypeChanged : false);
+						}, providerName);
 			} else {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(ConnectionController,
@@ -304,30 +301,27 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private handleShowUiComponent(input: OnShowUIResponse) {
 		if (input.selectedProviderType) {
 			// If the call is for specific providers
-			let isParamProvider: boolean = false;
+			let isProviderInParams: boolean = false;
 			if (this._params && this._params.providers) {
 				this._params.providers.forEach((provider) => {
 					if (input.selectedProviderType === this._providerNameToDisplayNameMap[provider]) {
-						isParamProvider = true;
+						isProviderInParams = true;
 						this._currentProviderType = provider;
 					}
 				});
 			}
-			if (!isParamProvider) {
+			if (!isProviderInParams) {
 				this._currentProviderType = Object.keys(this._providerNameToDisplayNameMap).find((key) =>
-					this._providerNameToDisplayNameMap[key] === input.selectedProviderType
+					this._providerNameToDisplayNameMap[key] === input.selectedProviderType &&
+					key !== Constants.cmsProviderName
 				);
 			}
 		}
 		this._model.providerName = this._currentProviderType;
 
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		if (this._inputModel && this._inputModel.options) {
-			this.uiController.showUiComponent(input.container,
-				this._inputModel.options.authTypeChanged);
-		} else {
-			this.uiController.showUiComponent(input.container);
-		}
+		this.uiController.showUiComponent(input.container);
+
 	}
 
 	private handleInitDialog() {

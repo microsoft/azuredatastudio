@@ -36,11 +36,14 @@ import { localize } from 'vs/nls';
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
 	public readonly contentChanged: Event<NotebookContentChange> = this._contentChangedEmitter.event;
-	private _providerInfo: IProviderInfo;
+	private _providerId: string = '';
+	private _providers: string[] = [];
 
 	constructor(public readonly editor: INotebookEditor) {
 		super();
 		editor.modelReady.then(model => {
+			this._providerId = model.providerId;
+
 			this._register(model.contentChanged((e) => this._contentChangedEmitter.fire(e)));
 			this._register(model.kernelChanged((e) => {
 				let changeEvent: NotebookContentChange = {
@@ -48,9 +51,12 @@ class MainThreadNotebookEditor extends Disposable {
 				};
 				this._contentChangedEmitter.fire(changeEvent);
 			}));
+			this._register(model.onProviderIdChange((provider) => {
+				this._providerId = provider;
+			}));
 		});
 		editor.notebookParams.providerInfo.then(info => {
-			this._providerInfo = info;
+			this._providers = info.providers;
 		});
 	}
 
@@ -67,11 +73,11 @@ class MainThreadNotebookEditor extends Disposable {
 	}
 
 	public get providerId(): string {
-		return this._providerInfo ? this._providerInfo.providerId : undefined;
+		return this._providerId;
 	}
 
 	public get providers(): string[] {
-		return this._providerInfo ? this._providerInfo.providers : [];
+		return this._providers;
 	}
 
 	public get cells(): ICellModel[] {
@@ -306,7 +312,7 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
-	private _modelToDisposeMap = new Map<string, IDisposable>();
+	private _modelToDisposeMap = new Map<string, IDisposable[]>();
 	constructor(
 		extHostContext: IExtHostContext,
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
@@ -383,6 +389,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
 		return editor.clearAllOutputs();
+	}
+
+	$changeKernel(id: string, kernel: azdata.nb.IKernelSpec): Promise<boolean> {
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		return this.doChangeKernel(editor, kernel.display_name);
 	}
 
 	//#endregion
@@ -500,9 +514,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return;
 		}
 		removedDocuments.forEach(removedDoc => {
-			let listener = this._modelToDisposeMap.get(removedDoc.toString());
-			if (listener) {
-				listener.dispose();
+			let listeners = this._modelToDisposeMap.get(removedDoc.toString());
+			if (listeners && listeners.length) {
+				listeners.forEach(listener => {
+					listener.dispose();
+				});
 				this._modelToDisposeMap.delete(removedDoc.toString());
 			}
 		});
@@ -514,9 +530,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
-			this._modelToDisposeMap.set(editor.uri.toString(), editor.contentChanged((e) => {
+			this._modelToDisposeMap.set(editor.uri.toString(), [editor.contentChanged((e) => {
 				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
-			}));
+			})]);
 		});
 	}
 
@@ -590,5 +606,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			});
 		}
 		return notebookCells;
+	}
+
+	private async doChangeKernel(editor: MainThreadNotebookEditor, displayName: string): Promise<boolean> {
+		let listeners = this._modelToDisposeMap.get(editor.id);
+		editor.model.changeKernel(displayName);
+		return new Promise((resolve) => {
+			listeners.push(editor.model.kernelChanged((kernel) => {
+				resolve(true);
+			}));
+			this._modelToDisposeMap.set(editor.id, listeners);
+		});
 	}
 }

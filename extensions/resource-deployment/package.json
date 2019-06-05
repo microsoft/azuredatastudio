@@ -13,8 +13,7 @@
     "azdata": "^1.6.0"
   },
   "activationEvents": [
-    "onCommand:azdata.resource.sql-image.deploy",
-    "onCommand:azdata.resource.sql-bdc.deploy"
+    "*"
   ],
   "main": "./out/main",
   "repository": {
@@ -22,7 +21,8 @@
     "url": "https://github.com/Microsoft/azuredatastudio.git"
   },
   "extensionDependencies": [
-    "Microsoft.mssql"
+    "microsoft.mssql",
+    "microsoft.notebook"
   ],
   "contributes": {
     "commands": [
@@ -34,6 +34,11 @@
       {
         "command": "azdata.resource.sql-bdc.deploy",
         "title": "%deploy-sql-bdc-command-name%",
+        "category": "%deploy-resource-command-category%"
+      },
+      {
+        "command": "azdata.resource.deploy",
+        "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
       }
     ],
@@ -120,10 +125,6 @@
           "displayName": "%version-display-name%",
           "values": [
             {
-              "name": "ctp2.5",
-              "displayName": "%sql-2019ctp25-display-name%"
-            },
-            {
               "name": "ctp3.0",
               "displayName": "%sql-2019ctp30-display-name%"
             }
@@ -145,33 +146,6 @@
         }
       ],
       "providers": [
-        {
-          "notebook": "%bdc-ctp25-aks-notebook%",
-          "requiredTools": [
-            {
-              "name": "kubectl"
-            },
-            {
-              "name": "azcli"
-            },
-            {
-              "name": "mssqlctl"
-            }
-          ],
-          "when": "target=aks&&version=ctp2.5"
-        },
-        {
-          "notebook": "%bdc-ctp25-existing-cluster-notebook%",
-          "requiredTools": [
-            {
-              "name": "kubectl"
-            },
-            {
-              "name": "mssqlctl"
-            }
-          ],
-          "when": "target=existingCluster&&version=ctp2.5"
-        },
         {
           "notebook": "%bdc-ctp30-aks-notebook%",
           "requiredTools": [

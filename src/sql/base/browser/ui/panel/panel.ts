@@ -197,7 +197,6 @@ export class TabbedPanel extends Disposable {
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
-		this.focus();
 	}
 
 	public removeTab(tab: PanelTabIdentifier) {

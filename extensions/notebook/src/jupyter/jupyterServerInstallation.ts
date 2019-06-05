@@ -53,7 +53,7 @@ export default class JupyterServerInstallation {
 	private _forceInstall: boolean;
 	private _installInProgress: boolean;
 
-	private static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
+	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
@@ -76,7 +76,12 @@ export default class JupyterServerInstallation {
 			this.outputChannel.appendLine(msgInstallPkgProgress);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgInstallPkgProgress);
 
-			await this.installPythonPackage(backgroundOperation);
+			try {
+				await this.installPythonPackage(backgroundOperation);
+			} catch (err) {
+				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
+				throw err;
+			}
 			this.outputChannel.appendLine(msgPythonDownloadComplete);
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 
@@ -135,13 +140,13 @@ export default class JupyterServerInstallation {
 			fs.mkdirs(this._pythonInstallationPath, (err) => {
 				if (err) {
 					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDirectoryError);
-					reject(err);
+					return reject(err);
 				}
 
 				let totalMegaBytes: number = undefined;
 				let receivedBytes = 0;
 				let printThreshold = 0.1;
-				request.get(pythonDownloadUrl, { timeout: 20000 })
+				let downloadRequest = request.get(pythonDownloadUrl, { timeout: 20000 })
 					.on('error', (downloadError) => {
 						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 						reject(downloadError);
@@ -149,7 +154,7 @@ export default class JupyterServerInstallation {
 					.on('response', (response) => {
 						if (response.statusCode !== 200) {
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
-							reject(response.statusMessage);
+							return reject(response.statusMessage);
 						}
 
 						let totalBytes = parseInt(response.headers['content-length']);
@@ -166,18 +171,19 @@ export default class JupyterServerInstallation {
 								printThreshold += 0.1;
 							}
 						}
-					})
-					.pipe(fs.createWriteStream(pythonPackagePathLocal))
+					});
+
+				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
 					.on('close', () => {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
-						if (fs.existsSync(pythonSourcePath)) {
+						if (!this._usingExistingPython && fs.existsSync(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
 								backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
-								reject(err);
+								return reject(err);
 							}
 						}
 						decompress(pythonPackagePathLocal, this._pythonInstallationPath).then(files => {
@@ -198,6 +204,7 @@ export default class JupyterServerInstallation {
 					.on('error', (downloadError) => {
 						backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadError);
 						reject(downloadError);
+						downloadRequest.abort();
 					});
 			});
 		});
@@ -314,7 +321,6 @@ export default class JupyterServerInstallation {
 						.catch(err => {
 							let errorMsg = msgDependenciesInstallationFailed(utils.getErrorMessage(err));
 							op.updateStatus(azdata.TaskStatus.Failed, errorMsg);
-							this.apiWrapper.showErrorMessage(errorMsg);
 							installReady.reject(errorMsg);
 							this._installInProgress = false;
 						});

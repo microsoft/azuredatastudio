@@ -423,7 +423,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		// Check extensions to create ActionItem; otherwise, return undefined
 		// This is similar behavior that exists in MenuItemActionItem
 		if (action instanceof MenuItemAction) {
-			return new LabeledMenuItemActionItem(action, this.keybindingService, this.notificationService, this.contextMenuService, 'notebook-button');
+			return new LabeledMenuItemActionItem(action, this.keybindingService, this.contextMenuService, this.notificationService, 'notebook-button');
 		}
 		return undefined;
 	}
