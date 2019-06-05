@@ -162,7 +162,7 @@ suite('Cell Model', function (): void {
 			future.setup(f => f.setReplyHandler(TypeMoq.It.isAny())).callback((handler) => onReply = handler);
 			future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 			let outputs: ReadonlyArray<nb.ICellOutput> = undefined;
-			cell.onOutputsChanged((o => outputs = o));
+			cell.onOutputsChanged((o => outputs = o.outputs));
 
 			// When I set it on the cell
 			cell.setFuture(future.object);
@@ -265,7 +265,7 @@ suite('Cell Model', function (): void {
 			let onIopub: nb.MessageHandler<nb.IIOPubMessage>;
 			future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 			let outputs: ReadonlyArray<nb.ICellOutput> = undefined;
-			cell.onOutputsChanged((o => outputs = o));
+			cell.onOutputsChanged((o => outputs = o.outputs));
 
 			//Set the future
 			cell.setFuture(future.object);
