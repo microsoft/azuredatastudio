@@ -401,6 +401,9 @@ export interface INotebookModel {
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
+
+	serializationStateChanged(changeType: NotebookChangeType): void;
+
 }
 
 export interface NotebookContentChange {

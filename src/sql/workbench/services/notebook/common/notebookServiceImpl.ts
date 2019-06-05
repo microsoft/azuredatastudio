@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, SerializationStateChangeType
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
 } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/parts/notebook/outputs/factories';
@@ -40,6 +40,7 @@ import { RunOnceScheduler } from 'vs/base/common/async';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -384,6 +385,15 @@ export class NotebookService extends Disposable implements INotebookService {
 		return editors;
 	}
 
+	findNotebookEditor(notebookUri: URI): INotebookEditor | undefined {
+		if (!notebookUri) {
+			return undefined;
+		}
+		let uriString = notebookUri.toString();
+		let editor = this.listNotebookEditors().find(n => n.id === uriString);
+		return editor;
+	}
+
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void {
 		let oldUriKey = oldUri.toString();
 		if (this._editors.has(oldUriKey)) {
@@ -552,7 +562,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	serializeNotebookStateChange(notebookUri: URI, changeType: SerializationStateChangeType): void {
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType): void {
 		if (notebookUri.scheme !== Schemas.untitled) {
 			// Conditions for saving:
 			// 1. Not untitled. They're always trusted as we open them
@@ -560,7 +570,7 @@ export class NotebookService extends Disposable implements INotebookService {
 			// 3. Not already saving (e.g. isn't in the queue to be cached)
 			// 4. Notebook is trusted. Don't need to save state of untrusted notebooks
 			let notebookUriString = notebookUri.toString();
-			if (changeType === SerializationStateChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
+			if (changeType === NotebookChangeType.Saved && this._trustedCacheQueue.findIndex(uri => uri.toString() === notebookUriString) < 0) {
 				// Only save if it's trusted
 				let notebook = this.listNotebookEditors().find(n => n.id === notebookUriString);
 				if (notebook && notebook.model.trustedMode) {
@@ -568,6 +578,11 @@ export class NotebookService extends Disposable implements INotebookService {
 					this._updateTrustCacheScheduler.schedule();
 				}
 			}
+		}
+
+		let editor = this.findNotebookEditor(notebookUri);
+		if (editor && editor.model) {
+			editor.model.serializationStateChanged(changeType);
 			// TODO add history notification if a non-untitled notebook has a state change
 		}
 	}
