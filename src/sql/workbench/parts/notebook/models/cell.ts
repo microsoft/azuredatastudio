@@ -317,7 +317,11 @@ export class CellModel implements ICellModel {
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
-		this._onOutputsChanged.fire({ outputs: this.outputs, shouldScroll: shouldScroll });
+		let outputEvent: IOutputChangedEvent = {
+			outputs: this.outputs,
+			shouldScroll: !!shouldScroll
+		};
+		this._onOutputsChanged.fire(outputEvent);
 		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
