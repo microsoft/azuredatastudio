@@ -1777,6 +1777,10 @@
 								}
 							]
 						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}
 			],
 			"resultMetadata": [
 				{
