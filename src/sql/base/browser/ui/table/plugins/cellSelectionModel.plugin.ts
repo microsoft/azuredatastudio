@@ -19,6 +19,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 	private grid: Slick.Grid<T>;
 	private selector: ICellRangeSelector<T>;
 	private ranges: Array<Slick.Range> = [];
+	private _handler = new Slick.EventHandler();
 
 	public onSelectedRangesChanged = new Slick.Event<Array<Slick.Range>>();
 
@@ -35,19 +36,16 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
-		this.grid.onActiveCellChanged.subscribe((e, args) => this.handleActiveCellChange(e, args));
-		this.grid.onKeyDown.subscribe(e => this.handleKeyDown(e));
-		this.grid.onHeaderClick.subscribe((e: MouseEvent, args) => this.handleHeaderClick(e, args));
+		this._handler.subscribe(this.grid.onActiveCellChanged, (e: Event, args: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e, args));
+		this._handler.subscribe(this.grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
+		this._handler.subscribe(this.grid.onHeaderClick, (e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args));
 		this.grid.registerPlugin(this.selector);
-		this.selector.onCellRangeSelected.subscribe((e, args) => this.handleCellRangeSelected(e, args));
-		this.selector.onBeforeCellRangeSelected.subscribe((e, args) => this.handleBeforeCellRangeSelected(e, args));
+		this._handler.subscribe(this.selector.onCellRangeSelected, (e: Event, range: Slick.Range) => this.handleCellRangeSelected(e, range));
+		this._handler.subscribe(this.selector.onBeforeCellRangeSelected, (e: Event, cell: Slick.Cell) => this.handleBeforeCellRangeSelected(e, cell));
 	}
 
 	public destroy() {
-		this.grid.onActiveCellChanged.unsubscribe((e, args) => this.handleActiveCellChange(e, args));
-		this.grid.onKeyDown.unsubscribe(e => this.handleKeyDown(e));
-		this.selector.onCellRangeSelected.unsubscribe((e, args) => this.handleCellRangeSelected(e, args));
-		this.selector.onBeforeCellRangeSelected.unsubscribe((e, args) => this.handleBeforeCellRangeSelected(e, args));
+		this._handler.unsubscribeAll();
 		this.grid.unregisterPlugin(this.selector);
 	}
 
@@ -81,7 +79,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		return this.ranges;
 	}
 
-	private handleBeforeCellRangeSelected(e, args: Slick.Cell) {
+	private handleBeforeCellRangeSelected(e: Event, args: Slick.Cell) {
 		if (this.grid.getEditorLock().isActive()) {
 			e.stopPropagation();
 			return false;
@@ -89,12 +87,12 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		return true;
 	}
 
-	private handleCellRangeSelected(e, args: { range: Slick.Range }) {
-		this.grid.setActiveCell(args.range.fromRow, args.range.fromCell, false, false, true);
-		this.setSelectedRanges([args.range]);
+	private handleCellRangeSelected(e: Event, range: Slick.Range) {
+		this.grid.setActiveCell(range.fromRow, range.fromCell, false, false, true);
+		this.setSelectedRanges([range]);
 	}
 
-	private handleActiveCellChange(e, args) {
+	private handleActiveCellChange(e: Event, args: Slick.OnActiveCellChangedEventArgs<T>) {
 		if (this.options.selectActiveCell && !isUndefinedOrNull(args.row) && !isUndefinedOrNull(args.cell)) {
 			this.setSelectedRanges([new Slick.Range(args.row, args.cell)]);
 		} else if (!this.options.selectActiveCell) {
@@ -120,7 +118,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		}
 	}
 
-	private handleKeyDown(e) {
+	private handleKeyDown(e: KeyboardEvent) {
 		/***
 		 * Кey codes
 		 * 37 left
@@ -128,12 +126,12 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		 * 39 right
 		 * 40 down
 		 */
-		let ranges, last;
 		let active = this.grid.getActiveCell();
 		let metaKey = e.ctrlKey || e.metaKey;
 
 		if (active && e.shiftKey && !metaKey && !e.altKey &&
 			(e.which === 37 || e.which === 39 || e.which === 38 || e.which === 40)) {
+			let ranges = this.getSelectedRanges(), last: Slick.Range;
 
 			ranges = this.getSelectedRanges();
 			if (!ranges.length) {
@@ -141,7 +139,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			}
 
 			// keyboard can work with last range only
-			last = ranges.pop();
+			last = ranges.pop()!; // this is guarenteed since if ranges is empty we add one
 
 			// can't handle selection out of active cell
 			if (!last.contains(active.row, active.cell)) {
