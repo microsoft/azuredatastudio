@@ -78,20 +78,24 @@ if (context.RunTest) {
 			let result = await cmsService.addServerGroup(ownerUri, '', TEST_CMS_GROUP, 'test_description');
 			assert(result === true, `Server group ${TEST_CMS_GROUP} was not added to CMS server successfully`);
 
+			let existingRegisteredServerGroupCount = (await cmsService.getRegisteredServers(ownerUri, '')).registeredServerGroups.length;
+
 			// Shouldn't be able to create a new server group with same name
 			await utils.assertThrowsAsync(
 				async () => await cmsService.addServerGroup(ownerUri, '', TEST_CMS_GROUP, 'test_description'),
 				'Cannot add a server group with existing name');
 
 			let cmsResources = await cmsService.getRegisteredServers(ownerUri, '');
-			assert(cmsResources.registeredServerGroups.length === 1, `The server group ${TEST_CMS_GROUP} was not added successfully. Groups : [${cmsResources.registeredServerGroups.join(',')}]`);
+			assert(cmsResources.registeredServerGroups.length === existingRegisteredServerGroupCount,
+				`Unexpected number of Registered Server Groups after attempting to add group that already exists. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 
 			// Should remove the server group we added above
 			let deleteResult = await cmsService.removeServerGroup(ownerUri, '', TEST_CMS_GROUP);
 			assert(deleteResult === true, `Server group ${TEST_CMS_GROUP} was not removed successfully`);
 
 			cmsResources = await cmsService.getRegisteredServers(ownerUri, '');
-			assert(cmsResources.registeredServerGroups.length === 0, `The server group ${TEST_CMS_GROUP} was not removed successfully. Groups : [${cmsResources.registeredServerGroups.join(',')}]`);
+			assert(cmsResources.registeredServerGroups.find(g => g.name === TEST_CMS_GROUP) === undefined,
+				`The server group ${TEST_CMS_GROUP} was not removed successfully. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 		});
 
 		test('Add and delete registered server to/from CMS server', async function () {
@@ -135,7 +139,8 @@ if (context.RunTest) {
 
 			// Make sure server group is created
 			let cmsResources = await cmsService.getRegisteredServers(ownerUri, '');
-			assert(cmsResources.registeredServerGroups.length === 1, `The server group ${TEST_CMS_GROUP} was not added correctly`);
+			assert(cmsResources.registeredServerGroups.find(g => g.name === TEST_CMS_GROUP),
+				`Registered Server Group ${TEST_CMS_GROUP} was not found after being added. Groups : [${cmsResources.registeredServerGroups.map(g => g.name).join(', ')}]`);
 
 			// Should create a registered server under the group
 			let bdcServer = await getBdcServer();
