@@ -90,7 +90,11 @@ export class CellModel implements ICellModel {
 	public set trustedMode(isTrusted: boolean) {
 		if (this._isTrusted !== isTrusted) {
 			this._isTrusted = isTrusted;
-			this._onOutputsChanged.fire({ outputs: this._outputs, shouldScroll: false });
+			let outputEvent: IOutputChangedEvent = {
+				outputs: this._outputs,
+				shouldScroll: false
+			};
+			this._onOutputsChanged.fire(outputEvent);
 		}
 	}
 
