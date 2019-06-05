@@ -435,6 +435,11 @@ export enum CellExecutionState {
 	Error = 3
 }
 
+export interface IOutputChangedEvent {
+	outputs: ReadonlyArray<nb.ICellOutput>;
+	shouldScroll: boolean;
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -447,7 +452,7 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
-	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;
