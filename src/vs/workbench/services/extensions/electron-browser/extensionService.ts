@@ -313,6 +313,12 @@ export class ExtensionService extends Disposable implements IExtensionService {
 			}
 		}
 
+		// {{SQL CARBON EDIT}}
+		// Forces a reload for CMS extension
+		if (extension.name === 'cms') {
+			return false;
+		}
+
 		return true;
 	}
 
