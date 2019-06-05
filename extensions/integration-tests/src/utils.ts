@@ -76,3 +76,16 @@ export async function deleteDB(dbName: string, ownerUri: string): Promise<void> 
 
 	await queryProvider.runQueryAndReturn(ownerUri, query);
 }
+
+export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
+	let f = () => {
+		// Empty
+	};
+	try {
+		await fn();
+	} catch (e) {
+		f = () => { throw e; };
+	} finally {
+		assert.throws(f, msg);
+	}
+}

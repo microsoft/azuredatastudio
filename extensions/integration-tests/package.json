@@ -55,7 +55,8 @@
     "chai": "3.5.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
-    "vscode": "1.1.5"
+	"vscode": "1.1.5",
+	"uuid": "^3.3.2"
   },
   "dependencies": {
     "azure-keyvault": "^3.0.4",
