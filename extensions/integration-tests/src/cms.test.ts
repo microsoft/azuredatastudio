@@ -110,7 +110,7 @@ if (context.RunTest) {
 				provider: bdcServer.provider,
 				version: bdcServer.version,
 				engineType: bdcServer.engineType,
-				options: { }
+				options: {}
 			};
 
 			// Should create a registered server
@@ -148,7 +148,7 @@ if (context.RunTest) {
 				provider: bdcServer.provider,
 				version: bdcServer.version,
 				engineType: bdcServer.engineType,
-				options: { }
+				options: {}
 			};
 			let relativePath = cmsResources.registeredServerGroups[0].relativePath;
 
