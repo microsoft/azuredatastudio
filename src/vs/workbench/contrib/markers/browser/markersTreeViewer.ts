@@ -13,7 +13,7 @@ import { IMarker, MarkerSeverity } from 'vs/platform/markers/common/markers';
 import { ResourceMarkers, Marker, RelatedInformation } from 'vs/workbench/contrib/markers/browser/markersModel';
 import Messages from 'vs/workbench/contrib/markers/browser/messages';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { attachBadgeStyler } from 'vs/platform/theme/common/styler';
+import { attachBadgeStyler, attachSeverityStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IDisposable, dispose, Disposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -218,14 +218,15 @@ export class MarkerRenderer implements ITreeRenderer<Marker, MarkerFilterData, I
 
 	constructor(
 		private readonly markersViewState: MarkersViewModel,
-		@IInstantiationService protected instantiationService: IInstantiationService
+		@IInstantiationService protected instantiationService: IInstantiationService,
+		@IThemeService protected themeService: IThemeService
 	) { }
 
 	templateId = TemplateId.Marker;
 
 	renderTemplate(container: HTMLElement): IMarkerTemplateData {
 		const data: IMarkerTemplateData = Object.create(null);
-		data.markerWidget = new MarkerWidget(container, this.markersViewState, this.instantiationService);
+		data.markerWidget = new MarkerWidget(container, this.markersViewState, this.instantiationService, this.themeService);
 		return data;
 	}
 
@@ -251,7 +252,8 @@ class MarkerWidget extends Disposable {
 	constructor(
 		private parent: HTMLElement,
 		private readonly markersViewModel: MarkersViewModel,
-		instantiationService: IInstantiationService
+		instantiationService: IInstantiationService,
+		private readonly themeService: IThemeService
 	) {
 		super();
 		this.actionBar = this._register(new ActionBar(dom.append(parent, dom.$('.actions')), {
@@ -273,7 +275,9 @@ class MarkerWidget extends Disposable {
 		}
 		dom.clearNode(this.messageAndDetailsContainer);
 
-		this.severityIcon.severity = MarkerSeverity.toSeverity(element.marker.severity);
+		const severity = MarkerSeverity.toSeverity(element.marker.severity);
+		this.severityIcon.severity = severity;
+		this.disposables.push(attachSeverityStyler(severity, this.severityIcon, this.themeService));
 		this.renderQuickfixActionbar(element);
 		this.renderMultilineActionbar(element);
 

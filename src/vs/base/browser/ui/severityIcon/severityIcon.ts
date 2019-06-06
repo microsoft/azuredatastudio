@@ -7,6 +7,7 @@ import 'vs/css!./media/severityIcon';
 import { Disposable } from 'vs/base/common/lifecycle';
 import Severity from 'vs/base/common/severity';
 import * as DOM from 'vs/base/browser/dom';
+import { Color } from 'vs/base/common/color';
 
 export class SeverityIcon extends Disposable {
 
@@ -24,16 +25,22 @@ export class SeverityIcon extends Disposable {
 		}
 	}
 
+	style({ color }: {
+		color: Color
+	}): void {
+		this.element.style.color = color.toString();
+	}
+
 	private iconClassNameFor(severity: Severity): string {
 		switch (severity) {
 			case Severity.Ignore:
-				return 'severity-icon info';
+				return 'octicon octicon-info';
 			case Severity.Info:
-				return 'severity-icon info';
+				return 'octicon octicon-info';
 			case Severity.Warning:
-				return 'severity-icon warning';
+				return 'octicon octicon-warning';
 			case Severity.Error:
-				return 'severity-icon error';
+				return 'octicon octicon-error';
 		}
 		return '';
 	}
