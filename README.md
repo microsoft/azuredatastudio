@@ -68,7 +68,8 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
-* yamatoya for `fix the format (#4899)`
+* Stevoni for `Corrected Keyboard Shortcut Execution Issue #5480`
+* yamatoya for `fix the format #4899`
 * GeoffYoung for `Fix sqlDropColumn description #4422`
 * AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
 * sadedil for `Missing feature request: Save as XML #3729`
