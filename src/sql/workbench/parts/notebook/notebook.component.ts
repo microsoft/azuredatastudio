@@ -519,7 +519,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			for (let i = 0; i < codeCells.length; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {
-					return Promise.reject(new Error(localize('cellRunFailed', 'Run Cells failed - See error in output of the currently select cell for more information.')));
+					return Promise.reject(new Error(localize('cellRunFailed', 'Run Cells failed - See error in output of the currently selected cell for more information.')));
 				}
 			}
 		}
