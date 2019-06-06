@@ -43,7 +43,8 @@ export class InstalledPackagesTab {
 
 			this.uninstallPackageButton = view.modelBuilder.button()
 				.withProperties({
-					label: this.UninstallButtonText
+					label: this.UninstallButtonText,
+					width: '200px'
 				}).component();
 			this.uninstallPackageButton.onDidClick(() => {
 				this.doUninstallPackage();
@@ -78,6 +79,7 @@ export class InstalledPackagesTab {
 	}
 
 	private async loadInstalledPackagesInfo(): Promise<void> {
+		let packageData: string[][];
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		try {
 			let pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
@@ -89,19 +91,20 @@ export class InstalledPackagesTab {
 					packagesLocation)
 			});
 
-			await this.installedPackagesTable.updateProperties({
-				data: this.getDataForPackages(pythonPackages),
-				selectedRows: [0]
-			});
+			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version]);
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
 		} finally {
 			await this.installedPackagesLoader.updateProperties({ loading: false });
 		}
-	}
 
-	private getDataForPackages(packages: PythonPkgDetails[]): string[][] {
-		return packages.map(pkg => [pkg.name, pkg.version]);
+		// Update table when loader isn't displayed to prevent table sizing issues
+		if (packageData && packageData.length > 0) {
+			await this.installedPackagesTable.updateProperties({
+				data: packageData,
+				selectedRows: [0]
+			});
+		}
 	}
 
 	private doUninstallPackage(): void {
