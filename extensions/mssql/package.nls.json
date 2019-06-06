@@ -23,7 +23,7 @@
 	"title.openSparkHistory": "View Spark History",
 	"title.openYarnHistory": "View Yarn History",
 	"title.tasks": "Tasks",
-	"title.managePackages": "Install Packages",
+	"title.installPackages": "Install Packages",
 	"title.configurePython": "Configure Python for Notebooks",
 
 	"title.searchServers": "Search: Servers",
