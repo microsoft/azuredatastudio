@@ -150,6 +150,7 @@ suite('SQL ConnectionManagementService tests', () => {
 	function createConnectionManagementService(): ConnectionManagementService {
 		let connectionManagementService = new ConnectionManagementService(
 			connectionStore.object,
+			undefined,
 			connectionDialogService.object,
 			undefined,
 			undefined,

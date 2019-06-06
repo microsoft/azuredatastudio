@@ -37,7 +37,7 @@ declare module 'azdata' {
 		export function getCurrentConnection(): Thenable<ConnectionProfile>;
 
 		/**
-		 * Get known connection profiles
+		 * Get known connection profiles including active connections, recent connections and saved connections.
 		 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
 		 * @returns array of connections
 		 */
