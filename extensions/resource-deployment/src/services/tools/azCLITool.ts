@@ -13,7 +13,7 @@ export class AzCliTool implements ITool {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzCLIDescription', 'The command-line tool for managing Azure resources');
+		return localize('resourceDeployment.AzCLIDescription', 'A command-line tool for managing Azure resources');
 	}
 
 	get type(): ToolType {

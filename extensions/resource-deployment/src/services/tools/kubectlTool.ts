@@ -13,7 +13,7 @@ export class KubeCtlTool implements ITool {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.KubeCtlDescription', 'The command-line tool allows you to run commands against Kubernetes clusters');
+		return localize('resourceDeployment.KubeCtlDescription', 'A command-line tool allows you to run commands against Kubernetes clusters');
 	}
 
 	get type(): ToolType {
