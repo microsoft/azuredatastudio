@@ -199,7 +199,14 @@ export class AddNewPackageTab {
 					let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
 					let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
 
-					// TODO: handle edge case where one version is longer (i.e. append zeroes)
+					// If versions have different lengths, then append zeroes to the shorter one
+					if (firstVersion.length > secondVersion.length) {
+						let diff = firstVersion.length - secondVersion.length;
+						secondVersion = secondVersion.concat(new Array(diff).fill(0));
+					} else if (secondVersion.length > firstVersion.length) {
+						let diff = secondVersion.length - firstVersion.length;
+						firstVersion = firstVersion.concat(new Array(diff).fill(0));
+					}
 
 					for (let i = 0; i < firstVersion.length; ++i) {
 						if (firstVersion[i] > secondVersion[i]) {
