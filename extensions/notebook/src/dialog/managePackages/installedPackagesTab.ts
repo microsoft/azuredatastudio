@@ -9,10 +9,14 @@ import * as azdata from 'azdata';
 import JupyterServerInstallation, { PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
+import CodeAdapter from '../../prompts/adapter';
+import { QuestionTypes, IQuestion } from '../../prompts/question';
 
 const localize = nls.loadMessageBundle();
 
 export class InstalledPackagesTab {
+	private prompter: CodeAdapter;
+
 	private installedPkgTab: azdata.window.DialogTab;
 
 	private installedPackageCount: azdata.TextComponent;
@@ -26,6 +30,8 @@ export class InstalledPackagesTab {
 	private readonly PkgVersionColumn = localize('managePackages.newPkgVersionColumn', "Version");
 
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
+		this.prompter = new CodeAdapter();
+
 		this.installedPkgTab = azdata.window.createTab(this.InstalledTabTitle);
 
 		this.installedPkgTab.registerContent(async view => {
@@ -46,9 +52,7 @@ export class InstalledPackagesTab {
 					label: this.UninstallButtonText,
 					width: '200px'
 				}).component();
-			this.uninstallPackageButton.onDidClick(() => {
-				this.doUninstallPackage();
-			});
+			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage());
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
@@ -107,41 +111,50 @@ export class InstalledPackagesTab {
 		}
 	}
 
-	private doUninstallPackage(): void {
+	private async doUninstallPackage(): Promise<void> {
 		let rowNums = this.installedPackagesTable.selectedRows;
-		if (!rowNums) {
+		if (!rowNums || rowNums.length === 0) {
 			return;
 		}
 
-		let packages: PythonPkgDetails[] = rowNums.map(rowNum => {
-			let row = this.installedPackagesTable.data[rowNum];
-			return {
-				name: row[0],
-				version: row[1]
-			};
+		this.uninstallPackageButton.updateProperties({ enabled: false });
+		let doUninstall = await this.prompter.promptSingle<boolean>(<IQuestion>{
+			type: QuestionTypes.confirm,
+			message: localize('managePackages.confirmUninstall', 'Are you sure you want to uninstall the specified packages?'),
+			default: false
 		});
 
-		let packagesStr = packages.map(pkg => {
-			return `${pkg.name} ${pkg.version}`;
-		}).join(', ');
-		this.dialog.showInfoMessage(
-			localize('managePackages.backgroundUninstallStarted',
-				"Started background uninstall for {0}.",
-				packagesStr));
+		if (doUninstall) {
+			try {
+				let packages: PythonPkgDetails[] = rowNums.map(rowNum => {
+					let row = this.installedPackagesTable.data[rowNum];
+					return {
+						name: row[0],
+						version: row[1]
+					};
+				});
 
-		this.uninstallPackageButton.updateProperties({ enabled: false });
-		this.jupyterInstallation.uninstallPipPackages(packages)
-			.then(async () => {
+				let packagesStr = packages.map(pkg => {
+					return `${pkg.name} ${pkg.version}`;
+				}).join(', ');
+				this.dialog.showInfoMessage(
+					localize('managePackages.backgroundUninstallStarted',
+						"Started background uninstall for {0}.",
+						packagesStr));
+
+				await this.jupyterInstallation.uninstallPipPackages(packages);
+
 				this.jupyterInstallation.outputChannel.appendLine(
 					localize('managePackages.backgroundUninstallComplete',
 						"Completed uninstall for {0}.",
 						packagesStr));
+
 				await this.loadInstalledPackagesInfo();
-				this.uninstallPackageButton.updateProperties({ enabled: true });
-			})
-			.catch(err => {
+			} catch (err) {
 				this.dialog.showErrorMessage(utils.getErrorMessage(err));
-				this.uninstallPackageButton.updateProperties({ enabled: true });
-			});
+			}
+		}
+
+		this.uninstallPackageButton.updateProperties({ enabled: true });
 	}
 }
