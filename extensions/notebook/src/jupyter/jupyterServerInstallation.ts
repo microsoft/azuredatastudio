@@ -10,7 +10,6 @@ import * as azdata from 'azdata';
 import { ExecOptions } from 'child_process';
 import * as decompress from 'decompress';
 import * as request from 'request';
-import { EOL } from 'os';
 
 import { ApiWrapper } from '../common/apiWrapper';
 import * as constants from '../common/constants';
@@ -527,27 +526,9 @@ export default class JupyterServerInstallation {
 			pythonBinPathSuffix);
 	}
 
-	/**
-	 * Returns the folder containing the python pip packages.
-	 * @param apiWrapper An ApiWrapper to use when retrieving user settings info.
-	 */
 	public async getPythonPackagesPath(): Promise<string> {
-		let cmd = `"${this.pythonExecutable}" -m pip show jupyter`;
-		let packageInfo = await this.executeBufferedCommand(cmd);
-
-		let location = undefined;
-		if (packageInfo) {
-			let locationHeader = 'Location: ';
-			let parts = packageInfo.split(EOL);
-			for (let part of parts) {
-				if (part && part.startsWith(locationHeader)) {
-					location = part.substring(locationHeader.length);
-					break;
-				}
-			}
-		}
-
-		return location;
+		let cmd = `"${this.pythonExecutable}" -c "import site; print(site.getsitepackages()[0])"`;
+		return await this.executeBufferedCommand(cmd);
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
