@@ -227,7 +227,7 @@ export class AddNewPackageTab {
 		});
 	}
 
-	private doPackageInstall(): void {
+	private async doPackageInstall(): Promise<void> {
 		let packageName = this.newPackagesName.value;
 		let packageVersion = this.newPackagesVersions.value as string;
 		if (!packageName || packageName.length === 0 ||
@@ -235,23 +235,25 @@ export class AddNewPackageTab {
 			return;
 		}
 
-		this.dialog.showInfoMessage(
-			localize('managePackages.backgroundInstallStarted',
-				"Started background install for {0} {1}.",
-				packageName,
-				packageVersion));
+		try {
+			this.dialog.showInfoMessage(
+				localize('managePackages.backgroundInstallStarted',
+					"Started background install for {0} {1}.",
+					packageName,
+					packageVersion));
 
-		this.jupyterInstallation.installPipPackage(packageName, packageVersion)
-			.then(() => {
-				this.jupyterInstallation.outputChannel.appendLine(
-					localize('managePackages.backgroundInstallComplete',
-						"Completed install for {0} {1}.",
-						packageName,
-						packageVersion));
-			})
-			.catch(err => {
-				this.dialog.showErrorMessage(utils.getErrorMessage(err));
-			});
+			await this.jupyterInstallation.installPipPackage(packageName, packageVersion);
+
+			this.jupyterInstallation.outputChannel.appendLine(
+				localize('managePackages.backgroundInstallComplete',
+					"Completed install for {0} {1}.",
+					packageName,
+					packageVersion));
+
+			await this.dialog.refreshInstalledPackages();
+		} catch (err) {
+			this.dialog.showErrorMessage(utils.getErrorMessage(err));
+		}
 	}
 }
 

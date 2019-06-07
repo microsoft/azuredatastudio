@@ -14,6 +14,8 @@ const localize = nls.loadMessageBundle();
 
 export class ManagePackagesDialog {
 	private dialog: azdata.window.Dialog;
+	private installedPkgTab: InstalledPackagesTab;
+	private addNewPkgTab: AddNewPackageTab;
 
 	private readonly DialogTitle = localize('managePackages.dialogName', "Manage Pip Packages");
 	private readonly CancelButtonText = localize('managePackages.cancelButtonText', "Close");
@@ -27,15 +29,19 @@ export class ManagePackagesDialog {
 	public showDialog(): void {
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 
-		let installedPkgTab = new InstalledPackagesTab(this, this.jupyterInstallation);
-		let addNewPkgTab = new AddNewPackageTab(this, this.jupyterInstallation);
+		this.installedPkgTab = new InstalledPackagesTab(this, this.jupyterInstallation);
+		this.addNewPkgTab = new AddNewPackageTab(this, this.jupyterInstallation);
 
 		this.dialog.okButton.hidden = true;
 		this.dialog.cancelButton.label = this.CancelButtonText;
 
-		this.dialog.content = [installedPkgTab.tab, addNewPkgTab.tab];
+		this.dialog.content = [this.installedPkgTab.tab, this.addNewPkgTab.tab];
 
 		azdata.window.openDialog(this.dialog);
+	}
+
+	public refreshInstalledPackages(): Promise<void> {
+		return this.installedPkgTab.loadInstalledPackagesInfo();
 	}
 
 	public showInfoMessage(message: string): void {

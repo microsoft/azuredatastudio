@@ -82,7 +82,7 @@ export class InstalledPackagesTab {
 		return this.installedPkgTab;
 	}
 
-	private async loadInstalledPackagesInfo(): Promise<void> {
+	public async loadInstalledPackagesInfo(): Promise<void> {
 		let packageData: string[][];
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		try {
