@@ -16,7 +16,7 @@ const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
 const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
 const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
-const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to generate script for');
+const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to script');
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No changes to apply');
 
@@ -280,7 +280,7 @@ export class SchemaCompareResult {
 
 			// disable apply and generate script buttons if no changes are included
 			if (thingsToExclude.size === this.comparisonResult.differences.length) {
-				this.toggleNoChanges(false);
+				this.setButtonStatesForNoChanges(false);
 			}
 		}
 
@@ -320,11 +320,11 @@ export class SchemaCompareResult {
 					if (!rowState.checked) {
 						this.originalSourceExcludes.set(key, diff);
 						if (this.originalSourceExcludes.size === this.comparisonResult.differences.length) {
-							this.toggleNoChanges(false);
+							this.setButtonStatesForNoChanges(false);
 						}
 					}
-					else if (!this.generateScriptButton.enabled && !this.applyButton.enabled) {
-						this.toggleNoChanges(true);
+					else {
+						this.setButtonStatesForNoChanges(true);
 					}
 				}
 				else {
@@ -332,10 +332,10 @@ export class SchemaCompareResult {
 					if (!rowState.checked) {
 						this.originalTargetExcludes.set(key, diff);
 						if (this.originalTargetExcludes.size === this.comparisonResult.differences.length) {
-							this.toggleNoChanges(false);
+							this.setButtonStatesForNoChanges(false);
 						}
-						else if (!this.generateScriptButton.enabled && !this.applyButton.enabled) {
-							this.toggleNoChanges(true);
+						else {
+							this.setButtonStatesForNoChanges(true);
 						}
 					}
 				}
@@ -605,13 +605,13 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private toggleNoChanges(enable: boolean): void {
+	private setButtonStatesForNoChanges(enableButtons: boolean): void {
 		// generate script and apply can only be enabled if the target is a database
 		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
-			this.applyButton.enabled = enable;
-			this.generateScriptButton.enabled = enable;
-			this.applyButton.title = enable ? applyEnabledMessage : applyNoChangesMessage;
-			this.generateScriptButton.title = enable ? generateScriptEnabledMessage : generateScriptNoChangesMessage;
+			this.applyButton.enabled = enableButtons;
+			this.generateScriptButton.enabled = enableButtons;
+			this.applyButton.title = enableButtons ? applyEnabledMessage : applyNoChangesMessage;
+			this.generateScriptButton.title = enableButtons ? generateScriptEnabledMessage : generateScriptNoChangesMessage;
 		}
 	}
 
