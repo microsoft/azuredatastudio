@@ -62,6 +62,11 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 	getTelemetryInfo(): Promise<ITelemetryInfo> {
 		return this.impl.getTelemetryInfo();
 	}
+
+	// {{SQL CARBON EDIT}} - Add method to get timestamp info for telemetry event name
+	public getTimestampForEvent(telemetryEvent: string): number {
+		return this.impl.getTimestampForEvent(telemetryEvent);
+	}
 }
 
 registerSingleton(ITelemetryService, TelemetryService);

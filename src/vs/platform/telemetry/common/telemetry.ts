@@ -34,4 +34,8 @@ export interface ITelemetryService {
 	getTelemetryInfo(): Promise<ITelemetryInfo>;
 
 	isOptedIn: boolean;
+
+	// {{SQL CARBON EDIT}} - Add method to get timestamp info for telemetry event name
+	getTimestampForEvent?(telemetryEvent: string): number;
+
 }

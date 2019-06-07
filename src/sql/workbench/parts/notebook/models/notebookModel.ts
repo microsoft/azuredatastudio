@@ -306,7 +306,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						this._register(cellModel.onLoaded((e) => {
 							this._textCellsLoading--;
 							if (this._textCellsLoading <= 0) {
-								this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered);
+								let editorOpenedTimestamp = this.telemetryService.getTimestampForEvent('editorOpened');
+								if (editorOpenedTimestamp && editorOpenedTimestamp > 0) {
+									let markdownRenderingTime = Date.now() - editorOpenedTimestamp;
+									this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingEllapsed: markdownRenderingTime });
+								}
 							}
 						}));
 						return cellModel;
