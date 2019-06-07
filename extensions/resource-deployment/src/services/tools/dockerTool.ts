@@ -13,7 +13,7 @@ export class DockerTool implements ITool {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.DockerDescription', 'Manages the containers');
+		return localize('resourceDeployment.DockerDescription', 'Provides the ability to package and run an application in isolated containers');
 	}
 
 	get type(): ToolType {

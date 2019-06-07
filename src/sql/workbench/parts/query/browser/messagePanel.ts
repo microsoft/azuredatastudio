@@ -110,20 +110,18 @@ export class MessagePanel extends Disposable {
 		this._register(this.themeService.onThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getTheme());
 		this.controller.onKeyDown = (tree, event) => {
-			if (event.ctrlKey) {
+			if (event.ctrlKey && event.code === 'KeyC') {
 				let context: IMessagesActionContext = {
 					selection: document.getSelection(),
 					tree: this.tree,
 				};
-				// Ctrl + C for copy
-				if (event.code === 'KeyC') {
-					let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this.clipboardService);
-					copyMessageAction.run(context);
-				}
+				let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this.clipboardService);
+				copyMessageAction.run(context);
+				event.preventDefault();
+				event.stopPropagation();
+				return true;
 			}
-			event.preventDefault();
-			event.stopPropagation();
-			return true;
+			return false;
 		};
 		this.controller.onContextMenu = (tree, element, event) => {
 			if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
@@ -370,15 +368,12 @@ export class MessageController extends WorkbenchTreeController {
 	constructor(
 		options: IControllerOptions,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IEditorService private workbenchEditorService: IEditorService,
-		@IContextMenuService private contextMenuService: IContextMenuService,
-		@IInstantiationService private instantiationService: IInstantiationService
+		@IEditorService private workbenchEditorService: IEditorService
 	) {
 		super(options, configurationService);
 	}
 
 	protected onLeftClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
-		const mouseEvent = <IMouseEvent>eventish;
 		// input and output are one element in the tree => we only expand if the user clicked on the output.
 		// if ((element.reference > 0 || (element instanceof RawObjectReplElement && element.hasChildren)) && mouseEvent.target.className.indexOf('input expression') === -1) {
 		super.onLeftClick(tree, element, eventish, origin);

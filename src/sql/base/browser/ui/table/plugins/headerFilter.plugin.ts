@@ -74,11 +74,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		if (column.id === '_detail_selector') {
 			return;
 		}
-		const $el = jQuery('<div></div>')
+		const $el = jQuery('<div tabIndex="0"></div>')
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
 		$el.bind('click', (e) => this.showFilter(e)).appendTo(args.node);
+		$el.bind('keydown', (e) => {
+			if (e.key === 'Enter' || e.keyCode === 13) {
+				this.showFilter(e);
+			}
+		}).appendTo(args.node);
 	}
 
 	private handleBeforeHeaderCellDestroy(e: Event, args: Slick.OnBeforeHeaderCellDestroyEventArgs<T>) {

@@ -39,7 +39,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		@Inject(IThemeService) private _themeService: IThemeService
 	) {
 		super();
-		this.registry = _notebookService.getMimeRegistry();
+		this.registry = this._notebookService.getMimeRegistry();
 	}
 
 	ngOnInit() {
@@ -70,7 +70,7 @@ export class OutputComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
-	private renderOutput() {
+	private renderOutput(): void {
 		let options = outputProcessor.getBundleOptions({ value: this.cellOutput, trusted: this.trustedMode });
 		options.themeService = this._themeService;
 		// TODO handle safe/unsafe mapping
