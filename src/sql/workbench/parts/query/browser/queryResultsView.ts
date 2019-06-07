@@ -9,7 +9,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel, MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
 import { GridPanel, GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
-import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
+import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab'; //import chart tab
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
@@ -103,6 +103,40 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 }
 
+class SandDanceView extends Disposable implements IPanelView {
+	private container = document.createElement('div');
+
+	constructor(private instantiationService: IInstantiationService) {
+		super();
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
+		//this.container.innerText += "Hello World!";
+	}
+
+	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+	}
+
+	focus(): void {
+	}
+
+	public clear() {
+	}
+
+	remove(): void {
+		this.container.remove();
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+	}
+
+	public set state(val: GridPanelState) {
+	}
+}
+
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', 'Results');
 	public readonly identifier = 'resultsTab';
@@ -147,12 +181,36 @@ class MessagesTab implements IPanelTab {
 	}
 }
 
+class SandDanceTab implements IPanelTab {
+	public readonly title = nls.localize('sandDanceTabTitle', 'SandDance');
+	public readonly identifier = 'sandDanceTab';
+	public readonly view: SandDanceView;
+
+	constructor(instantiationService: IInstantiationService) {
+		this.view = new SandDanceView(instantiationService);
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.view.queryRunner = runner;
+	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
+
+}
+
 export class QueryResultsView extends Disposable {
 	private _panelView: TabbedPanel;
 	private _input: QueryResultsInput;
 	private resultsTab: ResultsTab;
 	private messagesTab: MessagesTab;
 	private chartTab: ChartTab;
+	private sandDanceTab: SandDanceTab;
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
@@ -169,6 +227,8 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
+		//test
+		this.sandDanceTab = this._register(new SandDanceTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.qpTab = this._register(new QueryPlanTab());
@@ -203,9 +263,11 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
+		this.sandDanceTab.queryRunner = runner; //test
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.showResults();
 			this.hideChart();
+			this.hideSandDance();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
@@ -224,6 +286,12 @@ export class QueryResultsView extends Disposable {
 			this._panelView.pushTab(this.chartTab);
 		} else if (!this.input.state.visibleTabs.has(this.chartTab.identifier) && this._panelView.contains(this.chartTab)) {
 			this._panelView.removeTab(this.chartTab.identifier);
+		}
+
+		if (this.input.state.visibleTabs.has(this.sandDanceTab.identifier) && !this._panelView.contains(this.sandDanceTab)) {
+			this._panelView.pushTab(this.sandDanceTab);
+		} else if (!this.input.state.visibleTabs.has(this.sandDanceTab.identifier) && this._panelView.contains(this.sandDanceTab)) {
+			this._panelView.removeTab(this.sandDanceTab.identifier);
 		}
 
 		if (this.input.state.visibleTabs.has(this.qpTab.identifier) && !this._panelView.contains(this.qpTab)) {
@@ -278,7 +346,7 @@ export class QueryResultsView extends Disposable {
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
 
-		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab, this.sandDanceTab].forEach(t => t.clear());
 
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {
@@ -304,6 +372,7 @@ export class QueryResultsView extends Disposable {
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
+		this.sandDanceTab.clear();
 	}
 
 	public get input(): QueryResultsInput {
@@ -324,9 +393,24 @@ export class QueryResultsView extends Disposable {
 		this.chartTab.chart(dataId);
 	}
 
+	public sandDanceData(dataId: { resultId: number, batchId: number }): void {
+		this.input.state.visibleTabs.add(this.sandDanceTab.identifier);
+		if (!this._panelView.contains(this.sandDanceTab)) {
+			this._panelView.pushTab(this.sandDanceTab);
+		}
+
+		this._panelView.showTab(this.sandDanceTab.identifier);
+	}
+
 	public hideChart() {
 		if (this._panelView.contains(this.chartTab)) {
 			this._panelView.removeTab(this.chartTab.identifier);
+		}
+	}
+
+	public hideSandDance() {
+		if (this._panelView.contains(this.sandDanceTab)) {
+			this._panelView.removeTab(this.sandDanceTab.identifier);
 		}
 	}
 

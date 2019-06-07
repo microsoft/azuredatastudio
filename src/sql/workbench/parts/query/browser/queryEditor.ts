@@ -518,4 +518,8 @@ export class QueryEditor extends BaseEditor {
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.resultsEditor.chart(dataId);
 	}
+
+	public sandDance(dataId: { batchId: number, resultId: number }) {
+		this.resultsEditor.sandDance(dataId);
+	}
 }
