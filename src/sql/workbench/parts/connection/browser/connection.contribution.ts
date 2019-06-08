@@ -19,7 +19,8 @@ import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/
 // Register Statusbar item
 (<statusbar.IStatusbarRegistry>Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 	ConnectionStatusbarItem,
-	{ id: 'status.connection', label: localize('status.connection', "Connection") },
+	'status.connection',
+	localize('status.connection', "Connection"),
 	StatusbarAlignment.RIGHT,
 	100 /* High Priority */
 ));

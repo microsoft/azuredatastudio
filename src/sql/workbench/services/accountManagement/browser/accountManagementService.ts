@@ -69,7 +69,8 @@ export class AccountManagementService implements IAccountManagementService {
 		// Register status bar item
 		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
 			AccountListStatusbarItem,
-			{ id: 'status.accountList', label: localize('status.accountList', "Account List") },
+			'status.accountList',
+			localize('status.accountList', "Account List"),
 			StatusbarAlignment.LEFT,
 			15000 /* Highest Priority */
 		);
