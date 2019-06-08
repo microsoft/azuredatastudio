@@ -98,6 +98,9 @@ export function createApiFactory(
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
 					return extHostConnectionManagement.$getCurrentConnection();
 				},
+				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+				},
 
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
@@ -731,6 +734,30 @@ export function createApiFactory(
 				return extHostDataProvider.$registerScriptingProvider(provider);
 			};
 
+			let registerProfilerProvider = (provider: sqlops.ProfilerProvider): vscode.Disposable => {
+				provider.registerOnSessionEventsAvailable((response: sqlops.ProfilerSessionEvents) => {
+					extHostDataProvider.$onSessionEventsAvailable(provider.handle, response);
+				});
+
+				provider.registerOnSessionStopped((response: sqlops.ProfilerSessionStoppedParams) => {
+					extHostDataProvider.$onSessionStopped(provider.handle, response);
+				});
+
+				provider.registerOnProfilerSessionCreated((response: sqlops.ProfilerSessionCreatedParams) => {
+					extHostDataProvider.$onProfilerSessionCreated(provider.handle, response);
+				});
+
+				return extHostDataProvider.$registerProfilerProvider(provider);
+			};
+
+			let registerBackupProvider = (provider: sqlops.BackupProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerBackupProvider(provider);
+			};
+
+			let registerRestoreProvider = (provider: sqlops.RestoreProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerRestoreProvider(provider);
+			};
+
 			let registerMetadataProvider = (provider: sqlops.MetadataProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerMetadataProvider(provider);
 			};
@@ -746,11 +773,14 @@ export function createApiFactory(
 
 			// namespace: dataprotocol
 			const dataprotocol: typeof sqlops.dataprotocol = {
+				registerBackupProvider,
 				registerConnectionProvider,
 				registerFileBrowserProvider,
 				registerMetadataProvider,
 				registerObjectExplorerProvider,
 				registerObjectExplorerNodeProvider,
+				registerProfilerProvider,
+				registerRestoreProvider,
 				registerScriptingProvider,
 				registerTaskServicesProvider,
 				registerQueryProvider,

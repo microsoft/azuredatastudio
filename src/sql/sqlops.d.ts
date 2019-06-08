@@ -13,6 +13,10 @@ declare module 'sqlops' {
 	export namespace dataprotocol {
 		export function registerConnectionProvider(provider: ConnectionProvider): vscode.Disposable;
 
+		export function registerBackupProvider(provider: BackupProvider): vscode.Disposable;
+
+		export function registerRestoreProvider(provider: RestoreProvider): vscode.Disposable;
+
 		export function registerScriptingProvider(provider: ScriptingProvider): vscode.Disposable;
 
 		export function registerObjectExplorerProvider(provider: ObjectExplorerProvider): vscode.Disposable;
@@ -22,6 +26,8 @@ declare module 'sqlops' {
 		export function registerTaskServicesProvider(provider: TaskServicesProvider): vscode.Disposable;
 
 		export function registerFileBrowserProvider(provider: FileBrowserProvider): vscode.Disposable;
+
+		export function registerProfilerProvider(provider: ProfilerProvider): vscode.Disposable;
 
 		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
 
@@ -1260,6 +1266,176 @@ declare module 'sqlops' {
 		dateLastModified: string;
 		createDate: string;
 		providerName: string;
+	}
+
+	// Disaster Recovery interfaces  -----------------------------------------------------------------------
+
+	export interface BackupConfigInfo {
+		recoveryModel: string;
+		defaultBackupFolder: string;
+		backupEncryptors: {};
+	}
+
+	export interface BackupResponse {
+		result: boolean;
+		taskId: number;
+	}
+
+	export interface BackupProvider extends DataProvider {
+		backup(connectionUri: string, backupInfo: { [key: string]: any }, taskExecutionMode: TaskExecutionMode): Thenable<BackupResponse>;
+		getBackupConfigInfo(connectionUri: string): Thenable<BackupConfigInfo>;
+	}
+
+	export interface RestoreProvider extends DataProvider {
+		getRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestorePlanResponse>;
+		cancelRestorePlan(connectionUri: string, restoreInfo: RestoreInfo): Thenable<boolean>;
+		restore(connectionUri: string, restoreInfo: RestoreInfo): Thenable<RestoreResponse>;
+		getRestoreConfigInfo(connectionUri: string): Thenable<RestoreConfigInfo>;
+	}
+
+	export interface RestoreInfo {
+		options: { [key: string]: any };
+		taskExecutionMode: TaskExecutionMode;
+	}
+
+	export interface RestoreDatabaseFileInfo {
+		fileType: string;
+
+		logicalFileName: string;
+
+		originalFileName: string;
+
+		restoreAsFileName: string;
+	}
+
+	export interface DatabaseFileInfo {
+		properties: LocalizedPropertyInfo[];
+		id: string;
+		isSelected: boolean;
+	}
+
+	export interface LocalizedPropertyInfo {
+		propertyName: string;
+		propertyValue: string;
+		propertyDisplayName: string;
+		propertyValueDisplayName: string;
+	}
+
+	export interface RestorePlanDetailInfo {
+		name: string;
+		currentValue: any;
+		isReadOnly: boolean;
+		isVisible: boolean;
+		defaultValue: any;
+	}
+
+	export interface RestorePlanResponse {
+		sessionId: string;
+		backupSetsToRestore: DatabaseFileInfo[];
+		canRestore: boolean;
+		errorMessage: string;
+		dbFiles: RestoreDatabaseFileInfo[];
+		databaseNamesFromBackupSets: string[];
+		planDetails: { [key: string]: RestorePlanDetailInfo };
+	}
+
+	export interface RestoreConfigInfo {
+		configInfo: { [key: string]: any };
+	}
+
+	export interface RestoreResponse {
+		result: boolean;
+		taskId: string;
+		errorMessage: string;
+	}
+
+	export interface ProfilerProvider extends DataProvider {
+		createSession(sessionId: string, sessionName: string, template: ProfilerSessionTemplate): Thenable<boolean>;
+		startSession(sessionId: string, sessionName: string): Thenable<boolean>;
+		stopSession(sessionId: string): Thenable<boolean>;
+		pauseSession(sessionId: string): Thenable<boolean>;
+		getXEventSessions(sessionId: string): Thenable<string[]>;
+		connectSession(sessionId: string): Thenable<boolean>;
+		disconnectSession(sessionId: string): Thenable<boolean>;
+
+		registerOnSessionEventsAvailable(handler: (response: ProfilerSessionEvents) => any): void;
+		registerOnSessionStopped(handler: (response: ProfilerSessionStoppedParams) => any): void;
+		registerOnProfilerSessionCreated(handler: (response: ProfilerSessionCreatedParams) => any): void;
+	}
+
+	export interface IProfilerTableRow {
+		/**
+		 * Name of the event; known issue this is not camel case, need to figure
+		 * out a better way to determine column id's from rendered column names
+		 */
+		EventClass: string;
+	}
+
+	export interface IProfilerMoreRowsNotificationParams {
+		uri: string;
+		rowCount: number;
+		data: IProfilerTableRow;
+	}
+
+	/**
+	 * Profiler Event
+	 */
+	export interface ProfilerEvent {
+		/**
+		 * Event class name
+		 */
+		name: string;
+
+		/**
+		 * Event timestamp
+		 */
+		timestamp: string;
+
+		/**
+		 * Event values
+		 */
+		values: {};
+	}
+
+	/**
+	 * Profiler Session Template
+	 */
+	export interface ProfilerSessionTemplate {
+		/**
+		 * Template name
+		 */
+		name: string;
+
+		/**
+		 * Default view for template
+		 */
+		defaultView: string;
+
+		/**
+		 * TSQL for creating a session
+		 */
+		createStatement: string;
+	}
+
+	export interface ProfilerSessionEvents {
+		sessionId: string;
+
+		events: ProfilerEvent[];
+
+		eventsLost: boolean;
+	}
+
+	export interface ProfilerSessionStoppedParams {
+
+		ownerUri: string;
+
+		sessionId: number;
+	}
+
+	export interface ProfilerSessionCreatedParams {
+		ownerUri: string;
+		sessionName: string;
+		templateName: string;
 	}
 
 	export interface GetCredentialsResult extends ResultStatus {
