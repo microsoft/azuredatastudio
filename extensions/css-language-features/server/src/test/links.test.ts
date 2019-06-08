@@ -67,7 +67,7 @@ suite('Links', () => {
 		);
 	});
 
-	test('url links', function () {
+	test('node module resolving', function () {
 
 		let testUri = getTestResource('about.css');
 		let folders = [{ name: 'x', uri: getTestResource('') }];
