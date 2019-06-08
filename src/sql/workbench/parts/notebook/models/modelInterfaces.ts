@@ -401,6 +401,9 @@ export interface INotebookModel {
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
+
+	serializationStateChanged(changeType: NotebookChangeType): void;
+
 }
 
 export interface NotebookContentChange {
@@ -435,6 +438,11 @@ export enum CellExecutionState {
 	Error = 3
 }
 
+export interface IOutputChangedEvent {
+	outputs: ReadonlyArray<nb.ICellOutput>;
+	shouldScroll: boolean;
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -447,7 +455,7 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
-	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;

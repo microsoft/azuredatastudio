@@ -147,7 +147,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			this._onDidChangeNotebookCell.fire({
 				cells: data.document.cells,
 				notebook: data.document,
-				kind: undefined
+				kind: e.changeKind
 			});
 		}
 	}

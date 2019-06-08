@@ -147,12 +147,14 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.OpenCommandText,
+				title: this.OpenCommandText,
 				width: '80px',
 				isFile: true
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.ParseCommandText,
+				title: this.ParseCommandText,
 				width: '80px',
 				isFile: false
 			}).component();
@@ -176,7 +178,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				height: 300,
 				width: 400,
 				multiline: true,
-				inputType: 'text'
+				inputType: 'text',
+				ariaLabel: this.CommandLabelString,
+				placeHolder: this.CommandLabelString
 			})
 			.component();
 	}
@@ -185,6 +189,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.generalTab.registerContent(async (view) => {
 			this.nameTextBox = view.modelBuilder.inputBox()
 				.withProperties({
+					ariaLabel: this.StepNameLabelString,
+					placeHolder: this.StepNameLabelString
 				}).component();
 			this.nameTextBox.required = true;
 			this.nameTextBox.onTextChanged(() => {
@@ -214,6 +220,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 			this.processExitCodeBox = view.modelBuilder.inputBox()
 				.withProperties({
+					ariaLabel: this.ProcessExitCodeText,
+					placeHolder: this.ProcessExitCodeText
 				}).component();
 			this.processExitCodeBox.enabled = false;
 

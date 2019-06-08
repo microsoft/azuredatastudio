@@ -47,7 +47,6 @@ export enum ToolType {
 	AzCli,
 	KubeCtl,
 	Docker,
-	Python,
 	MSSQLCtl
 }
 

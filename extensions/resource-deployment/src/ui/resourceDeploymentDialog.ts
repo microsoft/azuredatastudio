@@ -32,9 +32,9 @@ export class ResourceDeploymentDialog {
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
 		this._selectedResourceType = resourceType;
-		this._dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Select a configuration'), 'resourceDeploymentDialog', true);
+		this._dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Select the deployment options'), 'resourceDeploymentDialog', true);
 		this._dialogObject.cancelButton.onClick(() => this.onCancel());
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
@@ -89,11 +89,11 @@ export class ResourceDeploymentDialog {
 
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 
-			if (this._selectedResourceType) {
-				this.selectResourceType(this._selectedResourceType);
-			}
-
-			return view.initializeModel(form);
+			return view.initializeModel(form).then(() => {
+				if (this._selectedResourceType) {
+					this.selectResourceType(this._selectedResourceType);
+				}
+			});
 		});
 		this._dialogObject.content = [tab];
 	}
@@ -160,18 +160,13 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
-		// do a 10 ms delay to workaround the issue of first time load:
-		// during initialization this update to table will be processed prior to the table initialization update
-		// as a result the data will be overwritten, introduce a short delay so that the order of updates can be maintained.
-		setTimeout(() => {
-			const tools = this.getCurrentProvider().requiredTools;
-			const headerRowHeight = 28;
-			this._toolsTable.height = 25 * tools.length + headerRowHeight;
-			this._toolsTable.data = tools.map(toolRef => {
-				const tool = this.toolsService.getToolByName(toolRef.name)!;
-				return [tool.displayName, tool.description];
-			});
-		}, 10);
+		const tools = this.getCurrentProvider().requiredTools;
+		const headerRowHeight = 28;
+		this._toolsTable.height = 25 * tools.length + headerRowHeight;
+		this._toolsTable.data = tools.map(toolRef => {
+			const tool = this.toolsService.getToolByName(toolRef.name)!;
+			return [tool.displayName, tool.description];
+		});
 	}
 
 	private getCurrentProvider(): DeploymentProvider {

@@ -54,8 +54,8 @@ class NotebookUpdateParticipant implements ISaveParticipantParticipant {
 	}
 
 	public participate(model: ITextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
-		let uriString = model.getResource().toString();
-		let notebookEditor = this.notebookService.listNotebookEditors().find((editor) => editor.id === uriString);
+		let uri = model.getResource();
+		let notebookEditor = this.notebookService.findNotebookEditor(uri);
 		if (notebookEditor) {
 			notebookEditor.notebookParams.input.updateModel();
 		}

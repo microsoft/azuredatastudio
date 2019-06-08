@@ -222,4 +222,8 @@ export class AsyncDataProvider<T extends Slick.SlickData> implements IDisposable
 	dispose() {
 		this.dataRows.dispose();
 	}
+
+	getItems(): T[] {
+		throw new Error('Method not supported.');
+	}
 }

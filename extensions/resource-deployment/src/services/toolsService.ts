@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import { ITool } from '../interfaces';
-import { PythonTool } from './tools/pythonTool';
 import { DockerTool } from './tools/dockerTool';
 import { AzCliTool } from './tools/azCliTool';
 import { MSSQLCtlTool } from './tools/mssqlCtlTool';
@@ -16,7 +15,7 @@ export interface IToolsService {
 
 export class ToolsService implements IToolsService {
 	constructor() {
-		this.SupportedTools = [new PythonTool(), new DockerTool(), new AzCliTool(), new MSSQLCtlTool(), new KubeCtlTool()];
+		this.SupportedTools = [new DockerTool(), new AzCliTool(), new MSSQLCtlTool(), new KubeCtlTool()];
 	}
 
 	private SupportedTools: ITool[];
