@@ -21,6 +21,8 @@ out-vscode-reh-pkg/
 **/node_modules
 src/vs/server/
 resources/server/
+src/vs/server
+resources/server
 build/node_modules
 coverage/
 test_data/
