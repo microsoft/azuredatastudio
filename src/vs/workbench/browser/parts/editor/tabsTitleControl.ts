@@ -720,10 +720,10 @@ export class TabsTitleControl extends TitleControl {
 			element.style.outlineColor = activeContrastBorderColor;
 			element.style.outlineOffset = isTab ? '-5px' : '-3px';
 		} else {
-			element.style.outlineWidth = null;
-			element.style.outlineStyle = null;
-			element.style.outlineColor = activeContrastBorderColor;
-			element.style.outlineOffset = null;
+			element.style.outlineWidth = '';
+			element.style.outlineStyle = '';
+			element.style.outlineColor = activeContrastBorderColor || '';
+			element.style.outlineOffset = '';
 		}
 
 		// {{SQL CARBON EDIT}} -- Display the editor's tab color
@@ -871,7 +871,7 @@ export class TabsTitleControl extends TitleControl {
 		// Borders / Outline
 		const borderRightColor = (this.getColor(TAB_BORDER) || this.getColor(contrastBorder));
 		tabContainer.style.borderRight = borderRightColor ? `1px solid ${borderRightColor}` : null;
-		tabContainer.style.outlineColor = this.getColor(activeContrastBorder);
+		tabContainer.style.outlineColor = this.getColor(activeContrastBorder) || '';
 
 		// Settings
 		const options = this.accessor.partOptions;
