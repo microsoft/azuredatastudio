@@ -296,7 +296,7 @@ export class RestoreAction extends Task {
 		}
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
-			if (serverInfo && serverInfo.isCloud) {
+			if (serverInfo && serverInfo.isCloud && profile.providerName.toLowerCase() === 'mssql') {
 				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', 'Restore command is not supported for Azure SQL databases.'));
 			}
 		}
