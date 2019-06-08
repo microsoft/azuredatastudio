@@ -118,7 +118,9 @@ export class TelemetryService implements ITelemetryService {
 		return this._commonProperties.then(values => {
 
 			// {{SQL CARBON EDIT}}
-			this._telemetryTimestampMap[eventName] = Date.now();
+			if (this._telemetryTimestampMap) {
+				this._telemetryTimestampMap[eventName] = Date.now();
+			}
 
 			// (first) add common properties
 			data = mixin(data, values);
