@@ -29,7 +29,7 @@ export class CmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.CreateCentralManagementServerRequest.type, e);
-				return Promise.reject(e.message);
+				return Promise.reject(new Error(e.message));
 			}
 		);
 	}
@@ -42,7 +42,7 @@ export class CmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.ListRegisteredServersRequest.type, e);
-				return Promise.reject(e.message);
+				return Promise.reject(new Error(e.message));
 			}
 		);
 	}
@@ -55,7 +55,7 @@ export class CmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.AddRegisteredServerRequest.type, e);
-				return Promise.reject(e.message);
+				return Promise.reject(new Error(e.message));
 			}
 		);
 	}
@@ -68,7 +68,7 @@ export class CmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.RemoveRegisteredServerRequest.type, e);
-				return Promise.reject(e.message);
+				return Promise.reject(new Error(e.message));
 			}
 		);
 	}
@@ -81,7 +81,7 @@ export class CmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.AddServerGroupRequest.type, e);
-				return Promise.reject(e.message);
+				return Promise.reject(new Error(e.message));
 			}
 		);
 	}
@@ -94,7 +94,7 @@ export class CmsService {
 			},
 			e => {
 				this.client.logFailedRequest(contracts.RemoveServerGroupRequest.type, e);
-				return Promise.reject(e.message);
+				return Promise.reject(new Error(e.message));
 			}
 		);
 	}
