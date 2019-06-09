@@ -28,7 +28,8 @@ export interface IInputOptions extends IInputBoxStyles {
 	readonly type?: string;
 	readonly validationOptions?: IInputValidationOptions;
 	readonly flexibleHeight?: boolean;
-	readonly actions?: IAction[];
+	readonly actions?: ReadonlyArray<IAction>;
+
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	readonly min?: string;

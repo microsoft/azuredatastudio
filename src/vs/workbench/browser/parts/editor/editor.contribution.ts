@@ -258,7 +258,7 @@ export class QuickOpenActionContributor extends ActionBarContributor {
 		return !!entry;
 	}
 
-	getActions(context: any): IAction[] {
+	getActions(context: any): ReadonlyArray<IAction> {
 		const actions: Action[] = [];
 
 		const entry = this.getEntry(context);
