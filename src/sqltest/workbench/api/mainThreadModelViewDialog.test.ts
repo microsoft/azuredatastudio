@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
-import { MainThreadModelViewDialog } from 'sql/workbench/api/node/mainThreadModelViewDialog';
+import { MainThreadModelViewDialog } from 'sql/workbench/api/browser/mainThreadModelViewDialog';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IModelViewButtonDetails, IModelViewTabDetails, IModelViewDialogDetails, IModelViewWizardPageDetails, IModelViewWizardDetails, DialogMessage, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CustomDialogService } from 'sql/platform/dialog/customDialogService';

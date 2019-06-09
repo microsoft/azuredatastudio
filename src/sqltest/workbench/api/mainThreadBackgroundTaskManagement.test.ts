@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import { Mock, It, Times } from 'typemoq';
-import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/node/mainThreadBackgroundTaskManagement';
+import { MainThreadBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/browser/mainThreadBackgroundTaskManagement';
 import { ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { ITaskService } from 'sql/platform/tasks/common/tasksService';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';

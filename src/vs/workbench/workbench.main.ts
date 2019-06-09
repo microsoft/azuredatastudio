@@ -7,7 +7,8 @@
 
 import 'vs/editor/editor.all';
 
-import 'vs/workbench/api/electron-browser/extensionHost.contribution';
+import 'vs/workbench/api/browser/extensionHost.contribution';
+import 'sql/workbench/api/electron-browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
 
 import 'vs/workbench/electron-browser/main.contribution';
 import 'vs/workbench/browser/workbench.contribution';
@@ -102,9 +103,8 @@ import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService
 import 'vs/workbench/services/extensions/common/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/decorations/browser/decorationsService';
 import 'vs/workbench/services/search/node/searchService';
-import 'vs/workbench/services/progress/browser/progressService2';
+import 'vs/workbench/services/progress/browser/progressService';
 import 'vs/workbench/services/editor/browser/codeEditorService';
-import 'vs/workbench/services/broadcast/electron-browser/broadcastService';
 import 'vs/workbench/services/extensions/electron-browser/extensionHostDebugService';
 import 'vs/workbench/services/preferences/browser/preferencesService';
 import 'vs/workbench/services/output/node/outputChannelModelService';
@@ -163,6 +163,8 @@ registerSingleton(IMenubarService, MenubarService);
 registerSingleton(IURLService, RelayURLService);
 registerSingleton(ITunnelService, TunnelService, true);
 registerSingleton(IConfigurationResolverService, ConfigurationResolverService, true);
+// {{SQL CARBON EDIT}} - Remove vscode ICredentialsService reference
+// registerSingleton(ICredentialsService, KeytarCredentialsService, true);
 
 //#endregion
 
@@ -298,8 +300,11 @@ import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 import 'vs/workbench/contrib/localizations/browser/localizations.contribution';
 
 // Preferences
-import 'vs/workbench/contrib/preferences/electron-browser/preferences.contribution';
+import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
 import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
+import { IPreferencesSearchService } from 'vs/workbench/contrib/preferences/common/preferences';
+import { PreferencesSearchService } from 'vs/workbench/contrib/preferences/electron-browser/preferencesSearch';
+registerSingleton(IPreferencesSearchService, PreferencesSearchService, true);
 
 // Logs
 import 'vs/workbench/contrib/logs/common/logs.contribution';
@@ -433,11 +438,11 @@ import 'vs/workbench/contrib/outline/browser/outline.contribution';
 // Experiments
 import 'vs/workbench/contrib/experiments/electron-browser/experiments.contribution';
 
-// Code Insets
-import 'vs/workbench/contrib/codeinset/electron-browser/codeInset.contribution';
-
 // Issues
 import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
+// {{SQL CARBON EDIT}} -- Removing reference to duplicate credentials service
+// import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
+import { KeytarCredentialsService } from 'vs/platform/credentials/node/credentialsService';
 
 // {{SQL CARBON EDIT}}
 // SQL
@@ -450,7 +455,6 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/platform/telemetry/telemetry.contribution';
-import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';

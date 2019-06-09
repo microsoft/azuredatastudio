@@ -45,7 +45,8 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	appNameLong: string;
 	appQuality?: string;
 	appSettingsHome: string;
-	appSettingsPath: string;
+
+	settingsResource: URI;
 	appKeybindingsPath: string;
 	settingsSearchBuildId?: number;
 	settingsSearchUrl?: string;
