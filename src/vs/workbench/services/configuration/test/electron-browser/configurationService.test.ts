@@ -52,7 +52,7 @@ class SettingsTestEnvironmentService extends EnvironmentService {
 		super(args, _execPath);
 	}
 
-	get appSettingsPath(): string { return this.customAppSettingsHome; }
+	get settingsResource(): URI { return URI.file(this.customAppSettingsHome); }
 }
 
 function setUpFolderWorkspace(folderName: string): Promise<{ parentDir: string, folderDir: string }> {
@@ -154,7 +154,7 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 				const configurationFileService = new ConfigurationFileService();
 				configurationFileService.fileService = fileService;
 				const configurationCache: IConfigurationCache = { read: () => Promise.resolve(''), write: () => Promise.resolve(), remove: () => Promise.resolve() };
-				testObject = new WorkspaceService({ userSettingsResource: URI.file(environmentService.appSettingsPath), configurationCache, remoteAuthority }, configurationFileService, remoteAgentService);
+				testObject = new WorkspaceService({ userSettingsResource: environmentService.settingsResource, configurationCache, remoteAuthority }, configurationFileService, remoteAgentService);
 				instantiationService.stub(IWorkspaceContextService, testObject);
 				instantiationService.stub(IConfigurationService, testObject);
 				instantiationService.stub(IEnvironmentService, environmentService);
