@@ -34,6 +34,8 @@ import { assign } from 'vs/base/common/objects';
 import { mnemonicMenuLabel, unmnemonicLabel } from 'vs/base/common/labels';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ServicesAccessor } from 'vs/editor/browser/editorExtensions';
 
 export class MenubarControl extends Disposable {
 
@@ -79,11 +81,12 @@ export class MenubarControl extends Disposable {
 	private readonly _onVisibilityChange: Emitter<boolean>;
 	private readonly _onFocusStateChange: Emitter<boolean>;
 
+	private menubarService: IMenubarService;
+
 	private static MAX_MENU_RECENT_ENTRIES = 10;
 
 	constructor(
 		@IThemeService private readonly themeService: IThemeService,
-		@IMenubarService private readonly menubarService: IMenubarService,
 		@IMenuService private readonly menuService: IMenuService,
 		@IWindowService private readonly windowService: IWindowService,
 		@IWindowsService private readonly windowsService: IWindowsService,
@@ -96,12 +99,19 @@ export class MenubarControl extends Disposable {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IPreferencesService private readonly preferencesService: IPreferencesService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
-		@IAccessibilityService private readonly accessibilityService: IAccessibilityService
+		@IAccessibilityService private readonly accessibilityService: IAccessibilityService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 
 		super();
 
 		this.isNative = !isWeb && (isMacintosh || this.currentTitlebarStyleSetting !== 'custom');
+
+		this.instantiationService.invokeFunction((accessor: ServicesAccessor) => {
+			if (this.isNative) {
+				this.menubarService = accessor.get(IMenubarService);
+			}
+		});
 
 		// {{SQL CARBON EDIT}} - Disable unusued menus
 		this.menus = {
