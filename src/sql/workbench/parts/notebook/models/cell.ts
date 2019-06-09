@@ -13,11 +13,13 @@ import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ICellModel, notebookConstants, IOutputChangedEvent } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
+import { ICellModelOptions, FutureInternal, CellExecutionState } from './modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { optional } from 'vs/platform/instantiation/common/instantiation';
 let modelId = 0;
 
 export class CellModel implements ICellModel {
@@ -39,7 +41,10 @@ export class CellModel implements ICellModel {
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 
-	constructor(private factory: IModelFactory, cellData?: nb.ICellContents, private _options?: ICellModelOptions) {
+	constructor(cellData: nb.ICellContents,
+		private _options: ICellModelOptions,
+		@optional(INotebookService) private _notebookService?: INotebookService
+	) {
 		this.id = `${modelId++}`;
 		if (cellData) {
 			// Read in contents if available
@@ -178,6 +183,12 @@ export class CellModel implements ICellModel {
 		this._onExecutionStateChanged.fire(this.executionState);
 	}
 
+	private notifyExecutionComplete(): void {
+		if (this._notebookService) {
+			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted);
+		}
+	}
+
 	public get executionState(): CellExecutionState {
 		let isRunning = !!(this._future && this._future.inProgress);
 		if (isRunning) {
@@ -256,6 +267,7 @@ export class CellModel implements ICellModel {
 		} finally {
 			this.disposeFuture();
 			this.fireExecutionStateChanged();
+			this.notifyExecutionComplete();
 		}
 
 		return true;

@@ -4430,10 +4430,17 @@ declare module 'azdata' {
 			 */
 			cells: NotebookCell[];
 			/**
-			 * The [change kind](#TextEditorSelectionChangeKind) which has triggered this
+			 * The [change kind](#NotebookChangeKind) which has triggered this
 			 * event. Can be `undefined`.
 			 */
-			kind?: vscode.TextEditorSelectionChangeKind;
+			kind?: NotebookChangeKind;
+		}
+
+		export enum NotebookChangeKind {
+			ContentUpdated = 0,
+			MetadataUpdated = 1,
+			Save = 2,
+			CellExecuted = 3
 		}
 
 		/**

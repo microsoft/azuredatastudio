@@ -22,7 +22,7 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
@@ -564,9 +564,30 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			providerId: editor.providerId,
 			providers: editor.providers,
 			uri: editor.uri,
-			kernelSpec: this.getKernelSpec(editor)
+			kernelSpec: this.getKernelSpec(editor),
+			changeKind: this.mapChangeKind(e.changeType)
 		};
 		return changeData;
+	}
+
+	mapChangeKind(changeType: NotebookChangeType): NotebookChangeKind {
+		switch (changeType) {
+			case NotebookChangeType.CellDeleted:
+			case NotebookChangeType.CellsAdded:
+			case NotebookChangeType.CellOutputUpdated:
+			case NotebookChangeType.CellSourceUpdated:
+			case NotebookChangeType.DirtyStateChanged:
+				return NotebookChangeKind.ContentUpdated;
+			case NotebookChangeType.KernelChanged:
+			case NotebookChangeType.TrustChanged:
+				return NotebookChangeKind.MetadataUpdated;
+			case NotebookChangeType.Saved:
+				return NotebookChangeKind.Save;
+			case NotebookChangeType.CellExecuted:
+				return NotebookChangeKind.CellExecuted;
+			default:
+				return NotebookChangeKind.ContentUpdated;
+		}
 	}
 
 	private getKernelSpec(editor: MainThreadNotebookEditor): azdata.nb.IKernelSpec {
