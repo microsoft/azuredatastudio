@@ -163,6 +163,7 @@ registerSingleton(IMenubarService, MenubarService);
 registerSingleton(IURLService, RelayURLService);
 registerSingleton(ITunnelService, TunnelService, true);
 registerSingleton(IConfigurationResolverService, ConfigurationResolverService, true);
+registerSingleton(ICredentialsService, KeytarCredentialsService, true);
 
 //#endregion
 
@@ -179,7 +180,7 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/common/ang
 import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
-import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
+import { CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
@@ -243,7 +244,6 @@ registerSingleton(ICapabilitiesService, CapabilitiesService);
 registerSingleton(IErrorMessageService, ErrorMessageService);
 registerSingleton(IConnectionDialogService, ConnectionDialogService);
 registerSingleton(IServerGroupController, ServerGroupController);
-registerSingleton(ICredentialsService, CredentialsService);
 registerSingleton(IResourceProviderService, ResourceProviderService);
 registerSingleton(IAccountManagementService, AccountManagementService);
 registerSingleton(IConnectionManagementService, ConnectionManagementService as any);
@@ -435,6 +435,8 @@ import 'vs/workbench/contrib/experiments/electron-browser/experiments.contributi
 
 // Issues
 import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
+import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
+import { KeytarCredentialsService } from 'vs/platform/credentials/node/credentialsService';
 
 // {{SQL CARBON EDIT}}
 // SQL
