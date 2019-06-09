@@ -153,6 +153,7 @@
 					"assert"
 				]
 			},
+			// {{SQL CARBON EDIT}} - allow import from sql/workbench in vs/workbench
 			{
 				"target": "**/vs/workbench/browser/**",
 				"restrictions": [
@@ -165,7 +166,8 @@
 					"**/vs/editor/contrib/**", // editor/contrib is equivalent to /browser/ by convention
 					"**/vs/workbench/{common,browser}/**",
 					"**/vs/workbench/services/*/{common,browser}/**",
-					"assert"
+					"assert",
+					"**/sql/workbench/services/queryEditor/browser/**"
 				]
 			},
 			{
