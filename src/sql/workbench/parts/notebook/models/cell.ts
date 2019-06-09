@@ -12,14 +12,13 @@ import { localize } from 'vs/nls';
 import * as notebookUtils from '../notebookUtils';
 import { CellTypes, CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
-import { ICellModel, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ICellModel, notebookConstants, IOutputChangedEvent } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { ICellModelOptions, IModelFactory, FutureInternal, CellExecutionState } from './modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { Schemas } from 'vs/base/common/network';
 let modelId = 0;
-
 
 export class CellModel implements ICellModel {
 	private _cellType: nb.CellType;
@@ -28,7 +27,7 @@ export class CellModel implements ICellModel {
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
 	private _isEditMode: boolean;
-	private _onOutputsChanged = new Emitter<ReadonlyArray<nb.ICellOutput>>();
+	private _onOutputsChanged = new Emitter<IOutputChangedEvent>();
 	private _onCellModeChanged = new Emitter<boolean>();
 	private _onExecutionStateChanged = new Emitter<CellExecutionState>();
 	private _isTrusted: boolean;
@@ -62,7 +61,7 @@ export class CellModel implements ICellModel {
 		return other && other.id === this.id;
 	}
 
-	public get onOutputsChanged(): Event<ReadonlyArray<nb.ICellOutput>> {
+	public get onOutputsChanged(): Event<IOutputChangedEvent> {
 		return this._onOutputsChanged.event;
 	}
 
@@ -91,7 +90,11 @@ export class CellModel implements ICellModel {
 	public set trustedMode(isTrusted: boolean) {
 		if (this._isTrusted !== isTrusted) {
 			this._isTrusted = isTrusted;
-			this._onOutputsChanged.fire(this._outputs);
+			let outputEvent: IOutputChangedEvent = {
+				outputs: this._outputs,
+				shouldScroll: false
+			};
+			this._onOutputsChanged.fire(outputEvent);
 		}
 	}
 
@@ -317,8 +320,12 @@ export class CellModel implements ICellModel {
 		this.fireOutputsChanged();
 	}
 
-	private fireOutputsChanged(): void {
-		this._onOutputsChanged.fire(this.outputs);
+	private fireOutputsChanged(shouldScroll: boolean = false): void {
+		let outputEvent: IOutputChangedEvent = {
+			outputs: this.outputs,
+			shouldScroll: !!shouldScroll
+		};
+		this._onOutputsChanged.fire(outputEvent);
 		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
 	}
 
@@ -383,7 +390,7 @@ export class CellModel implements ICellModel {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
 			this._outputs.push(this.rewriteOutputUrls(output));
-			this.fireOutputsChanged();
+			this.fireOutputsChanged(true);
 		}
 	}
 
