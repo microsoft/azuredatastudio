@@ -414,6 +414,7 @@ body[data-exploration="icon-exploration"] .monaco-workbench .part.editor > .cont
 ****************/
 
 body[data-exploration="icon-exploration"] .monaco-workbench .debug-action.start,
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.continue"],
 body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .start-debug-action-item .icon {
 	-webkit-mask-image: url("images/debug/start-alt1.svg");
 	background: var(--green) !important;
@@ -446,43 +447,53 @@ body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .drag
 }
 
 body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stepOver"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.stepOver"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.stepBack"],
 body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stepBack"] {
 	-webkit-mask-image: url("images/debug/step-over-alt1.svg");
 	background: var(--blue) !important;
 }
 
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stepInto"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stepInto"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.stepInto"] {
 	-webkit-mask-image: url("images/debug/step-into-alt1.svg");
 	background: var(--blue) !important;
 }
 
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stepOut"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stepOut"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.stepOut"] {
 	-webkit-mask-image: url("images/debug/step-out-alt1.svg");
 	background: var(--blue) !important;
 }
 
 body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.continue"],
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.rever"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.rever"].
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.continue"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.rever"] {
 	-webkit-mask-image: url("images/debug/continue-alt1.svg");
 	background: var(--blue) !important;
 }
 
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.restart"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.restart"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.restart"] {
 	-webkit-mask-image: url("images/debug/restart-alt1.svg");
 	background: var(--green) !important;
 }
 
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.pause"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.pause"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.pause"] {
 	-webkit-mask-image: url("images/debug/pause-alt1.svg");
 	background: var(--green) !important;
 }
 
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stop"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.stop"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.stop"] {
 	-webkit-mask-image: url("images/debug/stop-alt1.svg");
 	background: var(--red) !important;
 }
 
-body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.disconnect"] {
+body[data-exploration="icon-exploration"] .monaco-workbench .debug-toolbar .action-label[data-title="workbench.action.debug.disconnect"],
+body[data-exploration="icon-exploration"] .monaco-workbench .part > .title > .title-actions .action-label[data-title="workbench.action.debug.disconnect"] {
 	-webkit-mask-image: url("images/debug/disconnect-alt1.svg");
 	background: var(--red) !important;
 }
@@ -492,11 +503,10 @@ body[data-exploration="icon-exploration"] .debug-breakpoint-hint,
 body[data-exploration="icon-exploration"] .debug-breakpoint.icon,
 body[data-exploration="icon-exploration"] .monaco-editor .debug-breakpoint-column::before {
 	-webkit-mask-image: url("images/debug/breakpoint-alt1.svg");
-	opacity: 1 !important;
 	background: var(--redLight) !important;
 }
 
-body[data-exploration="icon-exploration"] .debug-breakpoint-hint:not(.debug-breakpoint) {
+body[data-exploration="icon-exploration"] .debug-breakpoint-hint:not(.debug-breakpoint):not(.debug-breakpoint-conditional):not(.debug-top-stack-frame):not(.debug-focused-stack-frame):not(.debug-breakpoint-log) {
 	opacity: .5 !important;
 }
 
@@ -515,7 +525,6 @@ body[data-exploration="icon-exploration"] .monaco-editor .debug-top-stack-frame-
 body[data-exploration="icon-exploration"] .monaco-editor .debug-top-stack-frame {
 	-webkit-mask-image: url("images/debug/current-arrow-alt1.svg");
 	background: var(--yellow) !important;
-	opacity: 1 !important;
 }
 
 body[data-exploration="icon-exploration"] .monaco-editor .debug-top-stack-frame.debug-breakpoint,
@@ -524,7 +533,6 @@ body[data-exploration="icon-exploration"] .monaco-editor .debug-top-stack-frame.
 body[data-exploration="icon-exploration"] .monaco-editor .debug-breakpoint-column.debug-breakpoint-column.debug-top-stack-frame-column::before {
 	-webkit-mask-image: url("images/debug/current-and-breakpoint-alt1.svg");
 	background: var(--yellow) !important;
-	opacity: 1 !important;
 }
 
 body[data-exploration="icon-exploration"] .monaco-editor .debug-focused-stack-frame.debug-breakpoint,
@@ -563,7 +571,6 @@ body[data-exploration="icon-exploration"] .monaco-editor .debug-breakpoint-colum
 body[data-exploration="icon-exploration"] .monaco-editor .debug-focused-stack-frame {
 	-webkit-mask-image: url("images/debug/stackframe-arrow-alt1.svg");
 	background: var(--green) !important;
-	opacity: 1 !important;
 }
 
 body[data-exploration="icon-exploration"] .debug-function-breakpoint,
