@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('SQL ProviderConnectionInfo tests', () => {
 	let msSQLCapabilities: any;
@@ -26,7 +27,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 		groupId: undefined,
 		getOptionsKey: undefined,
 		matches: undefined,
-		providerName: 'MSSQL',
+		providerName: mssqlProviderName,
 		options: undefined,
 		saveProfile: true,
 		id: undefined
@@ -121,13 +122,13 @@ suite('SQL ProviderConnectionInfo tests', () => {
 			}
 		];
 		msSQLCapabilities = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider,
 		};
 		capabilities.push(msSQLCapabilities);
 		capabilitiesService = new CapabilitiesTestService();
-		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 	});
 
 	test('constructor should accept undefined parameters', () => {
@@ -136,7 +137,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('set properties should set the values correctly', () => {
-		let conn = new ProviderConnectionInfo(capabilitiesService, 'MSSQL');
+		let conn = new ProviderConnectionInfo(capabilitiesService, mssqlProviderName);
 		assert.equal(conn.serverName, undefined);
 		conn.connectionName = connectionProfile.connectionName;
 		conn.serverName = connectionProfile.serverName;
@@ -153,7 +154,7 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('set properties should store the values in the options', () => {
-		let conn = new ProviderConnectionInfo(capabilitiesService, 'MSSQL');
+		let conn = new ProviderConnectionInfo(capabilitiesService, mssqlProviderName);
 		assert.equal(conn.serverName, undefined);
 		conn.serverName = connectionProfile.serverName;
 		conn.databaseName = connectionProfile.databaseName;
@@ -238,11 +239,10 @@ suite('SQL ProviderConnectionInfo tests', () => {
 	});
 
 	test('getProviderFromOptionsKey should return the provider name from the options key successfully', () => {
-		let optionsKey = 'providerName:MSSQL|authenticationType:|databaseName:database|serverName:new server|userName:user';
-		let expectedProviderId: string = 'MSSQL';
+		let optionsKey = `providerName:${mssqlProviderName}|authenticationType:|databaseName:database|serverName:new server|userName:user`;
 		let actual = ProviderConnectionInfo.getProviderFromOptionsKey(optionsKey);
 
-		assert.equal(expectedProviderId, actual);
+		assert.equal(mssqlProviderName, actual);
 	});
 
 	test('getProviderFromOptionsKey should return empty string give null', () => {
