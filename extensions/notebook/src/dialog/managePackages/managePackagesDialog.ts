@@ -17,9 +17,6 @@ export class ManagePackagesDialog {
 	private installedPkgTab: InstalledPackagesTab;
 	private addNewPkgTab: AddNewPackageTab;
 
-	private readonly DialogTitle = localize('managePackages.dialogName', "Manage Pip Packages");
-	private readonly CancelButtonText = localize('managePackages.cancelButtonText', "Close");
-
 	constructor(private jupyterInstallation: JupyterServerInstallation) {
 	}
 
@@ -27,13 +24,13 @@ export class ManagePackagesDialog {
 	 * Opens a dialog to manage pip packages used by notebooks.
 	 */
 	public showDialog(): void {
-		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
+		this.dialog = azdata.window.createModelViewDialog(localize('managePackages.dialogName', "Manage Pip Packages"));
 
 		this.installedPkgTab = new InstalledPackagesTab(this, this.jupyterInstallation);
 		this.addNewPkgTab = new AddNewPackageTab(this, this.jupyterInstallation);
 
 		this.dialog.okButton.hidden = true;
-		this.dialog.cancelButton.label = this.CancelButtonText;
+		this.dialog.cancelButton.label = localize('managePackages.cancelButtonText', "Close");
 
 		this.dialog.content = [this.installedPkgTab.tab, this.addNewPkgTab.tab];
 

@@ -24,15 +24,10 @@ export class InstalledPackagesTab {
 	private installedPackagesLoader: azdata.LoadingComponent;
 	private uninstallPackageButton: azdata.ButtonComponent;
 
-	private readonly UninstallButtonText = localize('managePackages.uninstallButtonText', "Uninstall selected packages");
-	private readonly InstalledTabTitle = localize('managePackages.installedTabTitle', "Installed");
-	private readonly PkgNameColumn = localize('managePackages.pkgNameColumn', "Name");
-	private readonly PkgVersionColumn = localize('managePackages.newPkgVersionColumn', "Version");
-
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
 		this.prompter = new CodeAdapter();
 
-		this.installedPkgTab = azdata.window.createTab(this.InstalledTabTitle);
+		this.installedPkgTab = azdata.window.createTab(localize('managePackages.installedTabTitle', "Installed"));
 
 		this.installedPkgTab.registerContent(async view => {
 			this.installedPackageCount = view.modelBuilder.text().withProperties({
@@ -41,7 +36,10 @@ export class InstalledPackagesTab {
 
 			this.installedPackagesTable = view.modelBuilder.table()
 				.withProperties({
-					columns: [this.PkgNameColumn, this.PkgVersionColumn],
+					columns: [
+						localize('managePackages.pkgNameColumn', "Name"),
+						localize('managePackages.newPkgVersionColumn', "Version")
+					],
 					data: [[]],
 					height: '600px',
 					width: '400px'
@@ -49,7 +47,7 @@ export class InstalledPackagesTab {
 
 			this.uninstallPackageButton = view.modelBuilder.button()
 				.withProperties({
-					label: this.UninstallButtonText,
+					label: localize('managePackages.uninstallButtonText', "Uninstall selected packages"),
 					width: '200px'
 				}).component();
 			this.uninstallPackageButton.onDidClick(() => this.doUninstallPackage());
