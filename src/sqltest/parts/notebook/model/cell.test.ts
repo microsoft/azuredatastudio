@@ -15,9 +15,17 @@ import { NotebookModelStub } from '../common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+
+let instantiationService: IInstantiationService;
 
 suite('Cell Model', function (): void {
-	let factory = new ModelFactory();
+	let serviceCollection = new ServiceCollection();
+	instantiationService = new InstantiationService(serviceCollection, true);
+
+	let factory = new ModelFactory(instantiationService);
 	test('Should set default values if none defined', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
 		should(cell.cellType).equal(CellTypes.Code);
@@ -162,7 +170,7 @@ suite('Cell Model', function (): void {
 			future.setup(f => f.setReplyHandler(TypeMoq.It.isAny())).callback((handler) => onReply = handler);
 			future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 			let outputs: ReadonlyArray<nb.ICellOutput> = undefined;
-			cell.onOutputsChanged((o => outputs = o));
+			cell.onOutputsChanged((o => outputs = o.outputs));
 
 			// When I set it on the cell
 			cell.setFuture(future.object);
@@ -265,7 +273,7 @@ suite('Cell Model', function (): void {
 			let onIopub: nb.MessageHandler<nb.IIOPubMessage>;
 			future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 			let outputs: ReadonlyArray<nb.ICellOutput> = undefined;
-			cell.onOutputsChanged((o => outputs = o));
+			cell.onOutputsChanged((o => outputs = o.outputs));
 
 			//Set the future
 			cell.setFuture(future.object);

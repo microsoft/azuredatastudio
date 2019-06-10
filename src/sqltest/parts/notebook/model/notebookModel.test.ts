@@ -25,6 +25,10 @@ import { Emitter } from 'vs/base/common/event';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { TestStorageService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -72,6 +76,7 @@ let sessionReady: Deferred<void>;
 let mockModelFactory: TypeMoq.Mock<ModelFactory>;
 let notificationService: TypeMoq.Mock<INotificationService>;
 let capabilitiesService: TypeMoq.Mock<ICapabilitiesService>;
+let instantiationService: IInstantiationService;
 
 suite('notebook model', function (): void {
 	let notebookManagers = [new NotebookManagerStub()];
@@ -87,15 +92,17 @@ suite('notebook model', function (): void {
 		memento.setup(x => x.getMemento(TypeMoq.It.isAny())).returns(() => void 0);
 		queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 		queryConnectionService.callBase = true;
+		let serviceCollection = new ServiceCollection();
+		instantiationService = new InstantiationService(serviceCollection, true);
 		defaultModelOptions = {
 			notebookUri: defaultUri,
-			factory: new ModelFactory(),
+			factory: new ModelFactory(instantiationService),
 			notebookManagers,
 			contentManager: undefined,
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
-			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
+			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: [mssqlProviderName], notebookProvider: 'sql' }],
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,

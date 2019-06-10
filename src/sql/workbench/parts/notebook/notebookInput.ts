@@ -11,7 +11,7 @@ import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo, SerializationStateChangeType } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
@@ -118,7 +118,7 @@ export class NotebookEditorModel extends EditorModel {
 	private sendNotebookSerializationStateChange() {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
-			this.notebookService.serializeNotebookStateChange(this.notebookUri, SerializationStateChangeType.Saved);
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
 		}
 	}
 
@@ -127,7 +127,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	private getNotebookModel(): INotebookModel {
-		let editor = this.notebookService.listNotebookEditors().find(n => n.id === this.notebookUri.toString());
+		let editor = this.notebookService.findNotebookEditor(this.notebookUri);
 		if (editor) {
 			return editor.model;
 		}

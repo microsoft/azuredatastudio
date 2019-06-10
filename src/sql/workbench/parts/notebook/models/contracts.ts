@@ -43,5 +43,7 @@ export enum NotebookChangeType {
 	CellOutputUpdated,
 	DirtyStateChanged,
 	KernelChanged,
-	TrustChanged
+	TrustChanged,
+	Saved,
+	CellExecuted
 }

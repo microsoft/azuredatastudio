@@ -10,7 +10,7 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySpark3KernelSpec } from './notebook.util';
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
 import { connectToServer } from './utils';
 import * as fs from 'fs';
@@ -55,6 +55,18 @@ if (context.RunTest) {
 
 			test('python language test', async function () {
 				await (new NotebookTester()).pythonLanguageTest(this.test.title);
+			});
+
+			test('Change kernel different provider SQL to Python to SQL', async function () {
+				await (new NotebookTester()).sqlNbChangeKernelDifferentProviderTest(this.test.title);
+			});
+
+			test('Change kernel different provider Python to SQL to Python', async function () {
+				await (new NotebookTester()).pythonChangeKernelDifferentProviderTest(this.test.title);
+			});
+
+			test('Change kernel same provider Python to PySpark3 to Python', async function () {
+				await (new NotebookTester()).pythonChangeKernelSameProviderTest(this.test.title);
 			});
 		}
 
@@ -152,6 +164,48 @@ class NotebookTester {
 		assert(actualOutput0 === expectedOutput0, `Expected row count: ${expectedOutput0}, Actual: ${actualOutput0}`);
 		let actualOutput2 = (<azdata.nb.IExecuteResult>cellOutputs[2]).data['application/vnd.dataresource+json'].data[0];
 		assert(actualOutput2[0] === '1', `Expected result: 1, Actual: '${actualOutput2[0]}'`);
+	}
+
+	async sqlNbChangeKernelDifferentProviderTest(title: string): Promise<void> {
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title);
+		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
+		assert(notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+
+		let kernelChanged = await notebook.changeKernel(pythonKernelSpec);
+		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+		assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected second kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+
+		kernelChanged = await notebook.changeKernel(sqlKernelSpec);
+		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
+		assert(kernelChanged && notebook.document.kernelSpec.name === 'SQL', `Expected third kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+	}
+
+	async pythonChangeKernelDifferentProviderTest(title: string): Promise<void> {
+		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title);
+		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+		assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+
+		let kernelChanged = await notebook.changeKernel(sqlKernelSpec);
+		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
+		assert(kernelChanged && notebook.document.kernelSpec.name === 'SQL', `Expected second kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+
+		kernelChanged = await notebook.changeKernel(pythonKernelSpec);
+		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+		assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected third kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+	}
+
+	async pythonChangeKernelSameProviderTest(title: string): Promise<void> {
+		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title);
+		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+		assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
+
+		let kernelChanged = await notebook.changeKernel(pySpark3KernelSpec);
+		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+		assert(kernelChanged && notebook.document.kernelSpec.name === 'pyspark3kernel', `Expected second kernel name: pyspark3kernel, Actual: ${notebook.document.kernelSpec.name}`);
+
+		kernelChanged = await notebook.changeKernel(pythonKernelSpec);
+		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
+		assert(kernelChanged && notebook.document.kernelSpec.name === 'python3', `Expected third kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 	}
 
 	async scalaLanguageTest(title: string): Promise<void> {

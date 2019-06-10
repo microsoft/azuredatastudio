@@ -18,7 +18,9 @@ import { ITreeComponentItem } from 'sql/workbench/common/views';
 import { ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import {
 	IItemConfig, IComponentShape, IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails,
-	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation
+	IModelViewWizardDetails, IModelViewWizardPageDetails, INotebookManagerDetails, INotebookSessionDetails,
+	INotebookKernelDetails, INotebookFutureDetails, FutureMessageType, INotebookFutureDone, ISingleNotebookEditOperation,
+	NotebookChangeKind
 } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { EditorViewColumn } from 'vs/workbench/api/common/shared/editor';
 import { IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
@@ -870,6 +872,7 @@ export interface INotebookModelChangedData {
 	isDirty: boolean;
 	cells: azdata.nb.NotebookCell[];
 	kernelSpec: azdata.nb.IKernelSpec;
+	changeKind: NotebookChangeKind;
 }
 
 export interface INotebookEditorAddData {
@@ -900,6 +903,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
+	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
 }
 
 export interface ExtHostExtensionManagementShape {

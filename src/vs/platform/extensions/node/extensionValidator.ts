@@ -222,7 +222,7 @@ export function isValidExtensionVersion(version: string, extensionDesc: IReduced
 	}
 
 	// {{SQL CARBON EDIT}}
-	return (extensionDesc.engines.azdata && extensionDesc.engines.azdata === '*') || isVersionValid(version, extensionDesc.engines.azdata, notices);
+	return extensionDesc.engines.azdata ? extensionDesc.engines.azdata === '*' || isVersionValid(version, extensionDesc.engines.azdata, notices) : true;
 }
 
 // {{SQL CARBON EDIT}}

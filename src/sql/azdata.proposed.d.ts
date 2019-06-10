@@ -4363,6 +4363,11 @@ declare module 'azdata' {
 			* @return A promise that resolves with a value indicating if the outputs are cleared or not.
 			*/
 			clearAllOutputs(): Thenable<boolean>;
+
+			/**
+			 * Changes the Notebook's kernel. Thenable will resolve only after kernel change is complete.
+			 */
+			changeKernel(kernel: IKernelSpec): Thenable<boolean>;
 		}
 
 		export interface NotebookCell {
@@ -4425,10 +4430,17 @@ declare module 'azdata' {
 			 */
 			cells: NotebookCell[];
 			/**
-			 * The [change kind](#TextEditorSelectionChangeKind) which has triggered this
+			 * The [change kind](#NotebookChangeKind) which has triggered this
 			 * event. Can be `undefined`.
 			 */
-			kind?: vscode.TextEditorSelectionChangeKind;
+			kind?: NotebookChangeKind;
+		}
+
+		export enum NotebookChangeKind {
+			ContentUpdated = 0,
+			MetadataUpdated = 1,
+			Save = 2,
+			CellExecuted = 3
 		}
 
 		/**

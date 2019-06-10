@@ -123,13 +123,13 @@ export class ConnectionWidget {
 		this._providerName = providerName;
 	}
 
-	public createConnectionWidget(container: HTMLElement, authTypeChanged: boolean = false): void {
+	public createConnectionWidget(container: HTMLElement): void {
 		this._serverGroupOptions = [this.DefaultServerGroup];
 		this._serverGroupSelectBox = new SelectBox(this._serverGroupOptions.map(g => g.name), this.DefaultServerGroup.name, this._contextViewService, undefined, { ariaLabel: this._serverGroupDisplayString });
 		this._previousGroupOption = this._serverGroupSelectBox.value;
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
-		this.fillInConnectionForm(authTypeChanged);
+		this.fillInConnectionForm();
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
@@ -155,12 +155,12 @@ export class ConnectionWidget {
 		}
 	}
 
-	protected fillInConnectionForm(authTypeChanged: boolean = false): void {
+	protected fillInConnectionForm(): void {
 		// Server Name
 		this.addServerNameOption();
 
 		// Authentication type
-		this.addAuthenticationTypeOption(authTypeChanged);
+		this.addAuthenticationTypeOption();
 
 		// Login Options
 		this.addLoginOptions();
@@ -178,7 +178,7 @@ export class ConnectionWidget {
 		this.addAdvancedOptions();
 	}
 
-	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
+	protected addAuthenticationTypeOption(): void {
 		if (this._optionsMaps[ConnectionOptionSpecialType.authType]) {
 			let authType = DialogHelper.appendRow(this._tableContainer, this._optionsMaps[ConnectionOptionSpecialType.authType].displayName, 'connection-label', 'connection-input');
 			DialogHelper.appendInputSelectBox(authType, this._authTypeSelectBox);

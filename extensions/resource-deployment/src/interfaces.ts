@@ -47,16 +47,7 @@ export enum ToolType {
 	AzCli,
 	KubeCtl,
 	Docker,
-	Python,
 	MSSQLCtl
-}
-
-export interface ToolStatusInfo {
-	type: ToolType;
-	name: string;
-	description: string;
-	version: string;
-	status: ToolInstallationStatus;
 }
 
 export interface ITool {
@@ -64,15 +55,4 @@ export interface ITool {
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
-	readonly supportAutoInstall: boolean;
-
-	getInstallationStatus(versionExpression: string): Thenable<ToolInstallationStatus>;
-	install(version: string): Thenable<void>;
-}
-
-export enum ToolInstallationStatus {
-	NotInstalled,
-	Installed,
-	Installing,
-	FailedToInstall
 }

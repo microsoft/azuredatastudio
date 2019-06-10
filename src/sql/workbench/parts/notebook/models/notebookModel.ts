@@ -457,10 +457,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 			}
 			this._onClientSessionReady.fire(clientSession);
-			this._kernelChangedEmitter.fire({
-				oldValue: undefined,
-				newValue: clientSession.kernel
-			});
 		}
 	}
 
@@ -955,6 +951,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			default:
 			// Do nothing for now
 		}
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	serializationStateChanged(changeType: NotebookChangeType): void {
+		let changeInfo: NotebookContentChange = {
+			changeType: changeType,
+			cells: undefined
+		};
+
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 

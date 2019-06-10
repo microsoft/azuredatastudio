@@ -1,8 +1,10 @@
 {
-	"extends": "./tsconfig.base.json",
+	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"noEmit": true,
 		"strictNullChecks": true,
+		"noImplicitAny": true,
+		"suppressImplicitAnyIndexErrors": true,
 		"moduleResolution": "classic"
 	},
 	"include": [
@@ -11,7 +13,10 @@
 		"./vs/vscode.proposed.d.ts",
 		"./sql/azdata.d.ts",
 		"./sql/azdata.proposed.d.ts",
+		"./vs/base/**/*.ts",
+		"./vs/platform/**/*.ts",
 		"./sql/base/**/*.ts",
+		"./sql/editor/**/*.ts",
 		"./sql/platform/angularEventing/**/*.ts",
 		"./sql/platform/clipboard/**/*.ts",
 		"./sql/platform/credentials/**/*.ts",
