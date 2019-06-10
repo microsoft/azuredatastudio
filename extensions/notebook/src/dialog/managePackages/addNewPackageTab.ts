@@ -242,25 +242,39 @@ export class AddNewPackageTab {
 			return;
 		}
 
-		try {
-			this.dialog.showInfoMessage(
-				localize('managePackages.backgroundInstallStarted',
-					"Started background install for {0} {1}.",
-					packageName,
-					packageVersion));
+		let taskName = localize('managePackages.backgroundInstallStarted',
+			"Installing {0} {1}",
+			packageName,
+			packageVersion);
+		this.jupyterInstallation.apiWrapper.startBackgroundOperation({
+			displayName: taskName,
+			description: taskName,
+			isCancelable: false,
+			operation: op => {
+				this.jupyterInstallation.installPipPackage(packageName, packageVersion)
+					.then(async () => {
+						let installMsg = localize('managePackages.backgroundInstallComplete',
+							"Completed install for {0} {1}",
+							packageName,
+							packageVersion);
 
-			await this.jupyterInstallation.installPipPackage(packageName, packageVersion);
+						op.updateStatus(azdata.TaskStatus.Succeeded, installMsg);
+						this.jupyterInstallation.outputChannel.appendLine(installMsg);
 
-			this.jupyterInstallation.outputChannel.appendLine(
-				localize('managePackages.backgroundInstallComplete',
-					"Completed install for {0} {1}.",
-					packageName,
-					packageVersion));
+						await this.dialog.refreshInstalledPackages();
+					})
+					.catch(err => {
+						let installFailedMsg = localize('managePackages.backgroundInstallFailed',
+							"Failed to install {0} {1}. Error: {2}",
+							packageName,
+							packageVersion,
+							utils.getErrorMessage(err));
 
-			await this.dialog.refreshInstalledPackages();
-		} catch (err) {
-			this.dialog.showErrorMessage(utils.getErrorMessage(err));
-		}
+						op.updateStatus(azdata.TaskStatus.Failed, installFailedMsg);
+						this.jupyterInstallation.outputChannel.appendLine(installFailedMsg);
+					});
+			}
+		});
 	}
 }
 
