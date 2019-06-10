@@ -257,13 +257,13 @@ export class GridPanel {
 
 		for (let set of resultSet) {
 			let tableState: GridTableState;
-			if (this._state) {
+			if (this.state) {
 				tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);
 			}
 			if (!tableState) {
 				tableState = new GridTableState(set.id, set.batchId);
-				if (this._state) {
-					this._state.tableStates.push(tableState);
+				if (this.state) {
+					this.state.tableStates.push(tableState);
 				}
 			}
 			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
@@ -295,13 +295,13 @@ export class GridPanel {
 
 	public clear() {
 		this.reset();
+		this.state = undefined;
 	}
 
 	private reset() {
 		for (let i = this.splitView.length - 1; i >= 0; i--) {
 			this.splitView.removeView(i);
 		}
-		this._state = undefined;
 		dispose(this.tables);
 		dispose(this.tableDisposable);
 		this.tableDisposable = [];
@@ -336,15 +336,17 @@ export class GridPanel {
 
 	public set state(val: GridPanelState) {
 		this._state = val;
-		this.tables.map(t => {
-			let state = this.state.tableStates.find(s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
-			if (!state) {
-				this.state.tableStates.push(t.state);
-			}
-			if (state) {
-				t.state = state;
-			}
-		});
+		if (this.state) {
+			this.tables.map(t => {
+				let state = this.state.tableStates.find(s => s.batchId === t.resultSet.batchId && s.resultId === t.resultSet.id);
+				if (!state) {
+					this.state.tableStates.push(t.state);
+				}
+				if (state) {
+					t.state = state;
+				}
+			});
+		}
 	}
 
 	public get state() {

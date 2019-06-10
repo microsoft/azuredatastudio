@@ -47,14 +47,26 @@ suite('Extension Gallery Service', () => {
 
 	// {{SQL CARBON EDIT}}
 	test('sortByField', () => {
-		let a = {
+		let a: {
+			extensionId: string | undefined;
+			extensionName: string | undefined;
+			displayName: string | undefined;
+			shortDescription: string | undefined;
+			publisher: { displayName: string | undefined, publisherId: string | undefined, publisherName: string | undefined; } | undefined;
+		} = {
 			extensionId: undefined,
 			extensionName: undefined,
 			displayName: undefined,
 			shortDescription: undefined,
 			publisher: undefined
 		};
-		let b = {
+		let b: {
+			extensionId: string | undefined;
+			extensionName: string | undefined;
+			displayName: string | undefined;
+			shortDescription: string | undefined;
+			publisher: { displayName: string | undefined, publisherId: string | undefined, publisherName: string | undefined; } | undefined;
+		} = {
 			extensionId: undefined,
 			extensionName: undefined,
 			displayName: undefined,
