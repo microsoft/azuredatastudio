@@ -6,6 +6,7 @@
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // CONSTANTS //////////////////////////////////////////////////////////////////////////////////////
 const msInH = 3.6e6;
@@ -136,6 +137,6 @@ export function findProfileInGroup(og: IConnectionProfile, groups: ConnectionPro
 export function isMaster(profile: IConnectionProfile): boolean {
 	// TODO: the connection profile should have a property to indicate whether the connection is a server connection or database connection
 	// created issue to track the problem: https://github.com/Microsoft/azuredatastudio/issues/5193.
-	return (profile.providerName.toLowerCase() === 'mssql' && profile.databaseName.toLowerCase() === 'master')
+	return (profile.providerName === mssqlProviderName && profile.databaseName.toLowerCase() === 'master')
 		|| (profile.providerName.toLowerCase() === 'pgsql' && profile.databaseName.toLowerCase() === 'postgres');
 }

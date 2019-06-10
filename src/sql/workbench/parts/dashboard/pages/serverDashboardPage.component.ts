@@ -19,6 +19,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
@@ -53,7 +54,7 @@ export class ServerDashboardPage extends DashboardPage implements OnInit {
 
 		// special-case handling for MSSQL data provider
 		const connInfo = this.dashboardService.connectionManagementService.connectionInfo;
-		if (connInfo && connInfo.providerId === 'MSSQL') {
+		if (connInfo && connInfo.providerId === mssqlProviderName) {
 			// revert back to default database
 			this._letDashboardPromise = this.dashboardService.connectionManagementService.changeDatabase('master').then();
 		} else {

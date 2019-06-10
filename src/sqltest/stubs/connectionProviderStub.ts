@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class ConnectionProviderStub implements azdata.ConnectionProvider {
-	public readonly providerId = 'MSSQL';
+	public readonly providerId = mssqlProviderName;
 
 	connect(connectionUri: string, connectionInfo: azdata.ConnectionInfo): Thenable<boolean> {
 		return undefined;

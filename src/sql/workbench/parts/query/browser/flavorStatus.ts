@@ -23,6 +23,7 @@ import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
@@ -45,7 +46,7 @@ class SqlProviderEntry implements ISqlProviderEntry {
 		// Note: consider adding API to connection management service to
 		// support getting display name for provider so this is consistent
 		switch (this.providerId) {
-			case 'MSSQL':
+			case mssqlProviderName:
 				return 'MSSQL';
 			default:
 				return this.providerId;
@@ -192,7 +193,7 @@ export class ChangeFlavorAction extends Action {
 		// TODO #1334 use connectionManagementService.GetProviderNames here. The challenge is that the credentials provider is returned
 		// so we need a way to filter this using a capabilities check, with isn't yet implemented
 		const ProviderOptions: ISqlProviderEntry[] = [
-			new SqlProviderEntry('MSSQL')
+			new SqlProviderEntry(mssqlProviderName)
 		];
 
 		// TODO: select the current language flavor
