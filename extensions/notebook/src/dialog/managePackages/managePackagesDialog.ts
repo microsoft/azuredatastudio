@@ -21,7 +21,7 @@ export class ManagePackagesDialog {
 	}
 
 	/**
-	 * Opens a dialog to manage pip packages used by notebooks.
+	 * Opens a dialog to manage packages used by notebooks.
 	 */
 	public showDialog(): void {
 		this.dialog = azdata.window.createModelViewDialog(localize('managePackages.dialogName', "Manage Packages"));
