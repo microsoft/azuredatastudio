@@ -14,6 +14,7 @@ import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 import { CmsResourceTreeNode } from './cmsResourceTreeNode';
+import { ICmsResourceNodeInfo } from './baseTreeNodes';
 
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
@@ -27,7 +28,8 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			let children = await element.getChildren(true);
+			return children;
 		}
 
 		if (!this.isSystemInitialized) {
@@ -63,10 +65,10 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
 				// save the CMS Servers for future use
-				let toSaveCmsServers = JSON.parse(JSON.stringify(registeredCmsServers));
+				let toSaveCmsServers: ICmsResourceNodeInfo[] = JSON.parse(JSON.stringify(registeredCmsServers));
 				toSaveCmsServers.forEach(server => {
-					server.ownerUri = undefined,
-						server.connection.options.password = '';
+					server.ownerUri = undefined;
+					server.connection.options.password = '';
 				});
 				await this._appContext.cmsUtils.setConfiguration(toSaveCmsServers);
 				return registeredCmsServers.map((server) => {

@@ -50,6 +50,9 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 					let appNameKey = appNameOption.name;
 					this.options[appNameKey] = Constants.applicationName;
 				}
+				if (model.options.registeredServerDescription) {
+					this.registeredServerDescription = model.options.registeredServerDescription;
+				}
 			}
 		} else {
 			//Default for a new connection
@@ -106,12 +109,12 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['azureTenantId'] = value;
 	}
 
-	public get registeredCmsServerDescription(): string {
-		return this.options['registeredCmsServerDescription'];
+	public get registeredServerDescription(): string {
+		return this.options['registeredServerDescription'];
 	}
 
-	public set registeredCmsServerDescription(value: string) {
-		this.options['registeredCmsServerDescription'] = value;
+	public set registeredServerDescription(value: string) {
+		this.options['registeredServerDescription'] = value;
 	}
 
 	public get groupFullName(): string {

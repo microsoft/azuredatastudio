@@ -18,11 +18,11 @@ const localize = nls.loadMessageBundle();
 
 export function registerCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Create a CMS Server
-	appContext.apiWrapper.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode, connectionProfile?: azdata.IConnectionProfile) => {
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		await appContext.cmsUtils.connection.then(async (connection) => {
+		await appContext.cmsUtils.connection(connectionProfile).then(async (connection) => {
 			if (connection && connection.options) {
 				let registeredCmsServerName = connection.options.registeredServerName ?
 					connection.options.registeredServerName : connection.options.server;
@@ -39,8 +39,6 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 					// recent connection list
 					connection.options.groupId = null;
 					let registeredCmsServerDescription = connection.options.registeredServerDescription;
-					// remove server description from connection uri
-					connection.options.registeredCmsServerDescription = null;
 					let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 					appContext.cmsUtils.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
 					tree.notifyNodeChanged(undefined);
@@ -61,7 +59,7 @@ export function deleteCmsServerCommand(appContext: AppContext, tree: CmsResource
 		if (!(node instanceof CmsResourceTreeNode)) {
 			return;
 		}
-		await appContext.cmsUtils.deleteCmsServer(node.name);
+		await appContext.cmsUtils.deleteCmsServer(node.name, node.connection);
 		tree.isSystemInitialized = false;
 		tree.notifyNodeChanged(undefined);
 	});

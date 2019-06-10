@@ -6,7 +6,7 @@
 'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { TreeItemCollapsibleState } from 'vscode';
+import { TreeItemCollapsibleState, TreeItem } from 'vscode';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
@@ -38,12 +38,21 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		try {
 			let nodes: CmsResourceTreeNodeBase[] = [];
 			if (!this.ownerUri) {
-				this._ownerUri = await this.appContext.cmsUtils.getUriForConnection(this.connection);
+				// Set back password to get ownerUri
+				if (this.connection.options.authenticationType === 'SqlLogin' && this.connection.options.savePassword === true) {
+					this.connection.options.password = await this.appContext.cmsUtils.getPassword(this.connection.options.user);
+				}
 			}
 			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
 				if (result) {
-					if (result.registeredServersList) {
-						result.registeredServersList.forEach((registeredServer) => {
+					// cache new connection is different from old one
+					if (this._connection !== result.connection) {
+						this._connection = result.connection;
+						this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, undefined, this.connection);
+
+					}
+					if (result.listRegisteredServersResult.registeredServersList) {
+						result.listRegisteredServersResult.registeredServersList.forEach((registeredServer) => {
 							nodes.push(new RegisteredServerTreeNode(
 								registeredServer.name,
 								registeredServer.description,
@@ -54,10 +63,10 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 								this.treeChangeHandler, this));
 						});
 					}
-					if (result.registeredServerGroups) {
-						if (result.registeredServerGroups) {
+					if (result.listRegisteredServersResult.registeredServerGroups) {
+						if (result.listRegisteredServersResult.registeredServerGroups) {
 							this._serverGroupNodes = [];
-							result.registeredServerGroups.forEach((serverGroup) => {
+							result.listRegisteredServersResult.registeredServerGroups.forEach((serverGroup) => {
 								let serverGroupNode = new ServerGroupTreeNode(
 									serverGroup.name,
 									serverGroup.description,
@@ -79,6 +88,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 			}, (error) => {
 				let errorText = localize('cms.errors.expandCmsFail', 'The Central Management Server {0} could not be found or is offline', this.name);
 				this.appContext.apiWrapper.showErrorMessage(error ? error : errorText);
+				this.treeChangeHandler.notifyNodeChanged(undefined);
 				return [];
 			});
 		} catch {

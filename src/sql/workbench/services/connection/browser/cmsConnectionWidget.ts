@@ -35,7 +35,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 
 	private _serverDescriptionInputBox: InputBox;
 	protected _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.cmsProviderName]: [AuthenticationType.Integrated]
+		[Constants.cmsProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated]
 	};
 
 	constructor(options: azdata.ConnectionOption[],
@@ -146,5 +146,13 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			model.options.registeredServerName = this._connectionNameInputBox.value;
 		}
 		return validInputs;
+	}
+
+	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
+		super.fillInConnectionInputs(connectionInfo);
+		if (connectionInfo) {
+			let description = connectionInfo.options.registeredServerDescription ? connectionInfo.options.registeredServerDescription : '';
+			this._serverDescriptionInputBox.value = description;
+		}
 	}
 }

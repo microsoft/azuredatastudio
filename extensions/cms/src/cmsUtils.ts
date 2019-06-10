@@ -15,6 +15,11 @@ const localize = nls.loadMessageBundle();
 const cmsProvider: string = 'MSSQL-CMS';
 const mssqlProvider: string = 'MSSQL';
 
+export interface CreateCmsResult {
+	listRegisteredServersResult: mssql.ListRegisteredServersResult;
+	connection: azdata.connection.Connection;
+}
+
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
  * this API from our code
@@ -24,8 +29,29 @@ const mssqlProvider: string = 'MSSQL';
  */
 export class CmsUtils {
 
+	private static CredentialNamespace = 'cmsCredentials';
+	private _credentialProvider: azdata.CredentialProvider;
 	private _cmsService: mssql.CmsService;
 	private _registeredCmsServers: ICmsResourceNodeInfo[];
+
+	constructor() {
+		// 1) Get a credential provider
+		// 2a) Store the credential provider for use later
+		azdata.credentials.getProvider(CmsUtils.CredentialNamespace).then(credProvider => {
+			this._credentialProvider = credProvider;
+			return true;
+		});
+	}
+
+	public async savePassword(username: string, password: string) {
+		let result = await this._credentialProvider.saveCredential(username, password);
+		return result;
+	}
+
+	public async getPassword(username: string): Promise<string> {
+		let credential = await this._credentialProvider.readCredential(username);
+		return credential ? credential.password : undefined;
+	}
 
 	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
 		return vscode.window.showErrorMessage(message, ...items);
@@ -80,35 +106,55 @@ export class CmsUtils {
 	}
 
 	public async createCmsServer(connection: azdata.connection.Connection,
-		name: string, description: string): Promise<mssql.ListRegisteredServersResult> {
+		name: string, description: string): Promise<CreateCmsResult> {
 		let provider = await this.getCmsService();
 		connection.providerName = connection.providerName === cmsProvider ? mssqlProvider : connection.providerName;
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false).then(async (result) => {
+			let initialConnectionProfile = CmsUtils.getConnectionProfile(connection);
+			await azdata.connection.connect(initialConnectionProfile, false, false).then(async (result) => {
 				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+				// If the ownerUri is still undefined, then open a connection dialog with the connection
+				if (!ownerUri) {
+					await this.connection(initialConnectionProfile).then(async (result) => {
+						if (result) {
+							connection = result;
+							ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+						}
+					}, (error) => {
+						// cancel pressed on connection dialog
+						return Promise.reject(localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.'));
+					});
+				}
 			});
 		}
 		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
 			if (result) {
-				return Promise.resolve(result);
-			} else {
-				return Promise.reject(null);
+				let createCmsResult: CreateCmsResult = {
+					listRegisteredServersResult: result,
+					connection: connection
+				};
+				return Promise.resolve(createCmsResult);
 			}
+		}, (error) => {
+			return Promise.reject(error.message);
 		});
 	}
 
-	public async deleteCmsServer(cmsServer: any): Promise<void> {
+	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
 		let config = this.getConfiguration();
 		if (config && config.servers) {
 			let newServers = config.servers.filter((cachedServer) => {
-				return cachedServer.name !== cmsServer;
+				return cachedServer.name !== cmsServerName;
 			});
 			await this.setConfiguration(newServers);
 			this._registeredCmsServers = this._registeredCmsServers.filter((cachedServer) => {
-				return cachedServer.name !== cmsServer;
+				return cachedServer.name !== cmsServerName;
 			});
+		}
+		if (connection.options.authenticationType === 'SqlLogin' && connection.options.savePassword) {
+			this._credentialProvider.deleteCredential(connection.options.user);
 		}
 	}
 
@@ -122,6 +168,10 @@ export class CmsUtils {
 			connection: connection,
 			ownerUri: ownerUri
 		};
+		// update a server if a server with same name exists
+		this._registeredCmsServers.filter((server) => {
+			return server.name !== name;
+		});
 		this._registeredCmsServers.push(cmsServerNode);
 	}
 
@@ -186,19 +236,60 @@ export class CmsUtils {
 		});
 	}
 
+	public static getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
+		let connectionProfile: azdata.IConnectionProfile = {
+			connectionName: connection.options.connectionName,
+			serverName: connection.options.server,
+			databaseName: undefined,
+			userName: connection.options.user,
+			password: connection.options.password,
+			authenticationType: connection.options.authenticationType,
+			savePassword: connection.options.savePassword,
+			groupFullName: undefined,
+			groupId: undefined,
+			providerName: connection.providerName,
+			saveProfile: false,
+			id: connection.connectionId,
+			options: connection.options
+		};
+		return connectionProfile;
+	}
+
 	// Getters
 	public get registeredCmsServers(): ICmsResourceNodeInfo[] {
 		return this._registeredCmsServers;
 	}
 
-	public get connection(): Thenable<azdata.connection.Connection> {
-		return this.openConnectionDialog([cmsProvider], undefined, { saveConnection: false }).then((connection) => {
+	public connection(initialConnectionProfile?: azdata.IConnectionProfile): Thenable<azdata.connection.Connection> {
+		if (!initialConnectionProfile) {
+			initialConnectionProfile = {
+				connectionName: undefined,
+				serverName: undefined,
+				databaseName: undefined,
+				userName: undefined,
+				password: undefined,
+				authenticationType: undefined,
+				savePassword: undefined,
+				groupFullName: undefined,
+				groupId: undefined,
+				providerName: undefined,
+				saveProfile: undefined,
+				id: undefined,
+				options: {}
+			};
+		}
+		return this.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false }).then(async (connection) => {
 			if (connection) {
 				// remove group ID from connection if a user chose connection
 				// from the recent connections list
 				connection.options['groupId'] = null;
 				connection.providerName = mssqlProvider;
+				if (connection.options.savePassword) {
+					await this.savePassword(connection.options.user, connection.options.password);
+				}
 				return connection;
+			} else {
+				return Promise.reject();
 			}
 		});
 	}

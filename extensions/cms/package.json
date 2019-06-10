@@ -87,6 +87,10 @@
 					"objectType": null,
 					"categoryValues": [
 						{
+							"displayName": "%cms.connectionOptions.authType.categoryValues.sqlLogin%",
+							"name": "SqlLogin"
+						},
+						{
 							"displayName": "%cms.connectionOptions.authType.categoryValues.integrated%",
 							"name": "Integrated"
 						}
@@ -624,5 +628,10 @@
 		"should": "^13.2.1",
 		"vscode": "^1.1.26",
 		"typemoq": "^2.1.0"
+	},
+	"__metadata": {
+		"id": "40",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }
