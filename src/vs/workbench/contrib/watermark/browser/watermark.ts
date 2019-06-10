@@ -52,7 +52,7 @@ const newSqlFile: WatermarkEntry = {
 	id: GlobalNewUntitledFileAction.ID
 };
 const newNotebook: WatermarkEntry = {
-	text: nls.localize('watermark.newNotebook', 'New Notebook'),
+	text: nls.localize('watermark.newNotebook', "New Notebook"),
 	id: NewNotebookAction.ID
 };
 
