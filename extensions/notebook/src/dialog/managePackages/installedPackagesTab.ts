@@ -83,6 +83,7 @@ export class InstalledPackagesTab {
 	public async loadInstalledPackagesInfo(): Promise<void> {
 		let packageData: string[][];
 		await this.installedPackagesLoader.updateProperties({ loading: true });
+		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		try {
 			let pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
 			let packagesLocation = await this.jupyterInstallation.getPythonPackagesPath();
@@ -120,6 +121,7 @@ export class InstalledPackagesTab {
 				data: packageData,
 				selectedRows: [0]
 			});
+			await this.uninstallPackageButton.updateProperties({ enabled: true });
 		}
 	}
 
