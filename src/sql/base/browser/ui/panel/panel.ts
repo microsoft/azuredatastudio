@@ -82,6 +82,7 @@ export class TabbedPanel extends Disposable {
 		this.header = DOM.$('.composite.title');
 		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
+		this.tabList.setAttribute('tabindex', '0');
 		this.tabList.style.height = this.headersize + 'px';
 		this.header.appendChild(this.tabList);
 		let actionbarcontainer = DOM.$('.title-actions');
@@ -95,7 +96,6 @@ export class TabbedPanel extends Disposable {
 		}
 		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
-		this.body.setAttribute('tabindex', '0');
 		this.parent.appendChild(this.body);
 	}
 
@@ -297,7 +297,6 @@ export class TabbedPanel extends Disposable {
 		if (dimension) {
 			this._currentDimensions = dimension;
 			this.parent.style.height = dimension.height + 'px';
-			this.parent.style.height = dimension.width + 'px';
 			this.header.style.width = dimension.width + 'px';
 			this.body.style.width = dimension.width + 'px';
 			const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);

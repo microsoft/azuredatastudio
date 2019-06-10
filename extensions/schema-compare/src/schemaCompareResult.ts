@@ -16,7 +16,9 @@ const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
 const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
 const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
+const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to script');
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
+const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No changes to apply');
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -41,8 +43,8 @@ export class SchemaCompareResult {
 	private deploymentOptions: azdata.DeploymentOptions;
 	private schemaCompareOptionDialog: SchemaCompareOptionsDialog;
 	private tablelistenersToDispose: vscode.Disposable[] = [];
-	private originalSourceExcludes = {};
-	private originalTargetExcludes = {};
+	private originalSourceExcludes = new Map<string, azdata.DiffEntry>();
+	private originalTargetExcludes = new Map<string, azdata.DiffEntry>();
 	private sourceTargetSwitched = false;
 
 	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
@@ -254,16 +256,6 @@ export class SchemaCompareResult {
 		this.compareButton.enabled = true;
 		this.optionsButton.enabled = true;
 
-		// explicitly exclude things that were excluded in previous compare
-		const thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
-		if (thingsToExclude) {
-			for (let item in thingsToExclude) {
-				if (<azdata.DiffEntry>thingsToExclude[item]) {
-					service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, thingsToExclude[item], false, azdata.TaskExecutionMode.execute);
-				}
-			}
-		}
-
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView, { CSSStyles: { 'overflow': 'hidden' } });
 
@@ -277,6 +269,19 @@ export class SchemaCompareResult {
 			}
 		} else {
 			this.flexModel.addItem(this.noDifferencesLabel, { CSSStyles: { 'margin': 'auto' } });
+		}
+
+		// explicitly exclude things that were excluded in previous compare
+		const thingsToExclude = this.sourceTargetSwitched ? this.originalTargetExcludes : this.originalSourceExcludes;
+		if (thingsToExclude) {
+			thingsToExclude.forEach(item => {
+				service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, item, false, azdata.TaskExecutionMode.execute);
+			});
+
+			// disable apply and generate script buttons if no changes are included
+			if (thingsToExclude.size === this.comparisonResult.differences.length) {
+				this.setButtonStatesForNoChanges(false);
+			}
 		}
 
 		let sourceText = '';
@@ -311,15 +316,27 @@ export class SchemaCompareResult {
 			let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
 			if (key) {
 				if (!this.sourceTargetSwitched) {
-					delete this.originalSourceExcludes[key];
+					this.originalSourceExcludes.delete(key);
 					if (!rowState.checked) {
-						this.originalSourceExcludes[key] = diff;
+						this.originalSourceExcludes.set(key, diff);
+						if (this.originalSourceExcludes.size === this.comparisonResult.differences.length) {
+							this.setButtonStatesForNoChanges(false);
+						}
+					}
+					else {
+						this.setButtonStatesForNoChanges(true);
 					}
 				}
 				else {
-					delete this.originalTargetExcludes[key];
+					this.originalTargetExcludes.delete(key);
 					if (!rowState.checked) {
-						this.originalTargetExcludes[key] = diff;
+						this.originalTargetExcludes.set(key, diff);
+						if (this.originalTargetExcludes.size === this.comparisonResult.differences.length) {
+							this.setButtonStatesForNoChanges(false);
+						}
+						else {
+							this.setButtonStatesForNoChanges(true);
+						}
 					}
 				}
 			}
@@ -329,11 +346,11 @@ export class SchemaCompareResult {
 	private shouldDiffBeIncluded(diff: azdata.DiffEntry): boolean {
 		let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
 		if (key) {
-			if (this.sourceTargetSwitched === true && this.originalTargetExcludes[key]) {
+			if (this.sourceTargetSwitched === true && this.originalTargetExcludes.has(key)) {
 				this.originalTargetExcludes[key] = diff;
 				return false;
 			}
-			if (this.sourceTargetSwitched === false && this.originalSourceExcludes[key]) {
+			if (this.sourceTargetSwitched === false && this.originalSourceExcludes.has(key)) {
 				this.originalSourceExcludes[key] = diff;
 				return false;
 			}
@@ -586,6 +603,16 @@ export class SchemaCompareResult {
 			this.sourceTargetSwitched = this.sourceTargetSwitched ? false : true;
 			this.startCompare();
 		});
+	}
+
+	private setButtonStatesForNoChanges(enableButtons: boolean): void {
+		// generate script and apply can only be enabled if the target is a database
+		if (this.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			this.applyButton.enabled = enableButtons;
+			this.generateScriptButton.enabled = enableButtons;
+			this.applyButton.title = enableButtons ? applyEnabledMessage : applyNoChangesMessage;
+			this.generateScriptButton.title = enableButtons ? generateScriptEnabledMessage : generateScriptNoChangesMessage;
+		}
 	}
 
 	private static async getService(providerName: string): Promise<azdata.SchemaCompareServicesProvider> {

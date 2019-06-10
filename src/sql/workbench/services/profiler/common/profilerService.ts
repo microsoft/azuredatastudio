@@ -21,6 +21,7 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 import { ProfilerFilterDialog } from 'sql/workbench/parts/profiler/browser/profilerFilterDialog';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -157,13 +158,7 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	private _runAction<T>(id: ProfilerSessionID, action: (handler: azdata.ProfilerProvider) => Thenable<T>): Thenable<T> {
-		// let providerId = this._connectionService.getProviderIdFromUri(this._idMap.get(id));
-		let providerId = 'MSSQL';
-
-		if (!providerId) {
-			return Promise.reject(new Error('Connection is required in order to interact with queries'));
-		}
-		let handler = this._providers.get(providerId);
+		let handler = this._providers.get(mssqlProviderName);
 		if (handler) {
 			return action(handler);
 		} else {

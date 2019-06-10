@@ -13,7 +13,7 @@ export class MSSQLCtlTool implements ITool {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.MssqlCtlDescription', 'Command-line tool for installing and managing the SQL Server big data cluster');
+		return localize('resourceDeployment.MssqlCtlDescription', 'A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs');
 	}
 
 	get type(): ToolType {

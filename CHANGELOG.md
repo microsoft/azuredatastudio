@@ -1,5 +1,26 @@
 # Change Log
 
+## Version 1.8.0
+* Release date: June 6, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Initial release of the Database Admin Tool Extensions for Windows *Preview* extension
+* Initial release of the Central Management Servers extension
+* **Schema Compare**
+   * Added Exclude/Include Options
+   * Generate Script opens script after being generated
+   * Removed double scroll bars
+   * Formatting and layout improvements
+   * Complete changes can be found [here](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22June+2019+Release%22+label%3A%22Area%3A+Schema+Compare%22+is%3Aclosed)
+* Messages panel moved into results panel - when users ran SQL queries, results and messages were in stacked panels. Now they are in separate tabs in a single panel similar to SSMS.
+* **Notebook**
+   * Users can now choose to use their own Python 3 or Anaconda installs in notebooks
+   * Multiple Stability + fit/finish fixes
+   * View the full list of improvements and fixes [here](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22June+2019+Release%22+is%3Aclosed+label%3A%22Area%3A+Notebooks%22)
+* Visual Studio Code May Release Merge 1.34 - the latest improvements can be found [here](https://code.visualstudio.com/updates/v1_34)
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/32?closed=1).
+
 ## Version 1.7.0
 * Release date: May 8, 2019
 * Release status: General Availability

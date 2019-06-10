@@ -57,6 +57,7 @@ export class QueryEditor extends BaseEditor {
 	private textFileEditorContainer: HTMLElement;
 
 	private taskbar: Taskbar;
+	private splitviewContainer: HTMLElement;
 	private splitview: SplitView;
 
 	private inputDisposables: IDisposable[] = [];
@@ -100,13 +101,13 @@ export class QueryEditor extends BaseEditor {
 	public createEditor(parent: HTMLElement): void {
 		DOM.addClass(parent, 'query-editor');
 
-		let splitviewContainer = DOM.$('.query-editor-view');
+		this.splitviewContainer = DOM.$('.query-editor-view');
 
 		this.createTaskbar(parent);
 
-		parent.appendChild(splitviewContainer);
+		parent.appendChild(this.splitviewContainer);
 
-		this.splitview = this._register(new SplitView(splitviewContainer, { orientation: Orientation.VERTICAL }));
+		this.splitview = this._register(new SplitView(this.splitviewContainer, { orientation: Orientation.VERTICAL }));
 		this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
 
 		// We create two separate editors - one for Untitled Documents (ad-hoc queries) and another for queries from
@@ -344,7 +345,9 @@ export class QueryEditor extends BaseEditor {
 	 */
 	public layout(dimension: DOM.Dimension): void {
 		this.dimension = dimension;
-		this.splitview.layout(dimension.height - 31);
+		const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
+		this.splitviewContainer.style.height = queryEditorHeight + 'px';
+		this.splitview.layout(queryEditorHeight);
 	}
 
 	/**

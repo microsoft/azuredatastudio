@@ -249,7 +249,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 					}
 				} else {
-					this.setViewInErrorState(localize('displayFailed', 'Could not display contents: {0}', notebookUtils.getErrorMessage(error)));
+					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", notebookUtils.getErrorMessage(error)));
 					this.setLoading(false);
 					this._modelReadyDeferred.reject(error);
 
@@ -317,9 +317,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (DEFAULT_NOTEBOOK_PROVIDER === providerInfo.providerId) {
 			// If it's still the default, warn them they should install an extension
 			this.notificationService.prompt(Severity.Warning,
-				localize('noKernelInstalled', 'Please install the SQL Server 2019 extension to run cells'),
+				localize('noKernelInstalled', "Please install the SQL Server 2019 extension to run cells."),
 				[{
-					label: localize('installSql2019Extension', 'Install Extension'),
+					label: localize('installSql2019Extension', "Install Extension"),
 					run: () => this.openExtensionGallery()
 				}]);
 		}
@@ -345,7 +345,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private get modelFactory(): IModelFactory {
 		if (!this._notebookParams.modelFactory) {
-			this._notebookParams.modelFactory = new ModelFactory();
+			this._notebookParams.modelFactory = new ModelFactory(this.instantiationService);
 		}
 		return this._notebookParams.modelFactory;
 	}
@@ -392,14 +392,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		attachToDropdown.render(attachToContainer);
 		attachSelectBoxStyler(attachToDropdown, this.themeService);
 
-		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', 'Code'), 'notebook-button icon-add');
+		let addCodeCellButton = new AddCellAction('notebook.AddCodeCell', localize('code', "Code"), 'notebook-button icon-add');
 		addCodeCellButton.cellType = CellTypes.Code;
 
-		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', 'Text'), 'notebook-button icon-add');
+		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
-		this._runAllCellsAction = new RunAllCellsAction('notebook.runAllCells', localize('runAll', 'Run Cells'), 'notebook-button icon-run-cells');
-		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', 'Clear Results'), 'notebook-button icon-clear-results');
+		this._runAllCellsAction = new RunAllCellsAction('notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', "Clear Results"), 'notebook-button icon-clear-results');
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
 		this._trustedAction.enabled = false;
@@ -508,7 +508,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.selectCell(cell);
 			return cell.runCell(this.notificationService, this.connectionManagementService);
 		} else {
-			return Promise.reject(new Error(localize('cellNotFound', 'cell with URI {0} was not found in this model', uriString)));
+			return Promise.reject(new Error(localize('cellNotFound', "cell with URI {0} was not found in this model", uriString)));
 		}
 	}
 
@@ -519,7 +519,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			for (let i = 0; i < codeCells.length; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {
-					return Promise.reject(new Error(localize('cellRunFailed', 'running cell id {0} failed', codeCells[i].id)));
+					return Promise.reject(new Error(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information.")));
 				}
 			}
 		}
