@@ -87,10 +87,19 @@ export class InstalledPackagesTab {
 			let pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
 			let packagesLocation = await this.jupyterInstallation.getPythonPackagesPath();
 
+			let packageCount = pythonPackages ? pythonPackages.length : 0;
+			let countMsg: string;
+			if (packagesLocation && packagesLocation.length > 0) {
+				countMsg = localize('managePackages.packageCount', "{0} packages found in '{1}'",
+					packageCount,
+					packagesLocation);
+			} else {
+				countMsg = localize('managePackages.packageCountNoPath', "{0} packages found",
+					packageCount);
+			}
+
 			await this.installedPackageCount.updateProperties({
-				value: localize('managePackages.packageCountLabel', "{0} packages found in '{1}'",
-					pythonPackages.length,
-					packagesLocation)
+				value: countMsg
 			});
 
 			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version]);
