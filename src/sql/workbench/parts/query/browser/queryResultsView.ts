@@ -9,7 +9,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel, MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
 import { GridPanel, GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
-import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab'; //import chart tab
+import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
