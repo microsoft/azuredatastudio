@@ -227,7 +227,6 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
-		//test
 		this.sandDanceTab = this._register(new SandDanceTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
@@ -264,7 +263,7 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
-		this.sandDanceTab.queryRunner = runner; //test
+		this.sandDanceTab.queryRunner = runner; 
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.showResults();
 			this.hideChart();
@@ -397,7 +396,7 @@ export class QueryResultsView extends Disposable {
 		this.chartTab.chart(dataId);
 	}
 
-	public sandDanceData(dataId: { resultId: number, batchId: number }): void {
+	public showDataAsSandDance(dataId: { resultId: number, batchId: number }): void {
 		this.input.state.visibleTabs.add(this.sandDanceTab.identifier);
 		if (!this._panelView.contains(this.sandDanceTab)) {
 			this._panelView.pushTab(this.sandDanceTab);
@@ -412,7 +411,7 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
-	public hideSandDance() {
+	public hideDataAsSandDance() {
 		if (this._panelView.contains(this.sandDanceTab)) {
 			this._panelView.removeTab(this.sandDanceTab.identifier);
 		}
