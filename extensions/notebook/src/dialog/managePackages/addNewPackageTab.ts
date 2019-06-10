@@ -179,40 +179,52 @@ export class AddNewPackageTab {
 					return reject(response.statusMessage);
 				}
 
+				let versionNums: string[] = [];
+				let packageSummary = '';
+
 				let packagesJson = JSON.parse(body);
-				let versionKeys = Object.keys(packagesJson.releases);
-				versionKeys = versionKeys.filter(versionKey => {
-					let releaseInfo = packagesJson.releases[versionKey];
-					return Array.isArray(releaseInfo) && releaseInfo.length > 0;
-				});
-				versionKeys.sort((first, second) => {
-					// sort in descending order
-					let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
-					let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
+				if (packagesJson) {
+					let versionKeys = Object.keys(packagesJson.releases);
+					if (versionKeys) {
+						versionKeys = versionKeys.filter(versionKey => {
+							let releaseInfo = packagesJson.releases[versionKey];
+							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
+						});
+						versionKeys.sort((first, second) => {
+							// sort in descending order
+							let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
+							let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
 
-					// If versions have different lengths, then append zeroes to the shorter one
-					if (firstVersion.length > secondVersion.length) {
-						let diff = firstVersion.length - secondVersion.length;
-						secondVersion = secondVersion.concat(new Array(diff).fill(0));
-					} else if (secondVersion.length > firstVersion.length) {
-						let diff = secondVersion.length - firstVersion.length;
-						firstVersion = firstVersion.concat(new Array(diff).fill(0));
+							// If versions have different lengths, then append zeroes to the shorter one
+							if (firstVersion.length > secondVersion.length) {
+								let diff = firstVersion.length - secondVersion.length;
+								secondVersion = secondVersion.concat(new Array(diff).fill(0));
+							} else if (secondVersion.length > firstVersion.length) {
+								let diff = secondVersion.length - firstVersion.length;
+								firstVersion = firstVersion.concat(new Array(diff).fill(0));
+							}
+
+							for (let i = 0; i < firstVersion.length; ++i) {
+								if (firstVersion[i] > secondVersion[i]) {
+									return -1;
+								} else if (firstVersion[i] < secondVersion[i]) {
+									return 1;
+								}
+							}
+							return 0;
+						});
+						versionNums = versionKeys;
 					}
 
-					for (let i = 0; i < firstVersion.length; ++i) {
-						if (firstVersion[i] > secondVersion[i]) {
-							return -1;
-						} else if (firstVersion[i] < secondVersion[i]) {
-							return 1;
-						}
+					if (packagesJson.info && packagesJson.info.summary) {
+						packageSummary = packagesJson.info.summary;
 					}
-					return 0;
-				});
+				}
 
 				resolve({
 					name: packageName,
-					versions: versionKeys,
-					summary: packagesJson.info.summary
+					versions: versionNums,
+					summary: packageSummary
 				});
 			});
 		});
