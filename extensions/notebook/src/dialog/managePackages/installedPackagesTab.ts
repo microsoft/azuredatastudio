@@ -81,41 +81,42 @@ export class InstalledPackagesTab {
 	}
 
 	public async loadInstalledPackagesInfo(): Promise<void> {
-		let packageData: string[][];
+		let pythonPackages: PythonPkgDetails[];
+		let packagesLocation: string;
+
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		try {
-			let pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
-			let packagesLocation = await this.jupyterInstallation.getPythonPackagesPath();
-
-			let packageCount: number;
-			let countMsg: string;
-			if (pythonPackages) {
-				packageCount = pythonPackages.length;
-				packageData = pythonPackages.map(pkg => [pkg.name, pkg.version]);
-			} else {
-				packageCount = 0;
-			}
-
-			if (packagesLocation && packagesLocation.length > 0) {
-				countMsg = localize('managePackages.packageCount', "{0} packages found in '{1}'",
-					packageCount,
-					packagesLocation);
-			} else {
-				countMsg = localize('managePackages.packageCountNoPath', "{0} packages found",
-					packageCount);
-			}
-
-			await this.installedPackageCount.updateProperties({
-				value: countMsg
-			});
+			pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
+			packagesLocation = await this.jupyterInstallation.getPythonPackagesPath();
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
 		} finally {
 			await this.installedPackagesLoader.updateProperties({ loading: false });
 		}
 
-		// Update table when loader isn't displayed to prevent table sizing issues
+		let packageData: string[][];
+		let packageCount: number;
+		if (pythonPackages) {
+			packageCount = pythonPackages.length;
+			packageData = pythonPackages.map(pkg => [pkg.name, pkg.version]);
+		} else {
+			packageCount = 0;
+		}
+
+		let countMsg: string;
+		if (packagesLocation && packagesLocation.length > 0) {
+			countMsg = localize('managePackages.packageCount', "{0} packages found in '{1}'",
+				packageCount,
+				packagesLocation);
+		} else {
+			countMsg = localize('managePackages.packageCountNoPath', "{0} packages found",
+				packageCount);
+		}
+		await this.installedPackageCount.updateProperties({
+			value: countMsg
+		});
+
 		if (packageData && packageData.length > 0) {
 			await this.installedPackagesTable.updateProperties({
 				data: packageData,
