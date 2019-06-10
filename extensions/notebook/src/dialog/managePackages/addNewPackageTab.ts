@@ -129,7 +129,7 @@ export class AddNewPackageTab {
 			if (!pipPackage.versions || pipPackage.versions.length === 0) {
 				this.dialog.showErrorMessage(
 					localize('managePackages.noVersionsFound',
-						"Could not find any valid versions for the specified package."));
+						"Could not find any valid versions for the specified package"));
 				return;
 			}
 
@@ -172,7 +172,7 @@ export class AddNewPackageTab {
 				}
 
 				if (response.statusCode === 404) {
-					return reject(localize('managePackages.packageNotFound', "Could not find the specified package."));
+					return reject(localize('managePackages.packageNotFound', "Could not find the specified package"));
 				}
 
 				if (response.statusCode !== 200) {
