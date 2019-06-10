@@ -152,19 +152,37 @@ export class InstalledPackagesTab {
 				let packagesStr = packages.map(pkg => {
 					return `${pkg.name} ${pkg.version}`;
 				}).join(', ');
-				this.dialog.showInfoMessage(
-					localize('managePackages.backgroundUninstallStarted',
-						"Started background uninstall for {0}.",
-						packagesStr));
+				let taskName = localize('managePackages.backgroundUninstallStarted',
+					"Uninstalling {0}",
+					packagesStr);
 
-				await this.jupyterInstallation.uninstallPipPackages(packages);
+				this.jupyterInstallation.apiWrapper.startBackgroundOperation({
+					displayName: taskName,
+					description: taskName,
+					isCancelable: false,
+					operation: op => {
+						this.jupyterInstallation.uninstallPipPackages(packages)
+							.then(async () => {
+								let uninstallMsg = localize('managePackages.backgroundUninstallComplete',
+									"Completed uninstall for {0}",
+									packagesStr);
 
-				this.jupyterInstallation.outputChannel.appendLine(
-					localize('managePackages.backgroundUninstallComplete',
-						"Completed uninstall for {0}.",
-						packagesStr));
+								op.updateStatus(azdata.TaskStatus.Succeeded, uninstallMsg);
+								this.jupyterInstallation.outputChannel.appendLine(uninstallMsg);
 
-				await this.loadInstalledPackagesInfo();
+								await this.loadInstalledPackagesInfo();
+							})
+							.catch(err => {
+								let uninstallFailedMsg = localize('managePackages.backgroundUninstallFailed',
+									"Failed to uninstall {0}. Error: {1}",
+									packagesStr,
+									utils.getErrorMessage(err));
+
+								op.updateStatus(azdata.TaskStatus.Failed, uninstallFailedMsg);
+								this.jupyterInstallation.outputChannel.appendLine(uninstallFailedMsg);
+							});
+					}
+				});
 			} catch (err) {
 				this.dialog.showErrorMessage(utils.getErrorMessage(err));
 			}
