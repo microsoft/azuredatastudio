@@ -184,8 +184,8 @@ export class AddNewPackageTab {
 
 				let packagesJson = JSON.parse(body);
 				if (packagesJson) {
-					let versionKeys = Object.keys(packagesJson.releases);
-					if (versionKeys) {
+					if (packagesJson.releases) {
+						let versionKeys = Object.keys(packagesJson.releases);
 						versionKeys = versionKeys.filter(versionKey => {
 							let releaseInfo = packagesJson.releases[versionKey];
 							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
