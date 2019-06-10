@@ -46,6 +46,15 @@ https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs201
 	color: #DCDCDC;
 }
 
+.notebook-preview pre code .hljs-subst,
+.notebook-preview pre code .hljs-function,
+.notebook-preview pre code .hljs-title,
+.notebook-preview pre code .hljs-params,
+.notebook-preview pre code .hljs-formula {
+	color: var(--vscode-editor-foreground);
+}
+
+
 .notebook-preview .hljs-comment,
 .notebook-preview .hljs-quote {
 	color: #57A64A;
