@@ -45,7 +45,7 @@
 				"title": "%notebook.analyzeJupyterNotebook%"
 			},
 			{
-				"command": "notebook.command.new",
+				"command": "_notebook.command.new",
 				"title": "%notebook.command.new%",
 				"icon": {
 					"dark": "resources/dark/new_notebook_inverse.svg",
@@ -145,7 +145,8 @@
 					"when": "false"
 				},
 				{
-					"command": "notebook.command.new"
+					"command": "_notebook.command.new",
+					"when": "false"
 				},
 				{
 					"command": "notebook.command.open"
@@ -205,11 +206,6 @@
 			],
 			"objectExplorer/item/context": [
 				{
-					"command": "notebook.command.new",
-					"when": "isQueryProvider && nodeType == Server",
-					"group": "1root@1"
-				},
-				{
 					"command": "notebook.command.analyzeNotebook",
 					"when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
 					"group": "1notebook@1"
@@ -233,10 +229,6 @@
 			]
 		},
 		"keybindings": [
-			{
-				"command": "notebook.command.new",
-				"key": "Ctrl+Shift+N"
-			},
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",

@@ -31,6 +31,7 @@ import { IDimension } from 'vs/platform/layout/browser/layoutService';
 
 // {{SQL CARBON EDIT}}
 import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 
 const $ = dom.$;
 
@@ -49,6 +50,10 @@ const showServers: WatermarkEntry = {
 const newSqlFile: WatermarkEntry = {
 	text: nls.localize('watermark.newSqlFile', 'New SQL File'),
 	id: GlobalNewUntitledFileAction.ID
+};
+const newNotebook: WatermarkEntry = {
+	text: nls.localize('watermark.newNotebook', 'New Notebook'),
+	id: NewNotebookAction.ID
 };
 
 const showCommands: WatermarkEntry = {
@@ -101,12 +106,14 @@ const startDebugging: WatermarkEntry = {
 const noFolderEntries = [
 	showServers,
 	newSqlFile,
+	newNotebook,
 	findInFiles
 ];
 
 const folderEntries = [
 	showServers,
 	newSqlFile,
+	newNotebook,
 	findInFiles
 ];
 // {{SQL CARBON EDIT}} - End
