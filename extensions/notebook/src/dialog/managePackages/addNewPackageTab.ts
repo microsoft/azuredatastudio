@@ -176,7 +176,11 @@ export class AddNewPackageTab {
 				}
 
 				if (response.statusCode !== 200) {
-					return reject(response.statusMessage);
+					return reject(
+						localize('managePackages.packageRequestError',
+							"Package info request failed with error: {0} {1}",
+							response.statusCode,
+							response.statusMessage));
 				}
 
 				let versionNums: string[] = [];
