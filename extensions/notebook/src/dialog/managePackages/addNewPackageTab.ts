@@ -26,31 +26,20 @@ export class AddNewPackageTab {
 	private newPackagesSummaryLoader: azdata.LoadingComponent;
 	private packageInstallButton: azdata.ButtonComponent;
 
-	private readonly InstallButtonText = localize('managePackages.installButtonText', "Install");
-	private readonly AddNewTabTitle = localize('managePackages.addNewTabTitle', "Add new");
 	private readonly InvalidTextPlaceholder = localize('managePackages.invalidTextPlaceholder', "N/A");
 
-	private readonly SearchBarPlaceholder = localize('managePackages.searchBarPlaceholder', "Search for packages");
-	private readonly SearchButtonLabel = localize('managePackages.searchButtonLabel', "Search");
-	private readonly PackageNameTitle = localize('managePackages.packageNameTitle', "Package Name");
-	private readonly PackageVersionTitle = localize('managePackages.packageVersionTitle', "Package Version");
-	private readonly PackageSummaryTitle = localize('managePackages.packageSummaryTitle', "Package Summary");
-
-	private readonly PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package.");
-	private readonly NoVersionsFoundError = localize('managePackages.noVersionsFound', "Could not find any valid versions for the specified package.");
-
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
-		this.addNewPkgTab = azdata.window.createTab(this.AddNewTabTitle);
+		this.addNewPkgTab = azdata.window.createTab(localize('managePackages.addNewTabTitle', "Add new"));
 
 		this.addNewPkgTab.registerContent(async view => {
 			this.newPackagesSearchBar = view.modelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: this.SearchBarPlaceholder
+					placeHolder: localize('managePackages.searchBarPlaceholder', "Search for packages")
 				}).component();
 
 			this.packagesSearchButton = view.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
-					label: this.SearchButtonLabel,
+					label: localize('managePackages.searchButtonLabel', "Search"),
 					width: '80px'
 				}).component();
 			this.packagesSearchButton.onDidClick(() => {
@@ -83,7 +72,7 @@ export class AddNewPackageTab {
 				.component();
 
 			this.packageInstallButton = view.modelBuilder.button().withProperties({
-				label: this.InstallButtonText,
+				label: localize('managePackages.installButtonText', "Install"),
 				enabled: false,
 				width: '80px'
 			}).component();
@@ -100,13 +89,13 @@ export class AddNewPackageTab {
 					title: ''
 				}, {
 					component: this.newPackagesNameLoader,
-					title: this.PackageNameTitle
+					title: localize('managePackages.packageNameTitle', "Package Name")
 				}, {
 					component: this.newPackagesVersionsLoader,
-					title: this.PackageVersionTitle
+					title: localize('managePackages.packageVersionTitle', "Package Version")
 				}, {
 					component: this.newPackagesSummaryLoader,
-					title: this.PackageSummaryTitle
+					title: localize('managePackages.packageSummaryTitle', "Package Summary")
 				}, {
 					component: this.packageInstallButton,
 					title: ''
@@ -138,7 +127,9 @@ export class AddNewPackageTab {
 
 			let pipPackage = await this.fetchPypiPackage(packageName);
 			if (!pipPackage.versions || pipPackage.versions.length === 0) {
-				this.dialog.showErrorMessage(this.NoVersionsFoundError);
+				this.dialog.showErrorMessage(
+					localize('managePackages.noVersionsFound',
+						"Could not find any valid versions for the specified package."));
 				return;
 			}
 
@@ -181,7 +172,7 @@ export class AddNewPackageTab {
 				}
 
 				if (response.statusCode === 404) {
-					return reject(this.PackageNotFoundError);
+					return reject(localize('managePackages.packageNotFound', "Could not find the specified package."));
 				}
 
 				if (response.statusCode !== 200) {
