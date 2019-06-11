@@ -131,13 +131,11 @@ export interface IDefaultConfigurationExtension {
 	defaults: { [key: string]: {} };
 }
 
-type SettingProperties = { [key: string]: any };
-
-export const allSettings: { properties: SettingProperties, patternProperties: SettingProperties } = { properties: {}, patternProperties: {} };
-export const applicationSettings: { properties: SettingProperties, patternProperties: SettingProperties } = { properties: {}, patternProperties: {} };
-export const machineSettings: { properties: SettingProperties, patternProperties: SettingProperties } = { properties: {}, patternProperties: {} };
-export const windowSettings: { properties: SettingProperties, patternProperties: SettingProperties } = { properties: {}, patternProperties: {} };
-export const resourceSettings: { properties: SettingProperties, patternProperties: SettingProperties } = { properties: {}, patternProperties: {} };
+export const allSettings: { properties: {}, patternProperties: {} } = { properties: {}, patternProperties: {} };
+export const applicationSettings: { properties: {}, patternProperties: {} } = { properties: {}, patternProperties: {} };
+export const machineSettings: { properties: {}, patternProperties: {} } = { properties: {}, patternProperties: {} };
+export const windowSettings: { properties: {}, patternProperties: {} } = { properties: {}, patternProperties: {} };
+export const resourceSettings: { properties: {}, patternProperties: {} } = { properties: {}, patternProperties: {} };
 
 export const editorConfigurationSchemaId = 'vscode://schemas/settings/editor';
 const contributionRegistry = Registry.as<IJSONContributionRegistry>(JSONExtensions.JSONContribution);

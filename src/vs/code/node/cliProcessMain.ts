@@ -31,6 +31,7 @@ import { mkdirp, writeFile } from 'vs/base/node/pfs';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { IStateService } from 'vs/platform/state/common/state';
 import { StateService } from 'vs/platform/state/node/stateService';
+import { createBufferSpdLogService } from 'vs/platform/log/node/spdlogService';
 import { ILogService, getLogLevel } from 'vs/platform/log/common/log';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { areSameExtensions, adoptToGalleryExtensionId, getGalleryExtensionId } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -40,11 +41,10 @@ import { IExtensionManifest, ExtensionType, isLanguagePackExtension } from 'vs/p
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { LocalizationsService } from 'vs/platform/localizations/node/localizations';
 import { Schemas } from 'vs/base/common/network';
-import { SpdLogService } from 'vs/platform/log/node/spdlogService';
 
 const notFound = (id: string) => localize('notFound', "Extension '{0}' not found.", id);
 const notInstalled = (id: string) => localize('notInstalled', "Extension '{0}' is not installed.", id);
-const useId = localize('useId', "Make sure you use the full extension ID, including the publisher, e.g.: {0}", 'ms-vscode.csharp');
+const useId = localize('useId', "Make sure you use the full extension ID, including the publisher, eg: {0}", 'ms-vscode.csharp');
 
 function getId(manifest: IExtensionManifest, withVersion?: boolean): string {
 	if (withVersion) {
@@ -275,22 +275,17 @@ export class Main {
 
 const eventPrefix = 'monacoworkbench';
 
-export async function main(argv: ParsedArgs): Promise<void> {
+export function main(argv: ParsedArgs): Promise<void> {
 	const services = new ServiceCollection();
 
 	const environmentService = new EnvironmentService(argv, process.execPath);
-	const logService: ILogService = new SpdLogService('cli', environmentService.logsPath, getLogLevel(environmentService));
+	const logService = createBufferSpdLogService('cli', getLogLevel(environmentService), environmentService.logsPath);
 	process.once('exit', () => logService.dispose());
+
 	logService.info('main', argv);
-
-	await Promise.all([environmentService.appSettingsHome, environmentService.extensionsPath].map(p => mkdirp(p)));
-
-	const configurationService = new ConfigurationService(environmentService.settingsResource.path);
-	await configurationService.initialize();
 
 	services.set(IEnvironmentService, environmentService);
 	services.set(ILogService, logService);
-	services.set(IConfigurationService, configurationService);
 	services.set(IStateService, new SyncDescriptor(StateService));
 
 	const instantiationService: IInstantiationService = new InstantiationService(services);
@@ -299,37 +294,40 @@ export async function main(argv: ParsedArgs): Promise<void> {
 		const envService = accessor.get(IEnvironmentService);
 		const stateService = accessor.get(IStateService);
 
-		const { appRoot, extensionsPath, extensionDevelopmentLocationURI: extensionDevelopmentLocationURI, isBuilt, installSourcePath } = envService;
+		return Promise.all([envService.appSettingsHome, envService.extensionsPath].map(p => mkdirp(p))).then(() => {
+			const { appRoot, extensionsPath, extensionDevelopmentLocationURI: extensionDevelopmentLocationURI, isBuilt, installSourcePath } = envService;
 
-		const services = new ServiceCollection();
-		services.set(IRequestService, new SyncDescriptor(RequestService));
-		services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
-		services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
+			const services = new ServiceCollection();
+			services.set(IConfigurationService, new SyncDescriptor(ConfigurationService, [environmentService.appSettingsPath]));
+			services.set(IRequestService, new SyncDescriptor(RequestService));
+			services.set(IExtensionManagementService, new SyncDescriptor(ExtensionManagementService));
+			services.set(IExtensionGalleryService, new SyncDescriptor(ExtensionGalleryService));
 
-		const appenders: AppInsightsAppender[] = [];
-		if (isBuilt && !extensionDevelopmentLocationURI && !envService.args['disable-telemetry'] && product.enableTelemetry) {
+			const appenders: AppInsightsAppender[] = [];
+			if (isBuilt && !extensionDevelopmentLocationURI && !envService.args['disable-telemetry'] && product.enableTelemetry) {
 
-			if (product.aiConfig && product.aiConfig.asimovKey) {
-				appenders.push(new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey, logService));
+				if (product.aiConfig && product.aiConfig.asimovKey) {
+					appenders.push(new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey, logService));
+				}
+
+				const config: ITelemetryServiceConfig = {
+					appender: combinedAppender(...appenders),
+					commonProperties: resolveCommonProperties(product.commit, pkg.version, stateService.getItem('telemetry.machineId'), installSourcePath),
+					piiPaths: [appRoot, extensionsPath]
+				};
+
+				services.set(ITelemetryService, new SyncDescriptor(TelemetryService, [config]));
+			} else {
+				services.set(ITelemetryService, NullTelemetryService);
 			}
 
-			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(...appenders),
-				commonProperties: resolveCommonProperties(product.commit, pkg.version, stateService.getItem('telemetry.machineId'), installSourcePath),
-				piiPaths: [appRoot, extensionsPath]
-			};
+			const instantiationService2 = instantiationService.createChild(services);
+			const main = instantiationService2.createInstance(Main);
 
-			services.set(ITelemetryService, new SyncDescriptor(TelemetryService, [config]));
-		} else {
-			services.set(ITelemetryService, NullTelemetryService);
-		}
-
-		const instantiationService2 = instantiationService.createChild(services);
-		const main = instantiationService2.createInstance(Main);
-
-		return main.run(argv).then(() => {
-			// Dispose the AI adapter so that remaining data gets flushed.
-			return combinedAppender(...appenders).dispose();
+			return main.run(argv).then(() => {
+				// Dispose the AI adapter so that remaining data gets flushed.
+				return combinedAppender(...appenders).dispose();
+			});
 		});
 	});
 }

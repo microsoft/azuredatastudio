@@ -45,7 +45,6 @@ const defaultThemeExtensionId = 'sql-theme-carbon';
 const oldDefaultThemeExtensionId = 'vscode-theme-colorful-defaults';
 
 const DEFAULT_ICON_THEME_SETTING_VALUE = 'vs-seti';
-const DEFAULT_ICON_THEME_ID = 'vscode.vscode-theme-seti-vs-seti';
 const fileIconsEnabledClass = 'file-icons-enabled';
 
 const colorThemeRulesClassName = 'contributedColorTheme';
@@ -193,10 +192,10 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 				if (!theme) {
 					// current theme is no longer available
 					prevFileIconId = this.currentIconTheme.id;
-					this.setFileIconTheme(DEFAULT_ICON_THEME_ID, 'auto');
+					this.setFileIconTheme(DEFAULT_ICON_THEME_SETTING_VALUE, 'auto');
 				} else {
 					// restore color
-					if (this.currentIconTheme.id === DEFAULT_ICON_THEME_ID && !types.isUndefined(prevFileIconId) && await this.iconThemeStore.findThemeData(prevFileIconId)) {
+					if (this.currentIconTheme.id === DEFAULT_ICON_THEME_SETTING_VALUE && !types.isUndefined(prevFileIconId) && await this.iconThemeStore.findThemeData(prevFileIconId)) {
 						this.setFileIconTheme(prevFileIconId, 'auto');
 						prevFileIconId = undefined;
 					}
@@ -272,7 +271,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 					if (devThemes.length) {
 						return this.setFileIconTheme(devThemes[0].id, ConfigurationTarget.MEMORY);
 					} else {
-						return this.setFileIconTheme(theme ? theme.id : DEFAULT_ICON_THEME_ID, undefined);
+						return this.setFileIconTheme(theme && theme.id || DEFAULT_ICON_THEME_SETTING_VALUE, undefined);
 					}
 				});
 			}),
@@ -295,7 +294,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 				let iconThemeSetting = this.configurationService.getValue<string | null>(ICON_THEME_SETTING);
 				if (iconThemeSetting !== this.currentIconTheme.settingsId) {
 					this.iconThemeStore.findThemeBySettingsId(iconThemeSetting).then(theme => {
-						this.setFileIconTheme(theme ? theme.id : DEFAULT_ICON_THEME_ID, undefined);
+						this.setFileIconTheme(theme && theme.id || DEFAULT_ICON_THEME_SETTING_VALUE, undefined);
 					});
 				}
 			}
@@ -482,7 +481,7 @@ export class WorkbenchThemeService implements IWorkbenchThemeService {
 			this.doSetFileIconTheme(newIconTheme);
 
 			// remember theme data for a quick restore
-			if (newIconTheme.isLoaded && (!newIconTheme.location || !getRemoteAuthority(newIconTheme.location))) {
+			if (newIconTheme.isLoaded && newIconTheme.location && !getRemoteAuthority(newIconTheme.location)) {
 				this.storageService.store(PERSISTED_ICON_THEME_STORAGE_KEY, newIconTheme.toStorageData(), StorageScope.GLOBAL);
 			}
 

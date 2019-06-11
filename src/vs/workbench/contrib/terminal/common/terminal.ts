@@ -101,6 +101,7 @@ export interface ITerminalConfiguration {
 	experimentalBufferImpl: 'JsArray' | 'TypedArray';
 	splitCwd: 'workspaceRoot' | 'initial' | 'inherited';
 	windowsEnableConpty: boolean;
+	enableLatencyMitigation: boolean;
 	experimentalRefreshOnResume: boolean;
 }
 
@@ -161,7 +162,7 @@ export interface IShellLaunchConfig {
 	env?: ITerminalEnvironment;
 
 	/**
-	 * Whether to ignore a custom cwd from the `terminal.integrated.cwd` settings key (e.g. if the
+	 * Whether to ignore a custom cwd from the `terminal.integrated.cwd` settings key (eg. if the
 	 * shell is being launched by an extension).
 	 */
 	ignoreConfigurationCwd?: boolean;
@@ -191,15 +192,6 @@ export interface IShellLaunchConfig {
 	 * provided as nothing will be inherited from the process or any configuration.
 	 */
 	strictEnv?: boolean;
-
-	/**
-	 * When enabled the terminal will run the process as normal but not be surfaced to the user
-	 * until `Terminal.show` is called. The typical usage for this is when you need to run
-	 * something that may need interactivity but only want to tell the user about it when
-	 * interaction is needed. Note that the terminals will still be exposed to all extensions
-	 * as normal.
-	 */
-	runInBackground?: boolean;
 }
 
 export interface ITerminalService {
@@ -434,7 +426,7 @@ export interface ITerminalInstance {
 
 	/**
 	 * Whether to disable layout for the terminal. This is useful when the size of the terminal is
-	 * being manipulating (e.g. adding a split pane) and we want the terminal to ignore particular
+	 * being manipulating (eg. adding a split pane) and we want the terminal to ignore particular
 	 * resize events.
 	 */
 	disableLayout: boolean;
@@ -671,6 +663,7 @@ export interface ITerminalProcessManager extends IDisposable {
 	readonly onProcessTitle: Event<string>;
 	readonly onProcessExit: Event<number>;
 
+	addDisposable(disposable: IDisposable): void;
 	dispose(immediate?: boolean): void;
 	createProcess(shellLaunchConfig: IShellLaunchConfig, cols: number, rows: number): void;
 	write(data: string): void;

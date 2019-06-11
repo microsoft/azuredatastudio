@@ -487,7 +487,7 @@ export class RawDebugSession {
 		}
 	}
 
-	private async dispatchRequest(request: DebugProtocol.Request, dbgr: IDebugger): Promise<void> {
+	private dispatchRequest(request: DebugProtocol.Request, dbgr: IDebugger): void {
 
 		const response: DebugProtocol.Response = {
 			type: 'response',
@@ -528,7 +528,7 @@ export class RawDebugSession {
 				break;
 			case 'handshake':
 				try {
-					const vsda = await import('vsda');
+					const vsda = <any>require.__$__nodeRequire('vsda');
 					const obj = new vsda.signer();
 					const sig = obj.sign(request.arguments.value);
 					response.body = {

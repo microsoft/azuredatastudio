@@ -5,20 +5,17 @@
 
 import * as path from 'path';
 import * as vscode from 'vscode';
-import * as nls from 'vscode-nls';
 import { OpenDocumentLinkCommand } from '../commands/openDocumentLink';
 import { getUriForLinkWithKnownExternalScheme } from '../util/links';
 
-const localize = nls.loadMessageBundle();
-
-function parseLink(
+function normalizeLink(
 	document: vscode.TextDocument,
 	link: string,
 	base: string
-): { uri: vscode.Uri, tooltip?: string } {
+): vscode.Uri {
 	const externalSchemeUri = getUriForLinkWithKnownExternalScheme(link);
 	if (externalSchemeUri) {
-		return { uri: externalSchemeUri };
+		return externalSchemeUri;
 	}
 
 	// Assume it must be an relative or absolute file path
@@ -37,10 +34,7 @@ function parseLink(
 		resourcePath = base ? path.join(base, tempUri.path) : tempUri.path;
 	}
 
-	return {
-		uri: OpenDocumentLinkCommand.createCommandUri(resourcePath, tempUri.fragment),
-		tooltip: localize('documentLink.tooltip', 'follow link')
-	};
+	return OpenDocumentLinkCommand.createCommandUri(resourcePath, tempUri.fragment);
 }
 
 function matchAll(
@@ -67,12 +61,9 @@ function extractDocumentLink(
 	const linkStart = document.positionAt(offset);
 	const linkEnd = document.positionAt(offset + link.length);
 	try {
-		const { uri, tooltip } = parseLink(document, link, base);
-		const documentLink = new vscode.DocumentLink(
+		return new vscode.DocumentLink(
 			new vscode.Range(linkStart, linkEnd),
-			uri);
-		documentLink.tooltip = tooltip;
-		return documentLink;
+			normalizeLink(document, link, base));
 	} catch (e) {
 		return undefined;
 	}
@@ -153,10 +144,11 @@ export default class LinkProvider implements vscode.DocumentLinkProvider {
 			}
 		}
 
-		for (const definition of definitions.values()) {
+		for (const definition of Array.from(definitions.values())) {
 			try {
-				const { uri } = parseLink(document, definition.link, base);
-				results.push(new vscode.DocumentLink(definition.linkRange, uri));
+				results.push(new vscode.DocumentLink(
+					definition.linkRange,
+					normalizeLink(document, definition.link, base)));
 			} catch (e) {
 				// noop
 			}

@@ -13,7 +13,7 @@ import { IDebugAdapter } from 'vs/workbench/contrib/debug/common/debug';
 export abstract class AbstractDebugAdapter implements IDebugAdapter {
 
 	private sequence: number;
-	private pendingRequests = new Map<number, (e: DebugProtocol.Response) => void>();
+	private pendingRequests: Map<number, (e: DebugProtocol.Response) => void>;
 	private requestCallback: (request: DebugProtocol.Request) => void;
 	private eventCallback: (request: DebugProtocol.Event) => void;
 	private messageCallback: (message: DebugProtocol.ProtocolMessage) => void;
@@ -22,6 +22,7 @@ export abstract class AbstractDebugAdapter implements IDebugAdapter {
 
 	constructor() {
 		this.sequence = 1;
+		this.pendingRequests = new Map();
 		this._onError = new Emitter<Error>();
 		this._onExit = new Emitter<number>();
 	}
@@ -138,7 +139,7 @@ export abstract class AbstractDebugAdapter implements IDebugAdapter {
 
 	protected cancelPending() {
 		const pending = this.pendingRequests;
-		this.pendingRequests.clear();
+		this.pendingRequests = new Map();
 		setTimeout(_ => {
 			pending.forEach((callback, request_seq) => {
 				const err: DebugProtocol.Response = {

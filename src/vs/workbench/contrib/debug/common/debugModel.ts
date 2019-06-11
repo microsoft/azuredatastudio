@@ -23,7 +23,6 @@ import { commonSuffixLength } from 'vs/base/common/strings';
 import { posix } from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { ITextEditor } from 'vs/workbench/common/editor';
 
 export class SimpleReplElement implements IReplElement {
 	constructor(
@@ -90,7 +89,7 @@ export class RawObjectReplElement implements IExpression {
 
 export class ExpressionContainer implements IExpressionContainer {
 
-	public static allValues = new Map<string, string>();
+	public static allValues: Map<string, string> = new Map<string, string>();
 	// Use chunks to support variable paging #9537
 	private static readonly BASE_CHUNK_SIZE = 100;
 
@@ -303,7 +302,7 @@ export class Scope extends ExpressionContainer implements IScope {
 		indexedVariables?: number,
 		public range?: IRange
 	) {
-		super(stackFrame.thread.session, reference, `scope:${name}:${index}`, namedVariables, indexedVariables);
+		super(stackFrame.thread.session, reference, `scope:${stackFrame.getId()}:${name}:${index}`, namedVariables, indexedVariables);
 	}
 
 	toString(): string {
@@ -388,7 +387,7 @@ export class StackFrame implements IStackFrame {
 		return sourceToString === UNKNOWN_SOURCE_LABEL ? this.name : `${this.name} (${sourceToString})`;
 	}
 
-	openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean, pinned?: boolean): Promise<ITextEditor | null> {
+	openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean, pinned?: boolean): Promise<any> {
 		return !this.source.available ? Promise.resolve(null) :
 			this.source.openInEditor(editorService, this.range, preserveFocus, sideBySide, pinned);
 	}
@@ -658,13 +657,6 @@ export class Breakpoint extends BaseBreakpoint implements IBreakpoint {
 	get endColumn(): number | undefined {
 		const data = this.getSessionData();
 		return data ? data.endColumn : undefined;
-	}
-
-	get sessionAgnosticData(): { lineNumber: number, column: number | undefined } {
-		return {
-			lineNumber: this._lineNumber,
-			column: this._column
-		};
 	}
 
 	setSessionData(sessionId: string, data: DebugProtocol.Breakpoint): void {
@@ -962,10 +954,10 @@ export class DebugModel implements IDebugModel {
 		this._onDidChangeBreakpoints.fire({ removed: toRemove });
 	}
 
-	updateBreakpoints(data: Map<string, IBreakpointUpdateData>): void {
+	updateBreakpoints(data: { [id: string]: IBreakpointUpdateData }): void {
 		const updated: IBreakpoint[] = [];
 		this.breakpoints.forEach(bp => {
-			const bpData = data.get(bp.getId());
+			const bpData = data[bp.getId()];
 			if (bpData) {
 				bp.update(bpData);
 				updated.push(bp);
@@ -975,15 +967,15 @@ export class DebugModel implements IDebugModel {
 		this._onDidChangeBreakpoints.fire({ changed: updated });
 	}
 
-	setBreakpointSessionData(sessionId: string, data: Map<string, DebugProtocol.Breakpoint>): void {
+	setBreakpointSessionData(sessionId: string, data: { [id: string]: DebugProtocol.Breakpoint }): void {
 		this.breakpoints.forEach(bp => {
-			const bpData = data.get(bp.getId());
+			const bpData = data[bp.getId()];
 			if (bpData) {
 				bp.setSessionData(sessionId, bpData);
 			}
 		});
 		this.functionBreakpoints.forEach(fbp => {
-			const fbpData = data.get(fbp.getId());
+			const fbpData = data[fbp.getId()];
 			if (fbpData) {
 				fbp.setSessionData(sessionId, fbpData);
 			}

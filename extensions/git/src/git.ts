@@ -12,8 +12,7 @@ import { EventEmitter } from 'events';
 import iconv = require('iconv-lite');
 import * as filetype from 'file-type';
 import { assign, groupBy, denodeify, IDisposable, toDisposable, dispose, mkdirp, readBytes, detectUnicodeEncoding, Encoding, onceEvent } from './util';
-import { CancellationToken } from 'vscode';
-import { URI } from 'vscode-uri';
+import { CancellationToken, Uri, workspace } from 'vscode';
 import { detectEncoding } from './encoding';
 import { Ref, RefType, Branch, Remote, GitErrorCodes, LogOptions, Change, Status } from './api/git';
 
@@ -558,7 +557,7 @@ export function parseGitmodules(raw: string): Submodule[] {
 			return;
 		}
 
-		const propertyMatch = /^\s*(\w+)\s+=\s+(.*)$/.exec(line);
+		const propertyMatch = /^\s*(\w+) = (.*)$/.exec(line);
 
 		if (!propertyMatch) {
 			return;
@@ -637,7 +636,6 @@ export interface CommitOptions {
 
 export interface PullOptions {
 	unshallow?: boolean;
-	tags?: boolean;
 }
 
 export enum ForcePushMode {
@@ -997,7 +995,7 @@ export class Repository {
 				break;
 			}
 
-			const originalUri = URI.file(path.isAbsolute(resourcePath) ? resourcePath : path.join(this.repositoryRoot, resourcePath));
+			const originalUri = Uri.file(path.isAbsolute(resourcePath) ? resourcePath : path.join(this.repositoryRoot, resourcePath));
 			let status: Status = Status.UNTRACKED;
 
 			// Copy or Rename status comes with a number, e.g. 'R100'. We don't need the number, so we use only first character of the status.
@@ -1025,7 +1023,7 @@ export class Repository {
 						break;
 					}
 
-					const uri = URI.file(path.isAbsolute(newPath) ? newPath : path.join(this.repositoryRoot, newPath));
+					const uri = Uri.file(path.isAbsolute(newPath) ? newPath : path.join(this.repositoryRoot, newPath));
 					result.push({
 						uri,
 						renameUri: uri,
@@ -1365,8 +1363,9 @@ export class Repository {
 
 	async pull(rebase?: boolean, remote?: string, branch?: string, options: PullOptions = {}): Promise<void> {
 		const args = ['pull'];
+		const config = workspace.getConfiguration('git', Uri.file(this.root));
 
-		if (options.tags) {
+		if (config.get<boolean>('pullTags')) {
 			args.push('--tags');
 		}
 
@@ -1577,14 +1576,6 @@ export class Repository {
 
 			return { name: undefined, commit: result.stdout.trim(), type: RefType.Head };
 		}
-	}
-
-	async findTrackingBranches(upstreamBranch: string): Promise<Branch[]> {
-		const result = await this.run(['for-each-ref', '--format', '%(refname:short)%00%(upstream:short)', 'refs/heads']);
-		return result.stdout.trim().split('\n')
-			.map(line => line.trim().split('\0'))
-			.filter(([_, upstream]) => upstream === upstreamBranch)
-			.map(([ref]) => ({ name: ref, type: RefType.Head } as Branch));
 	}
 
 	async getRefs(): Promise<Ref[]> {

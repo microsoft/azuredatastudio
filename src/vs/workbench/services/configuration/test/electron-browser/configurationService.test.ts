@@ -44,7 +44,6 @@ import { ConfigurationCache } from 'vs/workbench/services/configuration/node/con
 import { ConfigurationFileService } from 'vs/workbench/services/configuration/node/configurationFileService';
 import { IRemoteAgentEnvironment } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { IConfigurationCache } from 'vs/workbench/services/configuration/common/configuration';
-import { VSBuffer } from 'vs/base/common/buffer';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
@@ -52,7 +51,7 @@ class SettingsTestEnvironmentService extends EnvironmentService {
 		super(args, _execPath);
 	}
 
-	get settingsResource(): URI { return URI.file(this.customAppSettingsHome); }
+	get appSettingsPath(): string { return this.customAppSettingsHome; }
 }
 
 function setUpFolderWorkspace(folderName: string): Promise<{ parentDir: string, folderDir: string }> {
@@ -154,7 +153,7 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 				const configurationFileService = new ConfigurationFileService();
 				configurationFileService.fileService = fileService;
 				const configurationCache: IConfigurationCache = { read: () => Promise.resolve(''), write: () => Promise.resolve(), remove: () => Promise.resolve() };
-				testObject = new WorkspaceService({ userSettingsResource: environmentService.settingsResource, configurationCache, remoteAuthority }, configurationFileService, remoteAgentService);
+				testObject = new WorkspaceService({ userSettingsResource: URI.file(environmentService.appSettingsPath), configurationCache, remoteAuthority }, configurationFileService, remoteAgentService);
 				instantiationService.stub(IWorkspaceContextService, testObject);
 				instantiationService.stub(IConfigurationService, testObject);
 				instantiationService.stub(IEnvironmentService, environmentService);
@@ -248,26 +247,26 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 		return promise;
 	});
 
-	test('update remote settings', async () => {
-		registerRemoteFileSystemProvider();
-		resolveRemoteEnvironment();
-		await initialize();
-		assert.equal(testObject.getValue('configurationService.remote.machineSetting'), 'isSet');
-		const promise = new Promise((c, e) => {
-			testObject.onDidChangeConfiguration(event => {
-				try {
-					assert.equal(event.source, ConfigurationTarget.USER);
-					assert.deepEqual(event.affectedKeys, ['configurationService.remote.machineSetting']);
-					assert.equal(testObject.getValue('configurationService.remote.machineSetting'), 'remoteValue');
-					c();
-				} catch (error) {
-					e(error);
-				}
-			});
-		});
-		await instantiationService.get(IFileService).writeFile(URI.file(remoteSettingsFile), VSBuffer.fromString('{ "configurationService.remote.machineSetting": "remoteValue" }'));
-		return promise;
-	});
+	// test('update remote settings', async () => {
+	// 	registerRemoteFileSystemProvider();
+	// 	resolveRemoteEnvironment();
+	// 	await initialize();
+	// 	assert.equal(testObject.getValue('configurationService.remote.machineSetting'), 'isSet');
+	// 	const promise = new Promise((c, e) => {
+	// 		testObject.onDidChangeConfiguration(event => {
+	// 			try {
+	// 				assert.equal(event.source, ConfigurationTarget.USER);
+	// 				assert.deepEqual(event.affectedKeys, ['configurationService.remote.machineSetting']);
+	// 				assert.equal(testObject.getValue('configurationService.remote.machineSetting'), 'remoteValue');
+	// 				c();
+	// 			} catch (error) {
+	// 				e(error);
+	// 			}
+	// 		});
+	// 	});
+	// 	fs.writeFileSync(remoteSettingsFile, '{ "configurationService.remote.machineSetting": "remoteValue" }');
+	// 	return promise;
+	// });
 
 	test('machine settings in local user settings does not override defaults', async () => {
 		fs.writeFileSync(globalSettingsFile, '{ "configurationService.remote.machineSetting": "globalValue" }');

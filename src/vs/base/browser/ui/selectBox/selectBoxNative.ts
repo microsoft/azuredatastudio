@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as dom from 'vs/base/browser/dom';
@@ -11,7 +11,7 @@ import * as arrays from 'vs/base/common/arrays';
 import { ISelectBoxDelegate, ISelectOptionItem, ISelectBoxOptions, ISelectBoxStyles, ISelectData } from 'vs/base/browser/ui/selectBox/selectBox';
 import { isMacintosh } from 'vs/base/common/platform';
 
-export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
+export class SelectBoxNative implements ISelectBoxDelegate {
 
 	// {{SQL CARBON EDIT}}
 	public selectElement: HTMLSelectElement;
@@ -19,10 +19,11 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 	private options: ISelectOptionItem[];
 	private selected: number;
 	private readonly _onDidSelect: Emitter<ISelectData>;
+	private toDispose: IDisposable[];
 	private styles: ISelectBoxStyles;
 
 	constructor(options: ISelectOptionItem[], selected: number, styles: ISelectBoxStyles, selectBoxOptions?: ISelectBoxOptions) {
-		super();
+		this.toDispose = [];
 		this.selectBoxOptions = selectBoxOptions || Object.create(null);
 
 		this.options = [];
@@ -35,7 +36,8 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 			this.selectElement.setAttribute('aria-label', this.selectBoxOptions.ariaLabel);
 		}
 
-		this._onDidSelect = this._register(new Emitter<ISelectData>());
+		this._onDidSelect = new Emitter<ISelectData>();
+		this.toDispose.push(this._onDidSelect);
 
 		this.styles = styles;
 
@@ -45,7 +47,7 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 
 	private registerListeners() {
 
-		this._register(dom.addStandardDisposableListener(this.selectElement, 'change', (e) => {
+		this.toDispose.push(dom.addStandardDisposableListener(this.selectElement, 'change', (e) => {
 			this.selectElement.title = e.target.value;
 			this._onDidSelect.fire({
 				index: e.target.selectedIndex,
@@ -53,7 +55,7 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 			});
 		}));
 
-		this._register(dom.addStandardDisposableListener(this.selectElement, 'keydown', (e) => {
+		this.toDispose.push(dom.addStandardDisposableListener(this.selectElement, 'keydown', (e) => {
 			let showSelect = false;
 
 			if (isMacintosh) {
@@ -166,5 +168,9 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 		option.disabled = !!disabled;
 
 		return option;
+	}
+
+	public dispose(): void {
+		this.toDispose = dispose(this.toDispose);
 	}
 }

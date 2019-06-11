@@ -27,36 +27,27 @@ export class FileStorage {
 	}
 
 	async init(): Promise<void> {
-		if (this._database) {
-			return; // return if database was already loaded
-		}
-
-		const database = await this.loadAsync();
-
-		if (this._database) {
-			return; // return if database was already loaded
-		}
-
-		this._database = database;
-	}
-
-	private loadSync(): object {
 		try {
-			this.lastFlushedSerializedDatabase = fs.readFileSync(this.dbPath).toString();
+			const contents = await readFile(this.dbPath);
 
-			return JSON.parse(this.lastFlushedSerializedDatabase);
+			try {
+				this.lastFlushedSerializedDatabase = contents.toString();
+				this._database = JSON.parse(this.lastFlushedSerializedDatabase);
+			} catch (error) {
+				this._database = {};
+			}
 		} catch (error) {
 			if (error.code !== 'ENOENT') {
 				this.onError(error);
 			}
 
-			return {};
+			this._database = {};
 		}
 	}
 
-	private async loadAsync(): Promise<object> {
+	private loadSync(): object {
 		try {
-			this.lastFlushedSerializedDatabase = (await readFile(this.dbPath)).toString();
+			this.lastFlushedSerializedDatabase = fs.readFileSync(this.dbPath).toString();
 
 			return JSON.parse(this.lastFlushedSerializedDatabase);
 		} catch (error) {

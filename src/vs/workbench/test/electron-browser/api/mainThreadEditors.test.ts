@@ -62,7 +62,7 @@ suite('MainThreadEditors', () => {
 			}
 			move(source: URI, target: URI) {
 				movedResources.set(source, target);
-				return Promise.resolve(Object.create(null));
+				return Promise.resolve(undefined);
 			}
 			models = <any>{
 				onModelSaved: Event.None,

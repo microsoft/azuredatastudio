@@ -7,7 +7,7 @@ import { URI } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IDecorationsService, IDecoration, IResourceDecorationChangeEvent, IDecorationsProvider, IDecorationData } from './decorations';
 import { TernarySearchTree } from 'vs/base/common/map';
-import { Disposable, IDisposable, toDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import { isThenable } from 'vs/base/common/async';
 import { LinkedList } from 'vs/base/common/linkedList';
 import { createStyleSheet, createCSSRule, removeCSSRulesContainingSelector } from 'vs/base/browser/dom';
@@ -95,20 +95,20 @@ class DecorationRule {
 	}
 }
 
-class DecorationStyles extends Disposable {
+class DecorationStyles {
 
+	private readonly _disposables: IDisposable[];
 	private readonly _styleElement = createStyleSheet();
 	private readonly _decorationRules = new Map<string, DecorationRule>();
 
 	constructor(
 		private _themeService: IThemeService,
 	) {
-		super();
-		this._register(this._themeService.onThemeChange(this._onThemeChange, this));
+		this._disposables = [this._themeService.onThemeChange(this._onThemeChange, this)];
 	}
 
 	dispose(): void {
-		super.dispose();
+		dispose(this._disposables);
 
 		const parent = this._styleElement.parentElement;
 		if (parent) {

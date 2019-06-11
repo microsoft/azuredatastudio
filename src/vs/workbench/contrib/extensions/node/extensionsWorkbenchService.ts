@@ -9,7 +9,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { index, distinct } from 'vs/base/common/arrays';
 import { ThrottledDelayer } from 'vs/base/common/async';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IPager, mapPager, singlePagePager } from 'vs/base/common/paging';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 // {{SQL CARBON EDIT}}
@@ -17,7 +17,7 @@ import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
 	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, INSTALL_ERROR_INCOMPATIBLE
 } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
+import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWindowService } from 'vs/platform/windows/common/windows';
@@ -29,14 +29,13 @@ import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import product from 'vs/platform/product/node/product';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
+import { IProgressService2, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import * as resources from 'vs/base/common/resources';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IFileService } from 'vs/platform/files/common/files';
-import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
-import { IModeService } from 'vs/editor/common/services/modeService';
+import { IExtensionManifest, ExtensionType, ExtensionIdentifierWithVersion, IExtension as IPlatformExtension, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 
 // {{SQL CARBON EDIT}}
 import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
@@ -498,6 +497,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	private readonly remoteExtensions: Extensions | null;
 	private syncDelayer: ThrottledDelayer<void>;
 	private autoUpdateDelayer: ThrottledDelayer<void>;
+	private disposables: IDisposable[] = [];
 
 	private readonly _onChange: Emitter<IExtension | undefined> = new Emitter<IExtension | undefined>();
 	get onChange(): Event<IExtension | undefined> { return this._onChange.event; }
@@ -516,11 +516,10 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
 		@IWindowService private readonly windowService: IWindowService,
 		@ILogService private readonly logService: ILogService,
-		@IProgressService private readonly progressService: IProgressService,
+		@IProgressService2 private readonly progressService: IProgressService2,
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IStorageService private readonly storageService: IStorageService,
-		@IFileService private readonly fileService: IFileService,
-		@IModeService private readonly modeService: IModeService
+		@IFileService private readonly fileService: IFileService
 	) {
 		super();
 		this.localExtensions = this._register(instantiationService.createInstance(Extensions, extensionManagementServerService.localExtensionManagementServer));
@@ -537,7 +536,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 		urlService.registerHandler(this);
 
-		this._register(this.configurationService.onDidChangeConfiguration(e => {
+		this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(AutoUpdateConfigurationKey)) {
 				// {{SQL CARBON EDIT}}
 				// if (this.isAutoUpdateEnabled()) {
@@ -549,7 +548,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 					this.checkForUpdates();
 				}
 			}
-		}, this));
+		}, this, this.disposables);
 
 		this.queryLocal().then(() => {
 			this.resetIgnoreAutoUpdateExtensions();
@@ -603,7 +602,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	queryGallery(arg1: any, arg2?: any): Promise<IPager<IExtension>> {
 		const options: IQueryOptions = CancellationToken.isCancellationToken(arg1) ? {} : arg1;
 		const token: CancellationToken = CancellationToken.isCancellationToken(arg1) ? arg1 : arg2;
-		options.text = options.text ? this.resolveQueryText(options.text) : options.text;
 		return this.extensionService.getExtensionsReport()
 			.then(report => {
 				const maliciousSet = getMaliciousExtensionsSet(report);
@@ -618,27 +616,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 						return Promise.reject<IPager<IExtension>>(err);
 					});
 			});
-	}
-
-	private resolveQueryText(text: string): string {
-		const extensionRegex = /\bext:([^\s]+)\b/g;
-		if (extensionRegex.test(text)) {
-			text = text.replace(extensionRegex, (m, ext) => {
-
-				// Get curated keywords
-				const lookup = product.extensionKeywords || {};
-				const keywords = lookup[ext] || [];
-
-				// Get mode name
-				const modeId = this.modeService.getModeIdByFilepathOrFirstLine(`.${ext}`);
-				const languageName = modeId && this.modeService.getLanguageName(modeId);
-				const languageTag = languageName ? ` tag:"${languageName}"` : '';
-
-				// Construct a rich query
-				return `tag:"__ext_${ext}" tag:"__ext_.${ext}" ${keywords.map(tag => `tag:"${tag}"`).join(' ')}${languageTag} tag:"${ext}"`;
-			});
-		}
-		return text.substr(0, 350);
 	}
 
 	open(extension: IExtension, sideByside: boolean = false): Promise<any> {
@@ -1139,7 +1116,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	}
 
 	dispose(): void {
-		super.dispose();
 		this.syncDelayer.cancel();
+		this.disposables = dispose(this.disposables);
 	}
 }

@@ -169,7 +169,7 @@ export class SideBySideEditor extends BaseEditor {
 		}
 
 		if (!this.detailsEditor || !this.masterEditor) {
-			return;
+			return Promise.resolve();
 		}
 
 		await Promise.all([
@@ -213,6 +213,8 @@ export class SideBySideEditor extends BaseEditor {
 			this.detailsEditor.setInput(detailsInput, null, token),
 			this.masterEditor.setInput(masterInput, options, token)]
 		);
+
+		return this.focus();
 	}
 
 	updateStyles(): void {

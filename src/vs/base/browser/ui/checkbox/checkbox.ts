@@ -12,7 +12,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as objects from 'vs/base/common/objects';
 import { BaseActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 export interface ICheckboxOpts extends ICheckboxStyles {
 	readonly actionClassName?: string;
@@ -31,19 +31,19 @@ const defaultOpts = {
 export class CheckboxActionViewItem extends BaseActionViewItem {
 
 	private checkbox: Checkbox;
-	private readonly disposables = new DisposableStore();
+	private disposables: IDisposable[] = [];
 
 	render(container: HTMLElement): void {
 		this.element = container;
 
-		this.disposables.clear();
+		this.disposables = dispose(this.disposables);
 		this.checkbox = new Checkbox({
 			actionClassName: this._action.class,
 			isChecked: this._action.checked,
 			title: this._action.label
 		});
-		this.disposables.add(this.checkbox);
-		this.disposables.add(this.checkbox.onChange(() => this._action.checked = this.checkbox.checked, this));
+		this.disposables.push(this.checkbox);
+		this.checkbox.onChange(() => this._action.checked = this.checkbox.checked, this, this.disposables);
 		this.element.appendChild(this.checkbox.domNode);
 	}
 
@@ -64,9 +64,10 @@ export class CheckboxActionViewItem extends BaseActionViewItem {
 	}
 
 	dipsose(): void {
-		this.disposables.dispose();
+		this.disposables = dispose(this.disposables);
 		super.dispose();
 	}
+
 }
 
 export class Checkbox extends Widget {

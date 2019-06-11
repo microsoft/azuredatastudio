@@ -71,15 +71,6 @@ export namespace MarkerSeverity {
 			case Severity.Ignore: return MarkerSeverity.Hint;
 		}
 	}
-
-	export function toSeverity(severity: MarkerSeverity): Severity {
-		switch (severity) {
-			case MarkerSeverity.Error: return Severity.Error;
-			case MarkerSeverity.Warning: return Severity.Warning;
-			case MarkerSeverity.Info: return Severity.Info;
-			case MarkerSeverity.Hint: return Severity.Ignore;
-		}
-	}
 }
 
 /**

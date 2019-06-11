@@ -1,8 +1,5 @@
 # cleanup rules for native node modules, .gitignore style
 
-nan/**
-*/node_modules/nan/**
-
 fsevents/binding.gyp
 fsevents/fsevents.cc
 fsevents/build/**
@@ -86,7 +83,6 @@ node-pty/binding.gyp
 node-pty/build/**
 node-pty/src/**
 node-pty/tools/**
-node-pty/deps/**
 !node-pty/build/Release/*.exe
 !node-pty/build/Release/*.dll
 !node-pty/build/Release/*.node

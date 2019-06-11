@@ -21,9 +21,8 @@ import { MenuBarVisibility } from 'vs/platform/windows/common/windows';
 import { isWindows, isLinux } from 'vs/base/common/platform';
 import { IsMacContext } from 'vs/workbench/browser/contextkeys';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { InEditorZenModeContext, IsCenteredLayoutContext } from 'vs/workbench/common/editor';
+import { InEditorZenModeContext } from 'vs/workbench/common/editor';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { SideBarVisibleContext } from 'vs/workbench/common/viewlet';
 
 const registry = Registry.as<IWorkbenchActionRegistry>(Extensions.WorkbenchActions);
 const viewCategory = nls.localize('view', "View");
@@ -62,8 +61,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '2_workbench_layout',
 	command: {
 		id: ToggleActivityBarVisibilityAction.ID,
-		title: nls.localize({ key: 'miShowActivityBar', comment: ['&& denotes a mnemonic'] }, "Show &&Activity Bar"),
-		toggled: ContextKeyExpr.equals('config.workbench.activityBar.visible', true)
+		title: nls.localize({ key: 'miToggleActivityBar', comment: ['&& denotes a mnemonic'] }, "Toggle &&Activity Bar")
 	},
 	order: 4
 });
@@ -97,8 +95,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '1_toggle_view',
 	command: {
 		id: ToggleCenteredLayout.ID,
-		title: nls.localize('miToggleCenteredLayout', "Centered Layout"),
-		toggled: IsCenteredLayoutContext
+		title: nls.localize('miToggleCenteredLayout', "Toggle Centered Layout")
 	},
 	order: 3
 });
@@ -206,22 +203,11 @@ export class ToggleSidebarPositionAction extends Action {
 registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleSidebarPositionAction, ToggleSidebarPositionAction.ID, ToggleSidebarPositionAction.LABEL), 'View: Toggle Side Bar Position', viewCategory);
 
 MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
-	group: '3_workbench_layout_move',
+	group: '2_workbench_layout',
 	command: {
 		id: ToggleSidebarPositionAction.ID,
-		title: nls.localize({ key: 'miMoveSidebarRight', comment: ['&& denotes a mnemonic'] }, "&&Move Side Bar Right")
+		title: nls.localize({ key: 'miMoveSidebarLeftRight', comment: ['&& denotes a mnemonic'] }, "&&Move Side Bar Left/Right")
 	},
-	when: ContextKeyExpr.notEquals('config.workbench.sideBar.location', 'right'),
-	order: 2
-});
-
-MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
-	group: '3_workbench_layout_move',
-	command: {
-		id: ToggleSidebarPositionAction.ID,
-		title: nls.localize({ key: 'miMoveSidebarLeft', comment: ['&& denotes a mnemonic'] }, "&&Move Side Bar Left")
-	},
-	when: ContextKeyExpr.equals('config.workbench.sideBar.location', 'right'),
 	order: 2
 });
 
@@ -280,15 +266,14 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '2_workbench_layout',
 	command: {
 		id: ToggleSidebarVisibilityAction.ID,
-		title: nls.localize({ key: 'miShowSidebar', comment: ['&& denotes a mnemonic'] }, "Show &&Side Bar"),
-		toggled: SideBarVisibleContext
+		title: nls.localize({ key: 'miToggleSidebar', comment: ['&& denotes a mnemonic'] }, "&&Toggle Side Bar")
 	},
 	order: 1
 });
 
 // --- Toggle Statusbar Visibility
 
-export class ToggleStatusbarVisibilityAction extends Action {
+class ToggleStatusbarVisibilityAction extends Action {
 
 	static readonly ID = 'workbench.action.toggleStatusbarVisibility';
 	static readonly LABEL = nls.localize('toggleStatusbar', "Toggle Status Bar Visibility");
@@ -320,8 +305,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '2_workbench_layout',
 	command: {
 		id: ToggleStatusbarVisibilityAction.ID,
-		title: nls.localize({ key: 'miShowStatusbar', comment: ['&& denotes a mnemonic'] }, "Show S&&tatus Bar"),
-		toggled: ContextKeyExpr.equals('config.workbench.statusBar.visible', true)
+		title: nls.localize({ key: 'miToggleStatusbar', comment: ['&& denotes a mnemonic'] }, "&&Toggle Status Bar")
 	},
 	order: 3
 });
@@ -386,8 +370,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
 	group: '1_toggle_view',
 	command: {
 		id: ToggleZenMode.ID,
-		title: nls.localize('miToggleZenMode', "Zen Mode"),
-		toggled: InEditorZenModeContext
+		title: nls.localize('miToggleZenMode', "Toggle Zen Mode")
 	},
 	order: 2
 });
@@ -444,13 +427,13 @@ if (isWindows || isLinux) {
 }
 
 MenuRegistry.appendMenuItem(MenuId.MenubarAppearanceMenu, {
-	group: '2_workbench_layout',
+	group: '1_toggle_view',
 	command: {
 		id: ToggleMenuBarAction.ID,
-		title: nls.localize({ key: 'miShowMenuBar', comment: ['&& denotes a mnemonic'] }, "Show Menu &&Bar"),
-		toggled: ContextKeyExpr.and(IsMacContext.toNegated(), ContextKeyExpr.notEquals('config.window.menuBarVisibility', 'hidden'), ContextKeyExpr.notEquals('config.window.menuBarVisibility', 'toggle'))
+		title: nls.localize({ key: 'miToggleMenuBar', comment: ['&& denotes a mnemonic'] }, "Toggle Menu &&Bar")
 	},
-	order: 0
+	when: IsMacContext.toNegated(),
+	order: 4
 });
 
 // --- Resize View

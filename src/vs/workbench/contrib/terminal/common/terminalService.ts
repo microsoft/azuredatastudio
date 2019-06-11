@@ -30,7 +30,6 @@ export abstract class TerminalService implements ITerminalService {
 	protected _findWidgetVisible: IContextKey<boolean>;
 	protected _terminalContainer: HTMLElement;
 	protected _terminalTabs: ITerminalTab[] = [];
-	protected _backgroundedTerminalInstances: ITerminalInstance[] = [];
 	protected get _terminalInstances(): ITerminalInstance[] {
 		return this._terminalTabs.reduce((p, c) => p.concat(c.terminalInstances), <ITerminalInstance[]>[]);
 	}
@@ -104,8 +103,8 @@ export abstract class TerminalService implements ITerminalService {
 
 	protected abstract _getWslPath(path: string): Promise<string>;
 	protected abstract _getWindowsBuildNumber(): number;
-	protected abstract _showBackgroundTerminal(instance: ITerminalInstance): void;
 
+	public abstract refreshActiveTab(): void;
 	public abstract createTerminal(shell?: IShellLaunchConfig, wasNewTerminalAction?: boolean): ITerminalInstance;
 	public abstract createInstance(terminalFocusContextKey: IContextKey<boolean>, configHelper: ITerminalConfigHelper, container: HTMLElement, shellLaunchConfig: IShellLaunchConfig, doCreateProcess: boolean): ITerminalInstance;
 	public abstract getDefaultShell(platform: Platform): string;
@@ -207,11 +206,6 @@ export abstract class TerminalService implements ITerminalService {
 		}
 	}
 
-	public refreshActiveTab(): void {
-		// Fire active instances changed
-		this._onActiveTabChanged.fire();
-	}
-
 	public getActiveTab(): ITerminalTab | null {
 		if (this._activeTabIndex < 0 || this._activeTabIndex >= this._terminalTabs.length) {
 			return null;
@@ -228,15 +222,6 @@ export abstract class TerminalService implements ITerminalService {
 	}
 
 	public getInstanceFromId(terminalId: number): ITerminalInstance {
-		let bgIndex = -1;
-		this._backgroundedTerminalInstances.forEach((terminalInstance, i) => {
-			if (terminalInstance.id === terminalId) {
-				bgIndex = i;
-			}
-		});
-		if (bgIndex !== -1) {
-			return this._backgroundedTerminalInstances[bgIndex];
-		}
 		return this.terminalInstances[this._getIndexFromId(terminalId)];
 	}
 
@@ -245,11 +230,6 @@ export abstract class TerminalService implements ITerminalService {
 	}
 
 	public setActiveInstance(terminalInstance: ITerminalInstance): void {
-		// If this was a runInBackground terminal created by the API this was triggered by show,
-		// in which case we need to create the terminal tab
-		if (terminalInstance.shellLaunchConfig.runInBackground) {
-			this._showBackgroundTerminal(terminalInstance);
-		}
 		this.setActiveInstanceByIndex(this._getIndexFromId(terminalInstance.id));
 	}
 
@@ -461,14 +441,15 @@ export abstract class TerminalService implements ITerminalService {
 
 	public preparePathForTerminalAsync(originalPath: string, executable: string, title: string): Promise<string> {
 		return new Promise<string>(c => {
-			if (!executable) {
+			const exe = executable;
+			if (!exe) {
 				c(originalPath);
 				return;
 			}
 
 			const hasSpace = originalPath.indexOf(' ') !== -1;
 
-			const pathBasename = basename(executable, '.exe');
+			const pathBasename = basename(exe, '.exe');
 			const isPowerShell = pathBasename === 'pwsh' ||
 				title === 'pwsh' ||
 				pathBasename === 'powershell' ||
@@ -482,9 +463,7 @@ export abstract class TerminalService implements ITerminalService {
 			if (isWindows) {
 				// 17063 is the build number where wsl path was introduced.
 				// Update Windows uriPath to be executed in WSL.
-				const lowerExecutable = executable.toLowerCase();
-				if (this._getWindowsBuildNumber() >= 17063 &&
-					(lowerExecutable.indexOf('wsl') !== -1 || (lowerExecutable.indexOf('bash.exe') !== -1 && lowerExecutable.toLowerCase().indexOf('git') === -1))) {
+				if (((exe.indexOf('wsl') !== -1) || ((exe.indexOf('bash.exe') !== -1) && (exe.indexOf('git') === -1))) && (this._getWindowsBuildNumber() >= 17063)) {
 					c(this._getWslPath(originalPath));
 					return;
 				} else if (hasSpace) {

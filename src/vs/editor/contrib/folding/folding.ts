@@ -9,7 +9,7 @@ import * as types from 'vs/base/common/types';
 import { escapeRegExpCharacters } from 'vs/base/common/strings';
 import { RunOnceScheduler, Delayer, CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { KeyCode, KeyMod, KeyChord } from 'vs/base/common/keyCodes';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ScrollType, IEditorContribution } from 'vs/editor/common/editorCommon';
 import { ITextModel } from 'vs/editor/common/model';
 import { registerEditorAction, registerEditorContribution, ServicesAccessor, EditorAction, registerInstantiatedEditorAction } from 'vs/editor/browser/editorExtensions';
@@ -46,7 +46,7 @@ interface FoldingStateMemento {
 	provider?: string;
 }
 
-export class FoldingController extends Disposable implements IEditorContribution {
+export class FoldingController implements IEditorContribution {
 
 	static MAX_FOLDING_REGIONS = 5000;
 
@@ -73,25 +73,27 @@ export class FoldingController extends Disposable implements IEditorContribution
 	private foldingModelPromise: Promise<FoldingModel | null> | null;
 	private updateScheduler: Delayer<FoldingModel | null> | null;
 
+	private globalToDispose: IDisposable[];
 
 	private cursorChangedScheduler: RunOnceScheduler | null;
 
-	private readonly localToDispose = this._register(new DisposableStore());
+	private localToDispose: IDisposable[];
 
 	constructor(editor: ICodeEditor) {
-		super();
 		this.editor = editor;
 		this._isEnabled = this.editor.getConfiguration().contribInfo.folding;
 		this._autoHideFoldingControls = this.editor.getConfiguration().contribInfo.showFoldingControls === 'mouseover';
 		this._useFoldingProviders = this.editor.getConfiguration().contribInfo.foldingStrategy !== 'indentation';
 
+		this.globalToDispose = [];
+		this.localToDispose = [];
 
 		this.foldingDecorationProvider = new FoldingDecorationProvider(editor);
 		this.foldingDecorationProvider.autoHideFoldingControls = this._autoHideFoldingControls;
 
-		this._register(this.editor.onDidChangeModel(() => this.onModelChanged()));
+		this.globalToDispose.push(this.editor.onDidChangeModel(() => this.onModelChanged()));
 
-		this._register(this.editor.onDidChangeConfiguration((e: IConfigurationChangedEvent) => {
+		this.globalToDispose.push(this.editor.onDidChangeConfiguration((e: IConfigurationChangedEvent) => {
 			if (e.contribInfo) {
 				let oldIsEnabled = this._isEnabled;
 				this._isEnabled = this.editor.getConfiguration().contribInfo.folding;
@@ -111,11 +113,16 @@ export class FoldingController extends Disposable implements IEditorContribution
 				}
 			}
 		}));
+		this.globalToDispose.push({ dispose: () => dispose(this.localToDispose) });
 		this.onModelChanged();
 	}
 
 	public getId(): string {
 		return ID;
+	}
+
+	public dispose(): void {
+		this.globalToDispose = dispose(this.globalToDispose);
 	}
 
 	/**
@@ -166,7 +173,7 @@ export class FoldingController extends Disposable implements IEditorContribution
 	}
 
 	private onModelChanged(): void {
-		this.localToDispose.clear();
+		this.localToDispose = dispose(this.localToDispose);
 
 		let model = this.editor.getModel();
 		if (!this._isEnabled || !model || model.isTooLargeForTokenization()) {
@@ -175,23 +182,23 @@ export class FoldingController extends Disposable implements IEditorContribution
 		}
 
 		this.foldingModel = new FoldingModel(model, this.foldingDecorationProvider);
-		this.localToDispose.add(this.foldingModel);
+		this.localToDispose.push(this.foldingModel);
 
 		this.hiddenRangeModel = new HiddenRangeModel(this.foldingModel);
-		this.localToDispose.add(this.hiddenRangeModel);
-		this.localToDispose.add(this.hiddenRangeModel.onDidChange(hr => this.onHiddenRangesChanges(hr)));
+		this.localToDispose.push(this.hiddenRangeModel);
+		this.localToDispose.push(this.hiddenRangeModel.onDidChange(hr => this.onHiddenRangesChanges(hr)));
 
 		this.updateScheduler = new Delayer<FoldingModel>(200);
 
 		this.cursorChangedScheduler = new RunOnceScheduler(() => this.revealCursor(), 200);
-		this.localToDispose.add(this.cursorChangedScheduler);
-		this.localToDispose.add(FoldingRangeProviderRegistry.onDidChange(() => this.onFoldingStrategyChanged()));
-		this.localToDispose.add(this.editor.onDidChangeModelLanguageConfiguration(() => this.onFoldingStrategyChanged())); // covers model language changes as well
-		this.localToDispose.add(this.editor.onDidChangeModelContent(() => this.onModelContentChanged()));
-		this.localToDispose.add(this.editor.onDidChangeCursorPosition(() => this.onCursorPositionChanged()));
-		this.localToDispose.add(this.editor.onMouseDown(e => this.onEditorMouseDown(e)));
-		this.localToDispose.add(this.editor.onMouseUp(e => this.onEditorMouseUp(e)));
-		this.localToDispose.add({
+		this.localToDispose.push(this.cursorChangedScheduler);
+		this.localToDispose.push(FoldingRangeProviderRegistry.onDidChange(() => this.onFoldingStrategyChanged()));
+		this.localToDispose.push(this.editor.onDidChangeModelLanguageConfiguration(() => this.onFoldingStrategyChanged())); // covers model language changes as well
+		this.localToDispose.push(this.editor.onDidChangeModelContent(() => this.onModelContentChanged()));
+		this.localToDispose.push(this.editor.onDidChangeCursorPosition(() => this.onCursorPositionChanged()));
+		this.localToDispose.push(this.editor.onMouseDown(e => this.onEditorMouseDown(e)));
+		this.localToDispose.push(this.editor.onMouseUp(e => this.onEditorMouseUp(e)));
+		this.localToDispose.push({
 			dispose: () => {
 				if (this.foldingRegionPromise) {
 					this.foldingRegionPromise.cancel();

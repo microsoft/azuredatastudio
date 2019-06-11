@@ -244,7 +244,7 @@ export class BackupMainService implements IBackupMainService {
 			return [];
 		}
 
-		const seenIds: Set<string> = new Set();
+		const seenIds: { [id: string]: boolean } = Object.create(null);
 		const result: IWorkspaceBackupInfo[] = [];
 
 		// Validate Workspaces
@@ -254,8 +254,8 @@ export class BackupMainService implements IBackupMainService {
 				return []; // wrong format, skip all entries
 			}
 
-			if (!seenIds.has(workspace.id)) {
-				seenIds.add(workspace.id);
+			if (!seenIds[workspace.id]) {
+				seenIds[workspace.id] = true;
 
 				const backupPath = this.getBackupPath(workspace.id);
 				const hasBackups = await this.hasBackups(backupPath);
@@ -283,11 +283,11 @@ export class BackupMainService implements IBackupMainService {
 		}
 
 		const result: URI[] = [];
-		const seenIds: Set<string> = new Set();
+		const seen: { [id: string]: boolean } = Object.create(null);
 		for (let folderURI of folderWorkspaces) {
 			const key = getComparisonKey(folderURI);
-			if (!seenIds.has(key)) {
-				seenIds.add(key);
+			if (!seen[key]) {
+				seen[key] = true;
 
 				const backupPath = this.getBackupPath(this.getFolderHash(folderURI));
 				const hasBackups = await this.hasBackups(backupPath);
@@ -315,7 +315,7 @@ export class BackupMainService implements IBackupMainService {
 		}
 
 		const result: IEmptyWindowBackupInfo[] = [];
-		const seenIds: Set<string> = new Set();
+		const seen: { [id: string]: boolean } = Object.create(null);
 
 		// Validate Empty Windows
 		for (let backupInfo of emptyWorkspaces) {
@@ -324,8 +324,8 @@ export class BackupMainService implements IBackupMainService {
 				return [];
 			}
 
-			if (!seenIds.has(backupFolder)) {
-				seenIds.add(backupFolder);
+			if (!seen[backupFolder]) {
+				seen[backupFolder] = true;
 
 				const backupPath = this.getBackupPath(backupFolder);
 				if (await this.hasBackups(backupPath)) {

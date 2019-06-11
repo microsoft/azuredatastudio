@@ -72,9 +72,7 @@
 			"name": "Class name",
 			"scope": [
 				"entity.name.class",
-				"entity.name.type",
-				"entity.name.namespace",
-				"entity.name.scope-resolution"
+				"entity.name.type"
 			],
 			"settings": {
 				"foreground": "#268BD2"
@@ -221,14 +219,16 @@
 				"meta.diff.header"
 			],
 			"settings": {
+				"background": "#b58900",
 				"fontStyle": "italic",
-				"foreground": "#268bd2"
+				"foreground": "#E0EDDD"
 			}
 		},
 		{
 			"name": "diff: deleted",
 			"scope": "markup.deleted",
 			"settings": {
+				"background": "#eee8d5",
 				"fontStyle": "",
 				"foreground": "#dc322f"
 			}
@@ -237,6 +237,7 @@
 			"name": "diff: changed",
 			"scope": "markup.changed",
 			"settings": {
+				"background": "#eee8d5",
 				"fontStyle": "",
 				"foreground": "#cb4b16"
 			}
@@ -245,6 +246,7 @@
 			"name": "diff: inserted",
 			"scope": "markup.inserted",
 			"settings": {
+				"background": "#eee8d5",
 				"foreground": "#219186"
 			}
 		},
@@ -415,7 +417,7 @@
 		"tab.activeBackground": "#FDF6E3",
 		"tab.inactiveForeground": "#586E75",
 		"tab.inactiveBackground": "#D3CBB7",
-		"tab.activeModifiedBorder": "#cb4b16",
+		"tab.modifiedBorder": "#cb4b16",
 		// "tab.activeBackground": "",
 		// "tab.activeForeground": "",
 		// "tab.inactiveForeground": "",
