@@ -15,6 +15,7 @@ import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { RegisteredServerTreeNode } from './registeredServerTreeNode';
 import { ServerGroupTreeNode } from './serverGroupTreeNode';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
+import { CmsUtils } from '../../cmsUtils';
 
 const localize = nls.loadMessageBundle();
 
@@ -46,10 +47,9 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
 				if (result) {
 					// cache new connection is different from old one
-					if (this._connection !== result.connection) {
+					if (CmsUtils.didConnectionChange(this._connection, result.connection)) {
 						this._connection = result.connection;
-						this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, undefined, this.connection);
-
+						this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
 					}
 					if (result.listRegisteredServersResult.registeredServersList) {
 						result.listRegisteredServersResult.registeredServersList.forEach((registeredServer) => {

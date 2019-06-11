@@ -105,6 +105,11 @@ export class CmsUtils {
 		});
 	}
 
+	public static didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
+		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
+			(connectionA.options.savePassword !== connectionA.options.savePassword));
+	}
+
 	public async createCmsServer(connection: azdata.connection.Connection,
 		name: string, description: string): Promise<CreateCmsResult> {
 		let provider = await this.getCmsService();
@@ -119,8 +124,8 @@ export class CmsUtils {
 				if (!ownerUri) {
 					await this.connection(initialConnectionProfile).then(async (result) => {
 						if (result) {
-							connection = result;
 							ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+							connection = result;
 						}
 					}, (error) => {
 						// cancel pressed on connection dialog
@@ -158,7 +163,7 @@ export class CmsUtils {
 		}
 	}
 
-	public cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection): void {
+	public async cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection): Promise<void> {
 		if (!this._registeredCmsServers) {
 			this._registeredCmsServers = [];
 		}
@@ -168,11 +173,20 @@ export class CmsUtils {
 			connection: connection,
 			ownerUri: ownerUri
 		};
+
 		// update a server if a server with same name exists
-		this._registeredCmsServers.filter((server) => {
+		this._registeredCmsServers = this._registeredCmsServers.filter((server) => {
 			return server.name !== name;
 		});
 		this._registeredCmsServers.push(cmsServerNode);
+
+		// save the CMS Servers for future use
+		let toSaveCmsServers: ICmsResourceNodeInfo[] = JSON.parse(JSON.stringify(this._registeredCmsServers));
+		toSaveCmsServers.forEach(server => {
+			server.ownerUri = undefined;
+			server.connection.options.password = '';
+		});
+		await this.setConfiguration(toSaveCmsServers);
 	}
 
 	public async addRegisteredServer(relativePath: string, ownerUri: string,
