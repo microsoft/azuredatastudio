@@ -14,6 +14,8 @@ import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 const localize = nls.loadMessageBundle();
 const cmsProvider: string = 'MSSQL-CMS';
 const mssqlProvider: string = 'MSSQL';
+const CredentialNamespace = 'cmsCredentials';
+const sqlLoginAuthType: string = 'SqlLogin';
 
 export interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
@@ -29,27 +31,28 @@ export interface CreateCmsResult {
  */
 export class CmsUtils {
 
-	private static CredentialNamespace = 'cmsCredentials';
 	private _credentialProvider: azdata.CredentialProvider;
 	private _cmsService: mssql.CmsService;
 	private _registeredCmsServers: ICmsResourceNodeInfo[];
 
 	constructor() {
 		// 1) Get a credential provider
-		// 2a) Store the credential provider for use later
-		azdata.credentials.getProvider(CmsUtils.CredentialNamespace).then(credProvider => {
+		// 2) Store the credential provider for use later
+		azdata.credentials.getProvider(CredentialNamespace).then(credProvider => {
 			this._credentialProvider = credProvider;
 			return true;
 		});
 	}
 
 	public async savePassword(username: string, password: string) {
-		let result = await this._credentialProvider.saveCredential(username, password);
+		let provider = await this.credentialProvider();
+		let result = await provider.saveCredential(username, password);
 		return result;
 	}
 
 	public async getPassword(username: string): Promise<string> {
-		let credential = await this._credentialProvider.readCredential(username);
+		let provider = await this.credentialProvider();
+		let credential = await provider.readCredential(username);
 		return credential ? credential.password : undefined;
 	}
 
@@ -118,21 +121,20 @@ export class CmsUtils {
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
 			let initialConnectionProfile = CmsUtils.getConnectionProfile(connection);
-			await azdata.connection.connect(initialConnectionProfile, false, false).then(async (result) => {
-				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
-				// If the ownerUri is still undefined, then open a connection dialog with the connection
-				if (!ownerUri) {
-					await this.connection(initialConnectionProfile).then(async (result) => {
-						if (result) {
-							ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
-							connection = result;
-						}
-					}, (error) => {
-						// cancel pressed on connection dialog
-						return Promise.reject(localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.'));
-					});
-				}
-			});
+			let result = await azdata.connection.connect(initialConnectionProfile, false, false);
+			ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+			// If the ownerUri is still undefined, then open a connection dialog with the connection
+			if (!ownerUri) {
+				await this.connection(initialConnectionProfile).then(async (result) => {
+					if (result) {
+						ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+						connection = result;
+					}
+				}, (error) => {
+					// cancel pressed on connection dialog
+					return Promise.reject(localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.'));
+				});
+			}
 		}
 		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
 			if (result) {
@@ -158,7 +160,7 @@ export class CmsUtils {
 				return cachedServer.name !== cmsServerName;
 			});
 		}
-		if (connection.options.authenticationType === 'SqlLogin' && connection.options.savePassword) {
+		if (connection.options.authenticationType === sqlLoginAuthType && connection.options.savePassword) {
 			this._credentialProvider.deleteCredential(connection.options.user);
 		}
 	}
@@ -184,6 +186,7 @@ export class CmsUtils {
 		let toSaveCmsServers: ICmsResourceNodeInfo[] = JSON.parse(JSON.stringify(this._registeredCmsServers));
 		toSaveCmsServers.forEach(server => {
 			server.ownerUri = undefined;
+			// don't save password in config
 			server.connection.options.password = '';
 		});
 		await this.setConfiguration(toSaveCmsServers);
@@ -274,6 +277,13 @@ export class CmsUtils {
 	// Getters
 	public get registeredCmsServers(): ICmsResourceNodeInfo[] {
 		return this._registeredCmsServers;
+	}
+
+	public async credentialProvider(): Promise<azdata.CredentialProvider> {
+		if (!this._credentialProvider) {
+			this._credentialProvider = await azdata.credentials.getProvider(CredentialNamespace);
+		}
+		return this._credentialProvider;
 	}
 
 	public connection(initialConnectionProfile?: azdata.IConnectionProfile): Thenable<azdata.connection.Connection> {
