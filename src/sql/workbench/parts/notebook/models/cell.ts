@@ -417,7 +417,9 @@ export class CellModel implements ICellModel {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
 			this._outputs.push(this.rewriteOutputUrls(output));
-			this.fireOutputsChanged(true);
+			// Only scroll on 1st output being added
+			let shouldScroll = this._outputs.length === 1;
+			this.fireOutputsChanged(shouldScroll);
 		}
 	}
 

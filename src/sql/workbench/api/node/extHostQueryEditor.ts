@@ -7,6 +7,7 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostQueryEditorShape, SqlMainContext, MainThreadQueryEditorShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import { IQueryEvent } from 'sql/platform/query/common/queryModel';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	constructor(
@@ -57,13 +58,13 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
 			let planXml = event.params ? event.params.planXml : undefined;
-			listener.onQueryEvent(event.type, new ExtHostQueryDocument('MSSQL', fileUri, this._proxy), planXml);
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument(mssqlProviderName, fileUri, this._proxy), planXml);
 		}
 	}
 
 	public $getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
 		return new Promise((resolve) => {
-			resolve(new ExtHostQueryDocument('MSSQL', fileUri, this._proxy));
+			resolve(new ExtHostQueryDocument(mssqlProviderName, fileUri, this._proxy));
 		});
 	}
 

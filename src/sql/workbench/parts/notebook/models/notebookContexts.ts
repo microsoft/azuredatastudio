@@ -10,13 +10,13 @@ import { IDefaultConnection, notebookConstants } from 'sql/workbench/parts/noteb
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class NotebookContexts {
-	private static MSSQL_PROVIDER = 'MSSQL';
 
 	private static get DefaultContext(): IDefaultConnection {
 		let defaultConnection: ConnectionProfile = <any>{
-			providerName: NotebookContexts.MSSQL_PROVIDER,
+			providerName: mssqlProviderName,
 			id: '-1',
 			serverName: localize('selectConnection', 'Select Connection')
 		};
@@ -30,7 +30,7 @@ export class NotebookContexts {
 
 	private static get LocalContext(): IDefaultConnection {
 		let localConnection: ConnectionProfile = <any>{
-			providerName: NotebookContexts.MSSQL_PROVIDER,
+			providerName: mssqlProviderName,
 			id: '-1',
 			serverName: localize('localhost', 'localhost')
 		};

@@ -90,23 +90,31 @@ export class QueryModelService implements IQueryModelService {
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			TimeElapsedStatusBarItem,
+			'status.timeElapsed',
+			nls.localize('status.timeElapsed', "Time Elapsed"),
 			StatusbarAlignment.RIGHT,
 			100 /* Should appear to the right of the SQL editor status */
 		));
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			RowCountStatusBarItem,
+			'status.rowCount',
+			nls.localize('status.rowCount', "Row Count"),
 			StatusbarAlignment.RIGHT,
 			100 /* Should appear to the right of the SQL editor status */
 		));
 
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			QueryStatusbarItem,
+			'status.query',
+			nls.localize('status.query', "Query"),
 			StatusbarAlignment.RIGHT,
 			100 /* High Priority */
 		));
 		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
 			SqlFlavorStatusbarItem,
+			'status.sqlFlavor',
+			nls.localize('status.sqlFlavor', "SQL Flavor"),
 			StatusbarAlignment.RIGHT,
 			90 /* Should appear to the right of the SQL editor status */
 		));

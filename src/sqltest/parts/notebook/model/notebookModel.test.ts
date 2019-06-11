@@ -28,6 +28,7 @@ import { TestStorageService, TestLogService } from 'vs/workbench/test/workbenchT
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -101,7 +102,7 @@ suite('notebook model', function (): void {
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
-			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: ['MSSQL'], notebookProvider: 'sql' }],
+			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: [mssqlProviderName], notebookProvider: 'sql' }],
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
