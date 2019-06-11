@@ -155,6 +155,7 @@ export class NotebookInput extends EditorInput {
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
+	private _notebookEditorOpenedTimestamp: number;
 
 	constructor(private _title: string,
 		private resource: URI,
@@ -168,6 +169,7 @@ export class NotebookInput extends EditorInput {
 		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
+		this._notebookEditorOpenedTimestamp = Date.now();
 		if (this._textInput) {
 			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 		}
@@ -249,6 +251,10 @@ export class NotebookInput extends EditorInput {
 
 	get layoutChanged(): Event<void> {
 		return this._layoutChanged.event;
+	}
+
+	public get editorOpenedTimestamp(): number {
+		return this._notebookEditorOpenedTimestamp;
 	}
 
 	doChangeLayout(): any {
