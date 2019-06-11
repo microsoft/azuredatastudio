@@ -96,7 +96,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService
 	) {
 		super();
 		this.updateProfile();
@@ -282,7 +282,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			layoutChanged: this._notebookParams.input.layoutChanged,
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
-		}, this.profile, this.logService, this.notificationService, this._telemetryService);
+		}, this.profile, this.logService, this.notificationService, this.telemetryService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
 		await model.requestModelLoad(trusted);

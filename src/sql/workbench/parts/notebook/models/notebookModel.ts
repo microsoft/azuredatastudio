@@ -929,18 +929,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._connectionUrisToDispose = [];
 	}
 
-	// Track time it takes to render all markdown cells
+	/**
+	 * Track time it takes to render all markdown cells
+	 */
 	private trackMarkdownTelemetry(cellContent: nb.ICellContents, cellModel: ICellModel): void {
 		if (cellContent && cellContent.cell_type === CellTypes.Markdown) {
 			this._textCellsLoading++;
 		}
-		this._register(cellModel.onLoaded((e) => {
-			this._textCellsLoading--;
-			if (this._textCellsLoading <= 0) {
-				if (this._notebookOptions.editorLoadedTimestamp) {
-					if (this._notebookOptions.editorLoadedTimestamp && this._notebookOptions.editorLoadedTimestamp > 0) {
+		this._register(cellModel.onLoaded((cell_type) => {
+			if (cell_type === CellTypes.Markdown) {
+				this._textCellsLoading--;
+				if (this._textCellsLoading <= 0) {
+					if (this._notebookOptions.editorLoadedTimestamp) {
 						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
-						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingEllapsed: markdownRenderingTime });
+						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingElapsedMs: markdownRenderingTime });
 					}
 				}
 			}
