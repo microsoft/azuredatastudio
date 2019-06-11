@@ -45,6 +45,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	protected contextKey: IContextKey<boolean>;
 	protected findInputFocusContextKey: IContextKey<boolean>;
 
+	private pendingMessages: any[] = [];
+
+	public _ready: Promise<void>;
+	public isReady = false;
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -63,6 +68,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		}));
 	}
 
+
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
 			{
@@ -74,18 +80,46 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 		this._webview.mountTo(this._el.nativeElement);
 
-		this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
+		this._ready = new Promise(resolve => {
+			let webview = (<any>this._webview)._webview;
+			const subscription = this._register(addDisposableListener(webview, 'ipc-message', (event) => {
+				if (event.channel === 'webview-ready') {
+					// console.info('[PID Webview] ' event.args[0]);
+					//addClass(this._webview, 'ready'); // can be found by debug command
 
-		this._register(this._webview.onMessage(e => {
-			this.fireEvent({
-				eventType: ComponentEventType.onMessage,
-				args: e
-			});
-		}));
-		this.setHtml();
+					subscription.dispose();
+					resolve();
+				}
+			}));
+		});
+
+		this._ready.then(() => {
+			this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
+
+			this._register(this._webview.onMessage(e => {
+				this.fireEvent({
+					eventType: ComponentEventType.onMessage,
+					args: e
+				});
+			}));
+
+			for (const message of this.pendingMessages) {
+				this._webview.sendMessage(message);
+			}
+			this.pendingMessages = [];
+
+			this.setHtml();
+
+			this.isReady = true;
+		});
+
+
+
+		//this.setHtml();
 	}
 
 	ngOnDestroy(): void {
+		this.pendingMessages = [];
 		this.baseDestroy();
 	}
 
@@ -100,8 +134,12 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	private sendMessage(): void {
-		if (this._webview && this.message) {
-			this._webview.sendMessage(this.message);
+		if (this.message) {
+			if (this._webview) {
+				this._webview.sendMessage(this.message);
+			} else {
+				this.pendingMessages.push(this.message);
+			}
 		}
 	}
 
@@ -125,9 +163,17 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	/// IComponent implementation
 
 	public layout(): void {
-		let element = <HTMLElement>this._el.nativeElement;
-		element.style.position = this.position;
-		this._webview.layout();
+		if (this.isReady) {
+			let element = <HTMLElement>this._el.nativeElement;
+			element.style.position = this.position;
+			this._webview.layout();
+		} else {
+			this._ready.then(() => {
+				let element = <HTMLElement>this._el.nativeElement;
+				element.style.position = this.position;
+				this._webview.layout();
+			});
+		}
 	}
 
 	public setLayout(layout: any): void {
@@ -136,17 +182,34 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
-		super.setProperties(properties);
-		if (this.options) {
-			this._webview.options = this.getExtendedOptions();
+		if (this.isReady) {
+			super.setProperties(properties);
+			if (this.options) {
+				this._webview.options = this.getExtendedOptions();
+			}
+			if (this.html !== this._renderedHtml) {
+				this.setHtml();
+			}
+			if (this.extensionLocation) {
+				this._extensionLocationUri = URI.revive(this.extensionLocation);
+			}
+			this.sendMessage();
+
+		} else {
+			this._ready.then(() => {
+				super.setProperties(properties);
+				if (this.options) {
+					this._webview.options = this.getExtendedOptions();
+				}
+				if (this.html !== this._renderedHtml) {
+					this.setHtml();
+				}
+				if (this.extensionLocation) {
+					this._extensionLocationUri = URI.revive(this.extensionLocation);
+				}
+				this.sendMessage();
+			});
 		}
-		if (this.html !== this._renderedHtml) {
-			this.setHtml();
-		}
-		if (this.extensionLocation) {
-			this._extensionLocationUri = URI.revive(this.extensionLocation);
-		}
-		this.sendMessage();
 
 	}
 
