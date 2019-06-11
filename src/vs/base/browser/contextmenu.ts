@@ -24,7 +24,7 @@ export class ContextSubMenu extends SubmenuAction {
 
 export interface IContextMenuDelegate {
 	getAnchor(): HTMLElement | { x: number; y: number; width?: number; height?: number; };
-	getActions(): ReadonlyArray<IAction | ContextSubMenu>;
+	getActions(): Array<IAction | ContextSubMenu>;
 	getActionViewItem?(action: IAction): IActionViewItem | undefined;
 	getActionsContext?(event?: IContextMenuEvent): any;
 	getKeyBinding?(action: IAction): ResolvedKeybinding | undefined;

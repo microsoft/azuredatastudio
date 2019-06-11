@@ -384,14 +384,14 @@ export class BreadcrumbsControl {
 				this._breadcrumbsPickerShowing = true;
 				this._updateCkBreadcrumbsActive();
 
-				return combinedDisposable(
+				return combinedDisposable([
 					picker,
 					selectListener,
 					focusListener,
 					zoomListener,
 					focusTracker,
 					blurListener
-				);
+				]);
 			},
 			getAnchor: () => {
 				let maxInnerWidth = window.innerWidth - 8 /*a little less the full widget*/;
@@ -494,17 +494,17 @@ MenuRegistry.appendMenuItem(MenuId.CommandPalette, {
 		category: localize('cmd.category', "View")
 	}
 });
-/* {{SQL CARBON EDIT}} - Disable unused menu item
-MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
-	group: '5_editor',
-	order: 3,
-	command: {
-		id: 'breadcrumbs.toggle',
-		title: localize('miShowBreadcrumbs', "Show &&Breadcrumbs"),
-		toggled: ContextKeyExpr.equals('config.breadcrumbs.enabled', true)
-	}
-});
-*/
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+// 	group: '5_editor',
+// 	order: 99,
+// 	command: {
+// 		id: 'breadcrumbs.toggle',
+// 		title: localize('miToggleBreadcrumbs', "Toggle &&Breadcrumbs"),
+// 		toggled: ContextKeyExpr.equals('config.breadcrumbs.enabled', true)
+// 	}
+// });
+// {{SQL CARBON EDIT}} - End
 CommandsRegistry.registerCommand('breadcrumbs.toggle', accessor => {
 	let config = accessor.get(IConfigurationService);
 	let value = BreadcrumbsConfig.IsEnabled.bindTo(config).getValue();

@@ -5,7 +5,6 @@
 
 import * as path from 'vs/base/common/path';
 import * as fs from 'fs';
-import { promisify } from 'util';
 import * as cp from 'child_process';
 import * as nls from 'vs/nls';
 import * as Types from 'vs/base/common/types';
@@ -405,7 +404,7 @@ export function createQueuedSender(childProcess: cp.ChildProcess): IQueuedSender
 }
 
 export namespace win32 {
-	export async function findExecutable(command: string, cwd?: string, paths?: string[]): Promise<string> {
+	export function findExecutable(command: string, cwd?: string, paths?: string[]): string {
 		// If we have an absolute path then we take it.
 		if (path.isAbsolute(command)) {
 			return command;
@@ -436,15 +435,15 @@ export namespace win32 {
 			} else {
 				fullPath = path.join(cwd, pathEntry, command);
 			}
-			if (await promisify(fs.exists)(fullPath)) {
+			if (fs.existsSync(fullPath)) {
 				return fullPath;
 			}
 			let withExtension = fullPath + '.com';
-			if (await promisify(fs.exists)(withExtension)) {
+			if (fs.existsSync(withExtension)) {
 				return withExtension;
 			}
 			withExtension = fullPath + '.exe';
-			if (await promisify(fs.exists)(withExtension)) {
+			if (fs.existsSync(withExtension)) {
 				return withExtension;
 			}
 		}

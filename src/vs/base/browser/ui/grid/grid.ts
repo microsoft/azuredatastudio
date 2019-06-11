@@ -5,7 +5,7 @@
 
 import 'vs/css!./gridview';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { tail2 as tail, equals } from 'vs/base/common/arrays';
 import { orthogonal, IView, GridView, Sizing as GridViewSizing, Box, IGridViewStyles } from './gridview';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -191,10 +191,12 @@ export interface IGridOptions {
 	proportionalLayout?: boolean;
 }
 
-export class Grid<T extends IView> extends Disposable {
+export class Grid<T extends IView> implements IDisposable {
 
 	protected gridview: GridView;
 	private views = new Map<T, HTMLElement>();
+	private disposables: IDisposable[] = [];
+
 	get orientation(): Orientation { return this.gridview.orientation; }
 	set orientation(orientation: Orientation) { this.gridview.orientation = orientation; }
 
@@ -212,11 +214,10 @@ export class Grid<T extends IView> extends Disposable {
 	sashResetSizing: Sizing = Sizing.Distribute;
 
 	constructor(view: T, options: IGridOptions = {}) {
-		super();
 		this.gridview = new GridView(options);
-		this._register(this.gridview);
+		this.disposables.push(this.gridview);
 
-		this._register(this.gridview.onDidSashReset(this.doResetViewSize, this));
+		this.gridview.onDidSashReset(this.doResetViewSize, this, this.disposables);
 
 		this._addView(view, 0, [0]);
 	}
@@ -373,6 +374,10 @@ export class Grid<T extends IView> extends Disposable {
 			const [parentLocation,] = tail(location);
 			this.gridview.distributeViewSizes(parentLocation);
 		}
+	}
+
+	dispose(): void {
+		this.disposables = dispose(this.disposables);
 	}
 }
 

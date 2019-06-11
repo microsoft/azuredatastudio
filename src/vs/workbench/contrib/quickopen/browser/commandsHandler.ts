@@ -30,7 +30,7 @@ import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { timeout } from 'vs/base/common/async';
 
 export const ALL_COMMANDS_PREFIX = '>';
@@ -294,7 +294,7 @@ abstract class BaseCommandEntry extends QuickOpenEntryGroup {
 		this.onBeforeRun(this.commandId);
 
 		// Use a timeout to give the quick open widget a chance to close itself first
-		setTimeout(async () => {
+		setTimeout(() => {
 			if (action && (!(action instanceof Action) || action.enabled)) {
 				try {
 					/* __GDPR__
@@ -304,17 +304,11 @@ abstract class BaseCommandEntry extends QuickOpenEntryGroup {
 						}
 					*/
 					this.telemetryService.publicLog('workbenchActionExecuted', { id: action.id, from: 'quick open' });
-
-					const promise = action.run();
-					if (promise) {
-						try {
-							await promise;
-						} finally {
-							if (action instanceof Action) {
-								action.dispose();
-							}
+					(action.run() || Promise.resolve()).then(() => {
+						if (action instanceof Action) {
+							action.dispose();
 						}
-					}
+					}, err => this.onError(err));
 				} catch (error) {
 					this.onError(error);
 				}
@@ -377,14 +371,12 @@ class ActionCommandEntry extends BaseCommandEntry {
 
 const wordFilter = or(matchesPrefix, matchesWords, matchesContiguousSubString);
 
-export class CommandsHandler extends QuickOpenHandler implements IDisposable {
+export class CommandsHandler extends QuickOpenHandler {
 
 	static readonly ID = 'workbench.picker.commands';
 
 	private commandHistoryEnabled: boolean;
-	private readonly commandsHistory: CommandsHistory;
-
-	private readonly disposables = new DisposableStore();
+	private commandsHistory: CommandsHistory;
 
 	private waitedForExtensionsRegistered: boolean;
 
@@ -398,7 +390,7 @@ export class CommandsHandler extends QuickOpenHandler implements IDisposable {
 	) {
 		super();
 
-		this.commandsHistory = this.disposables.add(this.instantiationService.createInstance(CommandsHistory));
+		this.commandsHistory = this.instantiationService.createInstance(CommandsHistory);
 
 		this.extensionService.whenInstalledExtensionsRegistered().then(() => this.waitedForExtensionsRegistered = true);
 
@@ -410,7 +402,7 @@ export class CommandsHandler extends QuickOpenHandler implements IDisposable {
 		this.commandHistoryEnabled = resolveCommandHistory(this.configurationService) > 0;
 	}
 
-	async getResults(searchValue: string, token: CancellationToken): Promise<QuickOpenModel> {
+	getResults(searchValue: string, token: CancellationToken): Promise<QuickOpenModel> {
 		if (this.waitedForExtensionsRegistered) {
 			return this.doGetResults(searchValue, token);
 		}
@@ -419,10 +411,11 @@ export class CommandsHandler extends QuickOpenHandler implements IDisposable {
 		// a chance to register so that the complete set of commands shows up as result
 		// We do not want to delay functionality beyond that time though to keep the commands
 		// functional.
-		await Promise.race([timeout(800).then(), this.extensionService.whenInstalledExtensionsRegistered()]);
-		this.waitedForExtensionsRegistered = true;
+		return Promise.race([timeout(800), this.extensionService.whenInstalledExtensionsRegistered().then(() => undefined)]).then(() => {
+			this.waitedForExtensionsRegistered = true;
 
-		return this.doGetResults(searchValue, token);
+			return this.doGetResults(searchValue, token);
+		});
 	}
 
 	private doGetResults(searchValue: string, token: CancellationToken): Promise<QuickOpenModel> {
@@ -589,10 +582,6 @@ export class CommandsHandler extends QuickOpenHandler implements IDisposable {
 
 	getEmptyLabel(searchString: string): string {
 		return nls.localize('noCommandsMatching', "No commands matching");
-	}
-
-	dispose() {
-		this.disposables.dispose();
 	}
 }
 

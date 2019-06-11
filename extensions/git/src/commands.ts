@@ -56,13 +56,7 @@ class CheckoutRemoteHeadItem extends CheckoutItem {
 			return;
 		}
 
-		const branches = await repository.findTrackingBranches(this.ref.name);
-
-		if (branches.length > 0) {
-			await repository.checkout(branches[0].name!);
-		} else {
-			await repository.checkoutTracking(this.ref.name);
-		}
+		await repository.checkoutTracking(this.ref.name);
 	}
 }
 

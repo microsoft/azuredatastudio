@@ -33,14 +33,14 @@ export class ToggleRenderControlCharacterAction extends Action {
 const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleRenderControlCharacterAction, ToggleRenderControlCharacterAction.ID, ToggleRenderControlCharacterAction.LABEL), 'View: Toggle Control Characters');
 
-/* {{SQL CARBON EDIT}} - Disable unused menu item
-MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
-	group: '5_editor',
-	command: {
-		id: ToggleRenderControlCharacterAction.ID,
-		title: nls.localize({ key: 'miToggleRenderControlCharacters', comment: ['&& denotes a mnemonic'] }, "Render &&Control Characters"),
-		toggled: ContextKeyExpr.equals('config.editor.renderControlCharacters', true)
-	},
-	order: 5
-});
-*/
+// {{SQL CARBON EDIT}} - Disable unused menu item
+// MenuRegistry.appendMenuItem(MenuId.MenubarViewMenu, {
+// 	group: '5_editor',
+// 	command: {
+// 		id: ToggleRenderControlCharacterAction.ID,
+// 		title: nls.localize({ key: 'miToggleRenderControlCharacters', comment: ['&& denotes a mnemonic'] }, "Toggle &&Control Characters"),
+// 		toggled: ContextKeyExpr.equals('config.editor.renderControlCharacters', true)
+// 	},
+// 	order: 4
+// });
+// {{SQL CARBON EDIT}} - End

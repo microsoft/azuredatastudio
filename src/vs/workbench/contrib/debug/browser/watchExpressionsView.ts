@@ -76,16 +76,16 @@ export class WatchExpressionsView extends ViewletPanel {
 		const removeAllWatchExpressionsAction = new RemoveAllWatchExpressionsAction(RemoveAllWatchExpressionsAction.ID, RemoveAllWatchExpressionsAction.LABEL, this.debugService, this.keybindingService);
 		this.toolbar.setActions([addWatchExpressionAction, collapseAction, removeAllWatchExpressionsAction])();
 
-		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
-		this._register(this.tree.onMouseDblClick(e => this.onMouseDblClick(e)));
-		this._register(this.debugService.getModel().onDidChangeWatchExpressions(we => {
+		this.disposables.push(this.tree.onContextMenu(e => this.onContextMenu(e)));
+		this.disposables.push(this.tree.onMouseDblClick(e => this.onMouseDblClick(e)));
+		this.disposables.push(this.debugService.getModel().onDidChangeWatchExpressions(we => {
 			if (!this.isBodyVisible()) {
 				this.needsRefresh = true;
 			} else {
 				this.tree.updateChildren();
 			}
 		}));
-		this._register(this.debugService.getViewModel().onDidFocusStackFrame(() => {
+		this.disposables.push(this.debugService.getViewModel().onDidFocusStackFrame(() => {
 			if (!this.isBodyVisible()) {
 				this.needsRefresh = true;
 				return;
@@ -95,14 +95,14 @@ export class WatchExpressionsView extends ViewletPanel {
 				this.onWatchExpressionsUpdatedScheduler.schedule();
 			}
 		}));
-		this._register(variableSetEmitter.event(() => this.tree.updateChildren()));
+		this.disposables.push(variableSetEmitter.event(() => this.tree.updateChildren()));
 
-		this._register(this.onDidChangeBodyVisibility(visible => {
+		this.disposables.push(this.onDidChangeBodyVisibility(visible => {
 			if (visible && this.needsRefresh) {
 				this.onWatchExpressionsUpdatedScheduler.schedule();
 			}
 		}));
-		this._register(this.debugService.getViewModel().onDidSelectExpression(e => {
+		this.disposables.push(this.debugService.getViewModel().onDidSelectExpression(e => {
 			if (e instanceof Expression && e.name) {
 				this.tree.rerender(e);
 			}

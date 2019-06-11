@@ -192,12 +192,12 @@ export interface IContextMenuProvider {
 }
 
 export interface IActionProvider {
-	getActions(): ReadonlyArray<IAction>;
+	getActions(): IAction[];
 }
 
 export interface IDropdownMenuOptions extends IBaseDropdownOptions {
 	contextMenuProvider: IContextMenuProvider;
-	actions?: ReadonlyArray<IAction>;
+	actions?: IAction[];
 	actionProvider?: IActionProvider;
 	menuClassName?: string;
 }
@@ -205,7 +205,7 @@ export interface IDropdownMenuOptions extends IBaseDropdownOptions {
 export class DropdownMenu extends BaseDropdown {
 	private _contextMenuProvider: IContextMenuProvider;
 	private _menuOptions: IMenuOptions;
-	private _actions: ReadonlyArray<IAction>;
+	private _actions: IAction[];
 	private actionProvider?: IActionProvider;
 	private menuClassName: string;
 
@@ -226,7 +226,7 @@ export class DropdownMenu extends BaseDropdown {
 		return this._menuOptions;
 	}
 
-	private get actions(): ReadonlyArray<IAction> {
+	private get actions(): IAction[] {
 		if (this.actionProvider) {
 			return this.actionProvider.getActions();
 		}
@@ -234,7 +234,7 @@ export class DropdownMenu extends BaseDropdown {
 		return this._actions;
 	}
 
-	private set actions(actions: ReadonlyArray<IAction>) {
+	private set actions(actions: IAction[]) {
 		this._actions = actions;
 	}
 
@@ -275,7 +275,7 @@ export class DropdownMenuActionViewItem extends BaseActionViewItem {
 	private clazz: string | undefined;
 	private anchorAlignmentProvider: (() => AnchorAlignment) | undefined;
 
-	constructor(action: IAction, menuActions: ReadonlyArray<IAction>, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
+	constructor(action: IAction, menuActions: IAction[], contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
 	constructor(action: IAction, actionProvider: IActionProvider, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment);
 	constructor(action: IAction, menuActionsOrProvider: any, contextMenuProvider: IContextMenuProvider, actionViewItemProvider: IActionViewItemProvider | undefined, actionRunner: IActionRunner, keybindings: ((action: IAction) => ResolvedKeybinding | undefined) | undefined, clazz: string | undefined, anchorAlignmentProvider?: () => AnchorAlignment) {
 		super(null, action);

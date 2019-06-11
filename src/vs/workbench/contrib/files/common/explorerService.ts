@@ -147,7 +147,7 @@ export class ExplorerService implements IExplorerService {
 		return !!this.editable && (this.editable.stat === stat || !stat);
 	}
 
-	async select(resource: URI, reveal?: boolean): Promise<void> {
+	select(resource: URI, reveal?: boolean): Promise<void> {
 		const fileStat = this.findClosest(resource);
 		if (fileStat) {
 			this._onDidSelectResource.fire({ resource: fileStat.resource, reveal });
@@ -159,9 +159,7 @@ export class ExplorerService implements IExplorerService {
 		const workspaceFolder = this.contextService.getWorkspaceFolder(resource);
 		const rootUri = workspaceFolder ? workspaceFolder.uri : this.roots[0].resource;
 		const root = this.roots.filter(r => r.resource.toString() === rootUri.toString()).pop()!;
-
-		try {
-			const stat = await this.fileService.resolve(rootUri, options);
+		return this.fileService.resolve(rootUri, options).then(stat => {
 
 			// Convert to model
 			const modelStat = ExplorerItem.create(stat, undefined, options.resolveTo);
@@ -172,19 +170,17 @@ export class ExplorerService implements IExplorerService {
 
 			// Select and Reveal
 			this._onDidSelectResource.fire({ resource: item ? item.resource : undefined, reveal });
-		} catch (error) {
+		}, () => {
 			root.isError = true;
 			this._onDidChangeItem.fire({ item: root, recursive: false });
-		}
+		});
 	}
 
 	refresh(): void {
 		this.model.roots.forEach(r => r.forgetChildren());
 		this._onDidChangeItem.fire({ recursive: true });
 		const resource = this.editorService.activeEditor ? this.editorService.activeEditor.getResource() : undefined;
-		const autoReveal = this.configurationService.getValue<IFilesConfiguration>().explorer.autoReveal;
-
-		if (resource && autoReveal) {
+		if (resource) {
 			// We did a top level refresh, reveal the active file #67118
 			this.select(resource, true);
 		}
@@ -285,7 +281,7 @@ export class ExplorerService implements IExplorerService {
 				if (added.length) {
 
 					// Check added: Refresh if added file/folder is not part of resolved root and parent is part of it
-					const ignoredPaths: Set<string> = new Set();
+					const ignoredPaths: { [resource: string]: boolean } = <{ [resource: string]: boolean }>{};
 					for (let i = 0; i < added.length; i++) {
 						const change = added[i];
 
@@ -293,7 +289,7 @@ export class ExplorerService implements IExplorerService {
 						const parent = dirname(change.resource);
 
 						// Continue if parent was already determined as to be ignored
-						if (ignoredPaths.has(parent.toString())) {
+						if (ignoredPaths[parent.toString()]) {
 							continue;
 						}
 
@@ -305,7 +301,7 @@ export class ExplorerService implements IExplorerService {
 
 						// Keep track of path that can be ignored for faster lookup
 						if (!parentStat || !parentStat.isDirectoryResolved) {
-							ignoredPaths.add(parent.toString());
+							ignoredPaths[parent.toString()] = true;
 						}
 					}
 				}

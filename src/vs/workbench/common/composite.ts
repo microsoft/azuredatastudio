@@ -20,17 +20,17 @@ export interface IComposite {
 	/**
 	 * Returns the primary actions of the composite.
 	 */
-	getActions(): ReadonlyArray<IAction>;
+	getActions(): IAction[];
 
 	/**
 	 * Returns the secondary actions of the composite.
 	 */
-	getSecondaryActions(): ReadonlyArray<IAction>;
+	getSecondaryActions(): IAction[];
 
 	/**
 	 * Returns an array of actions to show in the context menu of the composite
 	 */
-	getContextMenuActions(): ReadonlyArray<IAction>;
+	getContextMenuActions(): IAction[];
 
 	/**
 	 * Returns the action item for a specific action.

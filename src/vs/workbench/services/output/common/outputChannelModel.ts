@@ -51,10 +51,10 @@ export abstract class AsbtractOutputChannelModelService {
 
 export abstract class AbstractFileOutputChannelModel extends Disposable implements IOutputChannelModel {
 
-	protected readonly _onDidAppendedContent = this._register(new Emitter<void>());
+	protected _onDidAppendedContent = new Emitter<void>();
 	readonly onDidAppendedContent: Event<void> = this._onDidAppendedContent.event;
 
-	protected readonly _onDispose = this._register(new Emitter<void>());
+	protected _onDispose = new Emitter<void>();
 	readonly onDispose: Event<void> = this._onDispose.event;
 
 	protected modelUpdater: RunOnceScheduler;
@@ -96,11 +96,12 @@ export abstract class AbstractFileOutputChannelModel extends Disposable implemen
 		} else {
 			this.model = this.modelService.createModel(content, this.modeService.create(this.mimeType), this.modelUri);
 			this.onModelCreated(this.model);
-			const disposable = this.model.onWillDispose(() => {
+			const disposables: IDisposable[] = [];
+			disposables.push(this.model.onWillDispose(() => {
 				this.onModelWillDispose(this.model);
 				this.model = null;
-				dispose(disposable);
-			});
+				dispose(disposables);
+			}));
 		}
 		return this.model;
 	}
@@ -339,10 +340,11 @@ export class BufferredOutputChannel extends Disposable implements IOutputChannel
 
 	private createModel(content: string): ITextModel {
 		const model = this.modelService.createModel(content, this.modeService.create(this.mimeType), this.modelUri);
-		const disposable = model.onWillDispose(() => {
+		const disposables: IDisposable[] = [];
+		disposables.push(model.onWillDispose(() => {
 			this.model = null;
-			dispose(disposable);
-		});
+			dispose(disposables);
+		}));
 		return model;
 	}
 

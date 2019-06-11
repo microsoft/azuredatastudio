@@ -118,7 +118,7 @@ export class FileIconThemeData implements IFileIconTheme {
 					case 'hidesExplorerArrows':
 					case 'hasFolderIcons':
 					case 'watch':
-						(theme as any)[key] = data[key];
+						theme[key] = data[key];
 						break;
 					case 'location':
 						theme.location = URI.revive(data.location);

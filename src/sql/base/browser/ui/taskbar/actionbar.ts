@@ -43,12 +43,13 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 		super();
 		this._options = options;
 		this._context = options.context;
+		this._toDispose = [];
 
 		if (this._options.actionRunner) {
 			this._actionRunner = this._options.actionRunner;
 		} else {
 			this._actionRunner = new ActionRunner();
-			this._register(this._actionRunner);
+			this._toDispose.push(this._actionRunner);
 		}
 
 		//this._toDispose.push(this.addEmitter(this._actionRunner));
@@ -363,6 +364,8 @@ export class ActionBar extends ActionRunner implements IActionRunner {
 	public dispose(): void {
 		lifecycle.dispose(this._items);
 		this._items = [];
+
+		this._toDispose = lifecycle.dispose(this._toDispose);
 
 		this._domNode.remove();
 

@@ -31,7 +31,6 @@ suite('ExtHostTypes', function () {
 			scheme: 'file',
 			path: '/path/test.file',
 			fsPath: '/path/test.file'.replace(/\//g, isWindows ? '\\' : '/'),
-			_sep: isWindows ? 1 : undefined,
 		});
 
 		assert.ok(uri.toString());
@@ -40,7 +39,6 @@ suite('ExtHostTypes', function () {
 			scheme: 'file',
 			path: '/path/test.file',
 			fsPath: '/path/test.file'.replace(/\//g, isWindows ? '\\' : '/'),
-			_sep: isWindows ? 1 : undefined,
 			external: 'file:///path/test.file'
 		});
 	});

@@ -144,7 +144,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 	}
 
-	private async onFileChanges(e: FileChangesEvent): Promise<void> {
+	private onFileChanges(e: FileChangesEvent): void {
 		let fileEventImpactsModel = false;
 		let newInOrphanModeGuess: boolean | undefined;
 
@@ -167,25 +167,28 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 
 		if (fileEventImpactsModel && this.inOrphanMode !== newInOrphanModeGuess) {
-			let newInOrphanModeValidated: boolean = false;
+			let checkOrphanedPromise: Promise<boolean>;
 			if (newInOrphanModeGuess) {
 				// We have received reports of users seeing delete events even though the file still
 				// exists (network shares issue: https://github.com/Microsoft/vscode/issues/13665).
 				// Since we do not want to mark the model as orphaned, we have to check if the
 				// file is really gone and not just a faulty file event.
-				await timeout(100);
+				checkOrphanedPromise = timeout(100).then(() => {
+					if (this.disposed) {
+						return true;
+					}
 
-				if (this.disposed) {
-					newInOrphanModeValidated = true;
-				} else {
-					const exists = await this.fileService.exists(this.resource);
-					newInOrphanModeValidated = !exists;
+					return this.fileService.exists(this.resource).then(exists => !exists);
+				});
+			} else {
+				checkOrphanedPromise = Promise.resolve(false);
+			}
+
+			checkOrphanedPromise.then(newInOrphanModeValidated => {
+				if (this.inOrphanMode !== newInOrphanModeValidated && !this.disposed) {
+					this.setOrphaned(newInOrphanModeValidated);
 				}
-			}
-
-			if (this.inOrphanMode !== newInOrphanModeValidated && !this.disposed) {
-				this.setOrphaned(newInOrphanModeValidated);
-			}
+			});
 		}
 	}
 
@@ -236,11 +239,13 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 			return this.backupFileService.backupResource<IBackupMetaData>(target, this.createSnapshot(), this.versionId, meta);
 		}
+
+		return Promise.resolve();
 	}
 
 	async revert(soft?: boolean): Promise<void> {
 		if (!this.isResolved()) {
-			return;
+			return Promise.resolve(undefined);
 		}
 
 		// Cancel any running auto-save
@@ -249,21 +254,25 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		// Unset flags
 		const undo = this.setDirty(false);
 
-		// Force read from disk unless reverting soft
-		if (!soft) {
-			try {
-				await this.load({ forceReadFromDisk: true });
-			} catch (error) {
-
-				// Set flags back to previous values, we are still dirty if revert failed
-				undo();
-
-				throw error;
-			}
+		let loadPromise: Promise<unknown>;
+		if (soft) {
+			loadPromise = Promise.resolve();
+		} else {
+			loadPromise = this.load({ forceReadFromDisk: true });
 		}
 
-		// Emit file change event
-		this._onDidStateChange.fire(StateChange.REVERTED);
+		try {
+			await loadPromise;
+
+			// Emit file change event
+			this._onDidStateChange.fire(StateChange.REVERTED);
+		} catch (error) {
+
+			// Set flags back to previous values, we are still dirty if revert failed
+			undo();
+
+			return Promise.reject(error);
+		}
 	}
 
 	async load(options?: ILoadOptions): Promise<ITextFileEditorModel> {
@@ -591,7 +600,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 
 	save(options: ISaveOptions = Object.create(null)): Promise<void> {
 		if (!this.isResolved()) {
-			return Promise.resolve();
+			return Promise.resolve(undefined);
 		}
 
 		this.logService.trace('save() - enter', this.resource);
@@ -617,7 +626,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		if (this.saveSequentializer.hasPendingSave(versionId)) {
 			this.logService.trace(`doSave(${versionId}) - exit - found a pending save for versionId ${versionId}`, this.resource);
 
-			return this.saveSequentializer.pendingSave || Promise.resolve();
+			return this.saveSequentializer.pendingSave || Promise.resolve(undefined);
 		}
 
 		// Return early if not dirty (unless forced) or version changed meanwhile
@@ -630,7 +639,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		if ((!options.force && !this.dirty) || versionId !== this.versionId) {
 			this.logService.trace(`doSave(${versionId}) - exit - because not dirty and/or versionId is different (this.isDirty: ${this.dirty}, this.versionId: ${this.versionId})`, this.resource);
 
-			return Promise.resolve();
+			return Promise.resolve(undefined);
 		}
 
 		// Return if currently saving by storing this save request as the next save that should happen.
@@ -783,7 +792,7 @@ export class TextFileEditorModel extends BaseTextEditorModel implements ITextFil
 		}
 
 		// Check for global settings file
-		if (isEqual(this.resource, this.environmentService.settingsResource, !isLinux)) {
+		if (isEqual(this.resource, URI.file(this.environmentService.appSettingsPath), !isLinux)) {
 			return 'global-settings';
 		}
 

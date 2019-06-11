@@ -117,6 +117,7 @@ export class OpenFileHandler extends QuickOpenHandler {
 	private cacheState: CacheState;
 
 	constructor(
+		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
@@ -207,7 +208,7 @@ export class OpenFileHandler extends QuickOpenHandler {
 	private doResolveQueryOptions(query: IPreparedQuery, cacheKey?: string, maxSortedResults?: number): IFileQueryBuilderOptions {
 		const queryOptions: IFileQueryBuilderOptions = {
 			_reason: 'openFileHandler',
-			extraFileResources: this.instantiationService.invokeFunction(getOutOfWorkspaceEditorResources),
+			extraFileResources: getOutOfWorkspaceEditorResources(this.editorService, this.contextService),
 			filePattern: query.original,
 			cacheKey
 		};
@@ -232,7 +233,7 @@ export class OpenFileHandler extends QuickOpenHandler {
 	private cacheQuery(cacheKey: string): IFileQuery {
 		const options: IFileQueryBuilderOptions = {
 			_reason: 'openFileHandler',
-			extraFileResources: this.instantiationService.invokeFunction(getOutOfWorkspaceEditorResources),
+			extraFileResources: getOutOfWorkspaceEditorResources(this.editorService, this.contextService),
 			filePattern: '',
 			cacheKey: cacheKey,
 			maxResults: 0,

@@ -457,8 +457,8 @@ async function readCaCertificates() {
 	return undefined;
 }
 
-async function readWindowsCaCertificates() {
-	const winCA = await import('vscode-windows-ca-certs');
+function readWindowsCaCertificates() {
+	const winCA = require.__$__nodeRequire<any>('vscode-windows-ca-certs');
 
 	let ders: any[] = [];
 	const store = winCA();
@@ -481,14 +481,7 @@ async function readWindowsCaCertificates() {
 }
 
 async function readMacCaCertificates() {
-	const stdout = await new Promise<string>((resolve, reject) => {
-		const child = cp.spawn('/usr/bin/security', ['find-certificate', '-a', '-p']);
-		const stdout: string[] = [];
-		child.stdout.setEncoding('utf8');
-		child.stdout.on('data', str => stdout.push(str));
-		child.on('error', reject);
-		child.on('exit', code => code ? reject(code) : resolve(stdout.join('')));
-	});
+	const stdout = (await promisify(cp.execFile)('/usr/bin/security', ['find-certificate', '-a', '-p'], { encoding: 'utf8', maxBuffer: 1024 * 1024 })).stdout;
 	const seen = {};
 	const certs = stdout.split(/(?=-----BEGIN CERTIFICATE-----)/g)
 		.filter(pem => !!pem.length && !seen[pem] && (seen[pem] = true));

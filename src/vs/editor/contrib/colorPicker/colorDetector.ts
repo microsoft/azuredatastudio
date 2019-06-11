@@ -7,7 +7,7 @@ import { CancelablePromise, TimeoutTimer, createCancelablePromise } from 'vs/bas
 import { RGBA } from 'vs/base/common/color';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { hash } from 'vs/base/common/hash';
-import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
@@ -22,13 +22,14 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 
 const MAX_DECORATORS = 500;
 
-export class ColorDetector extends Disposable implements IEditorContribution {
+export class ColorDetector implements IEditorContribution {
 
 	private static readonly ID: string = 'editor.contrib.colorDetector';
 
 	static RECOMPUTE_TIME = 1000; // ms
 
-	private readonly _localToDispose = this._register(new DisposableStore());
+	private _globalToDispose: IDisposable[] = [];
+	private _localToDispose: IDisposable[] = [];
 	private _computePromise: CancelablePromise<IColorData[]> | null;
 	private _timeoutTimer: TimeoutTimer | null;
 
@@ -44,14 +45,13 @@ export class ColorDetector extends Disposable implements IEditorContribution {
 		@ICodeEditorService private readonly _codeEditorService: ICodeEditorService,
 		@IConfigurationService private readonly _configurationService: IConfigurationService
 	) {
-		super();
-		this._register(_editor.onDidChangeModel((e) => {
+		this._globalToDispose.push(_editor.onDidChangeModel((e) => {
 			this._isEnabled = this.isEnabled();
 			this.onModelChanged();
 		}));
-		this._register(_editor.onDidChangeModelLanguage((e) => this.onModelChanged()));
-		this._register(ColorProviderRegistry.onDidChange((e) => this.onModelChanged()));
-		this._register(_editor.onDidChangeConfiguration((e) => {
+		this._globalToDispose.push(_editor.onDidChangeModelLanguage((e) => this.onModelChanged()));
+		this._globalToDispose.push(ColorProviderRegistry.onDidChange((e) => this.onModelChanged()));
+		this._globalToDispose.push(_editor.onDidChangeConfiguration((e) => {
 			let prevIsEnabled = this._isEnabled;
 			this._isEnabled = this.isEnabled();
 			if (prevIsEnabled !== this._isEnabled) {
@@ -98,7 +98,7 @@ export class ColorDetector extends Disposable implements IEditorContribution {
 	dispose(): void {
 		this.stop();
 		this.removeAllDecorations();
-		super.dispose();
+		this._globalToDispose = dispose(this._globalToDispose);
 	}
 
 	private onModelChanged(): void {
@@ -113,7 +113,7 @@ export class ColorDetector extends Disposable implements IEditorContribution {
 			return;
 		}
 
-		this._localToDispose.add(this._editor.onDidChangeModelContent((e) => {
+		this._localToDispose.push(this._editor.onDidChangeModelContent((e) => {
 			if (!this._timeoutTimer) {
 				this._timeoutTimer = new TimeoutTimer();
 				this._timeoutTimer.cancelAndSet(() => {
@@ -149,7 +149,7 @@ export class ColorDetector extends Disposable implements IEditorContribution {
 			this._computePromise.cancel();
 			this._computePromise = null;
 		}
-		this._localToDispose.clear();
+		this._localToDispose = dispose(this._localToDispose);
 	}
 
 	private updateDecorations(colorDatas: IColorData[]): void {

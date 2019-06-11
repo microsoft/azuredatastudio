@@ -84,8 +84,7 @@ export interface IExtensionHostProfile {
 }
 
 export interface IExtensionHostStarter {
-	readonly onExit: Event<[number, string | null]>;
-
+	readonly onCrashed: Event<[number, string | null]>;
 	start(): Promise<IMessagePassingProtocol> | null;
 	getInspectPort(): number | undefined;
 	dispose(): void;

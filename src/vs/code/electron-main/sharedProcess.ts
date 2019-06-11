@@ -11,7 +11,8 @@ import { ISharedProcess } from 'vs/platform/windows/electron-main/windows';
 import { Barrier } from 'vs/base/common/async';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ILifecycleService } from 'vs/platform/lifecycle/electron-main/lifecycleMain';
-import { IThemeMainService } from 'vs/platform/theme/electron-main/themeMainService';
+import { IStateService } from 'vs/platform/state/common/state';
+import { getBackgroundColor } from 'vs/code/electron-main/theme';
 import { dispose, toDisposable, IDisposable } from 'vs/base/common/lifecycle';
 
 export class SharedProcess implements ISharedProcess {
@@ -25,15 +26,15 @@ export class SharedProcess implements ISharedProcess {
 		private userEnv: NodeJS.ProcessEnv,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@ILifecycleService private readonly lifecycleService: ILifecycleService,
-		@ILogService private readonly logService: ILogService,
-		@IThemeMainService private readonly themeMainService: IThemeMainService
+		@IStateService private readonly stateService: IStateService,
+		@ILogService private readonly logService: ILogService
 	) { }
 
 	@memoize
 	private get _whenReady(): Promise<void> {
 		this.window = new BrowserWindow({
 			show: false,
-			backgroundColor: this.themeMainService.getBackgroundColor(),
+			backgroundColor: getBackgroundColor(this.stateService),
 			webPreferences: {
 				images: false,
 				webaudio: false,

@@ -74,9 +74,9 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 	private lastInputValue: string;
 	private lastSubmittedInputValue: string;
 	private quickOpenWidget: QuickOpenWidget;
-	private mapResolvedHandlersToPrefix: Map<string, Promise<QuickOpenHandler>> = new Map();
-	private mapContextKeyToContext: Map<string, IContextKey<boolean>> = new Map();
-	private handlerOnOpenCalled: Set<string> = new Set();
+	private mapResolvedHandlersToPrefix: { [prefix: string]: Promise<QuickOpenHandler>; } = Object.create(null);
+	private mapContextKeyToContext: { [id: string]: IContextKey<boolean>; } = Object.create(null);
+	private handlerOnOpenCalled: { [prefix: string]: boolean; } = Object.create(null);
 	private promisesToCompleteOnHide: ValueCallback[] = [];
 	private previousActiveHandlerDescriptor: QuickOpenHandlerDescriptor | null;
 	private actionProvider = new ContributableActionProvider();
@@ -258,13 +258,13 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 		this.cancelPendingGetResultsInvocation();
 
 		// Pass to handlers
-		this.mapResolvedHandlersToPrefix.forEach((promise, prefix) => {
-			promise.then(handler => {
-				this.handlerOnOpenCalled.delete(prefix);
+		for (let prefix in this.mapResolvedHandlersToPrefix) {
+			this.mapResolvedHandlersToPrefix[prefix].then(handler => {
+				this.handlerOnOpenCalled[prefix] = false;
 
 				handler.onClose(reason === HideReason.CANCELED); // Don't check if onOpen was called to preserve old behaviour for now
 			});
-		});
+		}
 
 		// Complete promises that are waiting
 		while (this.promisesToCompleteOnHide.length) {
@@ -294,16 +294,16 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 	}
 
 	private resetQuickOpenContextKeys(): void {
-		this.mapContextKeyToContext.forEach(context => context.reset());
+		Object.keys(this.mapContextKeyToContext).forEach(k => this.mapContextKeyToContext[k].reset());
 	}
 
 	private setQuickOpenContextKey(id?: string): void {
 		let key: IContextKey<boolean> | undefined;
 		if (id) {
-			key = this.mapContextKeyToContext.get(id);
+			key = this.mapContextKeyToContext[id];
 			if (!key) {
 				key = new RawContextKey<boolean>(id, false).bindTo(this.contextKeyService);
-				this.mapContextKeyToContext.set(id, key);
+				this.mapContextKeyToContext[id] = key;
 			}
 		}
 
@@ -454,16 +454,14 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 		const previousInput = this.quickOpenWidget.getInput();
 		const wasShowingHistory = previousInput && previousInput.entries && previousInput.entries.some(e => e instanceof EditorHistoryEntry || e instanceof EditorHistoryEntryGroup);
 		if (wasShowingHistory || matchingHistoryEntries.length > 0) {
-			(async () => {
-				if (resolvedHandler.hasShortResponseTime()) {
-					await timeout(QuickOpenController.MAX_SHORT_RESPONSE_TIME);
-				}
+			if (resolvedHandler.hasShortResponseTime()) {
+				await timeout(QuickOpenController.MAX_SHORT_RESPONSE_TIME);
+			}
 
-				if (!token.isCancellationRequested && !inputSet) {
-					this.quickOpenWidget.setInput(quickOpenModel, { autoFocusFirstEntry: true });
-					inputSet = true;
-				}
-			})();
+			if (!token.isCancellationRequested && !inputSet) {
+				this.quickOpenWidget.setInput(quickOpenModel, { autoFocusFirstEntry: true });
+				inputSet = true;
+			}
 		}
 
 		// Get results
@@ -525,7 +523,7 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 			const model = new QuickOpenModel([new PlaceholderQuickOpenEntry(placeHolderLabel)], this.actionProvider);
 			this.showModel(model, resolvedHandler.getAutoFocus(value, { model, quickNavigateConfiguration: this.quickOpenWidget.getQuickNavigateConfiguration() }), types.withNullAsUndefined(resolvedHandler.getAriaLabel()));
 
-			return;
+			return Promise.resolve(undefined);
 		}
 
 		// Support extra class from handler
@@ -581,45 +579,38 @@ export class QuickOpenController extends Component implements IQuickOpenService 
 		return mapEntryToPath;
 	}
 
-	private async resolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
-		let result = this.doResolveHandler(handler);
+	private resolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
+		let result = this._resolveHandler(handler);
 
 		const id = handler.getId();
-		if (!this.handlerOnOpenCalled.has(id)) {
+		if (!this.handlerOnOpenCalled[id]) {
 			const original = result;
-			this.handlerOnOpenCalled.add(id);
-			result = original.then(resolved => {
-				this.mapResolvedHandlersToPrefix.set(id, original);
+			this.handlerOnOpenCalled[id] = true;
+			result = this.mapResolvedHandlersToPrefix[id] = original.then(resolved => {
+				this.mapResolvedHandlersToPrefix[id] = original;
 				resolved.onOpen();
 
 				return resolved;
 			});
-
-			this.mapResolvedHandlersToPrefix.set(id, result);
 		}
 
-		try {
-			return await result;
-		} catch (error) {
-			this.mapResolvedHandlersToPrefix.delete(id);
+		return result.then<QuickOpenHandler>(null, (error) => {
+			delete this.mapResolvedHandlersToPrefix[id];
 
-			throw new Error(`Unable to instantiate quick open handler ${handler.getId()}: ${JSON.stringify(error)}`);
-		}
+			return Promise.reject(new Error(`Unable to instantiate quick open handler ${handler.getId()}: ${JSON.stringify(error)}`));
+		});
 	}
 
-	private doResolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
+	private _resolveHandler(handler: QuickOpenHandlerDescriptor): Promise<QuickOpenHandler> {
 		const id = handler.getId();
 
 		// Return Cached
-		if (this.mapResolvedHandlersToPrefix.has(id)) {
-			return this.mapResolvedHandlersToPrefix.get(id)!;
+		if (this.mapResolvedHandlersToPrefix[id]) {
+			return this.mapResolvedHandlersToPrefix[id];
 		}
 
 		// Otherwise load and create
-		const result = Promise.resolve(handler.instantiate(this.instantiationService));
-		this.mapResolvedHandlersToPrefix.set(id, result);
-
-		return result;
+		return this.mapResolvedHandlersToPrefix[id] = Promise.resolve(handler.instantiate(this.instantiationService));
 	}
 
 	layout(dimension: Dimension): void {

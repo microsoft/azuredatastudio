@@ -3,17 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { INotificationService, INotification, INotificationHandle, Severity, NotificationMessage, INotificationActions, IPromptChoice, IPromptOptions, IStatusMessageOptions } from 'vs/platform/notification/common/notification';
+import { INotificationService, INotification, INotificationHandle, Severity, NotificationMessage, INotificationActions, IPromptChoice, IPromptOptions } from 'vs/platform/notification/common/notification';
 import { INotificationsModel, NotificationsModel, ChoiceAction } from 'vs/workbench/common/notifications';
-import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
+import { dispose, Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { Event } from 'vs/base/common/event';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
-import { IAction } from 'vs/base/common/actions';
 
 export class NotificationService extends Disposable implements INotificationService {
 
-	_serviceBrand: ServiceIdentifier<INotificationService>;
+	_serviceBrand: any;
 
 	private _model: INotificationsModel = this._register(new NotificationsModel());
 
@@ -28,7 +26,7 @@ export class NotificationService extends Disposable implements INotificationServ
 			return;
 		}
 
-		this.model.addNotification({ severity: Severity.Info, message });
+		this.model.notify({ severity: Severity.Info, message });
 	}
 
 	warn(message: NotificationMessage | NotificationMessage[]): void {
@@ -38,7 +36,7 @@ export class NotificationService extends Disposable implements INotificationServ
 			return;
 		}
 
-		this.model.addNotification({ severity: Severity.Warning, message });
+		this.model.notify({ severity: Severity.Warning, message });
 	}
 
 	error(message: NotificationMessage | NotificationMessage[]): void {
@@ -48,32 +46,37 @@ export class NotificationService extends Disposable implements INotificationServ
 			return;
 		}
 
-		this.model.addNotification({ severity: Severity.Error, message });
+		this.model.notify({ severity: Severity.Error, message });
 	}
 
 	notify(notification: INotification): INotificationHandle {
-		return this.model.addNotification(notification);
+		return this.model.notify(notification);
 	}
 
 	prompt(severity: Severity, message: string, choices: IPromptChoice[], options?: IPromptOptions): INotificationHandle {
-		const toDispose = new DisposableStore();
+		const toDispose: IDisposable[] = [];
 
 		let choiceClicked = false;
 		let handle: INotificationHandle;
 
 		// Convert choices into primary/secondary actions
-		const primaryActions: IAction[] = [];
-		const secondaryActions: IAction[] = [];
+		const actions: INotificationActions = { primary: [], secondary: [] };
 		choices.forEach((choice, index) => {
 			const action = new ChoiceAction(`workbench.dialog.choice.${index}`, choice);
 			if (!choice.isSecondary) {
-				primaryActions.push(action);
+				if (!actions.primary) {
+					actions.primary = [];
+				}
+				actions.primary.push(action);
 			} else {
-				secondaryActions.push(action);
+				if (!actions.secondary) {
+					actions.secondary = [];
+				}
+				actions.secondary.push(action);
 			}
 
 			// React to action being clicked
-			toDispose.add(action.onDidRun(() => {
+			toDispose.push(action.onDidRun(() => {
 				choiceClicked = true;
 
 				// Close notification unless we are told to keep open
@@ -82,17 +85,16 @@ export class NotificationService extends Disposable implements INotificationServ
 				}
 			}));
 
-			toDispose.add(action);
+			toDispose.push(action);
 		});
 
 		// Show notification with actions
-		const actions: INotificationActions = { primary: primaryActions, secondary: secondaryActions };
 		handle = this.notify({ severity, message, actions, sticky: options && options.sticky, silent: options && options.silent });
 
 		Event.once(handle.onDidClose)(() => {
 
 			// Cleanup when notification gets disposed
-			toDispose.dispose();
+			dispose(toDispose);
 
 			// Indicate cancellation to the outside if no action was executed
 			if (options && typeof options.onCancel === 'function' && !choiceClicked) {
@@ -101,10 +103,6 @@ export class NotificationService extends Disposable implements INotificationServ
 		});
 
 		return handle;
-	}
-
-	status(message: NotificationMessage, options?: IStatusMessageOptions): IDisposable {
-		return this.model.showStatusMessage(message, options);
 	}
 }
 

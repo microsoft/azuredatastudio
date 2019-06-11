@@ -7,7 +7,6 @@ import * as path from 'path';
 import * as cp from 'child_process';
 import * as os from 'os';
 import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
 import { tmpName } from 'tmp';
 import { IDriver, connect as connectDriver, IDisposable, IElement, Thenable } from './driver';
 import { Logger } from '../logger';
@@ -124,8 +123,6 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 		'--driver', handle
 	];
 
-	const env = process.env;
-
 	if (options.remote) {
 		// Replace workspace path with URI
 		args.shift();
@@ -142,9 +139,6 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 			}
 		}
 		args.push('--enable-proposed-api=vscode.vscode-test-resolver');
-		const remoteDataDir = `${options.userDataDir}-server`;
-		mkdirp.sync(remoteDataDir);
-		env['TESTRESOLVER_DATA_FOLDER'] = remoteDataDir;
 	}
 
 	if (!codePath) {
@@ -163,7 +157,7 @@ export async function spawn(options: SpawnOptions): Promise<Code> {
 		args.push(...options.extraArgs);
 	}
 
-	const spawnOptions: cp.SpawnOptions = { env };
+	const spawnOptions: cp.SpawnOptions = {};
 
 	const child = cp.spawn(electronPath, args, spawnOptions);
 

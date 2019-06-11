@@ -1440,8 +1440,6 @@ export class DocumentLink {
 
 	target?: URI;
 
-	tooltip?: string;
-
 	constructor(range: Range, target: URI | undefined) {
 		if (target && !(target instanceof URI)) {
 			throw illegalArgument('target');

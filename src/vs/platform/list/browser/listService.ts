@@ -8,7 +8,7 @@ import { IListMouseEvent, IListTouchEvent, IListRenderer, IListVirtualDelegate }
 import { IPagedRenderer, PagedList } from 'vs/base/browser/ui/list/listPaging';
 import { DefaultStyleController, IListOptions, IMultipleSelectionController, IOpenController, isSelectionRangeChangeEvent, isSelectionSingleChangeEvent, List } from 'vs/base/browser/ui/list/listWidget';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable, dispose, IDisposable, toDisposable, DisposableStore, combinedDisposable } from 'vs/base/common/lifecycle';
+import { combinedDisposable, Disposable, dispose, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ITree, ITreeConfiguration, ITreeOptions } from 'vs/base/parts/tree/browser/tree';
@@ -78,7 +78,7 @@ export class ListService implements IListService {
 			this._lastFocusedWidget = widget;
 		}
 
-		return combinedDisposable(
+		const result = combinedDisposable([
 			widget.onDidFocus(() => this._lastFocusedWidget = widget),
 			toDisposable(() => this.lists.splice(this.lists.indexOf(registeredList), 1)),
 			widget.onDidDispose(() => {
@@ -87,7 +87,9 @@ export class ListService implements IListService {
 					this._lastFocusedWidget = undefined;
 				}
 			})
-		);
+		]);
+
+		return result;
 	}
 }
 
@@ -198,18 +200,18 @@ class WorkbenchOpenController extends Disposable implements IOpenController {
 }
 
 function toWorkbenchListOptions<T>(options: IListOptions<T>, configurationService: IConfigurationService, keybindingService: IKeybindingService): [IListOptions<T>, IDisposable] {
-	const disposables = new DisposableStore();
+	const disposables: IDisposable[] = [];
 	const result = { ...options };
 
 	if (options.multipleSelectionSupport !== false && !options.multipleSelectionController) {
 		const multipleSelectionController = new MultipleSelectionController(configurationService);
 		result.multipleSelectionController = multipleSelectionController;
-		disposables.add(multipleSelectionController);
+		disposables.push(multipleSelectionController);
 	}
 
 	const openController = new WorkbenchOpenController(configurationService, options.openController);
 	result.openController = openController;
-	disposables.add(openController);
+	disposables.push(openController);
 
 	if (options.keyboardNavigationLabelProvider) {
 		const tlp = options.keyboardNavigationLabelProvider;
@@ -220,7 +222,7 @@ function toWorkbenchListOptions<T>(options: IListOptions<T>, configurationServic
 		};
 	}
 
-	return [result, disposables];
+	return [result, combinedDisposable(disposables)];
 }
 
 let sharedListStyleSheet: HTMLStyleElement;
@@ -281,7 +283,7 @@ export class WorkbenchList<T> extends List<T> {
 
 		this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
 
-		this.disposables.push(
+		this.disposables.push(combinedDisposable([
 			this.contextKeyService,
 			(listService as ListService).register(this),
 			attachListStyler(this, themeService),
@@ -299,7 +301,7 @@ export class WorkbenchList<T> extends List<T> {
 
 				this.listHasSelectionOrFocus.set(selection.length > 0 || focus.length > 0);
 			})
-		);
+		]));
 
 		this.registerListeners();
 	}
@@ -322,7 +324,7 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 	readonly contextKeyService: IContextKeyService;
 	private readonly configurationService: IConfigurationService;
 
-	private readonly disposables: DisposableStore;
+	private disposables: IDisposable[];
 
 	private _useAltAsMultipleSelectionModifier: boolean;
 
@@ -349,8 +351,7 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 			}
 		);
 
-		this.disposables = new DisposableStore();
-		this.disposables.add(workbenchListOptionsDisposable);
+		this.disposables = [workbenchListOptionsDisposable];
 
 		this.contextKeyService = createScopedContextKeyService(contextKeyService, this);
 		this.configurationService = configurationService;
@@ -360,15 +361,17 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 
 		this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(configurationService);
 
-		this.disposables.add(this.contextKeyService);
-		this.disposables.add((listService as ListService).register(this));
-		this.disposables.add(attachListStyler(this, themeService));
+		this.disposables.push(combinedDisposable([
+			this.contextKeyService,
+			(listService as ListService).register(this),
+			attachListStyler(this, themeService)
+		]));
 
 		this.registerListeners();
 	}
 
 	private registerListeners(): void {
-		this.disposables.add(this.configurationService.onDidChangeConfiguration(e => {
+		this.disposables.push(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(multiSelectModifierSettingKey)) {
 				this._useAltAsMultipleSelectionModifier = useAltAsMultipleSelectionModifier(this.configurationService);
 			}
@@ -382,7 +385,7 @@ export class WorkbenchPagedList<T> extends PagedList<T> {
 	dispose(): void {
 		super.dispose();
 
-		this.disposables.dispose();
+		this.disposables = dispose(this.disposables);
 	}
 }
 
@@ -530,7 +533,7 @@ function massageControllerOptions(options: IControllerOptions): IControllerOptio
  */
 export class WorkbenchTreeController extends DefaultController {
 
-	protected readonly disposables = new DisposableStore();
+	protected disposables: IDisposable[] = [];
 
 	constructor(
 		options: IControllerOptions,
@@ -546,7 +549,7 @@ export class WorkbenchTreeController extends DefaultController {
 	}
 
 	private registerListeners(): void {
-		this.disposables.add(this.configurationService.onDidChangeConfiguration(e => {
+		this.disposables.push(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(openModeSettingKey)) {
 				this.setOpenMode(this.getOpenModeSetting());
 			}
@@ -558,7 +561,7 @@ export class WorkbenchTreeController extends DefaultController {
 	}
 
 	dispose(): void {
-		this.disposables.dispose();
+		this.disposables = dispose(this.disposables);
 	}
 }
 

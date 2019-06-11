@@ -18,7 +18,7 @@ import { localize } from 'vs/nls';
 import { createActionViewItem, fillInActionBarActions, fillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ExecuteCommandAction, IMenu, IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -33,7 +33,7 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { BreadcrumbsConfig } from 'vs/workbench/browser/parts/editor/breadcrumbs';
 import { BreadcrumbsControl, IBreadcrumbsControlOptions } from 'vs/workbench/browser/parts/editor/breadcrumbsControl';
 import { EDITOR_TITLE_HEIGHT, IEditorGroupsAccessor, IEditorGroupView } from 'vs/workbench/browser/parts/editor/editor';
-import { EditorCommandsContextActionRunner, IEditorCommandsContext, IEditorInput, toResource, IEditorPartOptions, SideBySideEditor, EditorPinnedContext } from 'vs/workbench/common/editor';
+import { EditorCommandsContextActionRunner, IEditorCommandsContext, IEditorInput, toResource, IEditorPartOptions, SideBySideEditor } from 'vs/workbench/common/editor';
 import { ResourceContextKey } from 'vs/workbench/common/resources';
 import { Themable } from 'vs/workbench/common/theme';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -59,8 +59,6 @@ export abstract class TitleControl extends Themable {
 	protected editorActionsToolbar: ToolBar;
 
 	private resourceContext: ResourceContextKey;
-	private editorPinnedContext: IContextKey<boolean>;
-
 	private editorToolBarMenuDisposables: IDisposable[] = [];
 
 	private contextMenu: IMenu;
@@ -87,8 +85,6 @@ export abstract class TitleControl extends Themable {
 		super(themeService);
 
 		this.resourceContext = this._register(instantiationService.createInstance(ResourceContextKey));
-		this.editorPinnedContext = EditorPinnedContext.bindTo(contextKeyService);
-
 		this.contextMenu = this._register(this.menuService.createMenu(MenuId.EditorTitleContext, this.contextKeyService));
 
 		this.create(parent);
@@ -225,9 +221,8 @@ export abstract class TitleControl extends Themable {
 		// Dispose previous listeners
 		this.editorToolBarMenuDisposables = dispose(this.editorToolBarMenuDisposables);
 
-		// Update contexts
+		// Update the resource context
 		this.resourceContext.set(this.group.activeEditor ? withUndefinedAsNull(toResource(this.group.activeEditor, { supportSideBySide: SideBySideEditor.MASTER })) : null);
-		this.editorPinnedContext.set(this.group.activeEditor ? this.group.isPinned(this.group.activeEditor) : false);
 
 		// Editor actions require the editor control to be there, so we retrieve it via service
 		const activeControl = this.group.activeControl;
@@ -292,11 +287,9 @@ export abstract class TitleControl extends Themable {
 
 	protected onContextMenu(editor: IEditorInput, e: Event, node: HTMLElement): void {
 
-		// Update contexts based on editor picked and remember previous to restore
-		const currentResourceContext = this.resourceContext.get();
+		// Update the resource context
+		const currentContext = this.resourceContext.get();
 		this.resourceContext.set(withUndefinedAsNull(toResource(editor, { supportSideBySide: SideBySideEditor.MASTER })));
-		const currentPinnedContext = !!this.editorPinnedContext.get();
-		this.editorPinnedContext.set(this.group.isPinned(editor));
 
 		// Find target anchor
 		let anchor: HTMLElement | { x: number, y: number } = node;
@@ -317,9 +310,8 @@ export abstract class TitleControl extends Themable {
 			getKeyBinding: (action) => this.getKeybinding(action),
 			onHide: () => {
 
-				// restore previous contexts
-				this.resourceContext.set(currentResourceContext || null);
-				this.editorPinnedContext.set(currentPinnedContext);
+				// restore previous context
+				this.resourceContext.set(currentContext || null);
 
 				// restore focus to active group
 				this.accessor.activeGroup.focus();

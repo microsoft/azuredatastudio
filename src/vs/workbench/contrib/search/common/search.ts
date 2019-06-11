@@ -12,8 +12,6 @@ import { URI } from 'vs/base/common/uri';
 import { toResource, SideBySideEditor } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { IFileService } from 'vs/platform/files/common/files';
 
 export interface IWorkspaceSymbol {
 	name: string;
@@ -83,14 +81,15 @@ export interface IWorkbenchSearchConfiguration extends ISearchConfiguration {
 /**
  * Helper to return all opened editors with resources not belonging to the currently opened workspace.
  */
-export function getOutOfWorkspaceEditorResources(accessor: ServicesAccessor): URI[] {
-	const editorService = accessor.get(IEditorService);
-	const contextService = accessor.get(IWorkspaceContextService);
-	const fileService = accessor.get(IFileService);
+export function getOutOfWorkspaceEditorResources(editorService: IEditorService, contextService: IWorkspaceContextService): URI[] {
+	const resources: URI[] = [];
 
-	const resources = editorService.editors
-		.map(editor => toResource(editor, { supportSideBySide: SideBySideEditor.MASTER }))
-		.filter(resource => !!resource && !contextService.isInsideWorkspace(resource) && fileService.canHandleResource(resource));
+	editorService.editors.forEach(editor => {
+		const resource = toResource(editor, { supportSideBySide: SideBySideEditor.MASTER });
+		if (resource && !contextService.isInsideWorkspace(resource)) {
+			resources.push(resource);
+		}
+	});
 
-	return resources as URI[];
+	return resources;
 }

@@ -180,7 +180,7 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 			return;
 		}
 
-		const data = new Map<string, IBreakpointUpdateData>();
+		const data: { [id: string]: IBreakpointUpdateData } = Object.create(null);
 		const breakpoints = this.debugService.getModel().getBreakpoints();
 		const modelUri = modelData.model.uri;
 		for (let i = 0, len = modelData.breakpointDecorations.length; i < len; i++) {
@@ -191,10 +191,10 @@ export class DebugEditorModelManager implements IWorkbenchContribution {
 				const breakpoint = breakpoints.filter(bp => bp.getId() === breakpointDecoration.modelId).pop();
 				// since we know it is collapsed, it cannot grow to multiple lines
 				if (breakpoint) {
-					data.set(breakpoint.getId(), {
+					data[breakpoint.getId()] = {
 						lineNumber: decorationRange.startLineNumber,
 						column: breakpoint.column ? decorationRange.startColumn : undefined,
-					});
+					};
 				}
 			}
 		}

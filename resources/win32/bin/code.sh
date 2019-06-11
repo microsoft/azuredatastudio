@@ -6,7 +6,6 @@ COMMIT="@@COMMIT@@"
 APP_NAME="@@APPNAME@@"
 QUALITY="@@QUALITY@@"
 NAME="@@NAME@@"
-DATAFOLDER="@@DATAFOLDER@@"
 VSCODE_PATH="$(dirname "$(dirname "$(realpath "$0")")")"
 ELECTRON="$VSCODE_PATH/$NAME.exe"
 if grep -qi Microsoft /proc/version; then
@@ -27,7 +26,7 @@ if grep -qi Microsoft /proc/version; then
 			# replace \r\n with \n in WSL_EXT_WLOC
 			WSL_CODE=$(wslpath -u "${WSL_EXT_WLOC%%[[:cntrl:]]}")/scripts/wslCode.sh
 			WIN_CODE_CMD=$(wslpath -w "$VSCODE_PATH/bin/$APP_NAME.cmd")
-			"$WSL_CODE" "$COMMIT" "$QUALITY" "$WIN_CODE_CMD" "$APP_NAME" "$DATAFOLDER" "$@"
+			"$WSL_CODE" $COMMIT $QUALITY "$WIN_CODE_CMD" "$APP_NAME" "$@"
 			exit $?
 		else
 			CLI=$(wslpath -m "$VSCODE_PATH/resources/app/out/cli.js")

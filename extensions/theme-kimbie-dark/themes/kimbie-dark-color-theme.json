@@ -147,9 +147,7 @@
 			"scope": [
 				"support.class",
 				"entity.name.class",
-				"entity.name.type",
-				"entity.name.namespace",
-				"entity.name.scope-resolution"
+				"entity.name.type"
 			],
 			"settings": {
 				"foreground": "#f06431"

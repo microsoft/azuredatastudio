@@ -1691,7 +1691,6 @@ declare module 'azdata' {
 	export interface GenerateDeployScriptParams {
 		packageFilePath: string;
 		databaseName: string;
-		scriptFilePath: string;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
@@ -1708,7 +1707,7 @@ declare module 'azdata' {
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
@@ -4489,8 +4488,8 @@ declare module 'azdata' {
 		* }
 		* ```
 		 * @export
-		 * @param notebook provider
-		 * @returns disposable
+		 * @param {NotebookProvider} provider
+		 * @returns {vscode.Disposable}
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 

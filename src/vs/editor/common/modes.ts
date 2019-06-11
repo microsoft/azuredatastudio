@@ -550,10 +550,6 @@ export interface CodeActionContext {
 	trigger: CodeActionTrigger;
 }
 
-export interface CodeActionList extends IDisposable {
-	readonly actions: ReadonlyArray<CodeAction>;
-}
-
 /**
  * The code action interface defines the contract between extensions and
  * the [light bulb](https://code.visualstudio.com/docs/editor/editingevolved#_code-action) feature.
@@ -563,7 +559,7 @@ export interface CodeActionProvider {
 	/**
 	 * Provide commands for the given document and range.
 	 */
-	provideCodeActions(model: model.ITextModel, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<CodeActionList>;
+	provideCodeActions(model: model.ITextModel, range: Range | Selection, context: CodeActionContext, token: CancellationToken): ProviderResult<CodeAction[]>;
 
 	/**
 	 * Optional list of CodeActionKinds that this provider returns.
@@ -1004,7 +1000,6 @@ export interface IInplaceReplaceSupportResult {
 export interface ILink {
 	range: IRange;
 	url?: URI | string;
-	tooltip?: string;
 }
 
 export interface ILinksList {
@@ -1098,6 +1093,7 @@ export interface DocumentColorProvider {
 }
 
 export interface SelectionRange {
+	kind: string;
 	range: IRange;
 }
 
@@ -1465,21 +1461,15 @@ export interface IWebviewPanelOptions {
 	readonly retainContextWhenHidden?: boolean;
 }
 
-export interface CodeLens {
+export interface ICodeLensSymbol {
 	range: IRange;
 	id?: string;
 	command?: Command;
 }
-
-export interface CodeLensList {
-	lenses: CodeLens[];
-	dispose(): void;
-}
-
 export interface CodeLensProvider {
 	onDidChange?: Event<this>;
-	provideCodeLenses(model: model.ITextModel, token: CancellationToken): ProviderResult<CodeLensList>;
-	resolveCodeLens?(model: model.ITextModel, codeLens: CodeLens, token: CancellationToken): ProviderResult<CodeLens>;
+	provideCodeLenses(model: model.ITextModel, token: CancellationToken): ProviderResult<ICodeLensSymbol[]>;
+	resolveCodeLens?(model: model.ITextModel, codeLens: ICodeLensSymbol, token: CancellationToken): ProviderResult<ICodeLensSymbol>;
 }
 
 // --- feature registries ------
