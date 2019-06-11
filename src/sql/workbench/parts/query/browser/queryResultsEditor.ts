@@ -159,7 +159,7 @@ export class QueryResultsEditor extends BaseEditor {
 	}
 
 	public sandDance(dataId: { batchId: number, resultId: number }) {
-		this.resultsView.sandDanceData(dataId);
+		this.resultsView.showDataAsSandDance(dataId);
 	}
 
 
