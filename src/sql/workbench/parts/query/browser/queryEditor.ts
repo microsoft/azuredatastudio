@@ -156,7 +156,7 @@ export class QueryEditor extends BaseEditor {
 
 		this.setTaskbarContent();
 
-		this._toDispose.push(this.configurationService.onDidChangeConfiguration(e => {
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectedKeys.includes('workbench.enablePreviewFeatures')) {
 				this.setTaskbarContent();
 			}

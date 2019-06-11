@@ -242,12 +242,14 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.moveStepUpButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepUpButtonString,
+					title: this.MoveStepUpButtonString,
 					width: 120
 				}).component();
 
 			this.moveStepDownButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepDownButtonString,
+					title: this.MoveStepDownButtonString,
 					width: 120
 				}).component();
 
@@ -256,6 +258,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.newStepButton = view.modelBuilder.button().withProperties({
 				label: this.NewStepButtonString,
+				title: this.NewStepButtonString,
 				width: 140
 			}).component();
 
@@ -283,11 +286,13 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.editStepButton = view.modelBuilder.button().withProperties({
 				label: this.EditStepButtonString,
+				title: this.EditStepButtonString,
 				width: 140
 			}).component();
 
 			this.deleteStepButton = view.modelBuilder.button().withProperties({
 				label: this.DeleteStepButtonString,
+				title: this.DeleteStepButtonString,
 				width: 140
 			}).component();
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./watermark';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { assign } from 'vs/base/common/objects';
 import { isMacintosh, OS } from 'vs/base/common/platform';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -31,6 +31,7 @@ import { IDimension } from 'vs/platform/layout/browser/layoutService';
 
 // {{SQL CARBON EDIT}}
 import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 
 const $ = dom.$;
 
@@ -42,13 +43,17 @@ interface WatermarkEntry {
 
 // {{SQL CARBON EDIT}}
 const showServers: WatermarkEntry = {
-	text: nls.localize('watermark.showServers', 'Show Servers'),
+	text: nls.localize('watermark.showServers', "Show Servers"),
 	id: OpenDataExplorerViewletAction.ID
 };
 
 const newSqlFile: WatermarkEntry = {
-	text: nls.localize('watermark.newSqlFile', 'New SQL File'),
+	text: nls.localize('watermark.newSqlFile', "New SQL File"),
 	id: GlobalNewUntitledFileAction.ID
+};
+const newNotebook: WatermarkEntry = {
+	text: nls.localize('watermark.newNotebook', "New Notebook"),
+	id: NewNotebookAction.ID
 };
 
 const showCommands: WatermarkEntry = {
@@ -101,21 +106,22 @@ const startDebugging: WatermarkEntry = {
 const noFolderEntries = [
 	showServers,
 	newSqlFile,
+	newNotebook,
 	findInFiles
 ];
 
 const folderEntries = [
 	showServers,
 	newSqlFile,
+	newNotebook,
 	findInFiles
 ];
 // {{SQL CARBON EDIT}} - End
 
 const WORKBENCH_TIPS_ENABLED_KEY = 'workbench.tips.enabled';
 
-export class WatermarkContribution implements IWorkbenchContribution {
+export class WatermarkContribution extends Disposable implements IWorkbenchContribution {
 
-	private toDispose: IDisposable[] = [];
 	private watermark: HTMLElement;
 	private enabled: boolean;
 	private workbenchState: WorkbenchState;
@@ -128,6 +134,7 @@ export class WatermarkContribution implements IWorkbenchContribution {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IEditorGroupsService private readonly editorGroupsService: IEditorGroupsService
 	) {
+		super();
 		this.workbenchState = contextService.getWorkbenchState();
 
 		lifecycleService.onShutdown(this.dispose, this);
@@ -135,7 +142,7 @@ export class WatermarkContribution implements IWorkbenchContribution {
 		if (this.enabled) {
 			this.create();
 		}
-		this.toDispose.push(this.configurationService.onDidChangeConfiguration(e => {
+		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration(WORKBENCH_TIPS_ENABLED_KEY)) {
 				const enabled = this.configurationService.getValue<boolean>(WORKBENCH_TIPS_ENABLED_KEY);
 				if (enabled !== this.enabled) {
@@ -148,7 +155,7 @@ export class WatermarkContribution implements IWorkbenchContribution {
 				}
 			}
 		}));
-		this.toDispose.push(this.contextService.onDidChangeWorkbenchState(e => {
+		this._register(this.contextService.onDidChangeWorkbenchState(e => {
 			const previousWorkbenchState = this.workbenchState;
 			this.workbenchState = this.contextService.getWorkbenchState();
 
@@ -182,8 +189,8 @@ export class WatermarkContribution implements IWorkbenchContribution {
 		};
 		update();
 		dom.prepend(container.firstElementChild as HTMLElement, this.watermark);
-		this.toDispose.push(this.keybindingService.onDidUpdateKeybindings(update));
-		this.toDispose.push(this.editorGroupsService.onDidLayout(dimension => this.handleEditorPartSize(container, dimension)));
+		this._register(this.keybindingService.onDidUpdateKeybindings(update));
+		this._register(this.editorGroupsService.onDidLayout(dimension => this.handleEditorPartSize(container, dimension)));
 		this.handleEditorPartSize(container, this.editorGroupsService.dimension);
 	}
 
@@ -207,10 +214,6 @@ export class WatermarkContribution implements IWorkbenchContribution {
 	private recreate(): void {
 		this.destroy();
 		this.create();
-	}
-
-	public dispose(): void {
-		this.toDispose = dispose(this.toDispose);
 	}
 }
 

@@ -5,13 +5,14 @@
 
 import { ProviderProperties } from './propertiesWidget.component';
 import * as nls from 'vs/nls';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 const azureEditionDisplayName = nls.localize('azureEdition', 'Edition');
 const azureType = nls.localize('azureType', 'Type');
 
 export const properties: Array<ProviderProperties> = [
 	{
-		provider: 'MSSQL',
+		provider: mssqlProviderName,
 		flavors: [
 			{
 				flavor: 'on_prem',

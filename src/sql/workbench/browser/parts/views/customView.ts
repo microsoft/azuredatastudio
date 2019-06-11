@@ -14,7 +14,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ViewContainer, ITreeItemLabel } from 'vs/workbench/common/views';
 import { FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -46,6 +46,7 @@ import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/object
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { fillInActionBarActions, fillInContextMenuActions, ContextAwareMenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TitleMenus implements IDisposable {
 
@@ -159,7 +160,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@IProgressService2 private progressService: IProgressService2
+		@IProgressService private progressService: IProgressService
 	) {
 		super();
 		this.root = new Root();
@@ -515,7 +516,7 @@ class TreeDataSource implements IDataSource {
 		private treeView: ITreeView,
 		private container: ViewContainer,
 		private id: string,
-		@IProgressService2 private progressService: IProgressService2,
+		@IProgressService private progressService: IProgressService,
 		@IOEShimService private objectExplorerService: IOEShimService
 	) {
 	}
@@ -612,7 +613,7 @@ class TreeRenderer implements IRenderer {
 	}
 
 	getTemplateId(tree: ITree, element: ITreeItem): string {
-		return equalsIgnoreCase(element.providerHandle, 'mssql') ? TreeRenderer.MSSQL_TREE_TEMPLATE_ID : TreeRenderer.TREE_TEMPLATE_ID;
+		return element.providerHandle === mssqlProviderName ? TreeRenderer.MSSQL_TREE_TEMPLATE_ID : TreeRenderer.TREE_TEMPLATE_ID;
 	}
 
 	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): ITreeExplorerTemplateData {

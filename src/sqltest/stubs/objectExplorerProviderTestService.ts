@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // Test stubs for commonly used objects
 
 export class ObjectExplorerProviderTestService implements azdata.ObjectExplorerProvider {
 
-	public readonly providerId = 'MSSQL';
+	public readonly providerId = mssqlProviderName;
 
 	public createNewSession(connInfo: azdata.ConnectionInfo): Thenable<azdata.ObjectExplorerCloseSessionResponse> {
 		return Promise.resolve(undefined);

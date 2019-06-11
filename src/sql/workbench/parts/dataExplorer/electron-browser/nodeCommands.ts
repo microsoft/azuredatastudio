@@ -12,7 +12,7 @@ import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/comm
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
-import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
@@ -82,7 +82,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: REFRESH_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const progressSerivce = accessor.get(IProgressService2);
+		const progressSerivce = accessor.get(IProgressService);
 		if (args.$treeItem) {
 			const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 			if (args.$treeContainerId) {
