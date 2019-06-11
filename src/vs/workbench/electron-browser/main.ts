@@ -23,7 +23,6 @@ import { KeyboardMapperFactory } from 'vs/workbench/services/keybinding/electron
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { webFrame } from 'electron';
 import { ISingleFolderWorkspaceIdentifier, IWorkspaceInitializationPayload, ISingleFolderWorkspaceInitializationPayload, reviveWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
-import { createBufferSpdLogService } from 'vs/platform/log/node/spdlogService';
 import { ConsoleLogService, MultiplexLogService, ILogService } from 'vs/platform/log/common/log';
 import { StorageService } from 'vs/platform/storage/node/storageService';
 import { LogLevelSetterChannelClient, FollowerLogService } from 'vs/platform/log/node/logIpc';
@@ -49,6 +48,7 @@ import { REMOTE_FILE_SYSTEM_CHANNEL_NAME, RemoteExtensionsFileSystemProvider } f
 import { DefaultConfigurationExportHelper } from 'vs/workbench/services/configuration/node/configurationExportHelper';
 import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';
 import { ConfigurationFileService } from 'vs/workbench/services/configuration/node/configurationFileService';
+import { SpdLogService } from 'vs/platform/log/node/spdlogService';
 
 class CodeRendererMain extends Disposable {
 
@@ -230,7 +230,7 @@ class CodeRendererMain extends Disposable {
 
 		// Multi-root workspace
 		if (this.configuration.workspace) {
-			return Promise.resolve(this.configuration.workspace);
+			return this.configuration.workspace;
 		}
 
 		// Single-folder workspace
@@ -260,7 +260,7 @@ class CodeRendererMain extends Disposable {
 
 		// Return early the folder is not local
 		if (folderUri.scheme !== Schemas.file) {
-			return Promise.resolve({ id: createHash('md5').update(folderUri.toString()).digest('hex'), folder: folderUri });
+			return { id: createHash('md5').update(folderUri.toString()).digest('hex'), folder: folderUri };
 		}
 
 		function computeLocalDiskFolderId(folder: URI, stat: fs.Stats): string {
@@ -303,7 +303,7 @@ class CodeRendererMain extends Disposable {
 		const configurationFileService = new ConfigurationFileService();
 		configurationFileService.fileService = fileService;
 
-		const workspaceService = new WorkspaceService({ userSettingsResource: URI.file(environmentService.appSettingsPath), remoteAuthority: this.configuration.remoteAuthority, configurationCache: new ConfigurationCache(environmentService) }, configurationFileService, remoteAgentService);
+		const workspaceService = new WorkspaceService({ userSettingsResource: environmentService.settingsResource, remoteAuthority: this.configuration.remoteAuthority, configurationCache: new ConfigurationCache(environmentService) }, configurationFileService, remoteAgentService);
 
 		try {
 			await workspaceService.initialize(payload);
@@ -334,7 +334,7 @@ class CodeRendererMain extends Disposable {
 	}
 
 	private createLogService(mainProcessService: IMainProcessService, environmentService: IWorkbenchEnvironmentService): ILogService {
-		const spdlogService = createBufferSpdLogService(`renderer${this.configuration.windowId}`, this.configuration.logLevel, environmentService.logsPath);
+		const spdlogService = new SpdLogService(`renderer${this.configuration.windowId}`, environmentService.logsPath, this.configuration.logLevel);
 		const consoleLogService = new ConsoleLogService(this.configuration.logLevel);
 		const logService = new MultiplexLogService([consoleLogService, spdlogService]);
 		const logLevelClient = new LogLevelSetterChannelClient(mainProcessService.getChannel('loglevel'));

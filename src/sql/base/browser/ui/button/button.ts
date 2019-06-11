@@ -18,7 +18,7 @@ export class Button extends vsButton {
 		super(container, options);
 
 		this._register(DOM.addDisposableListener(this.element, DOM.EventType.FOCUS, () => {
-			this.element.style.outlineColor = this.buttonFocusOutline ? this.buttonFocusOutline.toString() : null;
+			this.element.style.outlineColor = this.buttonFocusOutline ? this.buttonFocusOutline.toString() : '';
 			this.element.style.outlineWidth = '1px';
 		}));
 

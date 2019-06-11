@@ -87,7 +87,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 			this._editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()),
 			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
 		);
-		return combinedDisposable(this._toDispose);
+		return combinedDisposable(...this._toDispose);
 	}
 
 	private _onSelectionClick() {

@@ -38,6 +38,7 @@ export interface ICommentService {
 	readonly onDidSetResourceCommentInfos: Event<IResourceCommentThreadEvent>;
 	readonly onDidSetAllCommentThreads: Event<IWorkspaceCommentThreadsEvent>;
 	readonly onDidUpdateCommentThreads: Event<ICommentThreadChangedEvent>;
+	readonly onDidChangeActiveCommentThread: Event<CommentThread | null>;
 	readonly onDidChangeActiveCommentingRange: Event<{ range: Range, commentingRangesInfo: CommentingRanges }>;
 	readonly onDidSetDataProvider: Event<void>;
 	readonly onDidDeleteDataProvider: Event<string>;
@@ -48,6 +49,7 @@ export interface ICommentService {
 	unregisterCommentController(owner: string): void;
 	getCommentController(owner: string): MainThreadCommentController | undefined;
 	createCommentThreadTemplate(owner: string, resource: URI, range: Range): void;
+	updateCommentThreadTemplate(owner: string, threadHandle: number, range: Range): Promise<void>;
 	getCommentMenus(owner: string): CommentMenus;
 	registerDataProvider(owner: string, commentProvider: DocumentCommentProvider): void;
 	unregisterDataProvider(owner: string): void;
@@ -69,6 +71,7 @@ export interface ICommentService {
 	deleteReaction(owner: string, resource: URI, comment: Comment, reaction: CommentReaction): Promise<void>;
 	getReactionGroup(owner: string): CommentReaction[] | undefined;
 	toggleReaction(owner: string, resource: URI, thread: CommentThread2, comment: Comment, reaction: CommentReaction): Promise<void>;
+	setActiveCommentThread(commentThread: CommentThread | null): void;
 }
 
 export class CommentService extends Disposable implements ICommentService {
@@ -89,6 +92,9 @@ export class CommentService extends Disposable implements ICommentService {
 	private readonly _onDidUpdateCommentThreads: Emitter<ICommentThreadChangedEvent> = this._register(new Emitter<ICommentThreadChangedEvent>());
 	readonly onDidUpdateCommentThreads: Event<ICommentThreadChangedEvent> = this._onDidUpdateCommentThreads.event;
 
+	private readonly _onDidChangeActiveCommentThread = this._register(new Emitter<CommentThread | null>());
+	readonly onDidChangeActiveCommentThread = this._onDidChangeActiveCommentThread.event;
+
 	private readonly _onDidChangeActiveCommentingRange: Emitter<{
 		range: Range, commentingRangesInfo:
 		CommentingRanges
@@ -107,6 +113,10 @@ export class CommentService extends Disposable implements ICommentService {
 		@IInstantiationService protected instantiationService: IInstantiationService
 	) {
 		super();
+	}
+
+	setActiveCommentThread(commentThread: CommentThread | null) {
+		this._onDidChangeActiveCommentThread.fire(commentThread);
 	}
 
 	setDocumentComments(resource: URI, commentInfos: ICommentInfo[]): void {
@@ -143,6 +153,16 @@ export class CommentService extends Disposable implements ICommentService {
 		}
 
 		commentController.createCommentThreadTemplate(resource, range);
+	}
+
+	async updateCommentThreadTemplate(owner: string, threadHandle: number, range: Range) {
+		const commentController = this._commentControls.get(owner);
+
+		if (!commentController) {
+			return;
+		}
+
+		await commentController.updateCommentThreadTemplate(threadHandle, range);
 	}
 
 	disposeCommentThread(owner: string, threadId: string) {

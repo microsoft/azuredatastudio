@@ -12,7 +12,7 @@ import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCP
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
 import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { MainThreadAccountManagement } from 'sql/workbench/api/node/mainThreadAccountManagement';
+import { MainThreadAccountManagement } from 'sql/workbench/api/browser/mainThreadAccountManagement';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
