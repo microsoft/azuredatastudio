@@ -20,6 +20,7 @@ import { toObject } from 'sql/base/common/map';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ICapabilitiesService, ProviderFeatures, clientCapabilities } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 const connectionRegistry = Registry.as<IConnectionProviderRegistry>(ConnectionExtensions.ConnectionProviderContributions);
 
@@ -158,7 +159,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	 */
 	public isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean {
 		let isCloud = connectionManagementInfo && connectionManagementInfo.serverInfo && connectionManagementInfo.serverInfo.isCloud;
-		let isMssql = connectionManagementInfo.connectionProfile.providerName === 'MSSQL';
+		let isMssql = connectionManagementInfo.connectionProfile.providerName === mssqlProviderName;
 		// TODO: The logic should from capabilities service.
 		if (action) {
 			let featureName: string = action.id;

@@ -41,6 +41,7 @@ import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/co
 import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -458,7 +459,7 @@ export function createApiFactory(
 				},
 
 				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
-					extHostQueryEditor.$registerQueryInfoListener('MSSQL', listener);
+					extHostQueryEditor.$registerQueryInfoListener(mssqlProviderName, listener);
 				},
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
