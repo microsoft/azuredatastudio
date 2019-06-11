@@ -20,6 +20,7 @@ export class CmsConnectionController extends ConnectionController {
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
+		authTypeChanged: boolean = false,
 		@IInstantiationService _instantiationService: IInstantiationService) {
 		super(connectionManagementService, connectionProperties, callback, providerName, _instantiationService);
 		let specialOptions = this._providerOptions.filter(
@@ -33,11 +34,11 @@ export class CmsConnectionController extends ConnectionController {
 				serverName, authenticationType, userName, password).then(result => {
 					return result;
 				})
-		}, providerName);
+		}, providerName, authTypeChanged);
 	}
 
-	public showUiComponent(container: HTMLElement): void {
+	public showUiComponent(container: HTMLElement, authTypeChanged: boolean = false): void {
 		this._databaseCache = new Map<string, string[]>();
-		this._connectionWidget.createConnectionWidget(container);
+		this._connectionWidget.createConnectionWidget(container, authTypeChanged);
 	}
 }

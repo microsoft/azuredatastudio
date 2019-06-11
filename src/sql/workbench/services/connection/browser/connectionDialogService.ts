@@ -281,7 +281,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-						}, providerName);
+						}, providerName, this._inputModel ? this._inputModel.options.authTypeChanged : false);
 			} else {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(ConnectionController,
@@ -320,7 +320,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._model.providerName = this._currentProviderType;
 
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		this.uiController.showUiComponent(input.container);
+		if (this._inputModel && this._inputModel.options) {
+			this.uiController.showUiComponent(input.container,
+				this._inputModel.options.authTypeChanged);
+		} else {
+			this.uiController.showUiComponent(input.container);
+		}
 
 	}
 
