@@ -178,8 +178,8 @@ export class CommentNode extends Disposable {
 
 		let commentMenus = this.commentService.getCommentMenus(this.owner);
 		const menu = commentMenus.getCommentTitleActions(this.comment, this._contextKeyService);
-		this._register(menu);
-		this._register(menu.onDidChange(e => {
+		this._toDispose.push(menu);
+		this._toDispose.push(menu.onDidChange(e => {
 			const contributedActions = menu.getActions({ shouldForwardArgs: true }).reduce((r, [, actions]) => [...r, ...actions], <MenuItemAction[]>[]);
 			this.toolbar.setActions(contributedActions);
 		}));
@@ -217,7 +217,7 @@ export class CommentNode extends Disposable {
 
 			this.registerActionBarListeners(this._actionsToolbarContainer);
 			this.toolbar.setActions(actions, [])();
-			this._register(this.toolbar);
+			this._toDispose.push(this.toolbar);
 		}
 	}
 
@@ -354,7 +354,7 @@ export class CommentNode extends Disposable {
 				return this.actionViewItemProvider(action as Action);
 			}
 		});
-		this._register(this._reactionsActionBar);
+		this._toDispose.push(this._reactionsActionBar);
 
 		this.comment.commentReactions!.map(reaction => {
 			let action = new ReactionAction(`reaction.${reaction.label}`, `${reaction.label}`, reaction.hasReacted && reaction.canEdit ? 'active' : '', reaction.canEdit, async () => {
@@ -424,14 +424,12 @@ export class CommentNode extends Disposable {
 				uri: this._commentEditor.getModel()!.uri,
 				value: this.comment.body.value
 			};
-			this.commentService.setActiveCommentThread(commentThread);
 
 			this._commentEditorDisposables.push(this._commentEditor.onDidFocusEditorWidget(() => {
 				commentThread.input = {
 					uri: this._commentEditor!.getModel()!.uri,
 					value: this.comment.body.value
 				};
-				this.commentService.setActiveCommentThread(commentThread);
 			}));
 
 			this._commentEditorDisposables.push(this._commentEditor.onDidChangeModelContent(e => {
@@ -441,14 +439,13 @@ export class CommentNode extends Disposable {
 						let input = commentThread.input;
 						input.value = newVal;
 						commentThread.input = input;
-						this.commentService.setActiveCommentThread(commentThread);
 					}
 				}
 			}));
 		}
 
-		this._register(this._commentEditor);
-		this._register(this._commentEditorModel);
+		this._toDispose.push(this._commentEditor);
+		this._toDispose.push(this._commentEditorModel);
 	}
 
 	private removeCommentEditor() {
@@ -489,7 +486,6 @@ export class CommentNode extends Disposable {
 					uri: this._commentEditor.getModel()!.uri,
 					value: newBody
 				};
-				this.commentService.setActiveCommentThread(commentThread);
 				let commandId = this.comment.editCommand.id;
 				let args = this.comment.editCommand.arguments || [];
 
@@ -527,7 +523,6 @@ export class CommentNode extends Disposable {
 				if (result.confirmed) {
 					try {
 						if (this.comment.deleteCommand) {
-							this.commentService.setActiveCommentThread(this.commentThread);
 							let commandId = this.comment.deleteCommand.id;
 							let args = this.comment.deleteCommand.arguments || [];
 
@@ -566,8 +561,8 @@ export class CommentNode extends Disposable {
 		const menus = this.commentService.getCommentMenus(this.owner);
 		const menu = menus.getCommentActions(this.comment, this._contextKeyService);
 
-		this._register(menu);
-		this._register(menu.onDidChange(() => {
+		this._toDispose.push(menu);
+		this._toDispose.push(menu.onDidChange(() => {
 			this._commentFormActions.setActions(menu);
 		}));
 
@@ -604,17 +599,17 @@ export class CommentNode extends Disposable {
 
 		const cancelEditButton = new Button(formActions);
 		cancelEditButton.label = nls.localize('label.cancel', "Cancel");
-		this._register(attachButtonStyler(cancelEditButton, this.themeService));
+		this._toDispose.push(attachButtonStyler(cancelEditButton, this.themeService));
 
-		this._register(cancelEditButton.onDidClick(_ => {
+		this._toDispose.push(cancelEditButton.onDidClick(_ => {
 			this.removeCommentEditor();
 		}));
 
 		this._updateCommentButton = new Button(formActions);
 		this._updateCommentButton.label = UPDATE_COMMENT_LABEL;
-		this._register(attachButtonStyler(this._updateCommentButton, this.themeService));
+		this._toDispose.push(attachButtonStyler(this._updateCommentButton, this.themeService));
 
-		this._register(this._updateCommentButton.onDidClick(_ => {
+		this._toDispose.push(this._updateCommentButton.onDidClick(_ => {
 			this.editComment();
 		}));
 
@@ -627,21 +622,21 @@ export class CommentNode extends Disposable {
 	}
 
 	private registerActionBarListeners(actionsContainer: HTMLElement): void {
-		this._register(dom.addDisposableListener(this._domNode, 'mouseenter', () => {
+		this._toDispose.push(dom.addDisposableListener(this._domNode, 'mouseenter', () => {
 			actionsContainer.classList.remove('hidden');
 		}));
 
-		this._register(dom.addDisposableListener(this._domNode, 'focus', () => {
+		this._toDispose.push(dom.addDisposableListener(this._domNode, 'focus', () => {
 			actionsContainer.classList.remove('hidden');
 		}));
 
-		this._register(dom.addDisposableListener(this._domNode, 'mouseleave', () => {
+		this._toDispose.push(dom.addDisposableListener(this._domNode, 'mouseleave', () => {
 			if (!this._domNode.contains(document.activeElement)) {
 				actionsContainer.classList.add('hidden');
 			}
 		}));
 
-		this._register(dom.addDisposableListener(this._domNode, 'focusout', (e: FocusEvent) => {
+		this._toDispose.push(dom.addDisposableListener(this._domNode, 'focusout', (e: FocusEvent) => {
 			if (!this._domNode.contains((<HTMLElement>e.relatedTarget))) {
 				actionsContainer.classList.add('hidden');
 
@@ -713,5 +708,9 @@ export class CommentNode extends Disposable {
 				dom.removeClass(this.domNode, 'focus');
 			}, 3000);
 		}
+	}
+
+	dispose() {
+		this._toDispose.forEach(disposeable => disposeable.dispose());
 	}
 }

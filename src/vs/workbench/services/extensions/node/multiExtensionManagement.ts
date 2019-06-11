@@ -16,11 +16,10 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { getManifest } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { localize } from 'vs/nls';
-import { isUIExtension } from 'vs/workbench/services/extensions/common/extensionsUtil';
+import { isUIExtension } from 'vs/workbench/services/extensions/node/extensionsUtil';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { isNonEmptyArray } from 'vs/base/common/arrays';
 import { values } from 'vs/base/common/map';
-import { IProductService } from 'vs/platform/product/common/product';
 
 export class MultiExtensionManagementService extends Disposable implements IExtensionManagementService {
 
@@ -36,8 +35,7 @@ export class MultiExtensionManagementService extends Disposable implements IExte
 	constructor(
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IProductService private readonly productService: IProductService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 		this.servers = this.extensionManagementServerService.remoteExtensionManagementServer ? [this.extensionManagementServerService.localExtensionManagementServer, this.extensionManagementServerService.remoteExtensionManagementServer] : [this.extensionManagementServerService.localExtensionManagementServer];
@@ -87,7 +85,7 @@ export class MultiExtensionManagementService extends Disposable implements IExte
 	private async uninstallInServer(extension: ILocalExtension, server: IExtensionManagementServer, force?: boolean): Promise<void> {
 		if (server === this.extensionManagementServerService.localExtensionManagementServer) {
 			const installedExtensions = await this.extensionManagementServerService.remoteExtensionManagementServer!.extensionManagementService.getInstalled(ExtensionType.User);
-			const dependentNonUIExtensions = installedExtensions.filter(i => !isUIExtension(i.manifest, this.productService, this.configurationService)
+			const dependentNonUIExtensions = installedExtensions.filter(i => !isUIExtension(i.manifest, this.configurationService)
 				&& i.manifest.extensionDependencies && i.manifest.extensionDependencies.some(id => areSameExtensions({ id }, extension.identifier)));
 			if (dependentNonUIExtensions.length) {
 				return Promise.reject(new Error(this.getDependentsErrorMessage(extension, dependentNonUIExtensions)));
@@ -142,7 +140,7 @@ export class MultiExtensionManagementService extends Disposable implements IExte
 				const [extensionIdentifier] = await Promise.all(this.servers.map(server => server.extensionManagementService.install(vsix)));
 				return extensionIdentifier;
 			}
-			if (isUIExtension(manifest, this.productService, this.configurationService)) {
+			if (isUIExtension(manifest, this.configurationService)) {
 				// Install only on local server
 				return this.extensionManagementServerService.localExtensionManagementServer.extensionManagementService.install(vsix);
 			}
@@ -163,7 +161,7 @@ export class MultiExtensionManagementService extends Disposable implements IExte
 					// Install on both servers
 					return Promise.all(this.servers.map(server => server.extensionManagementService.installFromGallery(gallery))).then(() => undefined);
 				}
-				if (isUIExtension(manifest, this.productService, this.configurationService)) {
+				if (isUIExtension(manifest, this.configurationService)) {
 					// Install only on local server
 					return this.extensionManagementServerService.localExtensionManagementServer.extensionManagementService.installFromGallery(gallery);
 				}
@@ -212,7 +210,7 @@ export class MultiExtensionManagementService extends Disposable implements IExte
 		for (let idx = 0; idx < extensions.length; idx++) {
 			const extension = extensions[idx];
 			const manifest = manifests[idx];
-			if (manifest && isUIExtension(manifest, this.productService, this.configurationService)) {
+			if (manifest && isUIExtension(manifest, this.configurationService)) {
 				result.set(extension.identifier.id.toLowerCase(), extension);
 				uiExtensionsManifests.push(manifest);
 			}

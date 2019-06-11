@@ -9,8 +9,8 @@ import { createMatches } from 'vs/base/common/filters';
 import * as strings from 'vs/base/common/strings';
 import { Event, Emitter } from 'vs/base/common/event';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { IDisposable, dispose, toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
-import { addClass, append, $, hide, removeClass, show, toggleClass, getDomNodePagePosition, hasClass, addDisposableListener } from 'vs/base/browser/dom';
+import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
+import { addClass, append, $, hide, removeClass, show, toggleClass, getDomNodePagePosition, hasClass } from 'vs/base/browser/dom';
 import { IListVirtualDelegate, IListEvent, IListRenderer, IListMouseEvent } from 'vs/base/browser/ui/list/list';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
@@ -103,9 +103,7 @@ class Renderer implements IListRenderer<CompletionItem, ISuggestionTemplateData>
 
 	renderTemplate(container: HTMLElement): ISuggestionTemplateData {
 		const data = <ISuggestionTemplateData>Object.create(null);
-		const disposables = new DisposableStore();
-		data.disposables = [disposables];
-
+		data.disposables = [];
 		data.root = container;
 		addClass(data.root, 'show-file-icons');
 
@@ -116,7 +114,7 @@ class Renderer implements IListRenderer<CompletionItem, ISuggestionTemplateData>
 		const main = append(text, $('.main'));
 
 		data.iconLabel = new IconLabel(main, { supportHighlights: true });
-		disposables.add(data.iconLabel);
+		data.disposables.push(data.iconLabel);
 
 		data.typeLabel = append(main, $('span.type-label'));
 
@@ -144,9 +142,9 @@ class Renderer implements IListRenderer<CompletionItem, ISuggestionTemplateData>
 
 		configureFont();
 
-		disposables.add(Event.chain<IConfigurationChangedEvent>(this.editor.onDidChangeConfiguration.bind(this.editor))
+		Event.chain<IConfigurationChangedEvent>(this.editor.onDidChangeConfiguration.bind(this.editor))
 			.filter(e => e.fontInfo || e.contribInfo)
-			.on(configureFont, null));
+			.on(configureFont, null, data.disposables);
 
 		return data;
 	}
@@ -401,7 +399,6 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 
 	// Editor.IContentWidget.allowEditorOverflow
 	readonly allowEditorOverflow = true;
-	readonly suppressMouseDown = true;
 
 	private state: State | null;
 	private isAuto: boolean;
@@ -423,12 +420,13 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 
 	private readonly editorBlurTimeout = new TimeoutTimer();
 	private readonly showTimeout = new TimeoutTimer();
-	private readonly toDispose: IDisposable[] = [];
+	private toDispose: IDisposable[];
 
 	private onDidSelectEmitter = new Emitter<ISelectedSuggestion>();
 	private onDidFocusEmitter = new Emitter<ISelectedSuggestion>();
 	private onDidHideEmitter = new Emitter<this>();
 	private onDidShowEmitter = new Emitter<this>();
+
 
 	readonly onDidSelect: Event<ISelectedSuggestion> = this.onDidSelectEmitter.event;
 	readonly onDidFocus: Event<ISelectedSuggestion> = this.onDidFocusEmitter.event;
@@ -466,11 +464,6 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 		this.storageService = storageService;
 
 		this.element = $('.editor-widget.suggest-widget');
-		this.toDispose.push(addDisposableListener(this.element, 'click', e => {
-			if (e.target === this.element) {
-				this.hideWidget();
-			}
-		}));
 
 		this.messageElement = append(this.element, $('.message'));
 		this.listElement = append(this.element, $('.tree'));
@@ -487,7 +480,7 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 			mouseSupport: false
 		});
 
-		this.toDispose.push(
+		this.toDispose = [
 			attachListStyler(this.list, themeService, {
 				listInactiveFocusBackground: editorSuggestWidgetSelectedBackground,
 				listInactiveFocusOutline: activeContrastBorder
@@ -499,7 +492,7 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 			this.list.onFocusChange(e => this.onListFocus(e)),
 			this.editor.onDidChangeCursorSelection(() => this.onCursorSelectionChanged()),
 			this.editor.onDidChangeConfiguration(e => e.contribInfo && applyIconStyle())
-		);
+		];
 
 		this.suggestWidgetVisible = SuggestContext.Visible.bindTo(contextKeyService);
 		this.suggestWidgetMultipleSuggestions = SuggestContext.MultipleSuggestions.bindTo(contextKeyService);
@@ -1159,7 +1152,7 @@ export class SuggestWidget implements IContentWidget, IListVirtualDelegate<Compl
 		this.details = null!; // StrictNullOverride: nulling out ok in dispose
 		this.list.dispose();
 		this.list = null!; // StrictNullOverride: nulling out ok in dispose
-		dispose(this.toDispose);
+		this.toDispose = dispose(this.toDispose);
 		if (this.loadingTimeout) {
 			clearTimeout(this.loadingTimeout);
 			this.loadingTimeout = null;

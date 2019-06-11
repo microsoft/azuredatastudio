@@ -7,7 +7,7 @@ import * as assert from 'assert';
 import { mapArrayOrNot } from 'vs/base/common/arrays';
 import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
-import { DisposableStore } from 'vs/base/common/lifecycle';
+import { dispose } from 'vs/base/common/lifecycle';
 import { joinPath } from 'vs/base/common/resources';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import * as pfs from 'vs/base/node/pfs';
@@ -21,7 +21,7 @@ import * as vscode from 'vscode';
 
 let rpcProtocol: TestRPCProtocol;
 let extHostSearch: ExtHostSearch;
-const disposables = new DisposableStore();
+let disposables: vscode.Disposable[] = [];
 
 let mockMainThreadSearch: MockMainThreadSearch;
 class MockMainThreadSearch implements MainThreadSearchShape {
@@ -63,12 +63,12 @@ export function extensionResultIsMatch(data: vscode.TextSearchResult): data is v
 
 suite('ExtHostSearch', () => {
 	async function registerTestTextSearchProvider(provider: vscode.TextSearchProvider, scheme = 'file'): Promise<void> {
-		disposables.add(extHostSearch.registerTextSearchProvider(scheme, provider));
+		disposables.push(extHostSearch.registerTextSearchProvider(scheme, provider));
 		await rpcProtocol.sync();
 	}
 
 	async function registerTestFileSearchProvider(provider: vscode.FileSearchProvider, scheme = 'file'): Promise<void> {
-		disposables.add(extHostSearch.registerFileSearchProvider(scheme, provider));
+		disposables.push(extHostSearch.registerFileSearchProvider(scheme, provider));
 		await rpcProtocol.sync();
 	}
 
@@ -139,7 +139,7 @@ suite('ExtHostSearch', () => {
 	});
 
 	teardown(() => {
-		disposables.clear();
+		dispose(disposables);
 		return rpcProtocol.sync();
 	});
 

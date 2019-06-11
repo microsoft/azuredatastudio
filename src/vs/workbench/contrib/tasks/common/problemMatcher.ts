@@ -21,13 +21,11 @@ import { IStringDictionary } from 'vs/base/common/collections';
 import { IMarkerData, MarkerSeverity } from 'vs/platform/markers/common/markers';
 import { ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IFileService, IFileStat } from 'vs/platform/files/common/files';
 
 export enum FileLocationKind {
-	Default,
+	Auto,
 	Relative,
-	Absolute,
-	AutoDetect
+	Absolute
 }
 
 export module FileLocationKind {
@@ -37,8 +35,6 @@ export module FileLocationKind {
 			return FileLocationKind.Absolute;
 		} else if (value === 'relative') {
 			return FileLocationKind.Relative;
-		} else if (value === 'autodetect') {
-			return FileLocationKind.AutoDetect;
 		} else {
 			return undefined;
 		}
@@ -176,7 +172,7 @@ interface ProblemData {
 }
 
 export interface ProblemMatch {
-	resource: Promise<URI>;
+	resource: URI;
 	marker: IMarkerData;
 	description: ProblemMatcher;
 }
@@ -186,32 +182,13 @@ export interface HandleResult {
 	continue: boolean;
 }
 
-
-export async function getResource(filename: string, matcher: ProblemMatcher, fileService?: IFileService): Promise<URI> {
+export function getResource(filename: string, matcher: ProblemMatcher): URI {
 	let kind = matcher.fileLocation;
 	let fullPath: string | undefined;
 	if (kind === FileLocationKind.Absolute) {
 		fullPath = filename;
 	} else if ((kind === FileLocationKind.Relative) && matcher.filePrefix) {
 		fullPath = join(matcher.filePrefix, filename);
-	} else if (kind === FileLocationKind.AutoDetect) {
-		const matcherClone = Objects.deepClone(matcher);
-		matcherClone.fileLocation = FileLocationKind.Relative;
-		if (fileService) {
-			const relative = await getResource(filename, matcherClone);
-			let stat: IFileStat | undefined = undefined;
-			try {
-				stat = await fileService.resolve(relative);
-			} catch (ex) {
-				// Do nothing, we just need to catch file resolution errors.
-			}
-			if (stat) {
-				return relative;
-			}
-		}
-
-		matcherClone.fileLocation = FileLocationKind.Absolute;
-		return getResource(filename, matcherClone);
 	}
 	if (fullPath === undefined) {
 		throw new Error('FileLocationKind is not actionable. Does the matcher have a filePrefix? This should never happen.');
@@ -233,12 +210,12 @@ export interface ILineMatcher {
 	handle(lines: string[], start?: number): HandleResult;
 }
 
-export function createLineMatcher(matcher: ProblemMatcher, fileService?: IFileService): ILineMatcher {
+export function createLineMatcher(matcher: ProblemMatcher): ILineMatcher {
 	let pattern = matcher.pattern;
 	if (Types.isArray(pattern)) {
-		return new MultiLineMatcher(matcher, fileService);
+		return new MultiLineMatcher(matcher);
 	} else {
-		return new SingleLineMatcher(matcher, fileService);
+		return new SingleLineMatcher(matcher);
 	}
 }
 
@@ -246,11 +223,9 @@ const endOfLine: string = Platform.OS === Platform.OperatingSystem.Windows ? '\r
 
 abstract class AbstractLineMatcher implements ILineMatcher {
 	private matcher: ProblemMatcher;
-	private fileService?: IFileService;
 
-	constructor(matcher: ProblemMatcher, fileService?: IFileService) {
+	constructor(matcher: ProblemMatcher) {
 		this.matcher = matcher;
-		this.fileService = fileService;
 	}
 
 	public handle(lines: string[], start: number = 0): HandleResult {
@@ -337,8 +312,8 @@ abstract class AbstractLineMatcher implements ILineMatcher {
 		return undefined;
 	}
 
-	protected getResource(filename: string): Promise<URI> {
-		return getResource(filename, this.matcher, this.fileService);
+	protected getResource(filename: string): URI {
+		return getResource(filename, this.matcher);
 	}
 
 	private getLocation(data: ProblemData): Location | null {
@@ -414,8 +389,8 @@ class SingleLineMatcher extends AbstractLineMatcher {
 
 	private pattern: ProblemPattern;
 
-	constructor(matcher: ProblemMatcher, fileService?: IFileService) {
-		super(matcher, fileService);
+	constructor(matcher: ProblemMatcher) {
+		super(matcher);
 		this.pattern = <ProblemPattern>matcher.pattern;
 	}
 
@@ -450,8 +425,8 @@ class MultiLineMatcher extends AbstractLineMatcher {
 	private patterns: ProblemPattern[];
 	private data: ProblemData | null;
 
-	constructor(matcher: ProblemMatcher, fileService?: IFileService) {
-		super(matcher, fileService);
+	constructor(matcher: ProblemMatcher) {
+		super(matcher);
 		this.patterns = <ProblemPattern[]>matcher.pattern;
 	}
 
@@ -1370,7 +1345,7 @@ export class ProblemMatcherParser extends Parser {
 			kind = FileLocationKind.fromString(<string>description.fileLocation);
 			if (kind) {
 				fileLocation = kind;
-				if ((kind === FileLocationKind.Relative) || (kind === FileLocationKind.AutoDetect)) {
+				if (kind === FileLocationKind.Relative) {
 					filePrefix = '${workspaceFolder}';
 				}
 			}
@@ -1380,7 +1355,7 @@ export class ProblemMatcherParser extends Parser {
 				kind = FileLocationKind.fromString(values[0]);
 				if (values.length === 1 && kind === FileLocationKind.Absolute) {
 					fileLocation = kind;
-				} else if (values.length === 2 && (kind === FileLocationKind.Relative || kind === FileLocationKind.AutoDetect) && values[1]) {
+				} else if (values.length === 2 && kind === FileLocationKind.Relative && values[1]) {
 					fileLocation = kind;
 					filePrefix = values[1];
 				}
@@ -1598,7 +1573,7 @@ export namespace Schemas {
 				oneOf: [
 					{
 						type: 'string',
-						enum: ['absolute', 'relative', 'autoDetect']
+						enum: ['absolute', 'relative']
 					},
 					{
 						type: 'array',

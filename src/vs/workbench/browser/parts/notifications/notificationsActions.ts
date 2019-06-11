@@ -121,12 +121,12 @@ export class ConfigureNotificationAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private readonly _configurationActions: ReadonlyArray<IAction>
+		private _configurationActions: IAction[]
 	) {
 		super(id, label, 'configure-notification-action');
 	}
 
-	get configurationActions(): ReadonlyArray<IAction> {
+	get configurationActions(): IAction[] {
 		return this._configurationActions;
 	}
 }

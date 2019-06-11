@@ -5,7 +5,7 @@
 
 import * as browser from 'vs/base/browser/browser';
 import * as aria from 'vs/base/browser/ui/aria/aria';
-import { Disposable, IDisposable, toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, combinedDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { ICodeEditor, IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { CodeEditorWidget } from 'vs/editor/browser/widget/codeEditorWidget';
@@ -227,13 +227,13 @@ export class StandaloneCodeEditor extends CodeEditorWidget implements IStandalon
 		};
 
 
-		const toDispose = new DisposableStore();
+		let toDispose: IDisposable[] = [];
 
 		// Generate a unique id to allow the same descriptor.id across multiple editor instances
 		const uniqueId = this.getId() + ':' + id;
 
 		// Register the command
-		toDispose.add(CommandsRegistry.registerCommand(uniqueId, run));
+		toDispose.push(CommandsRegistry.registerCommand(uniqueId, run));
 
 		// Register the context menu item
 		if (contextMenuGroupId) {
@@ -246,14 +246,16 @@ export class StandaloneCodeEditor extends CodeEditorWidget implements IStandalon
 				group: contextMenuGroupId,
 				order: contextMenuOrder
 			};
-			toDispose.add(MenuRegistry.appendMenuItem(MenuId.EditorContext, menuItem));
+			toDispose.push(MenuRegistry.appendMenuItem(MenuId.EditorContext, menuItem));
 		}
 
 		// Register the keybindings
 		if (Array.isArray(keybindings)) {
-			for (const kb of keybindings) {
-				toDispose.add(this._standaloneKeybindingService.addDynamicKeybinding(uniqueId, kb, run, keybindingsWhen));
-			}
+			toDispose = toDispose.concat(
+				keybindings.map((kb) => {
+					return this._standaloneKeybindingService.addDynamicKeybinding(uniqueId, kb, run, keybindingsWhen);
+				})
+			);
 		}
 
 		// Finally, register an internal editor action
@@ -268,11 +270,11 @@ export class StandaloneCodeEditor extends CodeEditorWidget implements IStandalon
 
 		// Store it under the original id, such that trigger with the original id will work
 		this._actions[id] = internalAction;
-		toDispose.add(toDisposable(() => {
+		toDispose.push(toDisposable(() => {
 			delete this._actions[id];
 		}));
 
-		return toDispose;
+		return combinedDisposable(toDispose);
 	}
 }
 

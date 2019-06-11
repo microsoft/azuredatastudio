@@ -7,7 +7,7 @@ import { IViewlet } from 'vs/workbench/common/viewlet';
 import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { ViewletDescriptor } from 'vs/workbench/browser/viewlet';
-import { ILocalProgressService } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 export const IViewletService = createDecorator<IViewletService>('viewletService');
 
@@ -47,7 +47,7 @@ export interface IViewletService {
 	/**
 	 * Returns the progress indicator for the side bar.
 	 */
-	getProgressIndicator(id: string): ILocalProgressService | null;
+	getProgressIndicator(id: string): IProgressService | null;
 
 	/**
 	 * Hide the active viewlet.

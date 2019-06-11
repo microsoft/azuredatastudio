@@ -121,7 +121,7 @@ export interface TaskSystemInfo {
 	resolveVariables(workspaceFolder: IWorkspaceFolder, toResolve: ResolveSet): Promise<ResolvedVariables>;
 }
 
-export interface TaskSystemInfoResolver {
+export interface TaskSystemInfoResovler {
 	(workspaceFolder: IWorkspaceFolder): TaskSystemInfo | undefined;
 }
 

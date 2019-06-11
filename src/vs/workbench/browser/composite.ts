@@ -150,7 +150,7 @@ export abstract class Composite extends Component implements IComposite {
 	/**
 	 * Returns an array of actions to show in the action bar of the composite.
 	 */
-	getActions(): ReadonlyArray<IAction> {
+	getActions(): IAction[] {
 		return [];
 	}
 
@@ -158,14 +158,14 @@ export abstract class Composite extends Component implements IComposite {
 	 * Returns an array of actions to show in the action bar of the composite
 	 * in a less prominent way then action from getActions.
 	 */
-	getSecondaryActions(): ReadonlyArray<IAction> {
+	getSecondaryActions(): IAction[] {
 		return [];
 	}
 
 	/**
 	 * Returns an array of actions to show in the context menu of the composite
 	 */
-	getContextMenuActions(): ReadonlyArray<IAction> {
+	getContextMenuActions(): IAction[] {
 		return [];
 	}
 

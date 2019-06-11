@@ -40,7 +40,7 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 			this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus())
 		);
 
-		return combinedDisposable(...this._toDispose);
+		return combinedDisposable(this._toDispose);
 	}
 
 	// Update the connection status shown in the bar

@@ -86,9 +86,7 @@
 			"name": "Class name",
 			"scope": [
 				"entity.name.class",
-				"entity.name.type",
-				"entity.name.namespace",
-				"entity.name.scope-resolution"
+				"entity.name.type"
 			],
 			"settings": {
 				"fontStyle": "underline",

@@ -5,7 +5,7 @@
 
 import * as assert from 'vs/base/common/assert';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import * as objects from 'vs/base/common/objects';
 import { IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { ICursorPositionChangedEvent } from 'vs/editor/common/controller/cursorEvents';
@@ -33,11 +33,12 @@ const defaultOptions: Options = {
 /**
  * Create a new diff navigator for the provided diff editor.
  */
-export class DiffNavigator extends Disposable {
+export class DiffNavigator {
 
 	private readonly _editor: IDiffEditor;
 	private readonly _options: Options;
-	private readonly _onDidUpdate = this._register(new Emitter<this>());
+	private readonly _disposables: IDisposable[];
+	private readonly _onDidUpdate = new Emitter<this>();
 
 	readonly onDidUpdate: Event<this> = this._onDidUpdate.event;
 
@@ -48,11 +49,11 @@ export class DiffNavigator extends Disposable {
 	private ignoreSelectionChange: boolean;
 
 	constructor(editor: IDiffEditor, options: Options = {}) {
-		super();
 		this._editor = editor;
 		this._options = objects.mixin(options, defaultOptions, false);
 
 		this.disposed = false;
+		this._disposables = [];
 
 		this.nextIdx = -1;
 		this.ranges = [];
@@ -60,11 +61,11 @@ export class DiffNavigator extends Disposable {
 		this.revealFirst = Boolean(this._options.alwaysRevealFirst);
 
 		// hook up to diff editor for diff, disposal, and caret move
-		this._register(this._editor.onDidDispose(() => this.dispose()));
-		this._register(this._editor.onDidUpdateDiff(() => this._onDiffUpdated()));
+		this._disposables.push(this._editor.onDidDispose(() => this.dispose()));
+		this._disposables.push(this._editor.onDidUpdateDiff(() => this._onDiffUpdated()));
 
 		if (this._options.followsCaret) {
-			this._register(this._editor.getModifiedEditor().onDidChangeCursorPosition((e: ICursorPositionChangedEvent) => {
+			this._disposables.push(this._editor.getModifiedEditor().onDidChangeCursorPosition((e: ICursorPositionChangedEvent) => {
 				if (this.ignoreSelectionChange) {
 					return;
 				}
@@ -72,7 +73,7 @@ export class DiffNavigator extends Disposable {
 			}));
 		}
 		if (this._options.alwaysRevealFirst) {
-			this._register(this._editor.getModifiedEditor().onDidChangeModel((e) => {
+			this._disposables.push(this._editor.getModifiedEditor().onDidChangeModel((e) => {
 				this.revealFirst = true;
 			}));
 		}
@@ -215,7 +216,9 @@ export class DiffNavigator extends Disposable {
 	}
 
 	dispose(): void {
-		super.dispose();
+		dispose(this._disposables);
+		this._disposables.length = 0;
+		this._onDidUpdate.dispose();
 		this.ranges = [];
 		this.disposed = true;
 	}

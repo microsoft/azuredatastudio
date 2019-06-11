@@ -70,7 +70,7 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 	private panelFocusContextKey: IContextKey<boolean>;
 
 	private compositeBar: CompositeBar;
-	private compositeActions: Map<string, { activityAction: PanelActivityAction, pinnedAction: ToggleCompositePinnedAction }> = new Map();
+	private compositeActions: { [compositeId: string]: { activityAction: PanelActivityAction, pinnedAction: ToggleCompositePinnedAction } } = Object.create(null);
 
 	private blockOpeningPanel: boolean;
 	private dimension: Dimension;
@@ -245,7 +245,7 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 			.sort((p1, p2) => pinnedCompositeIds.indexOf(p1.id) - pinnedCompositeIds.indexOf(p2.id));
 	}
 
-	protected getActions(): ReadonlyArray<IAction> {
+	protected getActions(): IAction[] {
 		return [
 			this.instantiationService.createInstance(ToggleMaximizedPanelAction, ToggleMaximizedPanelAction.ID, ToggleMaximizedPanelAction.LABEL),
 			this.instantiationService.createInstance(ClosePanelAction, ClosePanelAction.ID, ClosePanelAction.LABEL)
@@ -261,11 +261,6 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 	}
 
 	hideActivePanel(): void {
-		// First check if panel is visible and hide if so
-		if (this.layoutService.isVisible(Parts.PANEL_PART)) {
-			this.layoutService.setPanelHidden(true);
-		}
-
 		this.hideActiveComposite();
 	}
 
@@ -316,14 +311,13 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 	}
 
 	private getCompositeActions(compositeId: string): { activityAction: PanelActivityAction, pinnedAction: ToggleCompositePinnedAction } {
-		let compositeActions = this.compositeActions.get(compositeId);
+		let compositeActions = this.compositeActions[compositeId];
 		if (!compositeActions) {
 			compositeActions = {
 				activityAction: this.instantiationService.createInstance(PanelActivityAction, this.getPanel(compositeId)),
 				pinnedAction: new ToggleCompositePinnedAction(this.getPanel(compositeId), this.compositeBar)
 			};
-
-			this.compositeActions.set(compositeId, compositeActions);
+			this.compositeActions[compositeId] = compositeActions;
 		}
 
 		return compositeActions;
@@ -331,11 +325,11 @@ export class PanelPart extends CompositePart<Panel> implements IPanelService {
 
 	protected removeComposite(compositeId: string): boolean {
 		if (super.removeComposite(compositeId)) {
-			const compositeActions = this.compositeActions.get(compositeId);
+			const compositeActions = this.compositeActions[compositeId];
 			if (compositeActions) {
 				compositeActions.activityAction.dispose();
 				compositeActions.pinnedAction.dispose();
-				this.compositeActions.delete(compositeId);
+				delete this.compositeActions[compositeId];
 			}
 
 			return true;

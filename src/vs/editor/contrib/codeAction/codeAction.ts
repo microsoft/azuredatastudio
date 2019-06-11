@@ -15,14 +15,8 @@ import { CodeAction, CodeActionContext, CodeActionProviderRegistry, CodeActionTr
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { CodeActionFilter, CodeActionKind, CodeActionTrigger, filtersAction, mayIncludeActionsOfKind } from './codeActionTrigger';
 import { TextModelCancellationTokenSource } from 'vs/editor/browser/core/editorState';
-import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 
-export interface CodeActionSet extends IDisposable {
-	readonly actions: readonly CodeAction[];
-	readonly hasAutoFix: boolean;
-}
-
-class ManagedCodeActionSet extends Disposable implements CodeActionSet {
+export class CodeActionSet {
 
 	private static codeActionsComparator(a: CodeAction, b: CodeAction): number {
 		if (isNonEmptyArray(a.diagnostics)) {
@@ -40,10 +34,8 @@ class ManagedCodeActionSet extends Disposable implements CodeActionSet {
 
 	public readonly actions: readonly CodeAction[];
 
-	public constructor(actions: readonly CodeAction[], disposables: DisposableStore) {
-		super();
-		this._register(disposables);
-		this.actions = mergeSort([...actions], ManagedCodeActionSet.codeActionsComparator);
+	public constructor(actions: readonly CodeAction[]) {
+		this.actions = mergeSort([...actions], CodeActionSet.codeActionsComparator);
 	}
 
 	public get hasAutoFix() {
@@ -67,14 +59,12 @@ export function getCodeActions(
 	const cts = new TextModelCancellationTokenSource(model, token);
 	const providers = getCodeActionProviders(model, filter);
 
-	const disposables = new DisposableStore();
 	const promises = providers.map(provider => {
 		return Promise.resolve(provider.provideCodeActions(model, rangeOrSelection, codeActionContext, cts.token)).then(providedCodeActions => {
-			if (cts.token.isCancellationRequested || !providedCodeActions) {
+			if (cts.token.isCancellationRequested || !Array.isArray(providedCodeActions)) {
 				return [];
 			}
-			disposables.add(providedCodeActions);
-			return providedCodeActions.actions.filter(action => action && filtersAction(filter, action));
+			return providedCodeActions.filter(action => action && filtersAction(filter, action));
 		}, (err): CodeAction[] => {
 			if (isPromiseCanceledError(err)) {
 				throw err;
@@ -94,7 +84,7 @@ export function getCodeActions(
 
 	return Promise.all(promises)
 		.then(flatten)
-		.then(actions => new ManagedCodeActionSet(actions, disposables))
+		.then(actions => new CodeActionSet(actions))
 		.finally(() => {
 			listener.dispose();
 			cts.dispose();
@@ -116,7 +106,7 @@ function getCodeActionProviders(
 		});
 }
 
-registerLanguageCommand('_executeCodeActionProvider', async function (accessor, args): Promise<ReadonlyArray<CodeAction>> {
+registerLanguageCommand('_executeCodeActionProvider', function (accessor, args): Promise<ReadonlyArray<CodeAction>> {
 	const { resource, range, kind } = args;
 	if (!(resource instanceof URI) || !Range.isIRange(range)) {
 		throw illegalArgument();
@@ -127,11 +117,9 @@ registerLanguageCommand('_executeCodeActionProvider', async function (accessor, 
 		throw illegalArgument();
 	}
 
-	const codeActionSet = await getCodeActions(
+	return getCodeActions(
 		model,
 		model.validateRange(range),
 		{ type: 'manual', filter: { includeSourceActions: true, kind: kind && kind.value ? new CodeActionKind(kind.value) : undefined } },
-		CancellationToken.None);
-	codeActionSet.dispose();
-	return codeActionSet.actions;
+		CancellationToken.None).then(actions => actions.actions);
 });

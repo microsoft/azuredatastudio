@@ -14,7 +14,7 @@ import { StartAction, ConfigureAction, SelectAndStartAction, FocusSessionAction 
 import { StartDebugActionViewItem, FocusSessionActionViewItem } from 'vs/workbench/contrib/debug/browser/debugActionViewItems';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IProgressService } from 'vs/platform/progress/common/progress';
+import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IStorageService } from 'vs/platform/storage/common/storage';
@@ -37,7 +37,7 @@ import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 export class DebugViewlet extends ViewContainerViewlet {
 
 	private startDebugActionViewItem: StartDebugActionViewItem;
-	private progressResolve: (() => void) | undefined;
+	private progressRunner: IProgressRunner;
 	private breakpointView: ViewletPanel;
 	private panelListeners = new Map<string, IDisposable>();
 	private debugToolBarMenu: IMenu;
@@ -112,7 +112,7 @@ export class DebugViewlet extends ViewContainerViewlet {
 
 		if (!this.debugToolBarMenu) {
 			this.debugToolBarMenu = this.menuService.createMenu(MenuId.DebugToolBar, this.contextKeyService);
-			this._register(this.debugToolBarMenu);
+			this.toDispose.push(this.debugToolBarMenu);
 		}
 		return DebugToolBar.getActions(this.debugToolBarMenu, this.debugService, this.instantiationService);
 	}
@@ -153,15 +153,12 @@ export class DebugViewlet extends ViewContainerViewlet {
 	}
 
 	private onDebugServiceStateChange(state: State): void {
-		if (this.progressResolve) {
-			this.progressResolve();
-			this.progressResolve = undefined;
+		if (this.progressRunner) {
+			this.progressRunner.done();
 		}
 
 		if (state === State.Initializing) {
-			this.progressService.withProgress({ location: VIEWLET_ID }, _progress => {
-				return new Promise(resolve => this.progressResolve = resolve);
-			});
+			this.progressRunner = this.progressService.show(true);
 		}
 
 		this.updateToolBar();

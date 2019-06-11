@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./sash';
-import { IDisposable, dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { isIPad } from 'vs/base/browser/browser';
 import { isMacintosh } from 'vs/base/common/platform';
 import * as types from 'vs/base/common/types';
@@ -95,14 +95,14 @@ export class Sash extends Disposable {
 
 	linkedSash: Sash | undefined = undefined;
 
-	private readonly orthogonalStartSashDisposables = this._register(new DisposableStore());
+	private orthogonalStartSashDisposables: IDisposable[] = [];
 	private _orthogonalStartSash: Sash | undefined;
 	get orthogonalStartSash(): Sash | undefined { return this._orthogonalStartSash; }
 	set orthogonalStartSash(sash: Sash | undefined) {
-		this.orthogonalStartSashDisposables.clear();
+		this.orthogonalStartSashDisposables = dispose(this.orthogonalStartSashDisposables);
 
 		if (sash) {
-			this.orthogonalStartSashDisposables.add(sash.onDidEnablementChange(this.onOrthogonalStartSashEnablementChange, this));
+			sash.onDidEnablementChange(this.onOrthogonalStartSashEnablementChange, this, this.orthogonalStartSashDisposables);
 			this.onOrthogonalStartSashEnablementChange(sash.state);
 		} else {
 			this.onOrthogonalStartSashEnablementChange(SashState.Disabled);
@@ -111,14 +111,14 @@ export class Sash extends Disposable {
 		this._orthogonalStartSash = sash;
 	}
 
-	private readonly orthogonalEndSashDisposables = this._register(new DisposableStore());
+	private orthogonalEndSashDisposables: IDisposable[] = [];
 	private _orthogonalEndSash: Sash | undefined;
 	get orthogonalEndSash(): Sash | undefined { return this._orthogonalEndSash; }
 	set orthogonalEndSash(sash: Sash | undefined) {
-		this.orthogonalEndSashDisposables.clear();
+		this.orthogonalEndSashDisposables = dispose(this.orthogonalEndSashDisposables);
 
 		if (sash) {
-			this.orthogonalEndSashDisposables.add(sash.onDidEnablementChange(this.onOrthogonalEndSashEnablementChange, this));
+			sash.onDidEnablementChange(this.onOrthogonalEndSashEnablementChange, this, this.orthogonalEndSashDisposables);
 			this.onOrthogonalEndSashEnablementChange(sash.state);
 		} else {
 			this.onOrthogonalEndSashEnablementChange(SashState.Disabled);
@@ -383,6 +383,9 @@ export class Sash extends Disposable {
 
 	dispose(): void {
 		super.dispose();
+
+		this.orthogonalStartSashDisposables = dispose(this.orthogonalStartSashDisposables);
+		this.orthogonalEndSashDisposables = dispose(this.orthogonalEndSashDisposables);
 
 		if (this.el && this.el.parentElement) {
 			this.el.parentElement.removeChild(this.el);

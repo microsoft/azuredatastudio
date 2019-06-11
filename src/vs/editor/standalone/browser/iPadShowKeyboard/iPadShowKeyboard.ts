@@ -6,23 +6,24 @@
 import 'vs/css!./iPadShowKeyboard';
 import * as browser from 'vs/base/browser/browser';
 import * as dom from 'vs/base/browser/dom';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ICodeEditor, IOverlayWidget, IOverlayWidgetPosition, OverlayWidgetPositionPreference } from 'vs/editor/browser/editorBrowser';
 import { registerEditorContribution } from 'vs/editor/browser/editorExtensions';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 
-export class IPadShowKeyboard extends Disposable implements IEditorContribution {
+export class IPadShowKeyboard implements IEditorContribution {
 
 	private static readonly ID = 'editor.contrib.iPadShowKeyboard';
 
 	private readonly editor: ICodeEditor;
 	private widget: ShowKeyboardWidget | null;
+	private toDispose: IDisposable[];
 
 	constructor(editor: ICodeEditor) {
-		super();
 		this.editor = editor;
+		this.toDispose = [];
 		if (browser.isIPad) {
-			this._register(editor.onDidChangeConfiguration(() => this.update()));
+			this.toDispose.push(editor.onDidChangeConfiguration(() => this.update()));
 			this.update();
 		}
 	}
@@ -47,7 +48,7 @@ export class IPadShowKeyboard extends Disposable implements IEditorContribution 
 	}
 
 	public dispose(): void {
-		super.dispose();
+		this.toDispose = dispose(this.toDispose);
 		if (this.widget) {
 			this.widget.dispose();
 			this.widget = null;
@@ -55,24 +56,25 @@ export class IPadShowKeyboard extends Disposable implements IEditorContribution 
 	}
 }
 
-class ShowKeyboardWidget extends Disposable implements IOverlayWidget {
+class ShowKeyboardWidget implements IOverlayWidget {
 
 	private static readonly ID = 'editor.contrib.ShowKeyboardWidget';
 
 	private readonly editor: ICodeEditor;
 
 	private readonly _domNode: HTMLElement;
+	private _toDispose: IDisposable[];
 
 	constructor(editor: ICodeEditor) {
-		super();
 		this.editor = editor;
 		this._domNode = document.createElement('textarea');
 		this._domNode.className = 'iPadShowKeyboard';
 
-		this._register(dom.addDisposableListener(this._domNode, 'touchstart', (e) => {
+		this._toDispose = [];
+		this._toDispose.push(dom.addDisposableListener(this._domNode, 'touchstart', (e) => {
 			this.editor.focus();
 		}));
-		this._register(dom.addDisposableListener(this._domNode, 'focus', (e) => {
+		this._toDispose.push(dom.addDisposableListener(this._domNode, 'focus', (e) => {
 			this.editor.focus();
 		}));
 
@@ -81,7 +83,7 @@ class ShowKeyboardWidget extends Disposable implements IOverlayWidget {
 
 	public dispose(): void {
 		this.editor.removeOverlayWidget(this);
-		super.dispose();
+		this._toDispose = dispose(this._toDispose);
 	}
 
 	// ----- IOverlayWidget API

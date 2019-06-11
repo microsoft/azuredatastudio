@@ -3,32 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { CancellationToken, CancellationTokenSource } from 'vs/base/common/cancellation';
 import { IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 
 export const IProgressService = createDecorator<IProgressService>('progressService');
 
-/**
- * A progress service that can be used to report progress to various locations of the UI.
- */
 export interface IProgressService {
-
-	_serviceBrand: ServiceIdentifier<IProgressService>;
-
-	withProgress<R = any>(options: IProgressOptions | IProgressNotificationOptions | IProgressCompositeOptions, task: (progress: IProgress<IProgressStep>) => Promise<R>, onDidCancel?: () => void): Promise<R>;
-}
-
-export const ILocalProgressService = createDecorator<ILocalProgressService>('localProgressService');
-
-/**
- * A progress service that will report progress local to the UI piece triggered from. E.g.
- * if used from an action of a viewlet, the progress will be reported in that viewlet.
- */
-export interface ILocalProgressService {
-
-	_serviceBrand: ServiceIdentifier<ILocalProgressService>;
+	_serviceBrand: any;
 
 	/**
 	 * Show progress customized with the provided flags.
@@ -61,19 +44,23 @@ export interface IProgressOptions {
 }
 
 export interface IProgressNotificationOptions extends IProgressOptions {
-	readonly location: ProgressLocation.Notification;
-	readonly primaryActions?: ReadonlyArray<IAction>;
-	readonly secondaryActions?: ReadonlyArray<IAction>;
-}
-
-export interface IProgressCompositeOptions extends IProgressOptions {
-	location: ProgressLocation.Explorer | ProgressLocation.Extensions | ProgressLocation.Scm | string;
-	delay?: number;
+	location: ProgressLocation.Notification;
+	primaryActions?: IAction[];
+	secondaryActions?: IAction[];
 }
 
 export interface IProgressStep {
 	message?: string;
 	increment?: number;
+}
+
+export const IProgressService2 = createDecorator<IProgressService2>('progressService2');
+
+export interface IProgressService2 {
+
+	_serviceBrand: any;
+
+	withProgress<R = any>(options: IProgressOptions, task: (progress: IProgress<IProgressStep>) => Promise<R>, onDidCancel?: () => void): Promise<R>;
 }
 
 export interface IProgressRunner {
@@ -131,7 +118,7 @@ export class LongRunningOperation {
 	private currentProgressTimeout: any;
 
 	constructor(
-		private localProgressService: ILocalProgressService
+		private progressService: IProgressService
 	) { }
 
 	start(progressDelay: number): IOperation {
@@ -144,7 +131,7 @@ export class LongRunningOperation {
 		const newOperationToken = new CancellationTokenSource();
 		this.currentProgressTimeout = setTimeout(() => {
 			if (newOperationId === this.currentOperationId) {
-				this.currentProgressRunner = this.localProgressService.show(true);
+				this.currentProgressRunner = this.progressService.show(true);
 			}
 		}, progressDelay);
 

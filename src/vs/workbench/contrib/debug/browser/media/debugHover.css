@@ -26,7 +26,6 @@
 	text-overflow: ellipsis;
 	height: 18px;
 	overflow: hidden;
-	white-space: pre;
 	border-bottom: 1px solid rgba(128, 128, 128, 0.35);
 }
 
@@ -59,6 +58,10 @@
 	overflow: auto;
 	font-family: var(--monaco-monospace-font);
 	max-height: 500px;
+}
+
+.monaco-editor .debug-hover-widget .monaco-tl-contents .value {
+	white-space: nowrap;
 }
 
 .monaco-editor .debug-hover-widget .error {

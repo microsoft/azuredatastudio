@@ -828,7 +828,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 						/* __GDPR__
 							"galleryService:requestError" : {
 								"url" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-								"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
+								"cdn": { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 								"message": { "classification": "CallstackOrException", "purpose": "FeatureInsight" }
 							}
 						*/

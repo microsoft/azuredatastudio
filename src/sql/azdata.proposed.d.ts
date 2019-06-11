@@ -4488,8 +4488,8 @@ declare module 'azdata' {
 		* }
 		* ```
 		 * @export
-		 * @param notebook provider
-		 * @returns disposable
+		 * @param {NotebookProvider} provider
+		 * @returns {vscode.Disposable}
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 

@@ -15,7 +15,6 @@ import { URI } from 'vs/base/common/uri';
 import { Event } from 'vs/base/common/event';
 import { isEmptyObject } from 'vs/base/common/types';
 import { DEFAULT_EDITOR_MIN_DIMENSIONS, DEFAULT_EDITOR_MAX_DIMENSIONS } from 'vs/workbench/browser/parts/editor/editor';
-import { MementoObject } from 'vs/workbench/common/memento';
 
 /**
  * The base class of editors in the workbench. Editors register themselves for specific editor inputs.
@@ -178,7 +177,7 @@ export class EditorMemento<T> implements IEditorMemento<T> {
 	constructor(
 		private _id: string,
 		private key: string,
-		private memento: MementoObject,
+		private memento: object,
 		private limit: number,
 		private editorGroupService: IEditorGroupsService
 	) { }

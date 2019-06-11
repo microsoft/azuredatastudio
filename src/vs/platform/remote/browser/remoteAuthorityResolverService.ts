@@ -21,11 +21,14 @@ export class RemoteAuthorityResolverService implements IRemoteAuthorityResolverS
 	}
 
 	clearResolvedAuthority(authority: string): void {
+		throw new Error(`Not implemented`);
 	}
 
 	setResolvedAuthority(resolvedAuthority: ResolvedAuthority) {
+		throw new Error(`Not implemented`);
 	}
 
 	setResolvedAuthorityError(authority: string, err: any): void {
+		throw new Error(`Not implemented`);
 	}
 }

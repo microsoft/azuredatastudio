@@ -26,21 +26,17 @@ function testGuessIndentation(defaultInsertSpaces: boolean, defaultTabSize: numb
 	assert.equal(r.tabSize, expectedTabSize, msg);
 }
 
-function assertGuess(expectedInsertSpaces: boolean | undefined, expectedTabSize: number | undefined | [number], text: string[], msg?: string): void {
+function assertGuess(expectedInsertSpaces: boolean | undefined, expectedTabSize: number | undefined, text: string[], msg?: string): void {
 	if (typeof expectedInsertSpaces === 'undefined') {
 		// cannot guess insertSpaces
 		if (typeof expectedTabSize === 'undefined') {
 			// cannot guess tabSize
 			testGuessIndentation(true, 13370, true, 13370, text, msg);
 			testGuessIndentation(false, 13371, false, 13371, text, msg);
-		} else if (typeof expectedTabSize === 'number') {
+		} else {
 			// can guess tabSize
 			testGuessIndentation(true, 13370, true, expectedTabSize, text, msg);
 			testGuessIndentation(false, 13371, false, expectedTabSize, text, msg);
-		} else {
-			// can only guess tabSize when insertSpaces is true
-			testGuessIndentation(true, 13370, true, expectedTabSize[0], text, msg);
-			testGuessIndentation(false, 13371, false, 13371, text, msg);
 		}
 	} else {
 		// can guess insertSpaces
@@ -48,19 +44,10 @@ function assertGuess(expectedInsertSpaces: boolean | undefined, expectedTabSize:
 			// cannot guess tabSize
 			testGuessIndentation(true, 13370, expectedInsertSpaces, 13370, text, msg);
 			testGuessIndentation(false, 13371, expectedInsertSpaces, 13371, text, msg);
-		} else if (typeof expectedTabSize === 'number') {
+		} else {
 			// can guess tabSize
 			testGuessIndentation(true, 13370, expectedInsertSpaces, expectedTabSize, text, msg);
 			testGuessIndentation(false, 13371, expectedInsertSpaces, expectedTabSize, text, msg);
-		} else {
-			// can only guess tabSize when insertSpaces is true
-			if (expectedInsertSpaces === true) {
-				testGuessIndentation(true, 13370, expectedInsertSpaces, expectedTabSize[0], text, msg);
-				testGuessIndentation(false, 13371, expectedInsertSpaces, expectedTabSize[0], text, msg);
-			} else {
-				testGuessIndentation(true, 13370, expectedInsertSpaces, 13370, text, msg);
-				testGuessIndentation(false, 13371, expectedInsertSpaces, 13371, text, msg);
-			}
 		}
 	}
 }
@@ -232,7 +219,7 @@ suite('Editor Model - TextModel', () => {
 			'\tx'
 		], '7xTAB');
 
-		assertGuess(undefined, [2], [
+		assertGuess(undefined, 2, [
 			'\tx',
 			'  x',
 			'\tx',
@@ -252,7 +239,7 @@ suite('Editor Model - TextModel', () => {
 			'\tx',
 			' x'
 		], '4x1, 4xTAB');
-		assertGuess(false, undefined, [
+		assertGuess(false, 2, [
 			'\tx',
 			'\tx',
 			'  x',
@@ -263,7 +250,7 @@ suite('Editor Model - TextModel', () => {
 			'\tx',
 			'  x',
 		], '4x2, 5xTAB');
-		assertGuess(false, undefined, [
+		assertGuess(false, 2, [
 			'\tx',
 			'\tx',
 			'x',
@@ -274,7 +261,7 @@ suite('Editor Model - TextModel', () => {
 			'\tx',
 			'  x',
 		], '1x2, 5xTAB');
-		assertGuess(false, undefined, [
+		assertGuess(false, 4, [
 			'\tx',
 			'\tx',
 			'x',
@@ -285,7 +272,7 @@ suite('Editor Model - TextModel', () => {
 			'\tx',
 			'    x',
 		], '1x4, 5xTAB');
-		assertGuess(false, undefined, [
+		assertGuess(false, 2, [
 			'\tx',
 			'\tx',
 			'x',
@@ -537,7 +524,7 @@ suite('Editor Model - TextModel', () => {
 			' \t x',
 			'\tx'
 		], 'mixed whitespace 1');
-		assertGuess(false, undefined, [
+		assertGuess(false, 4, [
 			'\tx',
 			'\t    x'
 		], 'mixed whitespace 2');
@@ -585,26 +572,6 @@ suite('Editor Model - TextModel', () => {
 			'',
 			'module.exports = myFn;',
 			'',
-		]);
-	});
-
-	test('issue #70832: Broken indentation detection', () => {
-		assertGuess(false, undefined, [
-			'x',
-			'x',
-			'x',
-			'x',
-			'	x',
-			'		x',
-			'    x',
-			'		x',
-			'	x',
-			'		x',
-			'	x',
-			'	x',
-			'	x',
-			'	x',
-			'x',
 		]);
 	});
 

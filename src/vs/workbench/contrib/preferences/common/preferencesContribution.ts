@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { dispose, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { isLinux } from 'vs/base/common/platform';
 import { isEqual } from 'vs/base/common/resources';
 import { endsWith } from 'vs/base/common/strings';
@@ -79,7 +79,7 @@ export class PreferencesContribution implements IWorkbenchContribution {
 		}
 
 		// Global User Settings File
-		if (isEqual(resource, this.environmentService.settingsResource, !isLinux)) {
+		if (isEqual(resource, URI.file(this.environmentService.appSettingsPath), !isLinux)) {
 			return { override: this.preferencesService.openGlobalSettings(true, options, group) };
 		}
 
@@ -129,14 +129,14 @@ export class PreferencesContribution implements IWorkbenchContribution {
 			const modelContent = JSON.stringify(schema);
 			const languageSelection = this.modeService.create('jsonc');
 			const model = this.modelService.createModel(modelContent, languageSelection, uri);
-			const disposables = new DisposableStore();
-			disposables.add(schemaRegistry.onDidChangeSchema(schemaUri => {
+			const disposables: IDisposable[] = [];
+			disposables.push(schemaRegistry.onDidChangeSchema(schemaUri => {
 				if (schemaUri === uri.toString()) {
 					schema = schemaRegistry.getSchemaContributions().schemas[uri.toString()];
 					model.setValue(JSON.stringify(schema));
 				}
 			}));
-			disposables.add(model.onWillDispose(() => disposables.dispose()));
+			disposables.push(model.onWillDispose(() => dispose(disposables)));
 
 			return model;
 		}

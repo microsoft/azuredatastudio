@@ -8,24 +8,25 @@ import * as dom from 'vs/base/browser/dom';
 import { InputBox, IRange, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import { inputBackground, inputForeground, inputBorder, inputValidationInfoBackground, inputValidationInfoForeground, inputValidationInfoBorder, inputValidationWarningBackground, inputValidationWarningForeground, inputValidationWarningBorder, inputValidationErrorBackground, inputValidationErrorForeground, inputValidationErrorBorder } from 'vs/platform/theme/common/colorRegistry';
 import { ITheme } from 'vs/platform/theme/common/themeService';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import Severity from 'vs/base/common/severity';
 import { StandardMouseEvent } from 'vs/base/browser/mouseEvent';
 
 const $ = dom.$;
 
-export class QuickInputBox extends Disposable {
+export class QuickInputBox {
 
 	private container: HTMLElement;
 	private inputBox: InputBox;
+	private disposables: IDisposable[] = [];
 
 	constructor(
 		private parent: HTMLElement
 	) {
-		super();
 		this.container = dom.append(this.parent, $('.quick-input-box'));
-		this.inputBox = this._register(new InputBox(this.container, undefined));
+		this.inputBox = new InputBox(this.container, undefined);
+		this.disposables.push(this.inputBox);
 	}
 
 	onKeyDown = (handler: (event: StandardKeyboardEvent) => void): IDisposable => {
@@ -127,5 +128,9 @@ export class QuickInputBox extends Disposable {
 			inputValidationErrorForeground: theme.getColor(inputValidationErrorForeground),
 			inputValidationErrorBorder: theme.getColor(inputValidationErrorBorder),
 		});
+	}
+
+	dispose() {
+		this.disposables = dispose(this.disposables);
 	}
 }

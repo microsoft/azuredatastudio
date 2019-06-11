@@ -11,7 +11,7 @@ import { TimeoutTimer } from 'vs/base/common/async';
 import { CharCode } from 'vs/base/common/charCode';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable, IDisposable, toDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, dispose, toDisposable } from 'vs/base/common/lifecycle';
 import * as platform from 'vs/base/common/platform';
 import { coalesce } from 'vs/base/common/arrays';
 
@@ -905,9 +905,10 @@ export const EventHelper = {
 	}
 };
 
-export interface IFocusTracker extends Disposable {
+export interface IFocusTracker {
 	onDidFocus: Event<void>;
 	onDidBlur: Event<void>;
+	dispose(): void;
 }
 
 export function saveParentsScrollTop(node: Element): number[] {
@@ -928,20 +929,21 @@ export function restoreParentsScrollTop(node: Element, state: number[]): void {
 	}
 }
 
-class FocusTracker extends Disposable implements IFocusTracker {
+class FocusTracker implements IFocusTracker {
 
-	private readonly _onDidFocus = this._register(new Emitter<void>());
-	public readonly onDidFocus: Event<void> = this._onDidFocus.event;
+	private _onDidFocus = new Emitter<void>();
+	readonly onDidFocus: Event<void> = this._onDidFocus.event;
 
-	private readonly _onDidBlur = this._register(new Emitter<void>());
-	public readonly onDidBlur: Event<void> = this._onDidBlur.event;
+	private _onDidBlur = new Emitter<void>();
+	readonly onDidBlur: Event<void> = this._onDidBlur.event;
+
+	private disposables: IDisposable[] = [];
 
 	constructor(element: HTMLElement | Window) {
-		super();
 		let hasFocus = isAncestor(document.activeElement, <HTMLElement>element);
 		let loosingFocus = false;
 
-		const onFocus = () => {
+		let onFocus = () => {
 			loosingFocus = false;
 			if (!hasFocus) {
 				hasFocus = true;
@@ -949,7 +951,7 @@ class FocusTracker extends Disposable implements IFocusTracker {
 			}
 		};
 
-		const onBlur = () => {
+		let onBlur = () => {
 			if (hasFocus) {
 				loosingFocus = true;
 				window.setTimeout(() => {
@@ -962,8 +964,14 @@ class FocusTracker extends Disposable implements IFocusTracker {
 			}
 		};
 
-		this._register(domEvent(element, EventType.FOCUS, true)(onFocus));
-		this._register(domEvent(element, EventType.BLUR, true)(onBlur));
+		domEvent(element, EventType.FOCUS, true)(onFocus, null, this.disposables);
+		domEvent(element, EventType.BLUR, true)(onBlur, null, this.disposables);
+	}
+
+	dispose(): void {
+		this.disposables = dispose(this.disposables);
+		this._onDidFocus.dispose();
+		this._onDidBlur.dispose();
 	}
 }
 
