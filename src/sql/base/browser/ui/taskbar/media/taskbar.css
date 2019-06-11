@@ -19,7 +19,10 @@
 .carbon-taskbar {
 	width: 100%;
 	position: relative;
-	margin: 2px 0px 2px 0px;
+}
+
+.carbon-taskbar .monaco-action-bar {
+	padding: 2px 0px 2px 0px;
 }
 
 .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {

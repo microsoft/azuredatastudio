@@ -1691,7 +1691,6 @@ declare module 'azdata' {
 	export interface GenerateDeployScriptParams {
 		packageFilePath: string;
 		databaseName: string;
-		scriptFilePath: string;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
@@ -1708,7 +1707,7 @@ declare module 'azdata' {
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
@@ -4430,10 +4429,17 @@ declare module 'azdata' {
 			 */
 			cells: NotebookCell[];
 			/**
-			 * The [change kind](#TextEditorSelectionChangeKind) which has triggered this
+			 * The [change kind](#NotebookChangeKind) which has triggered this
 			 * event. Can be `undefined`.
 			 */
-			kind?: vscode.TextEditorSelectionChangeKind;
+			kind?: NotebookChangeKind;
+		}
+
+		export enum NotebookChangeKind {
+			ContentUpdated = 0,
+			MetadataUpdated = 1,
+			Save = 2,
+			CellExecuted = 3
 		}
 
 		/**

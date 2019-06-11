@@ -195,6 +195,7 @@ export class QueryResultsView extends Disposable {
 	}
 
 	private setQueryRunner(runner: QueryRunner) {
+		const activeTab = this._input.state.activeTab;
 		if (runner.hasCompleted && !this.hasResults(runner)) {
 			this.hideResults();
 		} else {
@@ -261,8 +262,8 @@ export class QueryResultsView extends Disposable {
 				});
 			}
 		}));
-		if (this.input.state.activeTab) {
-			this._panelView.showTab(this.input.state.activeTab);
+		if (activeTab) {
+			this._panelView.showTab(activeTab);
 		} else {
 			this._panelView.showTab(this.resultsTab.identifier); // our default tab is the results view
 		}
@@ -272,13 +273,14 @@ export class QueryResultsView extends Disposable {
 		this._input = input;
 		dispose(this.runnerDisposables);
 		this.runnerDisposables = [];
+
+		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+
 		this.resultsTab.view.state = this.input.state.gridPanelState;
 		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
-
-		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {

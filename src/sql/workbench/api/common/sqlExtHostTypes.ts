@@ -646,3 +646,10 @@ export enum ActionOnCellCheckboxCheck {
 	selectRow = 0,
 	customAction = 1
 }
+
+export enum NotebookChangeKind {
+	ContentUpdated = 0,
+	MetadataUpdated = 1,
+	Save = 2,
+	CellExecuted = 3
+}
