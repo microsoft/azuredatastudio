@@ -33,7 +33,7 @@ export enum BuiltInCommands {
 }
 
 export enum CommandContext {
-	WizardServiceEnabled = 'wizardservice:enabled'
+	NotebookPythonInstalled = 'notebook:pythonInstalled'
 }
 
 export const pythonOfflinePipPackagesUrl = 'https://go.microsoft.com/fwlink/?linkid=2092867';
