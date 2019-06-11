@@ -210,3 +210,19 @@ export class ChartDataAction extends Action {
 		return Promise.resolve(true);
 	}
 }
+
+export class SandDanceDataAction extends Action {
+	public static ID = 'grid.sandDance';
+	public static LABEL = localize('sandDance', 'SandDance');
+	public static ICON = 'viewSandDance';
+
+	constructor(@IEditorService private editorService: IEditorService) {
+		super(SandDanceDataAction.ID, SandDanceDataAction.LABEL, SandDanceDataAction.ICON);
+	}
+
+	public run(context: IGridActionContext): Promise<boolean> {
+		const activeEditor = this.editorService.activeControl as QueryEditor;
+		activeEditor.sandDance({ batchId: context.batchId, resultId: context.resultId });
+		return Promise.resolve(true);
+	}
+}

@@ -83,6 +83,11 @@ export const viewAsChart = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.ViewAsChart);
 };
 
+
+export const viewAsSandDance = (accessor: ServicesAccessor) => {
+	runActionOnActiveResultsEditor(accessor, GridContentEvents.ViewAsSandDance);
+};
+
 export const goToNextGrid = (accessor: ServicesAccessor) => {
 	runActionOnActiveResultsEditor(accessor, GridContentEvents.GoToNextGrid);
 };
