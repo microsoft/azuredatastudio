@@ -31,6 +31,7 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 
 /**
  *  Provides actions for the server tree elements
@@ -111,7 +112,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private getBuiltinConnectionActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
 		actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
-		this.addNewQueryAction(context, actions);
+		this.addNewQueryNotebookActions(context, actions);
 
 		if (this._connectionManagementService.isProfileConnected(context.profile)) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
@@ -165,7 +166,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				isAvailableDatabaseNode = true;
 				actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
-				this.addNewQueryAction(context, actions);
+				this.addNewQueryNotebookActions(context, actions);
 			} else {
 				return actions;
 			}
@@ -186,9 +187,10 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		return actions;
 	}
 
-	private addNewQueryAction(context: ObjectExplorerContext, actions: IAction[]): void {
+	private addNewQueryNotebookActions(context: ObjectExplorerContext, actions: IAction[]): void {
 		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
 			actions.push(this._instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
+			actions.push(this._instantiationService.createInstance(OEAction, NewNotebookAction.ID, NewNotebookAction.LABEL));
 		}
 	}
 

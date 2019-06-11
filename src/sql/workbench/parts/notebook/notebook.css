@@ -116,3 +116,12 @@
 .notebookEditor .notebook-cellTable .slick-viewport {
 	min-height: 39px;
 }
+
+.monaco-workbench .notebook-action.new-notebook {
+	background: url('./media/light/new_notebook.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-workbench .notebook-action.new-notebook,
+.hc-black .monaco-workbench .notebook-action.new-notebook {
+	background: url('./media/dark/new_notebook_inverse.svg') center center no-repeat;
+}

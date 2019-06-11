@@ -10,6 +10,7 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 let connections: ConnectionStatusManager;
 let capabilitiesService: CapabilitiesTestService;
@@ -26,7 +27,7 @@ let connectionProfile: IConnectionProfile = {
 	groupId: 'group id',
 	getOptionsKey: () => 'connection1',
 	matches: undefined,
-	providerName: 'MSSQL',
+	providerName: mssqlProviderName,
 	options: {},
 	saveProfile: true,
 	id: undefined
@@ -43,7 +44,7 @@ let editorConnectionProfile: IConnectionProfile = {
 	groupId: 'group id',
 	getOptionsKey: () => 'connection2',
 	matches: undefined,
-	providerName: 'MSSQL',
+	providerName: mssqlProviderName,
 	options: {},
 	saveProfile: true,
 	id: undefined
@@ -60,7 +61,7 @@ let connectionProfileWithoutDbName: IConnectionProfile = {
 	groupId: 'group id',
 	getOptionsKey: () => 'connection1',
 	matches: undefined,
-	providerName: 'MSSQL',
+	providerName: mssqlProviderName,
 	options: {},
 	saveProfile: true,
 	id: undefined

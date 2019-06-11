@@ -25,6 +25,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -369,7 +370,7 @@ export default class QueryRunner extends Disposable {
 						// fire query plan available event if execution is completed
 						if (result.resultSetSummary.complete) {
 							this._onQueryPlanAvailable.fire({
-								providerId: 'MSSQL',
+								providerId: mssqlProviderName,
 								fileUri: result.ownerUri,
 								planXml: planXmlString
 							});

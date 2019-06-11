@@ -28,7 +28,7 @@ import { ObjectExplorerActionsContext, ManageConnectionAction } from 'sql/workbe
 import { IConnectionResult, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 
 suite('SQL Connection Tree Action tests', () => {
@@ -90,7 +90,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testId'
@@ -126,7 +126,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testId'
@@ -165,7 +165,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testId'
@@ -276,7 +276,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testId'
@@ -321,7 +321,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testId'
@@ -339,12 +339,12 @@ suite('SQL Connection Tree Action tests', () => {
 	test('RefreshConnectionAction - refresh should be called if connection status is connect', (done) => {
 		let isConnectedReturnValue: boolean = true;
 		let sqlProvider = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: [],
 		};
 
-		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: sqlProvider };
 
 		let connection = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'Test',
@@ -356,7 +356,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testID'
@@ -427,12 +427,12 @@ suite('SQL Connection Tree Action tests', () => {
 	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', (done) => {
 		let isConnectedReturnValue: boolean = false;
 		let sqlProvider = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: []
 		};
 
-		capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: sqlProvider };
 
 		let connection = new ConnectionProfile(capabilitiesService, {
 			connectionName: 'Test',
@@ -444,7 +444,7 @@ suite('SQL Connection Tree Action tests', () => {
 			password: 'test',
 			userName: 'testUsername',
 			groupId: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: 'testID'
