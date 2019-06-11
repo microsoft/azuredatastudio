@@ -33,9 +33,6 @@ export class TelemetryService implements ITelemetryService {
 	private _userOptIn: boolean;
 	private _enabled: boolean;
 
-	// {{SQL CARBON EDIT}} - Keep track of timestamp for certain telemetry events
-	private _telemetryTimestampMap: Map<string, number>;
-
 	private _disposables: IDisposable[] = [];
 	private _cleanupPatterns: RegExp[] = [];
 
@@ -76,8 +73,6 @@ export class TelemetryService implements ITelemetryService {
 				*/
 				this.publicLog('machineIdFallback', { usingFallbackGuid: !isHashedId });
 			});
-			// {{SQL CARBON EDIT}}
-			this._telemetryTimestampMap = new Map<string, number>();
 		}
 	}
 
@@ -117,11 +112,6 @@ export class TelemetryService implements ITelemetryService {
 
 		return this._commonProperties.then(values => {
 
-			// {{SQL CARBON EDIT}}
-			if (this._telemetryTimestampMap) {
-				this._telemetryTimestampMap[eventName] = Date.now();
-			}
-
 			// (first) add common properties
 			data = mixin(data, values);
 
@@ -139,11 +129,6 @@ export class TelemetryService implements ITelemetryService {
 			// unsure what to do now...
 			console.error(err);
 		});
-	}
-
-	// {{SQL CARBON EDIT}} - Add method to get timestamp info for telemetry event name
-	public getTimestampForEvent(telemetryEvent: string): number {
-		return this._telemetryTimestampMap[telemetryEvent];
 	}
 
 	private _cleanupInfo(stack: string, anonymizeFilePaths?: boolean): string {

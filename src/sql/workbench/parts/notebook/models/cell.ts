@@ -195,7 +195,9 @@ export class CellModel implements ICellModel {
 
 	public set loaded(val: boolean) {
 		this._loaded = val;
-		this._onCellLoaded.fire(this.id);
+		if (val) {
+			this._onCellLoaded.fire(this._cellType);
+		}
 	}
 
 	private notifyExecutionComplete(): void {

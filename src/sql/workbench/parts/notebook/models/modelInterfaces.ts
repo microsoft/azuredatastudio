@@ -510,6 +510,7 @@ export interface INotebookModelOptions {
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+	editorLoadedTimestamp?: number;
 }
 
 export interface ILanguageMagic {

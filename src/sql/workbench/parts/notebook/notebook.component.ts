@@ -280,7 +280,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			providerId: 'sql', // this is tricky; really should also depend on the connection profile
 			defaultKernel: this._notebookParams.input.defaultKernel,
 			layoutChanged: this._notebookParams.input.layoutChanged,
-			capabilitiesService: this.capabilitiesService
+			capabilitiesService: this.capabilitiesService,
+			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
 		}, this.profile, this.logService, this.notificationService, this._telemetryService);
 		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());

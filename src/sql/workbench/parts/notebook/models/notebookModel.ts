@@ -298,21 +298,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
 					this._cells = contents.cells.map(c => {
-						let cellContent = (<nb.ICellContents>c);
-						if (c && cellContent && cellContent.cell_type === CellTypes.Markdown) {
-							this._textCellsLoading++;
-						}
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
-						this._register(cellModel.onLoaded((e) => {
-							this._textCellsLoading--;
-							if (this._textCellsLoading <= 0) {
-								let editorOpenedTimestamp = this.telemetryService.getTimestampForEvent('editorOpened');
-								if (editorOpenedTimestamp && editorOpenedTimestamp > 0) {
-									let markdownRenderingTime = Date.now() - editorOpenedTimestamp;
-									this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingEllapsed: markdownRenderingTime });
-								}
-							}
-						}));
+						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
 						return cellModel;
 					});
 				}
@@ -940,6 +927,24 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			await this.notebookOptions.connectionService.disconnect(conn).catch(e => this.logService.error(e));
 		});
 		this._connectionUrisToDispose = [];
+	}
+
+	// Track time it takes to render all markdown cells
+	private trackMarkdownTelemetry(cellContent: nb.ICellContents, cellModel: ICellModel): void {
+		if (cellContent && cellContent.cell_type === CellTypes.Markdown) {
+			this._textCellsLoading++;
+		}
+		this._register(cellModel.onLoaded((e) => {
+			this._textCellsLoading--;
+			if (this._textCellsLoading <= 0) {
+				if (this._notebookOptions.editorLoadedTimestamp) {
+					if (this._notebookOptions.editorLoadedTimestamp && this._notebookOptions.editorLoadedTimestamp > 0) {
+						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
+						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingEllapsed: markdownRenderingTime });
+					}
+				}
+			}
+		}));
 	}
 
 	/**
