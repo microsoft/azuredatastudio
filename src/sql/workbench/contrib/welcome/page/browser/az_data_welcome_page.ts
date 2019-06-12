@@ -5,9 +5,17 @@
 
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
+import product from 'vs/platform/product/node/product';
 
 export function used() {
 }
+
+function showDeploySection(): boolean {
+	// only show the deploy section for insider build and dev environment for now until the feature is stable
+	// tracking issue: https://github.com/microsoft/azuredatastudio/issues/5987
+	return product.quality !== 'stable';
+}
+
 
 export default () => `
 <div class="welcomePageContainer">
@@ -26,7 +34,14 @@ export default () => `
 						<li><a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
 						<li class="mac-only"><a href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
 						<li class="windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
-						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.deploySQL', "Deploy SQL Server…"))}</a></li>
+					</ul>
+				</div>
+				<div class="section deploy" style="display:${showDeploySection() ? 'block' : 'none'}">
+					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
+					<ul>
+						<li><a href="command:azdata.resource.sql-image.deploy">${escape(localize('welcomePage.deploy-image', "Deploy SQL Server on Docker…"))}</a></li>
+						<li><a href="command:azdata.resource.sql-bdc.deploy">${escape(localize('welcomePage.deploy-bdc', "Deploy SQL Server big data cluster…"))}</a></li>
+						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.MoreOptions', "More…"))}</a></li>
 					</ul>
 				</div>
 				<div class="section recent">
