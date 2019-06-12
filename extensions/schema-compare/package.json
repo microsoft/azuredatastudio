@@ -34,6 +34,20 @@
 				}
 			}
 		],
+		"languages": [
+			{
+				"id": "scmp",
+				"filenames": [
+					"Schema Compare"
+				],
+				"extensions": [
+					".scmp"
+				],
+				"aliases": [
+					"scmp"
+				]
+			}
+		],
 		"menus": {
 			"objectExplorer/item/context": [
 				{
