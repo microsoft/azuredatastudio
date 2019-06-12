@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/jobStepsView';
-
+import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, AfterContentChecked } from '@angular/core';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
@@ -105,6 +105,8 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			renderer: this._treeRenderer
 		}, { verticalScrollMode: ScrollbarVisibility.Visible, horizontalScrollMode: ScrollbarVisibility.Visible });
 		this._register(attachListStyler(this._tree, this.themeService));
+		const stepsTooltip = nls.localize('agent.steps', 'Steps');
+		jQuery('.steps-header > .steps-icon').attr('title', stepsTooltip);
 		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
 	}
 
