@@ -347,6 +347,28 @@ export default class JupyterServerInstallation {
 		}
 	}
 
+	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
+		let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
+		let packagesInfo = await this.executeBufferedCommand(cmd);
+
+		let packagesResult: PythonPkgDetails[] = [];
+		if (packagesInfo) {
+			packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+		}
+		return packagesResult;
+	}
+
+	public installPipPackage(packageName: string, version: string): Promise<void> {
+		let cmd = `"${this.pythonExecutable}" -m pip install ${packageName}==${version}`;
+		return this.executeStreamedCommand(cmd);
+	}
+
+	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y ${packagesStr}`;
+		return this.executeStreamedCommand(cmd);
+	}
+
 	private async installOfflinePipPackages(): Promise<void> {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform) {
@@ -357,7 +379,7 @@ export default class JupyterServerInstallation {
 		if (installJupyterCommand) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
-			await this.executeCommand(installJupyterCommand);
+			await this.executeStreamedCommand(installJupyterCommand);
 			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
 			return Promise.resolve();
@@ -378,7 +400,7 @@ export default class JupyterServerInstallation {
 		if (installSparkMagic) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
-			await this.executeCommand(installSparkMagic);
+			await this.executeStreamedCommand(installSparkMagic);
 		}
 	}
 
@@ -387,10 +409,10 @@ export default class JupyterServerInstallation {
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let installCommand = `"${this._pythonExecutable}" -m pip install jupyter==1.0.0 pandas==0.24.2`;
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
@@ -403,16 +425,20 @@ export default class JupyterServerInstallation {
 		if (process.platform !== constants.winPlatform) {
 			installCommand = `${installCommand} pykerberos==1.2.1`;
 		}
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
 
-	private async executeCommand(command: string): Promise<void> {
+	private async executeStreamedCommand(command: string): Promise<void> {
 		await utils.executeStreamedCommand(command, { env: this.execOptions.env }, this.outputChannel);
+	}
+
+	private async executeBufferedCommand(command: string): Promise<string> {
+		return await utils.executeBufferedCommand(command, { env: this.execOptions.env });
 	}
 
 	public get pythonExecutable(): string {
@@ -500,10 +526,20 @@ export default class JupyterServerInstallation {
 			pythonBinPathSuffix);
 	}
 
+	public async getPythonPackagesPath(): Promise<string> {
+		let cmd = `"${this.pythonExecutable}" -c "import site; print(site.getsitepackages()[0])"`;
+		return await this.executeBufferedCommand(cmd);
+	}
+
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
 		return path.join(
 			pythonInstallPath,
 			useExistingInstall ? '' : constants.pythonBundleVersion,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
+}
+
+export interface PythonPkgDetails {
+	name: string;
+	version: string;
 }
