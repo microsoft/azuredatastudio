@@ -31,7 +31,7 @@ if (context.RunTest) {
 			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
 		test('Standalone database context menu test', async function () {
-			await (new ObjectExplorerTester()).standAloneContextMenuTest();
+			await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
 }
@@ -77,7 +77,7 @@ class ObjectExplorerTester {
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
-	async standAloneContextMenuTest(): Promise<void> {
+	async standaloneContextMenuTest(): Promise<void> {
 		let server = await getStandaloneServer();
 		let expectedActions: string[] = [];
 		if (process.platform === 'win32') {
