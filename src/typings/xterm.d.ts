@@ -930,7 +930,6 @@ declare module 'xterm' {
 
 
 
-
 // Modifications to official .d.ts below
 declare module 'xterm' {
 	interface TerminalCore {

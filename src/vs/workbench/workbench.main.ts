@@ -181,7 +181,7 @@ import { IAngularEventingService } from 'sql/platform/angularEventing/common/ang
 import { AngularEventingService } from 'sql/platform/angularEventing/node/angularEventingService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { CapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesServiceImpl';
-import { ICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
+import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
@@ -245,7 +245,7 @@ registerSingleton(ICapabilitiesService, CapabilitiesService);
 registerSingleton(IErrorMessageService, ErrorMessageService);
 registerSingleton(IConnectionDialogService, ConnectionDialogService);
 registerSingleton(IServerGroupController, ServerGroupController);
-registerSingleton(ICredentialsService, CredentialsService);
+registerSingleton(sqlICredentialsService, CredentialsService);
 registerSingleton(IResourceProviderService, ResourceProviderService);
 registerSingleton(IAccountManagementService, AccountManagementService);
 registerSingleton(IConnectionManagementService, ConnectionManagementService as any);
