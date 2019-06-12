@@ -11,6 +11,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class DashboardInput extends EditorInput {
 
@@ -93,7 +94,7 @@ export class DashboardInput extends EditorInput {
 	}
 
 	private isMasterMssql(): boolean {
-		return this.connectionProfile.providerName.toLowerCase() === 'mssql'
+		return this.connectionProfile.providerName === mssqlProviderName
 			&& this.connectionProfile.databaseName.toLowerCase() === 'master';
 	}
 

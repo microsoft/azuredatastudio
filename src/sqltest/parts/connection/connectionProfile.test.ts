@@ -10,6 +10,7 @@ import * as assert from 'assert';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('SQL ConnectionProfileInfo tests', () => {
 	let msSQLCapabilities: ConnectionProviderProperties;
@@ -27,7 +28,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 		groupId: 'group id',
 		getOptionsKey: undefined,
 		matches: undefined,
-		providerName: 'MSSQL',
+		providerName: mssqlProviderName,
 		options: {},
 		saveProfile: true,
 		id: undefined
@@ -44,7 +45,7 @@ suite('SQL ConnectionProfileInfo tests', () => {
 			password: 'password',
 			authenticationType: ''
 		},
-		providerName: 'MSSQL',
+		providerName: mssqlProviderName,
 		savePassword: true
 	};
 
@@ -124,12 +125,12 @@ suite('SQL ConnectionProfileInfo tests', () => {
 			}
 		];
 		msSQLCapabilities = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider
 		};
 		capabilitiesService = new CapabilitiesTestService();
-		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 	});
 
 	test('set properties should set the values correctly', () => {

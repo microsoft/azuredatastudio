@@ -5,9 +5,14 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
+import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
+import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
+import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
+import { KeyCode } from 'vs/base/common/keyCodes';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -18,3 +23,17 @@ const viewModelEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(viewModelEditorDescriptor, [new SyncDescriptor(NotebookInput)]);
+
+// Global Actions
+let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		NewNotebookAction,
+		NewNotebookAction.ID,
+		NewNotebookAction.LABEL,
+		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_N },
+
+	),
+	NewNotebookAction.LABEL
+);

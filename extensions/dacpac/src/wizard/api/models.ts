@@ -17,6 +17,4 @@ export interface DacFxDataModel {
 	filePath: string;
 	version: string;
 	upgradeExisting: boolean;
-	scriptFilePath: string;
-	generateScriptAndDeploy: boolean;
 }

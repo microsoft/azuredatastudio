@@ -305,6 +305,11 @@ export class ExtensionService extends Disposable implements IExtensionService {
 			return false;
 		}
 
+		// {{ SQL CARBON EDIT }}
+		if (extension.forceReload) {
+			return false;
+		}
+
 		const extensionDescription = this._registry.getExtensionDescription(extension.identifier);
 		if (extensionDescription) {
 			// ignore adding an extension which is already running and cannot be removed

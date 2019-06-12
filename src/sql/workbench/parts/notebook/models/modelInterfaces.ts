@@ -21,6 +21,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -465,6 +466,8 @@ export interface ICellModel {
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
+	loaded: boolean;
+	readonly onLoaded: Event<string>;
 }
 
 export interface FutureInternal extends nb.IFuture {
@@ -507,6 +510,7 @@ export interface INotebookModelOptions {
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+	editorLoadedTimestamp?: number;
 }
 
 export interface ILanguageMagic {
@@ -527,7 +531,7 @@ export interface ICellMagicMapper {
 
 export namespace notebookConstants {
 	export const SQL = 'SQL';
-	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
+	export const SQL_CONNECTION_PROVIDER = mssqlProviderName;
 	export const sqlKernel: string = localize('sqlKernel', 'SQL');
 	export const sqlKernelSpec: nb.IKernelSpec = ({
 		name: sqlKernel,

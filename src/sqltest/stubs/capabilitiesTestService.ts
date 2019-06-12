@@ -10,6 +10,7 @@ import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/ap
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { Action } from 'vs/base/common/actions';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class CapabilitiesTestService implements ICapabilitiesService {
 
@@ -94,11 +95,11 @@ export class CapabilitiesTestService implements ICapabilitiesService {
 			}
 		];
 		let msSQLCapabilities = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider,
 		};
-		this.capabilities['MSSQL'] = { connection: msSQLCapabilities };
+		this.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 	}
 
 	/**

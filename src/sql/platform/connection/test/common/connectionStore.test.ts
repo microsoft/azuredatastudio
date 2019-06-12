@@ -17,6 +17,7 @@ import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { deepClone, deepFreeze } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('ConnectionStore', () => {
 	let defaultNamedProfile: IConnectionProfile = deepFreeze({
@@ -31,7 +32,7 @@ suite('ConnectionStore', () => {
 		groupFullName: '',
 		getOptionsKey: undefined,
 		matches: undefined,
-		providerName: 'MSSQL',
+		providerName: mssqlProviderName,
 		options: {},
 		saveProfile: true,
 		id: undefined
@@ -121,17 +122,17 @@ suite('ConnectionStore', () => {
 			}
 		];
 		msSQLCapabilities = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider
 		};
 
 		provider2Capabilities = {
-			providerId: 'MSSQL',
+			providerId: mssqlProviderName,
 			displayName: 'MSSQL',
 			connectionOptions: connectionProvider
 		};
-		capabilitiesService.capabilities['MSSQL'] = { connection: msSQLCapabilities };
+		capabilitiesService.capabilities[mssqlProviderName] = { connection: msSQLCapabilities };
 		capabilitiesService.capabilities['Provider2'] = { connection: provider2Capabilities };
 
 		defaultNamedConnectionProfile = new ConnectionProfile(capabilitiesService, defaultNamedProfile);
@@ -507,7 +508,7 @@ suite('ConnectionStore', () => {
 			userName: 'user',
 			password: 'password',
 			authenticationType: '',
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			groupId: parentGroupId,
 			groupFullName: '',
 			savePassword: true,

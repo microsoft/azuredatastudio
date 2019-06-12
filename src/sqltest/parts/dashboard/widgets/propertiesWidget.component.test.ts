@@ -16,6 +16,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TestChangeDetectorRef extends ChangeDetectorRef {
 	reattach(): void {
@@ -75,7 +76,7 @@ suite('Dashboard Properties Widget Tests', () => {
 				'properties-widget': propertiesConfig
 			},
 			context: 'server',
-			provider: 'MSSQL',
+			provider: mssqlProviderName,
 			edition: 0
 		};
 
