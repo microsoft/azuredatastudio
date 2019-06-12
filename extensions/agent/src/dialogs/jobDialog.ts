@@ -169,6 +169,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.nameTextBox.onTextChanged(() => {
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
 					this.dialog.message = null;
+					// Change the job name immediately since steps
+					// depends on the job name
+					this.model.name = this.nameTextBox.value;
 				}
 			});
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
