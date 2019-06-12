@@ -67,7 +67,7 @@
 			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-				"timeout": 20000
+				"timeout": 60000
 			},
 			"osx": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
