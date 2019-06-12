@@ -141,7 +141,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy');
 			if (managementProxyEp) {
 				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana/app/kibana#/discover?_g=()'));
 			}
 
 			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
@@ -228,6 +228,9 @@ function activateNotebookTask(appContext: AppContext): void {
 	apiWrapper.registerTaskHandler(Constants.mssqlClusterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
 		return handleOpenNotebookTask(profile);
 	});
+	apiWrapper.registerTaskHandler(Constants.openClusterStatusNotebook, (profile: azdata.IConnectionProfile) => {
+		return handleOpenClusterStatusNotebookTask(profile);
+	});
 }
 
 function saveProfileAndCreateNotebook(profile: azdata.IConnectionProfile): Promise<void> {
@@ -297,6 +300,21 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 	}
 }
 
+async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile): Promise<void> {
+	const notebookRelativePath = 'mssql/notebooks/TSG/cluster-status.ipynb';
+	const notebookFullPath = path.join(__dirname, '../../', notebookRelativePath);
+	if (!Utils.fileExists(notebookFullPath)) {
+		vscode.window.showErrorMessage(localize('fileNotFound', 'Unable to find the file specified.'));
+	} else {
+		const targetFile = Utils.getTargetFileName(notebookFullPath, '.ipynb');
+		Utils.copyFile(notebookFullPath, targetFile);
+		let fileUri = vscode.Uri.file(targetFile);
+		await azdata.nb.showNotebookDocument(fileUri, {
+			connectionProfile: profile,
+			preview: false
+		});
+	}
+}
 function generateServerOptions(executablePath: string): ServerOptions {
 	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
