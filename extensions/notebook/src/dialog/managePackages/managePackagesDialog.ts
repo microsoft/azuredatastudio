@@ -9,6 +9,7 @@ import * as azdata from 'azdata';
 import JupyterServerInstallation from '../../jupyter/jupyterServerInstallation';
 import { InstalledPackagesTab } from './installedPackagesTab';
 import { AddNewPackageTab } from './addNewPackageTab';
+import { PythonPkgType } from '../../common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -17,7 +18,10 @@ export class ManagePackagesDialog {
 	private installedPkgTab: InstalledPackagesTab;
 	private addNewPkgTab: AddNewPackageTab;
 
+	public currentPkgType: PythonPkgType;
+
 	constructor(private jupyterInstallation: JupyterServerInstallation) {
+		this.currentPkgType = this.jupyterInstallation.usingConda ? PythonPkgType.Anaconda : PythonPkgType.Pip;
 	}
 
 	/**
@@ -39,6 +43,12 @@ export class ManagePackagesDialog {
 
 	public refreshInstalledPackages(): Promise<void> {
 		return this.installedPkgTab.loadInstalledPackagesInfo();
+	}
+
+	public async resetPages(newPkgType: PythonPkgType): Promise<void> {
+		this.currentPkgType = newPkgType;
+		await this.installedPkgTab.loadInstalledPackagesInfo();
+		await this.addNewPkgTab.resetPageFields();
 	}
 
 	public showInfoMessage(message: string): void {

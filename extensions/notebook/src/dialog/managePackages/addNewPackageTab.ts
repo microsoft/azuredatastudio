@@ -7,9 +7,10 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as request from 'request';
 
-import JupyterServerInstallation from '../../jupyter/jupyterServerInstallation';
+import JupyterServerInstallation, { PipPackageOverview } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
+import { PythonPkgType } from '../../common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -27,15 +28,14 @@ export class AddNewPackageTab {
 	private packageInstallButton: azdata.ButtonComponent;
 
 	private readonly InvalidTextPlaceholder = localize('managePackages.invalidTextPlaceholder', "N/A");
+	private readonly PackageNotFoundError = localize('managePackages.packageNotFound', "Could not find the specified package");
+	private readonly SearchPlaceholder = (pkgType: string) => localize('managePackages.searchBarPlaceholder', "Search {0} packages", pkgType);
 
 	constructor(private dialog: ManagePackagesDialog, private jupyterInstallation: JupyterServerInstallation) {
 		this.addNewPkgTab = azdata.window.createTab(localize('managePackages.addNewTabTitle', "Add new"));
 
 		this.addNewPkgTab.registerContent(async view => {
-			this.newPackagesSearchBar = view.modelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('managePackages.searchBarPlaceholder', "Search for packages")
-				}).component();
+			this.newPackagesSearchBar = view.modelBuilder.inputBox().component();
 
 			this.packagesSearchButton = view.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
@@ -46,34 +46,23 @@ export class AddNewPackageTab {
 				this.loadNewPackageInfo();
 			});
 
-			this.newPackagesName = view.modelBuilder.text().withProperties({
-				value: this.InvalidTextPlaceholder
-			}).component();
+			this.newPackagesName = view.modelBuilder.text().component();
 			this.newPackagesNameLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesName)
-				.withProperties({ loading: false })
 				.component();
 
-			this.newPackagesVersions = view.modelBuilder.dropDown().withProperties({
-				value: this.InvalidTextPlaceholder,
-				values: [this.InvalidTextPlaceholder]
-			}).component();
+			this.newPackagesVersions = view.modelBuilder.dropDown().component();
 			this.newPackagesVersionsLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesVersions)
-				.withProperties({ loading: false })
 				.component();
 
-			this.newPackagesSummary = view.modelBuilder.text().withProperties({
-				value: this.InvalidTextPlaceholder
-			}).component();
+			this.newPackagesSummary = view.modelBuilder.text().component();
 			this.newPackagesSummaryLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesSummary)
-				.withProperties({ loading: false })
 				.component();
 
 			this.packageInstallButton = view.modelBuilder.button().withProperties({
 				label: localize('managePackages.installButtonText', "Install"),
-				enabled: false,
 				width: '80px'
 			}).component();
 			this.packageInstallButton.onDidClick(() => {
@@ -102,11 +91,33 @@ export class AddNewPackageTab {
 				}]).component();
 
 			await view.initializeModel(formModel);
+
+			await this.resetPageFields();
 		});
 	}
 
 	public get tab(): azdata.window.DialogTab {
 		return this.addNewPkgTab;
+	}
+
+	public async resetPageFields(): Promise<void> {
+		await this.toggleNewPackagesFields(false);
+		try {
+			await this.packageInstallButton.updateProperties({ enabled: false });
+
+			await this.newPackagesSearchBar.updateProperties({
+				value: '',
+				placeHolder: this.SearchPlaceholder(this.dialog.currentPkgType)
+			});
+			await this.newPackagesName.updateProperties({ value: this.InvalidTextPlaceholder });
+			await this.newPackagesVersions.updateProperties({
+				values: [this.InvalidTextPlaceholder],
+				value: this.InvalidTextPlaceholder
+			});
+			await this.newPackagesSummary.updateProperties({ value: this.InvalidTextPlaceholder });
+		} finally {
+			await this.toggleNewPackagesFields(true);
+		}
 	}
 
 	private async toggleNewPackagesFields(enable: boolean): Promise<void> {
@@ -125,7 +136,12 @@ export class AddNewPackageTab {
 				return;
 			}
 
-			let pipPackage = await this.fetchPypiPackage(packageName);
+			let pipPackage: PipPackageOverview;
+			if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
+				pipPackage = await this.fetchCondaPackage(packageName);
+			} else {
+				pipPackage = await this.fetchPypiPackage(packageName);
+			}
 			if (!pipPackage.versions || pipPackage.versions.length === 0) {
 				this.dialog.showErrorMessage(
 					localize('managePackages.noVersionsFound',
@@ -164,15 +180,15 @@ export class AddNewPackageTab {
 		}
 	}
 
-	private async fetchPypiPackage(packageName: string): Promise<PipPackageData> {
-		return new Promise<PipPackageData>((resolve, reject) => {
+	private async fetchPypiPackage(packageName: string): Promise<PipPackageOverview> {
+		return new Promise<PipPackageOverview>((resolve, reject) => {
 			request.get(`https://pypi.org/pypi/${packageName}/json`, { timeout: 10000 }, (error, response, body) => {
 				if (error) {
 					return reject(error);
 				}
 
 				if (response.statusCode === 404) {
-					return reject(localize('managePackages.packageNotFound', "Could not find the specified package"));
+					return reject(this.PackageNotFoundError);
 				}
 
 				if (response.statusCode !== 200) {
@@ -194,30 +210,7 @@ export class AddNewPackageTab {
 							let releaseInfo = packagesJson.releases[versionKey];
 							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
 						});
-						versionKeys.sort((first, second) => {
-							// sort in descending order
-							let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
-							let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
-
-							// If versions have different lengths, then append zeroes to the shorter one
-							if (firstVersion.length > secondVersion.length) {
-								let diff = firstVersion.length - secondVersion.length;
-								secondVersion = secondVersion.concat(new Array(diff).fill(0));
-							} else if (secondVersion.length > firstVersion.length) {
-								let diff = secondVersion.length - firstVersion.length;
-								firstVersion = firstVersion.concat(new Array(diff).fill(0));
-							}
-
-							for (let i = 0; i < firstVersion.length; ++i) {
-								if (firstVersion[i] > secondVersion[i]) {
-									return -1;
-								} else if (firstVersion[i] < secondVersion[i]) {
-									return 1;
-								}
-							}
-							return 0;
-						});
-						versionNums = versionKeys;
+						versionNums = this.sortPackageVersions(versionKeys);
 					}
 
 					if (packagesJson.info && packagesJson.info.summary) {
@@ -231,6 +224,66 @@ export class AddNewPackageTab {
 					summary: packageSummary
 				});
 			});
+		});
+	}
+
+	private async fetchCondaPackage(packageName: string): Promise<PipPackageOverview> {
+		let condaExe = this.jupyterInstallation.getCondaExePath();
+		let cmd = `"${condaExe}" search --json ${packageName}`;
+		let packageResult: string;
+		try {
+			packageResult = await this.jupyterInstallation.executeBufferedCommand(cmd);
+		} catch (err) {
+			throw new Error(this.PackageNotFoundError);
+		}
+
+		if (packageResult) {
+			let packageJson = JSON.parse(packageResult);
+			if (packageJson) {
+				if (packageJson.error) {
+					throw new Error(packageJson.error);
+				}
+
+				let packages = packageJson[packageName];
+				if (Array.isArray(packages)) {
+					let allVersions = packages.filter(pkg => pkg && pkg.version).map(pkg => pkg.version);
+					let singletonVersions = new Set<string>(allVersions);
+					let sortedVersions = this.sortPackageVersions(Array.from(singletonVersions));
+					return {
+						name: packageName,
+						versions: sortedVersions,
+						summary: undefined
+					};
+				}
+			}
+		}
+
+		return undefined;
+	}
+
+	private sortPackageVersions(versions: string[]): string[] {
+		return versions.sort((first, second) => {
+			// sort in descending order
+			let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));
+			let secondVersion = second.split('.').map(numStr => Number.parseInt(numStr));
+
+			// If versions have different lengths, then append zeroes to the shorter one
+			if (firstVersion.length > secondVersion.length) {
+				let diff = firstVersion.length - secondVersion.length;
+				secondVersion = secondVersion.concat(new Array(diff).fill(0));
+			} else if (secondVersion.length > firstVersion.length) {
+				let diff = secondVersion.length - firstVersion.length;
+				firstVersion = firstVersion.concat(new Array(diff).fill(0));
+			}
+
+			for (let i = 0; i < firstVersion.length; ++i) {
+				if (firstVersion[i] > secondVersion[i]) {
+					return -1;
+				} else if (firstVersion[i] < secondVersion[i]) {
+					return 1;
+				}
+			}
+			return 0;
 		});
 	}
 
@@ -251,7 +304,13 @@ export class AddNewPackageTab {
 			description: taskName,
 			isCancelable: false,
 			operation: op => {
-				this.jupyterInstallation.installPipPackage(packageName, packageVersion)
+				let installPromise: Promise<void>;
+				if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
+					installPromise = this.jupyterInstallation.installCondaPackage(packageName, packageVersion);
+				} else {
+					installPromise = this.jupyterInstallation.installPipPackage(packageName, packageVersion);
+				}
+				installPromise
 					.then(async () => {
 						let installMsg = localize('managePackages.backgroundInstallComplete',
 							"Completed install for {0} {1}",
@@ -276,10 +335,4 @@ export class AddNewPackageTab {
 			}
 		});
 	}
-}
-
-interface PipPackageData {
-	name: string;
-	versions: string[];
-	summary: string;
 }

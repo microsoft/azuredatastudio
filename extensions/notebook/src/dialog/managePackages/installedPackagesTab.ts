@@ -11,6 +11,7 @@ import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';
 import { QuestionTypes, IQuestion } from '../../prompts/question';
+import { PythonPkgType } from '../../common/constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -19,6 +20,7 @@ export class InstalledPackagesTab {
 
 	private installedPkgTab: azdata.window.DialogTab;
 
+	private packageTypeDropdown: azdata.DropDownComponent;
 	private installedPackageCount: azdata.TextComponent;
 	private installedPackagesTable: azdata.TableComponent;
 	private installedPackagesLoader: azdata.LoadingComponent;
@@ -30,6 +32,23 @@ export class InstalledPackagesTab {
 		this.installedPkgTab = azdata.window.createTab(localize('managePackages.installedTabTitle', "Installed"));
 
 		this.installedPkgTab.registerContent(async view => {
+			let dropdownValues: string[];
+			if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
+				dropdownValues = [PythonPkgType.Anaconda, PythonPkgType.Pip];
+			} else {
+				dropdownValues = [PythonPkgType.Pip];
+			}
+			this.packageTypeDropdown = view.modelBuilder.dropDown().withProperties({
+				values: dropdownValues,
+				value: dropdownValues[0]
+			}).component();
+			this.packageTypeDropdown.onValueChanged(() => {
+				this.dialog.resetPages(this.packageTypeDropdown.value as PythonPkgType)
+					.catch(err => {
+						this.dialog.showErrorMessage(utils.getErrorMessage(err));
+					});
+			});
+
 			this.installedPackageCount = view.modelBuilder.text().withProperties({
 				value: ''
 			}).component();
@@ -54,6 +73,9 @@ export class InstalledPackagesTab {
 
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([{
+					component: this.packageTypeDropdown,
+					title: localize('managePackages.packageType', "Package Type")
+				}, {
 					component: this.installedPackageCount,
 					title: ''
 				}, {
@@ -87,8 +109,13 @@ export class InstalledPackagesTab {
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		try {
-			pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
-			packagesLocation = await this.jupyterInstallation.getPythonPackagesPath();
+			if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
+				pythonPackages = await this.jupyterInstallation.getInstalledCondaPackages();
+				packagesLocation = await this.jupyterInstallation.getCondaPackagesPath();
+			} else {
+				pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
+				packagesLocation = await this.jupyterInstallation.getPipPackagesPath();
+			}
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
 		} finally {
@@ -106,12 +133,14 @@ export class InstalledPackagesTab {
 
 		let countMsg: string;
 		if (packagesLocation && packagesLocation.length > 0) {
-			countMsg = localize('managePackages.packageCount', "{0} packages found in '{1}'",
+			countMsg = localize('managePackages.packageCount', "{0} {1} packages found in '{2}'",
 				packageCount,
+				this.dialog.currentPkgType,
 				packagesLocation);
 		} else {
-			countMsg = localize('managePackages.packageCountNoPath', "{0} packages found",
-				packageCount);
+			countMsg = localize('managePackages.packageCountNoPath', "{0} {1} packages found",
+				packageCount,
+				this.dialog.currentPkgType);
 		}
 		await this.installedPackageCount.updateProperties({
 			value: countMsg
@@ -161,7 +190,13 @@ export class InstalledPackagesTab {
 					description: taskName,
 					isCancelable: false,
 					operation: op => {
-						this.jupyterInstallation.uninstallPipPackages(packages)
+						let uninstallPromise: Promise<void>;
+						if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
+							uninstallPromise = this.jupyterInstallation.uninstallCondaPackages(packages);
+						} else {
+							uninstallPromise = this.jupyterInstallation.uninstallPipPackages(packages);
+						}
+						uninstallPromise
 							.then(async () => {
 								let uninstallMsg = localize('managePackages.backgroundUninstallComplete',
 									"Completed uninstall for {0}",
