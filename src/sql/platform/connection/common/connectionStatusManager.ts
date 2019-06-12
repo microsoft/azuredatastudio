@@ -7,15 +7,23 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { StopWatch } from 'vs/base/common/stopwatch';
+import { ILogService } from 'vs/platform/log/common/log';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { join } from 'vs/base/common/path';
 import * as Utils from 'sql/platform/connection/common/utils';
 import * as azdata from 'azdata';
-import { StopWatch } from 'vs/base/common/stopwatch';
+import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 export class ConnectionStatusManager {
 
 	private _connections: { [id: string]: ConnectionManagementInfo };
 
-	constructor(@ICapabilitiesService private _capabilitiesService: ICapabilitiesService) {
+	constructor(
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@ILogService private _logService: ILogService,
+		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@INotificationService private _notificationService: INotificationService) {
 		this._connections = {};
 	}
 
@@ -46,8 +54,10 @@ export class ConnectionStatusManager {
 			for (let key in this._connections) {
 				if (this._connections[key].connectionId === info.connectionId) {
 					if (this._connections[key].connecting) {
+						this._logService.info(`Deleting connection ${id} (connecting)`);
 						this._connections[key].deleted = true;
 					} else {
+						this._logService.info(`Deleting connection ${id}`);
 						delete this._connections[key];
 					}
 				}
@@ -61,6 +71,7 @@ export class ConnectionStatusManager {
 	}
 
 	public addConnection(connection: IConnectionProfile, id: string): ConnectionManagementInfo {
+		this._logService.info(`Adding connection ${id}`);
 		// Always create a copy and save that in the list
 		let connectionProfile = new ConnectionProfile(this._capabilitiesService, connection);
 		let connectionInfo: ConnectionManagementInfo = new ConnectionManagementInfo();
@@ -72,7 +83,7 @@ export class ConnectionStatusManager {
 		this._connections[id] = connectionInfo;
 		connectionInfo.serviceTimer = StopWatch.create();
 		connectionInfo.ownerUri = id;
-
+		this._logService.info(`Successfully added connection ${id}`);
 		return connectionInfo;
 	}
 
@@ -81,6 +92,7 @@ export class ConnectionStatusManager {
 	 * @param uri Remove connection from list of active connections
 	 */
 	public removeConnection(uri: string) {
+		this._logService.info(`Removing connection ${uri}`);
 		delete this._connections[uri];
 	}
 
@@ -99,6 +111,7 @@ export class ConnectionStatusManager {
 				newId = Utils.generateUri(connection);
 				if (newId !== id) {
 					this.deleteConnection(id);
+					this._logService.info(`Adding connection (update) ${newId} (old=${id})`);
 					this._connections[newId] = connectionInfo;
 				}
 			}
@@ -109,6 +122,15 @@ export class ConnectionStatusManager {
 
 	public onConnectionComplete(summary: azdata.ConnectionInfoSummary): ConnectionManagementInfo {
 		let connection = this._connections[summary.ownerUri];
+		if (!connection) {
+			this._logService.error(`OnConnectionComplete but no connection found '${summary.ownerUri}' Connections = [${Object.keys(this._connections)}]`);
+			this._notificationService.notify({
+				severity: Severity.Error,
+				message: `An unexpected error occurred while connecting. Please [file an issue](command:workbench.action.openIssueReporter) with the title 'Unexpected Error Occurred while Connecting' and include the log file [${join(this._environmentService.logsPath, 'renderer1.log')}](command:workbench.action.openLogsFolder)`
+			});
+			// Bail out at this point - there's nothing else we can do since this is an unexpected state.
+			throw new Error('Unexpected error occurred while connecting.');
+		}
 		connection.serviceTimer.stop();
 		connection.connecting = false;
 		connection.connectionId = summary.connectionId;
@@ -130,6 +152,7 @@ export class ConnectionStatusManager {
 			let prefix = Utils.getUriPrefix(summary.ownerUri);
 			let ownerUriWithDbName = Utils.generateUriWithPrefix(connection.connectionProfile, prefix);
 			if (!(ownerUriWithDbName in this._connections)) {
+				this._logService.info(`Adding connection with DB name ${ownerUriWithDbName}`);
 				this._connections[ownerUriWithDbName] = connection;
 			}
 		}
