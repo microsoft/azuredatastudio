@@ -51,6 +51,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import * as interfaces from './interfaces';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
@@ -61,7 +63,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 
-	private _connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService);
+	private _connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
 
 	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
 	private _onDeleteConnectionProfile = new Emitter<void>();
@@ -90,8 +92,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
-		@ILogService private logService: ILogService,
-		@IStorageService private _storageService: IStorageService
+		@ILogService private _logService: ILogService,
+		@IStorageService private _storageService: IStorageService,
+		@IEnvironmentService private _environmentService: IEnvironmentService,
+		@INotificationService private _notificationService: INotificationService
 	) {
 		super();
 
@@ -194,7 +198,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			self._connectionDialogService.showDialog(self, params, model, connectionResult, options).then(() => {
 				resolve();
 			}, dialogError => {
-				this.logService.warn('failed to open the connection dialog. error: ' + dialogError);
+				this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
 				reject(dialogError);
 			});
 		});
@@ -353,7 +357,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		if (uri !== input.uri) {
 			//TODO: this should never happen. If the input is already passed, it should have the uri
-			this.logService.warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
+			this._logService.warn(`the given uri is different that the input uri. ${uri}|${input.uri}`);
 		}
 		return this.tryConnect(connection, input, options);
 	}
@@ -662,7 +666,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.AddServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.AddServerGroup);
 		return new Promise<string>((resolve, reject) => {
 			this._connectionStore.saveProfileGroup(profile).then(groupId => {
 				this._onAddConnectionProfile.fire(undefined);
@@ -896,7 +900,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnection(connection: ConnectionManagementInfo): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DatabaseConnected, {
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DatabaseConnected, {
 			connectionType: connection.serverInfo ? (connection.serverInfo.isCloud ? 'Azure' : 'Standalone') : '',
 			provider: connection.connectionProfile.providerName,
 			serverVersion: connection.serverInfo ? connection.serverInfo.serverVersion : '',
@@ -908,7 +912,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private addTelemetryForConnectionDisconnected(connection: IConnectionProfile): void {
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DatabaseDisconnected, {
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DatabaseDisconnected, {
 			provider: connection.providerName
 		});
 	}
@@ -953,13 +957,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public changeGroupIdForConnectionGroup(source: ConnectionProfileGroup, target: ConnectionProfileGroup): Promise<void> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.MoveServerConnection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerConnection);
 		return this._connectionStore.changeGroupIdForConnectionGroup(source, target);
 	}
 
 	public changeGroupIdForConnection(source: ConnectionProfile, targetGroupId: string): Promise<void> {
 		let id = Utils.generateUri(source);
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.MoveServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.MoveServerGroup);
 		return this._connectionStore.changeGroupIdForConnection(source, targetGroupId).then(result => {
 			if (id && targetGroupId) {
 				source.groupId = targetGroupId;
@@ -1024,7 +1028,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	// Connect an open URI to a connection profile
 	private createNewConnection(uri: string, connection: IConnectionProfile): Promise<IConnectionResult> {
 		const self = this;
-
+		this._logService.info(`Creating new connection ${uri}`);
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			let connectionInfo = this._connectionStatusManager.addConnection(connection, uri);
 			// Setup the handler for the connection complete notification to call
@@ -1242,7 +1246,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 */
 	public deleteConnection(connection: ConnectionProfile): Promise<boolean> {
 
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DeleteConnection, {}, connection);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteConnection, {}, connection);
 		// Disconnect if connected
 		let uri = Utils.generateUri(connection);
 		if (this.isConnected(uri) || this.isConnecting(uri)) {
@@ -1280,7 +1284,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * Disconnects a connection before removing from config. If disconnect fails, settings is not modified.
 	 */
 	public deleteConnectionGroup(group: ConnectionProfileGroup): Promise<boolean> {
-		TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.DeleteServerGroup);
+		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.DeleteServerGroup);
 		// Get all connections for this group
 		let connections = ConnectionProfileGroup.getConnectionsInGroup(group);
 

@@ -40,6 +40,8 @@ export class CellModel implements ICellModel {
 	public id: string;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
+	private _onCellLoaded = new Emitter<string>();
+	private _loaded: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -181,6 +183,21 @@ export class CellModel implements ICellModel {
 
 	private fireExecutionStateChanged(): void {
 		this._onExecutionStateChanged.fire(this.executionState);
+	}
+
+	public get onLoaded(): Event<string> {
+		return this._onCellLoaded.event;
+	}
+
+	public get loaded(): boolean {
+		return this._loaded;
+	}
+
+	public set loaded(val: boolean) {
+		this._loaded = val;
+		if (val) {
+			this._onCellLoaded.fire(this._cellType);
+		}
 	}
 
 	private notifyExecutionComplete(): void {
@@ -402,7 +419,9 @@ export class CellModel implements ICellModel {
 			// deletes transient node in the serialized JSON
 			delete output['transient'];
 			this._outputs.push(this.rewriteOutputUrls(output));
-			this.fireOutputsChanged(true);
+			// Only scroll on 1st output being added
+			let shouldScroll = this._outputs.length === 1;
+			this.fireOutputsChanged(shouldScroll);
 		}
 	}
 
