@@ -102,7 +102,7 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options.documentPath;
 	}
 
-	private async doStartServer(): Promise<IServerInstance> {        // We can't find or create servers until the installation is complete
+	private async doStartServer(): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall();
 		this.apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
