@@ -1561,14 +1561,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.1.0",
-							"lastUpdated": "5/30/2019",
+							"version": "1.2.0",
+							"lastUpdated": "6/12/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-1.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-1.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
