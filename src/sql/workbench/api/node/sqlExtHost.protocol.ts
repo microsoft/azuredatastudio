@@ -455,7 +455,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * DacFx generate deploy script
 	 */
-	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
+	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx generate deploy plan

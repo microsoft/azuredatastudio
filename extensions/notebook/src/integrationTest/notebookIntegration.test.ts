@@ -10,7 +10,7 @@ import * as path from 'path';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
-import JupyterServerInstallation from '../jupyter/jupyterServerInstallation';
+import JupyterServerInstallation, { PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
 import { pythonBundleVersion } from '../common/constants';
 import { executeStreamedCommand } from '../common/utils';
 
@@ -79,5 +79,29 @@ describe('Notebook Extension Python Installation', function () {
 		should(JupyterServerInstallation.getPythonInstallPath(apiWrapper)).be.equal(pythonInstallDir);
 		should(JupyterServerInstallation.getExistingPythonSetting(apiWrapper)).be.false();
 		console.log('Existing Python Installation is done');
+	});
+
+	it('Python Install Utilities Test', async function () {
+		let install = jupyterController.jupyterInstallation;
+
+		let packagePath = await install.getPythonPackagesPath();
+		should(packagePath).not.be.undefined();
+		should(packagePath.length).be.greaterThan(0);
+
+		let testPkg = 'pandas';
+		let testPkgVersion = '0.24.2';
+		let expectedPkg: PythonPkgDetails = { name: testPkg, version: testPkgVersion };
+
+		await install.installPipPackage(testPkg, testPkgVersion);
+		let packages = await install.getInstalledPipPackages();
+		should(packages).containEql(expectedPkg);
+
+		await install.uninstallPipPackages([{ name: testPkg, version: testPkgVersion}]);
+		packages = await install.getInstalledPipPackages();
+		should(packages).not.containEql(expectedPkg);
+
+		await install.installPipPackage(testPkg, testPkgVersion);
+		packages = await install.getInstalledPipPackages();
+		should(packages).containEql(expectedPkg);
 	});
 });
