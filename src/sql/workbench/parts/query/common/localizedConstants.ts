@@ -26,6 +26,7 @@ export const saveJSONLabel = localize('saveJSONLabel', 'Save as JSON');
 export const saveExcelLabel = localize('saveExcelLabel', 'Save as Excel');
 export const saveXMLLabel = localize('saveXMLLabel', 'Save as XML');
 export const viewChartLabel = localize('viewChartLabel', 'View as Chart');
+export const viewSandDanceLabel = localize('viewSandDanceLabel', 'View in SandDance');
 
 export const resultPaneLabel = localize('resultPaneLabel', 'Results');
 export const executeQueryLabel = localize('executeQueryLabel', 'Executing query ');

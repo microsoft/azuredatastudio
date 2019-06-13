@@ -158,6 +158,11 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.chartData(dataId);
 	}
 
+	public sandDance(dataId: { batchId: number, resultId: number }) {
+		this.resultsView.showDataAsSandDance(dataId);
+	}
+
+
 	public showQueryPlan(xml: string) {
 		this.resultsView.showPlan(xml);
 	}
