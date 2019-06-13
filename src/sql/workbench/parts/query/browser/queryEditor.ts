@@ -103,7 +103,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	protected getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
-		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as diff editors are never persisted
+		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as results are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
