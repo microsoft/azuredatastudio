@@ -25,9 +25,13 @@ modelview-diff-editor-component {
 }
 
 .vs-dark .modelview-diff-editor-title-background {
-	background-color: #434343
+	background-color: #434343;
+}
+
+.hc-black .modelview-diff-editor-title-background {
+	background-color: #000000;
 }
 
 .modelview-diff-editor-title-background {
-	background-color: #d5d5d5
+	background-color: #d5d5d5;
 }
