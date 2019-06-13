@@ -25,7 +25,7 @@ let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
 			connectionProfile = context.connectionProfile;

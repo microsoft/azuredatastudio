@@ -39,7 +39,7 @@ export const jupyterCommandSetContext = 'jupyter.setContext';
 export const jupyterCommandSetKernel = 'jupyter.setKernel';
 export const jupyterReinstallDependenciesCommand = 'jupyter.reinstallDependencies';
 export const jupyterAnalyzeCommand = 'jupyter.cmd.analyzeNotebook';
-export const jupyterInstallPackages = 'jupyter.cmd.installPackages';
+export const jupyterManagePackages = 'jupyter.cmd.managePackages';
 export const jupyterConfigurePython = 'jupyter.cmd.configurePython';
 
 export enum BuiltInCommands {

@@ -9,7 +9,6 @@ import * as azdata from 'azdata';
 import { SelectOperationPage } from './pages/selectOperationpage';
 import { DeployConfigPage } from './pages/deployConfigPage';
 import { DeployPlanPage } from './pages/deployPlanPage';
-import { DeployActionPage } from './pages/deployActionPage';
 import { DacFxSummaryPage } from './pages/dacFxSummaryPage';
 import { ExportConfigPage } from './pages/exportConfigPage';
 import { ExtractConfigPage } from './pages/extractConfigPage';
@@ -40,7 +39,6 @@ export enum DeployOperationPath {
 	selectOperation,
 	deployOptions,
 	deployPlan,
-	deployAction,
 	summary
 }
 
@@ -104,7 +102,6 @@ export class DataTierApplicationWizard {
 		let selectOperationWizardPage = azdata.window.createWizardPage(localize('dacFx.selectOperationPageName', 'Select an Operation'));
 		let deployConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.deployConfigPageName', 'Select Deploy Dacpac Settings'));
 		let deployPlanWizardPage = azdata.window.createWizardPage(localize('dacFx.deployPlanPage', 'Review the deploy plan'));
-		let deployActionWizardPage = azdata.window.createWizardPage(localize('dacFx.deployActionPageName', 'Select Action'));
 		let summaryWizardPage = azdata.window.createWizardPage(localize('dacFx.summaryPageName', 'Summary'));
 		let extractConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.extractConfigPageName', 'Select Extract Dacpac Settings'));
 		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
@@ -113,7 +110,6 @@ export class DataTierApplicationWizard {
 		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
 		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
 		this.pages.set('deployPlan', new Page(deployPlanWizardPage));
-		this.pages.set('deployAction', new Page(deployActionWizardPage));
 		this.pages.set('extractConfig', new Page(extractConfigWizardPage));
 		this.pages.set('importConfig', new Page(importConfigWizardPage));
 		this.pages.set('exportConfig', new Page(exportConfigWizardPage));
@@ -138,12 +134,6 @@ export class DataTierApplicationWizard {
 			let deployPlanDacFxPage = new DeployPlanPage(this, deployPlanWizardPage, this.model, view);
 			this.pages.get('deployPlan').dacFxPage = deployPlanDacFxPage;
 			await deployPlanDacFxPage.start();
-		});
-
-		deployActionWizardPage.registerContent(async (view) => {
-			let deployActionDacFxPage = new DeployActionPage(this, deployActionWizardPage, this.model, view);
-			this.pages.get('deployAction').dacFxPage = deployActionDacFxPage;
-			await deployActionDacFxPage.start();
 		});
 
 		extractConfigWizardPage.registerContent(async (view) => {
@@ -190,7 +180,7 @@ export class DataTierApplicationWizard {
 			}
 		});
 
-		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, deployActionWizardPage, summaryWizardPage];
+		this.wizard.pages = [selectOperationWizardPage, deployConfigWizardPage, deployPlanWizardPage, summaryWizardPage];
 		this.wizard.generateScriptButton.hidden = true;
 		this.wizard.generateScriptButton.onClick(async () => await this.generateDeployScript());
 		this.wizard.doneButton.onClick(async () => await this.executeOperation());
@@ -306,19 +296,15 @@ export class DataTierApplicationWizard {
 	}
 
 	private async generateDeployScript() {
-		if (!this.model.scriptFilePath) {
-			return;
-		}
-
 		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
-			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Task History once the wizard is closed'),
+			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.'),
 			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};
 
-		let result = await service.generateDeployScript(this.model.filePath, this.model.database, this.model.scriptFilePath, ownerUri, azdata.TaskExecutionMode.execute);
+		let result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -351,8 +337,6 @@ export class DataTierApplicationWizard {
 			page = this.pages.get('summary');
 		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployPlan) {
 			page = this.pages.get('deployPlan');
-		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployAction) {
-			page = this.pages.get('deployAction');
 		}
 
 		return page;

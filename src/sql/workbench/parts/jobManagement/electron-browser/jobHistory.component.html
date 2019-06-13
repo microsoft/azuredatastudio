@@ -10,8 +10,8 @@
 </div>
 
 <!-- Back -->
-<div class="all-jobs">
-	<div class="back-button-icon" (click)="goToJobs()"></div>All Jobs
+<div class="all-jobs" tabindex="0" (click)="goToJobs()" (keyup.enter)="goToJobs()">
+	<div class="back-button-icon" (click)="goToJobs()" (keyup.enter)="goToJobs()"></div>All Jobs
 </div>
 
 <!-- Actions -->

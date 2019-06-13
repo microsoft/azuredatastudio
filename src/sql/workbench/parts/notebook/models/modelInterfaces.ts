@@ -466,6 +466,8 @@ export interface ICellModel {
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
+	loaded: boolean;
+	readonly onLoaded: Event<string>;
 }
 
 export interface FutureInternal extends nb.IFuture {
@@ -508,6 +510,7 @@ export interface INotebookModelOptions {
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+	editorLoadedTimestamp?: number;
 }
 
 export interface ILanguageMagic {

@@ -96,12 +96,21 @@ export class OperatorDialog extends AgentDialog<OperatorData> {
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
 
-			this.nameTextBox = view.modelBuilder.inputBox().component();
+			this.nameTextBox = view.modelBuilder.inputBox().withProperties({
+				ariaLabel: OperatorDialog.NameLabel,
+				placeHolder: OperatorDialog.NameLabel
+			}).component();
 			this.nameTextBox.value = this.model.name;
-			this.emailNameTextBox = view.modelBuilder.inputBox().component();
+			this.emailNameTextBox = view.modelBuilder.inputBox().withProperties({
+				ariaLabel: OperatorDialog.EmailNameTextLabel,
+				placeHolder: OperatorDialog.EmailNameTextLabel
+			}).component();
 			this.emailNameTextBox.value = this.model.emailAddress;
 
-			this.pagerEmailNameTextBox = view.modelBuilder.inputBox().component();
+			this.pagerEmailNameTextBox = view.modelBuilder.inputBox().withProperties({
+				ariaLabel: OperatorDialog.PagerEmailNameTextLabel,
+				placeHolder: OperatorDialog.PagerEmailNameTextLabel
+			}).component();
 			this.pagerEmailNameTextBox.value = this.model.pagerAddress;
 
 			this.enabledCheckBox = view.modelBuilder.checkBox()

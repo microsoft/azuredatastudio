@@ -6,7 +6,9 @@
 
 jobhistory-component .all-jobs {
 	display: inline-block;
+	cursor: pointer;
 	font-size: 15px;
+	width: 10%;
 }
 
 .overview-container .overview-tab .resultsViewCollapsible {
