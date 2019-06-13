@@ -6,8 +6,8 @@
 tasks-widget .tile-container {
 	position: relative;
 	display: flex;
-	flex-flow: column;
-	flex-wrap: wrap;
+	flex-flow: row wrap;
+	align-content: flex-start;
 }
 
 tasks-widget .task-tile {
@@ -18,10 +18,6 @@ tasks-widget .task-tile {
 	text-align: center;
 	margin-top: 10px;
 	margin-left: 18px;
-}
-
-tasks-widget .task-tile:last-of-type {
-	margin-right: 10px;
 }
 
 tasks-widget .task-tile > div {
