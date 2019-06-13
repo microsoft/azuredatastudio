@@ -36,7 +36,7 @@ import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/parts/query/browser/queryActions';
 
-const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'textEditorViewState';
+const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
 
 interface IQueryEditorViewState {
 	resultsHeight: number | undefined;
