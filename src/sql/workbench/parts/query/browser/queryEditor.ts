@@ -6,8 +6,8 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions, IEditorControl } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
+import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -19,21 +19,28 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { URI } from 'vs/base/common/uri';
 
 import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/parts/query/browser/queryActions';
-import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
-import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+
+const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'textEditorViewState';
+
+interface IQueryEditorViewState {
+	resultsHeight: number | undefined;
+}
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -66,6 +73,8 @@ export class QueryEditor extends BaseEditor {
 
 	private queryEditorVisible: IContextKey<boolean>;
 
+	private editorMemento: IEditorMemento<IQueryEditorViewState>;
+
 	//actions
 	private _runQueryAction: actions.RunQueryAction;
 	private _cancelQueryAction: actions.CancelQueryAction;
@@ -81,13 +90,20 @@ export class QueryEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService,
 		@IContextKeyService contextKeyService: IContextKeyService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
+		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
+
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+	}
+
+	protected getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
+		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as diff editors are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -251,6 +267,8 @@ export class QueryEditor extends BaseEditor {
 		}
 
 		if (oldInput) {
+			// Remember view settings if input changes
+			this.saveQueryEditorViewState(this.input);
 			this.currentTextEditor.clearInput();
 			this.resultsEditor.clearInput();
 		}
@@ -280,6 +298,49 @@ export class QueryEditor extends BaseEditor {
 		this.inputDisposables = [];
 		this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
 		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
+
+		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
+
+		if (editorViewState && editorViewState.resultsHeight) {
+			this.splitview.resizeView(1, editorViewState.resultsHeight);
+		}
+	}
+
+	private saveQueryEditorViewState(input: QueryInput): void {
+		if (!input) {
+			return; // ensure we have an input to handle view state for
+		}
+
+		if (!input.isDisposed()) {
+			this.saveTextEditorViewState(input.getResource());
+		}
+	}
+
+	private saveTextEditorViewState(resource: URI) {
+		const editorViewState = {
+			resultsHeight: this.resultsVisible ? this.splitview.getViewSize(1) : undefined
+		} as IQueryEditorViewState;
+
+		if (!this.group) {
+			return;
+		}
+
+		this.editorMemento.saveEditorState(this.group, resource, editorViewState);
+	}
+
+	/**
+	 * Loads the text editor view state for the given resource and returns it.
+	 */
+	protected loadTextEditorViewState(resource: URI): IQueryEditorViewState | undefined {
+		return this.group ? this.editorMemento.loadEditorState(this.group, resource) : undefined;
+	}
+
+	protected saveState(): void {
+
+		// Update/clear editor view State
+		this.saveQueryEditorViewState(this.input);
+
+		super.saveState();
 	}
 
 	public toggleResultsEditorVisibility() {
@@ -327,6 +388,9 @@ export class QueryEditor extends BaseEditor {
 	 * input should be freed.
 	 */
 	public clearInput(): void {
+
+		this.saveQueryEditorViewState(this.input);
+
 		this.currentTextEditor.clearInput();
 		this.resultsEditor.clearInput();
 		super.clearInput();
