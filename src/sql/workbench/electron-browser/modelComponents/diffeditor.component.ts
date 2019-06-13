@@ -30,7 +30,7 @@ import { ITextModel } from 'vs/editor/common/model';
 @Component({
 	template: `
 	<div *ngIf="_title">
-		<div class="modelview-diff-editor-title" style="width: 100%; height:100%; padding-left:3px !important; border: 1px solid #BFBDBD;">
+		<div class="modelview-diff-editor-title modelview-diff-editor-title-background">
 			{{_title}}
 		</div>
 	</div>`,

@@ -12,7 +12,7 @@ import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog
 import { Telemetry } from './telemetry';
 import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
-const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
+const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
 const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
 const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
