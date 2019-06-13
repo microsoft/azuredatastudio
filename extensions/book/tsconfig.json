@@ -13,7 +13,7 @@
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"moduleResolution": "node",
-		"declaration": false,
+		"declaration": true,
 		"typeRoots": [
 			"./node_modules/@types"
 		]

@@ -5,8 +5,8 @@
     "version": "0.0.1",
     "publisher": "Microsoft",
     "engines": {
-        "vscode": "^1.35.0",
-        "sqlops": "*"
+        "vscode": "*",
+        "azdata": "*"
     },
     "categories": [
         "Other"
@@ -17,49 +17,39 @@
     "main": "./out/extension",
     "contributes": {
         "views": {
-          "explorer": [
+            "explorer": [
+                {
+                    "id": "bookTreeView",
+                    "name": "Books"
+                }
+            ]
+        },
+        "commands": [
             {
-              "id": "bookTreeView",
-              "name": "Books"
+                "command": "bookTreeView.refreshEntry",
+                "title": "Refresh",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "bookTreeView.addEntry",
+                "title": "Add"
+            },
+            {
+                "command": "bookTreeView.editEntry",
+                "title": "Edit"
+            },
+            {
+                "command": "bookTreeView.deleteEntry",
+                "title": "Delete"
             }
-          ]
-        }
-      },
-      "commands": [
-        {
-          "command": "bookTreeView.refreshEntry",
-          "title": "Refresh",
-          "icon": {
-            "light": "resources/light/refresh.svg",
-            "dark": "resources/dark/refresh.svg"
-          }
-        },
-        {
-          "command": "bookTreeView.addEntry",
-          "title": "Add"
-        },
-        {
-          "command": "bookTreeView.editEntry",
-          "title": "Edit"
-        },
-        {
-          "command": "bookTreeView.deleteEntry",
-          "title": "Delete"
-        }
-      ],
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "watch": "tsc -watch -p ./",
-        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install",
-        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+        ]
     },
     "devDependencies": {
-        "typescript": "^2.6.1",
-        "vscode": "^1.1.6",
-        "sqlops": "github:anthonydresser/sqlops-extension-sqlops",
-        "tslint": "^5.8.0",
         "@types/node": "^7.0.43",
-        "@types/mocha": "^2.2.42"
+        "typescript": "^2.6.1",
+        "vscode": "^1.1.6"
     }
 }

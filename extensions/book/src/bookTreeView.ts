@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as yaml from 'js-yaml';
+
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<Notebook> {
 
@@ -55,34 +55,36 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Notebook> {
 	private getNotebooks(TOCPath: string): Notebook[] {
 		if (this.pathExists(TOCPath)) {
 			try {
-				const toc = yaml.safeLoad(fs.readFileSync(TOCPath, 'utf-8'));
+				// const toc = yaml.safeLoad(fs.readFileSync(TOCPath, 'utf-8'));
 				vscode.window.showInformationMessage('toc.yml found');
 			} catch (e) {
 				vscode.window.showInformationMessage(e);
 			}
 
-			/* const toDep = (moduleName: string, version: string): Notebook => {
-				if (this.pathExists(path.join(this.workspaceRoot, 'node_modules', moduleName))) {
-					return new Notebook(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed);
-				} else {
-					return new Notebook(moduleName, version, vscode.TreeItemCollapsibleState.None, {
-						command: 'extension.openPackageOnNpm',
-						title: '',
-						arguments: [moduleName]
-					});
-				}
-		};
+			/*
+				const toDep = (moduleName: string, version: string): Notebook => {
+					if (this.pathExists(path.join(this.workspaceRoot, 'node_modules', moduleName))) {
+						return new Notebook(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed);
+					} else {
+						return new Notebook(moduleName, version, vscode.TreeItemCollapsibleState.None, {
+							command: 'extension.openPackageOnNpm',
+							title: '',
+							arguments: [moduleName]
+						});
+					}
+				};
 
-			const nbs = toc.notebooks
-				? Object.keys(toc.notebooks).map(nb => toDep(nb, toc.notebooks[nb]))
-				: [];
+				const nbs = toc.notebooks
+					? Object.keys(toc.notebooks).map(nb => toDep(nb, toc.notebooks[nb]))
+					: [];
 
-			return nbs;
-		} else {
-			return [];
-		} */
-			return []; //temp
+				return nbs;
+			} else {
+				return [];
+			}
+			*/
 		}
+		return []; //temp
 	}
 
 	private pathExists(p: string): boolean {
@@ -110,12 +112,10 @@ export class Notebook extends vscode.TreeItem {
 		return `${this.title}`;
 	}
 
-	/*  	iconPath = {
-			light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
-			dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
-		}; */
+	// iconPath = {
+	// 	light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
+	// 	dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
+	// };
 
 	contextValue = 'notebook';
-
-
 }
