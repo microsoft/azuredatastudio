@@ -10,7 +10,8 @@ import * as os from 'os';
 import * as path from 'path';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { Telemetry } from './telemetry';
-import { getTelemetryErrorType } from './utils';
+import { getTelemetryErrorType, getEndpointName } from './utils';
+import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
@@ -40,6 +41,8 @@ export class SchemaCompareResult {
 	private optionsButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
 	private applyButton: azdata.ButtonComponent;
+	private selectSourceButton: azdata.ButtonComponent;
+	private selectTargetButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private comparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
@@ -50,18 +53,36 @@ export class SchemaCompareResult {
 	private originalSourceExcludes = new Map<string, azdata.DiffEntry>();
 	private originalTargetExcludes = new Map<string, azdata.DiffEntry>();
 	private sourceTargetSwitched = false;
+	private sourceName: string;
+	private targetName: string;
 
-	constructor(private sourceName: string, private targetName: string, private sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, private targetEndpointInfo: azdata.SchemaCompareEndpointInfo) {
+	public sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	public targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+
+	constructor() {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
-		this.GetDefaultDeploymentOptions();
+    }
+
+	public async start(context: any) {
+		// if schema compare was launched from a db, set that as the source
+		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
+		if (profile) {
+			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
+			this.sourceEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				serverName: profile.serverName,
+				databaseName: profile.databaseName,
+				ownerUri: ownerUri,
+				packageFilePath: ''
+			};
+		}
 
 		this.editor.registerContent(async view => {
-
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
 				height: 300
@@ -93,7 +114,8 @@ export class SchemaCompareResult {
 			this.createGenerateScriptButton(view);
 			this.createApplyButton(view);
 			this.createOptionsButton(view);
-			this.resetButtons(true);
+			this.createSourceAndTargetButtons(view);
+			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -123,12 +145,13 @@ export class SchemaCompareResult {
 				value: localize('schemaCompare.switchLabel', '➔')
 			}).component();
 
+			this.sourceName = this.sourceEndpointInfo ? `${this.sourceEndpointInfo.serverName}.${this.sourceEndpointInfo.databaseName}` : ' ';
 			this.sourceNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: sourceName,
+						value: this.sourceName,
 						headerCssClass: 'no-borders',
-						toolTip: sourceName
+						toolTip: this.sourceName
 					},
 				]
 			}).component();
@@ -136,18 +159,20 @@ export class SchemaCompareResult {
 			this.targetNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: targetName,
+						value: ' ',
 						headerCssClass: 'no-borders',
-						toolTip: targetName
+						toolTip: ''
 					},
 				]
 			}).component();
 
 			sourceTargetLabels.addItem(sourceLabel, { CSSStyles: { 'width': '55%', 'margin-left': '15px', 'font-size': 'larger', 'font-weight': 'bold' } });
 			sourceTargetLabels.addItem(targetLabel, { CSSStyles: { 'width': '45%', 'font-size': 'larger', 'font-weight': 'bold' } });
-			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '45%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+			this.sourceTargetFlexLayout.addItem(this.sourceNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+			this.sourceTargetFlexLayout.addItem(this.selectSourceButton, { CSSStyles: { 'margin-top': '10px' } });
 			this.sourceTargetFlexLayout.addItem(arrowLabel, { CSSStyles: { 'width': '10%', 'font-size': 'larger', 'text-align-last': 'center' } });
-			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '45%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+			this.sourceTargetFlexLayout.addItem(this.targetNameComponent, { CSSStyles: { 'width': '40%', 'height': '25px', 'margin-top': '10px', 'margin-left': '15px' } });
+			this.sourceTargetFlexLayout.addItem(this.selectTargetButton, { CSSStyles: { 'margin-top': '10px' } });
 
 			this.loader = view.modelBuilder.loadingComponent().component();
 			this.waitText = view.modelBuilder.text().withProperties({
@@ -155,7 +180,7 @@ export class SchemaCompareResult {
 			}).component();
 
 			this.startText = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.startText', 'Press Compare to start Schema Comparison.')
+				value: localize('schemaCompare.startText', 'To compare two schemas, first select a source schema and target schema, then press Compare.')
 			}).component();
 
 			this.noDifferencesLabel = view.modelBuilder.text().withProperties({
@@ -175,10 +200,33 @@ export class SchemaCompareResult {
 
 			await view.initializeModel(this.flexModel);
 		});
+
+		await this.GetDefaultDeploymentOptions();
+		this.editor.openEditor();
 	}
 
-	public start(): void {
-		this.editor.openEditor();
+	// update source and target name to display
+	public updateSourceAndTarget() {
+		this.sourceName = getEndpointName(this.sourceEndpointInfo);
+		this.targetName = getEndpointName(this.targetEndpointInfo);
+
+		this.sourceNameComponent.updateProperty('columns', [
+			{
+				value: this.sourceName,
+				headerCssClass: 'no-borders',
+				toolTip: this.sourceName
+			},
+		]);
+		this.targetNameComponent.updateProperty('columns', [
+			{
+				value: this.targetName,
+				headerCssClass: 'no-borders',
+				toolTip: this.targetName
+			},
+		]);
+
+		// reset buttons to before comparison state
+		this.resetButtons(true);
 	}
 
 	// only for test
@@ -524,10 +572,7 @@ export class SchemaCompareResult {
 					});
 
 					// disable apply and generate script buttons because the results are no longer valid after applying the changes
-					this.generateScriptButton.enabled = false;
-					this.generateScriptButton.title = reCompareToRefeshMessage;
-					this.applyButton.enabled = false;
-					this.applyButton.title = reCompareToRefeshMessage;
+					this.setButtonsForRecompare();
 
 					const service = await SchemaCompareResult.getService('MSSQL');
 					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
@@ -571,6 +616,13 @@ export class SchemaCompareResult {
 		this.applyButton.title = applyEnabledMessage;
 	}
 
+	public setButtonsForRecompare(): void {
+		this.generateScriptButton.enabled = false;
+		this.applyButton.enabled = false;
+		this.generateScriptButton.title = reCompareToRefeshMessage;
+		this.applyButton.title = reCompareToRefeshMessage;
+	}
+
 	private createSwitchButton(view: azdata.ModelView): void {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
@@ -611,6 +663,30 @@ export class SchemaCompareResult {
 			// remember that source target have been toggled
 			this.sourceTargetSwitched = this.sourceTargetSwitched ? false : true;
 			this.startCompare();
+		});
+	}
+
+	private createSourceAndTargetButtons(view: azdata.ModelView): void {
+		this.selectSourceButton = view.modelBuilder.button().withProperties({
+			label: '•••',
+			title: localize('schemaCompare.sourceButtonTitle', 'Select Source')
+		}).component();
+
+		this.selectSourceButton.onDidClick(() => {
+			Telemetry.sendTelemetryEvent('SchemaCompareSelectSource');
+			let dialog = new SchemaCompareDialog(this);
+			dialog.openDialog();
+		});
+
+		this.selectTargetButton = view.modelBuilder.button().withProperties({
+			label: '•••',
+			title: localize('schemaCompare.targetButtonTitle', 'Select Target')
+		}).component();
+
+		this.selectTargetButton.onDidClick(() => {
+			Telemetry.sendTelemetryEvent('SchemaCompareSelectTarget');
+			let dialog = new SchemaCompareDialog(this);
+			dialog.openDialog();
 		});
 	}
 
