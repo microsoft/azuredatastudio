@@ -38,13 +38,18 @@ export class CmsUtils {
 	constructor() {
 		// 1) Get a credential provider
 		// 2) Store the credential provider for use later
-		azdata.credentials.getProvider(CredentialNamespace).then(credProvider => {
-			this._credentialProvider = credProvider;
-			return true;
-		});
+		this.setupCredentialProvider();
 	}
 
-	public async savePassword(username: string, password: string) {
+	private async setupCredentialProvider(): Promise<boolean> {
+		let credProvider = await azdata.credentials.getProvider(CredentialNamespace);
+		if (credProvider) {
+			this._credentialProvider = credProvider;
+			return true;
+		}
+	}
+
+	public async savePassword(username: string, password: string): Promise<boolean> {
 		let provider = await this.credentialProvider();
 		let result = await provider.saveCredential(username, password);
 		return result;
@@ -82,9 +87,10 @@ export class CmsUtils {
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false).then(async (result) => {
+			let result = await azdata.connection.connect(Utils.toConnectionProfile(connection), false, false);
+			if (result) {
 				ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
-			});
+			}
 		}
 		return ownerUri;
 	}
@@ -99,13 +105,11 @@ export class CmsUtils {
 	}
 
 	public async getRegisteredServers(ownerUri: string, relativePath: string): Promise<mssql.ListRegisteredServersResult> {
-		return this.getCmsService().then((service) => {
-			return service.getRegisteredServers(ownerUri, relativePath).then((result) => {
-				if (result && result.registeredServersList && result.registeredServersList) {
-					return result;
-				}
-			});
-		});
+		const cmsService = await this.getCmsService();
+		const result = await cmsService.getRegisteredServers(ownerUri, relativePath);
+		if (result && result.registeredServersList && result.registeredServersList) {
+			return result;
+		}
 	}
 
 	public static didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
@@ -132,13 +136,14 @@ export class CmsUtils {
 					}
 				}, (error) => {
 					// cancel pressed on connection dialog
-					return Promise.reject(localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.'));
+					const errorText = localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.');
+					return Promise.reject(error ? new Error(error.message) : errorText);
 				});
 			}
 		}
 		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
 			if (result) {
-				let createCmsResult: CreateCmsResult = {
+				const createCmsResult: CreateCmsResult = {
 					listRegisteredServersResult: result,
 					connection: connection
 				};
@@ -236,23 +241,20 @@ export class CmsUtils {
 
 	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string): Promise<boolean> {
 		let provider = await this.getCmsService();
-		return provider.removeRegisteredServer(ownerUri, relativePath, registeredServerName).then((result) => {
-			return result;
-		});
+		let result = await provider.removeRegisteredServer(ownerUri, relativePath, registeredServerName);
+		return result;
 	}
 
 	public async addServerGroup(groupName: string, groupDescription: string, relativePath: string, ownerUri: string): Promise<boolean> {
 		let provider = await this.getCmsService();
-		return provider.addServerGroup(ownerUri, relativePath, groupName, groupDescription).then((result) => {
-			return result;
-		});
+		let result = await provider.addServerGroup(ownerUri, relativePath, groupName, groupDescription);
+		return result;
 	}
 
 	public async removeServerGroup(groupName: string, relativePath: string, ownerUri: string): Promise<boolean> {
 		let provider = await this.getCmsService();
-		return provider.removeServerGroup(ownerUri, relativePath, groupName).then((result) => {
-			return result;
-		});
+		let result = await provider.removeServerGroup(ownerUri, relativePath, groupName);
+		return result;
 	}
 
 	public static getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
