@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions, IEditorControl, IEditorMemento } from 'vs/workbench/common/editor';
+import { EditorOptions, IEditorControl, IEditorMemento, IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -29,6 +29,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { URI } from 'vs/base/common/uri';
+import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 
 import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
@@ -91,6 +92,7 @@ export class QueryEditor extends BaseEditor {
 		@IStorageService storageService: IStorageService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IFileService fileService: IFileService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
@@ -100,6 +102,16 @@ export class QueryEditor extends BaseEditor {
 		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
 
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+
+		// Clear view state for deleted files
+		this._register(fileService.onFileChanges(e => this.onFilesChanged(e)));
+	}
+
+	private onFilesChanged(e: FileChangesEvent): void {
+		const deleted = e.getDeleted();
+		if (deleted && deleted.length) {
+			this.clearTextEditorViewState(deleted.map(d => d.resource));
+		}
 	}
 
 	protected getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
@@ -311,12 +323,19 @@ export class QueryEditor extends BaseEditor {
 			return; // ensure we have an input to handle view state for
 		}
 
-		if (!input.isDisposed()) {
+		// Otherwise we save the view state to restore it later
+		else if (!input.isDisposed()) {
 			this.saveTextEditorViewState(input.getResource());
 		}
 	}
 
-	private saveTextEditorViewState(resource: URI) {
+	private clearTextEditorViewState(resources: URI[], group?: IEditorGroup): void {
+		resources.forEach(resource => {
+			this.editorMemento.clearEditorState(resource, group);
+		});
+	}
+
+	private saveTextEditorViewState(resource: URI): void {
 		const editorViewState = {
 			resultsHeight: this.resultsVisible ? this.splitview.getViewSize(1) : undefined
 		} as IQueryEditorViewState;
@@ -343,7 +362,7 @@ export class QueryEditor extends BaseEditor {
 		super.saveState();
 	}
 
-	public toggleResultsEditorVisibility() {
+	public toggleResultsEditorVisibility(): void {
 		if (this.resultsVisible) {
 			this.removeResultsEditor();
 		} else {
@@ -381,7 +400,6 @@ export class QueryEditor extends BaseEditor {
 			this.queryEditorVisible.set(visible);
 		}
 	}
-
 
 	/**
 	 * Called to indicate to the editor that the input should be cleared and resources associated with the
@@ -425,7 +443,7 @@ export class QueryEditor extends BaseEditor {
 		this.currentTextEditor.setOptions(options);
 	}
 
-	private removeResultsEditor() {
+	private removeResultsEditor(): void {
 		if (this.resultsVisible) {
 			this.splitview.removeView(1, Sizing.Distribute);
 			this.resultsVisible = false;
@@ -435,7 +453,7 @@ export class QueryEditor extends BaseEditor {
 		}
 	}
 
-	private addResultsEditor() {
+	private addResultsEditor(): void {
 		if (!this.resultsVisible) {
 			// size the results section to 65% of available height or at least 100px
 			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
@@ -451,12 +469,6 @@ export class QueryEditor extends BaseEditor {
 				this.input.state.resultsVisible = true;
 			}
 		}
-	}
-
-	public close(): void {
-		let queryInput: QueryInput = <QueryInput>this.input;
-		queryInput.sql.close();
-		queryInput.results.close();
 	}
 
 	// helper functions
@@ -588,7 +600,7 @@ export class QueryEditor extends BaseEditor {
 		this.resultsEditor.registerQueryModelViewTab(title, componentId);
 	}
 
-	public chart(dataId: { batchId: number, resultId: number }) {
+	public chart(dataId: { batchId: number, resultId: number }): void {
 		this.resultsEditor.chart(dataId);
 	}
 }
