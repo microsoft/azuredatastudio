@@ -6,6 +6,7 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as yaml from 'js-yaml';
 
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<Notebook> {
@@ -15,13 +16,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Notebook> {
 
 	constructor(private workspaceRoot: string) {
 		// TODO: Only show BOOK tab if a book is opened
-		/* const enabled = vscode.window.activeTextEditor.document.languageId === 'json' || vscode.window.activeTextEditor.document.languageId === 'jsonc';
-		vscode.commands.executeCommand('setContext', 'jsonOutlineEnabled', enabled);
-		vscode.commands.executeCommand('setContext', 'bookOpened', true); */
 	}
 
 	refresh(): void {
 		this._onDidChangeTreeData.fire();
+	}
+
+	async openNotebook(resource: vscode.Uri): Promise<void> {
+		let doc = await vscode.workspace.openTextDocument(resource);
+		vscode.window.showTextDocument(doc);
 	}
 
 	getTreeItem(element: Notebook): vscode.TreeItem {
@@ -29,13 +32,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Notebook> {
 	}
 
 	getChildren(element?: Notebook): Thenable<Notebook[]> {
-		if (!this.workspaceRoot) {
-			vscode.window.showInformationMessage('Empty workspace');
-			return Promise.resolve([]);
-		}
-
 		if (element) {
-			vscode.window.showInformationMessage(path.join(this.workspaceRoot, '_data', 'toc.yml'));
 			return Promise.resolve(this.getNotebooks(path.join(this.workspaceRoot, '_data', 'toc.yml')));
 		} else {
 			const tocPath = path.join(this.workspaceRoot, '_data', 'toc.yml');
@@ -54,37 +51,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Notebook> {
 	 */
 	private getNotebooks(TOCPath: string): Notebook[] {
 		if (this.pathExists(TOCPath)) {
-			try {
-				// const toc = yaml.safeLoad(fs.readFileSync(TOCPath, 'utf-8'));
-				vscode.window.showInformationMessage('toc.yml found');
-			} catch (e) {
-				vscode.window.showInformationMessage(e);
+			const toc = yaml.safeLoad(fs.readFileSync(TOCPath, 'utf-8'));
+			let notebooks: Notebook[] = [];
+
+			// TODO: check if it's a directory (right now assuming all are just notebooks)
+			for (let i = 0; i < Object.keys(toc).length; i++) {
+				if (toc[i].url) {
+					let pathToNotebook = path.join(this.workspaceRoot, 'content', String(toc[i].url).concat('.ipynb'));
+					notebooks.push(new Notebook(toc[i].title, toc[i].url, vscode.FileType.File, vscode.TreeItemCollapsibleState.None, { command: 'bookTreeView.openNotebook', title: "Open Notebook", arguments: [pathToNotebook], }));
+				} else {
+					// TODO: figure out where search notebook is (search doesn't have uri)
+					notebooks.push(new Notebook(toc[i].title, toc[i].url, vscode.FileType.File, vscode.TreeItemCollapsibleState.None));
+				}
 			}
-
-			/*
-				const toDep = (moduleName: string, version: string): Notebook => {
-					if (this.pathExists(path.join(this.workspaceRoot, 'node_modules', moduleName))) {
-						return new Notebook(moduleName, version, vscode.TreeItemCollapsibleState.Collapsed);
-					} else {
-						return new Notebook(moduleName, version, vscode.TreeItemCollapsibleState.None, {
-							command: 'extension.openPackageOnNpm',
-							title: '',
-							arguments: [moduleName]
-						});
-					}
-				};
-
-				const nbs = toc.notebooks
-					? Object.keys(toc.notebooks).map(nb => toDep(nb, toc.notebooks[nb]))
-					: [];
-
-				return nbs;
-			} else {
-				return [];
-			}
-			*/
+			return notebooks;
 		}
-		return []; //temp
+		return [];
 	}
 
 	private pathExists(p: string): boolean {
@@ -102,20 +84,19 @@ export class Notebook extends vscode.TreeItem {
 
 	constructor(
 		public readonly title: string,
+		public uri: string,
+		public readonly type: vscode.FileType,
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public readonly command?: vscode.Command
+		public command?: vscode.Command
 	) {
 		super(title, collapsibleState);
 	}
 
-	get tooltip(): string {
-		return `${this.title}`;
-	}
-
-	// iconPath = {
-	// 	light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
-	// 	dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
-	// };
+	iconPath = {
+		light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
+		dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
+	};
 
 	contextValue = 'notebook';
+
 }

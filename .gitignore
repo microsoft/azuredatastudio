@@ -23,3 +23,4 @@ coverage/
 test_data/
 test-results/
 yarn-error.log
+extensions/book/yarn.lock

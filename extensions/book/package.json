@@ -32,18 +32,6 @@
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
                 }
-            },
-            {
-                "command": "bookTreeView.addEntry",
-                "title": "Add"
-            },
-            {
-                "command": "bookTreeView.editEntry",
-                "title": "Edit"
-            },
-            {
-                "command": "bookTreeView.deleteEntry",
-                "title": "Delete"
             }
         ]
     },
@@ -51,5 +39,9 @@
         "@types/node": "^7.0.43",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6"
+    },
+    "dependencies": {
+        "@types/js-yaml": "^3.12.1",
+        "vscode-nls": "^4.1.1"
     }
 }
