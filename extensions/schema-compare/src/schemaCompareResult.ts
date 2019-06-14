@@ -53,7 +53,8 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
-		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
+		// Do not localize paramater customResourceName
+		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, customResourceName: 'Schema Compare' });
 		this.GetDefaultDeploymentOptions();
 
 		this.editor.registerContent(async view => {
@@ -178,8 +179,13 @@ export class SchemaCompareResult {
 	}
 
 	// only for test
-	public getComparisionResult(): azdata.SchemaCompareResult {
+	public getComparisonResult(): azdata.SchemaCompareResult {
 		return this.comparisonResult;
+	}
+
+	// only for test
+	public getDeploymentOptions(): azdata.DeploymentOptions {
+		return this.deploymentOptions;
 	}
 
 	public async execute(): Promise<void> {

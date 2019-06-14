@@ -90,9 +90,10 @@ export class ModelViewInput extends EditorInput {
 	}
 
 	public getResource(): URI {
-		return super.getResource()
-			? super.getResource()
-			: URI.from({ scheme: ModelViewInput.Scheme, path: this._title });
+		if (this._options.customResourceName) {
+			return URI.from({ scheme: ModelViewInput.Scheme, path: this._options.customResourceName });
+		}
+		return super.getResource();
 	}
 
 	public get container(): HTMLElement {
