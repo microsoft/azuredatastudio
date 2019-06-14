@@ -241,6 +241,11 @@ export class ExtensionService extends AbstractExtensionService implements IExten
 			return false;
 		}
 
+		// {{ SQL CARBON EDIT }}
+		if (extension.forceReload) {
+			return false;
+		}
+
 		const extensionDescription = this._registry.getExtensionDescription(extension.identifier);
 		if (extensionDescription) {
 			// ignore adding an extension which is already running and cannot be removed
