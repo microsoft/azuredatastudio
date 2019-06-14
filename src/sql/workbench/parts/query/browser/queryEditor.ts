@@ -365,6 +365,9 @@ export class QueryEditor extends BaseEditor {
 		if (this.resultsVisible) {
 			this.splitview.removeView(1, Sizing.Distribute);
 			this.resultsVisible = false;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = false;
+			}
 		}
 	}
 
@@ -380,6 +383,9 @@ export class QueryEditor extends BaseEditor {
 				onDidChange: Event.None
 			}, initialViewSize);
 			this.resultsVisible = true;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = true;
+			}
 		}
 	}
 
