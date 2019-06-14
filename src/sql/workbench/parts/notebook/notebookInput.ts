@@ -9,6 +9,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
+import * as os from 'os';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
@@ -26,6 +27,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import { ITextModel } from 'vs/editor/common/model';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -98,20 +100,22 @@ export class NotebookEditorModel extends EditorModel {
 			// ironically isn't cached in the JSON contents since trust doesn't persist across machines.
 			// Request serialization so trusted state is preserved but don't update the model
 			this.sendNotebookSerializationStateChange();
-		} else {
-			// For all other changes, update the backing model with the latest contents
-			let notebookModel = this.getNotebookModel();
-			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
-				let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
-				let model = this.textEditorModel.textEditorModel;
-				let endLine = model.getLineCount();
-				let endCol = model.getLineMaxColumn(endLine);
+			return;
+		}
 
-				this.textEditorModel.textEditorModel.applyEdits([{
-					range: new Range(1, 1, endLine, endCol),
-					text: content
-				}]);
-			}
+		// For all other changes, update the backing model with the latest contents
+		let notebookModel = this.getNotebookModel();
+		if (!notebookModel || !this.textEditorModel || !this.textEditorModel.textEditorModel) {
+			return;
+		}
+
+		let detector: DifferenceDetector = new DifferenceDetector(notebookModel, this.textEditorModel);
+		let info = detector.getDifference();
+		if (info) {
+			this.textEditorModel.textEditorModel.applyEdits([{
+				range: info.range,
+				text: info.text
+			}]);
 		}
 	}
 
@@ -402,5 +406,133 @@ class NotebookEditorContentManager implements IContentManager {
 		let contents = await contentManager.loadFromContentString(notebookEditorModel.contentString);
 		return contents;
 	}
+}
 
+class DifferenceDetector {
+	private updatedContent: string;
+	private updatedContentTail: string;
+	private existingContent: string;
+	private existingContentTail: string;
+	private commonHead: string;
+	private commonHeadEndIndex: number;
+	private textModel: ITextModel;
+
+	constructor(
+		private notebookModel: INotebookModel,
+		private textEditorModel: TextFileEditorModel | UntitledEditorModel
+	) {
+		if (this.textEditorModel && this.textEditorModel.textEditorModel) {
+			this.textModel = this.textEditorModel.textEditorModel;
+		}
+	}
+
+	private initialize(): void {
+		this.updatedContent = undefined;
+		this.updatedContentTail = undefined;
+		this.existingContent = undefined;
+		this.existingContentTail = undefined;
+		this.commonHead = undefined;
+		this.commonHeadEndIndex = undefined;
+	}
+
+	private loadContentToCompare(): void {
+		if (this.notebookModel && this.textModel) {
+			this.updatedContent = JSON.stringify(this.notebookModel.toJSON(), undefined, '    ').replace(/\n/g, os.EOL);
+			this.existingContent = this.textModel.getValue();
+		}
+	}
+
+	public getDifference(): { range: Range, text: string } {
+		this.initialize();
+		this.loadContentToCompare();
+		if (this.existingContent === this.updatedContent) {
+			return undefined;
+		}
+		if (!this.existingContent || this.existingContent === '' || this.updatedContent.length < 1000) {
+			return this.getAll();
+		}
+		this.commonHeadEndIndex = this.getCommonHeadStrEndIndex(this.existingContent, this.updatedContent);
+		if (!this.commonHeadEndIndex || this.commonHeadEndIndex < 0) {
+			return this.getAll();
+		}
+		this.commonHead = this.existingContent.substr(0, this.commonHeadEndIndex + 1);
+		this.existingContentTail = this.existingContent.replace(this.commonHead, '');
+		this.updatedContentTail = this.updatedContent.replace(this.commonHead, '');
+		if (this.updatedContentTail.includes(this.existingContentTail)) {
+			return this.getAppended();
+		} else if (this.existingContentTail.includes(this.updatedContentTail)) {
+			return this.getRemoved();
+		} else {
+			return this.getAll();
+		}
+	}
+
+	private getAll(): { range: Range, text: string } {
+		let endLine = this.textModel.getLineCount();
+		let endCol = this.textModel.getLineMaxColumn(endLine);
+		return { range: new Range(1, 1, endLine, endCol), text: this.updatedContent };
+	}
+
+	private getAppended(): { range: Range, text: string } {
+		let contentToAppend: string = this.updatedContentTail.replace(this.existingContentTail, '');
+		let lineAndColumn = this.getEndLineAndColumnNum(this.commonHead);
+		let lineNum = lineAndColumn[0];
+		let columnNum = lineAndColumn[1] + 1;
+		return {
+			range: new Range(lineNum, columnNum, lineNum, columnNum),
+			text: contentToAppend
+		};
+	}
+
+	private getRemoved(): { range: Range, text: string } {
+		let lineAndColumnStart = this.getEndLineAndColumnNum(this.commonHead);
+		let lineStart = lineAndColumnStart[0];
+		let columnStart = lineAndColumnStart[1] + 1;
+		let existingContentWithoutTail: string = this.existingContent.replace(this.updatedContentTail, '');
+		let lineAndColumnEnd = this.getEndLineAndColumnNum(existingContentWithoutTail);
+		let lineEnd = lineAndColumnEnd[0];
+		let columnEnd = lineAndColumnEnd[1] + 1;
+		return {
+			range: new Range(lineStart, columnStart, lineEnd, columnEnd),
+			text: ''
+		};
+	}
+
+	private getEndLineAndColumnNum(str: string): number[] {
+		let lines: number = str.split(os.EOL).length;
+		let columns: number = str.length - str.lastIndexOf(os.EOL) - os.EOL.length;
+		return [lines, columns];
+	}
+
+	private getCommonHeadStrEndIndex(oldStr: string, newStr: string): number {
+		let commonStrEndIndex: number = -1;
+		let range: number[] = [0, oldStr.length < newStr.length ? oldStr.length - 1 : newStr.length - 1];
+		while (range[0] >= 0 && range[1] >= 0 && range[0] <= range[1]) {
+			let start = range[0];
+			let end = range[1];
+			if (start === end) {
+				if (oldStr[start] === newStr[start]) {
+					commonStrEndIndex = end;
+				}
+				break;
+			}
+
+			let mid = Math.floor((start + end) / 2);
+			let halfLength = mid - start + 1;
+			let os = oldStr.substr(start, halfLength);
+			let ns = newStr.substr(start, halfLength);
+			if (os === ns) {
+				let nextOfMid = mid + 1;
+				if (oldStr[nextOfMid] !== newStr[nextOfMid]) {
+					commonStrEndIndex = mid;
+					break;
+				}
+				range = [nextOfMid, end];
+			}
+			else {
+				range = [start, mid];
+			}
+		}
+		return commonStrEndIndex;
+	}
 }
