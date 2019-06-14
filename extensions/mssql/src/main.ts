@@ -143,7 +143,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 		});
 		if (endpointsArray.length > 0) {
-			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy');
+			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy' || e.serviceName === 'mgmtproxy');
 			if (managementProxyEp) {
 				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Metrics Dashboard', '/grafana'));
 				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Log Search Dashboard', '/kibana'));
@@ -159,14 +159,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 			endpointsArray.forEach(endpointInfo => {
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: getFriendlyEndpointNames(endpointInfo.serviceName) }).component();
-				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'all' } });
+				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
 				if (endpointInfo.isHyperlink) {
 					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink, position: '' }).component();
 					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '60%', 'color': 'blue', 'text-decoration': 'underline', 'padding-top': '10px' } });
 				}
 				else {
 					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
-					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '60%', 'user-select': 'all' } });
+					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '60%', 'user-select': 'text' } });
 				}
 				const copyValueCell = view.modelBuilder.button().component();
 				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.svg'), dark: context.asAbsolutePath('resources/dark/copy_inverse.svg') };
@@ -200,23 +200,27 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	}
 
 	function getFriendlyEndpointNames(name: string): string {
+		let friendlyName: string = name;
 		switch (name) {
 			case 'app-proxy':
-				return 'Application Proxy';
+				friendlyName = 'Application Proxy';
 				break;
 			case 'controller':
-				return 'Cluster Management Service';
+				friendlyName = 'Cluster Management Service';
 				break;
 			case 'gateway':
-				return 'HDFS and Spark';
+				friendlyName = 'HDFS and Spark';
 				break;
 			case 'management-proxy':
-				return 'Management Proxy';
+				friendlyName = 'Management Proxy';
+				break;
+			case 'mgmtproxy':
+				friendlyName = 'Management Proxy';
 				break;
 			default:
-				return name;
 				break;
 		}
+		return friendlyName;
 	}
 
 	let api: MssqlExtensionApi = {
