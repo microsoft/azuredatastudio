@@ -304,7 +304,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			// Load values for edit scenario
 			if (this.isEdit) {
 				this.nameTextBox.value = this.model.stepName;
-				this.typeDropdown.value = this.model.subSystem.toString(); //
+				this.typeDropdown.value = JobStepData.convertToSubSystemDisplayName(this.model.subSystem);
 				this.databaseDropdown.value = this.model.databaseName;
 				this.commandTextBox.value = this.model.command;
 			}
@@ -383,10 +383,10 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			await view.initializeModel(formWrapper);
 
 			if (this.isEdit) {
-				this.successActionDropdown.value = this.model.successAction.toString(); //
+				this.successActionDropdown.value = JobStepData.convertToCompletionActionDisplayName(this.model.successAction);
 				this.retryAttemptsBox.value = this.model.retryAttempts.toString();
 				this.retryIntervalBox.value = this.model.retryInterval.toString();
-				this.failureActionDropdown.value = this.model.failureAction.toString(); //
+				this.failureActionDropdown.value = JobStepData.convertToCompletionActionDisplayName(this.model.failureAction);
 				this.outputFileNameBox.value = this.model.outputFileName;
 				this.appendToExistingFileCheckbox.checked = this.model.appendToLogFile;
 				this.logToTableCheckbox.checked = this.model.appendLogToTable;
