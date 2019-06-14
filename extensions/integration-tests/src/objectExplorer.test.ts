@@ -18,14 +18,11 @@ if (context.RunTest) {
 		test('BDC instance node label test', async function () {
 			await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
-		test('Standard alone instance node label test', async function () {
+		test('Standalone instance node label test', async function () {
 			await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
 		test('Azure SQL DB instance node label test', async function () {
 			await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
-		});
-		test('Standard SQL DB context menu test', async function () {
-			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
 		test('BDC instance context menu test', async function () {
 			await (new ObjectExplorerTester()).bdcContextMenuTest();
@@ -33,7 +30,7 @@ if (context.RunTest) {
 		test('Azure SQL DB context menu test', async function () {
 			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test('Stand alone database context menu test', async function () {
+		test('Standalone database context menu test', async function () {
 			await (new ObjectExplorerTester()).standAloneContextMenuTest();
 		});
 	});
@@ -67,14 +64,14 @@ class ObjectExplorerTester {
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbContextMenuTest(): Promise<void> {
-		let server = await getStandaloneServer();
+		let server = await getAzureServer();
 		let expectedActions: string[];
 		// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		}
 		await this.verifyContextMenu(server, expectedActions);
 	}
@@ -84,10 +81,10 @@ class ObjectExplorerTester {
 		let server = await getStandaloneServer();
 		let expectedActions: string[] = [];
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
 		await this.verifyDBContextMenu(server, 3000, expectedActions);
 	}
@@ -98,10 +95,10 @@ class ObjectExplorerTester {
 		let expectedActions: string[];
 		// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		}
 		await this.verifyContextMenu(server, expectedActions);
 	}
