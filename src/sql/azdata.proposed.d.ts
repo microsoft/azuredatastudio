@@ -1402,16 +1402,38 @@ declare module 'azdata' {
 		stepDetails: AgentJobStepInfo;
 	}
 
+	export enum AgentSubSystem {
+		TransactSql = 1,
+		ActiveScripting = 2,
+		CmdExec = 3,
+		Snapshot = 4,
+		LogReader = 5,
+		Distribution = 6,
+		Merge = 7,
+		QueueReader = 8,
+		AnalysisQuery = 9,
+		AnalysisCommands = 10,
+		Ssis = 11,
+		PowerShell = 12
+	}
+
+	export enum StepCompletionAction {
+		QuitWithSuccess = 1,
+		QuitWithFailure = 2,
+		GoToNextStep = 3,
+		GoToStep = 4
+	}
+
 	export interface AgentJobStepInfo {
 		jobId: string;
 		jobName: string;
 		script: string;
 		scriptName: string;
 		stepName: string;
-		subSystem: string;
+		subSystem: AgentSubSystem;
 		id: number;
-		failureAction: string;
-		successAction: string;
+		failureAction: StepCompletionAction;
+		successAction: StepCompletionAction;
 		failStepId: number;
 		successStepId: number;
 		command: string;
