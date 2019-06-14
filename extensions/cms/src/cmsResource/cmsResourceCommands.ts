@@ -22,7 +22,8 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		await appContext.cmsUtils.connection(connectionProfile).then(async (connection) => {
+		try {
+			let connection = await appContext.cmsUtils.connection(connectionProfile);
 			if (connection && connection.options) {
 				let registeredCmsServerName = connection.options.registeredServerName ?
 					connection.options.registeredServerName : connection.options.server;
@@ -46,10 +47,12 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 					// error out for same server name
 					let errorText = localize('cms.errors.sameCmsServerName', 'Central Management Server Group already has a Registered Server with the name {0}', registeredCmsServerName);
 					appContext.apiWrapper.showErrorMessage(errorText);
-					return;
+					return Promise.reject(errorText);
 				}
 			}
-		});
+		} catch (error) {
+			return Promise.reject(new Error(error.message));
+		}
 	});
 }
 
@@ -74,16 +77,17 @@ export function addRegisteredServerCommand(appContext: AppContext, tree: CmsReso
 		let relativePath = node instanceof CmsResourceTreeNode ? '' : node.relativePath;
 		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.registeredServerName === ''
 			? node.connection.options.server : node.connection.options.registeredServerName : null;
-		await appContext.cmsUtils.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
+		try {
+			let result = await appContext.cmsUtils.addRegisteredServer(relativePath, node.ownerUri, serverName);
 			if (result) {
 				tree.notifyNodeChanged(node);
 			}
-		}, (error) => {
+		} catch (error) {
 			// error out
-			let errorText = localize('cms.errors.addRegisterServerFail', 'Could not add the Registered Server {0}', error);
+			let errorText = error ? error.message : localize('cms.errors.addRegisterServerFail', 'Could not add the Registered Server {0}', error);
 			appContext.apiWrapper.showErrorMessage(errorText);
-			return;
-		});
+			return Promise.reject(new Error(errorText));
+		}
 	});
 }
 
@@ -93,18 +97,24 @@ export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsR
 		if (!(node instanceof RegisteredServerTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.showWarningMessage(
-			`${localize('cms.confirmDeleteServer', 'Are you sure you want to delete')} ${node.name}?`,
-			localize('cms.yes', 'Yes'),
-			localize('cms.no', 'No')).then((result) => {
-				if (result && result === localize('cms.yes', 'Yes')) {
-					appContext.cmsUtils.removeRegisteredServer(node.name, node.relativePath, node.ownerUri).then((result) => {
-						if (result) {
-							tree.notifyNodeChanged(node.parent);
-						}
-					});
+		try {
+			let result = await appContext.apiWrapper.showWarningMessage(
+				`${localize('cms.confirmDeleteServer', 'Are you sure you want to delete')} ${node.name}?`,
+				localize('cms.yes', 'Yes'),
+				localize('cms.no', 'No'));
+			if (result && result === localize('cms.yes', 'Yes')) {
+				try {
+					let removeResult = await appContext.cmsUtils.removeRegisteredServer(node.name, node.relativePath, node.ownerUri);
+					if (removeResult) {
+						tree.notifyNodeChanged(node.parent);
+					}
+				} catch (error) {
+					return Promise.reject(new Error(error.message));
 				}
-			});
+			}
+		} catch (error) {
+			return Promise.reject(new Error(error.message));
+		}
 	});
 }
 
@@ -149,22 +159,24 @@ export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceT
 		dialog.content = [mainTab];
 		azdata.window.openDialog(dialog);
 		let groupExists = false;
-		dialog.okButton.onClick(() => {
+		dialog.okButton.onClick(async () => {
 			let path = node instanceof ServerGroupTreeNode ? node.relativePath : '';
 			if (node.serverGroupNodes.some(node => node.name === serverGroupName)) {
 				groupExists = true;
 			}
 			if (!groupExists) {
-				appContext.cmsUtils.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
+				try {
+					let result = await appContext.cmsUtils.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri);
 					if (result) {
 						tree.notifyNodeChanged(node);
 					}
-				});
-			} else {
-				// error out for same server group
-				let errorText = localize('cms.errors.sameServerGroupName', '{0} already has a Server Group with the name {1}', node.name, serverGroupName);
-				appContext.apiWrapper.showErrorMessage(errorText);
-				return;
+				} catch (error) {
+					// error out for same server group
+					let errorText = error ? error.message : localize('cms.errors.sameServerGroupName',
+						'{0} already has a Server Group with the name {1}', node.name, serverGroupName);
+					appContext.apiWrapper.showErrorMessage(errorText);
+					return Promise.reject(new Error(errorText));
+				}
 			}
 		});
 	});
@@ -176,18 +188,24 @@ export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResour
 		if (!(node instanceof ServerGroupTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.showWarningMessage(
-			`${localize('cms.confirmDeleteGroup', 'Are you sure you want to delete')} ${node.name}?`,
-			localize('cms.yes', 'Yes'),
-			localize('cms.no', 'No')).then((result) => {
-				if (result && result === localize('cms.yes', 'Yes')) {
-					appContext.cmsUtils.removeServerGroup(node.name, node.relativePath, node.ownerUri).then((result) => {
-						if (result) {
-							tree.notifyNodeChanged(node.parent);
-						}
-					});
+		try {
+			let result = await appContext.apiWrapper.showWarningMessage(
+				`${localize('cms.confirmDeleteGroup', 'Are you sure you want to delete')} ${node.name}?`,
+				localize('cms.yes', 'Yes'),
+				localize('cms.no', 'No'));
+			if (result && result === localize('cms.yes', 'Yes')) {
+				try {
+					let result = await appContext.cmsUtils.removeServerGroup(node.name, node.relativePath, node.ownerUri);
+					if (result) {
+						tree.notifyNodeChanged(node.parent);
+					}
+				} catch (error) {
+					return Promise.reject(new Error(error.message));
 				}
-			});
+			}
+		} catch (error) {
+			return Promise.reject(new Error(error.message));
+		}
 	});
 }
 

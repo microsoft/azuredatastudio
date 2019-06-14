@@ -41,12 +41,11 @@ export class CmsUtils {
 		this.setupCredentialProvider();
 	}
 
-	private async setupCredentialProvider(): Promise<boolean> {
-		let credProvider = await azdata.credentials.getProvider(CredentialNamespace);
-		if (credProvider) {
-			this._credentialProvider = credProvider;
-			return true;
+	private async setupCredentialProvider(): Promise<azdata.CredentialProvider> {
+		if (!this._credentialProvider) {
+			this._credentialProvider = await azdata.credentials.getProvider(CredentialNamespace);
 		}
+		return this._credentialProvider;
 	}
 
 	public async savePassword(username: string, password: string): Promise<boolean> {
@@ -112,11 +111,6 @@ export class CmsUtils {
 		}
 	}
 
-	public static didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
-		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
-			(connectionA.options.savePassword !== connectionA.options.savePassword));
-	}
-
 	public async createCmsServer(connection: azdata.connection.Connection,
 		name: string, description: string): Promise<CreateCmsResult> {
 		let provider = await this.getCmsService();
@@ -129,19 +123,21 @@ export class CmsUtils {
 			ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			// If the ownerUri is still undefined, then open a connection dialog with the connection
 			if (!ownerUri) {
-				await this.connection(initialConnectionProfile).then(async (result) => {
+				try {
+					let result = await this.connection(initialConnectionProfile);
 					if (result) {
 						ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 						connection = result;
 					}
-				}, (error) => {
+				} catch (error) {
 					// cancel pressed on connection dialog
 					const errorText = localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.');
 					return Promise.reject(error ? new Error(error.message) : errorText);
-				});
+				}
 			}
 		}
-		return provider.createCmsServer(name, description, connection, ownerUri).then((result) => {
+		try {
+			let result = await provider.createCmsServer(name, description, connection, ownerUri);
 			if (result) {
 				const createCmsResult: CreateCmsResult = {
 					listRegisteredServersResult: result,
@@ -149,9 +145,10 @@ export class CmsUtils {
 				};
 				return Promise.resolve(createCmsResult);
 			}
-		}, (error) => {
-			return Promise.reject(error.message);
-		});
+		} catch (errorString) {
+			const error = new Error(errorString.message);
+			return Promise.reject(error);
+		}
 	}
 
 	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
@@ -219,7 +216,8 @@ export class CmsUtils {
 				authTypeChanged: true
 			}
 		};
-		return this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false }).then(async (connection) => {
+		try {
+			let connection = await this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false });
 			if (connection && connection.options) {
 				if (connection.options.server === parentServerName) {
 					// error out for same server registration
@@ -231,12 +229,13 @@ export class CmsUtils {
 					let result = await provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, connection.options.registeredServerDescription, connection);
 					if (result) {
 						return Promise.resolve(result);
-					} else {
-						return Promise.reject(registeredServerName);
 					}
 				}
 			}
-		});
+		} catch (errorString) {
+			let error = new Error(errorString.message);
+			return Promise.reject(error);
+		}
 	}
 
 	public async removeRegisteredServer(registeredServerName: string, relativePath: string, ownerUri: string): Promise<boolean> {
@@ -255,25 +254,6 @@ export class CmsUtils {
 		let provider = await this.getCmsService();
 		let result = await provider.removeServerGroup(ownerUri, relativePath, groupName);
 		return result;
-	}
-
-	public static getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
-		let connectionProfile: azdata.IConnectionProfile = {
-			connectionName: connection.options.connectionName,
-			serverName: connection.options.server,
-			databaseName: undefined,
-			userName: connection.options.user,
-			password: connection.options.password,
-			authenticationType: connection.options.authenticationType,
-			savePassword: connection.options.savePassword,
-			groupFullName: undefined,
-			groupId: undefined,
-			providerName: connection.providerName,
-			saveProfile: false,
-			id: connection.connectionId,
-			options: connection.options
-		};
-		return connectionProfile;
 	}
 
 	// Getters
@@ -321,4 +301,31 @@ export class CmsUtils {
 			}
 		});
 	}
+
+	// Static Functions
+
+	public static getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
+		let connectionProfile: azdata.IConnectionProfile = {
+			connectionName: connection.options.connectionName,
+			serverName: connection.options.server,
+			databaseName: undefined,
+			userName: connection.options.user,
+			password: connection.options.password,
+			authenticationType: connection.options.authenticationType,
+			savePassword: connection.options.savePassword,
+			groupFullName: undefined,
+			groupId: undefined,
+			providerName: connection.providerName,
+			saveProfile: false,
+			id: connection.connectionId,
+			options: connection.options
+		};
+		return connectionProfile;
+	}
+
+	public static didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
+		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
+			(connectionA.options.savePassword !== connectionA.options.savePassword));
+	}
+
 }
