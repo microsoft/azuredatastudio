@@ -19,6 +19,10 @@ const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabl
 const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to script');
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No changes to apply');
+// Do not localize this, this is used to decide the icon for the editor.
+// TODO : In future icon should be decided based on language id (scmp) and not resource name
+const schemaCompareResourceName = 'Schema Compare';
+
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -53,8 +57,7 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
-		// Do not localize paramater customResourceName
-		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, customResourceName: 'Schema Compare' });
+		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 		this.GetDefaultDeploymentOptions();
 
 		this.editor.registerContent(async view => {
