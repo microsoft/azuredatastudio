@@ -32,7 +32,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { IProgressService } from 'vs/platform/progress/common/progress';
+import { ILocalProgressService } from 'vs/platform/progress/common/progress';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -111,7 +111,7 @@ export class ExplorerController extends TreeDefaults.DefaultController {
 		private _contextMenuService: IContextMenuService,
 		private _capabilitiesService: ICapabilitiesService,
 		private _instantiationService: IInstantiationService,
-		private _progressService: IProgressService
+		private _progressService: ILocalProgressService
 	) {
 		super();
 	}
@@ -424,7 +424,7 @@ class ExplorerScriptSelectAction extends ScriptSelectAction {
 		@IQueryEditorService queryEditorService: IQueryEditorService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IScriptingService scriptingService: IScriptingService,
-		@IProgressService private progressService: IProgressService
+		@ILocalProgressService private progressService: ILocalProgressService
 	) {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService);
 	}
@@ -443,7 +443,7 @@ class ExplorerScriptCreateAction extends ScriptCreateAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IScriptingService scriptingService: IScriptingService,
 		@IErrorMessageService errorMessageService: IErrorMessageService,
-		@IProgressService private progressService: IProgressService
+		@ILocalProgressService private progressService: ILocalProgressService
 	) {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
@@ -462,7 +462,7 @@ class ExplorerScriptAlterAction extends ScriptAlterAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IScriptingService scriptingService: IScriptingService,
 		@IErrorMessageService errorMessageService: IErrorMessageService,
-		@IProgressService private progressService: IProgressService
+		@ILocalProgressService private progressService: ILocalProgressService
 	) {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
@@ -481,7 +481,7 @@ class ExplorerScriptExecuteAction extends ScriptExecuteAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IScriptingService scriptingService: IScriptingService,
 		@IErrorMessageService errorMessageService: IErrorMessageService,
-		@IProgressService private progressService: IProgressService
+		@ILocalProgressService private progressService: ILocalProgressService
 	) {
 		super(id, label, queryEditorService, connectionManagementService, scriptingService, errorMessageService);
 	}
@@ -498,7 +498,7 @@ class ExplorerManageAction extends ManageAction {
 		id: string, label: string,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IAngularEventingService angularEventingService: IAngularEventingService,
-		@IProgressService private _progressService: IProgressService
+		@ILocalProgressService private _progressService: ILocalProgressService
 	) {
 		super(id, label, connectionManagementService, angularEventingService);
 	}

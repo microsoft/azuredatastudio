@@ -47,7 +47,7 @@ export class QueryStatusbarItem implements IStatusbarItem {
 			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
 		);
 
-		return combinedDisposable(this._toDispose);
+		return combinedDisposable(...this._toDispose);
 	}
 
 	private _onEditorClosed(event: IEditorCloseEvent): void {

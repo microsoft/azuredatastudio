@@ -14,7 +14,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ViewContainer, ITreeItemLabel } from 'vs/workbench/common/views';
 import { FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -160,7 +160,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@IProgressService2 private progressService: IProgressService2
+		@IProgressService private progressService: IProgressService
 	) {
 		super();
 		this.root = new Root();
@@ -516,7 +516,7 @@ class TreeDataSource implements IDataSource {
 		private treeView: ITreeView,
 		private container: ViewContainer,
 		private id: string,
-		@IProgressService2 private progressService: IProgressService2,
+		@IProgressService private progressService: IProgressService,
 		@IOEShimService private objectExplorerService: IOEShimService
 	) {
 	}

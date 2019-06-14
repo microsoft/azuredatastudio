@@ -748,10 +748,10 @@ export class SwitchTerminalActionViewItem extends SelectActionViewItem {
 	) {
 		super(null, action, terminalService.getTabLabels().map(label => <ISelectOptionItem>{ text: label }), terminalService.activeTabIndex, contextViewService, { ariaLabel: nls.localize('terminals', 'Open Terminals.') });
 
-		this.toDispose.push(terminalService.onInstancesChanged(this._updateItems, this));
-		this.toDispose.push(terminalService.onActiveTabChanged(this._updateItems, this));
-		this.toDispose.push(terminalService.onInstanceTitleChanged(this._updateItems, this));
-		this.toDispose.push(attachSelectBoxStyler(this.selectBox, themeService));
+		this._register(terminalService.onInstancesChanged(this._updateItems, this));
+		this._register(terminalService.onActiveTabChanged(this._updateItems, this));
+		this._register(terminalService.onInstanceTitleChanged(this._updateItems, this));
+		this._register(attachSelectBoxStyler(this.selectBox, themeService));
 	}
 
 	private _updateItems(): void {
@@ -1041,7 +1041,7 @@ export class QuickOpenActionTermContributor extends ActionBarContributor {
 		super();
 	}
 
-	public getActions(context: any): IAction[] {
+	public getActions(context: any): ReadonlyArray<IAction> {
 		const actions: Action[] = [];
 		if (context.element instanceof TerminalEntry) {
 			actions.push(this.instantiationService.createInstance(RenameTerminalQuickOpenAction, RenameTerminalQuickOpenAction.ID, RenameTerminalQuickOpenAction.LABEL, context.element));
