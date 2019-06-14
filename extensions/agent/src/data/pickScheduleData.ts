@@ -20,14 +20,18 @@ export class PickScheduleData implements IAgentDialogData {
 		this.jobName = jobName;
 	}
 
-	public async initialize() {
+	public async initialize(): Promise<azdata.AgentJobScheduleInfo[]> {
 		let agentService = await AgentUtils.getAgentService();
-		await agentService.getJobSchedules(this.ownerUri).then((result) => {
+		try {
+			let result = await agentService.getJobSchedules(this.ownerUri);
 			if (result && result.success) {
 				this.schedules = result.schedules;
-				return true;
+				return Promise.resolve(this.schedules);
 			}
-		});
+		} catch (error) {
+			return Promise.reject(new Error(error.message));
+		}
+
 	}
 
 	public async save() {
