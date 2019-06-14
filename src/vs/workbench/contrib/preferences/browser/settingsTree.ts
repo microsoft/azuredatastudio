@@ -25,7 +25,7 @@ import { Color, RGBA } from 'vs/base/common/color';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { Emitter, Event } from 'vs/base/common/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
-import { dispose, IDisposable, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { ISpliceable } from 'vs/base/common/sequence';
 import { escapeRegExpCharacters, startsWith } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
@@ -45,7 +45,6 @@ import { ISettingsEditorViewState, settingKeyToDisplayFormat, SettingsTreeElemen
 import { ExcludeSettingWidget, IExcludeChangeEvent, IExcludeDataItem, settingsHeaderForeground, settingsNumberInputBackground, settingsNumberInputBorder, settingsNumberInputForeground, settingsSelectBackground, settingsSelectBorder, settingsSelectForeground, settingsSelectListBorder, settingsTextInputBackground, settingsTextInputBorder, settingsTextInputForeground } from 'vs/workbench/contrib/preferences/browser/settingsWidgets';
 import { SETTINGS_EDITOR_COMMAND_SHOW_CONTEXT_MENU } from 'vs/workbench/contrib/preferences/common/preferences';
 import { ISetting, ISettingsGroup, SettingValueType } from 'vs/workbench/services/preferences/common/preferences';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 const $ = DOM.$;
 
@@ -250,7 +249,7 @@ export interface ISettingOverrideClickEvent {
 	targetKey: string;
 }
 
-export abstract class AbstractSettingRenderer extends Disposable implements ITreeRenderer<SettingsTreeElement, never, any> {
+export abstract class AbstractSettingRenderer implements ITreeRenderer<SettingsTreeElement, never, any> {
 	/** To override */
 	abstract get templateId(): string;
 
@@ -262,19 +261,19 @@ export abstract class AbstractSettingRenderer extends Disposable implements ITre
 	static readonly SETTING_KEY_ATTR = 'data-key';
 	static readonly SETTING_ID_ATTR = 'data-id';
 
-	private readonly _onDidClickOverrideElement = this._register(new Emitter<ISettingOverrideClickEvent>());
+	private readonly _onDidClickOverrideElement = new Emitter<ISettingOverrideClickEvent>();
 	readonly onDidClickOverrideElement: Event<ISettingOverrideClickEvent> = this._onDidClickOverrideElement.event;
 
-	protected readonly _onDidChangeSetting = this._register(new Emitter<ISettingChangeEvent>());
+	protected readonly _onDidChangeSetting = new Emitter<ISettingChangeEvent>();
 	readonly onDidChangeSetting: Event<ISettingChangeEvent> = this._onDidChangeSetting.event;
 
-	protected readonly _onDidOpenSettings = this._register(new Emitter<string>());
+	protected readonly _onDidOpenSettings = new Emitter<string>();
 	readonly onDidOpenSettings: Event<string> = this._onDidOpenSettings.event;
 
-	private readonly _onDidClickSettingLink = this._register(new Emitter<ISettingLinkClickEvent>());
+	private readonly _onDidClickSettingLink = new Emitter<ISettingLinkClickEvent>();
 	readonly onDidClickSettingLink: Event<ISettingLinkClickEvent> = this._onDidClickSettingLink.event;
 
-	private readonly _onDidFocusSetting = this._register(new Emitter<SettingsTreeSettingElement>());
+	private readonly _onDidFocusSetting = new Emitter<SettingsTreeSettingElement>();
 	readonly onDidFocusSetting: Event<SettingsTreeSettingElement> = this._onDidFocusSetting.event;
 
 	// Put common injections back here
@@ -288,7 +287,6 @@ export abstract class AbstractSettingRenderer extends Disposable implements ITre
 		@IContextMenuService protected readonly _contextMenuService: IContextMenuService,
 		@IKeybindingService protected readonly _keybindingService: IKeybindingService,
 	) {
-		super();
 	}
 
 	renderTemplate(container: HTMLElement): any {
@@ -941,11 +939,11 @@ export class SettingBoolRenderer extends AbstractSettingRenderer implements ITre
 
 		const deprecationWarningElement = DOM.append(container, $('.setting-item-deprecation-message'));
 
-		const toDispose = new DisposableStore();
+		const toDispose: IDisposable[] = [];
 		const checkbox = new Checkbox({ actionClassName: 'setting-value-checkbox', isChecked: true, title: '', inputActiveOptionBorder: undefined });
 		controlElement.appendChild(checkbox.domNode);
-		toDispose.add(checkbox);
-		toDispose.add(checkbox.onChange(() => {
+		toDispose.push(checkbox);
+		toDispose.push(checkbox.onChange(() => {
 			if (template.onChange) {
 				template.onChange(checkbox.checked);
 			}
@@ -953,7 +951,7 @@ export class SettingBoolRenderer extends AbstractSettingRenderer implements ITre
 
 		// Need to listen for mouse clicks on description and toggle checkbox - use target ID for safety
 		// Also have to ignore embedded links - too buried to stop propagation
-		toDispose.add(DOM.addDisposableListener(descriptionElement, DOM.EventType.MOUSE_DOWN, (e) => {
+		toDispose.push(DOM.addDisposableListener(descriptionElement, DOM.EventType.MOUSE_DOWN, (e) => {
 			const targetElement = <HTMLElement>e.target;
 			const targetId = descriptionElement.getAttribute('checkbox_label_target_id');
 
@@ -970,10 +968,10 @@ export class SettingBoolRenderer extends AbstractSettingRenderer implements ITre
 		checkbox.domNode.classList.add(AbstractSettingRenderer.CONTROL_CLASS);
 		const toolbarContainer = DOM.append(container, $('.setting-toolbar-container'));
 		const toolbar = this.renderSettingToolbar(toolbarContainer);
-		toDispose.add(toolbar);
+		toDispose.push(toolbar);
 
 		const template: ISettingBoolItemTemplate = {
-			toDispose: [toDispose],
+			toDispose,
 
 			containerElement: container,
 			categoryElement,
@@ -989,16 +987,16 @@ export class SettingBoolRenderer extends AbstractSettingRenderer implements ITre
 		this.addSettingElementFocusHandler(template);
 
 		// Prevent clicks from being handled by list
-		toDispose.add(DOM.addDisposableListener(controlElement, 'mousedown', (e: IMouseEvent) => e.stopPropagation()));
+		toDispose.push(DOM.addDisposableListener(controlElement, 'mousedown', (e: IMouseEvent) => e.stopPropagation()));
 
-		toDispose.add(DOM.addStandardDisposableListener(controlElement, 'keydown', (e: StandardKeyboardEvent) => {
+		toDispose.push(DOM.addStandardDisposableListener(controlElement, 'keydown', (e: StandardKeyboardEvent) => {
 			if (e.keyCode === KeyCode.Escape) {
 				e.browserEvent.stopPropagation();
 			}
 		}));
 
-		toDispose.add(DOM.addDisposableListener(titleElement, DOM.EventType.MOUSE_ENTER, e => container.classList.add('mouseover')));
-		toDispose.add(DOM.addDisposableListener(titleElement, DOM.EventType.MOUSE_LEAVE, e => container.classList.remove('mouseover')));
+		toDispose.push(DOM.addDisposableListener(titleElement, DOM.EventType.MOUSE_ENTER, e => container.classList.add('mouseover')));
+		toDispose.push(DOM.addDisposableListener(titleElement, DOM.EventType.MOUSE_LEAVE, e => container.classList.remove('mouseover')));
 
 		return template;
 	}
@@ -1165,7 +1163,6 @@ function escapeInvisibleChars(enumValue: string): string {
 export class SettingsTreeFilter implements ITreeFilter<SettingsTreeElement> {
 	constructor(
 		private viewState: ISettingsEditorViewState,
-		@IWorkbenchEnvironmentService private environmentService: IWorkbenchEnvironmentService,
 	) { }
 
 	filter(element: SettingsTreeElement, parentVisibility: TreeVisibility): TreeFilterResult<void> {
@@ -1178,8 +1175,7 @@ export class SettingsTreeFilter implements ITreeFilter<SettingsTreeElement> {
 
 		// Non-user scope selected
 		if (element instanceof SettingsTreeSettingElement && this.viewState.settingsTarget !== ConfigurationTarget.USER_LOCAL) {
-			const isRemote = !!this.environmentService.configuration.remoteAuthority;
-			if (!element.matchesScope(this.viewState.settingsTarget, isRemote)) {
+			if (!element.matchesScope(this.viewState.settingsTarget)) {
 				return false;
 			}
 		}
@@ -1307,8 +1303,7 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 		container: HTMLElement,
 		viewState: ISettingsEditorViewState,
 		renderers: ITreeRenderer<any, void, any>[],
-		@IThemeService themeService: IThemeService,
-		@IInstantiationService instantiationService: IInstantiationService,
+		@IThemeService themeService: IThemeService
 	) {
 		const treeClass = 'settings-editor-tree';
 
@@ -1325,7 +1320,7 @@ export class SettingsTree extends ObjectTree<SettingsTreeElement> {
 					}
 				},
 				styleController: new DefaultStyleController(DOM.createStyleSheet(container), treeClass),
-				filter: instantiationService.createInstance(SettingsTreeFilter, viewState)
+				filter: new SettingsTreeFilter(viewState)
 			});
 
 		this.disposables = [];

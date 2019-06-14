@@ -5,7 +5,7 @@
 
 import 'vs/css!./contextview';
 import * as DOM from 'vs/base/browser/dom';
-import { IDisposable, dispose, toDisposable, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, toDisposable, combinedDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Range } from 'vs/base/common/range';
 
 export interface IAnchor {
@@ -128,21 +128,21 @@ export class ContextView extends Disposable {
 			this.container = container;
 			this.container.appendChild(this.view);
 
-			const toDisposeOnSetContainer = new DisposableStore();
+			const toDisposeOnSetContainer: IDisposable[] = [];
 
 			ContextView.BUBBLE_UP_EVENTS.forEach(event => {
-				toDisposeOnSetContainer.add(DOM.addStandardDisposableListener(this.container!, event, (e: Event) => {
+				toDisposeOnSetContainer.push(DOM.addStandardDisposableListener(this.container!, event, (e: Event) => {
 					this.onDOMEvent(e, false);
 				}));
 			});
 
 			ContextView.BUBBLE_DOWN_EVENTS.forEach(event => {
-				toDisposeOnSetContainer.add(DOM.addStandardDisposableListener(this.container!, event, (e: Event) => {
+				toDisposeOnSetContainer.push(DOM.addStandardDisposableListener(this.container!, event, (e: Event) => {
 					this.onDOMEvent(e, true);
 				}, true));
 			});
 
-			this.toDisposeOnSetContainer = toDisposeOnSetContainer;
+			this.toDisposeOnSetContainer = combinedDisposable(toDisposeOnSetContainer);
 		}
 	}
 
@@ -260,12 +260,11 @@ export class ContextView extends Disposable {
 	}
 
 	hide(data?: any): void {
-		const delegate = this.delegate;
-		this.delegate = null;
-
-		if (delegate && delegate.onHide) {
-			delegate.onHide(data);
+		if (this.delegate && this.delegate.onHide) {
+			this.delegate.onHide(data);
 		}
+
+		this.delegate = null;
 
 		if (this.toDisposeOnClean) {
 			this.toDisposeOnClean.dispose();

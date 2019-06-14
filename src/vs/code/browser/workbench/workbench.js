@@ -21,11 +21,7 @@
 
 		// @ts-ignore
 		require.config({
-			baseUrl: `${window.location.origin}/out`,
-			paths: {
-				'vscode-textmate': `${window.location.origin}/node_modules/vscode-textmate/release/main`,
-				'onigasm-umd': `${window.location.origin}/node_modules/onigasm-umd/release/main`,
-			}
+			baseUrl: `${window.location.origin}/out`
 		});
 
 		// @ts-ignore
@@ -36,8 +32,9 @@
 		],
 			// @ts-ignore
 			function () {
+
 				// @ts-ignore
-				require('vs/workbench/browser/web.main').main(self['WINDOW_CONFIGURATION']).then(undefined, console.error);
+				require('vs/workbench/browser/web.main').main().then(undefined, console.error);
 			});
 	});
 })();

@@ -7,7 +7,7 @@
 
 import 'vs/editor/editor.all';
 
-import 'vs/workbench/api/browser/extensionHost.contribution';
+// import 'vs/workbench/api/electron-browser/extensionHost.contribution';
 
 // import 'vs/workbench/electron-browser/main.contribution';
 import 'vs/workbench/browser/workbench.contribution';
@@ -90,6 +90,7 @@ import { ContextViewService } from 'vs/platform/contextview/browser/contextViewS
 // import { IURLService } from 'vs/platform/url/common/url';
 // import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
 import { IHeapService, NullHeapService } from 'vs/workbench/services/heap/common/heap';
+import { IBroadcastService, NullBroadcastService } from 'vs/workbench/services/broadcast/common/broadcast';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
@@ -100,13 +101,14 @@ import 'vs/platform/dialogs/browser/dialogService';
 import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 // import 'vs/workbench/services/integrity/node/integrityService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
-import 'vs/workbench/services/textMate/browser/textMateService';
+// import 'vs/workbench/services/textMate/electron-browser/textMateService';
 // import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
 // import 'vs/workbench/services/extensions/electron-browser/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/decorations/browser/decorationsService';
 // import 'vs/workbench/services/search/node/searchService';
-import 'vs/workbench/services/progress/browser/progressService';
+import 'vs/workbench/services/progress/browser/progressService2';
 import 'vs/workbench/services/editor/browser/codeEditorService';
+// import 'vs/workbench/services/broadcast/electron-browser/broadcastService';
 import 'vs/workbench/services/preferences/browser/preferencesService';
 import 'vs/workbench/services/output/common/outputChannelModelService';
 import 'vs/workbench/services/configuration/common/jsonEditingService';
@@ -126,7 +128,7 @@ import 'vs/workbench/services/mode/common/workbenchModeService';
 import 'vs/workbench/services/commands/common/commandService';
 import 'vs/workbench/services/themes/browser/workbenchThemeService';
 // import 'vs/workbench/services/extensionManagement/node/extensionEnablementService';
-import 'vs/workbench/services/extensions/browser/extensionService';
+// import 'vs/workbench/services/extensions/electron-browser/extensionService';
 // import 'vs/workbench/services/contextmenu/electron-browser/contextmenuService';
 // import 'vs/workbench/services/extensionManagement/node/multiExtensionManagement';
 import 'vs/workbench/services/label/common/labelService';
@@ -165,6 +167,7 @@ registerSingleton(IContextViewService, ContextViewService, true);
 // registerSingleton(IMenubarService, MenubarService);
 // registerSingleton(IURLService, RelayURLService);
 registerSingleton(IHeapService, NullHeapService);
+registerSingleton(IBroadcastService, NullBroadcastService);
 registerSingleton(IContextMenuService, ContextMenuService);
 registerSingleton(IConfigurationResolverService, ConfigurationResolverService, true);
 
@@ -195,11 +198,8 @@ import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 // import 'vs/workbench/contrib/localizations/browser/localizations.contribution';
 
 // Preferences
-import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
+// import 'vs/workbench/contrib/preferences/electron-browser/preferences.contribution';
 import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
-import { IPreferencesSearchService } from 'vs/workbench/contrib/preferences/common/preferences';
-import { PreferencesSearchService } from 'vs/workbench/contrib/preferences/browser/preferencesSearch';
-registerSingleton(IPreferencesSearchService, PreferencesSearchService, true);
 
 // Logs
 import 'vs/workbench/contrib/logs/common/logs.contribution';
@@ -249,8 +249,6 @@ import 'vs/workbench/contrib/url/common/url.contribution';
 
 // Webview
 // import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
-registerSingleton(IWebviewService, NullWebviewService, true);
-registerSingleton(IWebviewEditorService, WebviewEditorService, true);
 
 // Extensions Management
 // import 'vs/workbench/contrib/extensions/electron-browser/extensions.contribution';
@@ -324,12 +322,12 @@ import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 
 // Outline
 import 'vs/workbench/contrib/outline/browser/outline.contribution';
-import { IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
-import { NullWebviewService } from 'vs/workbench/contrib/webview/browser/webviewService';
-import { IWebviewEditorService, WebviewEditorService } from 'vs/workbench/contrib/webview/browser/webviewEditorService';
 
 // Experiments
 // import 'vs/workbench/contrib/experiments/electron-browser/experiments.contribution';
+
+// Code Insets
+// import 'vs/workbench/contrib/codeinset/electron-browser/codeInset.contribution';
 
 // Issues
 // import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';

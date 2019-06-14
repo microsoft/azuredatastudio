@@ -28,8 +28,7 @@ export interface IInputOptions extends IInputBoxStyles {
 	readonly type?: string;
 	readonly validationOptions?: IInputValidationOptions;
 	readonly flexibleHeight?: boolean;
-	readonly actions?: ReadonlyArray<IAction>;
-
+	readonly actions?: IAction[];
 
 	// {{SQL CARBON EDIT}} Candidate for addition to vscode
 	readonly min?: string;
@@ -100,7 +99,7 @@ export class InputBox extends Widget {
 	private placeholder: string;
 	private ariaLabel: string;
 	private validation?: IInputValidator;
-	private state: 'idle' | 'open' | 'closed' = 'idle';
+	private state: string | null = 'idle';
 	private cachedHeight: number | null;
 
 	// {{SQL CARBON EDIT}} - Add showValidationMessage and set inputBackground, inputForeground, and inputBorder as protected
@@ -423,6 +422,8 @@ export class InputBox extends Widget {
 		let div: HTMLElement;
 		let layout = () => div.style.width = dom.getTotalWidth(this.element) + 'px';
 
+		this.state = 'open';
+
 		this.contextViewProvider.showContextView({
 			getAnchor: () => this.element,
 			anchorAlignment: AnchorAlignment.RIGHT,
@@ -453,25 +454,18 @@ export class InputBox extends Widget {
 
 				return null;
 			},
-			onHide: () => {
-				this.state = 'closed';
-			},
 			layout: layout
 		});
-
-		this.state = 'open';
 	}
 
 	private _hideMessage(): void {
-		if (!this.contextViewProvider) {
+		if (!this.contextViewProvider || this.state !== 'open') {
 			return;
 		}
 
-		if (this.state === 'open') {
-			this.contextViewProvider.hideContextView();
-		}
-
 		this.state = 'idle';
+
+		this.contextViewProvider.hideContextView();
 	}
 
 	private onValueChange(): void {
@@ -561,7 +555,7 @@ export class InputBox extends Widget {
 		this.contextViewProvider = undefined;
 		this.message = null;
 		this.validation = undefined;
-		this.state = null!; // StrictNullOverride: nulling out ok in dispose
+		this.state = null;
 		this.actionbar = undefined;
 
 		super.dispose();

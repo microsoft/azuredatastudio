@@ -8,7 +8,7 @@ import { domEvent, stop } from 'vs/base/browser/event';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { DomScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { Event } from 'vs/base/common/event';
-import { IDisposable, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import 'vs/css!./parameterHints';
 import { ContentWidgetPositionPreference, ICodeEditor, IContentWidget, IContentWidgetPosition } from 'vs/editor/browser/editorBrowser';
 import { IConfigurationChangedEvent } from 'vs/editor/common/config/editorOptions';
@@ -25,12 +25,12 @@ import { ParameterHintsModel, TriggerContext } from 'vs/editor/contrib/parameter
 
 const $ = dom.$;
 
-export class ParameterHintsWidget extends Disposable implements IContentWidget, IDisposable {
+export class ParameterHintsWidget implements IContentWidget, IDisposable {
 
 	private static readonly ID = 'editor.widget.parameterHintsWidget';
 
 	private readonly markdownRenderer: MarkdownRenderer;
-	private readonly renderDisposeables = this._register(new DisposableStore());
+	private renderDisposeables: IDisposable[];
 	private model: ParameterHintsModel | null;
 	private readonly keyVisible: IContextKey<boolean>;
 	private readonly keyMultipleSignatures: IContextKey<boolean>;
@@ -41,6 +41,7 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 	private visible: boolean;
 	private announcedLabel: string | null;
 	private scrollbar: DomScrollableElement;
+	private disposables: IDisposable[];
 
 	// Editor.IContentWidget.allowEditorOverflow
 	allowEditorOverflow = true;
@@ -51,14 +52,14 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 		@IOpenerService openerService: IOpenerService,
 		@IModeService modeService: IModeService,
 	) {
-		super();
 		this.markdownRenderer = new MarkdownRenderer(editor, modeService, openerService);
 		this.model = new ParameterHintsModel(editor);
 		this.keyVisible = Context.Visible.bindTo(contextKeyService);
 		this.keyMultipleSignatures = Context.MultipleSignatures.bindTo(contextKeyService);
 		this.visible = false;
+		this.disposables = [];
 
-		this._register(this.model.onChangedHints(newParameterHints => {
+		this.disposables.push(this.model.onChangedHints(newParameterHints => {
 			if (newParameterHints) {
 				this.show();
 				this.render(newParameterHints);
@@ -78,16 +79,16 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 		const next = dom.append(buttons, $('.button.next'));
 
 		const onPreviousClick = stop(domEvent(previous, 'click'));
-		this._register(onPreviousClick(this.previous, this));
+		onPreviousClick(this.previous, this, this.disposables);
 
 		const onNextClick = stop(domEvent(next, 'click'));
-		this._register(onNextClick(this.next, this));
+		onNextClick(this.next, this, this.disposables);
 
 		this.overloads = dom.append(wrapper, $('.overloads'));
 
 		const body = $('.body');
 		this.scrollbar = new DomScrollableElement(body, {});
-		this._register(this.scrollbar);
+		this.disposables.push(this.scrollbar);
 		wrapper.appendChild(this.scrollbar.getDomNode());
 
 		this.signature = dom.append(body, $('.signature'));
@@ -98,7 +99,7 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 		this.hide();
 
 		this.element.style.userSelect = 'text';
-		this._register(this.editor.onDidChangeCursorSelection(e => {
+		this.disposables.push(this.editor.onDidChangeCursorSelection(e => {
 			if (this.visible) {
 				this.editor.layoutContentWidget(this);
 			}
@@ -111,11 +112,11 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 
 		updateFont();
 
-		this._register(Event.chain<IConfigurationChangedEvent>(this.editor.onDidChangeConfiguration.bind(this.editor))
+		Event.chain<IConfigurationChangedEvent>(this.editor.onDidChangeConfiguration.bind(this.editor))
 			.filter(e => e.fontInfo)
-			.on(updateFont, null));
+			.on(updateFont, null, this.disposables);
 
-		this._register(this.editor.onDidLayoutChange(e => this.updateMaxHeight()));
+		this.disposables.push(this.editor.onDidLayoutChange(e => this.updateMaxHeight()));
 		this.updateMaxHeight();
 	}
 
@@ -189,7 +190,8 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 			this.renderParameters(code, signature, hints.activeParameter);
 		}
 
-		this.renderDisposeables.clear();
+		dispose(this.renderDisposeables);
+		this.renderDisposeables = [];
 
 		const activeParameter = signature.parameters[hints.activeParameter];
 
@@ -200,7 +202,7 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 			} else {
 				const renderedContents = this.markdownRenderer.render(activeParameter.documentation);
 				dom.addClass(renderedContents.element, 'markdown-docs');
-				this.renderDisposeables.add(renderedContents);
+				this.renderDisposeables.push(renderedContents);
 				documentation.appendChild(renderedContents.element);
 			}
 			dom.append(this.docs, $('p', {}, documentation));
@@ -214,7 +216,7 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 		} else {
 			const renderedContents = this.markdownRenderer.render(signature.documentation);
 			dom.addClass(renderedContents.element, 'markdown-docs');
-			this.renderDisposeables.add(renderedContents);
+			this.renderDisposeables.push(renderedContents);
 			dom.append(this.docs, renderedContents.element);
 		}
 
@@ -321,7 +323,8 @@ export class ParameterHintsWidget extends Disposable implements IContentWidget, 
 	}
 
 	dispose(): void {
-		super.dispose();
+		this.disposables = dispose(this.disposables);
+		this.renderDisposeables = dispose(this.renderDisposeables);
 
 		if (this.model) {
 			this.model.dispose();

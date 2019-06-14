@@ -284,12 +284,12 @@ export function provideSelectionRanges(model: ITextModel, positions: Position[],
 				if (cur.startLineNumber !== prev.startLineNumber || cur.endLineNumber !== prev.endLineNumber) {
 					// add line/block range without leading/failing whitespace
 					const rangeNoWhitespace = new Range(prev.startLineNumber, model.getLineFirstNonWhitespaceColumn(prev.startLineNumber), prev.endLineNumber, model.getLineLastNonWhitespaceColumn(prev.endLineNumber));
-					if (rangeNoWhitespace.containsRange(prev) && !rangeNoWhitespace.equalsRange(prev) && cur.containsRange(rangeNoWhitespace) && !cur.equalsRange(rangeNoWhitespace)) {
+					if (rangeNoWhitespace.containsRange(prev) && !rangeNoWhitespace.equalsRange(prev)) {
 						oneRangesWithTrivia.push(rangeNoWhitespace);
 					}
 					// add line/block range
 					const rangeFull = new Range(prev.startLineNumber, 1, prev.endLineNumber, model.getLineMaxColumn(prev.endLineNumber));
-					if (rangeFull.containsRange(prev) && !rangeFull.equalsRange(rangeNoWhitespace) && cur.containsRange(rangeFull) && !cur.equalsRange(rangeFull)) {
+					if (rangeFull.containsRange(prev) && !rangeFull.equalsRange(rangeNoWhitespace)) {
 						oneRangesWithTrivia.push(rangeFull);
 					}
 				}

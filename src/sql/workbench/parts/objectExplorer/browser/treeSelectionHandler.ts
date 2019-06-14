@@ -8,7 +8,7 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
-import { IProgressService, IProgressRunner, ILocalProgressService } from 'vs/platform/progress/common/progress';
+import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
@@ -18,7 +18,7 @@ export class TreeSelectionHandler {
 	private _clicks: number = 0;
 	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
 
-	constructor(@ILocalProgressService private _progressService: ILocalProgressService) {
+	constructor(@IProgressService private _progressService: IProgressService) {
 
 	}
 

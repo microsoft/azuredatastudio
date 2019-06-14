@@ -81,6 +81,7 @@ export interface IProductConfiguration {
 	hockeyApp: {
 		'win32-ia32': string;
 		'win32-x64': string;
+		'linux-ia32': string;
 		'linux-x64': string;
 		'darwin': string;
 	};

@@ -22,10 +22,10 @@ interface PostResult {
 
 class Endpoint {
 	private constructor(
-		readonly url: string
+		public readonly url: string
 	) { }
 
-	static getFromProduct(): Endpoint | undefined {
+	public static getFromProduct(): Endpoint | undefined {
 		const logUploaderUrl = product.logUploaderUrl;
 		return logUploaderUrl ? new Endpoint(logUploaderUrl) : undefined;
 	}

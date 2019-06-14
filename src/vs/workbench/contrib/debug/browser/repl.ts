@@ -11,7 +11,7 @@ import { IAction, IActionViewItem, Action } from 'vs/base/common/actions';
 import * as dom from 'vs/base/browser/dom';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
+import { KeyCode } from 'vs/base/common/keyCodes';
 import severity from 'vs/base/common/severity';
 import { SuggestController } from 'vs/editor/contrib/suggest/suggestController';
 import { ITextModel } from 'vs/editor/common/model';
@@ -76,7 +76,6 @@ interface IPrivateReplService {
 	getVisibleContent(): string;
 	selectSession(session?: IDebugSession): void;
 	clearRepl(): void;
-	focusRepl(): void;
 }
 
 function revealLastElement(tree: WorkbenchAsyncDataTree<any, any, any>) {
@@ -134,16 +133,15 @@ export class Repl extends Panel implements IPrivateReplService, IHistoryNavigati
 			}
 			this.selectSession();
 		}));
-		this._register(this.debugService.onWillNewSession(newSession => {
+		this._register(this.debugService.onWillNewSession(() => {
 			// Need to listen to output events for sessions which are not yet fully initialised
 			const input = this.tree.getInput();
 			if (!input || input.state === State.Inactive) {
-				this.selectSession(newSession);
+				this.selectSession();
 			}
 			this.updateTitleArea();
 		}));
 		this._register(this.themeService.onThemeChange(() => {
-			this.refreshReplElements(false);
 			if (this.isVisible()) {
 				this.updateInputDecoration();
 			}
@@ -181,10 +179,6 @@ export class Repl extends Panel implements IPrivateReplService, IHistoryNavigati
 
 	showNextValue(): void {
 		this.navigateHistory(false);
-	}
-
-	focusRepl(): void {
-		this.tree.domFocus();
 	}
 
 	private onDidFontChange(): void {
@@ -288,7 +282,7 @@ export class Repl extends Panel implements IPrivateReplService, IHistoryNavigati
 		const lineDelimiter = this.textResourcePropertiesService.getEOL(this.model.uri);
 		const traverseAndAppend = (node: ITreeNode<IReplElement, FuzzyScore>) => {
 			node.children.forEach(child => {
-				text += child.element.toString().trimRight() + lineDelimiter;
+				text += child.element.toString() + lineDelimiter;
 				if (!child.collapsed && child.children.length) {
 					traverseAndAppend(child);
 				}
@@ -391,16 +385,7 @@ export class Repl extends Panel implements IPrivateReplService, IHistoryNavigati
 				supportDynamicHeights: true
 			}) as WorkbenchAsyncDataTree<IDebugSession, IReplElement, FuzzyScore>;
 
-		this._register(this.tree.onContextMenu(e => this.onContextMenu(e)));
-		let lastSelectedString: string;
-		this._register(this.tree.onMouseClick(() => {
-			const selection = window.getSelection();
-			if (!selection || selection.type !== 'Range' || lastSelectedString === selection.toString()) {
-				// only focus the input if the user is not currently selecting.
-				this.replInput.focus();
-			}
-			lastSelectedString = selection ? selection.toString() : '';
-		}));
+		this.toDispose.push(this.tree.onContextMenu(e => this.onContextMenu(e)));
 		// Make sure to select the session if debugging is already active
 		this.selectSession();
 		this.styleElement = dom.createStyleSheet(this.container);
@@ -626,8 +611,7 @@ class ReplSimpleElementsRenderer implements ITreeRenderer<SimpleReplElement, Fuz
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@ILabelService private readonly labelService: ILabelService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IThemeService private readonly themeService: IThemeService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) { }
 
 	get templateId(): string {
@@ -670,7 +654,7 @@ class ReplSimpleElementsRenderer implements ITreeRenderer<SimpleReplElement, Fuz
 		dom.clearNode(templateData.value);
 		// Reset classes to clear ansi decorations since templates are reused
 		templateData.value.className = 'value';
-		const result = handleANSIOutput(element.value, this.linkDetector, this.themeService);
+		const result = handleANSIOutput(element.value, this.linkDetector);
 		templateData.value.appendChild(result);
 
 		dom.addClass(templateData.value, (element.severity === severity.Warning) ? 'warn' : (element.severity === severity.Error) ? 'error' : (element.severity === severity.Ignore) ? 'ignore' : 'info');
@@ -860,28 +844,6 @@ class AcceptReplInputAction extends EditorAction {
 	}
 }
 
-class FilterReplAction extends EditorAction {
-
-	constructor() {
-		super({
-			id: 'repl.action.filter',
-			label: nls.localize('repl.action.filter', "REPL Focus Content to Filter"),
-			alias: 'REPL Filter',
-			precondition: CONTEXT_IN_DEBUG_REPL,
-			kbOpts: {
-				kbExpr: EditorContextKeys.textInputFocus,
-				primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
-				weight: KeybindingWeight.EditorContrib
-			}
-		});
-	}
-
-	run(accessor: ServicesAccessor, editor: ICodeEditor): void | Promise<void> {
-		SuggestController.get(editor).acceptSelectedSuggestion();
-		accessor.get(IPrivateReplService).focusRepl();
-	}
-}
-
 class ReplCopyAllAction extends EditorAction {
 
 	constructor() {
@@ -901,7 +863,6 @@ class ReplCopyAllAction extends EditorAction {
 
 registerEditorAction(AcceptReplInputAction);
 registerEditorAction(ReplCopyAllAction);
-registerEditorAction(FilterReplAction);
 
 class SelectReplActionViewItem extends FocusSessionActionViewItem {
 

@@ -361,10 +361,10 @@ interface WebviewContent {
 }
 
 export class WebviewElement extends Disposable implements Webview {
-	private _webview: Electron.WebviewTag | undefined;
+	private _webview: Electron.WebviewTag;
 	private _ready: Promise<void>;
 
-	private _webviewFindWidget: WebviewFindWidget | undefined;
+	private _webviewFindWidget: WebviewFindWidget;
 	private _findStarted: boolean = false;
 	private content: WebviewContent;
 
@@ -404,8 +404,8 @@ export class WebviewElement extends Disposable implements Webview {
 		this._webview.src = 'data:text/html;charset=utf-8,%3C%21DOCTYPE%20html%3E%0D%0A%3Chtml%20lang%3D%22en%22%20style%3D%22width%3A%20100%25%3B%20height%3A%20100%25%22%3E%0D%0A%3Chead%3E%0D%0A%09%3Ctitle%3EVirtual%20Document%3C%2Ftitle%3E%0D%0A%3C%2Fhead%3E%0D%0A%3Cbody%20style%3D%22margin%3A%200%3B%20overflow%3A%20hidden%3B%20width%3A%20100%25%3B%20height%3A%20100%25%22%3E%0D%0A%3C%2Fbody%3E%0D%0A%3C%2Fhtml%3E';
 
 		this._ready = new Promise(resolve => {
-			const subscription = this._register(addDisposableListener(this._webview!, 'ipc-message', (event) => {
-				if (this._webview && event.channel === 'webview-ready') {
+			const subscription = this._register(addDisposableListener(this._webview, 'ipc-message', (event) => {
+				if (event.channel === 'webview-ready') {
 					// console.info('[PID Webview] ' event.args[0]);
 					addClass(this._webview, 'ready'); // can be found by debug command
 
@@ -447,7 +447,7 @@ export class WebviewElement extends Disposable implements Webview {
 			this.layout();
 
 			// Workaround for https://github.com/electron/electron/issues/14474
-			if (this._webview && (this._focused || document.activeElement === this._webview)) {
+			if (this._focused || document.activeElement === this._webview) {
 				this._webview.blur();
 				this._webview.focus();
 			}
@@ -456,10 +456,6 @@ export class WebviewElement extends Disposable implements Webview {
 			console.error('embedded page crashed');
 		}));
 		this._register(addDisposableListener(this._webview, 'ipc-message', (event) => {
-			if (!this._webview) {
-				return;
-			}
-
 			switch (event.channel) {
 				case 'onmessage':
 					if (event.args && event.args.length) {
@@ -513,14 +509,10 @@ export class WebviewElement extends Disposable implements Webview {
 		}
 
 		this.style(themeService.getTheme());
-		this._register(themeService.onThemeChange(this.style, this));
+		themeService.onThemeChange(this.style, this, this._toDispose);
 	}
 
 	public mountTo(parent: HTMLElement) {
-		if (!this._webview) {
-			return;
-		}
-
 		if (this._webviewFindWidget) {
 			parent.appendChild(this._webviewFindWidget.getDomNode()!);
 		}
@@ -532,13 +524,10 @@ export class WebviewElement extends Disposable implements Webview {
 			if (this._webview.parentElement) {
 				this._webview.parentElement.removeChild(this._webview);
 			}
-			this._webview = undefined;
 		}
 
-		if (this._webviewFindWidget) {
-			this._webviewFindWidget.dispose();
-			this._webviewFindWidget = undefined;
-		}
+		this._webview = undefined!;
+		this._webviewFindWidget = undefined!;
 		super.dispose();
 	}
 
@@ -556,11 +545,7 @@ export class WebviewElement extends Disposable implements Webview {
 
 	private _send(channel: string, ...args: any[]): void {
 		this._ready
-			.then(() => {
-				if (this._webview) {
-					this._webview.send(channel, ...args);
-				}
-			})
+			.then(() => this._webview.send(channel, ...args))
 			.catch(err => console.error(err));
 	}
 
@@ -619,9 +604,6 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public focus(): void {
-		if (!this._webview) {
-			return;
-		}
 		this._webview.focus();
 		this._send('focus');
 
@@ -679,9 +661,6 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public layout(): void {
-		if (!this._webview) {
-			return;
-		}
 		const contents = this._webview.getWebContents();
 		if (!contents || contents.isDestroyed()) {
 			return;
@@ -700,7 +679,7 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public startFind(value: string, options?: Electron.FindInPageOptions) {
-		if (!value || !this._webview) {
+		if (!value) {
 			return;
 		}
 
@@ -727,10 +706,6 @@ export class WebviewElement extends Disposable implements Webview {
 	 * @param value The string to search for. Empty strings are ignored.
 	 */
 	public find(value: string, previous: boolean): void {
-		if (!this._webview) {
-			return;
-		}
-
 		// Searching with an empty value will throw an exception
 		if (!value) {
 			return;
@@ -746,9 +721,6 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public stopFind(keepSelection?: boolean): void {
-		if (!this._webview) {
-			return;
-		}
 		this._findStarted = false;
 		this._webview.stopFindInPage(keepSelection ? 'keepSelection' : 'clearSelection');
 	}
@@ -770,39 +742,27 @@ export class WebviewElement extends Disposable implements Webview {
 	}
 
 	public selectAll() {
-		if (this._webview) {
-			this._webview.selectAll();
-		}
+		this._webview.selectAll();
 	}
 
 	public copy() {
-		if (this._webview) {
-			this._webview.copy();
-		}
+		this._webview.copy();
 	}
 
 	public paste() {
-		if (this._webview) {
-			this._webview.paste();
-		}
+		this._webview.paste();
 	}
 
 	public cut() {
-		if (this._webview) {
-			this._webview.cut();
-		}
+		this._webview.cut();
 	}
 
 	public undo() {
-		if (this._webview) {
-			this._webview.undo();
-		}
+		this._webview.undo();
 	}
 
 	public redo() {
-		if (this._webview) {
-			this._webview.redo();
-		}
+		this._webview.redo();
 	}
 }
 

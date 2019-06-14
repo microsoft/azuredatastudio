@@ -7,7 +7,7 @@ import * as arrays from 'vs/base/common/arrays';
 import { localize } from 'vs/nls';
 import { Event } from 'vs/base/common/event';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionManagementService, ILocalExtension, IExtensionEnablementService, IExtensionTipsService, IExtensionIdentifier, EnablementState, InstallOperation } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
@@ -22,7 +22,9 @@ export interface IExtensionStatus {
 	globallyEnabled: boolean;
 }
 
-export class KeymapExtensions extends Disposable implements IWorkbenchContribution {
+export class KeymapExtensions implements IWorkbenchContribution {
+
+	private disposables: IDisposable[] = [];
 
 	constructor(
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
@@ -32,12 +34,13 @@ export class KeymapExtensions extends Disposable implements IWorkbenchContributi
 		@INotificationService private readonly notificationService: INotificationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 	) {
-		super();
-		this._register(lifecycleService.onShutdown(() => this.dispose()));
-		this._register(instantiationService.invokeFunction(onExtensionChanged)((identifiers => {
-			Promise.all(identifiers.map(identifier => this.checkForOtherKeymaps(identifier)))
-				.then(undefined, onUnexpectedError);
-		})));
+		this.disposables.push(
+			lifecycleService.onShutdown(() => this.dispose()),
+			instantiationService.invokeFunction(onExtensionChanged)((identifiers => {
+				Promise.all(identifiers.map(identifier => this.checkForOtherKeymaps(identifier)))
+					.then(undefined, onUnexpectedError);
+			}))
+		);
 	}
 
 	private checkForOtherKeymaps(extensionIdentifier: IExtensionIdentifier): Promise<void> {
@@ -83,6 +86,10 @@ export class KeymapExtensions extends Disposable implements IWorkbenchContributi
 				run: () => onPrompt(false)
 			}]
 		);
+	}
+
+	dispose(): void {
+		this.disposables = dispose(this.disposables);
 	}
 }
 

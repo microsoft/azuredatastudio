@@ -658,17 +658,18 @@ export class DelegatingEditorService extends EditorService {
 		this.editorOpenHandler = handler;
 	}
 
-	protected async doOpenEditor(group: IEditorGroup, editor: IEditorInput, options?: IEditorOptions): Promise<IEditor | null> {
+	protected doOpenEditor(group: IEditorGroup, editor: IEditorInput, options?: IEditorOptions): Promise<IEditor | null> {
 		if (!this.editorOpenHandler) {
 			return super.doOpenEditor(group, editor, options);
 		}
 
-		const control = await this.editorOpenHandler(group, editor, options);
-		if (control) {
-			return control; // the opening was handled, so return early
-		}
+		return this.editorOpenHandler(group, editor, options).then(control => {
+			if (control) {
+				return control; // the opening was handled, so return early
+			}
 
-		return super.doOpenEditor(group, editor, options);
+			return super.doOpenEditor(group, editor, options);
+		});
 	}
 }
 

@@ -28,6 +28,7 @@ import { IKeybindingItem, IKeybindingRule2, KeybindingWeight, KeybindingsRegistr
 import { ResolvedKeybindingItem } from 'vs/platform/keybinding/common/resolvedKeybindingItem';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { keybindingsTelemetry } from 'vs/platform/telemetry/common/telemetryUtils';
 import { ExtensionMessageCollector, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
@@ -40,7 +41,6 @@ import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { MenuRegistry } from 'vs/platform/actions/common/actions';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
-import { commandsExtensionPoint } from 'vs/workbench/api/common/menusExtensionPoint';
 
 export class KeyboardMapperFactory {
 	public static readonly INSTANCE = new KeyboardMapperFactory();
@@ -215,7 +215,7 @@ let keybindingType: IJSONSchema = {
 			description: nls.localize('vscode.extension.contributes.keybindings.args', "Arguments to pass to the command to execute.")
 		},
 		key: {
-			description: nls.localize('vscode.extension.contributes.keybindings.key', 'Key or key sequence (separate keys with plus-sign and sequences with space, e.g. Ctrl+O and Ctrl+L L for a chord).'),
+			description: nls.localize('vscode.extension.contributes.keybindings.key', 'Key or key sequence (separate keys with plus-sign and sequences with space, e.g Ctrl+O and Ctrl+L L for a chord).'),
 			type: 'string'
 		},
 		mac: {
@@ -239,7 +239,6 @@ let keybindingType: IJSONSchema = {
 
 const keybindingsExtPoint = ExtensionsRegistry.registerExtensionPoint<ContributedKeyBinding | ContributedKeyBinding[]>({
 	extensionPoint: 'keybindings',
-	deps: [commandsExtensionPoint],
 	jsonSchema: {
 		description: nls.localize('vscode.extension.contributes.keybindings', "Contributes keybindings."),
 		oneOf: [
@@ -276,11 +275,12 @@ export class WorkbenchKeybindingService extends AbstractKeybindingService {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@INotificationService notificationService: INotificationService,
 		@IEnvironmentService environmentService: IEnvironmentService,
+		@IStatusbarService statusBarService: IStatusbarService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IWindowService private readonly windowService: IWindowService,
 		@IExtensionService extensionService: IExtensionService
 	) {
-		super(contextKeyService, commandService, telemetryService, notificationService);
+		super(contextKeyService, commandService, telemetryService, notificationService, statusBarService);
 
 		updateSchema();
 
@@ -500,21 +500,10 @@ export class WorkbenchKeybindingService extends AbstractKeybindingService {
 			weight = KeybindingWeight.ExternalExtension + idx;
 		}
 
-		let commandAction = MenuRegistry.getCommand(command);
-		let precondition = commandAction && commandAction.precondition;
-		let fullWhen: ContextKeyExpr | undefined;
-		if (when && precondition) {
-			fullWhen = ContextKeyExpr.and(precondition, ContextKeyExpr.deserialize(when));
-		} else if (when) {
-			fullWhen = ContextKeyExpr.deserialize(when);
-		} else if (precondition) {
-			fullWhen = precondition;
-		}
-
 		let desc: IKeybindingRule2 = {
 			id: command,
 			args,
-			when: fullWhen,
+			when: ContextKeyExpr.deserialize(when),
 			weight: weight,
 			primary: KeybindingParser.parseKeybinding(key, OS),
 			mac: mac ? { primary: KeybindingParser.parseKeybinding(mac, OS) } : null,

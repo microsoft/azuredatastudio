@@ -14,21 +14,11 @@ export interface IStatusbarItem {
 }
 
 export class StatusbarItemDescriptor {
-	readonly syncDescriptor: SyncDescriptor0<IStatusbarItem>;
-	readonly id: string;
-	readonly name: string;
-	readonly alignment: StatusbarAlignment;
-	readonly priority: number;
+	syncDescriptor: SyncDescriptor0<IStatusbarItem>;
+	alignment: StatusbarAlignment;
+	priority: number;
 
-	constructor(
-		ctor: IConstructorSignature0<IStatusbarItem>,
-		id: string,
-		name: string,
-		alignment?: StatusbarAlignment,
-		priority?: number
-	) {
-		this.id = id;
-		this.name = name;
+	constructor(ctor: IConstructorSignature0<IStatusbarItem>, alignment?: StatusbarAlignment, priority?: number) {
 		this.syncDescriptor = createSyncDescriptor(ctor);
 		this.alignment = alignment || StatusbarAlignment.LEFT;
 		this.priority = priority || 0;
@@ -36,16 +26,21 @@ export class StatusbarItemDescriptor {
 }
 
 export interface IStatusbarRegistry {
-
-	readonly items: StatusbarItemDescriptor[];
-
 	registerStatusbarItem(descriptor: StatusbarItemDescriptor): void;
+	items: StatusbarItemDescriptor[];
 }
 
 class StatusbarRegistry implements IStatusbarRegistry {
 
-	private readonly _items: StatusbarItemDescriptor[] = [];
-	get items(): StatusbarItemDescriptor[] { return this._items; }
+	private _items: StatusbarItemDescriptor[];
+
+	constructor() {
+		this._items = [];
+	}
+
+	get items(): StatusbarItemDescriptor[] {
+		return this._items;
+	}
 
 	registerStatusbarItem(descriptor: StatusbarItemDescriptor): void {
 		this._items.push(descriptor);

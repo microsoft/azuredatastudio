@@ -243,23 +243,27 @@ export class ExplorerItem {
 		return this.children.get(this.getPlatformAwareName(name));
 	}
 
-	async fetchChildren(fileService: IFileService, explorerService: IExplorerService): Promise<ExplorerItem[]> {
+	fetchChildren(fileService: IFileService, explorerService: IExplorerService): Promise<ExplorerItem[]> {
+		let promise: Promise<unknown> = Promise.resolve(undefined);
 		if (!this._isDirectoryResolved) {
 			// Resolve metadata only when the mtime is needed since this can be expensive
 			// Mtime is only used when the sort order is 'modified'
 			const resolveMetadata = explorerService.sortOrder === 'modified';
-			const stat = await fileService.resolve(this.resource, { resolveSingleChildDescendants: true, resolveMetadata });
-			const resolved = ExplorerItem.create(stat, this);
-			ExplorerItem.mergeLocalWithDisk(resolved, this);
-			this._isDirectoryResolved = true;
+			promise = fileService.resolve(this.resource, { resolveSingleChildDescendants: true, resolveMetadata }).then(stat => {
+				const resolved = ExplorerItem.create(stat, this);
+				ExplorerItem.mergeLocalWithDisk(resolved, this);
+				this._isDirectoryResolved = true;
+			});
 		}
 
-		const items: ExplorerItem[] = [];
-		this.children.forEach(child => {
-			items.push(child);
-		});
+		return promise.then(() => {
+			const items: ExplorerItem[] = [];
+			this.children.forEach(child => {
+				items.push(child);
+			});
 
-		return items;
+			return items;
+		});
 	}
 
 	/**

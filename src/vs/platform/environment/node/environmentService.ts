@@ -21,9 +21,7 @@ import { URI } from 'vs/base/common/uri';
 const xdgRuntimeDir = process.env['XDG_RUNTIME_DIR'];
 
 function getNixIPCHandle(userDataPath: string, type: string): string {
-	const vscodePortable = process.env['VSCODE_PORTABLE'];
-
-	if (xdgRuntimeDir && !vscodePortable) {
+	if (xdgRuntimeDir) {
 		const scope = crypto.createHash('md5').update(userDataPath).digest('hex').substr(0, 8);
 		return path.join(xdgRuntimeDir, `vscode-${scope}-${pkg.version}-${type}.sock`);
 	}
@@ -95,7 +93,6 @@ export class EnvironmentService implements IEnvironmentService {
 	@memoize
 	get userDataPath(): string {
 		const vscodePortable = process.env['VSCODE_PORTABLE'];
-
 		if (vscodePortable) {
 			return path.join(vscodePortable, 'user-data');
 		}
@@ -111,7 +108,7 @@ export class EnvironmentService implements IEnvironmentService {
 	get appSettingsHome(): string { return path.join(this.userDataPath, 'User'); }
 
 	@memoize
-	get settingsResource(): URI { return URI.file(path.join(this.appSettingsHome, 'settings.json')); }
+	get appSettingsPath(): string { return path.join(this.appSettingsHome, 'settings.json'); }
 
 	@memoize
 	get machineSettingsHome(): string { return path.join(this.userDataPath, 'Machine'); }
@@ -173,7 +170,6 @@ export class EnvironmentService implements IEnvironmentService {
 		}
 
 		const vscodePortable = process.env['VSCODE_PORTABLE'];
-
 		if (vscodePortable) {
 			return path.join(vscodePortable, 'extensions');
 		}
@@ -293,7 +289,6 @@ export function parseDebugPort(debugArg: string | undefined, debugBrkArg: string
 	const portStr = debugBrkArg || debugArg;
 	const port = Number(portStr) || (!isBuild ? defaultBuildPort : null);
 	const brk = port ? Boolean(!!debugBrkArg) : false;
-
 	return { port, break: brk, debugId };
 }
 
@@ -308,9 +303,9 @@ function parsePathArg(arg: string | undefined, process: NodeJS.Process): string 
 
 	if (path.normalize(arg) === resolved) {
 		return resolved;
+	} else {
+		return path.resolve(process.env['VSCODE_CWD'] || process.cwd(), arg);
 	}
-
-	return path.resolve(process.env['VSCODE_CWD'] || process.cwd(), arg);
 }
 
 export function parseUserDataDir(args: ParsedArgs, process: NodeJS.Process): string {

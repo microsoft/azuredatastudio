@@ -31,22 +31,26 @@ export interface IRegistry {
 
 class RegistryImpl implements IRegistry {
 
-	private readonly data = new Map<string, any>();
+	private data: { [id: string]: any; };
+
+	constructor() {
+		this.data = {};
+	}
 
 	public add(id: string, data: any): void {
 		Assert.ok(Types.isString(id));
 		Assert.ok(Types.isObject(data));
-		Assert.ok(!this.data.has(id), 'There is already an extension with this id');
+		Assert.ok(!this.data.hasOwnProperty(id), 'There is already an extension with this id');
 
-		this.data.set(id, data);
+		this.data[id] = data;
 	}
 
 	public knows(id: string): boolean {
-		return this.data.has(id);
+		return this.data.hasOwnProperty(id);
 	}
 
 	public as(id: string): any {
-		return this.data.get(id) || null;
+		return this.data[id] || null;
 	}
 }
 

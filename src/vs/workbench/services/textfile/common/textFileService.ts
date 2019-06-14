@@ -443,7 +443,7 @@ export abstract class TextFileService extends Disposable implements ITextFileSer
 		return this.fileService.del(resource, options);
 	}
 
-	async move(source: URI, target: URI, overwrite?: boolean): Promise<IFileStatWithMetadata> {
+	async move(source: URI, target: URI, overwrite?: boolean): Promise<void> {
 		const waitForPromises: Promise<unknown>[] = [];
 
 		// Event
@@ -498,12 +498,10 @@ export abstract class TextFileService extends Disposable implements ITextFileSer
 
 		// Rename to target
 		try {
-			const stat = await this.fileService.move(source, target, overwrite);
+			await this.fileService.move(source, target, overwrite);
 
 			// Load models that were dirty before
 			await Promise.all(dirtyTargetModelUris.map(dirtyTargetModel => this.models.loadOrCreate(dirtyTargetModel)));
-
-			return stat;
 		} catch (error) {
 
 			// In case of an error, discard any dirty target backups that were made

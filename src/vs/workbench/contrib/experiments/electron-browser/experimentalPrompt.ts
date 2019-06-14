@@ -9,10 +9,11 @@ import { IExperimentService, IExperiment, ExperimentActionType, IExperimentActio
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IExtensionsViewlet } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { language } from 'vs/base/common/platform';
 
 export class ExperimentalPrompts extends Disposable implements IWorkbenchContribution {
+	private _disposables: IDisposable[] = [];
 
 	constructor(
 		@IExperimentService private readonly experimentService: IExperimentService,
@@ -22,11 +23,11 @@ export class ExperimentalPrompts extends Disposable implements IWorkbenchContrib
 
 	) {
 		super();
-		this._register(this.experimentService.onExperimentEnabled(e => {
+		this.experimentService.onExperimentEnabled(e => {
 			if (e.action && e.action.type === ExperimentActionType.Prompt && e.state === ExperimentState.Run) {
 				this.showExperimentalPrompts(e);
 			}
-		}, this));
+		}, this, this._disposables);
 	}
 
 	private showExperimentalPrompts(experiment: IExperiment): void {
@@ -88,6 +89,10 @@ export class ExperimentalPrompts extends Disposable implements IWorkbenchContrib
 				this.experimentService.markAsCompleted(experiment.id);
 			}
 		});
+	}
+
+	dispose() {
+		this._disposables = dispose(this._disposables);
 	}
 
 	static getLocalizedText(text: string | { [key: string]: string }, displayLanguage: string): string {

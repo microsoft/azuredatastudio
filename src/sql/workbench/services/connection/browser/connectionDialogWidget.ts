@@ -451,6 +451,10 @@ export class ConnectionDialogWidget extends Modal {
 		this.onProviderTypeSelected(displayName);
 	}
 
+	public dispose(): void {
+		this._toDispose.forEach(obj => obj.dispose());
+	}
+
 	public set databaseDropdownExpanded(val: boolean) {
 		this._databaseDropdownExpanded = val;
 	}

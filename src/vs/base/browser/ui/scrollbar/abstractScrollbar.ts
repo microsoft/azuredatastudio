@@ -108,12 +108,6 @@ export abstract class AbstractScrollbar extends Widget {
 				this._sliderMouseDown(e, () => { /*nothing to do*/ });
 			}
 		});
-
-		this.onclick(this.slider.domNode, e => {
-			if (e.leftButton) {
-				e.stopPropagation();
-			}
-		});
 	}
 
 	// ----------------- Update state

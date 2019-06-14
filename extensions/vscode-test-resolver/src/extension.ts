@@ -26,11 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
 			progress.report({ message: 'Starting Test Resolver' });
 			outputChannel = vscode.window.createOutputChannel('TestResolver');
 
-			let isResolved = false;
+			let isStarted = false;
 			async function processError(message: string) {
 				outputChannel.appendLine(message);
-				if (!isResolved) {
-					isResolved = true;
+				if (!isStarted) {
 					outputChannel.show();
 
 					const result = await vscode.window.showErrorMessage(message, { modal: true }, ...getActions());
@@ -49,7 +48,7 @@ export function activate(context: vscode.ExtensionContext) {
 					if (chr === CharCode.LineFeed) {
 						const match = lastProgressLine.match(/Extension host agent listening on (\d+)/);
 						if (match) {
-							isResolved = true;
+							isStarted = true;
 							res(new vscode.ResolvedAuthority('localhost', parseInt(match[1], 10))); // success!
 						}
 						lastProgressLine = '';
@@ -66,30 +65,47 @@ export function activate(context: vscode.ExtensionContext) {
 				return;
 			}
 
-			const { updateUrl, commit, quality, serverDataFolderName, dataFolderName } = getProductConfiguration();
-			const serverCommand = process.platform === 'win32' ? 'server.bat' : 'server.sh';
-			const commandArgs = ['--port=0', '--disable-telemetry'];
-			const env = getNewEnv();
-			const remoteDataDir = process.env['TESTRESOLVER_DATA_FOLDER'] || path.join(os.homedir(), serverDataFolderName || `${dataFolderName}-testresolver`);
-			env['VSCODE_AGENT_FOLDER'] = remoteDataDir;
-			outputChannel.appendLine(`Using data folder at ${remoteDataDir}`);
-
+			const { updateUrl, commit, quality } = getProductConfiguration();
 			if (!commit) { // dev mode
 				const vscodePath = path.resolve(path.join(context.extensionPath, '..', '..'));
-				const serverCommandPath = path.join(vscodePath, 'resources', 'server', 'bin-dev', serverCommand);
-				extHostProcess = cp.spawn(serverCommandPath, commandArgs, { env, cwd: vscodePath });
+				const nodeExec = process.platform === 'win32' ? 'node.exe' : 'node';
+				const nodePath = path.join(vscodePath, '.build', 'node-remote', nodeExec);
+
+				if (!fs.existsSync(nodePath)) {
+					try {
+						progress.report({ message: 'Installing node' });
+						outputChannel.appendLine(`Installing node at ${nodePath}`);
+						cp.execSync(`node ${path.join(vscodePath, 'node_modules/gulp/bin/gulp.js')} node-remote`);
+					} catch (e) {
+						processError(`Problem downloading node: ${e.message}`);
+
+					}
+				}
+				outputChannel.appendLine(`Using node at ${nodePath}`);
+
+				const env = getNewEnv();
+				env['PATH'] = path.join(vscodePath, 'resources', 'server', 'bin') + path.delimiter + env['PATH']; // allow calling code-dev.sh
+
+				outputChannel.appendLine(env['PATH'] || '');
+
+				extHostProcess = cp.spawn(nodePath, [path.join('out', 'remoteExtensionHostAgent'), '--port=0'], { cwd: vscodePath, env });
 			} else {
-				const serverBin = path.join(remoteDataDir, 'bin');
+				const serverBin = path.resolve(os.homedir(), '.vscode-remote', 'bin');
 				progress.report({ message: 'Installing VSCode Server' });
 				const serverLocation = await downloadAndUnzipVSCodeServer(updateUrl, commit, quality, serverBin);
 				outputChannel.appendLine(`Using server build at ${serverLocation}`);
 
-				extHostProcess = cp.spawn(path.join(serverLocation, serverCommand), commandArgs, { env, cwd: serverLocation });
+				const commandArgs = ['--port=0', '--disable-telemetry'];
+
+				const env = getNewEnv();
+				env['PATH'] = path.join(serverLocation, 'bin') + path.delimiter + env['PATH']; // code command for the terminal
+
+				extHostProcess = cp.spawn(path.join(serverLocation, 'server.sh'), commandArgs, { env, cwd: serverLocation });
 			}
 			extHostProcess.stdout.on('data', (data: Buffer) => processOutput(data.toString()));
 			extHostProcess.stderr.on('data', (data: Buffer) => processOutput(data.toString()));
-			extHostProcess.on('error', (error: Error) => processError(`server failed with error:\n${error.message}`));
-			extHostProcess.on('close', (code: number) => processError(`server closed unexpectedly.\nError code: ${code}`));
+			extHostProcess.on('error', (error: Error) => processError(`remoteExtensionHostAgent failed with error:\n${error.message}`));
+			extHostProcess.on('close', (code: number) => processError(`remoteExtensionHostAgent closed unexpectedly.\nError code: ${code}`));
 		});
 	}
 
@@ -117,6 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
 			outputChannel.show();
 		}
 	});
+
 }
 
 type ActionItem = (vscode.MessageItem & { execute: () => void; });
@@ -153,8 +170,6 @@ export interface IProductConfiguration {
 	updateUrl: string;
 	commit: string;
 	quality: string;
-	dataFolderName: string;
-	serverDataFolderName?: string;
 }
 
 function getProductConfiguration(): IProductConfiguration {

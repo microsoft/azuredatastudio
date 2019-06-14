@@ -17,7 +17,7 @@ import { IViewsService, ITreeView, ITreeItem, TreeItemCollapsibleState, ITreeVie
 import { IViewletViewOptions, FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IProgressService } from 'vs/platform/progress/common/progress';
+import { IProgressService2 } from 'vs/platform/progress/common/progress';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -60,9 +60,9 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView;
-		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));
-		this._register(toDisposable(() => this.treeView.setVisibility(false)));
-		this._register(this.onDidChangeBodyVisibility(() => this.updateTreeVisibility()));
+		this.treeView.onDidChangeActions(() => this.updateActions(), this, this.disposables);
+		this.disposables.push(toDisposable(() => this.treeView.setVisibility(false)));
+		this.disposables.push(this.onDidChangeBodyVisibility(() => this.updateTreeVisibility()));
 		this.updateTreeVisibility();
 	}
 
@@ -97,6 +97,11 @@ export class CustomTreeViewPanel extends ViewletPanel {
 
 	private updateTreeVisibility(): void {
 		this.treeView.setVisibility(this.isBodyVisible());
+	}
+
+	dispose(): void {
+		dispose(this.disposables);
+		super.dispose();
 	}
 }
 
@@ -211,7 +216,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ICommandService private readonly commandService: ICommandService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IProgressService private readonly progressService: IProgressService
+		@IProgressService2 private readonly progressService: IProgressService2
 	) {
 		super();
 		this.root = new Root();

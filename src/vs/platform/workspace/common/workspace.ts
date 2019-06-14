@@ -228,7 +228,7 @@ export function toWorkspaceFolder(resource: URI): WorkspaceFolder {
 
 export function toWorkspaceFolders(configuredFolders: IStoredWorkspaceFolder[], workspaceConfigFile: URI): WorkspaceFolder[] {
 	let result: WorkspaceFolder[] = [];
-	let seen: Set<string> = new Set();
+	let seen: { [uri: string]: boolean } = Object.create(null);
 
 	const relativeTo = resources.dirname(workspaceConfigFile);
 	for (let configuredFolder of configuredFolders) {
@@ -252,8 +252,8 @@ export function toWorkspaceFolders(configuredFolders: IStoredWorkspaceFolder[], 
 		if (uri) {
 			// remove duplicates
 			let comparisonKey = resources.getComparisonKey(uri);
-			if (!seen.has(comparisonKey)) {
-				seen.add(comparisonKey);
+			if (!seen[comparisonKey]) {
+				seen[comparisonKey] = true;
 
 				const name = configuredFolder.name || resources.basenameOrAuthority(uri);
 				result.push(new WorkspaceFolder({ uri, name, index: result.length }, configuredFolder));

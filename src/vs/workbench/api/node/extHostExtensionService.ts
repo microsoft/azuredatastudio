@@ -33,10 +33,10 @@ import { IWorkspace } from 'vs/platform/workspace/common/workspace';
 import { Schemas } from 'vs/base/common/network';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 import { ExtensionMemento } from 'vs/workbench/api/common/extHostMemento';
 import { ExtensionStoragePaths } from 'vs/workbench/api/node/extHostStoragePaths';
 import { RemoteAuthorityResolverError, ExtensionExecutionContext } from 'vs/workbench/api/common/extHostTypes';
-import { IURITransformer } from 'vs/base/common/uriIpc';
 
 interface ITestRunner {
 	run(testsRoot: string, clb: (error: Error, failures?: number) => void): void;
@@ -86,7 +86,8 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 		extHostConfiguration: ExtHostConfiguration,
 		environment: IEnvironment,
 		extHostLogService: ExtHostLogService,
-		uriTransformer: IURITransformer | null
+		schemeTransformer: ISchemeTransformer | null,
+		outputChannelName: string
 	) {
 		this._hostUtils = hostUtils;
 		this._initData = initData;
@@ -136,7 +137,8 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 			this,
 			this._extHostLogService,
 			this._storage,
-			uriTransformer
+			schemeTransformer,
+			outputChannelName
 		);
 
 		this._resolvers = Object.create(null);

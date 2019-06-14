@@ -17,7 +17,7 @@ import { cloneAndChange } from 'vs/base/common/objects';
 
 export interface IContentActionHandler {
 	callback: (content: string, event?: IMouseEvent) => void;
-	readonly disposeables: IDisposable[];
+	disposeables: IDisposable[];
 }
 
 export interface RenderOptions {

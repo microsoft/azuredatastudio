@@ -36,6 +36,7 @@ export interface IVersionAccessor extends IApplicationAccessor {
 enum Platform {
 	WIN_32 = 'win32-ia32',
 	WIN_64 = 'win32-x64',
+	LINUX_32 = 'linux-ia32',
 	LINUX_64 = 'linux-x64',
 	MAC_OS = 'darwin-x64'
 }
@@ -190,7 +191,7 @@ if (process.platform === 'darwin') {
 } else if (process.platform === 'win32') {
 	platform = is64 ? Platform.WIN_64 : Platform.WIN_32;
 } else {
-	platform = Platform.LINUX_64;
+	platform = is64 ? Platform.LINUX_64 : Platform.LINUX_32;
 }
 
 // Create version and upload symbols in HockeyApp

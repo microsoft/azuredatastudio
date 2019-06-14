@@ -135,6 +135,7 @@ h3 code,
 h4 code,
 h5 code,
 h6 code {
+	font-size: inherit;
 	line-height: auto;
 }
 
@@ -167,8 +168,8 @@ blockquote {
 
 code {
 	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
-	font-size: 1em;
-	line-height: 1.357em;
+	font-size: 1rem;
+	line-height: 1.357rem;
 }
 
 body.wordWrap pre {

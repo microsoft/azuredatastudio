@@ -79,7 +79,7 @@ export class EditorState {
  * A cancellation token source that cancels when the editor changes as expressed
  * by the provided flags
  */
-export class EditorStateCancellationTokenSource extends EditorKeybindingCancellationTokenSource implements IDisposable {
+export class EditorStateCancellationTokenSource extends EditorKeybindingCancellationTokenSource {
 
 	private readonly _listener: IDisposable[] = [];
 
@@ -110,7 +110,7 @@ export class EditorStateCancellationTokenSource extends EditorKeybindingCancella
 /**
  * A cancellation token source that cancels when the provided model changes
  */
-export class TextModelCancellationTokenSource extends CancellationTokenSource implements IDisposable {
+export class TextModelCancellationTokenSource extends CancellationTokenSource {
 
 	private _listener: IDisposable;
 

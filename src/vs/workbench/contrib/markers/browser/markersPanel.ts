@@ -44,7 +44,6 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { ResourceLabels } from 'vs/workbench/browser/labels';
 import { IMarker } from 'vs/platform/markers/common/markers';
 import { withUndefinedAsNull } from 'vs/base/common/types';
-import { MementoObject } from 'vs/workbench/common/memento';
 
 function createModelIterator(model: MarkersModel): Iterator<ITreeElement<TreeElement>> {
 	const resourcesIt = Iterator.fromArray(model.resourceMarkers);
@@ -80,12 +79,12 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 	private treeContainer: HTMLElement;
 	private messageBoxContainer: HTMLElement;
 	private ariaLabelElement: HTMLElement;
-	private readonly panelState: MementoObject;
+	private panelState: object;
 	private panelFoucusContextKey: IContextKey<boolean>;
 
 	private filter: Filter;
 
-	private _onDidFilter = this._register(new Emitter<void>());
+	private _onDidFilter = new Emitter<void>();
 	readonly onDidFilter: Event<void> = this._onDidFilter.event;
 	private cachedFilterStats: { total: number; filtered: number; } | undefined = undefined;
 
@@ -163,11 +162,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 			return;
 		}
 
-		if (this.isEmpty()) {
-			this.messageBoxContainer.focus();
-		} else {
-			this.tree.getHTMLElement().focus();
-		}
+		this.tree.getHTMLElement().focus();
 	}
 
 	public focusFilter(): void {
@@ -353,7 +348,7 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 			}
 		}));
 
-		this._register(this.tree.onContextMenu(this.onContextMenu, this));
+		this.tree.onContextMenu(this.onContextMenu, this, this._toDispose);
 
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
 			if (this.filterAction.useFilesExclude && e.affectsConfiguration('files.exclude')) {
@@ -475,15 +470,11 @@ export class MarkersPanel extends Panel implements IMarkerFilterController {
 		}
 	}
 
-	private isEmpty(): boolean {
-		const { total, filtered } = this.getFilterStats();
-		return total === 0 || filtered === 0;
-	}
-
 	private render(): void {
 		this.cachedFilterStats = undefined;
 		this.tree.setChildren(null, createModelIterator(this.markersWorkbenchService.markersModel));
-		dom.toggleClass(this.treeContainer, 'hidden', this.isEmpty());
+		const { total, filtered } = this.getFilterStats();
+		dom.toggleClass(this.treeContainer, 'hidden', total === 0 || filtered === 0);
 		this.renderMessage();
 	}
 

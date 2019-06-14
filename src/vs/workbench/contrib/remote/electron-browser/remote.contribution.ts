@@ -32,7 +32,7 @@ import { LogLevelSetterChannel } from 'vs/platform/log/node/logIpc';
 import { ipcRenderer as ipc } from 'electron';
 import { IDiagnosticInfoOptions, IRemoteDiagnosticInfo } from 'vs/platform/diagnostics/common/diagnosticsService';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { IProgressService, IProgress, IProgressStep, ProgressLocation } from 'vs/platform/progress/common/progress';
+import { IProgressService2, IProgress, IProgressStep, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { PersistenConnectionEventType } from 'vs/platform/remote/common/remoteAgentConnection';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IConfigurationRegistry, Extensions as ConfigurationExtensions } from 'vs/platform/configuration/common/configurationRegistry';
@@ -143,7 +143,7 @@ export class RemoteWindowActiveIndicator extends Disposable implements IWorkbenc
 		if (this.windowIndicatorEntry) {
 			this.windowIndicatorEntry.update(properties);
 		} else {
-			this.windowIndicatorEntry = this.statusbarService.addEntry(properties, 'status.host', nls.localize('status.host', "Remote Host"), StatusbarAlignment.LEFT, Number.MAX_VALUE /* first entry */);
+			this.windowIndicatorEntry = this.statusbarService.addEntry(properties, StatusbarAlignment.LEFT, Number.MAX_VALUE /* first entry */);
 		}
 	}
 
@@ -272,7 +272,7 @@ class ProgressReporter {
 class RemoteAgentConnectionStatusListener implements IWorkbenchContribution {
 	constructor(
 		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
-		@IProgressService progressService: IProgressService,
+		@IProgressService2 progressService: IProgressService2,
 		@IDialogService dialogService: IDialogService,
 		@ICommandService commandService: ICommandService
 	) {

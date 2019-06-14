@@ -26,8 +26,6 @@
 				"support.class",
 				"support.type",
 				"entity.name.type",
-				"entity.name.namespace",
-				"entity.name.scope-resolution",
 				"entity.name.class",
 				"storage.type.cs",
 				"storage.type.generic.cs",
@@ -67,11 +65,11 @@
 			}
 		},
 		{
-			"name": "Control flow / Special keywords",
+			"name": "Control flow keywords",
 			"scope": [
 				"keyword.control",
-				"source.cpp keyword.operator.new",
-				"source.cpp keyword.operator.delete",
+				"keyword.operator.new.cpp",
+				"keyword.operator.delete.cpp",
 				"keyword.other.using",
 				"keyword.other.operator"
 			],

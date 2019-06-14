@@ -257,12 +257,7 @@ class MinimapLayout {
 		const computedSliderRatio = (maxMinimapSliderTop) / (scrollHeight - viewportHeight);
 		const sliderTop = (scrollTop * computedSliderRatio);
 
-		let extraLinesAtTheBottom = 0;
-		if (options.scrollBeyondLastLine) {
-			const expectedViewportLineCount = viewportHeight / lineHeight;
-			extraLinesAtTheBottom = expectedViewportLineCount;
-		}
-		if (minimapLinesFitting >= lineCount + extraLinesAtTheBottom) {
+		if (minimapLinesFitting >= lineCount) {
 			// All lines fit in the minimap
 			const startLineNumber = 1;
 			const endLineNumber = lineCount;

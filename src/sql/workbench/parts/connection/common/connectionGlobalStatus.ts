@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import { ConnectionSummary } from 'azdata';
+import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import * as LocalizedConstants from 'sql/workbench/parts/connection/common/localizedConstants';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 
 // Status when making connections from the viewlet
 export class ConnectionGlobalStatus {
@@ -12,12 +12,12 @@ export class ConnectionGlobalStatus {
 	private _displayTime: number = 5000; // (in ms)
 
 	constructor(
-		@INotificationService private _notificationService: INotificationService
+		@IStatusbarService private _statusBarService: IStatusbarService
 	) {
 	}
 
 	public setStatusToConnected(connectionSummary: ConnectionSummary): void {
-		if (this._notificationService) {
+		if (this._statusBarService) {
 			let text: string;
 			let connInfo: string = connectionSummary.serverName;
 			if (connInfo) {
@@ -28,13 +28,13 @@ export class ConnectionGlobalStatus {
 				}
 				text = LocalizedConstants.onDidConnectMessage + ' ' + connInfo;
 			}
-			this._notificationService.status(text, { hideAfter: this._displayTime });
+			this._statusBarService.setStatusMessage(text, this._displayTime);
 		}
 	}
 
 	public setStatusToDisconnected(fileUri: string): void {
-		if (this._notificationService) {
-			this._notificationService.status(LocalizedConstants.onDidDisconnectMessage, { hideAfter: this._displayTime });
+		if (this._statusBarService) {
+			this._statusBarService.setStatusMessage(LocalizedConstants.onDidDisconnectMessage, this._displayTime);
 		}
 	}
 }

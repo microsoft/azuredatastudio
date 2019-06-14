@@ -18,8 +18,9 @@ import { editorWidgetBackground, widgetShadow, inputBorder, inputForeground, inp
 import { IAnchor } from 'vs/base/browser/ui/contextview/contextview';
 import { Button } from 'vs/base/browser/ui/button/button';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { OcticonLabel } from 'vs/base/browser/ui/octiconLabel/octiconLabel';
-import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+
+export const FEEDBACK_VISIBLE_CONFIG = 'workbench.statusBar.feedback.visible';
 
 export interface IFeedback {
 	feedback: string;
@@ -65,13 +66,12 @@ export class FeedbackDropdown extends Dropdown {
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IIntegrityService private readonly integrityService: IIntegrityService,
 		@IThemeService private readonly themeService: IThemeService,
-		@IStatusbarService private readonly statusbarService: IStatusbarService
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(container, {
 			contextViewProvider: options.contextViewProvider,
 			labelRenderer: (container: HTMLElement): IDisposable => {
-				const label = new OcticonLabel(container);
-				label.text = '$(smiley)';
+				dom.addClasses(container, 'send-feedback', 'mask-icon');
 
 				return Disposable.None;
 			}
@@ -402,7 +402,7 @@ export class FeedbackDropdown extends Dropdown {
 		}
 
 		if (this.hideButton && !this.hideButton.checked) {
-			this.statusbarService.updateEntryVisibility('status.feedback', false);
+			this.configurationService.updateValue(FEEDBACK_VISIBLE_CONFIG, false);
 		}
 
 		super.hide();

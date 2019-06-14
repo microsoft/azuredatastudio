@@ -8,7 +8,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { domEvent } from 'vs/base/browser/event';
 import { basename } from 'vs/base/common/resources';
-import { IDisposable, dispose, Disposable, DisposableStore, combinedDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, combinedDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
 import { append, $, addClass, toggleClass, trackFocus, removeClass, addClasses } from 'vs/base/browser/dom';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -162,14 +162,14 @@ class ProviderRenderer implements IListRenderer<ISCMRepository, RepositoryTempla
 		const badgeStyler = attachBadgeStyler(count, this.themeService);
 		const actionBar = new ActionBar(provider, { actionViewItemProvider: a => new StatusBarActionViewItem(a as StatusBarAction) });
 		const disposable = Disposable.None;
-		const templateDisposable = combinedDisposable(actionBar, badgeStyler);
+		const templateDisposable = combinedDisposable([actionBar, badgeStyler]);
 
 		return { title, type, countContainer, count, actionBar, disposable, templateDisposable };
 	}
 
 	renderElement(repository: ISCMRepository, index: number, templateData: RepositoryTemplateData): void {
 		templateData.disposable.dispose();
-		const disposables = new DisposableStore();
+		const disposables: IDisposable[] = [];
 
 		if (repository.provider.rootUri) {
 			templateData.title.textContent = basename(repository.provider.rootUri);
@@ -181,7 +181,7 @@ class ProviderRenderer implements IListRenderer<ISCMRepository, RepositoryTempla
 
 		const actions: IAction[] = [];
 		const disposeActions = () => dispose(actions);
-		disposables.add({ dispose: disposeActions });
+		disposables.push({ dispose: disposeActions });
 
 		const update = () => {
 			disposeActions();
@@ -198,10 +198,10 @@ class ProviderRenderer implements IListRenderer<ISCMRepository, RepositoryTempla
 			this._onDidRenderElement.fire(repository);
 		};
 
-		disposables.add(repository.provider.onDidChange(update, null));
+		repository.provider.onDidChange(update, null, disposables);
 		update();
 
-		templateData.disposable = disposables;
+		templateData.disposable = combinedDisposable(disposables);
 	}
 
 	disposeTemplate(templateData: RepositoryTemplateData): void {
@@ -241,23 +241,23 @@ export class MainPanel extends ViewletPanel {
 			horizontalScrolling: false
 		}) as WorkbenchList<ISCMRepository>;
 
-		this._register(renderer.onDidRenderElement(e => this.list.updateWidth(this.viewModel.repositories.indexOf(e)), null));
-		this._register(this.list.onSelectionChange(this.onListSelectionChange, this));
-		this._register(this.list.onFocusChange(this.onListFocusChange, this));
-		this._register(this.list.onContextMenu(this.onListContextMenu, this));
+		renderer.onDidRenderElement(e => this.list.updateWidth(this.viewModel.repositories.indexOf(e)), null, this.disposables);
+		this.list.onSelectionChange(this.onListSelectionChange, this, this.disposables);
+		this.list.onFocusChange(this.onListFocusChange, this, this.disposables);
+		this.list.onContextMenu(this.onListContextMenu, this, this.disposables);
 
-		this._register(this.viewModel.onDidChangeVisibleRepositories(this.updateListSelection, this));
+		this.viewModel.onDidChangeVisibleRepositories(this.updateListSelection, this, this.disposables);
 
-		this._register(this.viewModel.onDidSplice(({ index, deleteCount, elements }) => this.splice(index, deleteCount, elements), null));
+		this.viewModel.onDidSplice(({ index, deleteCount, elements }) => this.splice(index, deleteCount, elements), null, this.disposables);
 		this.splice(0, 0, this.viewModel.repositories);
 
-		this._register(this.list);
+		this.disposables.push(this.list);
 
-		this._register(this.configurationService.onDidChangeConfiguration(e => {
+		this.configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('scm.providers.visible')) {
 				this.updateBodySize();
 			}
-		}));
+		}, this.disposables);
 
 		this.updateListSelection();
 	}
@@ -396,14 +396,14 @@ class ResourceGroupRenderer implements IListRenderer<ISCMResourceGroup, Resource
 		template.actionBar.clear();
 		template.actionBar.context = group;
 
-		const disposables = new DisposableStore();
-		disposables.add(connectPrimaryMenuToInlineActionBar(this.menus.getResourceGroupMenu(group), template.actionBar));
+		const disposables: IDisposable[] = [];
+		disposables.push(connectPrimaryMenuToInlineActionBar(this.menus.getResourceGroupMenu(group), template.actionBar));
 
 		const updateCount = () => template.count.setCount(group.elements.length);
-		disposables.add(group.onDidSplice(updateCount, null));
+		group.onDidSplice(updateCount, null, disposables);
 		updateCount();
 
-		template.elementDisposable = disposables;
+		template.elementDisposable = combinedDisposable(disposables);
 	}
 
 	disposeElement(group: ISCMResourceGroup, index: number, template: ResourceGroupTemplate): void {
@@ -489,8 +489,8 @@ class ResourceRenderer implements IListRenderer<ISCMResource, ResourceTemplate> 
 		template.fileLabel.setFile(resource.sourceUri, { fileDecorations: { colors: false, badges: !icon, data: resource.decorations } });
 		template.actionBar.context = resource;
 
-		const disposables = new DisposableStore();
-		disposables.add(connectPrimaryMenuToInlineActionBar(this.menus.getResourceMenu(resource.resourceGroup), template.actionBar));
+		const disposables: IDisposable[] = [];
+		disposables.push(connectPrimaryMenuToInlineActionBar(this.menus.getResourceMenu(resource.resourceGroup), template.actionBar));
 
 		toggleClass(template.name, 'strike-through', resource.decorations.strikeThrough);
 		toggleClass(template.element, 'faded', resource.decorations.faded);
@@ -505,7 +505,7 @@ class ResourceRenderer implements IListRenderer<ISCMResource, ResourceTemplate> 
 		}
 
 		template.element.setAttribute('data-tooltip', resource.decorations.tooltip || '');
-		template.elementDisposable = disposables;
+		template.elementDisposable = combinedDisposable(disposables);
 	}
 
 	disposeElement(resource: ISCMResource, index: number, template: ResourceTemplate): void {
@@ -602,10 +602,10 @@ class ResourceGroupSplicer {
 				absoluteToInsert.push(element);
 			}
 
-			const disposable = combinedDisposable(
+			const disposable = combinedDisposable([
 				group.onDidChange(() => this.onDidChangeGroup(group)),
 				group.onDidSplice(splice => this.onDidSpliceGroup(group, splice))
-			);
+			]);
 
 			itemsToInsert.push({ group, visible, disposable });
 		}
@@ -699,7 +699,6 @@ export class RepositoryPanel extends ViewletPanel {
 
 	private cachedHeight: number | undefined = undefined;
 	private cachedWidth: number | undefined = undefined;
-	private cachedScrollTop: number | undefined = undefined;
 	private inputBoxContainer: HTMLElement;
 	private inputBox: InputBox;
 	private listContainer: HTMLElement;
@@ -728,8 +727,8 @@ export class RepositoryPanel extends ViewletPanel {
 		super(options, keybindingService, contextMenuService, configurationService);
 
 		this.menus = instantiationService.createInstance(SCMMenus, this.repository.provider);
-		this._register(this.menus);
-		this._register(this.menus.onDidChangeTitle(this._onDidChangeTitleArea.fire, this._onDidChangeTitleArea));
+		this.disposables.push(this.menus);
+		this.menus.onDidChangeTitle(this._onDidChangeTitleArea.fire, this._onDidChangeTitleArea, this.disposables);
 
 		this.contextKeyService = contextKeyService.createScoped(this.element);
 		this.contextKeyService.createKey('scmRepository', this.repository);
@@ -737,7 +736,7 @@ export class RepositoryPanel extends ViewletPanel {
 
 	render(): void {
 		super.render();
-		this._register(this.menus.onDidChangeTitle(this.updateActions, this));
+		this.menus.onDidChangeTitle(this.updateActions, this, this.disposables);
 	}
 
 	protected renderHeaderTitle(container: HTMLElement): void {
@@ -759,8 +758,8 @@ export class RepositoryPanel extends ViewletPanel {
 
 	protected renderBody(container: HTMLElement): void {
 		const focusTracker = trackFocus(container);
-		this._register(focusTracker.onDidFocus(() => this.repository.focus()));
-		this._register(focusTracker);
+		this.disposables.push(focusTracker.onDidFocus(() => this.repository.focus()));
+		this.disposables.push(focusTracker);
 
 		// Input
 		this.inputBoxContainer = append(container, $('.scm-editor'));
@@ -790,33 +789,33 @@ export class RepositoryPanel extends ViewletPanel {
 
 		this.inputBox = new InputBox(this.inputBoxContainer, this.contextViewService, { flexibleHeight: true });
 		this.inputBox.setEnabled(this.isBodyVisible());
-		this._register(attachInputBoxStyler(this.inputBox, this.themeService));
-		this._register(this.inputBox);
+		this.disposables.push(attachInputBoxStyler(this.inputBox, this.themeService));
+		this.disposables.push(this.inputBox);
 
-		this._register(this.inputBox.onDidChange(triggerValidation, null));
+		this.inputBox.onDidChange(triggerValidation, null, this.disposables);
 
 		const onKeyUp = domEvent(this.inputBox.inputElement, 'keyup');
 		const onMouseUp = domEvent(this.inputBox.inputElement, 'mouseup');
-		this._register(Event.any<any>(onKeyUp, onMouseUp)(triggerValidation, null));
+		Event.any<any>(onKeyUp, onMouseUp)(triggerValidation, null, this.disposables);
 
 		this.inputBox.value = this.repository.input.value;
-		this._register(this.inputBox.onDidChange(value => this.repository.input.value = value, null));
-		this._register(this.repository.input.onDidChange(value => this.inputBox.value = value, null));
+		this.inputBox.onDidChange(value => this.repository.input.value = value, null, this.disposables);
+		this.repository.input.onDidChange(value => this.inputBox.value = value, null, this.disposables);
 
 		updatePlaceholder();
-		this._register(this.repository.input.onDidChangePlaceholder(updatePlaceholder, null));
-		this._register(this.keybindingService.onDidUpdateKeybindings(updatePlaceholder, null));
+		this.repository.input.onDidChangePlaceholder(updatePlaceholder, null, this.disposables);
+		this.keybindingService.onDidUpdateKeybindings(updatePlaceholder, null, this.disposables);
 
-		this._register(this.inputBox.onDidHeightChange(() => this.layoutBody()));
+		this.disposables.push(this.inputBox.onDidHeightChange(() => this.layoutBody()));
 
 		if (this.repository.provider.onDidChangeCommitTemplate) {
-			this._register(this.repository.provider.onDidChangeCommitTemplate(this.updateInputBox, this));
+			this.repository.provider.onDidChangeCommitTemplate(this.updateInputBox, this, this.disposables);
 		}
 
 		this.updateInputBox();
 
 		// Input box visibility
-		this._register(this.repository.input.onDidChangeVisibility(this.updateInputBoxVisibility, this));
+		this.repository.input.onDidChangeVisibility(this.updateInputBoxVisibility, this, this.disposables);
 		this.updateInputBoxVisibility();
 
 		// List
@@ -831,7 +830,7 @@ export class RepositoryPanel extends ViewletPanel {
 		const actionViewItemProvider = (action: IAction) => this.getActionViewItem(action);
 
 		this.listLabels = this.instantiationService.createInstance(ResourceLabels, { onDidChangeVisibility: this.onDidChangeBodyVisibility });
-		this._register(this.listLabels);
+		this.disposables.push(this.listLabels);
 
 		const renderers = [
 			new ResourceGroupRenderer(actionViewItemProvider, this.themeService, this.menus),
@@ -844,20 +843,20 @@ export class RepositoryPanel extends ViewletPanel {
 			horizontalScrolling: false
 		}) as WorkbenchList<ISCMResourceGroup | ISCMResource>;
 
-		this._register(Event.chain(this.list.onDidOpen)
+		Event.chain(this.list.onDidOpen)
 			.map(e => e.elements[0])
 			.filter(e => !!e && isSCMResource(e))
-			.on(this.open, this));
+			.on(this.open, this, this.disposables);
 
-		this._register(Event.chain(this.list.onPin)
+		Event.chain(this.list.onPin)
 			.map(e => e.elements[0])
 			.filter(e => !!e && isSCMResource(e))
-			.on(this.pin, this));
+			.on(this.pin, this, this.disposables);
 
-		this._register(this.list.onContextMenu(this.onListContextMenu, this));
-		this._register(this.list);
+		this.list.onContextMenu(this.onListContextMenu, this, this.disposables);
+		this.disposables.push(this.list);
 
-		this._register(this.viewModel.onDidChangeVisibility(this.onDidChangeVisibility, this));
+		this.viewModel.onDidChangeVisibility(this.onDidChangeVisibility, this, this.disposables);
 		this.onDidChangeVisibility(this.viewModel.isVisible());
 		this.onDidChangeBodyVisibility(visible => this.inputBox.setEnabled(visible));
 	}
@@ -867,7 +866,6 @@ export class RepositoryPanel extends ViewletPanel {
 			const listSplicer = new ResourceGroupSplicer(this.repository.provider.groups, this.list);
 			this.visibilityDisposables.push(listSplicer);
 		} else {
-			this.cachedScrollTop = this.list.scrollTop;
 			this.visibilityDisposables = dispose(this.visibilityDisposables);
 		}
 	}
@@ -895,13 +893,6 @@ export class RepositoryPanel extends ViewletPanel {
 
 			this.listContainer.style.height = `${height}px`;
 			this.list.layout(height, width);
-		}
-
-		if (this.cachedScrollTop !== undefined && this.list.scrollTop !== this.cachedScrollTop) {
-			this.list.scrollTop = Math.min(this.cachedScrollTop, this.list.scrollHeight);
-			// Applying the cached scroll position just once until the next leave.
-			// This, also, avoids the scrollbar to flicker when resizing the sidebar.
-			this.cachedScrollTop = undefined;
 		}
 	}
 
@@ -1115,15 +1106,15 @@ export class SCMViewlet extends ViewContainerViewlet implements IViewModel {
 		super(VIEWLET_ID, SCMViewlet.STATE_KEY, true, configurationService, layoutService, telemetryService, storageService, instantiationService, themeService, contextMenuService, extensionService, contextService);
 
 		this.menus = instantiationService.createInstance(SCMMenus, undefined);
-		this._register(this.menus.onDidChangeTitle(this.updateTitleArea, this));
+		this.menus.onDidChangeTitle(this.updateTitleArea, this, this.toDispose);
 
 		this.message = $('.empty-message', { tabIndex: 0 }, localize('no open repo', "No source control providers registered."));
 
-		this._register(configurationService.onDidChangeConfiguration(e => {
+		configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('scm.alwaysShowProviders')) {
 				this.onDidChangeRepositories();
 			}
-		}));
+		}, this.toDispose);
 	}
 
 	create(parent: HTMLElement): void {
@@ -1133,8 +1124,8 @@ export class SCMViewlet extends ViewContainerViewlet implements IViewModel {
 		addClasses(parent, 'scm-viewlet', 'empty');
 		append(parent, this.message);
 
-		this._register(this.scmService.onDidAddRepository(this.onDidAddRepository, this));
-		this._register(this.scmService.onDidRemoveRepository(this.onDidRemoveRepository, this));
+		this.scmService.onDidAddRepository(this.onDidAddRepository, this, this.toDispose);
+		this.scmService.onDidRemoveRepository(this.onDidRemoveRepository, this, this.toDispose);
 		this.scmService.repositories.forEach(r => this.onDidAddRepository(r));
 	}
 

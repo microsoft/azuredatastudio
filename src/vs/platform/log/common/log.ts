@@ -186,7 +186,7 @@ export class ConsoleLogService extends AbstractLogService implements ILogService
 export class MultiplexLogService extends AbstractLogService implements ILogService {
 	_serviceBrand: any;
 
-	constructor(private readonly logServices: ReadonlyArray<ILogService>) {
+	constructor(private logServices: ILogService[]) {
 		super();
 		if (logServices.length) {
 			this.setLevel(logServices[0].getLevel());

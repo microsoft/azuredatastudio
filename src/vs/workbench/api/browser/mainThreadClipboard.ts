@@ -8,7 +8,7 @@ import { MainContext, MainThreadClipboardShape } from '../common/extHost.protoco
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 @extHostNamedCustomer(MainContext.MainThreadClipboard)
-export class MainThreadClipboard implements MainThreadClipboardShape {
+export class MainThreadCommands implements MainThreadClipboardShape {
 
 	constructor(
 		_context: any,

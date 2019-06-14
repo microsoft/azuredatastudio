@@ -12,7 +12,6 @@ export interface IExtHostReadyMessage {
 export interface IExtHostSocketMessage {
 	type: 'VSCODE_EXTHOST_IPC_SOCKET';
 	initialDataChunk: string;
-	skipWebSocketFrames: boolean;
 }
 
 export const enum MessageType {

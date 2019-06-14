@@ -32,16 +32,15 @@ import { TerminalConfigHelper } from 'vs/workbench/contrib/terminal/browser/term
 import { TerminalLinkHandler } from 'vs/workbench/contrib/terminal/browser/terminalLinkHandler';
 import { TerminalCommandTracker } from 'vs/workbench/contrib/terminal/browser/terminalCommandTracker';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
+import { ISearchOptions, Terminal as XTermTerminal, IBuffer } from 'vscode-xterm';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 import { ITerminalInstanceService } from 'vs/workbench/contrib/terminal/browser/terminal';
-import { TerminalProcessManager } from 'vs/workbench/contrib/terminal/browser/terminalProcessManager';
-import { Terminal as XTermTerminal, IBuffer } from 'xterm';
-import { SearchAddon, ISearchOptions } from 'xterm-addon-search';
 
 // How long in milliseconds should an average frame take to render for a notification to appear
 // which suggests the fallback DOM-based renderer
 const SLOW_CANVAS_RENDER_THRESHOLD = 50;
 const NUMBER_OF_FRAMES_TO_MEASURE = 20;
+
 
 export const DEFAULT_COMMANDS_TO_SKIP_SHELL: string[] = [
 	TERMINAL_COMMAND_ID.CLEAR_SELECTION,
@@ -149,8 +148,6 @@ export const DEFAULT_COMMANDS_TO_SKIP_SHELL: string[] = [
 	'workbench.action.toggleMaximizedPanel'
 ];
 
-let xtermConstructor: Promise<typeof XTermTerminal> | undefined;
-
 export class TerminalInstance implements ITerminalInstance {
 	private static readonly EOL_REGEX = /\r?\n/g;
 
@@ -169,7 +166,6 @@ export class TerminalInstance implements ITerminalInstance {
 	private _title: string;
 	private _wrapperElement: HTMLDivElement;
 	private _xterm: XTermTerminal;
-	private _xtermSearch: SearchAddon | undefined;
 	private _xtermElement: HTMLDivElement;
 	private _terminalHasTextContextKey: IContextKey<boolean>;
 	private _cols: number;
@@ -395,26 +391,11 @@ export class TerminalInstance implements ITerminalInstance {
 		return TerminalInstance._lastKnownDimensions;
 	}
 
-	private async _getXtermConstructor(): Promise<typeof XTermTerminal> {
-		if (xtermConstructor) {
-			return xtermConstructor;
-		}
-		xtermConstructor = new Promise<typeof XTermTerminal>(async (resolve) => {
-			const Terminal = await this._terminalInstanceService.getXtermConstructor();
-			// Localize strings
-			Terminal.strings.blankLine = nls.localize('terminal.integrated.a11yBlankLine', 'Blank line');
-			Terminal.strings.promptLabel = nls.localize('terminal.integrated.a11yPromptLabel', 'Terminal input');
-			Terminal.strings.tooMuchOutput = nls.localize('terminal.integrated.a11yTooMuchOutput', 'Too much output to announce, navigate to rows manually to read');
-			resolve(Terminal);
-		});
-		return xtermConstructor;
-	}
-
 	/**
 	 * Create xterm.js instance and attach data listeners.
 	 */
 	protected async _createXterm(): Promise<void> {
-		const Terminal = await this._getXtermConstructor();
+		const Terminal = await this._terminalInstanceService.getXtermConstructor();
 		const font = this._configHelper.getFont(undefined, true);
 		const config = this._configHelper.config;
 		this._xterm = new Terminal({
@@ -433,11 +414,9 @@ export class TerminalInstance implements ITerminalInstance {
 			macOptionClickForcesSelection: config.macOptionClickForcesSelection,
 			rightClickSelectsWord: config.rightClickBehavior === 'selectWord',
 			// TODO: Guess whether to use canvas or dom better
-			rendererType: config.rendererType === 'auto' ? 'canvas' : config.rendererType
-		});
-		this._terminalInstanceService.getXtermSearchConstructor().then(Addon => {
-			this._xtermSearch = new Addon();
-			this._xterm.loadAddon(this._xtermSearch);
+			rendererType: config.rendererType === 'auto' ? 'canvas' : config.rendererType,
+			// TODO: Remove this once the setting is removed upstream
+			experimentalCharAtlas: 'dynamic'
 		});
 		if (this._shellLaunchConfig.initialText) {
 			this._xterm.writeln(this._shellLaunchConfig.initialText);
@@ -616,6 +595,19 @@ export class TerminalInstance implements ITerminalInstance {
 			if (this._processManager) {
 				this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
 				this._processManager.onProcessReady(() => this._linkHandler.setWidgetManager(this._widgetManager));
+
+				this._processManager.onProcessReady(() => {
+					if (this._configHelper.config.enableLatencyMitigation) {
+						if (!this._processManager) {
+							return;
+						}
+						this._processManager.getLatency().then(latency => {
+							if (latency > 20 && (this._xterm as any).typeAheadInit) {
+								(this._xterm as any).typeAheadInit(this._processManager, this._themeService);
+							}
+						});
+					}
+				});
 			} else if (this._shellLaunchConfig.isRendererOnly) {
 				this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
 				this._linkHandler.setWidgetManager(this._widgetManager);
@@ -722,17 +714,11 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	public findNext(term: string, searchOptions: ISearchOptions): boolean {
-		if (!this._xtermSearch) {
-			return false;
-		}
-		return this._xtermSearch.findNext(term, searchOptions);
+		return this._xterm.findNext(term, searchOptions);
 	}
 
 	public findPrevious(term: string, searchOptions: ISearchOptions): boolean {
-		if (!this._xtermSearch) {
-			return false;
-		}
-		return this._xtermSearch.findPrevious(term, searchOptions);
+		return this._xterm.findPrevious(term, searchOptions);
 	}
 
 	public notifyFindWidgetFocusChanged(isFocused: boolean): void {
@@ -789,7 +775,7 @@ export class TerminalInstance implements ITerminalInstance {
 
 	public rendererExit(exitCode: number): void {
 		// The use of this API is for cases where there is no backing process behind a terminal
-		// instance (e.g. a custom execution task).
+		// instance (eg. a custom execution task).
 		if (!this.shellLaunchConfig.isRendererOnly) {
 			throw new Error('rendererExit is only expected to be called on a renderer only terminal');
 		}
@@ -929,7 +915,7 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	protected _createProcess(): void {
-		this._processManager = this._instantiationService.createInstance(TerminalProcessManager, this._id, this._configHelper);
+		this._processManager = this._terminalInstanceService.createTerminalProcessManager(this._id, this._configHelper);
 		this._processManager.onProcessReady(() => this._onProcessIdReady.fire(this));
 		this._processManager.onProcessExit(exitCode => this._onProcessExit(exitCode));
 		this._processManager.onProcessData(data => this._onData.fire(data));
@@ -973,7 +959,7 @@ export class TerminalInstance implements ITerminalInstance {
 
 	/**
 	 * Called when either a process tied to a terminal has exited or when a terminal renderer
-	 * simulates a process exiting (e.g. custom execution task).
+	 * simulates a process exiting (eg. custom execution task).
 	 * @param exitCode The exit code of the process, this is undefined when the terminal was exited
 	 * through user action.
 	 */
@@ -1137,17 +1123,9 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	private _sendLineData(buffer: IBuffer, lineIndex: number): void {
-		let line = buffer.getLine(lineIndex);
-		if (!line) {
-			return;
-		}
-		let lineData = line.translateToString(true);
-		while (lineIndex > 0 && line.isWrapped) {
-			line = buffer.getLine(--lineIndex);
-			if (!line) {
-				break;
-			}
-			lineData = line.translateToString(false) + lineData;
+		let lineData = buffer.getLine(lineIndex)!.translateToString(true);
+		while (lineIndex >= 0 && buffer.getLine(lineIndex--)!.isWrapped) {
+			lineData = buffer.getLine(lineIndex)!.translateToString(false) + lineData;
 		}
 		this._onLineData.fire(lineData);
 	}
