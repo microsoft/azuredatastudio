@@ -4,39 +4,40 @@
  *--------------------------------------------------------------------------------------------*/
 
 /* Disable repl hover highlight in tree. */
-.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows > .monaco-tree-row:hover:not(.highlighted):not(.selected):not(.focused)  {
+.monaco-workbench .message-list .monaco-list .monaco-list-rows > .monaco-list-row:hover:not(.highlighted):not(.selected):not(.focused)  {
 	background-color: inherit;
 }
 
 /* Disable repl hover highlight in tree. */
-.monaco-workbench .message-tree .monaco-tree .monaco-tree-row > .content {
-	line-height: 18px;
+.monaco-workbench .message-list .monaco-list {
+	line-height: 22px;
 	user-select: text;
+	/* Wrap words but also do not trim whitespace #6275 */
 	word-wrap: break-word;
-	/* white-space: pre-wrap; */
+	/* Break on all #7533 */
 	word-break: break-all;
 }
 
-.monaco-workbench .message-tree .monaco-tree .monaco-tree-rows>.monaco-tree-row {
+.monaco-workbench .message-list .monaco-list .monaco-list-rows > .monaco-list-row {
 	cursor: default;
 }
 
-.message-tree .time-stamp {
+.message-list .time-stamp {
 	width: 100px;
 	display: inline-block;
 }
 
-.message-tree .message,
-.message-tree .batch-start,
-.message-tree .error-message {
+.message-list .message,
+.message-list .batch-start,
+.message-list .error-message {
 	display: inline-block;
 }
 
-.message-tree .batch-start {
+.message-list .batch-start {
 	text-decoration: underline;
 	cursor: pointer;
 }
 
-.message-tree .batch-start:hover {
+.message-list .batch-start:hover {
 	color: red;
 }

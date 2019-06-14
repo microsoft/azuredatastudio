@@ -30,6 +30,9 @@ import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
+import { ObjectTree } from 'vs/base/browser/ui/tree/objectTree';
+import { List } from 'vs/base/browser/ui/list/listWidget';
+import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -56,98 +59,139 @@ interface IBatchTemplate extends IMessageTemplate {
 const TemplateIds = {
 	MESSAGE: 'message',
 	BATCH: 'batch',
-	MODEL: 'model',
 	ERROR: 'error'
 };
 
+export class MessagePanelState extends Disposable {
+	public scrollTop: number;
+}
+
+class Delegate implements IListVirtualDelegate<IQueryMessage> {
+	private static readonly lineHeight = 22;
+
+	getHeight(element: IQueryMessage): number {
+		let lines = element.message.split('\n').length;
+		return Delegate.lineHeight * lines;
+	}
+
+	getTemplateId(element: IQueryMessage): string {
+		if (element.selection) {
+			return TemplateIds.BATCH;
+		} else if (element.isError) {
+			return TemplateIds.ERROR;
+		} else {
+			return TemplateIds.MESSAGE;
+		}
+	}
+}
+
+class MessageRenderer implements IListRenderer<IQueryMessage, IMessageTemplate> {
+	public readonly templateId = TemplateIds.MESSAGE;
+
+	renderTemplate(container: HTMLElement): IMessageTemplate {
+		container.append($('.time-stamp'));
+		const message = $('.message');
+		message.style.whiteSpace = 'pre';
+		container.append(message);
+		return { message };
+	}
+
+	renderElement(element: IQueryMessage, index: number, templateData: IMessageTemplate, height: number): void {
+		templateData.message.innerText = element.message;
+	}
+
+	disposeTemplate(templateData: IMessageTemplate): void {
+		// no op
+	}
+}
+
+class BatchMessageRenderer implements IListRenderer<IQueryMessage, IBatchTemplate> {
+	public readonly templateId = TemplateIds.BATCH;
+
+	renderTemplate(container: HTMLElement): IBatchTemplate {
+		const timeStamp = $('.time-stamp');
+		container.append(timeStamp);
+		const message = $('.batch-start');
+		message.style.whiteSpace = 'pre';
+		container.append(message);
+		return { message, timeStamp };
+	}
+
+	renderElement(element: IQueryMessage, index: number, templateData: IBatchTemplate, height: number): void {
+		templateData.timeStamp.innerText = element.time;
+		templateData.message.innerText = element.message;
+	}
+
+	disposeTemplate(templateData: IBatchTemplate): void {
+		// no op
+	}
+}
+
+class ErrorMessageRenderer implements IListRenderer<IQueryMessage, IMessageTemplate> {
+	public readonly templateId = TemplateIds.ERROR;
+
+	renderTemplate(container: HTMLElement): IMessageTemplate {
+		container.append($('.time-stamp'));
+		const message = $('.error-message');
+		container.append(message);
+		return { message };
+	}
+
+	renderElement(element: IQueryMessage, index: number, templateData: IMessageTemplate, height: number): void {
+		templateData.message.innerText = element.message;
+	}
+
+	disposeTemplate(templateData: IMessageTemplate): void {
+		// no op
+	}
+}
+
 export class MessagePanel extends Disposable {
-	private ds = new MessageDataSource();
-	private renderer = new MessageRenderer();
-	private model = new Model();
-	private controller: MessageController;
-	private container = $('.message-tree');
+	private container = $('.message-list');
 	private styleElement = createStyleSheet(this.container);
+
+	private messages = new Array<IQueryMessage>();
+	private lastSelectedString: string = null;
 
 	private queryRunnerDisposables: IDisposable[] = [];
 	private _state: MessagePanelState | undefined;
 
-	private tree: ITree;
+	private list: List<IQueryMessage>;
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IThemeService private readonly themeService: IThemeService,
 		@IClipboardService private readonly clipboardService: IClipboardService,
-		@IContextMenuService private readonly contextMenuService: IContextMenuService
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
-		this.controller = instantiationService.createInstance(MessageController, { openMode: OpenMode.SINGLE_CLICK, clickBehavior: ClickBehavior.ON_MOUSE_UP /* do not change, to preserve focus behaviour in input field */ });
-		this.controller.toFocusOnClick = this.model;
-		this.tree = this._register(new Tree(this.container, {
-			dataSource: this.ds,
-			renderer: this.renderer,
-			controller: this.controller
-		}, { keyboardSupport: false, horizontalScrollMode: ScrollbarVisibility.Auto }));
-		this.tree.setInput(this.model);
-		this.tree.onDidScroll(e => {
-			// convert to old VS Code tree interface with expandable methods
-			let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-
-			if (this.state) {
-				this.state.scrollPosition = expandableTree.getScrollPosition();
-			}
-		});
-		this.container.style.width = '100%';
-		this.container.style.height = '100%';
-		this._register(attachListStyler(this.tree, this.themeService));
+		const renderers = [new ErrorMessageRenderer(), new MessageRenderer(), new BatchMessageRenderer()];
+		this.list = this._register(new List(this.container, new Delegate(), renderers, { horizontalScrolling: true, mouseSupport: false }));
+		this._register(attachListStyler(this.list, this.themeService));
 		this._register(this.themeService.onThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getTheme());
-		this.controller.onKeyDown = (tree, event) => {
-			if (event.ctrlKey && event.code === 'KeyC') {
-				let context: IMessagesActionContext = {
-					selection: document.getSelection(),
-					tree: this.tree,
-				};
-				let copyMessageAction = instantiationService.createInstance(CopyMessagesAction, this.clipboardService);
-				copyMessageAction.run(context);
-				event.preventDefault();
-				event.stopPropagation();
-				return true;
-			}
-			return false;
-		};
-		this.controller.onContextMenu = (tree, element, event) => {
-			if (event.target && event.target.tagName && event.target.tagName.toLowerCase() === 'input') {
-				return false; // allow context menu on input fields
-			}
-
-			// Prevent native context menu from showing up
-			if (event) {
-				event.preventDefault();
-				event.stopPropagation();
-			}
-
-			const selection = document.getSelection();
-
-			this.contextMenuService.showContextMenu({
-				getAnchor: () => {
-					return { x: event.posx, y: event.posy };
-				},
-				getActions: () => {
-					return [
-						instantiationService.createInstance(CopyMessagesAction, this.clipboardService),
-						instantiationService.createInstance(CopyAllMessagesAction, this.tree, this.clipboardService)
-					];
-				},
-				getActionsContext: () => {
-					return <IMessagesActionContext>{
-						selection,
-						tree
-					};
+		this.list.onMouseClick(e => {
+			const element = e.element;
+			this.list.setFocus([]);
+			this.list.setSelection([]);
+			const selection = window.getSelection();
+			if (element && (selection.type !== 'Range' || this.lastSelectedString === selection.toString())) {
+				// only focus the input if the user is not currently selecting.
+				if (element.selection) {
+					const selection: ISelectionData = element.selection;
+					// this is a batch statement
+					const editor = this.editorService.activeTextEditorWidget as ICodeEditor;
+					editor.focus();
+					editor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
 				}
-			});
-
-			return true;
-		};
+			}
+		});
+		this.list.onDidScroll(e => {
+			if (this.state) {
+				this.state.scrollTop = e.scrollTop;
+			}
+		});
 	}
 
 	public render(container: HTMLElement): void {
@@ -155,23 +199,13 @@ export class MessagePanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-
-		const previousScrollPosition = expandableTree.getScrollPosition();
-		this.tree.layout(size.height);
-		if (this.state && this.state.scrollPosition) {
-			expandableTree.setScrollPosition(this.state.scrollPosition);
-		} else {
-			if (previousScrollPosition === 1) {
-				expandableTree.setScrollPosition(1);
-			}
-		}
+		const previousScroll = this.state ? this.state.scrollTop || 0 : 0;
+		this.list.layout(size.height, size.width);
+		this.list.scrollTop = previousScroll;
 	}
 
 	public focus(): void {
-		this.tree.refresh();
-		this.tree.domFocus();
+		this.list.domFocus();
 	}
 
 	public set queryRunner(runner: QueryRunner) {
@@ -185,34 +219,20 @@ export class MessagePanel extends Disposable {
 
 	private onMessage(message: IQueryMessage | IQueryMessage[]) {
 		if (isArray(message)) {
-			this.model.messages.push(...message);
+			this.messages.push(...message);
 		} else {
-			this.model.messages.push(message);
+			this.messages.push(message);
 		}
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-		if (this.state && this.state.scrollPosition) {
-			const previousScroll = this.state.scrollPosition;
-			this.tree.refresh(this.model).then(() => {
-				// Restore the previous scroll position when switching between tabs
-				expandableTree.setScrollPosition(previousScroll);
-			});
-		} else {
-			const previousScrollPosition = expandableTree.getScrollPosition();
-			this.tree.refresh(this.model).then(() => {
-				// Scroll to the end if the user was already at the end otherwise leave the current scroll position
-				if (previousScrollPosition === 1) {
-					expandableTree.setScrollPosition(1);
-				}
-			});
-		}
+		const previousScroll = this.state ? this.state.scrollTop || 0 : 0;
+		this.list.splice(0, this.list.length, this.messages);
+		this.list.scrollTop = previousScroll;
 	}
 
 	private applyStyles(theme: ITheme): void {
 		const errorColor = theme.getColor(resultsErrorColor);
 		const content: string[] = [];
 		if (errorColor) {
-			content.push(`.message-tree .monaco-tree-rows .error-message { color: ${errorColor}; }`);
+			content.push(`.message-list .monaco-list-rows .error-message { color: ${errorColor}; }`);
 		}
 
 		const newStyles = content.join('\n');
@@ -222,18 +242,14 @@ export class MessagePanel extends Disposable {
 	}
 
 	private reset() {
-		this.model.messages = [];
-		this._state = undefined;
-		this.model.totalExecuteMessage = undefined;
-		this.tree.refresh(this.model);
+		this.messages = [];
+		this.list.splice(0, this.list.length);
 	}
 
 	public set state(val: MessagePanelState) {
 		this._state = val;
-		// convert to old VS Code tree interface with expandable methods
-		let expandableTree: IExpandableTree = <IExpandableTree>this.tree;
-		if (this.state.scrollPosition) {
-			expandableTree.setScrollPosition(this.state.scrollPosition);
+		if (this.state.scrollTop) {
+			this.list.scrollTop = this.state.scrollTop;
 		}
 	}
 
@@ -243,6 +259,7 @@ export class MessagePanel extends Disposable {
 
 	public clear() {
 		this.reset();
+		this._state = undefined;
 	}
 
 	public dispose() {
@@ -256,155 +273,5 @@ export class MessagePanel extends Disposable {
 			this.styleElement = undefined;
 		}
 		super.dispose();
-	}
-}
-
-class MessageDataSource implements IDataSource {
-	getId(tree: ITree, element: Model | IResultMessageIntern): string {
-		if (element instanceof Model) {
-			return element.uuid;
-		} else {
-			if (!element.id) {
-				element.id = generateUuid();
-			}
-			return element.id;
-		}
-	}
-
-	hasChildren(tree: ITree, element: any): boolean {
-		return element instanceof Model;
-	}
-
-	getChildren(tree: ITree, element: any): Promise<(IMessagePanelMessage | IMessagePanelBatchMessage)[]> {
-		if (element instanceof Model) {
-			let messages = element.messages;
-			if (element.totalExecuteMessage) {
-				messages = messages.concat(element.totalExecuteMessage);
-			}
-			return Promise.resolve(messages);
-		} else {
-			return Promise.resolve(undefined);
-		}
-	}
-
-	getParent(tree: ITree, element: any): Promise<void> {
-		return Promise.resolve(null);
-	}
-}
-
-class MessageRenderer implements IRenderer {
-
-	getHeight(tree: ITree, element: IQueryMessage): number {
-		const lineHeight = 22;
-		let lines = element.message.split('\n').length;
-		return lineHeight * lines;
-	}
-
-	getTemplateId(tree: ITree, element: IQueryMessage): string {
-		if (element instanceof Model) {
-			return TemplateIds.MODEL;
-		} else if (element.selection) {
-			return TemplateIds.BATCH;
-		} else if (element.isError) {
-			return TemplateIds.ERROR;
-		} else {
-			return TemplateIds.MESSAGE;
-		}
-	}
-
-	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): IMessageTemplate | IBatchTemplate {
-
-		if (templateId === TemplateIds.MESSAGE) {
-			container.append($('.time-stamp'));
-			const message = $('.message');
-			message.style.whiteSpace = 'pre';
-			container.append(message);
-			return { message };
-		} else if (templateId === TemplateIds.BATCH) {
-			const timeStamp = $('.time-stamp');
-			container.append(timeStamp);
-			const message = $('.batch-start');
-			message.style.whiteSpace = 'pre';
-			container.append(message);
-			return { message, timeStamp };
-		} else if (templateId === TemplateIds.ERROR) {
-			container.append($('.time-stamp'));
-			const message = $('.error-message');
-			container.append(message);
-			return { message };
-		} else {
-			return undefined;
-		}
-	}
-
-	renderElement(tree: ITree, element: IQueryMessage, templateId: string, templateData: IMessageTemplate | IBatchTemplate): void {
-		if (templateId === TemplateIds.MESSAGE || templateId === TemplateIds.ERROR) {
-			let data: IMessageTemplate = templateData;
-			data.message.innerText = element.message;
-		} else if (templateId === TemplateIds.BATCH) {
-			let data = templateData as IBatchTemplate;
-			data.timeStamp.innerText = element.time;
-			data.message.innerText = element.message;
-		}
-	}
-
-	disposeTemplate(tree: ITree, templateId: string, templateData: any): void {
-	}
-}
-
-export class MessageController extends WorkbenchTreeController {
-
-	private lastSelectedString: string = null;
-	public toFocusOnClick: { focus(): void };
-
-	constructor(
-		options: IControllerOptions,
-		@IConfigurationService configurationService: IConfigurationService,
-		@IEditorService private workbenchEditorService: IEditorService
-	) {
-		super(options, configurationService);
-	}
-
-	protected onLeftClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
-		// input and output are one element in the tree => we only expand if the user clicked on the output.
-		// if ((element.reference > 0 || (element instanceof RawObjectReplElement && element.hasChildren)) && mouseEvent.target.className.indexOf('input expression') === -1) {
-		super.onLeftClick(tree, element, eventish, origin);
-		tree.clearFocus();
-		tree.deselect(element);
-		// }
-
-		const selection = window.getSelection();
-		if (selection.type !== 'Range' || this.lastSelectedString === selection.toString()) {
-			// only focus the input if the user is not currently selecting.
-			this.toFocusOnClick.focus();
-		}
-		this.lastSelectedString = selection.toString();
-
-		if (element.selection) {
-			let selection: ISelectionData = element.selection;
-			// this is a batch statement
-			let editor = this.workbenchEditorService.activeControl as QueryEditor;
-			const codeEditor = <ICodeEditor>editor.getControl();
-			codeEditor.focus();
-			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
-			codeEditor.revealRangeInCenterIfOutsideViewport({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
-		}
-
-		return true;
-	}
-
-	public onContextMenu(tree: ITree, element: any, event: ContextMenuEvent): boolean {
-		return true;
-	}
-}
-
-export class Model {
-	public messages: Array<IMessagePanelMessage | IMessagePanelBatchMessage> = [];
-	public totalExecuteMessage: IMessagePanelMessage;
-
-	public uuid = generateUuid();
-
-	public focus() {
-
 	}
 }
