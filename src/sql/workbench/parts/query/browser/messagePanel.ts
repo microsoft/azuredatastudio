@@ -33,6 +33,12 @@ import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanel
 import { ObjectTree } from 'vs/base/browser/ui/tree/objectTree';
 import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
+import { Event } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { Schemas } from 'vs/base/common/network';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { URI } from 'vs/base/common/uri';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -83,6 +89,10 @@ class Delegate implements IListVirtualDelegate<IQueryMessage> {
 			return TemplateIds.MESSAGE;
 		}
 	}
+
+	hasDynamicHeight(): boolean {
+		return true;
+	}
 }
 
 class MessageRenderer implements IListRenderer<IQueryMessage, IMessageTemplate> {
@@ -91,7 +101,6 @@ class MessageRenderer implements IListRenderer<IQueryMessage, IMessageTemplate> 
 	renderTemplate(container: HTMLElement): IMessageTemplate {
 		container.append($('.time-stamp'));
 		const message = $('.message');
-		message.style.whiteSpace = 'pre';
 		container.append(message);
 		return { message };
 	}
@@ -112,7 +121,6 @@ class BatchMessageRenderer implements IListRenderer<IQueryMessage, IBatchTemplat
 		const timeStamp = $('.time-stamp');
 		container.append(timeStamp);
 		const message = $('.batch-start');
-		message.style.whiteSpace = 'pre';
 		container.append(message);
 		return { message, timeStamp };
 	}
@@ -167,7 +175,12 @@ export class MessagePanel extends Disposable {
 	) {
 		super();
 		const renderers = [new ErrorMessageRenderer(), new MessageRenderer(), new BatchMessageRenderer()];
-		this.list = this._register(new List(this.container, new Delegate(), renderers, { horizontalScrolling: true, mouseSupport: false }));
+		this.list = this._register(new List(this.container, new Delegate(), renderers, {
+			mouseSupport: false,
+			supportDynamicHeights: true,
+			horizontalScrolling: false,
+			setRowLineHeight: false
+		}));
 		this._register(attachListStyler(this.list, this.themeService));
 		this._register(this.themeService.onThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getTheme());
@@ -186,6 +199,26 @@ export class MessagePanel extends Disposable {
 					editor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
 				}
 			}
+		});
+		Event.map(this.list.onKeyDown, e => new StandardKeyboardEvent(e))(e => {
+			if (e.equals(KeyMod.CtrlCmd | KeyCode.KEY_C) && this.lastSelectedString) {
+				this.clipboardService.writeText(this.lastSelectedString);
+			}
+		});
+		this.list.onContextMenu((e) => {
+			this.contextMenuService.showContextMenu({
+				getAnchor: () => e.anchor,
+				getActions: () => [
+					instantiationService.createInstance(CopyMessagesAction),
+					instantiationService.createInstance(CopyAllMessagesAction)
+				],
+				getActionsContext: () => {
+					return <IMessagesActionContext>{
+						selection: this.lastSelectedString,
+						messages: this.messages
+					};
+				}
+			});
 		});
 		this.list.onDidScroll(e => {
 			if (this.state) {

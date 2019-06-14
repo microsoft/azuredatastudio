@@ -9,11 +9,11 @@
 }
 
 /* Disable repl hover highlight in tree. */
-.monaco-workbench .message-list .monaco-list {
-	line-height: 22px;
+.monaco-workbench .message-list .monaco-list-rows > .monaco-list-row {
 	user-select: text;
 	/* Wrap words but also do not trim whitespace #6275 */
 	word-wrap: break-word;
+	white-space: pre-wrap;
 	/* Break on all #7533 */
 	word-break: break-all;
 }
@@ -40,4 +40,9 @@
 
 .message-list .batch-start:hover {
 	color: red;
+}
+
+.message-list {
+	width: 100%;
+	height: 100%;
 }
