@@ -137,35 +137,47 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
 
 		const endpointsArray: Array<Utils.IEndpoint> = Object.assign([], view.serverInfo.options['clusterEndpoints']);
+		endpointsArray.forEach(endpointInfo => {
+			endpointInfo.isHyperlink = true;
+			endpointInfo.hyperlink = 'https://' + endpointInfo.ipAddress + ':' + endpointInfo.port;
+
+		});
 		if (endpointsArray.length > 0) {
 			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy');
 			if (managementProxyEp) {
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Grafana Dashboard', '/grafana'));
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Kibana Dashboard', '/kibana/app/kibana#/discover?_g=()'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Metrics Dashboard', '/grafana'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, 'Log Search Dashboard', '/kibana'));
 			}
 
 			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
 			if (gatewayEp) {
-				endpointsArray.push(getCustomEndpoint(gatewayEp, 'Spark History', '/gateway/default/sparkhistory'));
-				endpointsArray.push(getCustomEndpoint(gatewayEp, 'Yarn History', '/gateway/default/yarn'));
+				endpointsArray.push(getCustomEndpoint(gatewayEp, 'Spark Job Monitoring', '/gateway/default/sparkhistory'));
+				endpointsArray.push(getCustomEndpoint(gatewayEp, 'Spark Resource Management', '/gateway/default/yarn'));
 			}
 
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
 			endpointsArray.forEach(endpointInfo => {
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.serviceName }).component();
-				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '30%', 'font-weight': '600' } });
+				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: getFriendlyEndpointNames(endpointInfo.serviceName) }).component();
+				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'all' } });
 				if (endpointInfo.isHyperlink) {
 					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink, position: '' }).component();
-					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '70%', 'color': 'blue', 'text-decoration': 'underline', 'padding-top': '10px' } });
+					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '60%', 'color': 'blue', 'text-decoration': 'underline', 'padding-top': '10px' } });
 				}
 				else {
 					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
-					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '70%' } });
+					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '60%', 'user-select': 'all' } });
 				}
+				const copyValueCell = view.modelBuilder.button().component();
+				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.svg'), dark: context.asAbsolutePath('resources/dark/copy_inverse.svg') };
+				copyValueCell.onDidClick(() => {
+					vscode.env.clipboard.writeText(endpointInfo.hyperlink);
+				});
+				endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '5%', 'padding-top': '10px' } });
+
 				container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box' } });
 			});
-			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', alignItems: 'left' }).component();
 			endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px' } });
 
 			await view.initializeModel(endpointsContainer);
@@ -185,6 +197,26 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 			return endpoint;
 		}
 		return null;
+	}
+
+	function getFriendlyEndpointNames(name: string): string {
+		switch (name) {
+			case 'app-proxy':
+				return 'Application Proxy';
+				break;
+			case 'controller':
+				return 'Cluster Management Service';
+				break;
+			case 'gateway':
+				return 'HDFS and Spark';
+				break;
+			case 'management-proxy':
+				return 'Management Proxy';
+				break;
+			default:
+				return name;
+				break;
+		}
 	}
 
 	let api: MssqlExtensionApi = {
