@@ -14,6 +14,7 @@ import { DialogPane } from 'sql/platform/dialog/dialogPane';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { URI } from 'vs/base/common/uri';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
@@ -50,6 +51,7 @@ export class ModelViewInputModel extends EditorModel {
 export class ModelViewInput extends EditorInput {
 
 	public static ID: string = 'workbench.editorinputs.ModelViewEditorInput';
+	public static Scheme: string = 'ModelViewEditorScheme';
 	private _container: HTMLElement;
 	private _dialogPaneContainer: HTMLElement;
 	private _dialogPane: DialogPane;
@@ -85,6 +87,13 @@ export class ModelViewInput extends EditorInput {
 
 	public getName(): string {
 		return this._title;
+	}
+
+	public getResource(): URI {
+		if (this._options.resourceName) {
+			return URI.from({ scheme: ModelViewInput.Scheme, path: this._options.resourceName });
+		}
+		return super.getResource();
 	}
 
 	public get container(): HTMLElement {
