@@ -2113,15 +2113,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-br/languagepack.png"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/languagepack.png"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-br/README.md"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/README.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-br/package.json"
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/package.json"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
