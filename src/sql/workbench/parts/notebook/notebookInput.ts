@@ -414,7 +414,7 @@ class DifferenceDetector {
 	private existingContent: string;
 	private existingContentTail: string;
 	private commonHead: string;
-	private commonHeadEndIndex: number;
+	private commonTail: string;
 	private textModel: ITextModel;
 
 	constructor(
@@ -432,7 +432,6 @@ class DifferenceDetector {
 		this.existingContent = undefined;
 		this.existingContentTail = undefined;
 		this.commonHead = undefined;
-		this.commonHeadEndIndex = undefined;
 	}
 
 	private loadContentToCompare(): void {
@@ -451,20 +450,26 @@ class DifferenceDetector {
 		if (!this.existingContent || this.existingContent === '' || this.updatedContent.length < 1000) {
 			return this.getAll();
 		}
-		this.commonHeadEndIndex = this.getCommonHeadStrEndIndex(this.existingContent, this.updatedContent);
-		if (!this.commonHeadEndIndex || this.commonHeadEndIndex < 0) {
+
+		let commonHeadEndIndex = this.getCommonHeadStrEndIndex(this.existingContent, this.updatedContent);
+		if (!commonHeadEndIndex || commonHeadEndIndex < 0) {
 			return this.getAll();
 		}
-		this.commonHead = this.existingContent.substr(0, this.commonHeadEndIndex + 1);
+		this.commonHead = this.existingContent.substr(0, commonHeadEndIndex + 1);
 		this.existingContentTail = this.existingContent.replace(this.commonHead, '');
 		this.updatedContentTail = this.updatedContent.replace(this.commonHead, '');
 		if (this.updatedContentTail.includes(this.existingContentTail)) {
 			return this.getAppended();
 		} else if (this.existingContentTail.includes(this.updatedContentTail)) {
 			return this.getRemoved();
-		} else {
+		}
+
+		let commonTailStartIndexFromEnd = this.getCommonTailStartIndexFromEnd(this.existingContent, this.updatedContent);
+		if (!commonTailStartIndexFromEnd || commonTailStartIndexFromEnd < 0) {
 			return this.getAll();
 		}
+		this.commonTail = this.existingContent.substr(this.existingContent.length - commonTailStartIndexFromEnd - 1);
+		return this.getRemovedAndAppended();
 	}
 
 	private getAll(): { range: Range, text: string } {
@@ -498,33 +503,48 @@ class DifferenceDetector {
 		};
 	}
 
+	private getRemovedAndAppended(): { range: Range, text: string } {
+		let contentToAppend: string = this.updatedContentTail.replace(this.commonTail, '');
+		let lineAndColumnStart = this.getEndLineAndColumnNum(this.commonHead);
+		let lineStart = lineAndColumnStart[0];
+		let columnStart = lineAndColumnStart[1] + 1;
+		let existingContentWithoutCommonTail: string = this.existingContent.replace(this.commonTail, '');
+		let lineAndColumnEnd = this.getEndLineAndColumnNum(existingContentWithoutCommonTail);
+		let lineEnd = lineAndColumnEnd[0];
+		let columnEnd = lineAndColumnEnd[1] + 1;
+		return {
+			range: new Range(lineStart, columnStart, lineEnd, columnEnd),
+			text: contentToAppend
+		};
+	}
+
 	private getEndLineAndColumnNum(str: string): number[] {
 		let lines: number = str.split(os.EOL).length;
 		let columns: number = str.length - str.lastIndexOf(os.EOL) - os.EOL.length;
 		return [lines, columns];
 	}
 
-	private getCommonHeadStrEndIndex(oldStr: string, newStr: string): number {
-		let commonStrEndIndex: number = -1;
-		let range: number[] = [0, oldStr.length < newStr.length ? oldStr.length - 1 : newStr.length - 1];
+	private getCommonHeadStrEndIndex(str1: string, str2: string): number {
+		let commonHeadStrEndIndex: number = -1;
+		let range: number[] = [0, str1.length < str2.length ? str1.length - 1 : str2.length - 1];
 		while (range[0] >= 0 && range[1] >= 0 && range[0] <= range[1]) {
 			let start = range[0];
 			let end = range[1];
 			if (start === end) {
-				if (oldStr[start] === newStr[start]) {
-					commonStrEndIndex = end;
+				if (str1[start] === str2[start]) {
+					commonHeadStrEndIndex = end;
 				}
 				break;
 			}
 
 			let mid = Math.floor((start + end) / 2);
 			let halfLength = mid - start + 1;
-			let os = oldStr.substr(start, halfLength);
-			let ns = newStr.substr(start, halfLength);
-			if (os === ns) {
+			let s1 = str1.substr(start, halfLength);
+			let s2 = str2.substr(start, halfLength);
+			if (s1 === s2) {
 				let nextOfMid = mid + 1;
-				if (oldStr[nextOfMid] !== newStr[nextOfMid]) {
-					commonStrEndIndex = mid;
+				if (str1[nextOfMid] !== str2[nextOfMid]) {
+					commonHeadStrEndIndex = mid;
 					break;
 				}
 				range = [nextOfMid, end];
@@ -533,6 +553,48 @@ class DifferenceDetector {
 				range = [start, mid];
 			}
 		}
-		return commonStrEndIndex;
+		return commonHeadStrEndIndex;
+	}
+
+	private getCommonTailStartIndexFromEnd(str1: string, str2: string): number {
+		let indexFromEnd: number = -1;
+		let rangeLength: number = str1.length < str2.length ? str1.length - 1 : str2.length - 1;
+		let str1Range: number[] = [str1.length - rangeLength - 1, str1.length - 1];
+		let str2Range: number[] = [str2.length - rangeLength - 1, str2.length - 1];
+
+		while (str1Range[0] >= 0 && str1Range[1] >= 0 && str1Range[0] <= str1Range[1]
+			&& str2Range[0] >= 0 && str2Range[1] >= 0 && str2Range[0] <= str2Range[1]
+		) {
+			let str1Start = str1Range[0];
+			let str1End = str1Range[1];
+			let str2Start = str2Range[0];
+			let str2End = str2Range[1];
+
+			if (str1Start === str1End && str2Start === str2End) {
+				if (str1[str1Start] === str2[str2Start]) {
+					indexFromEnd = str1.length - str1Start - 1;
+				}
+				break;
+			}
+
+			let str1Mid = Math.floor((str1Start + str1End) / 2);
+			let str1HalfLength = str1End - str1Mid + 1;
+			let str2Mid = Math.floor((str2Start + str2End) / 2);
+			let str2HalfLength = str2End - str2Mid + 1;
+			let s1 = str1.substr(str1Mid, str1HalfLength);
+			let s2 = str2.substr(str2Mid, str2HalfLength);
+			if (s1 === s2) {
+				if (str1Mid === 0 || str2Mid === 0 || str1[str1Mid - 1] !== str2[str2Mid - 1]) {
+					indexFromEnd = str1.length - str1Mid - 1;
+					break;
+				}
+				str1Range = [str1Start, str1Mid - 1];
+				str2Range = [str2Start, str2Mid - 1];
+			} else {
+				str1Range = [str1Mid + 1, str1End];
+				str2Range = [str2Mid + 1, str2End];
+			}
+		}
+		return indexFromEnd;
 	}
 }
