@@ -32,7 +32,8 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { AccountManagementTestService } from 'sqltest/stubs/accountManagementStubs';
-import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestEnvironmentService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -85,7 +86,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStore = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		workbenchEditorService = TypeMoq.Mock.ofType(WorkbenchEditorTestService);
 		editorGroupService = TypeMoq.Mock.ofType(EditorGroupTestService);
-		connectionStatusManager = new ConnectionStatusManager(capabilitiesService);
+		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new TestLogService(), TestEnvironmentService, new TestNotificationService());
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(ConnectionProviderStub);
 		let resourceProviderStub = new ResourceProviderStub();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
@@ -151,19 +152,20 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionManagementService = new ConnectionManagementService(
 			connectionStore.object,
 			connectionDialogService.object,
-			undefined,
-			undefined,
+			undefined, // IServerGroupController
+			undefined, // IInstantiationService
 			workbenchEditorService.object,
-			undefined,
+			undefined, // ITelemetryService
 			workspaceConfigurationServiceMock.object,
 			capabilitiesService,
-			undefined,
-			undefined,
+			undefined, // IQuickInputService
+			new TestNotificationService(),
 			resourceProviderStubMock.object,
-			undefined,
+			undefined, // IAngularEventingService
 			accountManagementService.object,
-			undefined,
-			undefined
+			new TestLogService(), // ILogService
+			undefined, // IStorageService
+			TestEnvironmentService
 		);
 		return connectionManagementService;
 	}
