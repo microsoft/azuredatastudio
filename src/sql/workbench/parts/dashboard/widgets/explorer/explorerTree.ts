@@ -33,6 +33,7 @@ import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILocalProgressService } from 'vs/platform/progress/common/progress';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
@@ -392,6 +393,7 @@ function getExplorerActions(element: TreeResource, instantiationService: IInstan
 		}
 	} else {
 		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL));
+		actions.push(instantiationService.createInstance(CustomExecuteCommandAction, NewNotebookAction.ID, NewNotebookAction.LABEL));
 
 		let action: IAction = instantiationService.createInstance(CustomExecuteCommandAction, RestoreAction.ID, RestoreAction.LABEL);
 		if (capabilitiesService.isFeatureAvailable(action, info)) {
