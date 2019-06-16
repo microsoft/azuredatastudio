@@ -127,6 +127,22 @@ export class TableTestEditor extends BaseEditor {
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnG'),
 					id: 'columnG'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnI'),
+					id: 'columnI'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnJ'),
+					id: 'columnJ'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnK'),
+					id: 'columnK'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnL'),
+					id: 'columnL'
 				}
 			];
 			const table = new SplicableTableView(container, columns);
@@ -207,7 +223,27 @@ export class SlickGridTableTest extends BaseEditor {
 					name: 'columnG',
 					id: 'columnG',
 					field: 'columnG'
-				}
+				},
+				{
+					name: 'columnI',
+					id: 'columnI',
+					field: 'columnI'
+				},
+				{
+					name: 'columnJ',
+					id: 'columnJ',
+					field: 'columnJ'
+				},
+				{
+					name: 'columnK',
+					id: 'columnK',
+					field: 'columnK'
+				},
+				{
+					name: 'columnL',
+					id: 'columnL',
+					field: 'columnL'
+				},
 			];
 			const collection = new VirtualizedCollection<IDataShape>(50, () => ({} as IDataShape), data.length, (offset, count) => timeout(500).then(() => Promise.resolve(data.slice(offset, offset + count))));
 			collection.setCollectionChangedCallback((startindex, count) => {
@@ -293,6 +329,22 @@ export class AsyncTableTestEditor extends BaseEditor {
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnG'),
 					id: 'columnG'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnI'),
+					id: 'columnI'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnJ'),
+					id: 'columnJ'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnK'),
+					id: 'columnK'
+				},
+				{
+					renderer: new ColumnRenderer<IDataShape>('columnL'),
+					id: 'columnL'
 				}
 			];
 			const table = new AsyncTableView(container, columns, { getRow: (index) => timeout(500).then(() => Promise.resolve(data[index])) });
