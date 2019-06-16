@@ -69,10 +69,10 @@ describe('SchemaCompareResult.start', function(): void {
 		await promise;
 		await result.start();
 
-		should(result.getComparisionResult() === undefined);
+		should(result.getComparisonResult() === undefined);
 		await result.execute();
 
-		should(result.getComparisionResult() !== undefined);
-		should(result.getComparisionResult().operationId !== undefined);
+		should(result.getComparisonResult() !== undefined);
+		should(result.getComparisonResult().operationId !== undefined);
 	});
 });

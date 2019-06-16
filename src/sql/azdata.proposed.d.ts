@@ -3992,6 +3992,13 @@ declare module 'azdata' {
 		 * Does this model view editor support save?
 		 */
 		readonly supportsSave?: boolean;
+
+		/**
+		 * Resource name for this editor
+		 * File icons might depend on file extension, language id or resource name
+		 * Resource name field needs to be set explitly if file icon for a particular Model View Editor depends on editor resource name
+		 */
+		readonly resourceName?: string;
 	}
 
 	export enum DataProviderType {

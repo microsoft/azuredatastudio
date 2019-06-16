@@ -1,7 +1,7 @@
 {
 	"name": "schema-compare",
-	"displayName": "SQL Server Schema Compare",
-	"description": "SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.",
+	"displayName": "%displayName%",
+	"description": "%description%",
 	"version": "0.3.0",
 	"publisher": "Microsoft",
 	"preview": true,
@@ -27,11 +27,25 @@
 		"commands": [
 			{
 				"command": "schemaCompare.start",
-				"title": "Schema Compare",
+				"title": "%schemaCompare.start%",
 				"icon": {
 					"light": "./images/light_icon.svg",
 					"dark": "./images/dark_icon.svg"
 				}
+			}
+		],
+		"languages": [
+			{
+				"id": "scmp",
+				"filenames": [
+					"Schema Compare"
+				],
+				"extensions": [
+					".scmp"
+				],
+				"aliases": [
+					"scmp"
+				]
 			}
 		],
 		"menus": {

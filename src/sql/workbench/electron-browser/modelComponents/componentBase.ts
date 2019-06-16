@@ -268,6 +268,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 
 	/// IComponent container-related implementation
 	public addToContainer(componentDescriptor: IComponentDescriptor, config: any, index?: number): void {
+		if (!componentDescriptor) {
+			return;
+		}
 		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
 			return;
 		}
@@ -288,6 +291,9 @@ export abstract class ContainerBase<T> extends ComponentBase {
 	}
 
 	public removeFromContainer(componentDescriptor: IComponentDescriptor): boolean {
+		if (!componentDescriptor) {
+			return false;
+		}
 		let index = this.items.findIndex(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type);
 		if (index >= 0) {
 			this.items.splice(index, 1);
