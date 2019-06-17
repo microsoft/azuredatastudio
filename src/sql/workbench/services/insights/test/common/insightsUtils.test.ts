@@ -21,6 +21,7 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
+	keybindingsResource: URI;
 	machineSettingsHome: string;
 	machineSettingsPath: string;
 	extensionDevelopmentLocationURI?: URI[];
