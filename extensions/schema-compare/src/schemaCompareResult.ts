@@ -66,7 +66,7 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
-    }
+	}
 
 	public async start(context: any) {
 		// if schema compare was launched from a db, set that as the source
@@ -75,6 +75,7 @@ export class SchemaCompareResult {
 			let ownerUri = await azdata.connection.getUriForConnection((profile.id));
 			this.sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Database,
+				serverDisplayName: `${profile.serverName} ${profile.userName}`,
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,

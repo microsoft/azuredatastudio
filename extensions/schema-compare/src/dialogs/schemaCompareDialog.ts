@@ -60,12 +60,12 @@ export class SchemaCompareDialog {
 	private connectionId: string;
 	private sourceDbEditable: string;
 	private taregtDbEditable: string;
-	private previousSource: string;
-	private previousTarget: string;
+	private previousSource: azdata.SchemaCompareEndpointInfo;
+	private previousTarget: azdata.SchemaCompareEndpointInfo;
 
 	constructor(private schemaCompareResult: SchemaCompareResult) {
-		this.previousSource = getEndpointName(schemaCompareResult.sourceEndpointInfo);
-		this.previousTarget = getEndpointName(schemaCompareResult.targetEndpointInfo);
+		this.previousSource = schemaCompareResult.sourceEndpointInfo;
+		this.previousTarget = schemaCompareResult.targetEndpointInfo;
 	}
 
 	protected initializeDialog(): void {
@@ -98,6 +98,7 @@ export class SchemaCompareDialog {
 		if (this.sourceIsDacpac) {
 			this.schemaCompareResult.sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
@@ -108,6 +109,7 @@ export class SchemaCompareDialog {
 
 			this.schemaCompareResult.sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Database,
+				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
@@ -118,6 +120,7 @@ export class SchemaCompareDialog {
 		if (this.targetIsDacpac) {
 			this.schemaCompareResult.targetEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
@@ -128,6 +131,7 @@ export class SchemaCompareDialog {
 
 			this.schemaCompareResult.targetEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Database,
+				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
@@ -143,18 +147,18 @@ export class SchemaCompareDialog {
 		// update source and target values that are displayed
 		this.schemaCompareResult.updateSourceAndTarget();
 
-		let updatedSourceName = getEndpointName(this.schemaCompareResult.sourceEndpointInfo);
-		let updatedTargetName = getEndpointName(this.schemaCompareResult.targetEndpointInfo);
+		const sourceEndpointChanged = this.endpointChanged(this.previousSource, this.schemaCompareResult.sourceEndpointInfo);
+		const targetEndpointChanged = this.endpointChanged(this.previousTarget, this.schemaCompareResult.targetEndpointInfo);
 
 		// show recompare message if it isn't the initial population of source and target
 		if (this.previousSource && this.previousTarget
-			&& (updatedSourceName.toLowerCase() !== this.previousSource.toLowerCase() || updatedTargetName.toLowerCase() !== this.previousTarget.toLowerCase())) {
+			&& (sourceEndpointChanged || targetEndpointChanged)) {
 			this.schemaCompareResult.setButtonsForRecompare();
-			let message = differentSourceMessage;
 
-			if (updatedSourceName.toLowerCase() !== this.previousSource.toLowerCase() && updatedTargetName.toLowerCase() !== this.previousTarget.toLowerCase()) {
+			let message = differentSourceMessage;
+			if (sourceEndpointChanged && targetEndpointChanged) {
 				message = differentSourceTargetMessage;
-			} else if (updatedTargetName !== this.previousTarget) {
+			} else if (targetEndpointChanged) {
 				message = differentTargetMessage;
 			}
 
@@ -164,6 +168,14 @@ export class SchemaCompareDialog {
 				}
 			});
 		}
+	}
+
+	private endpointChanged(previousEndpoint: azdata.SchemaCompareEndpointInfo, updatedEndpoint: azdata.SchemaCompareEndpointInfo): boolean {
+		if (previousEndpoint && updatedEndpoint) {
+			return getEndpointName(previousEndpoint).toLowerCase() !== getEndpointName(updatedEndpoint).toLowerCase()
+				|| previousEndpoint.serverDisplayName.toLocaleLowerCase() !== updatedEndpoint.serverDisplayName.toLowerCase();
+		}
+		return false;
 	}
 
 	protected async cancel(): Promise<void> {
@@ -517,15 +529,6 @@ export class SchemaCompareDialog {
 		let values = cons.map(c => {
 			count++;
 
-			// use previously selected server or current connection if there is one
-			if (endpointInfo && endpointInfo.serverName !== null
-				&& c.options.server === endpointInfo.serverName) {
-				idx = count;
-			}
-			else if (c.connectionId === this.connectionId) {
-				idx = count;
-			}
-
 			let usr = c.options.user;
 			let srv = c.options.server;
 
@@ -534,10 +537,24 @@ export class SchemaCompareDialog {
 			}
 
 			let finalName = `${srv} (${usr})`;
+			if (endpointInfo) {
+				console.error('finalname: ' + finalName + ' endpointname: ' + endpointInfo.serverDisplayName);
+			}
+			// use previously selected server or current connection if there is one
+			if (endpointInfo && endpointInfo.serverName !== null
+				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
+				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
+				idx = count;
+			}
+			else if (c.connectionId === this.connectionId) {
+				idx = count;
+			}
+
 			return {
 				connection: c,
 				displayName: finalName,
-				name: srv
+				name: srv,
+				user: usr
 			};
 		});
 

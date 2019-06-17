@@ -39,6 +39,7 @@ if (context.RunTest) {
 			let source: azdata.SchemaCompareEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
 				packageFilePath: dacpac1,
+				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
@@ -46,6 +47,7 @@ if (context.RunTest) {
 			let target: azdata.SchemaCompareEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
 				packageFilePath: dacpac2,
+				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
@@ -86,6 +88,7 @@ if (context.RunTest) {
 				let source: azdata.SchemaCompareEndpointInfo = {
 					endpointType: azdata.SchemaCompareEndpointType.Database,
 					packageFilePath: '',
+					serverDisplayName: '',
 					serverName: server.serverName,
 					databaseName: sourceDB,
 					ownerUri: ownerUri,
@@ -93,6 +96,7 @@ if (context.RunTest) {
 				let target: azdata.SchemaCompareEndpointInfo = {
 					endpointType: azdata.SchemaCompareEndpointType.Database,
 					packageFilePath: '',
+					serverDisplayName: '',
 					serverName: server.serverName,
 					databaseName: targetDB,
 					ownerUri: ownerUri,
@@ -137,6 +141,7 @@ if (context.RunTest) {
 				let source: azdata.SchemaCompareEndpointInfo = {
 					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
 					packageFilePath: dacpac1,
+					serverDisplayName: '',
 					serverName: '',
 					databaseName: '',
 					ownerUri: ownerUri,
@@ -144,6 +149,7 @@ if (context.RunTest) {
 				let target: azdata.SchemaCompareEndpointInfo = {
 					endpointType: azdata.SchemaCompareEndpointType.Database,
 					packageFilePath: '',
+					serverDisplayName: '',
 					serverName: server.serverName,
 					databaseName: targetDB,
 					ownerUri: ownerUri,
