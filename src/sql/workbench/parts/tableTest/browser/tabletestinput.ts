@@ -5,21 +5,6 @@
 import { EditorInput } from 'vs/workbench/common/editor';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 
-export class TableTestInput extends EditorInput {
-
-	constructor(public readonly count: number) {
-		super();
-	}
-
-	getTypeId(): string {
-		return 'tabletest';
-	}
-
-	resolve(): Promise<IEditorModel> {
-		return Promise.resolve(undefined);
-	}
-}
-
 export class SlickGridTableTestInput extends EditorInput {
 
 	constructor(public readonly count: number) {

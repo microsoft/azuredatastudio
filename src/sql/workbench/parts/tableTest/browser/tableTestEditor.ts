@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { SplicableTableView, IColumn, AsyncTableView } from 'sql/base/browser/ui/table/highPerf/tableView';
+import { IColumn, AsyncTableView } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { IColumnRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 import * as DOM from 'vs/base/browser/dom';
 import { IStringDictionary } from 'vs/base/common/collections';
@@ -13,7 +13,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { range } from 'vs/base/common/arrays';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { SlickGridTableTestInput, TableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
+import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
 import { timeout } from 'vs/base/common/async';
 import { AsyncDataProvider, VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
@@ -75,94 +75,6 @@ function generateData(count: number): Array<IDataShape> {
 
 const data = generateData(762000);
 
-export class TableTestEditor extends BaseEditor {
-	private tables: Array<{ table: SplicableTableView<IDataShape>, container: HTMLElement }> = [];
-	private dimension = new DOM.Dimension(0, 0);
-
-	static readonly ID = 'TableTestEditor';
-
-	constructor(
-		@ITelemetryService telemetryService: ITelemetryService,
-		@IThemeService themeService: IThemeService,
-		@IStorageService storageService: IStorageService
-	) {
-		super(TableTestEditor.ID, telemetryService, themeService, storageService);
-	}
-
-	protected createEditor(parent: HTMLElement): void {
-	}
-
-	async setInput(input: TableTestInput): Promise<void> {
-		for (const count of range(input.count)) {
-			const container = DOM.append(this.getContainer(), DOM.$('div'));
-			const columns: Array<IColumn<IDataShape, { element: HTMLElement }>> = [
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnA'),
-					id: 'columnA'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnB'),
-					id: 'columnB'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnC'),
-					id: 'columnC'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnD'),
-					id: 'columnD'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnE'),
-					id: 'columnE'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnF'),
-					id: 'columnF'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnH'),
-					id: 'columnH'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnG'),
-					id: 'columnG'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnI'),
-					id: 'columnI'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnJ'),
-					id: 'columnJ'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnK'),
-					id: 'columnK'
-				},
-				{
-					renderer: new ColumnRenderer<IDataShape>('columnL'),
-					id: 'columnL'
-				}
-			];
-			const table = new SplicableTableView(container, columns);
-			table.splice(0, table.length, data);
-			this.tables.push({ table, container });
-		}
-		this.layout(this.dimension);
-	}
-
-	layout(size: DOM.Dimension): void {
-		this.dimension = size;
-		const tableHeight = Math.floor(size.height / this.tables.length);
-		this.tables.forEach(t => {
-			t.container.style.height = tableHeight + 'px';
-			t.container.style.width = size.width + 'px';
-			t.table.layout(tableHeight, size.width);
-		});
-	}
-}
-
 export class SlickGridTableTest extends BaseEditor {
 	static readonly ID = 'SlickTableTestEditor';
 	private dimension = new DOM.Dimension(0, 0);
@@ -173,7 +85,7 @@ export class SlickGridTableTest extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService
 	) {
-		super(TableTestEditor.ID, telemetryService, themeService, storageService);
+		super(SlickGridTableTest.ID, telemetryService, themeService, storageService);
 	}
 
 	protected createEditor(container: HTMLElement): void {

@@ -5,9 +5,9 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IEditorRegistry, Extensions as EditorExtensions, EditorDescriptor } from 'vs/workbench/browser/editor';
-import { TableTestEditor, SlickGridTableTest, AsyncTableTestEditor } from 'sql/workbench/parts/tableTest/browser/tableTestEditor';
+import { SlickGridTableTest, AsyncTableTestEditor } from 'sql/workbench/parts/tableTest/browser/tableTestEditor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
-import { TableTestInput, SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
+import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionExtensions } from 'vs/workbench/common/actions';
 import { Action } from 'vs/base/common/actions';
@@ -16,31 +16,10 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(new EditorDescriptor(TableTestEditor, TableTestEditor.ID, 'QueryResults'), [new SyncDescriptor(TableTestInput)]);
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(new EditorDescriptor(SlickGridTableTest, SlickGridTableTest.ID, 'QueryResults'), [new SyncDescriptor(SlickGridTableTestInput)]);
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(new EditorDescriptor(AsyncTableTestEditor, AsyncTableTestEditor.ID, 'QueryResults'), [new SyncDescriptor(AsyncTableTestInput)]);
 
-class OpenTableTest extends Action {
-	static readonly ID = 'workbench.action.opentableTest';
-	static readonly LABEL = localize('opentabletest', "Open Table Test");
-
-	constructor(
-		id: string,
-		label: string,
-		@IEditorService private readonly editorService: IEditorService,
-		@IQuickInputService private readonly quickInputService: IQuickInputService
-	) {
-		super(id, label);
-	}
-
-	run(): Promise<boolean> {
-		return this.quickInputService.input().then(n => {
-			this.editorService.openEditor(new TableTestInput(Number(n)));
-		}).then(() => true);
-	}
-}
 
 class AsyncOpenTableTest extends Action {
 	static readonly ID = 'workbench.action.AsyncopentableTest';
@@ -82,7 +61,5 @@ class SlickOpenTableTest extends Action {
 	}
 }
 
-
-Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(new SyncActionDescriptor(OpenTableTest, OpenTableTest.ID, OpenTableTest.LABEL), 'Open table test');
 Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(new SyncActionDescriptor(SlickOpenTableTest, SlickOpenTableTest.ID, SlickOpenTableTest.LABEL), 'Open slick table test');
 Registry.as<IWorkbenchActionRegistry>(WorkbenchActionExtensions.WorkbenchActions).registerWorkbenchAction(new SyncActionDescriptor(AsyncOpenTableTest, AsyncOpenTableTest.ID, AsyncOpenTableTest.LABEL), 'Open async table test');
