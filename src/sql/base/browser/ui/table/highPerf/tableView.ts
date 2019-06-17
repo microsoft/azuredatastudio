@@ -5,7 +5,7 @@
 
 import 'vs/css!./table';
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, combinedDisposable } from 'vs/base/common/lifecycle';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
 import { Event } from 'vs/base/common/event';
 import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions } from 'vs/base/common/scrollable';
@@ -16,8 +16,12 @@ import { isWindows } from 'vs/base/common/platform';
 import * as browser from 'vs/base/browser/browser';
 import { Range, IRange } from 'vs/base/common/range';
 import { getOrDefault } from 'vs/base/common/objects';
+
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { IColumnRenderer, ITableDataSource } from 'sql/base/browser/ui/table/highPerf/table';
+import { IColumnRenderer, ITableDataSource, ITableMouseEvent } from 'sql/base/browser/ui/table/highPerf/table';
+import { memoize } from 'vs/base/common/decorators';
+import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
+import { firstIndex } from 'vs/base/common/arrays';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -26,7 +30,7 @@ export interface IAriaSetProvider<T> {
 
 export interface ITableViewOptions<T> {
 	rowHeight?: number;
-
+	mouseSupport?: boolean;
 }
 
 const DefaultOptions = {
@@ -38,6 +42,28 @@ export interface IColumn<T, TTemplateData> {
 	renderer: IColumnRenderer<T, TTemplateData>;
 	width?: number;
 	id: string;
+	name: string;
+}
+
+interface IInternalColumn<T, TTemplateData> extends IColumn<T, TTemplateData> {
+	domNode?: HTMLElement;
+}
+
+interface ISashItem {
+	sash: Sash;
+	disposable: IDisposable;
+}
+
+interface ISashDragState {
+	current: number;
+	index: number;
+}
+
+interface ISashEvent<T> {
+	sash: Sash;
+	column: IInternalColumn<T, any>;
+	start: number;
+	current: number;
 }
 
 function removeFromParent(element: HTMLElement): void {
@@ -82,16 +108,47 @@ export class AsyncTableView<T> implements IDisposable {
 	private rowHeight: number;
 	private _length: number = 0;
 
+	private columns: IInternalColumn<T, any>[];
+	private columnSashs: ISashItem[] = [];
+	private sashDragState: ISashDragState;
+	private headerContainer: HTMLElement;
+
+	private headerHeight = 22;
+
 	private disposables: IDisposable[];
 
 	get contentHeight(): number { return this.length * this.rowHeight; }
 
 	get onDidScroll(): Event<ScrollEvent> { return this.scrollableElement.onScroll; }
 
+	private _orthogonalStartSash: Sash | undefined;
+	get orthogonalStartSash(): Sash | undefined { return this._orthogonalStartSash; }
+	set orthogonalStartSash(sash: Sash | undefined) {
+		for (const sashItem of this.columnSashs) {
+			sashItem.sash.orthogonalStartSash = sash;
+		}
+
+		this._orthogonalStartSash = sash;
+	}
+
+	private _orthogonalEndSash: Sash | undefined;
+	get orthogonalEndSash(): Sash | undefined { return this._orthogonalEndSash; }
+	set orthogonalEndSash(sash: Sash | undefined) {
+		for (const sashItem of this.columnSashs) {
+			sashItem.sash.orthogonalEndSash = sash;
+		}
+
+		this._orthogonalEndSash = sash;
+	}
+
+	get sashes(): Sash[] {
+		return this.columnSashs.map(s => s.sash);
+	}
+
 	constructor(
 		container: HTMLElement,
-		private columns: IColumn<T, any>[],
-		private dataSource: ITableDataSource<T>,
+		columns: IColumn<T, any>[],
+		private readonly dataSource: ITableDataSource<T>,
 		options: ITableViewOptions<T> = DefaultOptions as ITableViewOptions<T>,
 	) {
 		for (const column of columns) {
@@ -99,15 +156,18 @@ export class AsyncTableView<T> implements IDisposable {
 		}
 
 		this.cache = new CellCache(this.renderers);
+		this.columns = columns.slice();
 
 		this.domNode.className = 'monaco-perftable';
 
 		DOM.addClass(this.domNode, this.domId);
 		this.domNode.tabIndex = 0;
 
+		DOM.toggleClass(this.domNode, 'mouse-support', typeof options.mouseSupport === 'boolean' ? options.mouseSupport : true);
+
 		this.ariaSetProvider = { getSetSize: (e, i, length) => length, getPosInSet: (_, index) => index + 1 };
 
-		this.rowHeight = getOrDefault(options, (o) => o.rowHeight, DefaultOptions.rowHeight);
+		this.rowHeight = getOrDefault(options, o => o.rowHeight, DefaultOptions.rowHeight);
 		this.columns = this.columns.map(c => {
 			c.width = c.width || DefaultOptions.columnWidth;
 			return c;
@@ -122,6 +182,8 @@ export class AsyncTableView<T> implements IDisposable {
 			useShadows: true
 		});
 
+		this.renderHeader(this.domNode);
+
 		this.domNode.appendChild(this.scrollableElement.getDomNode());
 		container.appendChild(this.domNode);
 
@@ -134,6 +196,77 @@ export class AsyncTableView<T> implements IDisposable {
 		domEvent(this.scrollableElement.getDomNode(), 'scroll')
 			(e => (e.target as HTMLElement).scrollTop = 0, null, this.disposables);
 
+		this.layout();
+	}
+
+	private renderHeader(container: HTMLElement): void {
+		this.headerContainer = DOM.append(container, DOM.$('.monaco-perftable-header'));
+		const sashContainer = DOM.append(this.headerContainer, DOM.$('.sash-container'));
+		this.headerContainer.style.height = this.headerHeight + 'px';
+		const element = this.columns.reduce((p, c) => {
+			p[c.id] = c.name;
+			return p;
+		}, Object.create(null));
+
+		for (const column of this.columns) {
+			this.createHeaderSash(sashContainer, column);
+			column.domNode = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell'));
+			column.domNode.style.width = column.width + 'px';
+			column.renderer.renderHeader(column.domNode, element, column.width);
+		}
+	}
+
+	private createHeaderSash(sashContainer: HTMLElement, column: IColumn<T, any>): void {
+		const layoutProvider = {
+			getVerticalSashLeft: (sash: Sash) => {
+				let left = 0;
+				for (const c of this.columns) {
+					left += c.width;
+					if (column === c) {
+						break;
+					}
+				}
+				return left;
+			}
+		};
+		const sash = new Sash(sashContainer, layoutProvider, {
+			orientation: Orientation.VERTICAL,
+			orthogonalStartSash: this.orthogonalStartSash,
+			orthogonalEndSash: this.orthogonalEndSash
+		});
+
+		const sashEventMapper = (e: IBaseSashEvent) => ({ sash, column, start: e.startX, current: e.currentX });
+
+		const onStart = Event.map(sash.onDidStart, sashEventMapper);
+		const onStartDisposable = onStart(this.onSashStart, this);
+		const onChange = Event.map(sash.onDidChange, sashEventMapper);
+		const onChangeDisposable = onChange(this.onSashChange, this);
+		// const onEnd = Event.map(sash.onDidEnd, () => firstIndex(this.columnSashs, item => item.sash === sash));
+		// const onEndDisposable = onEnd(this.onSashEnd, this);
+		// const onDidReset = Event.map(sash.onDidEnd, () => firstIndex(this.columnSashs, item => item.sash === sash));
+		// const onDidResetDisposable = onDidReset(this.onDidSashReset, this);
+
+		const disposable = combinedDisposable([onStartDisposable, onChangeDisposable, /*onEndDisposable, onDidResetDisposable, */sash]);
+		const sashItem: ISashItem = { sash, disposable };
+		this.columnSashs.push(sashItem);
+	}
+
+	private onSashStart({ sash, start }: ISashEvent<T>): void {
+		const index = firstIndex(this.columnSashs, item => item.sash === sash);
+		this.sashDragState = { current: start, index };
+	}
+
+	private onSashChange({ column, current }: ISashEvent<T>): void {
+		const { index } = this.sashDragState;
+		const previous = this.sashDragState.current;
+		this.sashDragState.current = current;
+		const delta = current - previous;
+		column.width = column.width + delta;
+		column.domNode.style.width = column.width + 'px';
+		for (const row of this.visibleRows) {
+			row.cells[index].domNode.style.width = column.width + 'px';
+		}
+		this.updateScrollWidth();
 		this.layout();
 	}
 
@@ -223,13 +356,17 @@ export class AsyncTableView<T> implements IDisposable {
 			const transform = `translate3d(-${renderLeft}px, -${renderTop}px, 0px)`;
 			this.rowsContainer.style.transform = transform;
 			this.rowsContainer.style.webkitTransform = transform;
+			this.headerContainer.style.transform = `translate3d(-${renderLeft}px, 0px, 0px)`;
+			this.headerContainer.style.webkitTransform = `translate3d(-${renderLeft}px, 0px, 0px)`;
 
 			if (canUseTranslate3d !== this.canUseTranslate3d) {
 				this.rowsContainer.style.left = '0';
+				this.headerContainer.style.left = '0';
 				this.rowsContainer.style.top = '0';
 			}
 		} else {
 			this.rowsContainer.style.left = `-${renderLeft}px`;
+			this.headerContainer.style.left = `-${renderLeft}px`;
 			this.rowsContainer.style.top = `-${renderTop}px`;
 
 			if (canUseTranslate3d !== this.canUseTranslate3d) {
@@ -250,7 +387,7 @@ export class AsyncTableView<T> implements IDisposable {
 		const scrollDimensions: INewScrollDimensions = {
 			height: typeof height === 'number' ? height : DOM.getContentHeight(this.domNode)
 		};
-
+		scrollDimensions.height = scrollDimensions.height - this.headerHeight;
 		if (this.scrollableElementUpdateDisposable) {
 			this.scrollableElementUpdateDisposable.dispose();
 			this.scrollableElementUpdateDisposable = null;
@@ -266,6 +403,8 @@ export class AsyncTableView<T> implements IDisposable {
 				width: typeof width === 'number' ? width : DOM.getContentWidth(this.domNode)
 			});
 		}
+
+		this.columnSashs.forEach(s => s.sash.layout());
 	}
 
 	getScrollTop(): number {
@@ -297,7 +436,6 @@ export class AsyncTableView<T> implements IDisposable {
 
 	private insertRowInDOM(index: number, beforeElement: HTMLElement | null): void {
 		let row = this.visibleRows[index];
-		// need to check if row doesn't exist
 
 		if (!row) {
 			row = {
@@ -390,6 +528,43 @@ export class AsyncTableView<T> implements IDisposable {
 		removeFromParent(item.row);
 
 		delete this.visibleRows[index];
+	}
+
+	@memoize get onMouseClick(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'click'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseDblClick(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'dblclick'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseMiddleClick(): Event<ITableMouseEvent<T>> { return Event.filter(Event.map(domEvent(this.domNode, 'auxclick'), e => this.toMouseEvent(e as MouseEvent)), e => e.browserEvent.button === 1); }
+	@memoize get onMouseUp(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseup'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseDown(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mousedown'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseOver(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseover'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseMove(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mousemove'), e => this.toMouseEvent(e)); }
+	@memoize get onMouseOut(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseout'), e => this.toMouseEvent(e)); }
+	@memoize get onContextMenu(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'contextmenu'), e => this.toMouseEvent(e)); }
+
+	private toMouseEvent(browserEvent: MouseEvent): ITableMouseEvent<T> {
+		const index = this.getItemIndexFromEventTarget(browserEvent.target || null);
+		const item = typeof index === 'undefined' ? undefined : this.visibleRows[index];
+		const element = item && item.element;
+		return { browserEvent, index, element };
+	}
+
+	private getItemIndexFromEventTarget(target: EventTarget | null): number | undefined {
+		let element: HTMLElement | null = target as (HTMLElement | null);
+
+		while (element instanceof HTMLElement && element !== this.rowsContainer) {
+			const rawIndex = element.getAttribute('data-index');
+
+			if (rawIndex) {
+				const index = Number(rawIndex);
+
+				if (!isNaN(index)) {
+					return index;
+				}
+			}
+
+			element = element.parentElement;
+		}
+
+		return undefined;
 	}
 
 	elementTop(index: number): number {

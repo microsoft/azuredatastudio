@@ -29,6 +29,10 @@ class ColumnRenderer<IDataShape> implements IColumnRenderer<IDataShape, { elemen
 		return { element };
 	}
 
+	renderHeader(container: HTMLElement, element: IDataShape, width: number | undefined) {
+		container.innerText = element[this.key as string];
+	}
+
 	renderElement(element: IDataShape, index: number, templateData: { element: HTMLElement; }, width: number): void {
 		templateData.element.innerText = element[this.key as string] as string;
 	}
@@ -165,6 +169,9 @@ export class SlickGridTableTest extends BaseEditor {
 				{
 					columns,
 					dataProvider: new AsyncDataProvider<IDataShape>(collection)
+				},
+				{
+					syncColumnCellResize: true
 				}
 			);
 			this.splitview.addView({
@@ -212,51 +219,63 @@ export class AsyncTableTestEditor extends BaseEditor {
 			const columns: Array<IColumn<IDataShape, { element: HTMLElement }>> = [
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnA'),
-					id: 'columnA'
+					id: 'columnA',
+					name: 'columnA'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnB'),
-					id: 'columnB'
+					id: 'columnB',
+					name: 'columnB'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnC'),
-					id: 'columnC'
+					id: 'columnC',
+					name: 'columnC'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnD'),
-					id: 'columnD'
+					id: 'columnD',
+					name: 'columnD'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnE'),
-					id: 'columnE'
+					id: 'columnE',
+					name: 'columnE'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnF'),
-					id: 'columnF'
+					id: 'columnF',
+					name: 'columnF'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnH'),
-					id: 'columnH'
+					id: 'columnH',
+					name: 'columnH'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnG'),
-					id: 'columnG'
+					id: 'columnG',
+					name: 'columnG'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnI'),
-					id: 'columnI'
+					id: 'columnI',
+					name: 'columnI'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnJ'),
-					id: 'columnJ'
+					id: 'columnJ',
+					name: 'columnJ'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnK'),
-					id: 'columnK'
+					id: 'columnK',
+					name: 'columnK'
 				},
 				{
 					renderer: new ColumnRenderer<IDataShape>('columnL'),
-					id: 'columnL'
+					id: 'columnL',
+					name: 'columnL'
 				}
 			];
 			const table = new AsyncTableView(container, columns, { getRow: (index) => Promise.resolve(data[index]) });

@@ -20,7 +20,7 @@
 }
 
 .monaco-perftable > .monaco-scrollable-element {
-	height: 100%;
+	height: calc(100% - 22px);
 }
 
 .monaco-perftable .monaco-perftable-cell {
@@ -61,4 +61,24 @@
 /* Focus */
 .monaco-perftable.element-focused, .monaco-perftable.selection-single, .monaco-perftable.selection-multiple {
 	outline: 0 !important;
+}
+
+.monaco-perftable-header {
+	position: relative;
+	width: 100%;
+}
+
+.monaco-perftable-header-cell {
+	display: inline-block;
+}
+
+.monaco-perftable .sash-container {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.monaco-perftable .sash-container > .monaco-sash {
+	pointer-events: initial;
 }
