@@ -108,8 +108,8 @@ export interface IEnvironmentService {
 	settingsResource: URI;
 	keybindingsResource: URI;
 
-	machineSettingsHome: string;
-	machineSettingsPath: string;
+	machineSettingsHome: URI;
+	machineSettingsResource: URI;
 
 	settingsSearchBuildId?: number;
 	settingsSearchUrl?: string;
