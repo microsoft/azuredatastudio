@@ -460,5 +460,5 @@ MenuRegistry.appendMenuItem(MenuId.GlobalActivity, {
 		id: VIEWLET_ID,
 		title: localize('showExtensions', "Extensions")
 	},
-	order: 2
+	order: 3
 });
