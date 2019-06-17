@@ -112,8 +112,7 @@ export class NotebookEditorModel extends EditorModel {
 		let updatedContent = JSON.stringify(notebookModel.toJSON(), undefined, '    ').replace(/\n/g, os.EOL);
 		let existingContent = this.textEditorModel.textEditorModel.getValue();
 
-		let detector: DifferenceDetector = new DifferenceDetector();
-		let diff = detector.getDifference(existingContent, updatedContent);
+		let diff = DifferenceDetector.getDiff(existingContent, updatedContent);
 		if (diff) {
 			this.textEditorModel.textEditorModel.applyEdits([{
 				range: diff.range,
@@ -418,19 +417,13 @@ class DifferenceDetector {
 	private existingContentTail: string;
 	private commonHead: string;
 	private commonTail: string;
-	private textModel: ITextModel;
 
-	private initialize(): void {
-		this.updatedContent = undefined;
-		this.updatedContentTail = undefined;
-		this.existingContent = undefined;
-		this.existingContentTail = undefined;
-		this.commonHead = undefined;
-		this.commonTail = undefined;
+	public static getDiff(existingContent: string, updatedContent: string): { range: Range, text: string } {
+		let instance: DifferenceDetector = new DifferenceDetector();
+		return instance.getDifference(existingContent, updatedContent);
 	}
 
-	public getDifference(existingContent: string, updatedContent: string): { range: Range, text: string } {
-		this.initialize();
+	private getDifference(existingContent: string, updatedContent: string): { range: Range, text: string } {
 		this.existingContent = existingContent;
 		this.updatedContent = updatedContent;
 
@@ -463,8 +456,9 @@ class DifferenceDetector {
 	}
 
 	private getAll(): { range: Range, text: string } {
-		let endLine = this.textModel.getLineCount();
-		let endCol = this.textModel.getLineMaxColumn(endLine);
+		let lineAndColumn = this.getEndLineAndColumnNum(this.existingContent);
+		let endLine = lineAndColumn[0];
+		let endCol = lineAndColumn[1] + 1;
 		return { range: new Range(1, 1, endLine, endCol), text: this.updatedContent };
 	}
 
