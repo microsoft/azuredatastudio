@@ -510,7 +510,6 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		};
 
 		this.modeElement = this.updateElement(this.modeElement, props, 'status.editor.mode', nls.localize('status.editor.mode', "Editor Language"), StatusbarAlignment.RIGHT, 100.1);
-
 	}
 
 	private updateMetadataElement(text: string | undefined): void {
@@ -529,7 +528,6 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		};
 
 		this.metadataElement = this.updateElement(this.metadataElement, props, 'status.editor.info', nls.localize('status.editor.info', "File Information"), StatusbarAlignment.RIGHT, 100);
-
 	}
 
 	private updateElement(element: IStatusbarEntryAccessor | null, props: IStatusbarEntry, id: string, name: string, alignment: StatusbarAlignment, priority: number): IStatusbarEntryAccessor | null {
@@ -1029,7 +1027,7 @@ export class ChangeModeAction extends Action {
 					if (textModel) {
 						const resource = toResource(activeEditor.input, { supportSideBySide: SideBySideEditor.MASTER }); // {{SQL CARBON EDIT}} @anthonydresser reference input rather than activeeditor directly
 						if (resource) {
-							languageSelection = this.modeService.createByFilepathOrFirstLine(resource.fsPath, textModel.getLineContent(1));
+							languageSelection = this.modeService.createByFilepathOrFirstLine(resource, textModel.getLineContent(1));
 						}
 					}
 				} else {
@@ -1052,7 +1050,7 @@ export class ChangeModeAction extends Action {
 	private configureFileAssociation(resource: URI): void {
 		const extension = extname(resource);
 		const base = basename(resource);
-		const currentAssociation = this.modeService.getModeIdByFilepathOrFirstLine(base);
+		const currentAssociation = this.modeService.getModeIdByFilepathOrFirstLine(resource.with({ path: base }));
 
 		const languages = this.modeService.getRegisteredLanguageNames();
 		const picks: IQuickPickItem[] = languages.sort().map((lang, index) => {
@@ -1198,13 +1196,16 @@ export class ChangeEncodingAction extends Action {
 
 		await timeout(50); // quick open is sensitive to being opened so soon after another
 
-		const resource = toResource(activeControl!.input, { supportSideBySide: SideBySideEditor.MASTER });
-		if (!resource || !this.fileService.canHandleResource(resource)) {
-			return null; // encoding detection only possible for resources the file service can handle
+		const resource = toResource(activeControl.input, { supportSideBySide: SideBySideEditor.MASTER });
+		if (!resource || (!this.fileService.canHandleResource(resource) && resource.scheme !== Schemas.untitled)) {
+			return null; // encoding detection only possible for resources the file service can handle or that are untitled
 		}
 
-		const content = await this.textFileService.read(resource, { autoGuessEncoding: true, acceptTextOnly: true });
-		const guessedEncoding = content.encoding;
+		let guessedEncoding: string | undefined = undefined;
+		if (this.fileService.canHandleResource(resource)) {
+			const content = await this.textFileService.read(resource, { autoGuessEncoding: true, acceptTextOnly: true });
+			guessedEncoding = content.encoding;
+		}
 
 		const isReopenWithEncoding = (action === reopenWithEncodingPick);
 
