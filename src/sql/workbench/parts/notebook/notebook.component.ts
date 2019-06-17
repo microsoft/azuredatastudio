@@ -401,7 +401,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		let addTextCellButton = new AddCellAction('notebook.AddTextCell', localize('text', "Text"), 'notebook-button icon-add');
 		addTextCellButton.cellType = CellTypes.Markdown;
 
-		this._runAllCellsAction = new RunAllCellsAction('notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
+		this._runAllCellsAction = this.instantiationService.createInstance(RunAllCellsAction, 'notebook.runAllCells', localize('runAll', "Run Cells"), 'notebook-button icon-run-cells');
 		let clearResultsButton = new ClearAllOutputsAction('notebook.ClearAllOutputs', localize('clearResults', "Clear Results"), 'notebook-button icon-clear-results');
 
 		this._trustedAction = this.instantiationService.createInstance(TrustedAction, 'notebook.Trusted');
