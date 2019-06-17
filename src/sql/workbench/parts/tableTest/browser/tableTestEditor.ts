@@ -245,7 +245,7 @@ export class SlickGridTableTest extends BaseEditor {
 					field: 'columnL'
 				},
 			];
-			const collection = new VirtualizedCollection<IDataShape>(50, () => ({} as IDataShape), data.length, (offset, count) => timeout(500).then(() => Promise.resolve(data.slice(offset, offset + count))));
+			const collection = new VirtualizedCollection<IDataShape>(50, () => ({} as IDataShape), data.length, (offset, count) => Promise.resolve(data.slice(offset, offset + count)));
 			collection.setCollectionChangedCallback((startindex, count) => {
 				table.invalidateRows(range(startindex, startindex + count), true);
 			});
@@ -347,7 +347,7 @@ export class AsyncTableTestEditor extends BaseEditor {
 					id: 'columnL'
 				}
 			];
-			const table = new AsyncTableView(container, columns, { getRow: (index) => timeout(500).then(() => Promise.resolve(data[index])) });
+			const table = new AsyncTableView(container, columns, { getRow: (index) => Promise.resolve(data[index]) });
 			table.length = data.length;
 			this.splitview.addView({
 				element: container,

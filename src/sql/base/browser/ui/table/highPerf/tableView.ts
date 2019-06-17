@@ -585,9 +585,11 @@ export class AsyncTableView<T> implements IDisposable {
 	}
 
 	private getRenderRange(renderTop: number, renderHeight: number): IRange {
+		const start = Math.floor(renderTop / this.rowHeight);
+		const end = Math.min(Math.ceil((renderTop + renderHeight) / this.rowHeight), this.length);
 		return {
-			start: Math.floor(renderTop / this.rowHeight),
-			end: Math.ceil((renderTop + renderHeight - 1) / this.rowHeight)
+			start,
+			end
 		};
 	}
 
@@ -724,15 +726,10 @@ export class AsyncTableView<T> implements IDisposable {
 			};
 			row.datapromise = createCancelablePromise(token => {
 				return this.dataSource.getRow(index).then(d => {
-					if (!token.isCancellationRequested) {
-						row.element = d;
-						row.datapromise = null;
-					}
+					row.element = d;
 				});
 			});
-			row.datapromise.catch(() => {
-				/* its fine to ignore a canceled Promise*/
-			});
+			row.datapromise.finally(() => row.datapromise = null);
 			this.visibleRows[index] = row;
 		}
 
@@ -791,6 +788,7 @@ export class AsyncTableView<T> implements IDisposable {
 
 	private removeRowFromDOM(index: number): void {
 		const item = this.visibleRows[index];
+
 		if (item.datapromise) {
 			item.datapromise.cancel();
 		}
@@ -811,7 +809,7 @@ export class AsyncTableView<T> implements IDisposable {
 	}
 
 	elementTop(index: number): number {
-		return Math.floor((index - 1) * this.rowHeight);
+		return Math.floor(index * this.rowHeight);
 	}
 
 	getElementDomId(index: number): string {
