@@ -148,11 +148,11 @@ export class SchemaCompareDialog {
 
 		// show recompare message if it isn't the initial population of source and target
 		if (this.previousSource && this.previousTarget
-			&& (updatedSourceName !== this.previousSource || updatedTargetName !== this.previousTarget)) {
+			&& (updatedSourceName.toLowerCase() !== this.previousSource.toLowerCase() || updatedTargetName.toLowerCase() !== this.previousTarget.toLowerCase())) {
 			this.schemaCompareResult.setButtonsForRecompare();
 			let message = differentSourceMessage;
 
-			if (updatedSourceName !== this.previousSource && updatedTargetName !== this.previousTarget) {
+			if (updatedSourceName.toLowerCase() !== this.previousSource.toLowerCase() && updatedTargetName.toLowerCase() !== this.previousTarget.toLowerCase()) {
 				message = differentSourceTargetMessage;
 			} else if (updatedTargetName !== this.previousTarget) {
 				message = differentTargetMessage;
@@ -284,7 +284,7 @@ export class SchemaCompareDialog {
 		currentButton.onDidClick(async (click) => {
 			// file browser should open where the current dacpac is or the appropriate default folder
 			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
-			let defaultUri = endpoint && endpoint.packageFilePath ? endpoint.packageFilePath : rootPath;
+			let defaultUri = endpoint && endpoint.packageFilePath && existsSync(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
 
 			let fileUris = await vscode.window.showOpenDialog(
 				{
