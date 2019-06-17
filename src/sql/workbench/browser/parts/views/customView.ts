@@ -45,7 +45,7 @@ import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
-import { fillInActionBarActions, fillInContextMenuActions, ContextAwareMenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { ContextAwareMenuEntryActionViewItem, createAndFillInActionBarActions, createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TitleMenus implements IDisposable {
@@ -75,7 +75,7 @@ class TitleMenus implements IDisposable {
 		const updateActions = () => {
 			this.titleActions = [];
 			this.titleSecondaryActions = [];
-			fillInActionBarActions(titleMenu, undefined, { primary: this.titleActions, secondary: this.titleSecondaryActions });
+			createAndFillInActionBarActions(titleMenu, undefined, { primary: this.titleActions, secondary: this.titleSecondaryActions });
 			this._onDidChangeTitle.fire();
 		};
 
@@ -854,7 +854,7 @@ class TreeMenus extends Disposable implements IDisposable {
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		fillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
 
 		menu.dispose();
 		contextKeyService.dispose();
