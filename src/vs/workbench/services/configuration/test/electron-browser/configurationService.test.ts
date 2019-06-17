@@ -45,6 +45,7 @@ import { ConfigurationFileService } from 'vs/workbench/services/configuration/no
 import { IRemoteAgentEnvironment } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { IConfigurationCache } from 'vs/workbench/services/configuration/common/configuration';
 import { VSBuffer } from 'vs/base/common/buffer';
+import { SignService } from 'vs/platform/sign/browser/signService';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
@@ -94,6 +95,16 @@ function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configP
 
 
 suite('WorkspaceContextService - Folder', () => {
+	let workspaceName = `testWorkspace${uuid.generateUuid()}`, parentResource: string, workspaceResource: string, workspaceContextService: IWorkspaceContextService;
+
+	setup(() => {
+		// {{SQL CARBON EDIT}} - Remove tests
+	});
+
+	teardown(() => {
+		// {{SQL CARBON EDIT}} - Remove tests
+	});
+
 	test('getWorkspace()', () => {
 		// {{SQL CARBON EDIT}} - Remove tests
 		assert.equal(0, 0);
