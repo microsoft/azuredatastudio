@@ -109,12 +109,15 @@ export class NotebookEditorModel extends EditorModel {
 			return;
 		}
 
-		let detector: DifferenceDetector = new DifferenceDetector(notebookModel, this.textEditorModel);
-		let info = detector.getDifference();
-		if (info) {
+		let updatedContent = JSON.stringify(notebookModel.toJSON(), undefined, '    ').replace(/\n/g, os.EOL);
+		let existingContent = this.textEditorModel.textEditorModel.getValue();
+
+		let detector: DifferenceDetector = new DifferenceDetector();
+		let diff = detector.getDifference(existingContent, updatedContent);
+		if (diff) {
 			this.textEditorModel.textEditorModel.applyEdits([{
-				range: info.range,
-				text: info.text
+				range: diff.range,
+				text: diff.text
 			}]);
 		}
 	}
@@ -417,33 +420,20 @@ class DifferenceDetector {
 	private commonTail: string;
 	private textModel: ITextModel;
 
-	constructor(
-		private notebookModel: INotebookModel,
-		private textEditorModel: TextFileEditorModel | UntitledEditorModel
-	) {
-		if (this.textEditorModel && this.textEditorModel.textEditorModel) {
-			this.textModel = this.textEditorModel.textEditorModel;
-		}
-	}
-
 	private initialize(): void {
 		this.updatedContent = undefined;
 		this.updatedContentTail = undefined;
 		this.existingContent = undefined;
 		this.existingContentTail = undefined;
 		this.commonHead = undefined;
+		this.commonTail = undefined;
 	}
 
-	private loadContentToCompare(): void {
-		if (this.notebookModel && this.textModel) {
-			this.updatedContent = JSON.stringify(this.notebookModel.toJSON(), undefined, '    ').replace(/\n/g, os.EOL);
-			this.existingContent = this.textModel.getValue();
-		}
-	}
-
-	public getDifference(): { range: Range, text: string } {
+	public getDifference(existingContent: string, updatedContent: string): { range: Range, text: string } {
 		this.initialize();
-		this.loadContentToCompare();
+		this.existingContent = existingContent;
+		this.updatedContent = updatedContent;
+
 		if (this.existingContent === this.updatedContent) {
 			return undefined;
 		}
