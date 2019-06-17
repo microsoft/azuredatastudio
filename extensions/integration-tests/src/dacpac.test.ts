@@ -11,8 +11,8 @@ import * as utils from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 import { context } from './testContext';
-import assert = require('assert');
 import { getStandaloneServer } from './testConfig';
+import assert = require('assert');
 
 if (context.RunTest) {
 	suite('Dacpac integration test suite', () => {
@@ -104,7 +104,7 @@ if (context.RunTest) {
 }
 
 async function assertDatabaseCreationResult(databaseName: string, ownerUri: string): Promise<void> {
-	let retryCount = 20; // database can take a long time to get created
+	let retryCount = 24; // wait up to two minutes since database can take a long time to get created
 	let result: azdata.SimpleExecuteResult;
 	while (retryCount > 0) {
 		--retryCount;
@@ -126,15 +126,15 @@ async function assertDatabaseCreationResult(databaseName: string, ownerUri: stri
 }
 
 async function assertFileGenerationResult(filepath: string): Promise<void> {
-	let retry = 20; // file can take quite a long time to get created
+	let retryCount = 24; // wait up to two minutes since file can take quite a long time to get created
 	let exists = false;
-	while (retry > 0 && !exists) {
+	while (retryCount > 0 && !exists) {
+		--retryCount;
 		exists = fs.existsSync(filepath);
 		await utils.sleep(5000);
-		--retry;
 	}
 
-	assert(exists, `file ${filepath} is expected to be present`);
-	assert(fs.readFileSync(filepath).byteLength > 0, 'file should not be empty');
+	assert(exists, `File ${filepath} is expected to be present`);
+	assert(fs.readFileSync(filepath).byteLength > 0, 'File should not be empty');
 	fs.unlinkSync(filepath);
 }
