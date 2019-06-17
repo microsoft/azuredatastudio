@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable, dispose, Disposable, toDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable, toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAction, ActionRunner, Action } from 'vs/base/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -870,7 +870,7 @@ class MarkdownRenderer {
 	) {
 	}
 
-	private getOptions(disposeables: IDisposable[]): RenderOptions {
+	private getOptions(disposeables: DisposableStore): RenderOptions {
 		return {
 			actionHandler: {
 				callback: (content) => {
@@ -890,7 +890,7 @@ class MarkdownRenderer {
 	}
 
 	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		let disposeables: IDisposable[] = [];
+		let disposeables = new DisposableStore();
 		const element: HTMLElement = markdown ? renderMarkdown(markdown, this.getOptions(disposeables)) : document.createElement('span');
 		return {
 			element,
