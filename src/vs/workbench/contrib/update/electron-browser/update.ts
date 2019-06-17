@@ -222,7 +222,7 @@ export class Win3264BitContribution implements IWorkbenchContribution {
 	}
 }
 
-export class UpdateContribution extends Disposable {
+export class UpdateContribution extends Disposable implements IWorkbenchContribution {
 
 	private state: UpdateState;
 	private badgeDisposable: IDisposable = Disposable.None;
