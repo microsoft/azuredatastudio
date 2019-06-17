@@ -122,6 +122,7 @@ export async function assertDatabaseCreationResult(databaseName: string, ownerUr
 	}
 
 	assert(result.rowCount === 1, `Database ${databaseName} should be created`);
+	assert(result.columnInfo[0].columnName !== 'ErrorMessage', 'Checking for db creation threw error');
 }
 
 /**
