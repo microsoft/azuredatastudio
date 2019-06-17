@@ -263,11 +263,11 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
-		this.sandDanceTab.queryRunner = runner; 
+		this.sandDanceTab.queryRunner = runner;
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.showResults();
 			this.hideChart();
-			this.hideSandDance();
+			this.hideDataAsSandDance();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
