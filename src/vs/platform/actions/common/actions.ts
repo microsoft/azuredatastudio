@@ -103,7 +103,8 @@ export const enum MenuId {
 	CommentThreadTitle,
 	CommentThreadActions,
 	CommentTitle,
-	CommentActions
+	CommentActions,
+	GlobalActivity
 }
 
 export interface IMenuActionOptions {
