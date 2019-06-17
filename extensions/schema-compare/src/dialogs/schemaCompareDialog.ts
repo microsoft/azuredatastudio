@@ -603,7 +603,7 @@ export class SchemaCompareDialog {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.updateProperties({ values: [], value: null });
 
-		let values = await this.getDatabaseValues(connectionId);
+		let values = await this.getDatabaseValues(connectionId, isTarget);
 		if (values && values.length > 0) {
 			currentDropdown.updateProperties({
 				values: values,

@@ -70,7 +70,7 @@ describe('SchemaCompareResult.start', function (): void {
 		let promise = new Promise(resolve => setTimeout(resolve, 3000)); // to ensure comparision result view is initialized
 		await promise;
 
-		should(result.getComparisionResult() === undefined);
+		should(result.getComparisonResult() === undefined);
 		result.sourceEndpointInfo = mockSourceEndpoint;
 		result.targetEndpointInfo = mockTargetEndpoint;
 		await result.execute();
