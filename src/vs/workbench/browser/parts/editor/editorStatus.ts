@@ -510,7 +510,6 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		};
 
 		this.modeElement = this.updateElement(this.modeElement, props, 'status.editor.mode', nls.localize('status.editor.mode', "Editor Language"), StatusbarAlignment.RIGHT, 100.1);
-
 	}
 
 	private updateMetadataElement(text: string | undefined): void {
@@ -529,7 +528,6 @@ export class EditorStatus extends Disposable implements IWorkbenchContribution {
 		};
 
 		this.metadataElement = this.updateElement(this.metadataElement, props, 'status.editor.info', nls.localize('status.editor.info', "File Information"), StatusbarAlignment.RIGHT, 100);
-
 	}
 
 	private updateElement(element: IStatusbarEntryAccessor | null, props: IStatusbarEntry, id: string, name: string, alignment: StatusbarAlignment, priority: number): IStatusbarEntryAccessor | null {
