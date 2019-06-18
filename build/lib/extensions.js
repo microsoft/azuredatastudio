@@ -267,7 +267,8 @@ const sqlBuiltInExtensions = [
     'dacpac',
     'schema-compare',
     'resource-deployment',
-    'cms'
+    'cms',
+    'book'
 ];
 const builtInExtensions = require('../builtInExtensions.json');
 /**

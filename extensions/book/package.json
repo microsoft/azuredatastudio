@@ -20,7 +20,8 @@
             "explorer": [
                 {
                     "id": "bookTreeView",
-                    "name": "Books"
+                    "name": "Books",
+                    "when": "bookOpened"
                 }
             ]
         },
