@@ -221,7 +221,7 @@ export class InstallAction extends ExtensionAction {
 
 		alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName));
 
-		// Add extension object check since ADS third party extensions will be directed to a download page
+		// {{SQL CARBON EDIT}} Add extension object check since ADS third party extensions will be directed to a download page
 		// and the extension object will be undefined.
 		if (extension && extension.local) {
 			const runningExtension = await this.getRunningExtension(extension.local);
@@ -243,7 +243,7 @@ export class InstallAction extends ExtensionAction {
 
 	}
 
-	private install(extension: IExtension): Promise<IExtension> {
+	private install(extension: IExtension): Promise<IExtension | void> {
 		return this.extensionsWorkbenchService.install(extension)
 			.then(null, err => {
 				// {{SQL CARBON EDIT}}
