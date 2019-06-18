@@ -17,6 +17,7 @@ import JupyterServerInstallation from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerNotebookServerInstance, IInstanceOptions } from './serverInstance';
+import { CommandContext } from '../common/constants';
 
 export interface IServerManagerOptions {
 	documentPath: string;
@@ -101,9 +102,10 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options.documentPath;
 	}
 
-	private async doStartServer(): Promise<IServerInstance> {        // We can't find or create servers until the installation is complete
+	private async doStartServer(): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall();
+		this.apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace

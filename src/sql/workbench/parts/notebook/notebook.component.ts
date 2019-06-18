@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { nb } from 'azdata';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -288,6 +289,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await model.requestModelLoad(trusted);
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
+		model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs));
 		this._model = this._register(model);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this._modelRegisteredDeferred.resolve(this._model);
@@ -369,6 +371,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			action.enabled = false;
 		});
 		this.setContextKeyServiceWithProviderId(providerId);
+		this.fillInActionsForCurrentContext();
+	}
+
+	private handleKernelChanged(kernelArgs: nb.IKernelChangedArgs) {
 		this.fillInActionsForCurrentContext();
 	}
 
