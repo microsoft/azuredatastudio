@@ -336,14 +336,15 @@ import 'vs/workbench/contrib/search/browser/openAnythingHandler';
 import 'vs/workbench/contrib/scm/browser/scm.contribution';
 import 'vs/workbench/contrib/scm/browser/scmViewlet';
 
-// {{SQL CARBON EDIT}}
+/* {{SQL CARBON EDIT}}
 // Debug
-// import 'vs/workbench/contrib/debug/electron-browser/debug.contribution';
-// import 'vs/workbench/contrib/debug/browser/debugQuickOpen';
-// import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
-// import 'vs/workbench/contrib/debug/browser/repl';
-// import 'vs/workbench/contrib/debug/browser/debugViewlet';
-
+import 'vs/workbench/contrib/debug/browser/debug.contribution';
+import 'vs/workbench/contrib/debug/browser/debugQuickOpen';
+import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
+import 'vs/workbench/contrib/debug/browser/repl';
+import 'vs/workbench/contrib/debug/browser/debugViewlet';
+import 'vs/workbench/contrib/debug/node/debugHelperService';
+*/
 // Markers
 import 'vs/workbench/contrib/markers/browser/markers.contribution';
 
