@@ -313,6 +313,15 @@ CommandsRegistry.registerCommand(SaveExtensionHostProfileAction.ID, (accessor: S
 // });
 // {{SQL CARBON EDIT}} - End
 
+MenuRegistry.appendMenuItem(MenuId.GlobalActivity, {
+	group: '2_keybindings',
+	command: {
+		id: ShowRecommendedKeymapExtensionsAction.ID,
+		title: localize('miOpenKeymapExtensions2', "Keymaps")
+	},
+	order: 2
+});
+
 MenuRegistry.appendMenuItem(MenuId.MenubarPreferencesMenu, {
 	group: '1_settings',
 	command: {
