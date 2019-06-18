@@ -1691,7 +1691,6 @@ declare module 'azdata' {
 	export interface GenerateDeployScriptParams {
 		packageFilePath: string;
 		databaseName: string;
-		scriptFilePath: string;
 		ownerUri: string;
 		taskExecutionMode: TaskExecutionMode;
 	}
@@ -1708,7 +1707,7 @@ declare module 'azdata' {
 		importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
-		generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
+		generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<DacFxResult>;
 		generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: TaskExecutionMode): Thenable<GenerateDeployPlanResult>;
 	}
 
@@ -3993,6 +3992,13 @@ declare module 'azdata' {
 		 * Does this model view editor support save?
 		 */
 		readonly supportsSave?: boolean;
+
+		/**
+		 * Resource name for this editor
+		 * File icons might depend on file extension, language id or resource name
+		 * Resource name field needs to be set explitly if file icon for a particular Model View Editor depends on editor resource name
+		 */
+		readonly resourceName?: string;
 	}
 
 	export enum DataProviderType {

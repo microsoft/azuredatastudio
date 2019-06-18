@@ -335,7 +335,6 @@ export interface DeployParams {
 export interface GenerateDeployScriptParams {
 	packageFilePath: string;
 	databaseName: string;
-	scriptFilePath: string;
 	ownerUri: string;
 	taskExecutionMode: TaskExecutionMode;
 }

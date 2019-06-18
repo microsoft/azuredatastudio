@@ -294,7 +294,8 @@ export class QueryEditor extends BaseEditor {
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
 	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
-		this.currentTextEditor.setVisible(visible, group);
+		this.textFileEditor.setVisible(visible, group);
+		this.textResourceEditor.setVisible(visible, group);
 		this.resultsEditor.setVisible(visible, group);
 		super.setEditorVisible(visible, group);
 
@@ -365,6 +366,9 @@ export class QueryEditor extends BaseEditor {
 		if (this.resultsVisible) {
 			this.splitview.removeView(1, Sizing.Distribute);
 			this.resultsVisible = false;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = false;
+			}
 		}
 	}
 
@@ -380,6 +384,9 @@ export class QueryEditor extends BaseEditor {
 				onDidChange: Event.None
 			}, initialViewSize);
 			this.resultsVisible = true;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = true;
+			}
 		}
 	}
 

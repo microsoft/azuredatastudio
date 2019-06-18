@@ -455,7 +455,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * DacFx generate deploy script
 	 */
-	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
+	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
 
 	/**
 	 * DacFx generate deploy plan
@@ -484,7 +484,7 @@ export abstract class ExtHostDataProtocolShape {
 
 
 	/**
-	 * Schema comapre Include node
+	 * Schema compare Include node
 	 */
 	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
 }
