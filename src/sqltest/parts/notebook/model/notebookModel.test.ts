@@ -154,7 +154,7 @@ suite('notebook model', function (): void {
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.requestModelLoad(true);
+		await model.requestModelLoad();
 
 		// Then Trust should be true
 		should(model.trustedMode).be.true();
@@ -277,7 +277,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
 		notebookManagers[0].contentManager = mockContentManager.object;
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.requestModelLoad(false);
+		await model.requestModelLoad();
 
 		let actualChanged: NotebookContentChange;
 		model.contentChanged((changed) => actualChanged = changed);
