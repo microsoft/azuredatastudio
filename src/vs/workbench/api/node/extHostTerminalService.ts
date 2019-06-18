@@ -10,7 +10,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import * as platform from 'vs/base/common/platform';
 import * as terminalEnvironment from 'vs/workbench/contrib/terminal/common/terminalEnvironment';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, IMainContext, ShellLaunchConfigDto } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, IMainContext, ShellLaunchConfigDto, IShellDefinitionDto } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { EXT_HOST_CREATION_DELAY, IShellLaunchConfig, ITerminalEnvironment } from 'vs/workbench/contrib/terminal/common/terminal';
@@ -21,7 +21,7 @@ import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 // {{SQL CARBON EDIT}}
 // import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
-import { getDefaultShell } from 'vs/workbench/contrib/terminal/node/terminal';
+import { getDefaultShell, detectWindowsShells } from 'vs/workbench/contrib/terminal/node/terminal';
 
 const RENDERER_NO_PROCESS_ID = -1;
 
@@ -537,7 +537,9 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 
 		// Fork the process and listen for messages
 		this._logService.debug(`Terminal process launching on ext host`, shellLaunchConfig, initialCwd, cols, rows, env);
-		const p = new TerminalProcess(shellLaunchConfig, initialCwd, cols, rows, env, terminalConfig.get('windowsEnableConpty') as boolean, this._logService);
+		// TODO: Support conpty on remote, it doesn't seem to work for some reason?
+		const enableConpty = false; //terminalConfig.get('windowsEnableConpty') as boolean;
+		const p = new TerminalProcess(shellLaunchConfig, initialCwd, cols, rows, env, enableConpty, this._logService);
 		p.onProcessReady((e: { pid: number, cwd: string }) => this._proxy.$sendProcessReady(id, e.pid, e.cwd));
 		p.onProcessTitleChanged(title => this._proxy.$sendProcessTitle(id, title));
 		p.onProcessData(data => this._proxy.$sendProcessData(id, data));
@@ -574,6 +576,13 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 
 	public $acceptProcessRequestLatency(id: number): number {
 		return id;
+	}
+
+	public $requestWindowsShells(): Promise<IShellDefinitionDto[]> {
+		if (!platform.isWindows) {
+			throw new Error('Can only detect Windows shells on Windows');
+		}
+		return detectWindowsShells();
 	}
 
 	private _onProcessExit(id: number, exitCode: number): void {
