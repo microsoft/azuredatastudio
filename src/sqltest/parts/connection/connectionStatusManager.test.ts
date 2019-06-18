@@ -10,9 +10,10 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { TestEnvironmentService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEnvironmentService } from 'vs/workbench/test/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 let connections: ConnectionStatusManager;
 let capabilitiesService: CapabilitiesTestService;
@@ -77,7 +78,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 	setup(() => {
 		capabilitiesService = new CapabilitiesTestService();
 		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
-		connections = new ConnectionStatusManager(capabilitiesService, new TestLogService(), TestEnvironmentService, new TestNotificationService());
+		connections = new ConnectionStatusManager(capabilitiesService, new NullLogService(), TestEnvironmentService, new TestNotificationService());
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';
 		connection3Id = 'connection3Id';

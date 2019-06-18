@@ -8,7 +8,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { TelemetryServiceStub } from 'sqltest/stubs/telemetryServiceStub';
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('SQL Telemetry Utilities tests', () => {
 	let telemetryService: TypeMoq.Mock<ITelemetryService>;
@@ -42,7 +42,7 @@ suite('SQL Telemetry Utilities tests', () => {
 	test('addTelemetry should add provider id using the connection', (done) => {
 		let data: TelemetryUtils.IConnectionTelemetryData = {
 		};
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey, data, connectionProfile).then(() => {
 			telemetryService.verify(x => x.publicLog(TypeMoq.It.is(a => a === telemetryKey), TypeMoq.It.is(b => b.provider === providerName)), TypeMoq.Times.once());
 			done();
@@ -59,7 +59,7 @@ suite('SQL Telemetry Utilities tests', () => {
 		};
 		data.test1 = '1';
 
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey, data, connectionProfile).then(() => {
 			telemetryService.verify(x => x.publicLog(
 				TypeMoq.It.is(a => a === telemetryKey),
@@ -77,7 +77,7 @@ suite('SQL Telemetry Utilities tests', () => {
 
 	test('addTelemetry should not crash not given data', (done) => {
 
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey).then(() => {
 			telemetryService.verify(x => x.publicLog(
 				TypeMoq.It.is(a => a === telemetryKey),
@@ -95,7 +95,7 @@ suite('SQL Telemetry Utilities tests', () => {
 		};
 		data.provider = providerName + '1';
 
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		TelemetryUtils.addTelemetry(telemetryService.object, logService, telemetryKey, data, connectionProfile).then(() => {
 			telemetryService.verify(x => x.publicLog(TypeMoq.It.is(a => a === telemetryKey), TypeMoq.It.is(b => b.provider === data.provider)), TypeMoq.Times.once());
 			done();

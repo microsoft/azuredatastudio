@@ -15,8 +15,8 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestLogService } from 'vs/workbench/test/workbenchTestServices';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 class TestChangeDetectorRef extends ChangeDetectorRef {
 	reattach(): void {
@@ -98,7 +98,7 @@ suite('Dashboard Properties Widget Tests', () => {
 
 		dashboardService.setup(x => x.connectionManagementService).returns(() => singleConnectionService.object);
 
-		const testLogService = new class extends TestLogService {
+		const testLogService = new class extends NullLogService {
 			error() {
 				assert.fail('Called console Error unexpectedly');
 			}
