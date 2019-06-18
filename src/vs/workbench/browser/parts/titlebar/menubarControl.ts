@@ -40,6 +40,7 @@ export abstract class MenubarControl extends Disposable {
 	protected keys = [
 		'window.menuBarVisibility',
 		'window.enableMenuBarMnemonics',
+		'window.disableCustomMenuBarAltFocus',
 		'window.nativeTabs'
 	];
 
@@ -606,6 +607,15 @@ export class CustomMenubarControl extends MenubarControl {
 		return this.configurationService.getValue<MenuBarVisibility>('window.menuBarVisibility');
 	}
 
+	private get currentDisableMenuBarAltFocus(): boolean {
+		let disableMenuBarAltBehavior = this.configurationService.getValue<boolean>('window.disableCustomMenuBarAltFocus');
+		if (typeof disableMenuBarAltBehavior !== 'boolean') {
+			disableMenuBarAltBehavior = false;
+		}
+
+		return disableMenuBarAltBehavior;
+	}
+
 	private insertActionsBefore(nextAction: IAction, target: IAction[]): void {
 		switch (nextAction.id) {
 			case 'workbench.action.openRecent':
@@ -643,6 +653,7 @@ export class CustomMenubarControl extends MenubarControl {
 			this.menubar = this._register(new MenuBar(
 				this.container, {
 					enableMnemonics: this.currentEnableMenuBarMnemonics,
+					disableAltFocus: this.currentDisableMenuBarAltFocus,
 					visibility: this.currentMenubarVisibility,
 					getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id),
 				}
@@ -650,7 +661,7 @@ export class CustomMenubarControl extends MenubarControl {
 
 			this.accessibilityService.alwaysUnderlineAccessKeys().then(val => {
 				this.alwaysOnMnemonics = val;
-				this.menubar.update({ enableMnemonics: this.currentEnableMenuBarMnemonics, visibility: this.currentMenubarVisibility, getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id), alwaysOnMnemonics: this.alwaysOnMnemonics });
+				this.menubar.update({ enableMnemonics: this.currentEnableMenuBarMnemonics, disableAltFocus: this.currentDisableMenuBarAltFocus, visibility: this.currentMenubarVisibility, getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id), alwaysOnMnemonics: this.alwaysOnMnemonics });
 			});
 
 			this._register(this.menubar.onFocusStateChange(e => this._onFocusStateChange.fire(e)));
@@ -658,7 +669,7 @@ export class CustomMenubarControl extends MenubarControl {
 
 			this._register(attachMenuStyler(this.menubar, this.themeService));
 		} else {
-			this.menubar.update({ enableMnemonics: this.currentEnableMenuBarMnemonics, visibility: this.currentMenubarVisibility, getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id), alwaysOnMnemonics: this.alwaysOnMnemonics });
+			this.menubar.update({ enableMnemonics: this.currentEnableMenuBarMnemonics, disableAltFocus: this.currentDisableMenuBarAltFocus, visibility: this.currentMenubarVisibility, getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id), alwaysOnMnemonics: this.alwaysOnMnemonics });
 		}
 
 		// Update the menu actions
@@ -777,7 +788,7 @@ export class CustomMenubarControl extends MenubarControl {
 		}
 
 		if (this.menubar) {
-			this.menubar.update({ enableMnemonics: this.currentEnableMenuBarMnemonics, visibility: this.currentMenubarVisibility, getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id), alwaysOnMnemonics: this.alwaysOnMnemonics });
+			this.menubar.update({ enableMnemonics: this.currentEnableMenuBarMnemonics, disableAltFocus: this.currentDisableMenuBarAltFocus, visibility: this.currentMenubarVisibility, getKeybinding: (action) => this.keybindingService.lookupKeybinding(action.id), alwaysOnMnemonics: this.alwaysOnMnemonics });
 		}
 	}
 }

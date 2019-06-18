@@ -195,6 +195,9 @@ import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 // Localizations
 // import 'vs/workbench/contrib/localizations/browser/localizations.contribution';
 
+// Labels
+import 'vs/workbench/contrib/label/common/label.contribution';
+
 // Preferences
 import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
 import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
@@ -248,13 +251,12 @@ import 'vs/workbench/contrib/markers/browser/markers.contribution';
 import 'vs/workbench/contrib/url/common/url.contribution';
 
 // Webview
-// import 'vs/workbench/contrib/webview/browser/webview.contribution';
-// import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
+import 'vs/workbench/contrib/webview/browser/webview.contribution';
 
 import { IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
-import { NullWebviewService } from 'vs/workbench/contrib/webview/browser/webviewService';
+import { WebviewService } from 'vs/workbench/contrib/webview/browser/webviewService';
 import { IWebviewEditorService, WebviewEditorService } from 'vs/workbench/contrib/webview/browser/webviewEditorService';
-registerSingleton(IWebviewService, NullWebviewService, true);
+registerSingleton(IWebviewService, WebviewService, true);
 registerSingleton(IWebviewEditorService, WebviewEditorService, true);
 
 // Extensions Management

@@ -639,6 +639,13 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-brow
 				'description': nls.localize('enableMenuBarMnemonics', "If enabled, the main menus can be opened via Alt-key shortcuts. Disabling mnemonics allows to bind these Alt-key shortcuts to editor commands instead."),
 				'included': isWindows || isLinux
 			},
+			'window.disableCustomMenuBarAltFocus': {
+				'type': 'boolean',
+				'default': false,
+				'scope': ConfigurationScope.APPLICATION,
+				'markdownDescription': nls.localize('disableCustomMenuBarAltFocus', "If enabled, disables the ability to focus the menu bar with the Alt-key when not set to toggle."),
+				'included': isWindows || isLinux
+			},
 			'window.autoDetectHighContrast': {
 				'type': 'boolean',
 				'default': true,
