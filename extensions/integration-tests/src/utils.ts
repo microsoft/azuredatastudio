@@ -102,6 +102,7 @@ export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Pr
  * @param databaseName name of database to check for
  * @param ownerUri owner uri
  * @param retryCount number of times to retry with a 5 second wait between each try
+ * Checks for database getting created for operations that have async database creation
  */
 export async function assertDatabaseCreationResult(databaseName: string, ownerUri: string, retryCount: number): Promise<void> {
 	let result: azdata.SimpleExecuteResult;
@@ -129,6 +130,7 @@ export async function assertDatabaseCreationResult(databaseName: string, ownerUr
  *
  * @param filepath File path to check for
  * @param retryCount number of times to retry with a 5 second wait between each try
+ * Checks for file getting created for async file generation and deletes file
  */
 export async function assertFileGenerationResult(filepath: string, retryCount: number): Promise<void> {
 	let exists = false;
