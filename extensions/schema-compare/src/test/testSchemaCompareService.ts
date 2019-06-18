@@ -21,7 +21,7 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
+	schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
 		let result: azdata.SchemaCompareResult = {
 			operationId: this.testOperationId,
 			areEqual: true,
@@ -33,7 +33,11 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 		return Promise.resolve(result);
 	}
 
-	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
+	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		return undefined;
+	}
+
+	schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
 		return undefined;
 	}
 

@@ -12,11 +12,12 @@ const path = require('path');
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer } from './testConfig';
+import { stressify } from 'adstest';
 
 let schemaCompareService: azdata.SchemaCompareServicesProvider;
+let schemaCompareTester: SchemaCompareTester;
 let dacpac1: string = path.join(__dirname, 'testData/Database1.dacpac');
 let dacpac2: string = path.join(__dirname, 'testData/Database2.dacpac');
-let dummyDBName: string = 'ads_schemaCompareDB'; // This is used as fill in name and not created anywhere
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 
 if (context.RunTest) {
@@ -31,146 +32,183 @@ if (context.RunTest) {
 				attempts--;
 				await utils.sleep(1000); // To ensure the providers are registered.
 			}
+			schemaCompareTester = new SchemaCompareTester();
 			console.log(`Start schema compare tests`);
 		});
 		test('Schema compare dacpac to dacpac comparison', async function () {
+			await schemaCompareTester.SchemaCompareDacpacToDacpac();
+		});
+		test('Schema compare database to database comparison and script generation', async function () {
+			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
+		});
+		test('Schema compare dacpac to database comparison and script generation', async function () {
+			await schemaCompareTester.SchemaCompareDacpacToDatabase();
+		});
+	});
+}
+
+class SchemaCompareTester {
+	private static ParallelCount = 1;
+
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	async SchemaCompareDacpacToDacpac(): Promise<void> {
+		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+
+		let source: azdata.SchemaCompareEndpointInfo = {
+			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: dacpac1,
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+		};
+		let target: azdata.SchemaCompareEndpointInfo = {
+			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: dacpac2,
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+		};
+
+		let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
+		this.assertSchemaCompareResult(schemaCompareResult);
+	}
+
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	async SchemaCompareDatabaseToDatabase(): Promise<void> {
+		let server = await getStandaloneServer();
+		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
+
+		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+
+		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+
+		let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		let now = new Date();
+
+		let sourceDB: string = 'ads_schemaCompare_sourceDB_' + now.getTime().toString();
+		let targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+
+		try {
+			let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result1 = await dacfxService.deployDacpac(dacpac1, sourceDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+			let result2 = await dacfxService.deployDacpac(dacpac2, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result1.success === true, 'Deploy source database should succeed');
+			assert(result2.success === true, 'Deploy target database should succeed');
+
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+
+			let source: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverName: server.serverName,
+				databaseName: sourceDB,
+				ownerUri: ownerUri,
+			};
+			let target: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
+			};
+
+			let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
+			this.assertSchemaCompareResult(schemaCompareResult);
+
+			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
+
+			// TODO : add wait for tasks to complete
+			// script generation might take too long and the 'success' status does not mean that script is created.
+			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
+		}
+		finally {
+			await utils.deleteDB(sourceDB, ownerUri);
+			await utils.deleteDB(targetDB, ownerUri);
+		}
+	}
+
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	async SchemaCompareDacpacToDatabase(): Promise<void> {
+		let server = await getStandaloneServer();
+		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
+
+		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+
+		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+
+		let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		let now = new Date();
+		let targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+
+		try {
+			let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+			assert(dacfxService, 'DacFx Service Provider is not available');
+			let result = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database2.dacpac'), targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+
+			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
 			let source: azdata.SchemaCompareEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
 				packageFilePath: dacpac1,
 				serverName: '',
 				databaseName: '',
-				ownerUri: '',
+				ownerUri: ownerUri,
 			};
 			let target: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-				packageFilePath: dacpac2,
-				serverName: '',
-				databaseName: '',
-				ownerUri: '',
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
 			};
 
-			let schemaCompareResult = await schemaCompareService.schemaCompare(source, target, azdata.TaskExecutionMode.execute, null);
-			assertSchemaCompareResult(schemaCompareResult);
-		});
+			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-		test('Schema compare database to database comparison and script generation', async function () {
+			// start schema compare and cancel
+			const compareTask = schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
+			const canceResult = await schemaCompareService.schemaCompareCancel('testOperationId');
+			assert(canceResult.success, `Cancel Operation should Succeed but failed with ${canceResult.errorMessage}`);
+			let schemaCompareResult = await compareTask;
+			assert(schemaCompareResult.success === false, 'Schema compare task should not succeed after cancel');
 
-			let server = await getStandaloneServer();
-			await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
+			// redo schema compare sucessfully
+			schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
+			this.assertSchemaCompareResult(schemaCompareResult);
 
-			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
+			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
+			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
+		}
+		finally {
+			await utils.deleteDB(targetDB, ownerUri);
+		}
+	}
 
-			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+	private assertSchemaCompareResult(schemaCompareResult: azdata.SchemaCompareResult): void {
+		assert(schemaCompareResult.areEqual === false, `Expected: the schemas are not to be equal Actual: Equal`);
+		assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
+		assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failure`);
+		assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
+		assert(schemaCompareResult.operationId === 'testOperationId', `Operation Id Expected to be same as passed. Expected : testOperationId, Actual ${schemaCompareResult.operationId}`)
+	}
 
-			let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-			let now = new Date();
-
-			let sourceDB: string = 'ads_schemaCompare_sourceDB_' + now.getTime().toString();
-			let targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
-
-			try {
-				let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
-				assert(dacfxService, 'DacFx Service Provider is not available');
-				let result1 = await dacfxService.deployDacpac(dacpac1, sourceDB, true, ownerUri, azdata.TaskExecutionMode.execute);
-				let result2 = await dacfxService.deployDacpac(dacpac2, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
-
-				assert(result1.success === true, 'Deploy source database should succeed');
-				assert(result2.success === true, 'Deploy target database should succeed');
-
-				assert(schemaCompareService, 'Schema Compare Service Provider is not available');
-
-				let source: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Database,
-					packageFilePath: '',
-					serverName: server.serverName,
-					databaseName: sourceDB,
-					ownerUri: ownerUri,
-				};
-				let target: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Database,
-					packageFilePath: '',
-					serverName: server.serverName,
-					databaseName: targetDB,
-					ownerUri: ownerUri,
-				};
-
-				let schemaCompareResult = await schemaCompareService.schemaCompare(source, target, azdata.TaskExecutionMode.execute, null);
-				assertSchemaCompareResult(schemaCompareResult);
-
-				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, dummyDBName, azdata.TaskExecutionMode.script);
-
-				// TODO : add wait for tasks to complete
-				// script generation might take too long and the 'success' status does not mean that script is created.
-				await assertScriptGenerationResult(status);
-			}
-			finally {
-				await utils.deleteDB(sourceDB, ownerUri);
-				await utils.deleteDB(targetDB, ownerUri);
+	private async assertScriptGenerationResult(resultstatus: azdata.ResultStatus, server: string, database: string): Promise<void> {
+		// TODO add more validation
+		assert(resultstatus.success === true, `Expected: success true Actual: "${resultstatus.success}" Error Message: "${resultstatus.errorMessage}`);
+		const taskService = await azdata.dataprotocol.getProvider<azdata.TaskServicesProvider>('MSSQL', azdata.DataProviderType.TaskServicesProvider);
+		const tasks = await taskService.getAllTasks({ listActiveTasksOnly: true });
+		let foundTask: azdata.TaskInfo;
+		tasks.tasks.forEach(t => {
+			if (t.serverName === server && t.databaseName === database && t.taskExecutionMode === azdata.TaskExecutionMode.script) {
+				foundTask = t;
 			}
 		});
-
-		test('Schema compare dacpac to database comparison and script generation', async function () {
-			let server = await getStandaloneServer();
-			await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
-
-			let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
-			assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
-
-			let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
-			assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-
-			let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-			let now = new Date();
-			let targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
-
-			try {
-				let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
-				assert(dacfxService, 'DacFx Service Provider is not available');
-				let result = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database2.dacpac'), targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
-
-				assert(result.success === true, 'Deploy database 2 (target) should succeed');
-
-				let source: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-					packageFilePath: dacpac1,
-					serverName: '',
-					databaseName: '',
-					ownerUri: ownerUri,
-				};
-				let target: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Database,
-					packageFilePath: '',
-					serverName: server.serverName,
-					databaseName: targetDB,
-					ownerUri: ownerUri,
-				};
-
-				assert(schemaCompareService, 'Schema Compare Service Provider is not available');
-				let schemaCompareResult = await schemaCompareService.schemaCompare(source, target, azdata.TaskExecutionMode.execute, null);
-				assertSchemaCompareResult(schemaCompareResult);
-
-				let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, dummyDBName, azdata.TaskExecutionMode.script);
-				await assertScriptGenerationResult(status);
-			}
-			finally {
-				await utils.deleteDB(targetDB, ownerUri);
-			}
-		});
-	});
-}
-
-export function assertSchemaCompareResult(schemaCompareResult: azdata.SchemaCompareResult): void {
-	assert(schemaCompareResult.areEqual === false, `Expected: the schemas are not to be equal Actual: Equal`);
-	assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
-	assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failure`);
-	assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
-}
-
-export async function assertScriptGenerationResult(resultstatus: azdata.ResultStatus): Promise<void> {
-	// TODO add more validation
-	assert(resultstatus.success === true, `Expected: success true Actual: "${resultstatus.success}" Error Message: "${resultstatus.errorMessage}`);
+		assert(foundTask, 'Could not find Script task');
+		assert(foundTask.isCancelable, 'The task should be cancellable');
+	}
 }

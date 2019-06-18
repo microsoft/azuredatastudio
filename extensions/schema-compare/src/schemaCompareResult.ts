@@ -11,6 +11,7 @@ import * as path from 'path';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { Telemetry } from './telemetry';
 import { getTelemetryErrorType } from './utils';
+import { isNullOrUndefined } from 'util';
 const localize = nls.loadMessageBundle();
 const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
@@ -37,10 +38,12 @@ export class SchemaCompareResult {
 	private sourceTargetFlexLayout: azdata.FlexContainer;
 	private switchButton: azdata.ButtonComponent;
 	private compareButton: azdata.ButtonComponent;
+	private cancelCompareButton: azdata.ButtonComponent;
 	private optionsButton: azdata.ButtonComponent;
 	private generateScriptButton: azdata.ButtonComponent;
 	private applyButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
+	private operationId: string;
 	private comparisonResult: azdata.SchemaCompareResult;
 	private sourceNameComponent: azdata.TableComponent;
 	private targetNameComponent: azdata.TableComponent;
@@ -90,6 +93,7 @@ export class SchemaCompareResult {
 
 			this.createSwitchButton(view);
 			this.createCompareButton(view);
+			this.createCancelButton(view);
 			this.createGenerateScriptButton(view);
 			this.createApplyButton(view);
 			this.createOptionsButton(view);
@@ -98,6 +102,8 @@ export class SchemaCompareResult {
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
 				component: this.compareButton
+			}, {
+				component: this.cancelCompareButton
 			}, {
 				component: this.generateScriptButton
 			}, {
@@ -198,7 +204,11 @@ export class SchemaCompareResult {
 		}
 		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
 		const service = await SchemaCompareResult.getService('MSSQL');
-		this.comparisonResult = await service.schemaCompare(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
+		if (!this.operationId) {
+			// create once per page
+			this.operationId = generateGuid();
+		}
+		this.comparisonResult = await service.schemaCompare(this.operationId, this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions);
 		if (!this.comparisonResult || !this.comparisonResult.success) {
 			Telemetry.sendTelemetryEventForError('SchemaComparisonFailed', {
 				'errorType': getTelemetryErrorType(this.comparisonResult.errorMessage),
@@ -264,6 +274,7 @@ export class SchemaCompareResult {
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
 		this.optionsButton.enabled = true;
+		this.cancelCompareButton.enabled = false;
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView, { CSSStyles: { 'overflow': 'hidden' } });
@@ -322,7 +333,7 @@ export class SchemaCompareResult {
 	private saveExcludeState(rowState: azdata.ICheckboxCellActionEventArgs) {
 		if (rowState) {
 			let diff = this.comparisonResult.differences[rowState.row];
-			let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
+			let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 			if (key) {
 				if (!this.sourceTargetSwitched) {
 					this.originalSourceExcludes.delete(key);
@@ -353,7 +364,7 @@ export class SchemaCompareResult {
 	}
 
 	private shouldDiffBeIncluded(diff: azdata.DiffEntry): boolean {
-		let key = diff.sourceValue ? diff.sourceValue : diff.targetValue;
+		let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 		if (key) {
 			if (this.sourceTargetSwitched === true && this.originalTargetExcludes.has(key)) {
 				this.originalTargetExcludes[key] = diff;
@@ -373,15 +384,22 @@ export class SchemaCompareResult {
 		if (differences) {
 			differences.forEach(difference => {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
-					if (difference.sourceValue !== null || difference.targetValue !== null) {
+					if ((difference.sourceValue !== null && difference.sourceValue.length > 0) || (difference.targetValue !== null && difference.targetValue.length > 0)) {
 						let state: boolean = this.shouldDiffBeIncluded(difference);
-						data.push([difference.name, difference.sourceValue, state, this.SchemaCompareActionMap[difference.updateAction], difference.targetValue]);
+						data.push([difference.name, this.createName(difference.sourceValue), state, this.SchemaCompareActionMap[difference.updateAction], this.createName(difference.targetValue)]);
 					}
 				}
 			});
 		}
 
 		return data;
+	}
+
+	private createName(nameParts: string[]): string {
+		if (isNullOrUndefined(nameParts) || nameParts.length === 0) {
+			return '';
+		}
+		return nameParts.join('.');
 	}
 
 	private getFormattedScript(diffEntry: azdata.DiffEntry, getSourceScript: boolean): string {
@@ -445,6 +463,54 @@ export class SchemaCompareResult {
 		this.compareButton.onDidClick(async (click) => {
 			this.startCompare();
 		});
+	}
+
+	private createCancelButton(view: azdata.ModelView): void {
+		this.cancelCompareButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.cancelCompareButton', 'Stop'),
+			iconPath: {
+				light: path.join(__dirname, 'media', 'stop.svg'),
+				dark: path.join(__dirname, 'media', 'stop-inverse.svg')
+			},
+			title: localize('schemaCompare.cancelCompareButtonTitle', 'Stop')
+		}).component();
+
+		this.cancelCompareButton.onDidClick(async (click) => {
+			this.cancelCompare();
+		});
+	}
+
+	private async cancelCompare() {
+
+		Telemetry.sendTelemetryEvent('SchemaCompareCancelStarted', {
+			'startTime:': Date.now().toString(),
+			'operationId': this.comparisonResult.operationId
+		});
+
+		// clean the pane
+		this.flexModel.removeItem(this.loader);
+		this.flexModel.removeItem(this.waitText);
+		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
+		this.resetButtons(true);
+
+		// cancel compare
+		if (this.operationId) {
+			const service = await SchemaCompareResult.getService('MSSQL');
+			const result = await service.schemaCompareCancel(this.operationId);
+
+			if (!result || !result.success) {
+				Telemetry.sendTelemetryEvent('SchemaCompareCancelFailed', {
+					'errorType': getTelemetryErrorType(result.errorMessage),
+					'operationId': this.operationId
+				});
+				vscode.window.showErrorMessage(
+					localize('schemaCompare.cancelErrorMessage', "Cancel schema compare failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
+			}
+			Telemetry.sendTelemetryEvent('SchemaCompareCancelEnded', {
+				'endTime:': Date.now().toString(),
+				'operationId': this.operationId
+			});
+		}
 	}
 
 	private createGenerateScriptButton(view: azdata.ModelView): void {
@@ -559,11 +625,13 @@ export class SchemaCompareResult {
 			this.compareButton.enabled = true;
 			this.optionsButton.enabled = true;
 			this.switchButton.enabled = true;
+			this.cancelCompareButton.enabled = false;
 		}
 		else {
 			this.compareButton.enabled = false;
 			this.optionsButton.enabled = false;
 			this.switchButton.enabled = false;
+			this.cancelCompareButton.enabled = true;
 		}
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
@@ -635,4 +703,30 @@ export class SchemaCompareResult {
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 	}
+}
+
+// Borrowed as is from other extensions
+// TODO : figure out if any inbuilt alternative is available
+export function generateGuid(): string {
+	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
+	// c.f. rfc4122 (UUID version 4 = xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx)
+	let oct: string = '';
+	let tmp: number;
+	/* tslint:disable:no-bitwise */
+	for (let a: number = 0; a < 4; a++) {
+		tmp = (4294967296 * Math.random()) | 0;
+		oct += hexValues[tmp & 0xF] +
+			hexValues[tmp >> 4 & 0xF] +
+			hexValues[tmp >> 8 & 0xF] +
+			hexValues[tmp >> 12 & 0xF] +
+			hexValues[tmp >> 16 & 0xF] +
+			hexValues[tmp >> 20 & 0xF] +
+			hexValues[tmp >> 24 & 0xF] +
+			hexValues[tmp >> 28 & 0xF];
+	}
+
+	// 'Set the two most significant bits (bits 6 and 7) of the clock_seq_hi_and_reserved to zero and one, respectively'
+	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
+	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
+	/* tslint:enable:no-bitwise */
 }
