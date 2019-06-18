@@ -39,7 +39,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface OnShowUIResponse {
-	selectedProviderType: string;
+	selectedProviderDisplayName: string;
 	container: HTMLElement;
 }
 
@@ -85,7 +85,7 @@ export class ConnectionDialogWidget extends Modal {
 	private _connecting = false;
 
 	constructor(
-		private providerTypeOptions: string[],
+		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -106,29 +106,29 @@ export class ConnectionDialogWidget extends Modal {
 	 * Update the available connection providers, this is called when new providers are registered
 	 * So that the connection type dropdown always has up to date values
 	 */
-	public updateConnectionProviders(providerTypeOptions: string[],
+	public updateConnectionProviders(
+		providerTypeDisplayNameOptions: string[],
 		providerNameToDisplayNameMap: { [providerDisplayName: string]: string }) {
-		this.providerTypeOptions = providerTypeOptions;
+		this.providerDisplayNameOptions = providerTypeDisplayNameOptions;
 		this.providerNameToDisplayNameMap = providerNameToDisplayNameMap;
 		this.refresh();
 	}
 
 	public refresh(): void {
-		let filteredProviderTypes = this.providerTypeOptions;
+		let filteredProviderDisplayNames = this.providerDisplayNameOptions;
 
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(
+				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.find(
 					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
 				);
 			}
-		} else {
-			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderName);
 		}
-		this._providerTypeSelectBox.setOptions(filteredProviderTypes.filter((providerType, index) =>
-			// Remove duplicate listings
-			filteredProviderTypes.indexOf(providerType) === index)
+
+		this._providerTypeSelectBox.setOptions(filteredProviderDisplayNames.filter((providerDisplayName, index) =>
+			// Remove duplicate listings (CMS uses the same display name)
+			filteredProviderDisplayNames.indexOf(providerDisplayName) === index)
 		);
 	}
 
@@ -140,7 +140,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
-		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
+		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
 		const recentConnectionTab = DOM.$('.connection-recent-tab');
 		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
@@ -259,10 +259,10 @@ export class ConnectionDialogWidget extends Modal {
 		}));
 	}
 
-	private onProviderTypeSelected(selectedProviderType: string) {
+	private onProviderTypeSelected(selectedProviderDisplayName: string) {
 		// Show connection form based on server type
 		DOM.clearNode(this._connectionUIContainer);
-		this._onShowUiComponent.fire({ selectedProviderType: selectedProviderType, container: this._connectionUIContainer });
+		this._onShowUiComponent.fire({ selectedProviderDisplayName: selectedProviderDisplayName, container: this._connectionUIContainer });
 		this.initDialog();
 	}
 
@@ -445,10 +445,10 @@ export class ConnectionDialogWidget extends Modal {
 		this.refresh();
 	}
 
-	public updateProvider(displayName: string) {
-		this._providerTypeSelectBox.selectWithOptionName(displayName);
+	public updateProvider(providerDisplayName: string) {
+		this._providerTypeSelectBox.selectWithOptionName(providerDisplayName);
 
-		this.onProviderTypeSelected(displayName);
+		this.onProviderTypeSelected(providerDisplayName);
 	}
 
 	public dispose(): void {
