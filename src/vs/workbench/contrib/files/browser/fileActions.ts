@@ -8,7 +8,7 @@ import * as nls from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import { isWindows, isLinux } from 'vs/base/common/platform';
 import * as extpath from 'vs/base/common/extpath';
-import { extname, basename } from 'vs/base/common/path';
+import { extname, basename, join } from 'vs/base/common/path';
 import * as resources from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
@@ -36,7 +36,7 @@ import { ICommandService, CommandsRegistry } from 'vs/platform/commands/common/c
 import { IListService, ListWidget } from 'vs/platform/list/browser/listService';
 import { RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Schemas } from 'vs/base/common/network';
-import { IDialogService, IConfirmationResult, getConfirmMessage } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IConfirmationResult, getConfirmMessage, IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { Constants } from 'vs/editor/common/core/uint';
@@ -45,6 +45,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { AsyncDataTree } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { ExplorerItem, NewExplorerItem } from 'vs/workbench/contrib/files/common/explorerModel';
 import { onUnexpectedError } from 'vs/base/common/errors';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 // {{SQL CARBON EDIT}}
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -984,6 +985,34 @@ export const cutFileHandler = (accessor: ServicesAccessor) => {
 		pasteShouldMove = true;
 	}
 };
+
+export const DOWNLOAD_COMMAND_ID = 'explorer.download';
+const downloadFileHandler = (accessor: ServicesAccessor) => {
+	const listService = accessor.get(IListService);
+	if (!listService.lastFocusedList) {
+		return;
+	}
+	const explorerContext = getContext(listService.lastFocusedList);
+	const textFileService = accessor.get(ITextFileService);
+	const fileDialogService = accessor.get(IFileDialogService);
+	const environmentService = accessor.get(IEnvironmentService);
+
+	if (explorerContext.stat) {
+		const stats = explorerContext.selection.length > 1 ? explorerContext.selection : [explorerContext.stat];
+		stats.forEach(async s => {
+			const resource = await fileDialogService.showSaveDialog({
+				defaultUri: URI.file(join(environmentService.userHome, basename(s.resource.path)))
+			});
+			if (resource) {
+				await textFileService.saveAs(s.resource, resource);
+			}
+		});
+	}
+};
+CommandsRegistry.registerCommand({
+	id: DOWNLOAD_COMMAND_ID,
+	handler: downloadFileHandler
+});
 
 export const pasteFileHandler = (accessor: ServicesAccessor) => {
 	const listService = accessor.get(IListService);
