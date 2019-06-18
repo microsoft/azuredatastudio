@@ -118,7 +118,7 @@ export class CmsUtils {
 		let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
 		if (!ownerUri) {
 			// Make a connection if it's not already connected
-			let initialConnectionProfile = CmsUtils.getConnectionProfile(connection);
+			let initialConnectionProfile = this.getConnectionProfile(connection);
 			let result = await azdata.connection.connect(initialConnectionProfile, false, false);
 			ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			// If the ownerUri is still undefined, then open a connection dialog with the connection
@@ -130,24 +130,19 @@ export class CmsUtils {
 						connection = result;
 					}
 				} catch (error) {
-					// cancel pressed on connection dialog
-					const errorText = localize('cms.error.cancelConnectionDialog', 'The server is disconnected. Please connect to the server to continue.');
-					return Promise.reject(error ? new Error(error.message) : errorText);
+					throw error;
 				}
 			}
 		}
 		try {
 			let result = await provider.createCmsServer(name, description, connection, ownerUri);
-			if (result) {
-				const createCmsResult: CreateCmsResult = {
-					listRegisteredServersResult: result,
-					connection: connection
-				};
-				return Promise.resolve(createCmsResult);
-			}
-		} catch (errorString) {
-			const error = new Error(errorString.message);
-			return Promise.reject(error);
+			const createCmsResult: CreateCmsResult = {
+				listRegisteredServersResult: result,
+				connection: connection
+			};
+			return createCmsResult;
+		} catch (error) {
+			throw error;
 		}
 	}
 
@@ -232,9 +227,8 @@ export class CmsUtils {
 					}
 				}
 			}
-		} catch (errorString) {
-			let error = new Error(errorString.message);
-			return Promise.reject(error);
+		} catch (error) {
+			throw error;
 		}
 	}
 
@@ -268,7 +262,7 @@ export class CmsUtils {
 		return this._credentialProvider;
 	}
 
-	public connection(initialConnectionProfile?: azdata.IConnectionProfile): Thenable<azdata.connection.Connection> {
+	public async connection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection> {
 		if (!initialConnectionProfile) {
 			initialConnectionProfile = {
 				connectionName: undefined,
@@ -286,7 +280,8 @@ export class CmsUtils {
 				options: {}
 			};
 		}
-		return this.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false }).then(async (connection) => {
+		try {
+			let connection = await this.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false });
 			if (connection) {
 				// remove group ID from connection if a user chose connection
 				// from the recent connections list
@@ -299,12 +294,14 @@ export class CmsUtils {
 			} else {
 				return Promise.reject();
 			}
-		});
+		} catch (error) {
+			throw error;
+		}
 	}
 
 	// Static Functions
 
-	public static getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
+	public getConnectionProfile(connection: azdata.connection.Connection): azdata.IConnectionProfile {
 		let connectionProfile: azdata.IConnectionProfile = {
 			connectionName: connection.options.connectionName,
 			serverName: connection.options.server,
@@ -323,7 +320,7 @@ export class CmsUtils {
 		return connectionProfile;
 	}
 
-	public static didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
+	public didConnectionChange(connectionA: azdata.connection.Connection, connectionB: azdata.connection.Connection): boolean {
 		return (connectionA !== connectionB) || ((connectionA.connectionId === connectionB.connectionId) &&
 			(connectionA.options.savePassword !== connectionA.options.savePassword));
 	}

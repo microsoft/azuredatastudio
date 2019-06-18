@@ -47,7 +47,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
 				if (result) {
 					// cache new connection is different from old one
-					if (CmsUtils.didConnectionChange(this._connection, result.connection)) {
+					if (this.appContext.cmsUtils.didConnectionChange(this._connection, result.connection)) {
 						this._connection = result.connection;
 						this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
 					}
@@ -86,10 +86,11 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					}
 				}
 			}, (error) => {
-				let errorText = localize('cms.errors.expandCmsFail', 'The Central Management Server {0} could not be found or is offline', this.name);
-				this.appContext.apiWrapper.showErrorMessage(error ? error.message : errorText);
-				Promise.reject(error ? new Error(error.message) : errorText);
 				this.treeChangeHandler.notifyNodeChanged(undefined);
+				if (error) {
+					this.appContext.apiWrapper.showErrorMessage(error.message);
+					throw error;
+				}
 				return [];
 			});
 		} catch {
