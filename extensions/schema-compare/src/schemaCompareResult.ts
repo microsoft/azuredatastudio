@@ -476,7 +476,7 @@ export class SchemaCompareResult {
 		}).component();
 
 		this.cancelCompareButton.onDidClick(async (click) => {
-			this.cancelCompare();
+			await this.cancelCompare();
 		});
 	}
 
@@ -484,7 +484,7 @@ export class SchemaCompareResult {
 
 		Telemetry.sendTelemetryEvent('SchemaCompareCancelStarted', {
 			'startTime:': Date.now().toString(),
-			'operationId': this.comparisonResult.operationId
+			'operationId': this.operationId
 		});
 
 		// clean the pane
