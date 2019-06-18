@@ -210,20 +210,6 @@ export class JupyterController implements vscode.Disposable {
 		});
 	}
 
-	public getTextToSendToTerminal(shellType: any): string {
-		if (utils.getOSPlatform() === utils.Platform.Windows && typeof shellType === 'string') {
-			if (shellType.endsWith('powershell.exe')) {
-				return localizedConstants.msgManagePackagesPowershell;
-			} else if (shellType.endsWith('cmd.exe')) {
-				return localizedConstants.msgManagePackagesCmd;
-			} else {
-				return localizedConstants.msgManagePackagesBash;
-			}
-		} else {
-			return localizedConstants.msgManagePackagesBash;
-		}
-	}
-
 	public get jupyterInstallation() {
 		return this._jupyterInstallation;
 	}
