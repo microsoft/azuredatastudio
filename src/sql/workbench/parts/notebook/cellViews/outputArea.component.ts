@@ -9,6 +9,7 @@ import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 
@@ -24,6 +25,7 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 
 	constructor(
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
+		@Inject(IOpenerService) private readonly openerService: IOpenerService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef
 	) {
 		super();
@@ -42,6 +44,10 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 				}
 			}));
 		}
+	}
+
+	public get isTrusted(): boolean {
+		return this.cellModel.trustedMode;
 	}
 
 	private setFocusAndScroll(node: HTMLElement): void {
