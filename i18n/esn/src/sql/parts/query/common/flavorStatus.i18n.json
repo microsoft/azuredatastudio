@@ -8,6 +8,8 @@
 	],
 	"chooseSqlLang": "Elegir lenguaje SQL",
 	"changeProvider": "Cambiar proveedor de lenguaje SQL",
+	"changeSqlProvider": "Cambiar el proveedor de SQL Engine",
 	"alreadyConnected": "Existe una conexión mediante el motor {0}. Para cambiar, por favor desconecte o cambie la conexión",
+	"noEditor": "Ningún editor de texto activo en este momento",
 	"pickSqlProvider": "Seleccione proveedor de lenguaje de SQL"
 }
