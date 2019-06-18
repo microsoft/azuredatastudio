@@ -9,6 +9,18 @@
 	align-items: center;
 }
 
+.monaco-tl-indent {
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 16px;
+	pointer-events: none;
+}
+
+.monaco-tl-indent > svg {
+	overflow: visible;
+}
+
 .monaco-tl-twistie,
 .monaco-tl-contents {
 	height: 100%;
