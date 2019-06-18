@@ -289,6 +289,7 @@ export class AsyncTableView<T> implements IDisposable {
 
 	private updateScrollWidth(): void {
 		this.scrollWidth = this.columns.reduce((p, c) => p + c.width!, 0);
+		this.rowsContainer.style.width = `${this.scrollWidth}px`;
 		this.scrollableElement.setScrollDimensions({ scrollWidth: this.scrollWidth + 10 });
 	}
 
@@ -374,8 +375,6 @@ export class AsyncTableView<T> implements IDisposable {
 				this.rowsContainer.style.webkitTransform = '';
 			}
 		}
-
-		this.rowsContainer.style.width = `${Math.max(scrollWidth, this.renderWidth)}px`;
 
 		this.canUseTranslate3d = canUseTranslate3d;
 
@@ -510,6 +509,10 @@ export class AsyncTableView<T> implements IDisposable {
 
 	private removeRowFromDOM(index: number): void {
 		const item = this.visibleRows[index];
+
+		if (!item) {
+			return;
+		}
 
 		if (item.datapromise) {
 			item.datapromise.cancel();
