@@ -7,10 +7,22 @@
   resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-3.12.1.tgz#5c6f4a1eabca84792fbd916f0cb40847f123c656"
   integrity sha512-SGGAhXLHDx+PK4YLNcNGa6goPf9XRWQNAUUbffkwVGGXIxmDKWyGGL4inzq2sPmExu431Ekb9aEMn9BkPqEYFA==
 
+"@types/node@*":
+  version "12.0.8"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.0.8.tgz#551466be11b2adc3f3d47156758f610bd9f6b1d8"
+  integrity sha512-b8bbUOTwzIY3V5vDTY1fIJ+ePKDUBqt2hC2woVGotdQQhG/2Sh62HOKHrT7ab+VerXAcPyAiTEipPu/FsreUtg==
+
 "@types/node@^7.0.43":
   version "7.10.6"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-7.10.6.tgz#c42137f0f2f6458bf0c898d65f48c5f600911475"
   integrity sha512-d0BOAicT0tEdbdVQlLGOVul1kvg6YvbaADRCThGCz5NJ0e9r00SofcR1x69hmlCyrHuB6jd4cKzL9bMLjPnpAA==
+
+"@types/walk@^2.3.0":
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/@types/walk/-/walk-2.3.0.tgz#1bfeb19f6fab63a1a39f929c0f2b4c02134468f8"
+  integrity sha512-I1w1RJW5kowe7JnekvVTSD/Lek8WK0N/Fz80n9Chnb5jYo+mne4tDthgCAV/Fo1tym9m8W6stfsJQvjRMpOHgw==
+  dependencies:
+    "@types/node" "*"
 
 agent-base@4, agent-base@^4.1.0:
   version "4.3.0"

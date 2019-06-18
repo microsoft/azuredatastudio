@@ -42,6 +42,7 @@
     },
     "dependencies": {
         "@types/js-yaml": "^3.12.1",
+        "@types/walk": "^2.3.0",
         "vscode-nls": "^4.1.1"
     }
 }
