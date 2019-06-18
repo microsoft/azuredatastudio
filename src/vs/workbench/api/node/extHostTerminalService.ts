@@ -21,7 +21,7 @@ import { IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 // {{SQL CARBON EDIT}}
 // import { ExtHostVariableResolverService } from 'vs/workbench/api/node/extHostDebugService';
 import { ExtHostDocumentsAndEditors } from 'vs/workbench/api/common/extHostDocumentsAndEditors';
-import { getDefaultShell, detectWindowsShells } from 'vs/workbench/contrib/terminal/node/terminal';
+import { getDefaultShell, detectAvailableShells } from 'vs/workbench/contrib/terminal/node/terminal';
 
 const RENDERER_NO_PROCESS_ID = -1;
 
@@ -578,11 +578,8 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 		return id;
 	}
 
-	public $requestWindowsShells(): Promise<IShellDefinitionDto[]> {
-		if (!platform.isWindows) {
-			throw new Error('Can only detect Windows shells on Windows');
-		}
-		return detectWindowsShells();
+	public $requestAvailableShells(): Promise<IShellDefinitionDto[]> {
+		return detectAvailableShells();
 	}
 
 	private _onProcessExit(id: number, exitCode: number): void {
