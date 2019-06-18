@@ -203,7 +203,7 @@ export class FileDialogService implements IFileDialogService {
 			return URI.file(result);
 		}
 
-		return;
+		return undefined; // {{SQL CARBON EDIT}} strict-null-check
 	}
 
 	private toNativeSaveDialogOptions(options: ISaveDialogOptions): Electron.SaveDialogOptions {
