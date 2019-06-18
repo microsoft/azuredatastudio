@@ -455,7 +455,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	}
 
 	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
-		const disposable: DisposableStore = new DisposableStore();
+		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
 		const item = {
@@ -480,7 +480,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			item,
 			parent,
 			children: undefined,
-			dispose() { disposable.dispose(); }
+			dispose(): void { disposable.dispose(); }
 		};
 	}
 
