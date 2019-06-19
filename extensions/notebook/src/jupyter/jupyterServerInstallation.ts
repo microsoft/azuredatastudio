@@ -559,26 +559,6 @@ export default class JupyterServerInstallation {
 			pythonBinPathSuffix);
 	}
 
-	public async getPipPackagesPath(): Promise<string> {
-		let cmd = `"${this.pythonExecutable}" -c "import site; print(site.getsitepackages()[0])"`;
-		return await this.executeBufferedCommand(cmd);
-	}
-
-	public async getCondaPackagesPath(): Promise<string> {
-		let condaExe = this.getCondaExePath();
-		let cmd = `"${condaExe}" info --json`;
-		let condaInfo = await this.executeBufferedCommand(cmd);
-
-		if (condaInfo) {
-			let condaJson = JSON.parse(condaInfo);
-			if (condaJson && Array.isArray(condaJson.pkgs_dirs) && condaJson.pkgs_dirs.length > 0) {
-				return condaJson.pkgs_dirs[0] as string;
-			}
-		}
-
-		return undefined;
-	}
-
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
 		return path.join(
 			pythonInstallPath,

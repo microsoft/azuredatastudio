@@ -104,17 +104,14 @@ export class InstalledPackagesTab {
 
 	public async loadInstalledPackagesInfo(): Promise<void> {
 		let pythonPackages: PythonPkgDetails[];
-		let packagesLocation: string;
 
 		await this.installedPackagesLoader.updateProperties({ loading: true });
 		await this.uninstallPackageButton.updateProperties({ enabled: false });
 		try {
 			if (this.dialog.currentPkgType === PythonPkgType.Anaconda) {
 				pythonPackages = await this.jupyterInstallation.getInstalledCondaPackages();
-				packagesLocation = await this.jupyterInstallation.getCondaPackagesPath();
 			} else {
 				pythonPackages = await this.jupyterInstallation.getInstalledPipPackages();
-				packagesLocation = await this.jupyterInstallation.getPipPackagesPath();
 			}
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
@@ -131,19 +128,10 @@ export class InstalledPackagesTab {
 			packageCount = 0;
 		}
 
-		let countMsg: string;
-		if (packagesLocation && packagesLocation.length > 0) {
-			countMsg = localize('managePackages.packageCount', "{0} {1} packages found in '{2}'",
-				packageCount,
-				this.dialog.currentPkgType,
-				packagesLocation);
-		} else {
-			countMsg = localize('managePackages.packageCountNoPath', "{0} {1} packages found",
-				packageCount,
-				this.dialog.currentPkgType);
-		}
 		await this.installedPackageCount.updateProperties({
-			value: countMsg
+			value: localize('managePackages.packageCount', "{0} {1} packages found",
+				packageCount,
+				this.dialog.currentPkgType)
 		});
 
 		if (packageData && packageData.length > 0) {

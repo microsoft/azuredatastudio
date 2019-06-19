@@ -84,10 +84,6 @@ describe('Notebook Extension Python Installation', function () {
 	it('Pip Install Utilities Test', async function () {
 		let install = jupyterController.jupyterInstallation;
 
-		let packagePath = await install.getPipPackagesPath();
-		should(packagePath).not.be.undefined();
-		should(packagePath.length).be.greaterThan(0);
-
 		let testPkg = 'pandas';
 		let testPkgVersion = '0.24.2';
 		let expectedPkg: PythonPkgDetails = { name: testPkg, version: testPkgVersion };
@@ -111,8 +107,6 @@ describe('Notebook Extension Python Installation', function () {
 		// Anaconda is not included in our Python package, so all
 		// the conda utilities should fail.
 		should(install.usingConda).be.false();
-
-		should(install.getCondaPackagesPath()).be.rejected();
 
 		should(install.getInstalledCondaPackages()).be.rejected();
 
