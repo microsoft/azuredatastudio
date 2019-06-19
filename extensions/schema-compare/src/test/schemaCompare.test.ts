@@ -38,7 +38,8 @@ const mockSourceEndpoint: azdata.SchemaCompareEndpointInfo = {
 	serverName: '',
 	databaseName: '',
 	ownerUri: '',
-	packageFilePath: mocksource
+	packageFilePath: mocksource,
+	connectionDetails: undefined
 };
 
 const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
@@ -47,7 +48,8 @@ const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 	serverName: '',
 	databaseName: '',
 	ownerUri: '',
-	packageFilePath: mocktarget
+	packageFilePath: mocktarget,
+	connectionDetails: undefined
 };
 
 describe('SchemaCompareDialog.openDialog', function (): void {

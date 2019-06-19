@@ -44,8 +44,37 @@ export function getEndpointName(endpoint: azdata.SchemaCompareEndpointInfo): str
 	}
 
 	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database) {
+		if (!endpoint.serverName && endpoint.connectionDetails) {
+			endpoint.serverName = endpoint.connectionDetails['serverName'];
+		}
 		return `${endpoint.serverName}.${endpoint.databaseName}`;
 	} else {
 		return endpoint.packageFilePath;
 	}
+}
+
+function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azdata.IConnectionProfile {
+	return {
+		serverName: details['serverName'],
+		databaseName: details['databaseName'],
+		authenticationType: details['authenticationType'],
+		providerName: 'MSSQL',
+		connectionName: '',
+		userName: details['userName'],
+		password: details['password'],
+		savePassword: false,
+		groupFullName: undefined,
+		saveProfile: true,
+		id: undefined,
+		groupId: undefined,
+		options: details['options']
+	};
+}
+
+export async function verifyConnectionAndGetOwnerUri(endpoint: azdata.SchemaCompareEndpointInfo): Promise<string> {
+	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
+		let connection = await azdata.connection.connect(connectionInfoToConnectionProfile(endpoint.connectionDetails), false, false);
+		return await azdata.connection.getUriForConnection(connection.connectionId);
+	}
+	return '';
 }
