@@ -85,11 +85,7 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 				}
 			}, (error) => {
 				this.treeChangeHandler.notifyNodeChanged(undefined);
-				if (error) {
-					this.appContext.apiWrapper.showErrorMessage(error.message);
-					throw error;
-				}
-				return [];
+				throw error;
 			});
 		} catch {
 			return [];

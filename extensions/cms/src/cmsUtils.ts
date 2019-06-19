@@ -111,28 +111,20 @@ export class CmsUtils {
 			ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			// If the ownerUri is still undefined, then open a connection dialog with the connection
 			if (!ownerUri) {
-				try {
-					let result = await this.connection(initialConnectionProfile);
-					if (result) {
-						ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
-						connection = result;
-					}
-				} catch (error) {
-					throw error;
+				let result = await this.connection(initialConnectionProfile);
+				if (result) {
+					ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
+					connection = result;
 				}
 			}
 		}
-		try {
-			let result = await provider.createCmsServer(name, description, connection, ownerUri);
-			const createCmsResult: CreateCmsResult = {
-				listRegisteredServersResult: result,
-				connection: connection,
-				ownerUri: ownerUri
-			};
-			return createCmsResult;
-		} catch (error) {
-			throw error;
-		}
+		let result = await provider.createCmsServer(name, description, connection, ownerUri);
+		const createCmsResult: CreateCmsResult = {
+			listRegisteredServersResult: result,
+			connection: connection,
+			ownerUri: ownerUri
+		};
+		return createCmsResult;
 	}
 
 	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
@@ -197,24 +189,18 @@ export class CmsUtils {
 				authTypeChanged: true
 			}
 		};
-		try {
-			let connection = await this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false });
-			if (connection && connection.options) {
-				if (connection.options.server === parentServerName) {
-					// error out for same server registration
-					let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
-					this.showErrorMessage(errorText);
-					return false;
-				} else {
-					let registeredServerName = connection.options.registeredServerName === '' ? connection.options.server : connection.options.registeredServerName;
-					let result = await provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, connection.options.registeredServerDescription, connection);
-					if (result) {
-						return Promise.resolve(result);
-					}
-				}
+		let connection = await this.openConnectionDialog([cmsProvider], initialProfile, { saveConnection: false });
+		if (connection && connection.options) {
+			if (connection.options.server === parentServerName) {
+				// error out for same server registration
+				let errorText = localize('cms.errors.sameServerUnderCms', 'You cannot add a shared registered server with the same name as the Configuration Server');
+				this.showErrorMessage(errorText);
+				throw new Error(errorText);
+			} else {
+				let registeredServerName = connection.options.registeredServerName === '' ? connection.options.server : connection.options.registeredServerName;
+				let result = await provider.addRegisteredServer(ownerUri, relativePath, registeredServerName, connection.options.registeredServerDescription, connection);
+				return result;
 			}
-		} catch (error) {
-			throw error;
 		}
 	}
 
@@ -266,22 +252,18 @@ export class CmsUtils {
 				options: {}
 			};
 		}
-		try {
-			let connection = await this.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false });
-			if (connection) {
-				// remove group ID from connection if a user chose connection
-				// from the recent connections list
-				connection.options['groupId'] = null;
-				connection.providerName = mssqlProvider;
-				if (connection.options.savePassword) {
-					await this.savePassword(connection.options.user, connection.options.password);
-				}
-				return connection;
-			} else {
-				return Promise.reject();
+		let connection = await this.openConnectionDialog([cmsProvider], initialConnectionProfile, { saveConnection: false });
+		if (connection) {
+			// remove group ID from connection if a user chose connection
+			// from the recent connections list
+			connection.options['groupId'] = null;
+			connection.providerName = mssqlProvider;
+			if (connection.options.savePassword) {
+				await this.savePassword(connection.options.user, connection.options.password);
 			}
-		} catch (error) {
-			throw error;
+			return connection;
+		} else {
+			return Promise.reject();
 		}
 	}
 
