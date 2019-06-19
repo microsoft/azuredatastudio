@@ -210,7 +210,7 @@ export class AddNewPackageTab {
 							let releaseInfo = packagesJson.releases[versionKey];
 							return Array.isArray(releaseInfo) && releaseInfo.length > 0;
 						});
-						versionNums = this.sortPackageVersions(versionKeys);
+						versionNums = AddNewPackageTab.sortPackageVersions(versionKeys);
 					}
 
 					if (packagesJson.info && packagesJson.info.summary) {
@@ -248,7 +248,7 @@ export class AddNewPackageTab {
 				if (Array.isArray(packages)) {
 					let allVersions = packages.filter(pkg => pkg && pkg.version).map(pkg => pkg.version);
 					let singletonVersions = new Set<string>(allVersions);
-					let sortedVersions = this.sortPackageVersions(Array.from(singletonVersions));
+					let sortedVersions = AddNewPackageTab.sortPackageVersions(Array.from(singletonVersions));
 					return {
 						name: packageName,
 						versions: sortedVersions,
@@ -261,7 +261,7 @@ export class AddNewPackageTab {
 		return undefined;
 	}
 
-	private sortPackageVersions(versions: string[]): string[] {
+	public static sortPackageVersions(versions: string[]): string[] {
 		return versions.sort((first, second) => {
 			// sort in descending order
 			let firstVersion = first.split('.').map(numStr => Number.parseInt(numStr));

@@ -13,6 +13,7 @@ import { JupyterController } from '../jupyter/jupyterController';
 import JupyterServerInstallation, { PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
 import { pythonBundleVersion } from '../common/constants';
 import { executeStreamedCommand } from '../common/utils';
+import { AddNewPackageTab } from '../dialog/managePackages/addNewPackageTab';
 
 describe('Notebook Extension Python Installation', function () {
 	this.timeout(600000);
@@ -20,6 +21,7 @@ describe('Notebook Extension Python Installation', function () {
 	let installComplete = false;
 	let pythonInstallDir = process.env.PYTHON_TEST_PATH;
 	let jupyterController: JupyterController;
+
 	before(async function () {
 		assert.ok(pythonInstallDir, 'Python install directory was not defined.');
 
@@ -113,5 +115,13 @@ describe('Notebook Extension Python Installation', function () {
 		should(install.installCondaPackage('pandas', '0.24.2')).be.rejected();
 
 		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
+	});
+
+	it('Manage Packages Dialog: New Package Test', async function () {
+		let testVersions = ['1.0.0', '1.1', '0.0.0.9', '0.0.5', '100', '0.3', '3'];
+		let expectedVerions = ['100', '3', '1.1', '1.0.0', '0.3', '0.0.5', '0.0.0.9'];
+
+		let actualVersions = AddNewPackageTab.sortPackageVersions(testVersions);
+		should(actualVersions).be.deepEqual(expectedVerions);
 	});
 });
