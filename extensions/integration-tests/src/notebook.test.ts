@@ -193,12 +193,12 @@ class NotebookTester {
 
 		// When I save it, it should no longer be dirty
 		let saved = await notebook.document.save();
-		assert(saved === true, 'Expect save to succeed');
+		assert(saved === true, 'Expect initial save to succeed');
 		// Note: need to sleep after save as the change events happen after save
 		// We need to give back the thread or the event won't have been drained.
 		// This is consistent with VSCode APIs, so keeping as-is
 		await sleep(10);
-		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after save');
+		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after initial save');
 
 		// And when I edit again, should become dirty
 		let edited = await notebook.edit(builder => {
@@ -214,8 +214,8 @@ class NotebookTester {
 		// Finally on 2nd save it should no longer be dirty
 		saved = await notebook.document.save();
 		await sleep(10);
-		assert(saved === true, 'Expect save to succeed');
-		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after save');
+		assert(saved === true, 'Expect save after edit to succeed');
+		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after 2nd save');
 
 	}
 
