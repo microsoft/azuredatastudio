@@ -5,6 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
+import { CommandContext, BuiltInCommands } from './constants';
 
 /**
  * Wrapper class to act as a facade over VSCode and Data APIs and allow us to test / mock callbacks into
@@ -54,6 +55,10 @@ export class ApiWrapper {
 
 	public startBackgroundOperation(operationInfo: azdata.BackgroundOperationInfo): void {
 		azdata.tasks.startBackgroundOperation(operationInfo);
+	}
+
+	public setCommandContext(key: CommandContext | string, value: any): Thenable<any> {
+		return vscode.commands.executeCommand(BuiltInCommands.SetContext, key, value);
 	}
 
 	/**
