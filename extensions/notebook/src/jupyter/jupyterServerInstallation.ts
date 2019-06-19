@@ -134,10 +134,17 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		let pythonPackagePathLocal = this._pythonInstallationPath + '/' + packageName;
+		let installPath: string;
+		if (this._usingExistingPython) {
+			installPath = utils.getUserHome();
+		} else {
+			installPath = this._pythonInstallationPath;
+		}
+
+		let pythonPackagePathLocal = path.join(installPath, packageName);
 		return new Promise((resolve, reject) => {
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
-			fs.mkdirs(this._pythonInstallationPath, (err) => {
+			fs.mkdirs(installPath, (err) => {
 				if (err) {
 					backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDirectoryError);
 					return reject(err);
@@ -177,7 +184,7 @@ export class JupyterServerInstallation {
 					.on('close', () => {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
-						let pythonSourcePath = path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
+						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
 						if (!this._usingExistingPython && fs.existsSync(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
@@ -186,7 +193,7 @@ export class JupyterServerInstallation {
 								return reject(err);
 							}
 						}
-						decompress(pythonPackagePathLocal, this._pythonInstallationPath).then(files => {
+						decompress(pythonPackagePathLocal, installPath).then(files => {
 							//Delete zip/tar file
 							fs.unlink(pythonPackagePathLocal, (err) => {
 								if (err) {
@@ -216,7 +223,11 @@ export class JupyterServerInstallation {
 			? this._pythonInstallationPath
 			: path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
 
-		this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
+		if (this._usingExistingPython) {
+			this._pythonPackageDir = path.join(utils.getUserHome(), 'offlinePackages');
+		} else {
+			this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
+		}
 
 		// Update python paths and properties to reference user's local python.
 		let pythonBinPathSuffix = process.platform === constants.winPlatform ? '' : 'bin';
