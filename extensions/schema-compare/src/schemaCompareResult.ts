@@ -250,6 +250,7 @@ export class SchemaCompareResult {
 					width: 150
 				}
 			],
+			CSSStyles: { 'left': '15px' }
 		});
 
 		this.splitView.addItem(this.differencesTable);
