@@ -88,7 +88,7 @@ export class JupyterController implements vscode.Disposable {
 
 	private registerNotebookProvider(): JupyterNotebookProvider {
 		let notebookProvider = new JupyterNotebookProvider((documentUri: vscode.Uri) => new LocalJupyterServerManager({
-			documentPath: documentUri.scheme === 'untitled' ? utils.getUserHome() : documentUri.fsPath,
+			documentPath: documentUri.fsPath,
 			jupyterInstallation: this._jupyterInstallation,
 			extensionContext: this.extensionContext,
 			apiWrapper: this.apiWrapper
