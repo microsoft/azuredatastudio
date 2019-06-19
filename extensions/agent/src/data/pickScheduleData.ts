@@ -26,12 +26,11 @@ export class PickScheduleData implements IAgentDialogData {
 			let result = await agentService.getJobSchedules(this.ownerUri);
 			if (result && result.success) {
 				this.schedules = result.schedules;
-				return Promise.resolve(this.schedules);
+				return this.schedules;
 			}
 		} catch (error) {
-			return Promise.reject(new Error(error.message));
+			throw error;
 		}
-
 	}
 
 	public async save() {
