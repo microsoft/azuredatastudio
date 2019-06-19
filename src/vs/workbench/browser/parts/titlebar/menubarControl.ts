@@ -34,6 +34,8 @@ import { assign } from 'vs/base/common/objects';
 import { mnemonicMenuLabel, unmnemonicLabel } from 'vs/base/common/labels';
 import { IAccessibilityService, AccessibilitySupport } from 'vs/platform/accessibility/common/accessibility';
 import { withNullAsUndefined } from 'vs/base/common/types';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { isFullscreen } from 'vs/base/browser/browser';
 
 export abstract class MenubarControl extends Disposable {
 
@@ -109,8 +111,6 @@ export abstract class MenubarControl extends Disposable {
 		this.menuUpdater = this._register(new RunOnceScheduler(() => this.doUpdateMenubar(false), 200));
 
 		this.notifyUserOfCustomMenubarAccessibility();
-
-		this.registerListeners();
 	}
 
 	protected abstract doUpdateMenubar(firstTime: boolean): void;
@@ -303,6 +303,8 @@ export class NativeMenubarControl extends MenubarControl {
 
 			this.doUpdateMenubar(true);
 		});
+
+		this.registerListeners();
 	}
 
 	protected doUpdateMenubar(firstTime: boolean): void {
@@ -460,7 +462,8 @@ export class CustomMenubarControl extends MenubarControl {
 		@IPreferencesService preferencesService: IPreferencesService,
 		@IEnvironmentService environmentService: IEnvironmentService,
 		@IAccessibilityService accessibilityService: IAccessibilityService,
-		@IThemeService private readonly themeService: IThemeService
+		@IThemeService private readonly themeService: IThemeService,
+		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService
 	) {
 
 		super(
@@ -484,6 +487,8 @@ export class CustomMenubarControl extends MenubarControl {
 		this.windowService.getRecentlyOpened().then((recentlyOpened) => {
 			this.recentlyOpened = recentlyOpened;
 		});
+
+		this.registerListeners();
 
 		registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 			const menubarActiveWindowFgColor = theme.getColor(TITLE_BAR_ACTIVE_FOREGROUND);
@@ -645,7 +650,7 @@ export class CustomMenubarControl extends MenubarControl {
 			enableMenuBarMnemonics = true;
 		}
 
-		return enableMenuBarMnemonics;
+		return enableMenuBarMnemonics && (!isWeb || isFullscreen());
 	}
 
 	private setupCustomMenubar(firstTime: boolean): void {
@@ -753,6 +758,11 @@ export class CustomMenubarControl extends MenubarControl {
 		this._register(DOM.addDisposableListener(window, DOM.EventType.RESIZE, () => {
 			this.menubar.blur();
 		}));
+
+		// Mnemonics require fullscreen in web
+		if (isWeb) {
+			this._register(this.layoutService.onFullscreenChange(e => this.updateMenubar()));
+		}
 	}
 
 	get onVisibilityChange(): Event<boolean> {
