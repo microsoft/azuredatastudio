@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 
 export interface IPackageInfo {
 	name: string;
@@ -74,6 +75,9 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 export async function verifyConnectionAndGetOwnerUri(endpoint: azdata.SchemaCompareEndpointInfo): Promise<string> {
 	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
 		let connection = await azdata.connection.connect(connectionInfoToConnectionProfile(endpoint.connectionDetails), false, false);
+		if (connection.errorMessage) {
+			vscode.window.showErrorMessage(connection.errorMessage);
+		}
 		return await azdata.connection.getUriForConnection(connection.connectionId);
 	}
 	return '';
