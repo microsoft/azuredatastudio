@@ -24,5 +24,7 @@
 	"config.jupyter.kernelConfigValuesDescription": "Configuration options for Jupyter kernels. This is automatically managed and not recommended to be manually edited.",
 	"title.reinstallNotebookDependencies": "Reinstall Notebook dependencies",
 	"title.configurePython": "Configure Python for Notebooks",
-	"title.installPackages": "Install Packages"
+	"title.installPackages": "Install Packages",
+	"book.displayName": "Books",
+	"book.description": "Adds Jupyter Book support to Azure Data Studio"
 }

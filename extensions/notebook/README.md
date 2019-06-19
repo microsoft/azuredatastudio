@@ -2,6 +2,12 @@
 
 Welcome to the Notebook extension for Azure Data Studio! This extension supports core notebook functionality including configuration settings, actions such as New / Open Notebook, and more.
 
+## Books in Azure Data Studio
+
+The Notebook extension also adds support for Jupyter Books in Azure Data Studio.
+
+Download sample book https://github.com/jupyter/jupyter-book and open folder in Azure Data Studio to get started.
+
 ## Code of Conduct
 
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.

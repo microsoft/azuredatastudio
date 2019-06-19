@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import { Book } from './bookTreeItem';
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 
@@ -15,13 +16,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 	private tocPath: string[];
 
 	constructor(private workspaceRoot: string) {
-		//this.tocPath = [];
-		//this.tocPath.push(path.join(this.workspaceRoot, '_data', 'toc.yml'));
-		this.tocPath = this.getFiles(this.workspaceRoot, []);
-		if (this.tocPath === undefined || this.tocPath.length === 0) {
-			vscode.commands.executeCommand('setContext', 'bookOpened', false);
-		} else {
-			vscode.commands.executeCommand('setContext', 'bookOpened', true);
+		if (workspaceRoot !== '') {
+			this.tocPath = this.getFiles(this.workspaceRoot, []);
+			if (this.tocPath === undefined || this.tocPath.length === 0) {
+				vscode.commands.executeCommand('setContext', 'bookOpened', false);
+			} else {
+				vscode.commands.executeCommand('setContext', 'bookOpened', true);
+			}
 		}
 	}
 
@@ -37,10 +38,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 			}
 		}
 		return files_;
-	}
-
-	refresh(): void {
-		this._onDidChangeTreeData.fire();
 	}
 
 	async openNotebook(resource: vscode.Uri): Promise<void> {
@@ -68,14 +65,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 		let books: Book[] = [];
 		for (let i in this.tocPath) {
 			let root = this.tocPath[i].substring(0, this.tocPath[i].lastIndexOf('_data/toc.yml'));
-			const config = yaml.safeLoad(fs.readFileSync(root + '/_config.yml', 'utf-8'));
-			const toc = yaml.safeLoad(fs.readFileSync(this.tocPath[i], 'utf-8'));
-			let book = new Book(config.title, root, toc, vscode.TreeItemCollapsibleState.Expanded);
-			/* book.iconPath = {
-				light: path.join(__filename, '..', '..', 'resources', 'light', '.svg'),
-				dark: path.join(__filename, '..', '..', 'resources', 'dark', '.svg')
-			}; */
-			books.push(book);
+			try {
+				const config = yaml.safeLoad(fs.readFileSync(root + '/_config.yml', 'utf-8'));
+				const toc = yaml.safeLoad(fs.readFileSync(this.tocPath[i], 'utf-8'));
+				let book = new Book(config.title, root, toc, vscode.TreeItemCollapsibleState.Expanded);
+				/* book.iconPath = {
+					light: path.join(__filename, '..', '..', 'resources', 'light', '.svg'),
+					dark: path.join(__filename, '..', '..', 'resources', 'dark', '.svg')
+				}; */
+				books.push(book);
+			} catch (e) {
+				// TODO: missing _config.yml file
+			}
 		}
 		return books;
 	}
@@ -96,13 +97,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 						dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
 					};
 					notebooks.push(notebook);
-				} else {
+				} else if (this.pathExists(pathToMarkdown)) {
 					let markdown = new Book(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToMarkdown], });
 					// markdown.iconPath = {
 					// 	light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
 					// 	dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
 					// };
 					notebooks.push(markdown);
+				} else {
+					// TODO: missing notebook/markdown file
 				}
 			} else {
 				// TODO: search, divider, header
@@ -122,20 +125,3 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 	}
 }
 
-export class Book extends vscode.TreeItem {
-
-	constructor(
-		public readonly title: string,
-		public readonly root: string,
-		public readonly toc: any[],
-		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
-		public uri?: string,
-		public readonly type?: vscode.FileType,
-		public command?: vscode.Command
-	) {
-		super(title, collapsibleState);
-	}
-
-	contextValue = 'book';
-
-}

@@ -14,6 +14,7 @@ import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi } from './types';
 import { CellType } from './contracts/content';
 import { getErrorMessage } from './common/utils';
+import { BookTreeViewProvider } from './book/bookTreeView';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,6 +26,11 @@ let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
+
+	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.rootPath || '');
+	vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider);
+	vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource));
+
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
