@@ -568,12 +568,15 @@ export default class JupyterServerInstallation {
 		let condaExe = this.getCondaExePath();
 		let cmd = `"${condaExe}" info --json`;
 		let condaInfo = await this.executeBufferedCommand(cmd);
-		let condaJson = JSON.parse(condaInfo);
-		if (condaJson && condaJson.pkgs_dirs && condaJson.pkgs_dirs.length > 0) {
-			return condaJson.pkgs_dirs[0] as string;
-		} else {
-			return undefined;
+
+		if (condaInfo) {
+			let condaJson = JSON.parse(condaInfo);
+			if (condaJson && Array.isArray(condaJson.pkgs_dirs) && condaJson.pkgs_dirs.length > 0) {
+				return condaJson.pkgs_dirs[0] as string;
+			}
 		}
+
+		return undefined;
 	}
 
 	public static getPythonExePath(pythonInstallPath: string, useExistingInstall: boolean): string {
