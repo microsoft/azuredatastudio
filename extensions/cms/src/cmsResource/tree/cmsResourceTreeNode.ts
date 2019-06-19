@@ -15,7 +15,6 @@ import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { RegisteredServerTreeNode } from './registeredServerTreeNode';
 import { ServerGroupTreeNode } from './serverGroupTreeNode';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
-import { CmsUtils } from '../../cmsUtils';
 
 const localize = nls.loadMessageBundle();
 
