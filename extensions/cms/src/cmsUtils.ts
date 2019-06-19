@@ -33,20 +33,7 @@ export class CmsUtils {
 
 	private _credentialProvider: azdata.CredentialProvider;
 	private _cmsService: mssql.CmsService;
-	private _registeredCmsServers: ICmsResourceNodeInfo[];
-
-	constructor() {
-		// 1) Get a credential provider
-		// 2) Store the credential provider for use later
-		this.setupCredentialProvider();
-	}
-
-	private async setupCredentialProvider(): Promise<azdata.CredentialProvider> {
-		if (!this._credentialProvider) {
-			this._credentialProvider = await azdata.credentials.getProvider(CredentialNamespace);
-		}
-		return this._credentialProvider;
-	}
+	private _registeredCmsServers: ICmsResourceNodeInfo[] = [];
 
 	public async savePassword(username: string, password: string): Promise<boolean> {
 		let provider = await this.credentialProvider();
@@ -163,9 +150,6 @@ export class CmsUtils {
 	}
 
 	public async cacheRegisteredCmsServer(name: string, description: string, ownerUri: string, connection: azdata.connection.Connection): Promise<void> {
-		if (!this._registeredCmsServers) {
-			this._registeredCmsServers = [];
-		}
 		let cmsServerNode: ICmsResourceNodeInfo = {
 			name: name,
 			description: description,

@@ -41,7 +41,6 @@ export class CmsConnectionWidget extends ConnectionWidget {
 	constructor(options: azdata.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
-		authTypeChanged: boolean = false,
 		@IThemeService _themeService: IThemeService,
 		@IContextViewService _contextViewService: IContextViewService,
 		@ILayoutService _layoutService: ILayoutService,
@@ -55,7 +54,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			_clipboardService, _configurationService, _accountManagementService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
-			if (OS === OperatingSystem.Windows || authTypeChanged) {
+			if (OS === OperatingSystem.Windows) {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
 			} else {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
