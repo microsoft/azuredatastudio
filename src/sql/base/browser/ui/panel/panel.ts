@@ -47,6 +47,7 @@ interface IInternalPanelTab {
 	disposables: IDisposable[];
 	label: HTMLElement;
 	body: HTMLElement;
+	containsWebView?: boolean;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -111,9 +112,10 @@ export class TabbedPanel extends Disposable {
 		return this._tabMap.has(tab.identifier);
 	}
 
-	public pushTab(tab: IPanelTab, index?: number): PanelTabIdentifier {
+	public pushTab(tab: IPanelTab, index?: number, containsWebView?: boolean): PanelTabIdentifier {
 		let internalTab = { tab } as IInternalPanelTab;
 		internalTab.disposables = [];
+		internalTab.containsWebView = containsWebView;
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab, index);
 		if (!this._shownTabId) {
@@ -182,6 +184,12 @@ export class TabbedPanel extends Disposable {
 		this._shownTabId = id;
 		this.tabHistory.push(id);
 		const tab = this._tabMap.get(this._shownTabId)!; // @anthonydresser we know this can't be undefined since we check further up if the map contains the id
+
+		if (tab.containsWebView && tab.body) {
+			tab.body.remove();
+			tab.body = undefined;
+		}
+
 		if (!tab.body) {
 			tab.body = DOM.$('.tab-container');
 			tab.body.style.width = '100%';
