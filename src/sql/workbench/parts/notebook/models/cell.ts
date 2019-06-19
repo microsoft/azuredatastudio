@@ -42,6 +42,7 @@ export class CellModel implements ICellModel {
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
+	private _stdInVisible: boolean;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -56,6 +57,7 @@ export class CellModel implements ICellModel {
 			this._source = '';
 		}
 		this._isEditMode = this._cellType !== CellTypes.Markdown;
+		this._stdInVisible = false;
 		if (_options && _options.isTrusted) {
 			this._isTrusted = true;
 		} else {
@@ -198,6 +200,14 @@ export class CellModel implements ICellModel {
 		if (val) {
 			this._onCellLoaded.fire(this._cellType);
 		}
+	}
+
+	public get stdInVisible(): boolean {
+		return this._stdInVisible;
+	}
+
+	public set stdInVisible(val: boolean) {
+		this._stdInVisible = val;
 	}
 
 	private notifyExecutionComplete(): void {
