@@ -477,7 +477,7 @@ class GridTable<T> extends Disposable implements IView {
 				}, Object.create(null));
 			})
 		});
-		this.updateResult(this.resultSet);
+		this.table.length = this.resultSet.rowCount;
 
 		let actions = this.getCurrentActions();
 

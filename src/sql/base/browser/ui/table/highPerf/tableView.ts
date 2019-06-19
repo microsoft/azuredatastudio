@@ -31,6 +31,7 @@ export interface IAriaSetProvider<T> {
 export interface ITableViewOptions<T> {
 	rowHeight?: number;
 	mouseSupport?: boolean;
+	initialLength?: number;
 }
 
 const DefaultOptions = {
