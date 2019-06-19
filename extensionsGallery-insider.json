@@ -14,14 +14,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.38.0",
-							"lastUpdated": "4/18/2019",
+							"version": "0.40.0",
+							"lastUpdated": "5/31/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.38.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.40.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -51,7 +51,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.6.0"
+									"value": ">=1.8.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -246,8 +246,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.2",
-							"lastUpdated": "3/20/2019",
+							"version": "0.3.3",
+							"lastUpdated": "5/9/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -474,14 +474,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.0",
-							"lastUpdated": "3/15/2019",
+							"version": "0.8.0",
+							"lastUpdated": "5/8/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.7.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/profiler/profiler-0.8.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -702,14 +702,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.7.0",
-							"lastUpdated": "3/14/2019",
+							"version": "0.8.0",
+							"lastUpdated": "5/8/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.7.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.8.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -759,8 +759,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.12.1",
-							"lastUpdated": "4/17/2019",
+							"version": "0.13.1",
+							"lastUpdated": "5/15/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -774,15 +774,15 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087446"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092819"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Code.Manifest",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087445"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092818"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
-									"source": "https://go.microsoft.com/fwlink/?linkid=2087444"
+									"source": "https://go.microsoft.com/fwlink/?linkid=2092917"
 								}
 							],
 							"properties": [
@@ -1268,14 +1268,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "3/15/2019",
+							"version": "0.3.0",
+							"lastUpdated": "6/3/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/dacpac/dacpac-0.3.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1325,14 +1325,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "3/15/2019",
+							"version": "0.2.0",
+							"lastUpdated": "6/9/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/postgresql-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/postgresql/azuredatastudio-postgresql-0.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1359,6 +1359,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1390,6 +1394,7 @@
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
 									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/PowerShell-2019.5.0.vsix"
+
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1428,56 +1433,62 @@
 					"flags": "preview"
 				},
 				{
-                    "extensionId": "36",
-                    "extensionName": "palenight-theme-dataazurestudio-version",
-                    "displayName": "Palenight Theme",
-                    "shortDescription": "Palenight Theme - Azure Data Studio Version Theme (based on vscode version)",
-                    "publisher": {
-                        "displayName":"JoseRocha",
-                        "publisherId": "JoseRocha",
-                        "publisherName":"JoseRocha"
-                    },
-                    "versions": [
-                        {
-                            "version": "0.0.1",
-                            "lastUpdated": "04/06/2019",
-                            "assetUri": "",
-                            "fallbackAssetUri": "fallbackAssetUri",
-                            "files": [
-                                {
-                                    "assetType": "Microsoft.SQLOps.DownloadPage",
-                                    "source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.1"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Links.Source",
-                                    "source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Icons.Default",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/icon.png"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Content.Details",
-                                "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md>"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Code.Manifest",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json>"
-                                },
-                                {
-                                    "assetType": "Microsoft.VisualStudio.Services.Content.License",
-                                    "source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/LICENSE.txt>"
-                                }
-                            ],
-                            "properties": [
-                                { "key": "Microsoft.VisualStudio.Code.ExtensionDependencies", "value":""},
-                                { "key": "Microsoft.VisualStudio.Code.Engine", "value":"*"}
-                            ]
-                        }
-                    ],
-                    "statistics": [],
-                    "flags": "preview"
-                },
+					"extensionId": "36",
+					"extensionName": "palenight-theme-dataazurestudio-version",
+					"displayName": "Palenight Theme",
+					"shortDescription": "Palenight Theme - Azure Data Studio Version Theme (based on vscode version)",
+					"publisher": {
+						"displayName": "JoseRocha",
+						"publisherId": "JoseRocha",
+						"publisherName": "JoseRocha"
+					},
+					"versions": [
+						{
+							"version": "0.0.2",
+							"lastUpdated": "04/06/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/releases/tag/0.0.2"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Links.Source",
+									"source": "https://github.com/joserocha/azdatastudio-material-palenight-theme/"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/icon.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/joserocha/azdatastudio-material-palenight-theme/master/License.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
 				{
 					"extensionId": "37",
 					"extensionName": "schema-compare",
@@ -1490,14 +1501,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.0",
-							"lastUpdated": "4/17/2019",
+							"version": "0.3.0",
+							"lastUpdated": "6/3/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-0.1.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/schema-compare/schema-compare-0.3.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1527,7 +1538,7 @@
 								},
 								{
 									"key": "Microsoft.AzDataEngine",
-									"value": ">=1.6.0"
+									"value": ">=1.8.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
@@ -1551,14 +1562,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.0.0",
-							"lastUpdated": "4/17/2019",
+							"version": "1.2.0",
+							"lastUpdated": "6/12/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-1.0.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-1.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1595,6 +1606,734 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "39",
+					"extensionName": "managed-instance-dashboard",
+					"displayName": "Managed Instance Dashboard",
+					"shortDescription": "Managed Instance Dashboard",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.3.6",
+							"lastUpdated": "6/18/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.3.6.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/images/ManagedInstanceLogo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/JocaPC/AzureDataStudio-Managed-Instance/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/JocaPC/AzureDataStudio-Managed-Instance"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "40",
+					"extensionName": "cms",
+					"displayName": "Central Management Servers",
+					"shortDescription": "Central Management Servers",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.2.0",
+							"lastUpdated": "5/31/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/cms/cms-0.2.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/cms/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/cms/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "41",
+					"extensionName": "admin-tool-ext-win",
+					"displayName": "Database Administration Tool Extensions for Windows",
+					"shortDescription": "Provides additional Windows-specific functionality to Azure Data Studio",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "0.0.1",
+							"lastUpdated": "5/31/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/admin-tool-ext-win/admin-tool-ext-win-0.0.1.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/Microsoft/vscode-mssql/master/images/sqlserver.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "42",
+					"extensionName": "ads-language-pack-de",
+					"displayName": "German Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for German",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-de-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-de/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-de/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-de/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "43",
+					"extensionName": "ads-language-pack-es",
+					"displayName": "Spanish Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Spanish",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-es-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-es/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-es/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-es/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "44",
+					"extensionName": "ads-language-pack-fr",
+					"displayName": "French Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for French",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-fr-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-fr/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-fr/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-fr/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "45",
+					"extensionName": "ads-language-pack-it",
+					"displayName": "Italian Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Italian",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-it-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-it/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-it/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-it/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "46",
+					"extensionName": "ads-language-pack-ko",
+					"displayName": "Korean Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Korean",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-ko-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ko/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ko/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ko/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "47",
+					"extensionName": "ads-language-pack-pt-br",
+					"displayName": "Portuguese (Brazil) Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Portuguese (Brazil)",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-pt-br-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-pt-BR/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "48",
+					"extensionName": "ads-language-pack-ru",
+					"displayName": "Russian Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Russian",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-ru-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ru/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ru/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ru/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "49",
+					"extensionName": "ads-language-pack-zh-hans",
+					"displayName": "Chinese (Simplified) Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Chinese (Simplified)",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-zh-hans-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hans/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hans/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hans/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},
+				{
+					"extensionId": "50",
+					"extensionName": "ads-language-pack-zh-hant",
+					"displayName": "Chinese (Traditional) Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Chinese (Traditional)",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-zh-hant-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hant/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hant/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-zh-hant/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -1603,7 +2342,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 28
+							"count": 40
 						}
 					]
 				}
