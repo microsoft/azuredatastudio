@@ -341,7 +341,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.updateActiveCell(cell);
 
 		this._contentChangedEmitter.fire({
-			changeType: NotebookChangeType.CellsAdded,
+			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
 			cellIndex: index
 		});
@@ -375,9 +375,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (index > -1) {
 			this._cells.splice(index, 1);
 			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellDeleted,
+				changeType: NotebookChangeType.CellsModified,
 				cells: [cellModel],
-				cellIndex: index
+				cellIndex: index,
+				isDirty: true
 			});
 		} else {
 			this.notifyError(localize('deleteCellFailed', "Failed to delete cell."));
@@ -401,7 +402,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.updateActiveCell(newCells[0]);
 			}
 			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsAdded
+				changeType: NotebookChangeType.CellsModified,
+				isDirty: true
 			});
 		}
 	}

@@ -15,6 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import * as types from 'vs/base/common/types';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -560,7 +561,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let changeData: INotebookModelChangedData = {
 			// Note: we just send all cells for now, not a diff
 			cells: this.convertCellModelToNotebookCell(editor.cells),
-			isDirty: e.isDirty,
+			isDirty: this.getDirtyState(e, editor),
 			providerId: editor.providerId,
 			providers: editor.providers,
 			uri: editor.uri,
@@ -570,10 +571,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return changeData;
 	}
 
+	private getDirtyState(e: NotebookContentChange, editor: MainThreadNotebookEditor): boolean {
+		if (!types.isUndefinedOrNull(e.isDirty)) {
+			return e.isDirty;
+		}
+		return editor.isDirty;
+	}
+
 	mapChangeKind(changeType: NotebookChangeType): NotebookChangeKind {
 		switch (changeType) {
-			case NotebookChangeType.CellDeleted:
-			case NotebookChangeType.CellsAdded:
+			case NotebookChangeType.CellsModified:
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
