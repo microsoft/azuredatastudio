@@ -133,7 +133,7 @@ export class GridPanel {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService
 	) {
-		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
+		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible, scrollDebounce: 0 });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
 				this.state.scrollPosition = e;
