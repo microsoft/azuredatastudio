@@ -52,6 +52,13 @@
                             "container": {
                                 "server-reports-performance-container": {}
                             }
+                        },
+                        {
+                            "id": "server-reports-tempdb",
+                            "title": "TempDB",
+                            "container": {
+                                "server-reports-tempdb-container": {}
+                            }
                         }
                     ]
                 }
@@ -119,6 +126,29 @@
                     "queryFile": "./out/src/sql/waits_paul_randal.sql",
                     "details": {
                         "queryFile": "./out/src/sql/waits_detail_paul_randal.sql",
+                        "label": {
+                            "column": "WaitType",
+                            "state": []
+                        },
+                        "value": "Percentage"
+                    }
+                }
+            },
+            {
+                "id": "extension-wait-resource-statistics",
+                "contrib": {
+                    "type": { 
+                        "bar": {
+                            "dataDirection": "horizontal",
+                            "dataType": "number",
+                            "legendPosition": "none",
+                            "labelFirstColumn": false,
+                            "columnsAsLabels": true
+                        }
+                    },
+                    "queryFile": "./out/src/sql/wait_resources.sql",
+                    "details": {
+                        "queryFile": "./out/src/sql/wait_resources.sql",
                         "label": {
                             "column": "WaitType",
                             "state": []
@@ -207,6 +237,23 @@
                         }
                     ]
                 }
+            },
+            {   
+                "id": "server-reports-tempdb-container",
+                "container": {
+                    "widgets-container": [
+                        {
+                            "name": "Wait Resource Statistics",
+                            "gridItemConfig": {
+                                "sizex": 2,
+                                "sizey": 2
+                            },
+                            "widget": {
+                                "extension-wait-resource-statistics": {}
+                            }
+                        }
+                    ]
+                }
             }
         ],
         "snippets": []
@@ -229,7 +276,7 @@
         "should": "^13.2.1",
         "tslint": "^3.14.0",
         "typemoq": "^2.1.0",
-        "typescript": "^2.6.1",
+        "typescript": "^2.9.2",
         "vsce": "1.36.2",
         "vscode": "^1.1.6"
     }
