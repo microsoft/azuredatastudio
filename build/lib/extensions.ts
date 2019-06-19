@@ -313,8 +313,7 @@ const sqlBuiltInExtensions = [
 	'dacpac',
 	'schema-compare',
 	'resource-deployment',
-	'cms',
-	'book'
+	'cms'
 ];
 // {{SQL CARBON EDIT}} - End
 
