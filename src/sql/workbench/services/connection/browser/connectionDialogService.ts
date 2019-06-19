@@ -281,7 +281,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-						}, providerName, this._inputModel ? this._inputModel.options.authTypeChanged : false);
+						}, providerName);
 			} else {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(ConnectionController,

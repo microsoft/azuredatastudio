@@ -20,6 +20,7 @@ const sqlLoginAuthType: string = 'SqlLogin';
 export interface CreateCmsResult {
 	listRegisteredServersResult: mssql.ListRegisteredServersResult;
 	connection: azdata.connection.Connection;
+	ownerUri: string;
 }
 
 /**
@@ -125,7 +126,8 @@ export class CmsUtils {
 			let result = await provider.createCmsServer(name, description, connection, ownerUri);
 			const createCmsResult: CreateCmsResult = {
 				listRegisteredServersResult: result,
-				connection: connection
+				connection: connection,
+				ownerUri: ownerUri
 			};
 			return createCmsResult;
 		} catch (error) {
