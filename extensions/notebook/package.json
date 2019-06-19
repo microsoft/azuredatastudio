@@ -224,7 +224,7 @@
 			"notebook/toolbar": [
 				{
 					"command": "jupyter.cmd.managePackages",
-					"when": "providerId == jupyter"
+					"when": "providerId == jupyter && notebook:pythonInstalled"
 				}
 			]
 		},

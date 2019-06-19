@@ -12,13 +12,17 @@ import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog
 import { Telemetry } from './telemetry';
 import { getTelemetryErrorType } from './utils';
 const localize = nls.loadMessageBundle();
-const diffEditorTitle = localize('schemaCompare.ObjectDefinitionsTitle', 'Object Definitions');
+const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
 const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
 const generateScriptEnabledMessage = localize('schemaCompare.generateScriptEnabledButton', 'Generate script to deploy changes to target');
 const generateScriptNoChangesMessage = localize('schemaCompare.generateScriptNoChanges', 'No changes to script');
 const applyEnabledMessage = localize('schemaCompare.applyButtonEnabledTitle', 'Apply changes to target');
 const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No changes to apply');
+// Do not localize this, this is used to decide the icon for the editor.
+// TODO : In future icon should be decided based on language id (scmp) and not resource name
+const schemaCompareResourceName = 'Schema Compare';
+
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -53,7 +57,7 @@ export class SchemaCompareResult {
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
 		this.SchemaCompareActionMap[azdata.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
-		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true });
+		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 		this.GetDefaultDeploymentOptions();
 
 		this.editor.registerContent(async view => {
@@ -178,8 +182,13 @@ export class SchemaCompareResult {
 	}
 
 	// only for test
-	public getComparisionResult(): azdata.SchemaCompareResult {
+	public getComparisonResult(): azdata.SchemaCompareResult {
 		return this.comparisonResult;
+	}
+
+	// only for test
+	public getDeploymentOptions(): azdata.DeploymentOptions {
+		return this.deploymentOptions;
 	}
 
 	public async execute(): Promise<void> {
@@ -241,6 +250,7 @@ export class SchemaCompareResult {
 					width: 150
 				}
 			],
+			CSSStyles: { 'left': '15px' }
 		});
 
 		this.splitView.addItem(this.differencesTable);

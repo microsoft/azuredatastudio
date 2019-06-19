@@ -484,7 +484,7 @@ export abstract class ExtHostDataProtocolShape {
 
 
 	/**
-	 * Schema comapre Include node
+	 * Schema compare Include node
 	 */
 	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
 }
