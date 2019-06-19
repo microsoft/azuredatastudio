@@ -25,6 +25,8 @@
 
 .monaco-perftable .monaco-perftable-cell {
 	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .monaco-perftable-rows {
@@ -70,6 +72,8 @@
 
 .monaco-perftable-header-cell {
 	display: inline-block;
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
 
 .monaco-perftable .sash-container {

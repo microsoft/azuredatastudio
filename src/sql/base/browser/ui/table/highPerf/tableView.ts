@@ -264,7 +264,9 @@ export class AsyncTableView<T> implements IDisposable {
 		column.width = column.width + delta;
 		column.domNode.style.width = column.width + 'px';
 		for (const row of this.visibleRows) {
-			row.cells[index].domNode.style.width = column.width + 'px';
+			if (row) {
+				row.cells[index].domNode.style.width = column.width + 'px';
+			}
 		}
 		this.updateScrollWidth();
 		this.layout();

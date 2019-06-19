@@ -36,7 +36,7 @@ import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { isInDOM, Dimension, $ } from 'vs/base/browser/dom';
+import { isInDOM, Dimension, $, append } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -371,8 +371,9 @@ interface ICellTemplate {
 class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
 
 	constructor(private key: string) { }
+
 	renderTemplate(container: HTMLElement): ICellTemplate {
-		const element = $('div');
+		const element = append(container, $('div'));
 		return { element };
 	}
 
