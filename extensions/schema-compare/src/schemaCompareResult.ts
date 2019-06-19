@@ -61,6 +61,8 @@ export class SchemaCompareResult {
 	private sourceTargetSwitched = false;
 	private sourceName: string;
 	private targetName: string;
+	private scmpSourceExcludes: azdata.SchemaCompareObjectId[];
+	private scmpTargetExcludes: azdata.SchemaCompareObjectId[];
 
 	public sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
@@ -283,6 +285,10 @@ export class SchemaCompareResult {
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
 
+		// clear out scmp excludes so that they aren't taken into account for next compare
+		this.scmpSourceExcludes = [];
+		this.scmpTargetExcludes = [];
+
 		this.differencesTable.updateProperties({
 			data: data,
 			columns: [
@@ -426,17 +432,31 @@ export class SchemaCompareResult {
 	private shouldDiffBeIncluded(diff: azdata.DiffEntry): boolean {
 		let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 		if (key) {
-			if (this.sourceTargetSwitched === true && this.originalTargetExcludes.has(key)) {
-				this.originalTargetExcludes[key] = diff;
+			if (this.sourceTargetSwitched === true
+				&& (this.originalTargetExcludes.has(key) || this.hasEntry(this.scmpTargetExcludes, key))) {
+				this.originalTargetExcludes.set(key, diff);
 				return false;
 			}
-			if (this.sourceTargetSwitched === false && this.originalSourceExcludes.has(key)) {
-				this.originalSourceExcludes[key] = diff;
+			if (this.sourceTargetSwitched === false
+				&& (this.originalSourceExcludes.has(key) || this.hasEntry(this.scmpSourceExcludes, key))) {
+				this.originalSourceExcludes.set(key, diff);
 				return false;
 			}
 			return true;
 		}
 		return true;
+	}
+
+	private hasEntry(collection: azdata.SchemaCompareObjectId[], entryName: string): boolean {
+		let found = false;
+		collection.forEach(e => {
+			if (e.nameParts.join('.') === entryName) {
+				console.error('found ' + entryName);
+				found = true;
+				return;
+			}
+		});
+		return found;
 	}
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
@@ -776,25 +796,39 @@ export class SchemaCompareResult {
 			let fileUri = fileUris[0];
 			const service = await SchemaCompareResult.getService('MSSQL');
 			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
-
-			this.sourceEndpointInfo = result.sourceEndpointInfo;
-			this.targetEndpointInfo = result.targetEndpointInfo;
-			this.updateSourceAndTarget();
-
-			// try to connect
-			this.sourceEndpointInfo.ownerUri = await verifyConnectionAndGetOwnerUri(this.sourceEndpointInfo);
-			this.targetEndpointInfo.ownerUri = await verifyConnectionAndGetOwnerUri(this.targetEndpointInfo);
-
-			console.error('done connecting');
-			this.deploymentOptions = result.deploymentOptions;
-
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpFailed', {
 					'errorType': getTelemetryErrorType(result.errorMessage)
 				});
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.openScmpErrorMessage', "Open scmp failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
+				return;
 			}
+
+			if (result.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo);
+				if (ownerUri) {
+					this.sourceEndpointInfo = result.sourceEndpointInfo;
+					this.sourceEndpointInfo.ownerUri = ownerUri;
+				}
+			} else {
+				this.sourceEndpointInfo = result.sourceEndpointInfo;
+			}
+
+			if (result.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo);
+				if (ownerUri) {
+					this.targetEndpointInfo = result.targetEndpointInfo;
+					this.targetEndpointInfo.ownerUri = ownerUri;
+				}
+			} else {
+				this.targetEndpointInfo = result.targetEndpointInfo;
+			}
+
+			this.updateSourceAndTarget();
+			this.deploymentOptions = result.deploymentOptions;
+			this.scmpSourceExcludes = result.excludedSourceElements;
+			this.scmpTargetExcludes = result.excludedTargetElements;
 
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpEnded', {
 				'endTime:': Date.now().toString()
