@@ -141,11 +141,13 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	/// IComponent implementation
 
 	public layout(): void {
-		this._ready.then(() => {
-			let element = <HTMLElement>this._el.nativeElement;
-			element.style.position = this.position;
-			this._webview.layout();
-		});
+		if (this._ready) {
+			this._ready.then(() => {
+				let element = <HTMLElement>this._el.nativeElement;
+				element.style.position = this.position;
+				this._webview.layout();
+			});
+		}
 	}
 
 	public setLayout(layout: any): void {
