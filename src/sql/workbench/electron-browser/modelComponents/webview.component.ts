@@ -46,7 +46,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	protected contextKey: IContextKey<boolean>;
 	protected findInputFocusContextKey: IContextKey<boolean>;
 
-
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) el: ElementRef,
@@ -64,7 +63,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			this.layout();
 		}));
 	}
-
 
 	private _createWebview(): void {
 		this._webview = this.instantiationService.createInstance(WebviewElement,
