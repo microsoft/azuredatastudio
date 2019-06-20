@@ -10,7 +10,7 @@ import * as path from 'path';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
-import JupyterServerInstallation, { PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
 import { pythonBundleVersion } from '../common/constants';
 import { executeStreamedCommand } from '../common/utils';
 import { AddNewPackageTab } from '../dialog/managePackages/addNewPackageTab';

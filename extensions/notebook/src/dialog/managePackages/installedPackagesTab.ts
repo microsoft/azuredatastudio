@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 
-import JupyterServerInstallation, { PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import CodeAdapter from '../../prompts/adapter';

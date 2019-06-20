@@ -7,7 +7,7 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as request from 'request';
 
-import JupyterServerInstallation, { PipPackageOverview } from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PipPackageOverview } from '../../jupyter/jupyterServerInstallation';
 import * as utils from '../../common/utils';
 import { ManagePackagesDialog } from './managePackagesDialog';
 import { PythonPkgType } from '../../common/constants';

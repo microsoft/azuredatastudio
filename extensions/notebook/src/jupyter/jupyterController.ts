@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import * as constants from '../common/constants';
 import * as localizedConstants from '../common/localizedConstants';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import { IServerInstance } from './common';
 import * as utils from '../common/utils';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';

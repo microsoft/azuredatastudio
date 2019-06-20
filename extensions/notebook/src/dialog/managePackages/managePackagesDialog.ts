@@ -6,7 +6,7 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 
-import JupyterServerInstallation from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { InstalledPackagesTab } from './installedPackagesTab';
 import { AddNewPackageTab } from './addNewPackageTab';
 import { PythonPkgType } from '../../common/constants';
