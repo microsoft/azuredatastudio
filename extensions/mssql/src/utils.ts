@@ -35,8 +35,9 @@ export function getAppDataPath() {
  * @param filePath source notebook file name
  * @param fileExtension file type
  */
-export function getTargetFileName(filePath: string, fileExtension: string): string {
+export function getTargetFileName(filePath: string): string {
 	const targetDirectory = os.homedir();
+	const fileExtension = path.extname(filePath);
 	const baseName = path.basename(filePath, fileExtension);
 	let targetFileName;
 	let idx = 0;
