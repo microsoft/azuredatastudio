@@ -18,6 +18,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { deepClone } from 'vs/base/common/objects';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -130,7 +131,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		let connection: azdata.connection.ConnectionProfile = {
 			providerId: profile.providerName,
 			connectionId: profile.id,
-			options: profile.options,
+			options: deepClone(profile.options),
 			connectionName: profile.connectionName,
 			serverName: profile.serverName,
 			databaseName: profile.databaseName,

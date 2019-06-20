@@ -11,102 +11,10 @@ import { ConnectionStore } from 'sql/platform/connection/common/connectionStore'
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
-import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-
-const sqlProvider = {
-	providerId: 'MSSQL',
-	displayName: 'MSSQL',
-	connectionOptions: [
-		{
-			name: 'connectionName',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: ConnectionOptionSpecialType.connectionName,
-			valueType: ServiceOptionType.string
-		},
-		{
-			name: 'serverName',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: ConnectionOptionSpecialType.serverName,
-			valueType: ServiceOptionType.string
-		},
-		{
-			name: 'databaseName',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: ConnectionOptionSpecialType.databaseName,
-			valueType: ServiceOptionType.string
-		},
-		{
-			name: 'userName',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: ConnectionOptionSpecialType.userName,
-			valueType: ServiceOptionType.string
-		},
-		{
-			name: 'authenticationType',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: ConnectionOptionSpecialType.authType,
-			valueType: ServiceOptionType.string
-		},
-		{
-			name: 'password',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: true,
-			isRequired: true,
-			specialValueType: ConnectionOptionSpecialType.password,
-			valueType: ServiceOptionType.string
-		},
-		{
-			name: 'encrypt',
-			displayName: undefined,
-			description: undefined,
-			groupName: undefined,
-			categoryValues: undefined,
-			defaultValue: undefined,
-			isIdentity: false,
-			isRequired: false,
-			specialValueType: undefined,
-			valueType: ServiceOptionType.string
-		}
-	]
-};
+import { integrated, mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 const capabilitiesService = new CapabilitiesTestService();
-capabilitiesService.capabilities['MSSQL'] = { connection: sqlProvider };
 
 suite('ConnectionManagementService Tests:', () => {
 	test('getConnections test', () => {
@@ -132,17 +40,22 @@ suite('ConnectionManagementService Tests:', () => {
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
+		const verifyConnections = (actualConnections: ConnectionProfile[], expectedConnectionIds: string[], scenario: string) => {
+			assert.equal(actualConnections.length, expectedConnectionIds.length, 'incorrect number of connections returned, ' + scenario);
+			assert.deepEqual(actualConnections.map(conn => conn.id).sort(), expectedConnectionIds.sort(), 'connections do not match expectation, ' + scenario);
+		};
+
 		// no parameter - default to false
 		let connections = connectionManagementService.getConnections();
-		assert.equal(connections.length, 6, 'no known connections');
+		verifyConnections(connections, ['1', '2', '3', '4', '5', '6'], 'no parameter provided');
 
 		// explicitly set to false
-		connections = connectionManagementService.getConnections();
-		assert.equal(connections.length, 6, 'no known connections');
+		connections = connectionManagementService.getConnections(false);
+		verifyConnections(connections, ['1', '2', '3', '4', '5', '6'], 'parameter is false');
 
 		// active connections only
 		connections = connectionManagementService.getConnections(true);
-		assert.equal(connections.length, 2, 'no known connections');
+		verifyConnections(connections, ['1', '2'], 'parameter is true');
 	});
 });
 
@@ -154,11 +67,11 @@ function createConnectionProfile(id: string): ConnectionProfile {
 		groupFullName: 'testGroup',
 		serverName: 'testServerName',
 		databaseName: 'testDatabaseName',
-		authenticationType: 'inetgrated',
+		authenticationType: integrated,
 		password: 'test',
 		userName: 'testUsername',
 		groupId: undefined,
-		providerName: 'MSSQL',
+		providerName: mssqlProviderName,
 		options: {},
 		saveProfile: true,
 		id: id
