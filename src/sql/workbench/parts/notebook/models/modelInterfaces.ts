@@ -467,6 +467,7 @@ export interface ICellModel {
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 	loaded: boolean;
+	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
 }
 
