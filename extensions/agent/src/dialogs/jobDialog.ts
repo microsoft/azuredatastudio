@@ -705,7 +705,8 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.model.jobSteps = [];
 		}
 		this.model.jobSteps = this.steps;
-		// Change the last step's success action to quit
+		// Change the last step's success action to quit because the
+		// default is "Go To Next Step"
 		if (this.model.jobSteps.length > 0) {
 			this.model.jobSteps[this.model.jobSteps.length - 1].successAction = azdata.StepCompletionAction.QuitWithSuccess;
 		}
