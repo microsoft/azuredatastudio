@@ -1753,6 +1753,7 @@ declare module 'azdata' {
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
+		serverDisplayName: string;
 		serverName: string;
 		databaseName: string;
 		ownerUri: string;

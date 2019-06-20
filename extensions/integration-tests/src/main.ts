@@ -25,6 +25,7 @@ export function activate(context: vscode.ExtensionContext) {
 				let installerFullPath = join(extensionInstallersFolder, installers[i]);
 				console.info(`installing extension at ${installerFullPath}`);
 				await azdata.extensions.install(installerFullPath);
+				console.info(`extension has been installed successfully. vsix: ${installers[i]}`);
 			}
 		}
 		await setConfiguration('workbench.enablePreviewFeatures', true);
@@ -34,26 +35,71 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	vscode.commands.registerCommand('test.waitForExtensionsToLoad', async () => {
-		let expectedExtensions = ['Microsoft.agent', 'Microsoft.import', 'Microsoft.mssql', 'Microsoft.profiler'];
+		const expectedExtensions = ['Microsoft.agent', 'Microsoft.import', 'Microsoft.mssql', 'Microsoft.profiler', 'Microsoft.azuredatastudio-postgresql'];
+		const commonFeatures: azdata.DataProviderType[] = [
+			azdata.DataProviderType.AdminServicesProvider,
+			azdata.DataProviderType.BackupProvider,
+			azdata.DataProviderType.CapabilitiesProvider,
+			azdata.DataProviderType.ConnectionProvider,
+			azdata.DataProviderType.FileBrowserProvider,
+			azdata.DataProviderType.MetadataProvider,
+			azdata.DataProviderType.ObjectExplorerProvider,
+			azdata.DataProviderType.ProfilerProvider,
+			azdata.DataProviderType.QueryProvider,
+			azdata.DataProviderType.RestoreProvider,
+			azdata.DataProviderType.ScriptingProvider,
+			azdata.DataProviderType.TaskServicesProvider];
+
+		const features_mssql: azdata.DataProviderType[] = [
+			azdata.DataProviderType.AgentServicesProvider,
+			azdata.DataProviderType.DacFxServicesProvider,
+			azdata.DataProviderType.IconProvider,
+			azdata.DataProviderType.SchemaCompareServicesProvider
+		];
+
+		features_mssql.push(...commonFeatures);
+
+		const providerFeatureMapping: { providerId: string, features: azdata.DataProviderType[] }[] = [
+			{
+				providerId: 'MSSQL',
+				features: features_mssql
+			}, {
+				providerId: 'PGSQL',
+				features: commonFeatures
+			}];
+
 		do {
 			let extensions = vscode.extensions.all.filter(ext => { return expectedExtensions.indexOf(ext.id) !== -1; });
-			let isReady = true;
-			for (let i = 0; i < extensions.length; i++) {
-				let extension = extensions[i];
-				isReady = isReady && extension.isActive;
-				if (!isReady) {
-					break;
+			const extensionsNotInReadyState: string[] = [];
+
+			extensions.forEach(extension => {
+				if (!extension.isActive) {
+					extensionsNotInReadyState.push(extension.id);
 				}
+			});
+
+			const providerTypesNotInReadyState: string[] = [];
+			if (extensionsNotInReadyState.length === 0) {
+				providerFeatureMapping.forEach(entry => {
+					entry.features.forEach(feature => {
+						const provider = azdata.dataprotocol.getProvider(entry.providerId, feature);
+						if (!provider) {
+							providerTypesNotInReadyState.push(`${entry.providerId}:${feature}`);
+						}
+					});
+				});
 			}
 
-			if (isReady) {
+			if (extensionsNotInReadyState.length === 0 && providerTypesNotInReadyState.length === 0) {
 				console.info('All extensions are ready');
 				showStatusBarItem(statusBarItem, ALL_EXTENSION_LOADED_TEXT);
 				break;
+			} else if (extensionsNotInReadyState.length !== 0) {
+				console.warn(`the following extensions are not ready: ${extensionsNotInReadyState.join(',')}`);
 			} else {
-				console.warn(`At least one extension is not ready, waiting one second before recheck.}`);
-				await new Promise(resolve => { setTimeout(resolve, 1000); });
+				console.warn(`the following providers are not ready: ${providerTypesNotInReadyState.join(',')}`);
 			}
+			await new Promise(resolve => { setTimeout(resolve, 2000); });
 		}
 		while (true);
 	});

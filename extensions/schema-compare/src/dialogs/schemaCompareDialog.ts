@@ -12,6 +12,7 @@ import { SchemaCompareResult } from '../schemaCompareResult';
 import { isNullOrUndefined } from 'util';
 import { existsSync } from 'fs';
 import { Telemetry } from '../telemetry';
+import { getEndpointName } from '../utils';
 
 const localize = nls.loadMessageBundle();
 const OkButtonText: string = localize('schemaCompareDialog.ok', 'Ok');
@@ -26,6 +27,11 @@ const ServerDropdownLabel: string = localize('schemaCompareDialog.serverDropdown
 const DatabaseDropdownLabel: string = localize('schemaCompareDialog.databaseDropdownTitle', 'Database');
 const NoActiveConnectionsLabel: string = localize('schemaCompare.noActiveConnectionsText', 'No active connections');
 const SchemaCompareLabel: string = localize('schemaCompare.dialogTitle', 'Schema Compare');
+const differentSourceMessage: string = localize('schemaCompareDialog.differentSourceMessage', 'A different source schema has been selected. Compare to see the comparison?');
+const differentTargetMessage: string = localize('schemaCompareDialog.differentTargetMessage', 'A different target schema has been selected. Compare to see the comparison?');
+const differentSourceTargetMessage: string = localize('schemaCompareDialog.differentSourceTargetMessage', 'Different source and target schemas have been selected. Compare to see the comparison?');
+const YesButtonText: string = localize('schemaCompareDialog.Yes', 'Yes');
+const NoButtonText: string = localize('schemaCompareDialog.No', 'No');
 const titleFontSize: number = 13;
 
 export class SchemaCompareDialog {
@@ -51,10 +57,16 @@ export class SchemaCompareDialog {
 	private formBuilder: azdata.FormBuilder;
 	private sourceIsDacpac: boolean;
 	private targetIsDacpac: boolean;
-	private database: string;
 	private connectionId: string;
 	private sourceDbEditable: string;
 	private taregtDbEditable: string;
+	private previousSource: azdata.SchemaCompareEndpointInfo;
+	private previousTarget: azdata.SchemaCompareEndpointInfo;
+
+	constructor(private schemaCompareResult: SchemaCompareResult) {
+		this.previousSource = schemaCompareResult.sourceEndpointInfo;
+		this.previousTarget = schemaCompareResult.targetEndpointInfo;
+	}
 
 	protected initializeDialog(): void {
 		this.schemaCompareTab = azdata.window.createTab(SchemaCompareLabel);
@@ -62,22 +74,14 @@ export class SchemaCompareDialog {
 		this.dialog.content = [this.schemaCompareTab];
 	}
 
-	public async openDialog(context: any, dialogName?: string): Promise<void> {
-		let profile = context ? <azdata.IConnectionProfile>context.connectionProfile : undefined;
-		if (profile) {
-			this.database = profile.databaseName;
-			this.connectionId = profile.id;
-		} else {
-			let connection = await azdata.connection.getCurrentConnection();
-			if (connection) {
-				this.connectionId = connection.connectionId;
-				this.database = undefined;
-			}
+	public async openDialog(): Promise<void> {
+		// connection to use if schema compare wasn't launched from a database or no previous source/target
+		let connection = await azdata.connection.getCurrentConnection();
+		if (connection) {
+			this.connectionId = connection.connectionId;
 		}
 
-		let event = dialogName ? dialogName : null;
-		this.dialog = azdata.window.createModelViewDialog(SchemaCompareLabel, event);
-
+		this.dialog = azdata.window.createModelViewDialog(SchemaCompareLabel);
 		this.initializeDialog();
 
 		this.dialog.okButton.label = OkButtonText;
@@ -91,25 +95,21 @@ export class SchemaCompareDialog {
 	}
 
 	protected async execute(): Promise<void> {
-		let sourceName: string;
-		let targetName: string;
-
-		let sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 		if (this.sourceIsDacpac) {
-			sourceName = this.sourceTextBox.value;
-			sourceEndpointInfo = {
+			this.schemaCompareResult.sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.sourceTextBox.value
 			};
 		} else {
-			sourceName = (this.sourceServerDropdown.value as ConnectionDropdownValue).name + '.' + (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name;
 			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
-			sourceEndpointInfo = {
+			this.schemaCompareResult.sourceEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Database,
+				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
@@ -117,22 +117,21 @@ export class SchemaCompareDialog {
 			};
 		}
 
-		let targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
 		if (this.targetIsDacpac) {
-			targetName = this.targetTextBox.value;
-			targetEndpointInfo = {
+			this.schemaCompareResult.targetEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
 				packageFilePath: this.targetTextBox.value
 			};
 		} else {
-			targetName = (this.targetServerDropdown.value as ConnectionDropdownValue).name + '.' + (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name;
 			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
-			targetEndpointInfo = {
+			this.schemaCompareResult.targetEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Database,
+				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
@@ -144,8 +143,39 @@ export class SchemaCompareDialog {
 			'sourceIsDacpac': this.sourceIsDacpac.toString(),
 			'targetIsDacpac': this.targetIsDacpac.toString()
 		});
-		let schemaCompareResult = new SchemaCompareResult(sourceName, targetName, sourceEndpointInfo, targetEndpointInfo);
-		schemaCompareResult.start();
+
+		// update source and target values that are displayed
+		this.schemaCompareResult.updateSourceAndTarget();
+
+		const sourceEndpointChanged = this.endpointChanged(this.previousSource, this.schemaCompareResult.sourceEndpointInfo);
+		const targetEndpointChanged = this.endpointChanged(this.previousTarget, this.schemaCompareResult.targetEndpointInfo);
+
+		// show recompare message if it isn't the initial population of source and target
+		if (this.previousSource && this.previousTarget
+			&& (sourceEndpointChanged || targetEndpointChanged)) {
+			this.schemaCompareResult.setButtonsForRecompare();
+
+			let message = differentSourceMessage;
+			if (sourceEndpointChanged && targetEndpointChanged) {
+				message = differentSourceTargetMessage;
+			} else if (targetEndpointChanged) {
+				message = differentTargetMessage;
+			}
+
+			vscode.window.showWarningMessage(message, YesButtonText, NoButtonText).then((result) => {
+				if (result === YesButtonText) {
+					this.schemaCompareResult.startCompare();
+				}
+			});
+		}
+	}
+
+	private endpointChanged(previousEndpoint: azdata.SchemaCompareEndpointInfo, updatedEndpoint: azdata.SchemaCompareEndpointInfo): boolean {
+		if (previousEndpoint && updatedEndpoint) {
+			return getEndpointName(previousEndpoint).toLowerCase() !== getEndpointName(updatedEndpoint).toLowerCase()
+				|| previousEndpoint.serverDisplayName.toLocaleLowerCase() !== updatedEndpoint.serverDisplayName.toLowerCase();
+		}
+		return false;
 	}
 
 	protected async cancel(): Promise<void> {
@@ -154,6 +184,7 @@ export class SchemaCompareDialog {
 	private initializeSchemaCompareTab(): void {
 		this.schemaCompareTab.registerContent(async view => {
 			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
+				value: this.schemaCompareResult.sourceEndpointInfo ? this.schemaCompareResult.sourceEndpointInfo.packageFilePath : '',
 				width: 275
 			}).component();
 
@@ -162,6 +193,7 @@ export class SchemaCompareDialog {
 			});
 
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
+				value: this.schemaCompareResult.targetEndpointInfo ? this.schemaCompareResult.targetEndpointInfo.packageFilePath : '',
 				width: 275
 			}).component();
 
@@ -185,8 +217,8 @@ export class SchemaCompareDialog {
 				await this.populateDatabaseDropdown((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId, true);
 			}
 
-			this.sourceDacpacComponent = await this.createFileBrowser(view, false);
-			this.targetDacpacComponent = await this.createFileBrowser(view, true);
+			this.sourceDacpacComponent = await this.createFileBrowser(view, false, this.schemaCompareResult.sourceEndpointInfo);
+			this.targetDacpacComponent = await this.createFileBrowser(view, true, this.schemaCompareResult.targetEndpointInfo);
 
 			let sourceRadioButtons = await this.createSourceRadiobuttons(view);
 			let targetRadioButtons = await this.createTargetRadiobuttons(view);
@@ -194,63 +226,60 @@ export class SchemaCompareDialog {
 			this.sourceNoActiveConnectionsText = await this.createNoActiveConnectionsText(view);
 			this.targetNoActiveConnectionsText = await this.createNoActiveConnectionsText(view);
 
-			// if schema compare was launched from a db context menu, set that db as the source
-			if (this.database) {
-				this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
-					.withFormItems([
-						{
-							title: SourceTitle,
-							components: [
-								sourceRadioButtons,
-								this.sourceServerComponent,
-								this.sourceDatabaseComponent
-							]
-						}, {
-							title: TargetTitle,
-							components: [
-								targetRadioButtons,
-								this.targetDacpacComponent
-							]
-						}
-					], {
-							horizontal: true,
-							titleFontSize: titleFontSize
-						})
-					.withLayout({
-						width: '100%',
-						padding: '10px 10px 0 30px'
-					});
+			let sourceComponents = [];
+			let targetComponents = [];
+
+			// start source and target with either dacpac or database selection based on what the previous value was
+			if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+				sourceComponents = [
+					sourceRadioButtons,
+					this.sourceServerComponent,
+					this.sourceDatabaseComponent
+				];
 			} else {
-				this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
-					.withFormItems([
-						{
-							title: SourceTitle,
-							components: [
-								sourceRadioButtons,
-								this.sourceDacpacComponent,
-							]
-						}, {
-							title: TargetTitle,
-							components: [
-								targetRadioButtons,
-								this.targetDacpacComponent
-							]
-						}
-					], {
-							horizontal: true,
-							titleFontSize: titleFontSize
-						})
-					.withLayout({
-						width: '100%',
-						padding: '10px 10px 0 30px'
-					});
+				sourceComponents = [
+					sourceRadioButtons,
+					this.sourceDacpacComponent,
+				];
 			}
+
+			if (this.schemaCompareResult.targetEndpointInfo && this.schemaCompareResult.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+				targetComponents = [
+					targetRadioButtons,
+					this.targetServerComponent,
+					this.targetDatabaseComponent
+				];
+			} else {
+				targetComponents = [
+					targetRadioButtons,
+					this.targetDacpacComponent,
+				];
+			}
+
+			this.formBuilder = <azdata.FormBuilder>view.modelBuilder.formContainer()
+				.withFormItems([
+					{
+						title: SourceTitle,
+						components: sourceComponents
+					}, {
+						title: TargetTitle,
+						components: targetComponents
+					}
+				], {
+						horizontal: true,
+						titleFontSize: titleFontSize
+					})
+				.withLayout({
+					width: '100%',
+					padding: '10px 10px 0 30px'
+				});
+
 			let formModel = this.formBuilder.component();
 			await view.initializeModel(formModel);
 		});
 	}
 
-	private async createFileBrowser(view: azdata.ModelView, isTarget: boolean): Promise<azdata.FormComponent> {
+	private async createFileBrowser(view: azdata.ModelView, isTarget: boolean, endpoint: azdata.SchemaCompareEndpointInfo): Promise<azdata.FormComponent> {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
 		if (isTarget) {
 			this.targetFileButton = view.modelBuilder.button().withProperties({
@@ -265,13 +294,16 @@ export class SchemaCompareDialog {
 		let currentButton = isTarget ? this.targetFileButton : this.sourceFileButton;
 
 		currentButton.onDidClick(async (click) => {
+			// file browser should open where the current dacpac is or the appropriate default folder
 			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			let defaultUri = endpoint && endpoint.packageFilePath && existsSync(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
+
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
 					canSelectFolders: false,
 					canSelectMany: false,
-					defaultUri: vscode.Uri.file(rootPath),
+					defaultUri: vscode.Uri.file(defaultUri),
 					openLabel: localize('schemaCompare.openFile', 'Open'),
 					filters: {
 						'dacpac Files': ['dacpac'],
@@ -330,7 +362,8 @@ export class SchemaCompareDialog {
 			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
 		});
 
-		if (this.database) {
+		// if source is currently a db, show it in the server and db dropdowns
+		if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
 			databaseRadioButton.checked = true;
 			this.sourceIsDacpac = false;
 		} else {
@@ -384,8 +417,15 @@ export class SchemaCompareDialog {
 			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
 		});
 
-		dacpacRadioButton.checked = true;
-		this.targetIsDacpac = true;
+		// if target is currently a db, show it in the server and db dropdowns
+		if (this.schemaCompareResult.targetEndpointInfo && this.schemaCompareResult.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			databaseRadioButton.checked = true;
+			this.targetIsDacpac = false;
+		} else {
+			dacpacRadioButton.checked = true;
+			this.targetIsDacpac = true;
+		}
+
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'column' })
 			.withItems([dacpacRadioButton, databaseRadioButton]
@@ -463,7 +503,7 @@ export class SchemaCompareDialog {
 
 	protected async populateServerDropdown(isTarget: boolean): Promise<void> {
 		let currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
-		let values = await this.getServerValues();
+		let values = await this.getServerValues(isTarget);
 
 		if (values && values.length > 0) {
 			currentDropdown.updateProperties({
@@ -473,13 +513,14 @@ export class SchemaCompareDialog {
 		}
 	}
 
-	protected async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
+	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
 		let cons = await azdata.connection.getActiveConnections();
 		// This user has no active connections
 		if (!cons || cons.length === 0) {
 			return undefined;
 		}
 
+		let endpointInfo = isTarget ? this.schemaCompareResult.targetEndpointInfo : this.schemaCompareResult.sourceEndpointInfo;
 		// reverse list so that most recent connections are first
 		cons.reverse();
 
@@ -487,10 +528,6 @@ export class SchemaCompareDialog {
 		let idx = -1;
 		let values = cons.map(c => {
 			count++;
-
-			if (c.connectionId === this.connectionId) {
-				idx = count;
-			}
 
 			let usr = c.options.user;
 			let srv = c.options.server;
@@ -500,10 +537,24 @@ export class SchemaCompareDialog {
 			}
 
 			let finalName = `${srv} (${usr})`;
+			if (endpointInfo) {
+				console.error('finalname: ' + finalName + ' endpointname: ' + endpointInfo.serverDisplayName);
+			}
+			// use previously selected server or current connection if there is one
+			if (endpointInfo && endpointInfo.serverName !== null
+				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
+				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
+				idx = count;
+			}
+			else if (c.connectionId === this.connectionId) {
+				idx = count;
+			}
+
 			return {
 				connection: c,
 				displayName: finalName,
-				name: srv
+				name: srv,
+				user: usr
 			};
 		});
 
@@ -569,7 +620,7 @@ export class SchemaCompareDialog {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
 		currentDropdown.updateProperties({ values: [], value: null });
 
-		let values = await this.getDatabaseValues(connectionId);
+		let values = await this.getDatabaseValues(connectionId, isTarget);
 		if (values && values.length > 0) {
 			currentDropdown.updateProperties({
 				values: values,
@@ -578,13 +629,17 @@ export class SchemaCompareDialog {
 		}
 	}
 
-	protected async getDatabaseValues(connectionId: string): Promise<{ displayName, name }[]> {
+	protected async getDatabaseValues(connectionId: string, isTarget: boolean): Promise<{ displayName, name }[]> {
+		let endpointInfo = isTarget ? this.schemaCompareResult.targetEndpointInfo : this.schemaCompareResult.sourceEndpointInfo;
+
 		let idx = -1;
 		let count = -1;
 		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
 			count++;
-			// if schema compare was launched from a db context menu, set that db at the top of the dropdown
-			if (this.database && db === this.database) {
+
+			// put currently selected db at the top of the dropdown if there is one
+			if (endpointInfo && endpointInfo.databaseName !== null
+				&& db === endpointInfo.databaseName) {
 				idx = count;
 			}
 

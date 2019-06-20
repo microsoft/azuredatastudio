@@ -19,6 +19,7 @@ let schemaCompareTester: SchemaCompareTester;
 let dacpac1: string = path.join(__dirname, 'testData/Database1.dacpac');
 let dacpac2: string = path.join(__dirname, 'testData/Database2.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
+const retryCount = 24; // 2 minutes
 
 if (context.RunTest) {
 	suite('Schema compare integration test suite', () => {
@@ -54,20 +55,22 @@ class SchemaCompareTester {
 	async SchemaCompareDacpacToDacpac(): Promise<void> {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-		let source: azdata.SchemaCompareEndpointInfo = {
-			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-			packageFilePath: dacpac1,
-			serverName: '',
-			databaseName: '',
-			ownerUri: '',
-		};
-		let target: azdata.SchemaCompareEndpointInfo = {
-			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-			packageFilePath: dacpac2,
-			serverName: '',
-			databaseName: '',
-			ownerUri: '',
-		};
+			let source: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac1,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+			};
+			let target: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac2,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+			};
 
 		let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
 		this.assertSchemaCompareResult(schemaCompareResult);
@@ -98,23 +101,27 @@ class SchemaCompareTester {
 
 			assert(result1.success === true, 'Deploy source database should succeed');
 			assert(result2.success === true, 'Deploy target database should succeed');
+			utils.assertDatabaseCreationResult(sourceDB, ownerUri, retryCount);
+			utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-			let source: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
-				packageFilePath: '',
-				serverName: server.serverName,
-				databaseName: sourceDB,
-				ownerUri: ownerUri,
-			};
-			let target: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
-				packageFilePath: '',
-				serverName: server.serverName,
-				databaseName: targetDB,
-				ownerUri: ownerUri,
-			};
+				let source: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Database,
+					packageFilePath: '',
+					serverDisplayName: '',
+					serverName: server.serverName,
+					databaseName: sourceDB,
+					ownerUri: ownerUri,
+				};
+				let target: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Database,
+					packageFilePath: '',
+					serverDisplayName: '',
+					serverName: server.serverName,
+					databaseName: targetDB,
+					ownerUri: ownerUri,
+				};
 
 			let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
 			this.assertSchemaCompareResult(schemaCompareResult);
@@ -152,28 +159,32 @@ class SchemaCompareTester {
 			let result = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database2.dacpac'), targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 
 			assert(result.success === true, 'Deploy database 2 (target) should succeed');
+			utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
 
-			let source: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-				packageFilePath: dacpac1,
-				serverName: '',
-				databaseName: '',
-				ownerUri: ownerUri,
-			};
-			let target: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
-				packageFilePath: '',
-				serverName: server.serverName,
-				databaseName: targetDB,
-				ownerUri: ownerUri,
-			};
+
+				let source: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					packageFilePath: dacpac1,
+					serverDisplayName: '',
+					serverName: '',
+					databaseName: '',
+					ownerUri: ownerUri,
+				};
+				let target: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Database,
+					packageFilePath: '',
+					serverDisplayName: '',
+					serverName: server.serverName,
+					databaseName: targetDB,
+					ownerUri: ownerUri,
+				};
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
 			// start schema compare and cancel
 			const compareTask = schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
-			const canceResult = await schemaCompareService.schemaCompareCancel('testOperationId');
-			assert(canceResult.success, `Cancel Operation should Succeed but failed with ${canceResult.errorMessage}`);
+			const cancelResult = await schemaCompareService.schemaCompareCancel('testOperationId');
+			assert(cancelResult.success, `Cancel Operation should Succeed but failed with ${cancelResult.errorMessage}`);
 			let schemaCompareResult = await compareTask;
 			assert(schemaCompareResult.success === false, 'Schema compare task should not succeed after cancel');
 
