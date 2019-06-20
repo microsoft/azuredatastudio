@@ -38,7 +38,7 @@ export class QueryEditors extends Editors {
 	 */
 	async waitForActiveTab(fileName: string, isDirty: boolean = false): Promise<void> {
 		// For now assume all opened tabs are disconnected until we have a need to open connected tabs
-		await this.vsCode.waitForElement(`.tabs-container div.tab.active${isDirty ? '.dirty' : ''}[aria-selected="true"][aria-label="${fileName} - disconnected, tab"]`);
+		await this.vsCode.waitForElement(`.tabs-container div.tab.active${isDirty ? '.dirty' : ''}[aria-selected="true"][aria-label="${fileName} - disconnected, tab"]`,/* accept function */ result => !!result,  /*retry count*/ 300);
 	}
 
 

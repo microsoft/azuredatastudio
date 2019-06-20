@@ -24,7 +24,7 @@ export class Editors {
 
 	async waitForActiveEditor(filename: string): Promise<any> {
 		const selector = `.editor-instance .monaco-editor[data-uri$="${filename}"] textarea`;
-		return this.code.waitForActiveElement(selector);
+		return this.code.waitForActiveElement(selector, /*retry count*/ 300);
 	}
 
 	async waitForEditorFocus(fileName: string, untitled: boolean = false): Promise<void> {
