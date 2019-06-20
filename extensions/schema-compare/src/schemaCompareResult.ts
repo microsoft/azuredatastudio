@@ -87,7 +87,8 @@ export class SchemaCompareResult {
 				serverName: profile.serverName,
 				databaseName: profile.databaseName,
 				ownerUri: ownerUri,
-				packageFilePath: ''
+				packageFilePath: '',
+				connectionDetails: undefined
 			};
 		}
 
@@ -125,9 +126,10 @@ export class SchemaCompareResult {
 			this.createApplyButton(view);
 			this.createOptionsButton(view);
 			this.createOpenScmpButton(view);
-			this.createSourceAndTargetButtons(view);
 			this.createSaveScmpButton(view);
-			this.resetButtons(true);
+			this.createSourceAndTargetButtons(view);
+			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
+			this.openScmpButton.enabled = true;
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -164,7 +166,8 @@ export class SchemaCompareResult {
 				value: localize('schemaCompare.switchLabel', '➔')
 			}).component();
 
-			this.sourceName = this.sourceEndpointInfo ? `${this.sourceEndpointInfo.serverName}.${this.sourceEndpointInfo.databaseName}` : ' ';
+			this.sourceName = getEndpointName(this.sourceEndpointInfo);
+			this.targetName = ' ';
 			this.sourceNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
@@ -178,9 +181,9 @@ export class SchemaCompareResult {
 			this.targetNameComponent = view.modelBuilder.table().withProperties({
 				columns: [
 					{
-						value: ' ',
+						value: this.targetName,
 						headerCssClass: 'no-borders',
-						toolTip: ''
+						toolTip: this.targetName
 					},
 				]
 			}).component();
@@ -340,6 +343,7 @@ export class SchemaCompareResult {
 		this.switchButton.enabled = true;
 		this.compareButton.enabled = true;
 		this.optionsButton.enabled = true;
+		this.openScmpButton.enabled = true;
 		this.cancelCompareButton.enabled = false;
 
 		if (this.comparisonResult.differences.length > 0) {
@@ -433,12 +437,12 @@ export class SchemaCompareResult {
 		let key = (diff.sourceValue && diff.sourceValue.length > 0) ? this.createName(diff.sourceValue) : this.createName(diff.targetValue);
 		if (key) {
 			if (this.sourceTargetSwitched === true
-				&& (this.originalTargetExcludes.has(key) || this.hasEntry(this.scmpTargetExcludes, key))) {
+				&& (this.originalTargetExcludes.has(key) || this.hasExcludeEntry(this.scmpTargetExcludes, key))) {
 				this.originalTargetExcludes.set(key, diff);
 				return false;
 			}
 			if (this.sourceTargetSwitched === false
-				&& (this.originalSourceExcludes.has(key) || this.hasEntry(this.scmpSourceExcludes, key))) {
+				&& (this.originalSourceExcludes.has(key) || this.hasExcludeEntry(this.scmpSourceExcludes, key))) {
 				this.originalSourceExcludes.set(key, diff);
 				return false;
 			}
@@ -447,15 +451,17 @@ export class SchemaCompareResult {
 		return true;
 	}
 
-	private hasEntry(collection: azdata.SchemaCompareObjectId[], entryName: string): boolean {
+	private hasExcludeEntry(collection: azdata.SchemaCompareObjectId[], entryName: string): boolean {
 		let found = false;
-		collection.forEach(e => {
-			if (e.nameParts.join('.') === entryName) {
-				console.error('found ' + entryName);
-				found = true;
-				return;
-			}
-		});
+		if (collection) {
+			collection.forEach(e => {
+				if (e.nameParts.join('.') === entryName) {
+					console.error('found ' + entryName);
+					found = true;
+					return;
+				}
+			});
+		}
 		return found;
 	}
 
@@ -698,6 +704,7 @@ export class SchemaCompareResult {
 			this.compareButton.enabled = true;
 			this.optionsButton.enabled = true;
 			this.switchButton.enabled = true;
+			this.openScmpButton.enabled = true;
 			this.cancelCompareButton.enabled = false;
 			this.saveScmpButton.enabled = true;
 		}
@@ -705,6 +712,7 @@ export class SchemaCompareResult {
 			this.compareButton.enabled = false;
 			this.optionsButton.enabled = false;
 			this.switchButton.enabled = false;
+			this.openScmpButton.enabled = false;
 			this.cancelCompareButton.enabled = true;
 		}
 		this.generateScriptButton.enabled = false;
@@ -718,6 +726,14 @@ export class SchemaCompareResult {
 		this.applyButton.enabled = false;
 		this.generateScriptButton.title = reCompareToRefeshMessage;
 		this.applyButton.title = reCompareToRefeshMessage;
+	}
+
+	// reset state afer loading an scmp
+	private resetForNewCompare(): void {
+		this.resetButtons(true);
+		this.flexModel.removeItem(this.splitView);
+		this.flexModel.removeItem(this.noDifferencesLabel);
+		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
 	}
 
 	private createSwitchButton(view: azdata.ModelView): void {
@@ -759,7 +775,11 @@ export class SchemaCompareResult {
 
 			// remember that source target have been toggled
 			this.sourceTargetSwitched = this.sourceTargetSwitched ? false : true;
-			this.startCompare();
+
+			// only compare if both source and target are set
+			if (this.sourceEndpointInfo && this.targetEndpointInfo) {
+				this.startCompare();
+			}
 		});
 	}
 
@@ -767,10 +787,10 @@ export class SchemaCompareResult {
 		this.openScmpButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.openScmpButton', 'Open .scmp file'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'generate-script.svg'),
-				dark: path.join(__dirname, 'media', 'generate-script-inverse.svg')
+				light: path.join(__dirname, 'media', 'open-scmp.svg'),
+				dark: path.join(__dirname, 'media', 'open-scmp-inverse.svg')
 			},
-			title: localize('schemaCompare.openScmpButtonTitle', 'Open .scmp file')
+			title: localize('schemaCompare.openScmpButtonTitle', 'Load source, target, and options saved in an .scmp file')
 		}).component();
 
 		this.openScmpButton.onDidClick(async (click) => {
@@ -806,6 +826,7 @@ export class SchemaCompareResult {
 			}
 
 			if (result.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+				// only set endpoint info if able to connect to the database
 				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo);
 				if (ownerUri) {
 					this.sourceEndpointInfo = result.sourceEndpointInfo;
@@ -830,34 +851,13 @@ export class SchemaCompareResult {
 			this.scmpSourceExcludes = result.excludedSourceElements;
 			this.scmpTargetExcludes = result.excludedTargetElements;
 
+			// clear out any old results
+			this.resetForNewCompare();
+
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpEnded', {
 				'endTime:': Date.now().toString()
 			});
 		});
-	}
-
-	// update source and target name to display
-	public updateSourceAndTarget() {
-		this.sourceName = getEndpointName(this.sourceEndpointInfo);
-		this.targetName = getEndpointName(this.targetEndpointInfo);
-
-		this.sourceNameComponent.updateProperty('columns', [
-			{
-				value: this.sourceName,
-				headerCssClass: 'no-borders',
-				toolTip: this.sourceName
-			},
-		]);
-		this.targetNameComponent.updateProperty('columns', [
-			{
-				value: this.targetName,
-				headerCssClass: 'no-borders',
-				toolTip: this.targetName
-			},
-		]);
-
-		// reset buttons to before comparison state
-		this.resetButtons(true);
 	}
 
 	private createSourceAndTargetButtons(view: azdata.ModelView): void {

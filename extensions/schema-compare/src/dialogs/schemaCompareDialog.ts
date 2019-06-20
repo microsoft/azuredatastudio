@@ -545,7 +545,7 @@ export class SchemaCompareDialog {
 				console.error('finalname: ' + finalName + ' endpointname: ' + endpointInfo.serverDisplayName);
 			}
 			// use previously selected server or current connection if there is one
-			if (endpointInfo && endpointInfo.serverName !== null
+			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
 				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
 				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
 				idx = count;

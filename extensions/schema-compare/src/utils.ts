@@ -41,7 +41,7 @@ export function getTelemetryErrorType(msg: string): string {
  */
 export function getEndpointName(endpoint: azdata.SchemaCompareEndpointInfo): string {
 	if (!endpoint) {
-		return undefined;
+		return ' ';
 	}
 
 	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database) {
@@ -75,10 +75,12 @@ function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azda
 export async function verifyConnectionAndGetOwnerUri(endpoint: azdata.SchemaCompareEndpointInfo): Promise<string> {
 	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
 		let connection = await azdata.connection.connect(connectionInfoToConnectionProfile(endpoint.connectionDetails), false, false);
+
+		// show error message if the can't connect to the database
 		if (connection.errorMessage) {
 			vscode.window.showErrorMessage(connection.errorMessage);
 		}
 		return await azdata.connection.getUriForConnection(connection.connectionId);
 	}
-	return '';
+	return undefined;
 }
