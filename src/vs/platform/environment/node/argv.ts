@@ -96,12 +96,12 @@ export const options: Option[] = [
 	{ id: 'trace-options', type: 'string' },
 	{ id: 'prof-code-loading', type: 'boolean' },
 	// {{SQL CARBON EDIT}}
-	{ id: 'database', type: 'string', alias: 'D' },
-	{ id: 'server', type: 'string', alias: 'S' },
-	{ id: 'user', type: 'string', alias: 'U' },
-	{ id: 'command', type: 'string', alias: 'c' },
-	{ id: 'aad', type: 'boolean' },
-	{ id: 'integrated', type: 'boolean', alias: 'E' },
+	{ id: 'command', type: 'string', alias: 'c', cat: 'o', args: 'command name', description: localize('commandParameter', 'Name of command to run') },
+	{ id: 'database', type: 'string', alias: 'D', cat: 'o', args: 'database', description: localize('databaseParameter', 'Database name') },
+	{ id: 'server', type: 'string', alias: 'S', cat: 'o', args: 'server', description: localize('serverParameter', 'Server name') },
+	{ id: 'user', type: 'string', alias: 'U', cat: 'o', args: 'user name', description: localize('userParameter', 'User name for server connection') },
+	{ id: 'aad', type: 'boolean', cat: 'o', description: localize('aadParameter', 'Use Azure Active Directory authentication for server connection') },
+	{ id: 'integrated', type: 'boolean', alias: 'E', cat: 'o', description: localize('integratedAuthParameter', 'Use Integrated authentication for server connection') },
 	// {{SQL CARBON EDIT}} - End
 	{ id: '_', type: 'string' }
 ];
