@@ -544,6 +544,7 @@ export class ConnectionProfile {
 	groupId: string;
 	saveProfile: boolean;
 	azureTenantId?: string;
+	options: { [name: string]: any };
 
 	static createFrom(options: any[]): ConnectionProfile {
 		// create from options
