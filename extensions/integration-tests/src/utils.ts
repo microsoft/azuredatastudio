@@ -108,7 +108,6 @@ export async function assertDatabaseCreationResult(databaseName: string, ownerUr
 	let result: azdata.SimpleExecuteResult;
 	while (retryCount > 0) {
 		--retryCount;
-		await sleep(5000);
 
 		let query = `BEGIN TRY
 				SELECT name FROM master.dbo.sysdatabases WHERE name='${databaseName}'
@@ -120,6 +119,8 @@ export async function assertDatabaseCreationResult(databaseName: string, ownerUr
 		if (result.rowCount > 0) {
 			break;
 		}
+
+		await sleep(5000);
 	}
 
 	assert(result.rowCount === 1, `Database ${databaseName} should be created`);
@@ -137,10 +138,63 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
 	while (retryCount > 0 && !exists) {
 		--retryCount;
 		exists = fs.existsSync(filepath);
-		await sleep(5000);
+
+		if (!exists) {
+			await sleep(5000);
+		}
 	}
 
 	assert(exists, `File ${filepath} is expected to be present`);
 	assert(fs.readFileSync(filepath).byteLength > 0, 'File should not be empty');
 	fs.unlinkSync(filepath);
+}
+
+/**
+ *
+ * @param databaseName name of database where to look for table
+ * @param tableName table to look for
+ * @param ownerUri owner uri
+ * @param retryCount number of times to retry with a 5 second wait between each try
+ * Checks for table existing
+ */
+export async function assertTableCreationResult(databaseName: string, tableName: string, ownerUri: string, retryCount: number, checkForData?: boolean): Promise<void> {
+	let result: azdata.SimpleExecuteResult;
+	while (retryCount > 0) {
+		--retryCount;
+		let query = `BEGIN TRY
+				USE ${databaseName}
+				SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '${tableName}'
+			END TRY
+			BEGIN CATCH
+				SELECT ERROR_MESSAGE() AS ErrorMessage;
+			END CATCH`;
+		result = await runQuery(query, ownerUri);
+		if (result.rowCount > 0) {
+			break;
+		}
+		await sleep(5000);
+	}
+
+	assert(result.rowCount === 1, `Table ${tableName} should be created`);
+	assert(result.columnInfo[0].columnName !== 'ErrorMessage', 'Checking for table creation threw error');
+
+	if (checkForData) {
+		while (retryCount > 0) {
+			let query = `BEGIN TRY
+					USE ${databaseName}
+					SELECT * FROM ${tableName}
+				END TRY
+				BEGIN CATCH
+					SELECT ERROR_MESSAGE() AS ErrorMessage;
+				END CATCH`;
+			result = await runQuery(query, ownerUri);
+			if (result.rowCount > 0) {
+				break;
+			}
+			await sleep(5000);
+		}
+
+		assert(result.rowCount > 0, `Table ${tableName} should have at least one row of data`);
+		assert(result.columnInfo[0].columnName !== 'ErrorMessage', 'Checking for table data threw error');
+	}
 }
