@@ -1393,7 +1393,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/PowerShell-2019.5.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2019.5.0.vsix"
 
 								},
 								{
