@@ -12,7 +12,7 @@ const path = require('path');
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer } from './testConfig';
-import { stressify, StressOptions } from 'adstest';
+import { stressify } from 'adstest';
 
 let schemaCompareService: azdata.SchemaCompareServicesProvider;
 let schemaCompareTester: SchemaCompareTester;
@@ -49,23 +49,13 @@ if (context.RunTest) {
 }
 
 class SchemaCompareTester {
+	private static ParallelCount = 1;
 
-	private static StressOptions: StressOptions = SchemaCompareTester.GetStressSettings();
-
-	private static GetStressSettings(): StressOptions {
-		let stressOptions: StressOptions = { dop: 1 };
-		if (process.env['StressRuntime']) {
-			stressOptions.runtime = process.env['StressRuntime'] * 2;
-		}
-		if (process.env['StressIterations']) {
-			stressOptions.runtime = process.env['StressIterations'] * 2;
-		}
-		return stressOptions;
-	}
-
-	@stressify(SchemaCompareTester.StressOptions)
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
 	async SchemaCompareDacpacToDacpac(): Promise<void> {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
+		const now = new Date();
+		const operationId = 'testOperationId_' + now.getTime().toString();
 
 		let source: azdata.SchemaCompareEndpointInfo = {
 			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
@@ -84,11 +74,11 @@ class SchemaCompareTester {
 			ownerUri: '',
 		};
 
-		let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
-		this.assertSchemaCompareResult(schemaCompareResult);
+		let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+		this.assertSchemaCompareResult(schemaCompareResult, operationId);
 	}
 
-	@stressify(SchemaCompareTester.StressOptions)
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
 	async SchemaCompareDatabaseToDatabase(): Promise<void> {
 		let server = await getStandaloneServer();
 		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
@@ -99,11 +89,12 @@ class SchemaCompareTester {
 		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
-		let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-		let now = new Date();
+		const ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		const now = new Date();
 
-		let sourceDB: string = 'ads_schemaCompare_sourceDB_' + now.getTime().toString();
-		let targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+		const operationId = 'testOperationId_' + now.getTime().toString();
+		const sourceDB: string = 'ads_schemaCompare_sourceDB_' + now.getTime().toString();
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
 			let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
@@ -135,8 +126,8 @@ class SchemaCompareTester {
 				ownerUri: ownerUri,
 			};
 
-			let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
-			this.assertSchemaCompareResult(schemaCompareResult);
+			let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			this.assertSchemaCompareResult(schemaCompareResult, operationId);
 
 			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
 
@@ -150,7 +141,7 @@ class SchemaCompareTester {
 		}
 	}
 
-	@stressify(SchemaCompareTester.StressOptions)
+	@stressify({ dop: SchemaCompareTester.ParallelCount })
 	async SchemaCompareDacpacToDatabase(): Promise<void> {
 		let server = await getStandaloneServer();
 		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
@@ -161,9 +152,10 @@ class SchemaCompareTester {
 		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
-		let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-		let now = new Date();
-		let targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
+		const ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		const now = new Date();
+		const operationId = 'testOperationId_' + now.getTime().toString();
+		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
 			let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
@@ -194,15 +186,15 @@ class SchemaCompareTester {
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
 			// start schema compare and cancel
-			const compareTask = schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
-			const cancelResult = await schemaCompareService.schemaCompareCancel('testOperationId');
+			const compareTask = schemaCompareService.schemaCompare(operationId + now.getTime().toString(), source, target, azdata.TaskExecutionMode.execute, null);
+			const cancelResult = await schemaCompareService.schemaCompareCancel(operationId);
 			assert(cancelResult.success, `Cancel Operation should Succeed but failed with ${cancelResult.errorMessage}`);
 			let schemaCompareResult = await compareTask;
 			assert(schemaCompareResult.success === false, 'Schema compare task should not succeed after cancel');
 
 			// redo schema compare sucessfully
-			schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
-			this.assertSchemaCompareResult(schemaCompareResult);
+			schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			this.assertSchemaCompareResult(schemaCompareResult, operationId);
 
 			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
 			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
@@ -212,12 +204,12 @@ class SchemaCompareTester {
 		}
 	}
 
-	private assertSchemaCompareResult(schemaCompareResult: azdata.SchemaCompareResult): void {
+	private assertSchemaCompareResult(schemaCompareResult: azdata.SchemaCompareResult, operationId : string): void {
 		assert(schemaCompareResult.areEqual === false, `Expected: the schemas are not to be equal Actual: Equal`);
 		assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
 		assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failure`);
 		assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
-		assert(schemaCompareResult.operationId === 'testOperationId', `Operation Id Expected to be same as passed. Expected : testOperationId, Actual ${schemaCompareResult.operationId}`)
+		assert(schemaCompareResult.operationId === operationId, `Operation Id Expected to be same as passed. Expected : ${operationId}, Actual ${schemaCompareResult.operationId}`)
 	}
 
 	private async assertScriptGenerationResult(resultstatus: azdata.ResultStatus, server: string, database: string): Promise<void> {
