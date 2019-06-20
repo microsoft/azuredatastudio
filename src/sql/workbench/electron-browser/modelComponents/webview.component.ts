@@ -41,11 +41,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	private _webview: WebviewElement;
 	private _renderedHtml: string;
 	private _extensionLocationUri: URI;
+	private _ready: Promise<void>;
 
 	protected contextKey: IContextKey<boolean>;
 	protected findInputFocusContextKey: IContextKey<boolean>;
 
-	public ready: Promise<void>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -77,7 +77,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 		this._webview.mountTo(this._el.nativeElement);
 
-		this.ready = new Promise(resolve => {
+		this._ready = new Promise(resolve => {
 			let webview = (<any>this._webview)._webview;
 			const subscription = this._register(addDisposableListener(webview, 'ipc-message', (event) => {
 				if (event.channel === 'webview-ready') {
@@ -87,7 +87,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			}));
 		});
 
-		this.ready.then(() => {
+		this._ready.then(() => {
 			this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
 
 			this._register(this._webview.onMessage(e => {
@@ -143,7 +143,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	/// IComponent implementation
 
 	public layout(): void {
-		this.ready.then(() => {
+		this._ready.then(() => {
 			let element = <HTMLElement>this._el.nativeElement;
 			element.style.position = this.position;
 			this._webview.layout();
@@ -156,8 +156,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
-		if (this.ready) {
-			this.ready.then(() => {
+		if (this._ready) {
+			this._ready.then(() => {
 				super.setProperties(properties);
 				if (this.options) {
 					this._webview.options = this.getExtendedOptions();
