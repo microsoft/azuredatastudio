@@ -78,14 +78,7 @@ export class ModelStore implements IModelStore {
 			this._componentActions[componentId] = deferredPromise;
 		}
 		let promise = deferredPromise.promise.then((component) => {
-			let anyComponent: any = <any>component;
-			if (anyComponent._ready) {
-				return anyComponent._ready.then(() => {
-					return action(component);
-				});
-			} else {
-				return action(component);
-			}
+			return action(component);
 		});
 		return promise;
 	}

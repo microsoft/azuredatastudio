@@ -45,10 +45,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	protected contextKey: IContextKey<boolean>;
 	protected findInputFocusContextKey: IContextKey<boolean>;
 
-	private pendingMessages: any[] = [];
-
-	public _ready: Promise<void>;
-	public isReady = false;
+	public ready: Promise<void>;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) changeRef: ChangeDetectorRef,
@@ -80,20 +77,17 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 		this._webview.mountTo(this._el.nativeElement);
 
-		this._ready = new Promise(resolve => {
+		this.ready = new Promise(resolve => {
 			let webview = (<any>this._webview)._webview;
 			const subscription = this._register(addDisposableListener(webview, 'ipc-message', (event) => {
 				if (event.channel === 'webview-ready') {
-					// console.info('[PID Webview] ' event.args[0]);
-					//addClass(this._webview, 'ready'); // can be found by debug command
-
 					subscription.dispose();
 					resolve();
 				}
 			}));
 		});
 
-		this._ready.then(() => {
+		this.ready.then(() => {
 			this._register(this._webview.onDidClickLink(link => this.onDidClickLink(link)));
 
 			this._register(this._webview.onMessage(e => {
@@ -103,23 +97,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 				});
 			}));
 
-			for (const message of this.pendingMessages) {
-				this._webview.sendMessage(message);
-			}
-			this.pendingMessages = [];
-
 			this.setHtml();
-
-			this.isReady = true;
 		});
-
-
-
-		//this.setHtml();
 	}
 
 	ngOnDestroy(): void {
-		this.pendingMessages = [];
 		this.baseDestroy();
 	}
 
@@ -137,8 +119,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 		if (this.message) {
 			if (this._webview) {
 				this._webview.sendMessage(this.message);
-			} else {
-				this.pendingMessages.push(this.message);
 			}
 		}
 	}
@@ -163,17 +143,11 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	/// IComponent implementation
 
 	public layout(): void {
-		if (this.isReady) {
+		this.ready.then(() => {
 			let element = <HTMLElement>this._el.nativeElement;
 			element.style.position = this.position;
 			this._webview.layout();
-		} else {
-			this._ready.then(() => {
-				let element = <HTMLElement>this._el.nativeElement;
-				element.style.position = this.position;
-				this._webview.layout();
-			});
-		}
+		});
 	}
 
 	public setLayout(layout: any): void {
@@ -182,21 +156,8 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
-		if (this.isReady) {
-			super.setProperties(properties);
-			if (this.options) {
-				this._webview.options = this.getExtendedOptions();
-			}
-			if (this.html !== this._renderedHtml) {
-				this.setHtml();
-			}
-			if (this.extensionLocation) {
-				this._extensionLocationUri = URI.revive(this.extensionLocation);
-			}
-			this.sendMessage();
-
-		} else {
-			this._ready.then(() => {
+		if (this.ready) {
+			this.ready.then(() => {
 				super.setProperties(properties);
 				if (this.options) {
 					this._webview.options = this.getExtendedOptions();
@@ -210,7 +171,6 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 				this.sendMessage();
 			});
 		}
-
 	}
 
 	// CSS-bound properties
