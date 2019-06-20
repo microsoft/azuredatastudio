@@ -12,7 +12,7 @@ const path = require('path');
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer } from './testConfig';
-import { stressify } from 'adstest';
+import { stressify, StressOptions } from 'adstest';
 
 let schemaCompareService: azdata.SchemaCompareServicesProvider;
 let schemaCompareTester: SchemaCompareTester;
@@ -49,34 +49,46 @@ if (context.RunTest) {
 }
 
 class SchemaCompareTester {
-	private static ParallelCount = 1;
 
-	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	private static StressOptions: StressOptions = SchemaCompareTester.GetStressSettings();
+
+	private static GetStressSettings(): StressOptions {
+		let stressOptions: StressOptions = { dop: 1 };
+		if (process.env['StressRuntime']) {
+			stressOptions.runtime = process.env['StressRuntime'] * 2;
+		}
+		if (process.env['StressIterations']) {
+			stressOptions.runtime = process.env['StressIterations'] * 2;
+		}
+		return stressOptions;
+	}
+
+	@stressify(SchemaCompareTester.StressOptions)
 	async SchemaCompareDacpacToDacpac(): Promise<void> {
 		assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-			let source: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-				packageFilePath: dacpac1,
-				serverDisplayName: '',
-				serverName: '',
-				databaseName: '',
-				ownerUri: '',
-			};
-			let target: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-				packageFilePath: dacpac2,
-				serverDisplayName: '',
-				serverName: '',
-				databaseName: '',
-				ownerUri: '',
-			};
+		let source: azdata.SchemaCompareEndpointInfo = {
+			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: dacpac1,
+			serverDisplayName: '',
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+		};
+		let target: azdata.SchemaCompareEndpointInfo = {
+			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+			packageFilePath: dacpac2,
+			serverDisplayName: '',
+			serverName: '',
+			databaseName: '',
+			ownerUri: '',
+		};
 
 		let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
 		this.assertSchemaCompareResult(schemaCompareResult);
 	}
 
-	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	@stressify(SchemaCompareTester.StressOptions)
 	async SchemaCompareDatabaseToDatabase(): Promise<void> {
 		let server = await getStandaloneServer();
 		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
@@ -106,22 +118,22 @@ class SchemaCompareTester {
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-				let source: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Database,
-					packageFilePath: '',
-					serverDisplayName: '',
-					serverName: server.serverName,
-					databaseName: sourceDB,
-					ownerUri: ownerUri,
-				};
-				let target: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Database,
-					packageFilePath: '',
-					serverDisplayName: '',
-					serverName: server.serverName,
-					databaseName: targetDB,
-					ownerUri: ownerUri,
-				};
+			let source: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: server.serverName,
+				databaseName: sourceDB,
+				ownerUri: ownerUri,
+			};
+			let target: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
+			};
 
 			let schemaCompareResult = await schemaCompareService.schemaCompare('testOperationId', source, target, azdata.TaskExecutionMode.execute, null);
 			this.assertSchemaCompareResult(schemaCompareResult);
@@ -138,7 +150,7 @@ class SchemaCompareTester {
 		}
 	}
 
-	@stressify({ dop: SchemaCompareTester.ParallelCount })
+	@stressify(SchemaCompareTester.StressOptions)
 	async SchemaCompareDacpacToDatabase(): Promise<void> {
 		let server = await getStandaloneServer();
 		await utils.connectToServer(server, SERVER_CONNECTION_TIMEOUT);
@@ -162,22 +174,22 @@ class SchemaCompareTester {
 			utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
 
 
-				let source: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-					packageFilePath: dacpac1,
-					serverDisplayName: '',
-					serverName: '',
-					databaseName: '',
-					ownerUri: ownerUri,
-				};
-				let target: azdata.SchemaCompareEndpointInfo = {
-					endpointType: azdata.SchemaCompareEndpointType.Database,
-					packageFilePath: '',
-					serverDisplayName: '',
-					serverName: server.serverName,
-					databaseName: targetDB,
-					ownerUri: ownerUri,
-				};
+			let source: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac1,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: ownerUri,
+			};
+			let target: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Database,
+				packageFilePath: '',
+				serverDisplayName: '',
+				serverName: server.serverName,
+				databaseName: targetDB,
+				ownerUri: ownerUri,
+			};
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
