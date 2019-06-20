@@ -46,7 +46,8 @@ interface IInternalPanelTab {
 	header: HTMLElement;
 	disposables: IDisposable[];
 	label: HTMLElement;
-	body: HTMLElement;
+	body?: HTMLElement;
+	destoryTabBody?: boolean;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -111,9 +112,10 @@ export class TabbedPanel extends Disposable {
 		return this._tabMap.has(tab.identifier);
 	}
 
-	public pushTab(tab: IPanelTab, index?: number): PanelTabIdentifier {
+	public pushTab(tab: IPanelTab, index?: number, destoryTabBody?: boolean): PanelTabIdentifier {
 		let internalTab = { tab } as IInternalPanelTab;
 		internalTab.disposables = [];
+		internalTab.destoryTabBody = destoryTabBody;
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab, index);
 		if (!this._shownTabId) {
@@ -175,13 +177,21 @@ export class TabbedPanel extends Disposable {
 				DOM.removeClass(shownTab.label, 'active');
 				DOM.removeClass(shownTab.header, 'active');
 				shownTab.header.setAttribute('aria-selected', 'false');
-				shownTab.body.remove();
+				if (shownTab.body) {
+					shownTab.body.remove();
+				}
 			}
 		}
 
 		this._shownTabId = id;
 		this.tabHistory.push(id);
 		const tab = this._tabMap.get(this._shownTabId)!; // @anthonydresser we know this can't be undefined since we check further up if the map contains the id
+
+		if (tab.destoryTabBody && tab.body) {
+			tab.body.remove();
+			tab.body = undefined;
+		}
+
 		if (!tab.body) {
 			tab.body = DOM.$('.tab-container');
 			tab.body.style.width = '100%';
@@ -308,7 +318,7 @@ export class TabbedPanel extends Disposable {
 	private _layoutCurrentTab(dimension: DOM.Dimension): void {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
-			if (tab) {
+			if (tab && tab.body) {
 				tab.body.style.width = dimension.width + 'px';
 				tab.body.style.height = dimension.height + 'px';
 				tab.tab.view.layout(dimension);
