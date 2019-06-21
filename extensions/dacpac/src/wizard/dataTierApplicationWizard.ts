@@ -252,7 +252,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async deploy() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let service = await DataTierApplicationWizard.getService('MSSQL');
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
@@ -263,7 +263,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async extract() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let service = await DataTierApplicationWizard.getService('MSSQL');
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
@@ -274,7 +274,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async export() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let service = await DataTierApplicationWizard.getService('MSSQL');
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
@@ -285,7 +285,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async import() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let service = await DataTierApplicationWizard.getService('MSSQL');
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
@@ -296,7 +296,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async generateDeployScript() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let service = await DataTierApplicationWizard.getService('MSSQL');
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.'),
@@ -351,7 +351,7 @@ export class DataTierApplicationWizard {
 	}
 
 	public async generateDeployPlan(): Promise<string> {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
+		let service = await DataTierApplicationWizard.getService('MSSQL');
 		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		let result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);

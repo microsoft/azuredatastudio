@@ -163,6 +163,6 @@ export abstract class DacFxConfigPage extends BasePage {
 }
 
 interface ConnectionDropdownValue extends azdata.CategoryValue {
-	connection: azdata.connection.Connection;
+	connection: azdata.connection.ConnectionProfile;
 }
 
