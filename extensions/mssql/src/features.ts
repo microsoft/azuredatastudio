@@ -167,8 +167,8 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
-			let params: contracts.SchemaCompareParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
+		let schemaCompare = (operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
+			let params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
 			return client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 				r => {
 					return r;
@@ -232,13 +232,27 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let schemaCompareCancel = (operationId: string): Thenable<azdata.ResultStatus> => {
+			let params: contracts.SchemaCompareCancelParams = { operationId: operationId };
+			return client.sendRequest(contracts.SchemaCompareCancellationRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareCancellationRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return azdata.dataprotocol.registerSchemaCompareServicesProvider({
 			providerId: client.providerId,
 			schemaCompare,
 			schemaCompareGenerateScript,
 			schemaComparePublishChanges,
 			schemaCompareGetDefaultOptions,
-			schemaCompareIncludeExcludeNode
+			schemaCompareIncludeExcludeNode,
+			schemaCompareCancel
 		});
 	}
 }
