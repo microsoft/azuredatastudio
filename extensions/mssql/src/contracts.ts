@@ -467,6 +467,16 @@ export interface SchemaCompareNodeParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaCompareSaveScmpParams {
+	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	taskExecutionMode: TaskExecutionMode;
+	deploymentOptions: azdata.DeploymentOptions;
+	scmpFilePath: string;
+	excludedSourceObjects: azdata.SchemaCompareObjectId[];
+	excludedTargetObjects: azdata.SchemaCompareObjectId[];
+}
+
 export interface SchemaCompareCancelParams {
 	operationId: string;
 }
@@ -489,6 +499,10 @@ export namespace SchemaCompareGetDefaultOptionsRequest {
 
 export namespace SchemaCompareIncludeExcludeNodeRequest {
 	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeExcludeNode');
+}
+
+export namespace SchemaCompareSaveScmpRequest {
+	export const type = new RequestType<SchemaCompareSaveScmpParams, azdata.ResultStatus, void, void>('schemaCompare/saveScmp');
 }
 
 export namespace SchemaCompareCancellationRequest {

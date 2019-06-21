@@ -46,6 +46,7 @@ export class SchemaCompareResult {
 	private applyButton: azdata.ButtonComponent;
 	private selectSourceButton: azdata.ButtonComponent;
 	private selectTargetButton: azdata.ButtonComponent;
+	private saveScmpButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
 	private comparisonResult: azdata.SchemaCompareResult;
@@ -122,6 +123,7 @@ export class SchemaCompareResult {
 			this.createOptionsButton(view);
 			this.createSourceAndTargetButtons(view);
 			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
+			this.createSaveScmpButton(view);
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -136,7 +138,10 @@ export class SchemaCompareResult {
 				component: this.optionsButton,
 				toolbarSeparatorAfter: true
 			}, {
-				component: this.switchButton
+				component: this.switchButton,
+				toolbarSeparatorAfter: true
+			}, {
+				component: this.saveScmpButton
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
@@ -758,6 +763,53 @@ export class SchemaCompareResult {
 			Telemetry.sendTelemetryEvent('SchemaCompareSelectTarget');
 			let dialog = new SchemaCompareDialog(this);
 			dialog.openDialog();
+		});
+	}
+
+	private createSaveScmpButton(view: azdata.ModelView): void {
+		this.saveScmpButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.saveScmpButton', 'Save .scmp file'),
+			iconPath: {
+				light: path.join(__dirname, 'media', 'save-scmp.svg'),
+				dark: path.join(__dirname, 'media', 'save-scmp-inverse.svg')
+			},
+			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements')
+		}).component();
+
+		this.saveScmpButton.onDidClick(async (click) => {
+			const rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			const filePath = await vscode.window.showSaveDialog(
+				{
+					defaultUri: vscode.Uri.file(rootPath),
+					saveLabel: localize('schemaCompare.saveFile', 'Save'),
+					filters: {
+						'scmp Files': ['scmp'],
+					}
+				}
+			);
+
+			if (!filePath) {
+				return;
+			}
+
+			// convert include/exclude maps to arrays of object ids
+			let sourceExcludes: azdata.SchemaCompareObjectId[] = [];
+			let targetExcludes: azdata.SchemaCompareObjectId[] = [];
+			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmp');
+			const service = await SchemaCompareResult.getService('MSSQL');
+			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
+			if (!result || !result.success) {
+				Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpFailed', {
+					'errorType': getTelemetryErrorType(result.errorMessage),
+					'operationId': this.comparisonResult.operationId
+				});
+				vscode.window.showErrorMessage(
+					localize('schemaCompare.saveScmpErrorMessage', "Save scmp failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
+			}
+			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpEnded', {
+				'endTime:': Date.now().toString(),
+				'operationId': this.comparisonResult.operationId
+			});
 		});
 	}
 
