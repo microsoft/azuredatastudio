@@ -163,8 +163,6 @@ class SchemaCompareTester {
 			let result = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database2.dacpac'), targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 
 			assert(result.success === true, 'Deploy database 2 (target) should succeed');
-			utils.assertDatabaseCreationResult(targetDB, ownerUri, retryCount);
-
 
 			let source: azdata.SchemaCompareEndpointInfo = {
 				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
@@ -185,15 +183,7 @@ class SchemaCompareTester {
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-			// start schema compare and cancel
-			const compareTask = schemaCompareService.schemaCompare(operationId + now.getTime().toString(), source, target, azdata.TaskExecutionMode.execute, null);
-			const cancelResult = await schemaCompareService.schemaCompareCancel(operationId);
-			assert(cancelResult.success, `Cancel Operation should Succeed but failed with ${cancelResult.errorMessage}`);
-			let schemaCompareResult = await compareTask;
-			assert(schemaCompareResult.success === false, 'Schema compare task should not succeed after cancel');
-
-			// redo schema compare sucessfully
-			schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
+			let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
 			this.assertSchemaCompareResult(schemaCompareResult, operationId);
 
 			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
