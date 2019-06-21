@@ -43,6 +43,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
+import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -369,7 +370,6 @@ interface ICellTemplate {
 }
 
 class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
-
 	constructor(private key: string) { }
 
 	renderTemplate(container: HTMLElement): ICellTemplate {
@@ -390,7 +390,6 @@ class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
 	}
 
 	disposeTemplate(templateData: ICellTemplate): void {
-		throw new Error('Method not implemented.');
 	}
 
 }
@@ -404,6 +403,8 @@ class GridTable<T> extends Disposable implements IView {
 
 	private _onDidChange = new Emitter<number>();
 	public readonly onDidChange: Event<number> = this._onDidChange.event;
+
+	private virtWindow: VirtualizedWindow<T>;
 
 	public id = generateUuid();
 	readonly element: HTMLElement = this.container;
@@ -453,29 +454,24 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	private build(): void {
-		let tableContainer = document.createElement('div');
+		const tableContainer = document.createElement('div');
 		tableContainer.style.display = 'inline-block';
 		tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
+		tableContainer.style.height = '100%';
 
 		this.container.appendChild(tableContainer);
 
-		let collection = new VirtualizedCollection(
-			50,
-			index => this.placeholdGenerator(index),
-			0,
-			() => Promise.resolve([])
-		);
-		collection.setCollectionChangedCallback((startIndex, count) => {
-			this.renderGridDataRowsRange(startIndex, count);
+		this.virtWindow = new VirtualizedWindow<T>(50, this.resultSet.rowCount, (offset, count) => {
+			return Promise.resolve(this.runner.getQueryRows(offset, count, this._resultSet.batchId, this._resultSet.id).then(r => {
+				return r.resultSubset.rows.map(c => c.reduce((p, c, i) => {
+					p[this.columns[i].id] = c.displayValue;
+					return p;
+				}, Object.create(null)));
+			}));
 		});
 
 		this.table = new AsyncTableView<T>(tableContainer, this.columns, {
-			getRow: index => Promise.resolve(this.runner.getQueryRows(index, 1, this._resultSet.batchId, this._resultSet.id)).then(r => {
-				return r.resultSubset.rows[0].reduce((p, c, i) => {
-					p[this.columns[i].id] = c.displayValue;
-					return p;
-				}, Object.create(null));
-			})
+			getRow: index => this.virtWindow.getIndex(index)
 		});
 		this.table.length = this.resultSet.rowCount;
 
@@ -562,7 +558,10 @@ class GridTable<T> extends Disposable implements IView {
 
 	public updateResult(resultSet: azdata.ResultSetSummary) {
 		this._resultSet = resultSet;
-		this.table.length = resultSet.rowCount;
+		if (this.table) {
+			this.virtWindow.length = resultSet.rowCount;
+			this.table.length = resultSet.rowCount;
+		}
 		this._onDidChange.fire(undefined);
 	}
 

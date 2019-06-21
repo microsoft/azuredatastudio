@@ -16,12 +16,12 @@ import { isWindows } from 'vs/base/common/platform';
 import * as browser from 'vs/base/browser/browser';
 import { Range, IRange } from 'vs/base/common/range';
 import { getOrDefault } from 'vs/base/common/objects';
-
-import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { IColumnRenderer, ITableDataSource, ITableMouseEvent } from 'sql/base/browser/ui/table/highPerf/table';
 import { memoize } from 'vs/base/common/decorators';
 import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser/ui/sash/sash';
 import { firstIndex } from 'vs/base/common/arrays';
+
+import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
+import { IColumnRenderer, ITableDataSource, ITableMouseEvent } from 'sql/base/browser/ui/table/highPerf/table';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -307,7 +307,7 @@ export class AsyncTableView<T> implements IDisposable {
 
 	private getRenderRange(renderTop: number, renderHeight: number): IRange {
 		const start = Math.floor(renderTop / this.rowHeight);
-		const end = Math.min(Math.ceil((renderTop + renderHeight) / this.rowHeight), this.length);
+		const end = Math.ceil((renderTop + renderHeight) / this.rowHeight);
 		return {
 			start,
 			end
@@ -337,6 +337,7 @@ export class AsyncTableView<T> implements IDisposable {
 	private render(renderTop: number, renderHeight: number, renderLeft: number, scrollWidth: number): void {
 		const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
 		const renderRange = this.getRenderRange(renderTop, renderHeight);
+		renderRange.end = renderRange.end > this.length ? this.length : renderRange.end;
 
 		const rangesToInsert = Range.relativeComplement(renderRange, previousRenderRange);
 		const rangesToRemove = Range.relativeComplement(previousRenderRange, renderRange);
@@ -586,7 +587,16 @@ export class AsyncTableView<T> implements IDisposable {
 	}
 
 	set length(length: number) {
+		const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
+		const potentialRerenderRange = { start: this.length, end: length + 1 };
+		const rerenderRange = Range.intersect(potentialRerenderRange, previousRenderRange);
 		this._length = length;
+		for (let i = rerenderRange.start; i < rerenderRange.end; i++) {
+			if (this.visibleRows[i]) {
+				this.removeRowFromDOM(i);
+			}
+			this.insertRowInDOM(i, null);
+		}
 		this.eventuallyUpdateScrollDimensions();
 	}
 

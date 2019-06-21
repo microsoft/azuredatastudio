@@ -31,6 +31,7 @@ require('slickgrid/slick.editors');
 require('slickgrid/slick.dataview');
 require('reflect-metadata');
 require('zone.js');
+global['Zone']["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
 // {{SQL CARBON EDIT}} - End
 
 // Load workbench main
