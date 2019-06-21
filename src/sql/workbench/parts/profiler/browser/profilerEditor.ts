@@ -343,6 +343,11 @@ export class ProfilerEditor extends BaseEditor {
 				layout: dim => this._editor.layout(dim),
 				render: parent => parent.appendChild(editorContainer),
 				focus: () => this._editor.focus()
+			},
+			tabSelectedHandler: () => {
+				if (this._collapsedPanelAction.collapsed) {
+					this._collapsedPanelAction.run(this.input);
+				}
 			}
 		});
 
@@ -382,6 +387,11 @@ export class ProfilerEditor extends BaseEditor {
 				layout: dim => this._detailTable.layout(dim),
 				render: parent => parent.appendChild(detailTableContainer),
 				focus: () => this._detailTable.focus()
+			},
+			tabSelectedHandler: () => {
+				if (this._collapsedPanelAction.collapsed) {
+					this._collapsedPanelAction.run(this.input);
+				}
 			}
 		});
 
