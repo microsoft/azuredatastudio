@@ -20,6 +20,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
+import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
 
 
 // Register Statusbar item
@@ -62,9 +63,15 @@ actionRegistry.registerWorkbenchAction(
 );
 
 CommandsRegistry.registerCommand('azdata.connect',
-	function (accessor, args) {
+	function (accessor, args: {
+		serverName: string,
+		providerName: string,
+		authenticationType?: AuthenticationType,
+		userName?: string,
+		password?: string,
+		databaseName?: string
+	}) {
 		const capabilitiesServices = accessor.get(ICapabilitiesService);
-		const notificationService = accessor.get(INotificationService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		if (args && args.serverName && args.providerName
 			&& (args.authenticationType === integrated
@@ -72,7 +79,7 @@ CommandsRegistry.registerCommand('azdata.connect',
 				|| (args.userName && args.password))) {
 			const profile: azdata.IConnectionProfile = {
 				serverName: args.serverName,
-				databaseName: args.database,
+				databaseName: args.databaseName,
 				authenticationType: args.authenticationType,
 				providerName: args.providerName,
 				connectionName: '',
@@ -87,16 +94,12 @@ CommandsRegistry.registerCommand('azdata.connect',
 			};
 			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
 
-			connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
+			connectionManagementService.connect(connectionProfile, undefined, {
 				saveTheConnection: true,
 				showDashboard: true,
 				params: undefined,
 				showConnectionDialogOnError: true,
 				showFirewallRuleOnError: true
-			}).then(result => {
-				if (!result.connected) {
-					notificationService.error(localize('connectionFailure', 'Failed to connect to the server, error code: {0}, detail: {1}', result.errorCode, result.errorMessage));
-				}
 			});
 		} else {
 			connectionManagementService.showConnectionDialog();
