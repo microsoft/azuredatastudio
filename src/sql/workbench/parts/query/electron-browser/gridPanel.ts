@@ -7,19 +7,10 @@ import * as pretty from 'pretty-data';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
-import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
-import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
-import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/workbench/parts/query/browser/actions';
-import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
+import { SaveResultAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/workbench/parts/query/browser/actions';
 import { escape } from 'sql/base/common/strings';
-import { hyperLinkFormatter, textFormatter } from 'sql/base/browser/ui/table/formatters';
-import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
-import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
 import { AsyncTableView, IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { IColumnRenderer } from 'sql/base/browser/ui/table/highPerf/table';
@@ -31,12 +22,10 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { range } from 'vs/base/common/arrays';
-import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
-import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { isInDOM, Dimension, $, append } from 'vs/base/browser/dom';
+import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
+import { Dimension, $, append } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -609,26 +598,6 @@ class GridTable<T> extends Disposable implements IView {
 
 	public get maximumSize(): number {
 		return Math.max(this.maxSize, ACTIONBAR_HEIGHT + BOTTOM_PADDING);
-	}
-
-	private placeholdGenerator(index: number): any {
-		return {};
-	}
-
-	private renderGridDataRowsRange(startIndex: number, count: number): void {
-		// let editor = this.table.getCellEditor();
-		// let oldValue = editor ? editor.getValue() : undefined;
-		// let wasValueChanged = editor ? editor.isValueChanged() : false;
-		this.invalidateRange(startIndex, startIndex + count);
-		// let activeCell = this._grid.getActiveCell();
-		// if (editor && activeCell.row >= startIndex && activeCell.row < startIndex + count) {
-		//     if (oldValue && wasValueChanged) {
-		//         editor.setValue(oldValue);
-		//     }
-		// }
-	}
-
-	private invalidateRange(start: number, end: number): void {
 	}
 
 	public style(styles: ITableStyles) {

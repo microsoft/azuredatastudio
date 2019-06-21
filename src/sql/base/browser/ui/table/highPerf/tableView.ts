@@ -48,6 +48,7 @@ export interface IColumn<T, TTemplateData> {
 
 interface IInternalColumn<T, TTemplateData> extends IColumn<T, TTemplateData> {
 	domNode?: HTMLElement;
+	left?: number;
 }
 
 interface ISashItem {
@@ -97,14 +98,13 @@ export class AsyncTableView<T> implements IDisposable {
 	private renderers = new Map<string, IColumnRenderer<T /* TODO@joao */, any>>();
 	private lastRenderTop = 0;
 	private lastRenderHeight = 0;
-	private renderWidth = 0;
 	private readonly rowsContainer = document.createElement('div');
 	private scrollableElement: ScrollableElement;
 	private _scrollHeight: number;
+	private _scrollWidth: number;
 	private scrollableElementUpdateDisposable: IDisposable | null = null;
 	private scrollableElementWidthDelayer = new Delayer<void>(50);
 	private ariaSetProvider: IAriaSetProvider<T>;
-	private scrollWidth: number | undefined;
 	private canUseTranslate3d: boolean | undefined = undefined;
 	private rowHeight: number;
 	private _length: number = 0;
@@ -113,6 +113,8 @@ export class AsyncTableView<T> implements IDisposable {
 	private columnSashs: ISashItem[] = [];
 	private sashDragState: ISashDragState;
 	private headerContainer: HTMLElement;
+
+	private scheduledRender: IDisposable;
 
 	private headerHeight = 22;
 
@@ -169,8 +171,11 @@ export class AsyncTableView<T> implements IDisposable {
 		this.ariaSetProvider = { getSetSize: (e, i, length) => length, getPosInSet: (_, index) => index + 1 };
 
 		this.rowHeight = getOrDefault(options, o => o.rowHeight, DefaultOptions.rowHeight);
+		let left = 0;
 		this.columns = this.columns.map(c => {
 			c.width = c.width || DefaultOptions.columnWidth;
+			c.left = left;
+			left += c.width;
 			return c;
 		});
 
@@ -213,6 +218,7 @@ export class AsyncTableView<T> implements IDisposable {
 			this.createHeaderSash(sashContainer, column);
 			column.domNode = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell'));
 			column.domNode.style.width = column.width + 'px';
+			column.domNode.style.left = column.left + 'px';
 			column.renderer.renderHeader(column.domNode, element, column.width);
 		}
 	}
@@ -258,15 +264,20 @@ export class AsyncTableView<T> implements IDisposable {
 	}
 
 	private onSashChange({ column, current }: ISashEvent<T>): void {
-		const { index } = this.sashDragState;
+		const index = this.sashDragState.index;
 		const previous = this.sashDragState.current;
 		this.sashDragState.current = current;
 		const delta = current - previous;
-		column.width = column.width + delta;
+		column.width += delta;
 		column.domNode.style.width = column.width + 'px';
-		for (const row of this.visibleRows) {
+		for (let i = index + 1; i < this.columns.length; i++) {
+			const resizeColumn = this.columns[i];
+			resizeColumn.left += delta;
+			resizeColumn.domNode.style.left = resizeColumn.left + 'px';
+		}
+		for (const [index, row] of this.visibleRows.entries()) {
 			if (row) {
-				row.cells[index].domNode.style.width = column.width + 'px';
+				this.updateRowInDOM(row, index);
 			}
 		}
 		this.updateScrollWidth();
@@ -286,19 +297,20 @@ export class AsyncTableView<T> implements IDisposable {
 		}
 	}
 
-	private eventuallyUpdateScrollWidth(): void {
-		this.scrollableElementWidthDelayer.trigger(() => this.updateScrollWidth());
-	}
-
 	private updateScrollWidth(): void {
-		this.scrollWidth = this.columns.reduce((p, c) => p + c.width!, 0);
+		this._scrollWidth = this.columns.reduce((p, c) => p + c.width!, 0);
 		this.rowsContainer.style.width = `${this.scrollWidth}px`;
-		this.scrollableElement.setScrollDimensions({ scrollWidth: this.scrollWidth + 10 });
+		this.scrollableElement.setScrollDimensions({ scrollWidth: this.scrollWidth });
 	}
 
 	private onScroll(e: ScrollEvent): void {
 		try {
-			this.render(e.scrollTop, e.height, e.scrollLeft, e.scrollWidth);
+			if (this.scheduledRender) {
+				this.scheduledRender.dispose();
+			}
+			this.scheduledRender = DOM.runAtThisOrScheduleAtNextAnimationFrame(() => {
+				this.render(e.scrollTop, e.height, e.scrollLeft, e.scrollWidth);
+			});
 		} catch (err) {
 			console.error('Got bad scroll event:', e);
 			throw err;
@@ -399,13 +411,9 @@ export class AsyncTableView<T> implements IDisposable {
 
 		this.scrollableElement.setScrollDimensions(scrollDimensions);
 
-		if (typeof width !== 'undefined') {
-			this.renderWidth = width;
-
-			this.scrollableElement.setScrollDimensions({
-				width: typeof width === 'number' ? width : DOM.getContentWidth(this.domNode)
-			});
-		}
+		this.scrollableElement.setScrollDimensions({
+			width: typeof width === 'number' ? width : DOM.getContentWidth(this.domNode)
+		});
 
 		this.columnSashs.forEach(s => s.sash.layout());
 	}
@@ -413,6 +421,11 @@ export class AsyncTableView<T> implements IDisposable {
 	getScrollTop(): number {
 		const scrollPosition = this.scrollableElement.getScrollPosition();
 		return scrollPosition.scrollTop;
+	}
+
+	getScrollLeft(): number {
+		const scrollPosition = this.scrollableElement.getScrollPosition();
+		return scrollPosition.scrollLeft;
 	}
 
 	setScrollTop(scrollTop: number): void {
@@ -435,6 +448,14 @@ export class AsyncTableView<T> implements IDisposable {
 
 	get scrollHeight(): number {
 		return this._scrollHeight + 10;
+	}
+
+	get scrollWidth(): number {
+		return this._scrollWidth + 10;
+	}
+
+	get scrollLeft(): number {
+		return this.getScrollLeft();
 	}
 
 	private insertRowInDOM(index: number, beforeElement: HTMLElement | null): void {
@@ -501,7 +522,9 @@ export class AsyncTableView<T> implements IDisposable {
 		row.row!.style.height = `${row.size}px`;
 
 		for (const [index, column] of this.columns.entries()) {
-			row.cells[index].domNode.style.width = `${column.width}px`;
+			const cell = row.cells[index].domNode;
+			cell.style.width = `${column.width}px`;
+			cell.style.left = `${column.left}px`;
 		}
 
 		row.row!.setAttribute('data-index', `${index}`);

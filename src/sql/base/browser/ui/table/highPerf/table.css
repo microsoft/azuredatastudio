@@ -74,6 +74,7 @@
 	display: inline-block;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	position: absolute;
 }
 
 .monaco-perftable .sash-container {

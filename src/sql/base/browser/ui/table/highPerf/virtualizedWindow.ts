@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { CancellationTokenSource } from 'vs/base/common/cancellation';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 
 class DataWindow<T> {
@@ -105,7 +104,7 @@ export class VirtualizedWindow<T> {
 
 	public getIndex(index: number): Promise<T> {
 
-		if (index < this._bufferWindowBefore.start || index > this._bufferWindowAfter.end) {
+		if (index < this._bufferWindowBefore.start || index >= this._bufferWindowAfter.end) {
 			this.resetWindowsAroundIndex(index);
 		}
 		// scrolling up
@@ -114,15 +113,23 @@ export class VirtualizedWindow<T> {
 			this._bufferWindowAfter = this._window;
 			this._window = this._bufferWindowBefore;
 			this._bufferWindowBefore = beforeWindow;
-			this._bufferWindowBefore.positionWindow(this._window.start - this.windowSize - 1, this.windowSize);
+			// ensure we aren't buffer invalid data
+			const beforeStart = Math.max(0, this._window.start - this.windowSize);
+			// ensure if we got hinder in our start index that we update out length to not overlap
+			const beforeLength = this._window.start - beforeStart;
+			this._bufferWindowBefore.positionWindow(beforeStart, beforeLength);
 		}
 		// scroll down
 		else if (this._bufferWindowAfter.contains(index)) {
 			const afterWindow = this._bufferWindowBefore;
-			this._bufferWindowAfter = this._window;
+			this._bufferWindowBefore = this._window;
 			this._window = this._bufferWindowAfter;
 			this._bufferWindowAfter = afterWindow;
-			this._bufferWindowAfter.positionWindow(this._window.end + this.windowSize + 1, this.windowSize);
+			// ensure we aren't buffer invalid data
+			const afterStart = this._window.end;
+			// ensure if we got hinder in our start index that we update out length to not overlap
+			const afterLength = afterStart + this.windowSize > this.length ? this.length - afterStart : this.windowSize;
+			this._bufferWindowAfter.positionWindow(afterStart, afterLength);
 		}
 
 		// at this point we know the current window will have the index
