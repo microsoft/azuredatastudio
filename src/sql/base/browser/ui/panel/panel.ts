@@ -149,21 +149,22 @@ export class TabbedPanel extends Disposable {
 		let tabLabel = DOM.$('a.tabLabel');
 		tabLabel.innerText = tab.tab.title;
 		tabElement.appendChild(tabLabel);
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => {
-			this.showTab(tab.tab.identifier);
+		const invokeTabSelectedHandler = () => {
 			if (tab.tab.tabSelectedHandler) {
 				tab.tab.tabSelectedHandler();
 			}
+		};
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => {
+			this.showTab(tab.tab.identifier);
+			invokeTabSelectedHandler();
 		}));
 
 		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.showTab(tab.tab.identifier);
+				invokeTabSelectedHandler();
 				e.stopImmediatePropagation();
-				if (tab.tab.tabSelectedHandler) {
-					tab.tab.tabSelectedHandler();
-				}
 			}
 		}));
 		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;

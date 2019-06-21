@@ -336,6 +336,13 @@ export class ProfilerEditor extends BaseEditor {
 		tabbedPanelContainer.className = 'profiler-tabbedPane';
 		this._tabbedPanel = new TabbedPanel(tabbedPanelContainer);
 		attachTabbedPanelStyler(this._tabbedPanel, this.themeService);
+
+		const expandPanel = () => {
+			if (this._collapsedPanelAction.collapsed) {
+				this._collapsedPanelAction.run(this.input);
+			}
+		};
+
 		this._tabbedPanel.pushTab({
 			identifier: 'editor',
 			title: nls.localize('text', "Text"),
@@ -345,9 +352,7 @@ export class ProfilerEditor extends BaseEditor {
 				focus: () => this._editor.focus()
 			},
 			tabSelectedHandler: () => {
-				if (this._collapsedPanelAction.collapsed) {
-					this._collapsedPanelAction.run(this.input);
-				}
+				expandPanel();
 			}
 		});
 
@@ -389,9 +394,7 @@ export class ProfilerEditor extends BaseEditor {
 				focus: () => this._detailTable.focus()
 			},
 			tabSelectedHandler: () => {
-				if (this._collapsedPanelAction.collapsed) {
-					this._collapsedPanelAction.run(this.input);
-				}
+				expandPanel();
 			}
 		});
 
