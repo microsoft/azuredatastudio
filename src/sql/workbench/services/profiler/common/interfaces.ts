@@ -147,8 +147,14 @@ export interface IProfilerViewTemplate {
 	columns: Array<IColumnViewTemplate>;
 }
 
+export enum EngineType {
+	SQLDB = 'SQLDB',
+	Standalone = 'Standalone'
+}
+
 export interface IProfilerSessionTemplate {
 	name: string;
+	engineTypes?: EngineType[];
 	defaultView: string;
 	createStatement: string;
 }
