@@ -36,12 +36,14 @@ export interface ITableViewOptions<T> {
 
 const DefaultOptions = {
 	rowHeight: 22,
-	columnWidth: 120
+	columnWidth: 120,
+	minWidth: 20
 };
 
 export interface IColumn<T, TTemplateData> {
 	renderer: IColumnRenderer<T, TTemplateData>;
 	width?: number;
+	minWidth?: number;
 	id: string;
 	name: string;
 }
@@ -59,6 +61,9 @@ interface ISashItem {
 interface ISashDragState {
 	current: number;
 	index: number;
+	start: number;
+	sizes: Array<number>;
+	lefts: Array<number>;
 }
 
 interface ISashEvent<T> {
@@ -174,6 +179,7 @@ export class AsyncTableView<T> implements IDisposable {
 		let left = 0;
 		this.columns = this.columns.map(c => {
 			c.width = c.width || DefaultOptions.columnWidth;
+			c.minWidth = c.minWidth || DefaultOptions.minWidth;
 			c.left = left;
 			left += c.width;
 			return c;
@@ -261,19 +267,23 @@ export class AsyncTableView<T> implements IDisposable {
 
 	private onSashStart({ sash, start }: ISashEvent<T>): void {
 		const index = firstIndex(this.columnSashs, item => item.sash === sash);
-		this.sashDragState = { current: start, index };
+		const sizes = this.columns.map(i => i.width);
+		const lefts = this.columns.map(i => i.left);
+		this.sashDragState = { start, current: start, index, sizes, lefts };
 	}
 
 	private onSashChange({ column, current }: ISashEvent<T>): void {
-		const index = this.sashDragState.index;
-		const previous = this.sashDragState.current;
+		const { index, start, sizes, lefts } = this.sashDragState;
 		this.sashDragState.current = current;
-		const delta = current - previous;
-		column.width += delta;
+
+		const delta = current - start;
+		const adjustedDelta = sizes[index] + delta < column.minWidth ? column.minWidth - sizes[index] : delta;
+
+		column.width = sizes[index] + adjustedDelta;
 		column.domNode.style.width = column.width + 'px';
 		for (let i = index + 1; i < this.columns.length; i++) {
 			const resizeColumn = this.columns[i];
-			resizeColumn.left += delta;
+			resizeColumn.left = lefts[i] + adjustedDelta;
 			resizeColumn.domNode.style.left = resizeColumn.left + 'px';
 		}
 		for (const [index, row] of this.visibleRows.entries()) {
@@ -529,6 +539,7 @@ export class AsyncTableView<T> implements IDisposable {
 		for (const [i, column] of this.columns.entries()) {
 			const cell = row.cells[i];
 			column.renderer.renderElement(row.element, index, cell.templateData, column.width);
+			console.log('');
 		}
 	}
 

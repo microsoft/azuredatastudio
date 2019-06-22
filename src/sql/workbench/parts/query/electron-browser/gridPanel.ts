@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as pretty from 'pretty-data';
+import 'vs/css!./gridPanel';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
@@ -362,7 +363,7 @@ class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
 	constructor(private key: string) { }
 
 	renderTemplate(container: HTMLElement): ICellTemplate {
-		const element = append(container, $('div'));
+		const element = append(container, $('.cell'));
 		return { element };
 	}
 
