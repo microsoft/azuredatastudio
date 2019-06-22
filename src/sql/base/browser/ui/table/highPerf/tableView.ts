@@ -21,7 +21,7 @@ import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser
 import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { IColumnRenderer, ITableDataSource, ITableMouseEvent } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer, ITableDataSource, ITableMouseEvent } from 'sql/base/browser/ui/table/highPerf/table';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -41,7 +41,7 @@ const DefaultOptions = {
 };
 
 export interface IColumn<T, TTemplateData> {
-	renderer: IColumnRenderer<T, TTemplateData>;
+	renderer: ITableRenderer<T, TTemplateData>;
 	width?: number;
 	minWidth?: number;
 	id: string;
@@ -92,15 +92,15 @@ interface IAsyncRowItem<T> {
 	datapromise: CancelablePromise<void> | null;
 }
 
-export class AsyncTableView<T> implements IDisposable {
+export class TableView<T> implements IDisposable {
 	private static InstanceCount = 0;
-	readonly domId = `table_id_${++AsyncTableView.InstanceCount}`;
+	readonly domId = `table_id_${++TableView.InstanceCount}`;
 
 	readonly domNode = document.createElement('div');
 
 	private visibleRows: IAsyncRowItem<T>[] = [];
 	private cache: CellCache<T>;
-	private renderers = new Map<string, IColumnRenderer<T /* TODO@joao */, any>>();
+	private renderers = new Map<string, ITableRenderer<T /* TODO@joao */, any>>();
 	private lastRenderTop = 0;
 	private lastRenderHeight = 0;
 	private readonly rowsContainer = document.createElement('div');
@@ -226,7 +226,7 @@ export class AsyncTableView<T> implements IDisposable {
 			column.domNode = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell'));
 			column.domNode.style.width = column.width + 'px';
 			column.domNode.style.left = column.left + 'px';
-			column.renderer.renderHeader(column.domNode, element, column.width);
+			column.domNode.innerText = column.name;
 		}
 	}
 
@@ -538,7 +538,7 @@ export class AsyncTableView<T> implements IDisposable {
 	private renderRow(row: IAsyncRowItem<T>, index: number): void {
 		for (const [i, column] of this.columns.entries()) {
 			const cell = row.cells[i];
-			column.renderer.renderElement(row.element, index, cell.templateData, column.width);
+			column.renderer.renderCell(row.element, index, cell.templateData, column.width);
 			console.log('');
 		}
 	}
@@ -574,8 +574,8 @@ export class AsyncTableView<T> implements IDisposable {
 		for (const [i, column] of this.columns.entries()) {
 			const renderer = column.renderer;
 			const cell = item.cells[i];
-			if (renderer && renderer.disposeElement) {
-				renderer.disposeElement(item.element, index, cell.templateData, column.width);
+			if (renderer && renderer.disposeCell) {
+				renderer.disposeCell(item.element, index, cell.templateData, column.width);
 			}
 
 			this.cache.release(cell!);

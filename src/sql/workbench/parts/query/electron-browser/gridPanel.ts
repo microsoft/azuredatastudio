@@ -13,8 +13,8 @@ import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { SaveResultAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/workbench/parts/query/browser/actions';
 import { escape } from 'sql/base/common/strings';
 import { ITableStyles, ITableMouseEvent } from 'sql/base/browser/ui/table/interfaces';
-import { AsyncTableView, IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
-import { IColumnRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { TableView, IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
+import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
 import * as azdata from 'azdata';
 
@@ -359,7 +359,7 @@ interface ICellTemplate {
 	element: HTMLElement;
 }
 
-class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
+class TableFormatter<T> implements ITableRenderer<T, ICellTemplate> {
 	constructor(private key: string) { }
 
 	renderTemplate(container: HTMLElement): ICellTemplate {
@@ -367,15 +367,11 @@ class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
 		return { element };
 	}
 
-	renderElement(element: T, index: number, templateData: ICellTemplate, width: number): void {
+	renderCell(element: T, index: number, templateData: ICellTemplate, width: number): void {
 		templateData.element.innerText = element[this.key];
 	}
 
-	renderHeader(container: HTMLElement, element: T, width: number): void {
-		container.innerText = element[this.key];
-	}
-
-	disposeElement?(element: T, index: number, templateData: ICellTemplate, width: number): void {
+	disposeCell?(element: T, index: number, templateData: ICellTemplate, width: number): void {
 		templateData.element.innerText = '';
 	}
 
@@ -385,7 +381,7 @@ class TableFormatter<T> implements IColumnRenderer<T, ICellTemplate> {
 }
 
 class GridTable<T> extends Disposable implements IView {
-	private table: AsyncTableView<T>;
+	private table: TableView<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
 
@@ -460,7 +456,7 @@ class GridTable<T> extends Disposable implements IView {
 			}));
 		});
 
-		this.table = new AsyncTableView<T>(tableContainer, this.columns, {
+		this.table = new TableView<T>(tableContainer, this.columns, {
 			getRow: index => this.virtWindow.getIndex(index)
 		});
 		this.table.length = this.resultSet.rowCount;

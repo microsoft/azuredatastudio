@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IDisposable } from 'vs/base/common/lifecycle';
-import { IColumnRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
 import { $, removeClass } from 'vs/base/browser/dom';
 export interface ICell {
@@ -27,7 +27,7 @@ export class CellCache<T> implements IDisposable {
 
 	private cache = new Map<string, ICell[]>();
 
-	constructor(private renderers: Map<string, IColumnRenderer<T, any>>) { }
+	constructor(private renderers: Map<string, ITableRenderer<T, any>>) { }
 
 	alloc(templateId: string): ICell {
 		let result = this.getTemplateCache(templateId).pop();
@@ -53,7 +53,7 @@ export class CellCache<T> implements IDisposable {
 		return result;
 	}
 
-	private getRenderer(templateId: string): IColumnRenderer<T, any> {
+	private getRenderer(templateId: string): ITableRenderer<T, any> {
 		const renderer = this.renderers.get(templateId);
 		if (!renderer) {
 			throw new Error(`No renderer found for ${templateId}`);

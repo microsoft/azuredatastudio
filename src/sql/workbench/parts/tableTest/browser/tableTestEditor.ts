@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { IColumn, AsyncTableView } from 'sql/base/browser/ui/table/highPerf/tableView';
-import { IColumnRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { IColumn, TableView } from 'sql/base/browser/ui/table/highPerf/tableView';
+import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 import * as DOM from 'vs/base/browser/dom';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -14,14 +14,13 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { range } from 'vs/base/common/arrays';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { SlickGridTableTestInput, AsyncTableTestInput } from 'sql/workbench/parts/tableTest/browser/tabletestinput';
-import { timeout } from 'vs/base/common/async';
 import { AsyncDataProvider, VirtualizedCollection } from 'sql/base/browser/ui/table/asyncDataView';
 import { ScrollableSplitView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 
-class ColumnRenderer<IDataShape> implements IColumnRenderer<IDataShape, { element: HTMLElement }> {
+class ColumnRenderer<IDataShape> implements ITableRenderer<IDataShape, { element: HTMLElement }> {
 	constructor(private key: keyof IDataShape) { }
 
 	renderTemplate(container: HTMLElement): { element: HTMLElement; } {
@@ -29,15 +28,11 @@ class ColumnRenderer<IDataShape> implements IColumnRenderer<IDataShape, { elemen
 		return { element };
 	}
 
-	renderHeader(container: HTMLElement, element: IDataShape, width: number | undefined) {
-		container.innerText = element[this.key as string];
-	}
-
-	renderElement(element: IDataShape, index: number, templateData: { element: HTMLElement; }, width: number): void {
+	renderCell(element: IDataShape, index: number, templateData: { element: HTMLElement; }, width: number): void {
 		templateData.element.innerText = element[this.key as string] as string;
 	}
 
-	disposeElement(element: IDataShape, index: number, templateData: { element: HTMLElement }, width: number | undefined): void {
+	disposeCell(element: IDataShape, index: number, templateData: { element: HTMLElement }, width: number | undefined): void {
 		templateData.element.innerText = '';
 	}
 
@@ -278,7 +273,7 @@ export class AsyncTableTestEditor extends BaseEditor {
 					name: 'columnL'
 				}
 			];
-			const table = new AsyncTableView(container, columns, { getRow: (index) => Promise.resolve(data[index]) });
+			const table = new TableView(container, columns, { getRow: (index) => Promise.resolve(data[index]) });
 			table.length = data.length;
 			this.splitview.addView({
 				element: container,
