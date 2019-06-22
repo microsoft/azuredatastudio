@@ -77,7 +77,7 @@ function generateData(count: number): Array<IDataShape> {
 	}));
 }
 
-const data = generateData(762000);
+const data = generateData(1000000);
 
 export class SlickGridTableTest extends BaseEditor {
 	static readonly ID = 'SlickTableTestEditor';

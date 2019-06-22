@@ -7,7 +7,7 @@ import * as pretty from 'pretty-data';
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
+import { ScrollableSplitView, IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { SaveResultAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/workbench/parts/query/browser/actions';
 import { escape } from 'sql/base/common/strings';
@@ -25,7 +25,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
-import { Dimension, $, append } from 'vs/base/browser/dom';
+import { Dimension, $, append, getContentWidth, getContentHeight } from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -583,11 +583,12 @@ class GridTable<T> extends Disposable implements IView {
 		return actions;
 	}
 
-	public layout(size?: number, width?: number): void {
+	public layout(size?: number, orientation?: Orientation, width?: number): void {
 		if (!this.table) {
 			this.build();
 		}
-		this.table.layout(size, width);
+		const layoutWidth = width || (!isUndefinedOrNull(orientation) && orientation === Orientation.VERTICAL ? getContentWidth(this.element) : getContentHeight(this.element)) || undefined;
+		this.table.layout(size, layoutWidth - ACTIONBAR_WIDTH);
 	}
 
 	public get minimumSize(): number {

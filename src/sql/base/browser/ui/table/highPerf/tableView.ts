@@ -103,7 +103,6 @@ export class AsyncTableView<T> implements IDisposable {
 	private _scrollHeight: number;
 	private _scrollWidth: number;
 	private scrollableElementUpdateDisposable: IDisposable | null = null;
-	private scrollableElementWidthDelayer = new Delayer<void>(50);
 	private ariaSetProvider: IAriaSetProvider<T>;
 	private canUseTranslate3d: boolean | undefined = undefined;
 	private rowHeight: number;
@@ -115,6 +114,7 @@ export class AsyncTableView<T> implements IDisposable {
 	private headerContainer: HTMLElement;
 
 	private scheduledRender: IDisposable;
+	private bigNumberDelta = 0;
 
 	private headerHeight = 22;
 
@@ -202,6 +202,7 @@ export class AsyncTableView<T> implements IDisposable {
 		domEvent(this.scrollableElement.getDomNode(), 'scroll')
 			(e => (e.target as HTMLElement).scrollTop = 0, null, this.disposables);
 
+		this.updateScrollWidth();
 		this.layout();
 	}
 
@@ -298,8 +299,9 @@ export class AsyncTableView<T> implements IDisposable {
 	}
 
 	private updateScrollWidth(): void {
-		this._scrollWidth = this.columns.reduce((p, c) => p + c.width!, 0);
+		this._scrollWidth = this.columns.reduce((p, c) => p += c.width!, 0);
 		this.rowsContainer.style.width = `${this.scrollWidth}px`;
+		this.headerContainer.style.width = `${this.scrollWidth}px`;
 		this.scrollableElement.setScrollDimensions({ scrollWidth: this.scrollWidth });
 	}
 
@@ -351,6 +353,19 @@ export class AsyncTableView<T> implements IDisposable {
 		const renderRange = this.getRenderRange(renderTop, renderHeight);
 		renderRange.end = renderRange.end > this.length ? this.length : renderRange.end;
 
+		// IE (all versions) cannot handle units above about 1,533,908 px, so every 500k pixels bring numbers down
+		const STEP_SIZE = 500000;
+		this.bigNumberDelta = 0;
+		if (renderTop >= STEP_SIZE) {
+			// Compute a delta that guarantees that lines are positioned at `lineHeight` increments
+			this.bigNumberDelta = Math.floor(renderTop / STEP_SIZE) * STEP_SIZE;
+			this.bigNumberDelta = Math.floor(this.bigNumberDelta / this.rowHeight) * this.rowHeight;
+			const rangesToUpdate = Range.intersect(previousRenderRange, renderRange);
+			for (let i = rangesToUpdate.start; i < rangesToUpdate.end; i++) {
+				this.updateRowInDOM(this.visibleRows[i], i);
+			}
+		}
+
 		const rangesToInsert = Range.relativeComplement(renderRange, previousRenderRange);
 		const rangesToRemove = Range.relativeComplement(previousRenderRange, renderRange);
 		const beforeElement = this.getNextToLastElement(rangesToInsert);
@@ -370,7 +385,7 @@ export class AsyncTableView<T> implements IDisposable {
 		const canUseTranslate3d = !isWindows && !browser.isFirefox && browser.getZoomLevel() === 0;
 
 		if (canUseTranslate3d) {
-			const transform = `translate3d(-${renderLeft}px, -${renderTop}px, 0px)`;
+			const transform = `translate3d(-${renderLeft}px, -${renderTop - this.bigNumberDelta}px, 0px)`;
 			this.rowsContainer.style.transform = transform;
 			this.rowsContainer.style.webkitTransform = transform;
 			this.headerContainer.style.transform = `translate3d(-${renderLeft}px, 0px, 0px)`;
@@ -384,7 +399,7 @@ export class AsyncTableView<T> implements IDisposable {
 		} else {
 			this.rowsContainer.style.left = `-${renderLeft}px`;
 			this.headerContainer.style.left = `-${renderLeft}px`;
-			this.rowsContainer.style.top = `-${renderTop}px`;
+			this.rowsContainer.style.top = `-${renderTop - this.bigNumberDelta}px`;
 
 			if (canUseTranslate3d !== this.canUseTranslate3d) {
 				this.rowsContainer.style.transform = '';
@@ -598,7 +613,7 @@ export class AsyncTableView<T> implements IDisposable {
 	}
 
 	elementTop(index: number): number {
-		return Math.floor(index * this.rowHeight);
+		return Math.floor(index * this.rowHeight) - this.bigNumberDelta;
 	}
 
 	getElementDomId(index: number): string {
@@ -611,7 +626,7 @@ export class AsyncTableView<T> implements IDisposable {
 
 	set length(length: number) {
 		const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
-		const potentialRerenderRange = { start: this.length, end: length + 1 };
+		const potentialRerenderRange = { start: this.length, end: length };
 		const rerenderRange = Range.intersect(potentialRerenderRange, previousRenderRange);
 		this._length = length;
 		for (let i = rerenderRange.start; i < rerenderRange.end; i++) {

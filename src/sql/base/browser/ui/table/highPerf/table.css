@@ -8,6 +8,7 @@
 	height: 100%;
 	width: 100%;
 	white-space: nowrap;
+	overflow: hidden;
 }
 
 .monaco-perftable.mouse-support {
@@ -68,6 +69,7 @@
 .monaco-perftable-header {
 	position: relative;
 	width: 100%;
+	overflow: hidden;
 }
 
 .monaco-perftable-header-cell {
