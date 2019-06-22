@@ -351,9 +351,7 @@ export class ProfilerEditor extends BaseEditor {
 				render: parent => parent.appendChild(editorContainer),
 				focus: () => this._editor.focus()
 			},
-			tabSelectedHandler: () => {
-				expandPanel();
-			}
+			tabSelectedHandler: expandPanel
 		});
 
 		let detailTableContainer = document.createElement('div');
@@ -393,9 +391,7 @@ export class ProfilerEditor extends BaseEditor {
 				render: parent => parent.appendChild(detailTableContainer),
 				focus: () => this._detailTable.focus()
 			},
-			tabSelectedHandler: () => {
-				expandPanel();
-			}
+			tabSelectedHandler: expandPanel
 		});
 
 		this._collapsedPanelAction = this._instantiationService.createInstance(Actions.ProfilerCollapsablePanelAction, Actions.ProfilerCollapsablePanelAction.ID, Actions.ProfilerCollapsablePanelAction.LABEL);
