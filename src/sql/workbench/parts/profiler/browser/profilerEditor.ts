@@ -46,6 +46,10 @@ import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import { clamp } from 'vs/base/common/numbers';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { HandleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -156,7 +160,8 @@ export class ProfilerEditor extends BaseEditor {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEditorService editorService: IEditorService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IClipboardService private _clipboardService: IClipboardService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -374,6 +379,21 @@ export class ProfilerEditor extends BaseEditor {
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();
 		});
+
+		const detailTableCopyKeybind = new CopyKeybind();
+		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
+			// we always only get 1 item in the ranges
+			if (ranges && ranges.length === 1) {
+				HandleCopyRequest(this._clipboardService, ranges[0], (row, cell) => {
+					const item = this._detailTableData.getItem(row);
+					// only 2 columns in this table
+					return cell === 0 ? item.label : item.value;
+				});
+			}
+		});
+		this._detailTable.setSelectionModel(new CellSelectionModel());
+		this._detailTable.registerPlugin(detailTableCopyKeybind);
+
 
 		this._tabbedPanel.pushTab({
 			identifier: 'detailTable',

@@ -29,6 +29,9 @@ import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/b
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { HandleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -62,7 +65,8 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
-		@IStatusbarService private _statusbarService: IStatusbarService
+		@IStatusbarService private _statusbarService: IStatusbarService,
+		@IClipboardService private _clipboardService: IClipboardService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -89,6 +93,17 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
 			});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
+		const copyKeybind = new CopyKeybind();
+		copyKeybind.onCopy((e) => {
+			// in context of this table, the selection mode is row selection, copy the whole row will get a lot of unwanted data
+			// ignore the passed in range and create a range so that it only copies the currently selected cell value.
+			const activeCell = this._profilerTable.activeCell;
+			HandleCopyRequest(this._clipboardService, new Slick.Range(activeCell.row, activeCell.cell), (row, cell) => {
+				const fieldName = this._input.columns[cell].field;
+				return this._input.data.getItem(row)[fieldName];
+			});
+		});
+		this._profilerTable.registerPlugin(copyKeybind);
 		attachTableStyler(this._profilerTable, this._themeService);
 
 		this._findState = new FindReplaceState();
