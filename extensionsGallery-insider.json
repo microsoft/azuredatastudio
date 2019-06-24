@@ -1799,7 +1799,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1860,7 +1860,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1921,7 +1921,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1982,7 +1982,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2043,7 +2043,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2104,7 +2104,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2165,7 +2165,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2226,7 +2226,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2287,7 +2287,7 @@
 					"versions": [
 						{
 							"version": "1.9.0",
-							"lastUpdated": "6/14/2019",
+							"lastUpdated": "6/24/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2334,6 +2334,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "51",
+					"extensionName": "ads-language-pack-ja",
+					"displayName": "Japanese Language Pack for Azure Data Studio",
+					"shortDescription": "Language pack extension for Japanese",
+					"publisher": {
+						"displayName": "Microsoft",
+						"publisherId": "Microsoft",
+						"publisherName": "Microsoft"
+					},
+					"versions": [
+						{
+							"version": "1.9.0",
+							"lastUpdated": "6/24/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/langpacks/1.9.0/ads-language-pack-ja-1.9.0.vsix"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ja/languagepack.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-pack-ja/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/microsoft/azuredatastudio/master/i18n/language-ja/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=1.30.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/Microsoft/azuredatastudio"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -2342,7 +2403,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 40
+							"count": 41
 						}
 					]
 				}
