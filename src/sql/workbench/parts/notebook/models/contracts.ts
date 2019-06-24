@@ -37,8 +37,7 @@ export class OutputTypes {
 }
 
 export enum NotebookChangeType {
-	CellsAdded,
-	CellDeleted,
+	CellsModified,
 	CellSourceUpdated,
 	CellOutputUpdated,
 	DirtyStateChanged,

@@ -10,7 +10,7 @@ import 'mocha';
 
 import { JupyterServerInstanceStub } from '../common';
 import { LocalJupyterServerManager, ServerInstanceFactory } from '../../jupyter/jupyterServerManager';
-import JupyterServerInstallation from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { Deferred } from '../../common/promise';
 import { ApiWrapper } from '../../common/apiWrapper';
 import * as testUtils from '../common/testUtils';

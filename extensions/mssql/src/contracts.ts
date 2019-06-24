@@ -435,6 +435,7 @@ export namespace RemoveServerGroupRequest {
 
 // ------------------------------- <Schema Compare> -----------------------------
 export interface SchemaCompareParams {
+	operationId: string;
 	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
 	taskExecutionMode: TaskExecutionMode;
@@ -466,6 +467,10 @@ export interface SchemaCompareNodeParams {
 	taskExecutionMode: TaskExecutionMode;
 }
 
+export interface SchemaCompareCancelParams {
+	operationId: string;
+}
+
 export namespace SchemaCompareRequest {
 	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
@@ -484,6 +489,10 @@ export namespace SchemaCompareGetDefaultOptionsRequest {
 
 export namespace SchemaCompareIncludeExcludeNodeRequest {
 	export const type = new RequestType<SchemaCompareNodeParams, azdata.ResultStatus, void, void>('schemaCompare/includeExcludeNode');
+}
+
+export namespace SchemaCompareCancellationRequest {
+	export const type = new RequestType<SchemaCompareCancelParams, azdata.ResultStatus, void, void>('schemaCompare/cancel');
 }
 
 // ------------------------------- <Schema Compare> -----------------------------

@@ -178,7 +178,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 		const linkForeground = theme.getColor(textLinkForeground);
 		if (linkForeground) {
 			collector.addRule(`
-			.notebookEditor a:link {
+			.notebookEditor .scrollable a {
 				color: ${linkForeground};
 			}
 			`);

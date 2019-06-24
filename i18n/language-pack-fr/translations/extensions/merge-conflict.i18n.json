@@ -25,7 +25,11 @@
 			"config.title": "Conflit de fusion",
 			"config.autoNavigateNextConflictEnabled": "Détermine s'il faut automatiquement passer au conflit de fusion suivant après la résolution d'un conflit de fusion.",
 			"config.codeLensEnabled": "Créer un CodeLens pour les blocs de conflit de fusion dans l’éditeur.",
-			"config.decoratorsEnabled": "Créer des décorateurs pour les blocs de conflit de fusion dans l’éditeur."
+			"config.decoratorsEnabled": "Créer des décorateurs pour les blocs de conflit de fusion dans l’éditeur.",
+			"config.diffViewPosition": "Controls where the diff view should be opened when comparing changes in merge conflicts.",
+			"config.diffViewPosition.current": "Open the diff view in the current editor group.",
+			"config.diffViewPosition.beside": "Open the diff view next to the current editor group.",
+			"config.diffViewPosition.below": "Open the diff view below the current editor group."
 		},
 		"out/mergeDecorator": {
 			"currentChange": "(Modification actuelle)",

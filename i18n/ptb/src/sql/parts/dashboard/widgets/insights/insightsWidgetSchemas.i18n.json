@@ -10,10 +10,11 @@
 	"insightIdDescription": "Identificador exclusivo usado para armazenar em cache os resultados do insight.",
 	"insightQueryDescription": "Consulta SQL para executar. Isso deve retornar exatamente 1 resultset.",
 	"insightQueryFileDescription": "[Opcional] caminho para um arquivo que contém uma consulta. Use se a \"consulta\" não estiver configurada",
+	"insightAutoRefreshIntervalDescription": "[Opcional] Auto intervalo de atualização em minutos, se não estiver definido, não haverá atualização automática",
 	"actionTypes": "Quais ações para usar",
-	"actionDatabaseDescription": "Banco de dados de destino para a ação; pode usar o formato \"$ {columnName} para usar um nome de coluna orientado por dados.",
-	"actionServerDescription": "Servidor destino para a ação; pode usar o formato \"$ {columnName} para usar um nome de coluna orientado por dados.",
-	"actionUserDescription": "Usuário de destino para a ação; pode usar o formato \"${columnName} para usar um orientado o nome da coluna de dados.",
+	"actionDatabaseDescription": "Banco de dados de destino para a ação; pode usar o formato  \"$ {ColumnName} \" para usar um nome de coluna de dados orientados.",
+	"actionServerDescription": "Servidor de destino para a ação; pode usar o formato \"${columnName}\" para usar um nome de coluna de dados orientados.",
+	"actionUserDescription": "Usuário de destino para a ação; pode usar o formato \"${columnName}\" para usar um nome de coluna de dados orientados.",
 	"carbon.extension.contributes.insightType.id": "Identificador da percepção",
 	"carbon.extension.contributes.insights": "Contribuir com ideias para a paleta do painel de controle."
 }

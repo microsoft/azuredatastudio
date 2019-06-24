@@ -36,6 +36,11 @@ export enum CommandContext {
 	NotebookPythonInstalled = 'notebook:pythonInstalled'
 }
 
+export enum PythonPkgType {
+	Pip = 'Pip',
+	Anaconda = 'Anaconda'
+}
+
 export const pythonOfflinePipPackagesUrl = 'https://go.microsoft.com/fwlink/?linkid=2092867';
 export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092866';
 export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092865';

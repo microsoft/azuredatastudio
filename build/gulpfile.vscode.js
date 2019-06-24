@@ -526,10 +526,14 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
-		gulp.src(`../vscode-localization/${language.id}/build/*/*.xlf`)
-			.pipe(i18n.prepareI18nFiles())
-			.pipe(vfs.dest(`./i18n/${language.folderName}`));
+	return new Promise(function(resolve) {
+		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
+			let languageId = language.translationId ? language.translationId : language.id;
+			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)
+				.pipe(i18n.prepareI18nFiles())
+				.pipe(vfs.dest(`./i18n/${language.folderName}`));
+			resolve();
+		});
 	});
 	// {{SQL CARBON EDIT}} - End
 });

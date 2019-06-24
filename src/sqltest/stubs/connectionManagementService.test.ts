@@ -291,4 +291,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	getDefaultProviderId(): string {
 		return undefined;
 	}
+
+	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
+		return [];
+	}
 }

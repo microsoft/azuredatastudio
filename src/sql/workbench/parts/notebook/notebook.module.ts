@@ -13,7 +13,6 @@ import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/boot
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/notebook.component';
-
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CodeComponent } from 'sql/workbench/parts/notebook/cellViews/code.component';
 import { CodeCellComponent } from 'sql/workbench/parts/notebook/cellViews/codeCell.component';
@@ -28,6 +27,7 @@ import { SelectBox } from 'sql/platform/ui/electron-browser/selectBox/selectBox.
 import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.component';
 import { IMimeComponentRegistry, Extensions } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { LinkHandlerDirective } from 'sql/workbench/parts/notebook/cellViews/linkHandler.directive';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	let outputComponents = Registry.as<IMimeComponentRegistry>(Extensions.MimeComponentContribution).getAllCtors();
@@ -48,6 +48,7 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			OutputAreaComponent,
 			OutputComponent,
 			StdInComponent,
+			LinkHandlerDirective,
 			...outputComponents
 		],
 		entryComponents: [

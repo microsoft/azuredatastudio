@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "Habilita o deshabilita el diagnóstico de sugerencia para archivos de TypeScript en el editor. Requiere el uso de TypeScript 2.8 o posterior en el área de trabajo.",
 			"typescript.preferences.quoteStyle": "Estilo de comillas preferido para correcciones rápidas: \"single\" (comillas sencillas), \"double\" (comillas dobles) o \"auto\" (inferir automáticamente el tipo de comillas a partir de las importaciones actuales). Requiere el uso de TypeScript 2.9 o posterior en el área de trabajo.",
 			"typescript.preferences.importModuleSpecifier": "Estilo de ruta de acceso preferido para las importaciones automáticas.",
-			"typescript.preferences.importModuleSpecifier.auto": "Deduzca el tipo de ruta de acceso más corto.",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "Relativo a la ubicación del archivo.",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "Se basa en el valor \"baseUrl\" configurado en su \"jsconfig.json\" o \"tsconfig.json\".",
 			"typescript.updateImportsOnFileMove.enabled": "Habilite o deshabilite la actualización automática de las rutas de acceso de importación al cambiar de nombre un archivo o moverlo en VS Code. Requiere el uso de TypeScript 2.9 o posterior en el área de trabajo.",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "Habilitar/deshabilitar las encuestas ocasionales que nos ayudan a mejorar la compatibilidad de JavaScript y TypeScript en VS Code.",
 			"configuration.suggest.completeJSDocs": "Habilitar/deshabilitar sugerencia para completar comentarios JSDoc.",
 			"typescript.preferences.renameShorthandProperties": "Habilita/deshabilita la introducción de alias para propiedades de objeto al renombrar. Requiere utilizar TypeScript 3.4 o superior en el espacio de trabajo."
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "No se pudo cargar la versión de TypeScript en esta ruta",
@@ -102,6 +105,7 @@
 			"neverAgain": "Desactivar las encuestas de JS/TS"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "Para habilitar las características de lenguaje de JavaScript/TypeScript en todo el proyecto, excluya las carpetas con muchos archivos, como: {0}",
 			"hintExclude.generic": "Para habilitar las características de idioma de JavaScript/TypeScript IntelliSense en todo el proyecto, excluya las carpetas de tamaño grande con archivos de origen en los que no trabaje.",
 			"large.label": "Configurar exclusiones",

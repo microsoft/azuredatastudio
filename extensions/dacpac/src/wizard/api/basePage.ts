@@ -67,19 +67,14 @@ export abstract class BasePage {
 				}
 			}
 
-			let db = c.options.databaseDisplayName;
 			let usr = c.options.user;
 			let srv = c.options.server;
-
-			if (!db) {
-				db = localize('basePage.defaultDb', '<default>');
-			}
 
 			if (!usr) {
 				usr = localize('basePage.defaultUser', 'default');
 			}
 
-			let finalName = `${srv}, ${db} (${usr})`;
+			let finalName = `${srv} (${usr})`;
 			return {
 				connection: c,
 				displayName: finalName,

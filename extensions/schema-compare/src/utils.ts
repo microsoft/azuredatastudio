@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as azdata from 'azdata';
 
 export interface IPackageInfo {
 	name: string;
@@ -30,5 +31,21 @@ export function getTelemetryErrorType(msg: string): string {
 	}
 	else {
 		return 'Other';
+	}
+}
+
+/**
+ * Return the appropriate endpoint name depending on if the endpoint is a dacpac or a database
+ * @param endpoint endpoint to get the name of
+ */
+export function getEndpointName(endpoint: azdata.SchemaCompareEndpointInfo): string {
+	if (!endpoint) {
+		return undefined;
+	}
+
+	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database) {
+		return `${endpoint.serverName}.${endpoint.databaseName}`;
+	} else {
+		return endpoint.packageFilePath;
 	}
 }

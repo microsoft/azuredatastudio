@@ -1402,16 +1402,38 @@ declare module 'azdata' {
 		stepDetails: AgentJobStepInfo;
 	}
 
+	export enum AgentSubSystem {
+		TransactSql = 1,
+		ActiveScripting = 2,
+		CmdExec = 3,
+		Snapshot = 4,
+		LogReader = 5,
+		Distribution = 6,
+		Merge = 7,
+		QueueReader = 8,
+		AnalysisQuery = 9,
+		AnalysisCommands = 10,
+		Ssis = 11,
+		PowerShell = 12
+	}
+
+	export enum StepCompletionAction {
+		QuitWithSuccess = 1,
+		QuitWithFailure = 2,
+		GoToNextStep = 3,
+		GoToStep = 4
+	}
+
 	export interface AgentJobStepInfo {
 		jobId: string;
 		jobName: string;
 		script: string;
 		scriptName: string;
 		stepName: string;
-		subSystem: string;
+		subSystem: AgentSubSystem;
 		id: number;
-		failureAction: string;
-		successAction: string;
+		failureAction: StepCompletionAction;
+		successAction: StepCompletionAction;
 		failStepId: number;
 		successStepId: number;
 		command: string;
@@ -1718,12 +1740,18 @@ declare module 'azdata' {
 		differences: DiffEntry[];
 	}
 
+	export interface SchemaCompareCompletionResult extends ResultStatus {
+		operationId: string;
+		areEqual: boolean;
+		differences: DiffEntry[];
+	}
+
 	export interface DiffEntry {
 		updateAction: SchemaUpdateAction;
 		differenceType: SchemaDifferenceType;
 		name: string;
-		sourceValue: string;
-		targetValue: string;
+		sourceValue: string[];
+		targetValue: string[];
 		parent: DiffEntry;
 		children: DiffEntry[];
 		sourceScript: string;
@@ -1747,6 +1775,7 @@ declare module 'azdata' {
 	export interface SchemaCompareEndpointInfo {
 		endpointType: SchemaCompareEndpointType;
 		packageFilePath: string;
+		serverDisplayName: string;
 		serverName: string;
 		databaseName: string;
 		ownerUri: string;
@@ -1907,11 +1936,12 @@ declare module 'azdata' {
 	}
 
 	export interface SchemaCompareServicesProvider extends DataProvider {
-		schemaCompare(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
+		schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareCancel(operationId: string): Thenable<ResultStatus>;
 	}
 
 	// Security service interfaces ------------------------------------------------------------------------

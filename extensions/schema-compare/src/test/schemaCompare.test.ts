@@ -14,19 +14,19 @@ import { SchemaCompareTestService } from './testSchemaCompareService';
 
 // Mock test data
 const mockConnectionProfile: azdata.IConnectionProfile = {
-		connectionName: 'My Connection',
-		serverName: 'My Server',
-		databaseName: 'My Server',
-		userName: 'My User',
-		password: 'My Pwd',
-		authenticationType: 'SqlLogin',
-		savePassword: false,
-		groupFullName: 'My groupName',
-		groupId: 'My GroupId',
-		providerName: 'My Server',
-		saveProfile: true,
-		id: 'My Id',
-		options: null
+	connectionName: 'My Connection',
+	serverName: 'My Server',
+	databaseName: 'My Server',
+	userName: 'My User',
+	password: 'My Pwd',
+	authenticationType: 'SqlLogin',
+	savePassword: false,
+	groupFullName: 'My groupName',
+	groupId: 'My GroupId',
+	providerName: 'My Server',
+	saveProfile: true,
+	id: 'My Id',
+	options: null
 };
 
 const mocksource: string = 'source.dacpac';
@@ -34,6 +34,7 @@ const mocktarget: string = 'target.dacpac';
 
 const mockSourceEndpoint: azdata.SchemaCompareEndpointInfo = {
 	endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+	serverDisplayName: '',
 	serverName: '',
 	databaseName: '',
 	ownerUri: '',
@@ -42,16 +43,18 @@ const mockSourceEndpoint: azdata.SchemaCompareEndpointInfo = {
 
 const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 	endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+	serverDisplayName: '',
 	serverName: '',
 	databaseName: '',
 	ownerUri: '',
 	packageFilePath: mocktarget
 };
 
-describe('SchemaCompareDialog.openDialog', function(): void {
-	it('Should be correct when created.', async function(): Promise<void> {
-		let dialog = new SchemaCompareDialog();
-		await dialog.openDialog(mockConnectionProfile);
+describe('SchemaCompareDialog.openDialog', function (): void {
+	it('Should be correct when created.', async function (): Promise<void> {
+		let schemaCompareResult = new SchemaCompareResult();
+		let dialog = new SchemaCompareDialog(schemaCompareResult);
+		await dialog.openDialog();
 
 		should(dialog.dialog.title).equal('Schema Compare');
 		should(dialog.dialog.okButton.label).equal('Ok');
@@ -59,17 +62,19 @@ describe('SchemaCompareDialog.openDialog', function(): void {
 	});
 });
 
-describe('SchemaCompareResult.start', function(): void {
-	it('Should be correct when created.', async function(): Promise<void> {
+describe('SchemaCompareResult.start', function (): void {
+	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 		azdata.dataprotocol.registerSchemaCompareServicesProvider(sc);
 
-		let result = new SchemaCompareResult(mocksource, mocktarget, mockSourceEndpoint, mockTargetEndpoint);
-		let promise = new Promise(resolve => setTimeout(resolve, 3000)); // to ensure comparision result view is initialized
+		let result = new SchemaCompareResult();
+		await result.start(null);
+		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;
-		await result.start();
 
 		should(result.getComparisonResult() === undefined);
+		result.sourceEndpointInfo = mockSourceEndpoint;
+		result.targetEndpointInfo = mockTargetEndpoint;
 		await result.execute();
 
 		should(result.getComparisonResult() !== undefined);
