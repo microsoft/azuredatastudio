@@ -10,10 +10,7 @@ import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
 import * as outputProcessor from 'sql/workbench/parts/notebook/outputs/common/outputProcessor';
-import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
@@ -43,19 +40,16 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 	private _trusted: boolean;
 	private _initialized: boolean = false;
 	private _activeCellId: string;
-	private registry: RenderMimeRegistry;
 	private _componentInstance: IMimeComponent;
 	public errorText: string;
 
 	constructor(
-		@Inject(INotebookService) private _notebookService: INotebookService,
 		@Inject(IThemeService) private _themeService: IThemeService,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeref: ChangeDetectorRef,
 		@Inject(forwardRef(() => ElementRef)) private _ref: ElementRef,
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver
 	) {
 		super();
-		this.registry = this._notebookService.getMimeRegistry();
 	}
 
 	ngOnInit() {
