@@ -9,6 +9,7 @@ import { ElementRef, forwardRef, Inject, Component, OnInit, Input } from '@angul
 import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
+import { localize } from 'vs/nls';
 
 @Component({
 	selector: MimeRendererComponent.SELECTOR,
@@ -69,10 +70,10 @@ export class MimeRendererComponent extends AngularDisposable implements IMimeCom
 			});
 		} else {
 			// TODO Localize
-			node.innerHTML =
-				`No ${options.trusted ? '' : '(safe) '}renderer could be ` +
-				'found for output. It has the following MIME types: ' +
-				Object.keys(options.data).join(', ');
+			node.innerHTML = localize('noRendererFound',
+				"No {0} renderer could be found for output. It has the following MIME types: {1}",
+				options.trusted ? '' : localize('safe', "(safe) "),
+				Object.keys(options.data).join(', '));
 		}
 	}
 }

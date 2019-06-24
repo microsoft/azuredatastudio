@@ -57,9 +57,7 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 		this.layout();
 		this._initialized = true;
 		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
-			(() => {
-				this.layout();
-			}));
+			(() => this.layout()));
 	}
 
 	ngAfterViewInit() {
@@ -68,7 +66,6 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 			this.loadComponent();
 		}
 		this._changeref.detectChanges();
-		this.layout();
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
@@ -92,9 +89,7 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 	}
 
 	private get nativeOutputElement() {
-		return this.outputElement
-			? this.outputElement.nativeElement
-			: undefined;
+		return this.outputElement ? this.outputElement.nativeElement : undefined;
 	}
 
 	public layout(): void {
@@ -137,7 +132,6 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 		return !types.isUndefinedOrNull(this.errorText);
 	}
 	private updateTheme(theme: ITheme): void {
-		// TODO handle theming appropriately
 		let el = <HTMLElement>this._ref.nativeElement;
 		let backgroundColor = theme.getColor(colors.editorBackground, true);
 		let foregroundColor = theme.getColor(themeColors.SIDE_BAR_FOREGROUND, true);
@@ -145,11 +139,9 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 		if (backgroundColor) {
 			el.style.backgroundColor = backgroundColor.toString();
 		}
-
 		if (foregroundColor) {
 			el.style.color = foregroundColor.toString();
 		}
-
 	}
 
 	private loadComponent(): void {
