@@ -550,6 +550,20 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (names && names.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
+			const categoryFilters = query.criteria.filter(x => x.filterType === FilterType.Category).map(v => v.value.toLowerCase());
+			if (categoryFilters && categoryFilters.length > 0) {
+				// Implement the @category: "language packs" filtering
+				if (categoryFilters.includes('language packs')) {
+					filteredExtensions = filteredExtensions.filter(e => {
+						// we only have 1 version for our extensions in the gallery file, so this should always be the case
+						if (e.versions.length === 1) {
+							const extension = toExtension(e, e.versions[0], 0, query);
+							return extension.properties.localizedLanguages && extension.properties.localizedLanguages.length > 0;
+						}
+						return false;
+					});
+				}
+			}
 			const searchTexts = query.criteria.filter(x => x.filterType === FilterType.SearchText).map(v => v.value ? v.value.toLocaleLowerCase() : undefined);
 			if (searchTexts && searchTexts.length > 0) {
 				searchTexts.forEach(searchText => {
