@@ -559,6 +559,7 @@ export class TableView<T> implements IDisposable {
 			const cell = row.cells[columnIndex].domNode;
 			cell.style.width = `${column.width}px`;
 			cell.style.left = `${column.left}px`;
+			cell.style.height = `${row.size}px`;
 			cell.setAttribute('data-column-id', `${column.id}`);
 			row.row!.setAttribute('id', this.getElementDomId(index, column.id));
 		}

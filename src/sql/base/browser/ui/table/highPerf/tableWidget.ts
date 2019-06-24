@@ -184,7 +184,7 @@ class Trait<T> implements IDisposable {
 		this.sortedIndexes = sortedIndexes;
 
 		// const toRender = disjunction(sortedResult, indexes);
-		this.renderer.renderIndexes(indexes);
+		this.renderer.renderIndexes(indexes.concat(sortedResult));
 
 		this._onChange.fire({ indexes, browserEvent });
 		return result;
