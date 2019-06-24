@@ -8,17 +8,20 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { Book } from './bookTreeItem';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
+
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 
 	private _onDidChangeTreeData: vscode.EventEmitter<Book | undefined> = new vscode.EventEmitter<Book | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<Book | undefined> = this._onDidChangeTreeData.event;
-	private tocPath: string[];
+	private tableOfContentsPath: string[];
 
 	constructor(private workspaceRoot: string) {
 		if (workspaceRoot !== '') {
-			this.tocPath = this.getFiles(this.workspaceRoot, []);
-			if (this.tocPath === undefined || this.tocPath.length === 0) {
+			this.tableOfContentsPath = this.getFiles(this.workspaceRoot, []);
+			if (this.tableOfContentsPath === undefined || this.tableOfContentsPath.length === 0) {
 				vscode.commands.executeCommand('setContext', 'bookOpened', false);
 			} else {
 				vscode.commands.executeCommand('setContext', 'bookOpened', true);
@@ -26,23 +29,28 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 		}
 	}
 
-	private getFiles(dir: string, files_: string[]): string[] {
-		files_ = files_ || [];
+	private getFiles(dir: string, allFiles: string[]): string[] {
 		let files = fs.readdirSync(dir);
 		for (let i in files) {
-			let name = dir + '/' + files[i];
+			let name = path.join(dir, files[i]);
 			if (fs.statSync(name).isDirectory()) {
-				this.getFiles(name, files_);
+				this.getFiles(name, allFiles);
 			} else if (files[i] === 'toc.yml') {
-				files_.push(name);
+				allFiles.push(name);
 			}
 		}
-		return files_;
+		return allFiles;
 	}
 
 	async openNotebook(resource: vscode.Uri): Promise<void> {
-		let doc = await vscode.workspace.openTextDocument(resource);
-		vscode.window.showTextDocument(doc);
+		try {
+			let doc = await vscode.workspace.openTextDocument(resource);
+			vscode.window.showTextDocument(doc);
+		} catch (e) {
+			vscode.window.showErrorMessage(localize('showNotebookError', 'Open file {0} failed: {1}',
+				resource.fsPath,
+				e instanceof Error ? e.message : e));
+		}
 	}
 
 	getTreeItem(element: Book): vscode.TreeItem {
@@ -51,8 +59,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 
 	getChildren(element?: Book): Thenable<Book[]> {
 		if (element) {
-			if (element.toc) {
-				return Promise.resolve(this.getSections(element.toc, element.root));
+			if (element.tableOfContents) {
+				return Promise.resolve(this.getSections(element.tableOfContents, element.root));
 			} else {
 				return Promise.resolve([]);
 			}
@@ -63,19 +71,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 
 	private getBooks(): Book[] {
 		let books: Book[] = [];
-		for (let i in this.tocPath) {
-			let root = this.tocPath[i].substring(0, this.tocPath[i].lastIndexOf('_data/toc.yml'));
+		for (let i in this.tableOfContentsPath) {
+			let root = path.dirname(path.dirname(this.tableOfContentsPath[i]));
 			try {
-				const config = yaml.safeLoad(fs.readFileSync(root + '/_config.yml', 'utf-8'));
-				const toc = yaml.safeLoad(fs.readFileSync(this.tocPath[i], 'utf-8'));
-				let book = new Book(config.title, root, toc, vscode.TreeItemCollapsibleState.Expanded);
-				/* book.iconPath = {
-					light: path.join(__filename, '..', '..', 'resources', 'light', '.svg'),
-					dark: path.join(__filename, '..', '..', 'resources', 'dark', '.svg')
-				}; */
+				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '/_config.yml'), 'utf-8'));
+				const tableOfContents = yaml.safeLoad(fs.readFileSync(this.tableOfContentsPath[i], 'utf-8'));
+				let book = new Book(config.title, root, tableOfContents, vscode.TreeItemCollapsibleState.Collapsed);
 				books.push(book);
 			} catch (e) {
-				// TODO: missing _config.yml file
+				continue;
 			}
 		}
 		return books;
@@ -83,29 +87,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 
 	private getSections(sec: any[], root: string): Book[] {
 		let notebooks: Book[] = [];
-
 		for (let i = 0; i < sec.length; i++) {
 			if (sec[i].url) {
-
-				let pathToNotebook = path.join(root, 'content', String(sec[i].url).concat('.ipynb'));
-				let pathToMarkdown = path.join(root, 'content', String(sec[i].url).concat('.md'));
-
+				let pathToNotebook = path.join(root, 'content', sec[i].url.concat('.ipynb'));
+				let pathToMarkdown = path.join(root, 'content', sec[i].url.concat('.md'));
 				if (this.pathExists(pathToNotebook)) {
 					let notebook = new Book(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToNotebook], });
-					notebook.iconPath = {
-						light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
-						dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
-					};
 					notebooks.push(notebook);
 				} else if (this.pathExists(pathToMarkdown)) {
 					let markdown = new Book(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToMarkdown], });
-					// markdown.iconPath = {
-					// 	light: path.join(__filename, '..', '..', 'resources', 'light', 'open_notebook.svg'),
-					// 	dark: path.join(__filename, '..', '..', 'resources', 'dark', 'open_notebook_inverse.svg')
-					// };
 					notebooks.push(markdown);
 				} else {
-					// TODO: missing notebook/markdown file
+					vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sec[i].title));
 				}
 			} else {
 				// TODO: search, divider, header
@@ -117,10 +110,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<Book> {
 	private pathExists(p: string): boolean {
 		try {
 			fs.accessSync(p);
-		} catch (err) {
+		} catch (e) {
 			return false;
 		}
-
 		return true;
 	}
 }
