@@ -870,7 +870,7 @@ export class SchemaCompareResult {
 			this.deploymentOptions = result.deploymentOptions;
 			this.scmpSourceExcludes = result.excludedSourceElements;
 			this.scmpTargetExcludes = result.excludedTargetElements;
-			this.sourceTargetSwitched = result.originalTargetName !== this.targetName;
+			this.sourceTargetSwitched = result.originalTargetName.toLowerCase() !== this.targetEndpointInfo.databaseName.toLowerCase();
 
 			// clear out any old results
 			this.resetForNewCompare();
