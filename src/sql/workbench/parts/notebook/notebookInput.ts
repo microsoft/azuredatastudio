@@ -93,6 +93,11 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange): void {
+		if (contentChange && contentChange.changeType === NotebookChangeType.Saved) {
+			// We send the saved events out, so ignore. Otherwise we double-count this as a change
+			// and cause the text to be reapplied
+			return;
+		}
 		if (contentChange && contentChange.changeType === NotebookChangeType.TrustChanged) {
 			// This is a serializable change (in that we permanently cache trusted state, but
 			// ironically isn't cached in the JSON contents since trust doesn't persist across machines.
@@ -115,7 +120,7 @@ export class NotebookEditorModel extends EditorModel {
 		}
 	}
 
-	private sendNotebookSerializationStateChange() {
+	private sendNotebookSerializationStateChange(): void {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
 			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
