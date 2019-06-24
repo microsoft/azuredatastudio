@@ -10,6 +10,11 @@
 	"insightIdDescription": "Identificateur unique utilisé pour mettre en cache les résultats de l'aperçu.",
 	"insightQueryDescription": "Requête SQL à exécuter. Cela devrait renvoyer exactement 1 jeu de résultat.",
 	"insightQueryFileDescription": "[Facultatif] chemin vers un fichier qui contient une requête. A utiliser si la « requête » n’est pas définie",
-	"actionDatabaseDescription": "Base de données cible pour l’action ; Vous pouvez utiliser le format ${columnName} pour définir un nom de colonne basé sur les données.",
-	"actionServerDescription": "Serveur cible pour l’action ; Vous pouvez utiliser le format ${columnName} pour définir un nom de colonne basé sur les données."
+	"insightAutoRefreshIntervalDescription": "[Facultatif] Intervalle d'actualisation automatique en minutes, si la valeur n'est pas définie il n'y a pas d'actualisation automatique",
+	"actionTypes": "Quelles actions utiliser",
+	"actionDatabaseDescription": "Base de données cible pour l'action. Peut utiliser le format \"${columnName}\" pour utiliser un nom de colonne de données.",
+	"actionServerDescription": "Serveur cible pour l’action ; vous pouvez utiliser le format « ${columnName} » pour utiliser un nom de colonne piloté par les données.",
+	"actionUserDescription": "Utilisateur cible pour l’action ; vous pouvez utiliser le format « ${columnName} » pour utiliser un nom de colonne piloté par les données.",
+	"carbon.extension.contributes.insightType.id": "Identificateur de aperçu",
+	"carbon.extension.contributes.insights": "Contribue à des insights de la palette de tableau de bord."
 }

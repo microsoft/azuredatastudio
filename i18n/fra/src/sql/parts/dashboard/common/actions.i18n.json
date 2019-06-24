@@ -11,6 +11,9 @@
 	"refreshWidget": "Actualiser",
 	"toggleMore": "Activer/désactiver plus",
 	"deleteWidget": "Supprimer le Widget",
+	"clickToUnpin": "Cliquer pour supprimer",
 	"clickToPin": "Cliquer pour épingler",
-	"addFeatureAction.openInstalledFeatures": "Ouvrir les fonctionnalités installées"
+	"addFeatureAction.openInstalledFeatures": "Ouvrir les fonctionnalités installées",
+	"collapseWidget": "Réduire",
+	"expandWidget": "Développer"
 }
