@@ -145,14 +145,14 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		if (endpointsArray.length > 0) {
 			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy' || e.serviceName === 'mgmtproxy');
 			if (managementProxyEp) {
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize('grafana', 'Metrics Dashboard'), '/grafana'));
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize('kibana', 'Log Search Dashboard'), '/kibana'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("grafana", "Metrics Dashboard"), '/grafana'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("kibana", "Log Search Dashboard"), '/kibana'));
 			}
 
 			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
 			if (gatewayEp) {
-				endpointsArray.push(getCustomEndpoint(gatewayEp, localize('sparkHostory', 'Spark Job Monitoring'), '/gateway/default/sparkhistory'));
-				endpointsArray.push(getCustomEndpoint(gatewayEp, localize('yarnHistory', 'Spark Resource Management'), '/gateway/default/yarn'));
+				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("sparkHostory", "Spark Job Monitoring"), '/gateway/default/sparkhistory'));
+				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("yarnHistory", "Spark Resource Management"), '/gateway/default/yarn'));
 			}
 
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
@@ -173,7 +173,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 				copyValueCell.onDidClick(() => {
 					vscode.env.clipboard.writeText(endpointInfo.hyperlink);
 				});
-				copyValueCell.title = 'Copy';
+				copyValueCell.title = localize("copyText", "Copy");
 				copyValueCell.iconHeight = '14px';
 				copyValueCell.iconWidth = '14px';
 				endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '5%', 'padding-top': '10px' } });
@@ -206,19 +206,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		let friendlyName: string = name;
 		switch (name) {
 			case 'app-proxy':
-				friendlyName = localize('appproxy', 'Application Proxy');
+				friendlyName = localize("appproxy", "Application Proxy");
 				break;
 			case 'controller':
-				friendlyName = localize('controller', 'Cluster Management Service');
+				friendlyName = localize("controller", "Cluster Management Service");
 				break;
 			case 'gateway':
-				friendlyName = localize('gateway', 'HDFS and Spark');
+				friendlyName = localize("gateway", "HDFS and Spark");
 				break;
 			case 'management-proxy':
-				friendlyName = localize('managementproxy', 'Management Proxy');
+				friendlyName = localize("managementproxy", "Management Proxy");
 				break;
 			case 'mgmtproxy':
-				friendlyName = localize('mgmtproxy', 'Management Proxy');
+				friendlyName = localize("mgmtproxy", "Management Proxy");
 				break;
 			default:
 				break;
@@ -343,7 +343,7 @@ async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionPr
 	const notebookRelativePath = 'notebooks/tsg/cluster-status.ipynb';
 	const notebookFullPath = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
 	if (!Utils.fileExists(notebookFullPath)) {
-		vscode.window.showErrorMessage(localize('fileNotFound', 'Unable to find the file specified.'));
+		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
 	} else {
 		const targetFile = Utils.getTargetFileName(notebookFullPath);
 		Utils.copyFile(notebookFullPath, targetFile);
