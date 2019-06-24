@@ -26,6 +26,11 @@ const applyNoChangesMessage = localize('schemaCompare.applyNoChanges', 'No chang
 // TODO : In future icon should be decided based on language id (scmp) and not resource name
 const schemaCompareResourceName = 'Schema Compare';
 
+enum ResetButtonState {
+	noSourceTarget,
+	beforeCompareStart,
+	disabled,
+}
 
 export class SchemaCompareResult {
 	private differencesTable: azdata.TableComponent;
@@ -128,8 +133,7 @@ export class SchemaCompareResult {
 			this.createOpenScmpButton(view);
 			this.createSaveScmpButton(view);
 			this.createSourceAndTargetButtons(view);
-			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
-			this.openScmpButton.enabled = true;
+			this.resetButtons(ResetButtonState.noSourceTarget);
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -248,7 +252,7 @@ export class SchemaCompareResult {
 		]);
 
 		// reset buttons to before comparison state
-		this.resetButtons(true);
+		this.resetButtons(ResetButtonState.beforeCompareStart);
 	}
 
 	// only for test
@@ -532,7 +536,7 @@ export class SchemaCompareResult {
 		if (this.tablelistenersToDispose) {
 			this.tablelistenersToDispose.forEach(x => x.dispose());
 		}
-		this.resetButtons(false);
+		this.resetButtons(ResetButtonState.disabled);
 		this.execute();
 	}
 
@@ -699,22 +703,35 @@ export class SchemaCompareResult {
 		});
 	}
 
-	private resetButtons(beforeCompareStart: boolean): void {
-		if (beforeCompareStart) {
-			this.compareButton.enabled = true;
-			this.optionsButton.enabled = true;
-			this.switchButton.enabled = true;
-			this.openScmpButton.enabled = true;
-			this.cancelCompareButton.enabled = false;
-			this.saveScmpButton.enabled = true;
+	private resetButtons(resetButtonState: ResetButtonState): void {
+		switch (resetButtonState) {
+			case (ResetButtonState.noSourceTarget): {
+				this.compareButton.enabled = false;
+				this.optionsButton.enabled = false;
+				this.switchButton.enabled = this.sourceEndpointInfo ? true : false; // allows switching if the source is set
+				this.openScmpButton.enabled = true;
+			    this.cancelCompareButton.enabled = false;
+				break;
+			}
+			case (ResetButtonState.beforeCompareStart): {
+				this.compareButton.enabled = true;
+				this.optionsButton.enabled = true;
+				this.switchButton.enabled = true;
+				this.openScmpButton.enabled = true;
+				this.saveScmpButton.enabled = true;
+				this.cancelCompareButton.enabled = false;
+				break;
+			}
+			case (ResetButtonState.disabled): {
+				this.compareButton.enabled = false;
+				this.optionsButton.enabled = false;
+				this.switchButton.enabled = false;
+				this.openScmpButton.enabled = false;
+			    this.cancelCompareButton.enabled = true;
+				break;
+			}
 		}
-		else {
-			this.compareButton.enabled = false;
-			this.optionsButton.enabled = false;
-			this.switchButton.enabled = false;
-			this.openScmpButton.enabled = false;
-			this.cancelCompareButton.enabled = true;
-		}
+
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
 		this.generateScriptButton.title = generateScriptEnabledMessage;
@@ -730,7 +747,7 @@ export class SchemaCompareResult {
 
 	// reset state afer loading an scmp
 	private resetForNewCompare(): void {
-		this.resetButtons(true);
+		this.resetButtons(ResetButtonState.beforeCompareStart);
 		this.flexModel.removeItem(this.splitView);
 		this.flexModel.removeItem(this.noDifferencesLabel);
 		this.flexModel.addItem(this.startText, { CSSStyles: { 'margin': 'auto' } });
@@ -825,7 +842,7 @@ export class SchemaCompareResult {
 				return;
 			}
 
-			if (result.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (result.sourceEndpointInfo && result.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
 				// only set endpoint info if able to connect to the database
 				const ownerUri = await verifyConnectionAndGetOwnerUri(result.sourceEndpointInfo);
 				if (ownerUri) {
@@ -836,7 +853,7 @@ export class SchemaCompareResult {
 				this.sourceEndpointInfo = result.sourceEndpointInfo;
 			}
 
-			if (result.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
 				const ownerUri = await verifyConnectionAndGetOwnerUri(result.targetEndpointInfo);
 				if (ownerUri) {
 					this.targetEndpointInfo = result.targetEndpointInfo;
