@@ -17,7 +17,7 @@ import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 
 const localize = nls.loadMessageBundle();
-
+const msSqlProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
 	dacFxPage: BasePage;
@@ -252,10 +252,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async deploy() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -263,10 +263,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async extract() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -274,10 +274,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async export() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -285,10 +285,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async import() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -296,15 +296,15 @@ export class DataTierApplicationWizard {
 	}
 
 	private async generateDeployScript() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.'),
 			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};
 
-		let result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -351,10 +351,10 @@ export class DataTierApplicationWizard {
 	}
 
 	public async generateDeployPlan(): Promise<string> {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
@@ -365,7 +365,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
-		let service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
+		const service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
 		return service;
 	}
 }
