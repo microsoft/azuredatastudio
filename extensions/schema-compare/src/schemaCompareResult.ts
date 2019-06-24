@@ -292,10 +292,6 @@ export class SchemaCompareResult {
 
 		let data = this.getAllDifferences(this.comparisonResult.differences);
 
-		// clear out scmp excludes so that they aren't taken into account for next compare
-		this.scmpSourceExcludes = [];
-		this.scmpTargetExcludes = [];
-
 		this.differencesTable.updateProperties({
 			data: data,
 			columns: [
@@ -411,6 +407,8 @@ export class SchemaCompareResult {
 			if (key) {
 				if (!this.sourceTargetSwitched) {
 					this.originalSourceExcludes.delete(key);
+					this.removeExcludeEntry(this.scmpSourceExcludes, key);
+
 					if (!rowState.checked) {
 						this.originalSourceExcludes.set(key, diff);
 						if (this.originalSourceExcludes.size === this.comparisonResult.differences.length) {
@@ -423,6 +421,8 @@ export class SchemaCompareResult {
 				}
 				else {
 					this.originalTargetExcludes.delete(key);
+					this.removeExcludeEntry(this.scmpTargetExcludes, key);
+
 					if (!rowState.checked) {
 						this.originalTargetExcludes.set(key, diff);
 						if (this.originalTargetExcludes.size === this.comparisonResult.differences.length) {
@@ -458,15 +458,18 @@ export class SchemaCompareResult {
 	private hasExcludeEntry(collection: azdata.SchemaCompareObjectId[], entryName: string): boolean {
 		let found = false;
 		if (collection) {
-			collection.forEach(e => {
-				if (e.nameParts.join('.') === entryName) {
-					console.error('found ' + entryName);
-					found = true;
-					return;
-				}
-			});
+			const index = collection.findIndex(e => this.createName(e.nameParts) === entryName);
+			found = index !== -1;
 		}
 		return found;
+	}
+
+	private removeExcludeEntry(collection: azdata.SchemaCompareObjectId[], entryName: string) {
+		if (collection) {
+			console.error('removing ' + entryName);
+			const index = collection.findIndex(e => this.createName(e.nameParts) === entryName);
+			collection.splice(index, 1);
+		}
 	}
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
@@ -867,6 +870,7 @@ export class SchemaCompareResult {
 			this.deploymentOptions = result.deploymentOptions;
 			this.scmpSourceExcludes = result.excludedSourceElements;
 			this.scmpTargetExcludes = result.excludedTargetElements;
+			this.sourceTargetSwitched = result.originalTargetName !== this.targetName;
 
 			// clear out any old results
 			this.resetForNewCompare();
