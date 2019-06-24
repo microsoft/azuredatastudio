@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "在編輯器中為 TypeScript 檔案啟用/停用建議診斷。需要在工作區中使用 TypeScript 2.8 或更新版。",
 			"typescript.preferences.quoteStyle": "建議用於快速修正的引號樣式: `single` 單引號、`double` 雙引號或 `auto` 從現有匯入自動推斷引號類型。需要在工作區中使用 TypeScript 2.9 或更新版。",
 			"typescript.preferences.importModuleSpecifier": "自動匯入的偏好路徑樣式。",
-			"typescript.preferences.importModuleSpecifier.auto": "推斷最短的路徑類型。",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "相對於檔案位置。",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "以 `jsconfig.json` / `tsconfig.json` 中設定的 `baseUrl` 為基礎。",
 			"typescript.updateImportsOnFileMove.enabled": "當在 VS Code 重新命名或移動檔案時，啟用/停用自動更新匯入路徑。必須在工作區中使用 TypeScript 2.9 或更新版本。",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "啟用/停用可協助我們改進 VS Code JavaScript 和 TypeScript 支援的不定期調查。",
 			"configuration.suggest.completeJSDocs": "啟用/停用完成 JSDoc 註解的建議。",
 			"typescript.preferences.renameShorthandProperties": "啟用/停用在重新命名期間為物件速記屬性引入別名。必須在工作區中使用 TypeScript 3.4 或更新版本。"
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "無法在此路徑載入 TypeScript 版本",
@@ -102,6 +105,7 @@
 			"neverAgain": "停用 JS/TS 調查"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "若要讓整個專案都能使用 JavaScript/TypeScript 語言功能，請排除內含許多檔案的資料夾，例如: {0}",
 			"hintExclude.generic": "若要讓整個專案都能使用 JavaScript/TypeScript 語言功能，請排除內含您未使用之來源檔案的大型資料夾。",
 			"large.label": "設定排除項目",

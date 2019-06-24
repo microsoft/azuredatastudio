@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "Aktiviert oder deaktiviert Vorschlagsdiagnosen für TypeScript-Dateien im Editor. Im Arbeitsbereich muss TypeScript 2.8 oder höher verwendet werden.",
 			"typescript.preferences.quoteStyle": "Der bevorzugte Stil für Anführungszeichen bei schnellen Fixes. Mögliche Werte sind `single` (einfache Anführungszeichen), `double` (doppelte Anführungszeichen) und `auto` (hierbei wird der Stil für Anführungszeichen aus bestehenden Importen abgeleitet). Im Arbeitsbereich muss TypeScript 2.9 oder höher verwendet werden.",
 			"typescript.preferences.importModuleSpecifier": "Bevorzugter Pfadstil für automatische Importe.",
-			"typescript.preferences.importModuleSpecifier.auto": "Kürzesten Pfadtyp ableiten.",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "Relativ zum Dateispeicherort.",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "Auf Grundlage der `baseUrl`, die in der Datei `jsconfig.json` oder `jtsconfig.json` konfiguriert ist.",
 			"typescript.updateImportsOnFileMove.enabled": "Automatisches Aktualisieren von Importpfaden beim Umbenennen oder Verschieben einer Datei in VS Code aktivieren oder deaktivieren. Im Arbeitsbereich muss TypeScript 2.9 oder höher verwendet werden.",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "Gelegentliche Umfragen zur Verbesserung der Unterstützung von JavaScript und TypeScript in Visual Studio Code aktivieren bzw. deaktivieren.",
 			"configuration.suggest.completeJSDocs": "Vorschläge zum Vervollständigen von JSDoc-Kommentaren aktivieren/deaktivieren.",
 			"typescript.preferences.renameShorthandProperties": "Einführung von Aliasen für Kompakteigenschaften von Objekten während einer Umbenennung aktivieren/deaktivieren. Hierfür muss im Arbeitsbereich TypeScript 3.4 oder höher verwendet werden."
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "Die TypeScript-Version konnte unter diesem Pfad nicht geladen werden.",
@@ -102,6 +105,7 @@
 			"neverAgain": "Umfragen zu JavaScript bzw. TypeScript deaktivieren"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "Um die JavaScript/TypeScript-Sprachfunktionen für das gesamte Projekt zu aktivieren, schließen Sie Ordner mit vielen Dateien aus. Beispiel: {0}",
 			"hintExclude.generic": "Um JavaScript/TypeScript-Sprachfunktionen für das gesamte Projekt zu aktivieren, schließen Sie große Ordner mit Quelldateien aus, an denen Sie nicht arbeiten.",
 			"large.label": "Auszuschließende Elemente konfigurieren",

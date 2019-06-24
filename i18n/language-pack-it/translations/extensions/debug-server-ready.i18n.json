@@ -22,7 +22,7 @@
 		"out/extension": {
 			"server.ready.nocapture.error": "L'URI di formato ('{0}') usa un segnaposto di sostituzione ma con il criterio non è stato acquisito nulla.",
 			"server.ready.placeholder.error": "L'URI di formato ('{0}') deve contenere esattamente un segnaposto di sostituzione.",
-			"server.ready.chrome.not.installed": "Con l'azione 'debugWithChrome' è richiesto '{0}'"
+			"server.ready.chrome.not.installed": "The action '{0}' requires the '{1}' extension."
 		}
 	}
 }
