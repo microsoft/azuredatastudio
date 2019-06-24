@@ -17,7 +17,7 @@ import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 
 const localize = nls.loadMessageBundle();
-
+const serviceProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
 	dacFxPage: BasePage;
@@ -252,7 +252,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async deploy() {
-		const service = await DataTierApplicationWizard.getService('MSSQL');
+		const service = await DataTierApplicationWizard.getService(serviceProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
@@ -263,7 +263,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async extract() {
-		const service = await DataTierApplicationWizard.getService('MSSQL');
+		const service = await DataTierApplicationWizard.getService(serviceProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
@@ -274,7 +274,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async export() {
-		const service = await DataTierApplicationWizard.getService('MSSQL');
+		const service = await DataTierApplicationWizard.getService(serviceProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
@@ -285,7 +285,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async import() {
-		const service = await DataTierApplicationWizard.getService('MSSQL');
+		const service = await DataTierApplicationWizard.getService(serviceProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
@@ -296,7 +296,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private async generateDeployScript() {
-		const service = await DataTierApplicationWizard.getService('MSSQL');
+		const service = await DataTierApplicationWizard.getService(serviceProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.'),
@@ -351,7 +351,7 @@ export class DataTierApplicationWizard {
 	}
 
 	public async generateDeployPlan(): Promise<string> {
-		const service = await DataTierApplicationWizard.getService('MSSQL');
+		const service = await DataTierApplicationWizard.getService(serviceProvider);
 		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
 		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
