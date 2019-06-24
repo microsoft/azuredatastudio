@@ -46,7 +46,7 @@ export abstract class BasePage {
 	public abstract setupNavigationValidator();
 
 	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
-		let cons = await azdata.connection.getConnections(true);
+		let cons = await azdata.connection.getConnections(/* activeConnectionsOnly */ true);
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
 			return undefined;

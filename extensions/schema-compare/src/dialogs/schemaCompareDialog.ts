@@ -514,7 +514,7 @@ export class SchemaCompareDialog {
 	}
 
 	protected async getServerValues(isTarget: boolean): Promise<{ connection: azdata.connection.ConnectionProfile, displayName: string, name: string }[]> {
-		let cons = await azdata.connection.getConnections(true);
+		let cons = await azdata.connection.getConnections(/* activeConnectionsOnly */ true);
 		// This user has no active connections
 		if (!cons || cons.length === 0) {
 			return undefined;
