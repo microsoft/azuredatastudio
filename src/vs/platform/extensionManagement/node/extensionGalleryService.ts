@@ -550,7 +550,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (names && names.length > 0) {
 				filteredExtensions = filteredExtensions.filter(e => e.extensionName && e.publisher.publisherName && names.includes(`${e.publisher.publisherName.toLocaleLowerCase()}.${e.extensionName.toLocaleLowerCase()}`));
 			}
-			const categoryFilters = query.criteria.filter(x => x.filterType === FilterType.Category).map(v => v.value.toLowerCase());
+			const categoryFilters = query.criteria.filter(x => x.filterType === FilterType.Category).map(v => v.value ? v.value.toLowerCase() : undefined);
 			if (categoryFilters && categoryFilters.length > 0) {
 				// Implement the @category: "language packs" filtering
 				if (categoryFilters.includes('language packs')) {
