@@ -11,7 +11,7 @@ import { Event } from 'vs/base/common/event';
 import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions } from 'vs/base/common/scrollable';
 import * as DOM from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
-import { Delayer, CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
+import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 import { isWindows } from 'vs/base/common/platform';
 import * as browser from 'vs/base/browser/browser';
 import { Range, IRange } from 'vs/base/common/range';
@@ -21,7 +21,7 @@ import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser
 import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { ITableRenderer, ITableDataSource, ITableMouseEvent } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer, ITableDataSource, ITableMouseEvent, ICellIndex } from 'sql/base/browser/ui/table/highPerf/table';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -188,7 +188,6 @@ export class TableView<T> implements IDisposable {
 		this.rowsContainer.className = 'monaco-perftable-rows';
 
 		this.scrollableElement = new ScrollableElement(this.rowsContainer, {
-			alwaysConsumeMouseWheel: true,
 			horizontal: ScrollbarVisibility.Auto,
 			vertical: ScrollbarVisibility.Auto,
 			useShadows: true
@@ -483,6 +482,16 @@ export class TableView<T> implements IDisposable {
 		return this.getScrollLeft();
 	}
 
+	domElement(index: number, column: string): HTMLElement | null {
+		const row = this.visibleRows[index];
+		const cell = row && row.cells.find(v => v.templateId === column);
+		return cell && cell.domNode;
+	}
+
+	element(index: number): T | undefined {
+		return this.visibleRows[index].element;
+	}
+
 	private insertRowInDOM(index: number, beforeElement: HTMLElement | null): void {
 		let row = this.visibleRows[index];
 
@@ -538,8 +547,7 @@ export class TableView<T> implements IDisposable {
 	private renderRow(row: IAsyncRowItem<T>, index: number): void {
 		for (const [i, column] of this.columns.entries()) {
 			const cell = row.cells[i];
-			column.renderer.renderCell(row.element, index, cell.templateData, column.width);
-			console.log('');
+			column.renderer.renderCell(row.element, index, column.id, cell.templateData, column.width);
 		}
 	}
 
@@ -547,10 +555,12 @@ export class TableView<T> implements IDisposable {
 		row.row!.style.top = `${this.elementTop(index)}px`;
 		row.row!.style.height = `${row.size}px`;
 
-		for (const [index, column] of this.columns.entries()) {
-			const cell = row.cells[index].domNode;
+		for (const [columnIndex, column] of this.columns.entries()) {
+			const cell = row.cells[columnIndex].domNode;
 			cell.style.width = `${column.width}px`;
 			cell.style.left = `${column.left}px`;
+			cell.setAttribute('data-column-id', `${column.id}`);
+			row.row!.setAttribute('id', this.getElementDomId(index, column.id));
 		}
 
 		row.row!.setAttribute('data-index', `${index}`);
@@ -575,7 +585,7 @@ export class TableView<T> implements IDisposable {
 			const renderer = column.renderer;
 			const cell = item.cells[i];
 			if (renderer && renderer.disposeCell) {
-				renderer.disposeCell(item.element, index, cell.templateData, column.width);
+				renderer.disposeCell(item.element, index, column.id, cell.templateData, column.width);
 			}
 
 			this.cache.release(cell!);
@@ -598,22 +608,34 @@ export class TableView<T> implements IDisposable {
 
 	private toMouseEvent(browserEvent: MouseEvent): ITableMouseEvent<T> {
 		const index = this.getItemIndexFromEventTarget(browserEvent.target || null);
-		const item = typeof index === 'undefined' ? undefined : this.visibleRows[index];
+		const item = typeof index === 'undefined' ? undefined : this.visibleRows[index.row];
 		const element = item && item.element;
 		return { browserEvent, index, element };
 	}
 
-	private getItemIndexFromEventTarget(target: EventTarget | null): number | undefined {
+	private getItemIndexFromEventTarget(target: EventTarget | null): ICellIndex | undefined {
 		let element: HTMLElement | null = target as (HTMLElement | null);
 
 		while (element instanceof HTMLElement && element !== this.rowsContainer) {
-			const rawIndex = element.getAttribute('data-index');
+			const rawColumn = element.getAttribute('data-column-id');
 
-			if (rawIndex) {
-				const index = Number(rawIndex);
+			if (rawColumn) {
+				const columnId = String(rawColumn);
 
-				if (!isNaN(index)) {
-					return index;
+				if (columnId) {
+					while (element instanceof HTMLElement && element !== this.rowsContainer) {
+						const rawIndex = element.getAttribute('data-index');
+
+						if (rawIndex) {
+							const row = Number(rawIndex);
+
+							if (!isNaN(row)) {
+								return { row, columnId };
+							}
+						}
+
+						element = element.parentElement;
+					}
 				}
 			}
 
@@ -627,8 +649,12 @@ export class TableView<T> implements IDisposable {
 		return Math.floor(index * this.rowHeight) - this.bigNumberDelta;
 	}
 
-	getElementDomId(index: number): string {
-		return `${this.domId}_${index}`;
+	getElementDomId(index: number, column?: string): string {
+		if (column) {
+			return `${this.domId}_${index}_${column}`;
+		} else {
+			return `${this.domId}_${index}`;
+		}
 	}
 
 	get length(): number {

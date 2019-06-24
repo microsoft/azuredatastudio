@@ -21,18 +21,17 @@ import { Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 
 class ColumnRenderer<IDataShape> implements ITableRenderer<IDataShape, { element: HTMLElement }> {
-	constructor(private key: keyof IDataShape) { }
 
 	renderTemplate(container: HTMLElement): { element: HTMLElement; } {
 		const element = DOM.append(container, DOM.$('div'));
 		return { element };
 	}
 
-	renderCell(element: IDataShape, index: number, templateData: { element: HTMLElement; }, width: number): void {
-		templateData.element.innerText = element[this.key as string] as string;
+	renderCell(element: IDataShape, index: number, columnId: string, templateData: { element: HTMLElement; }, width: number): void {
+		templateData.element.innerText = element[columnId] as string;
 	}
 
-	disposeCell(element: IDataShape, index: number, templateData: { element: HTMLElement }, width: number | undefined): void {
+	disposeCell(element: IDataShape, index: number, columnId: string, templateData: { element: HTMLElement }, width: number | undefined): void {
 		templateData.element.innerText = '';
 	}
 
@@ -211,64 +210,65 @@ export class AsyncTableTestEditor extends BaseEditor {
 	async setInput(input: AsyncTableTestInput): Promise<void> {
 		for (const count of range(input.count)) {
 			const container = DOM.append(this.getContainer(), DOM.$('div'));
+			const renderer = new ColumnRenderer<IDataShape>();
 			const columns: Array<IColumn<IDataShape, { element: HTMLElement }>> = [
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnA'),
+					renderer,
 					id: 'columnA',
 					name: 'columnA'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnB'),
+					renderer,
 					id: 'columnB',
 					name: 'columnB'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnC'),
+					renderer,
 					id: 'columnC',
 					name: 'columnC'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnD'),
+					renderer,
 					id: 'columnD',
 					name: 'columnD'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnE'),
+					renderer,
 					id: 'columnE',
 					name: 'columnE'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnF'),
+					renderer,
 					id: 'columnF',
 					name: 'columnF'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnH'),
+					renderer,
 					id: 'columnH',
 					name: 'columnH'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnG'),
+					renderer,
 					id: 'columnG',
 					name: 'columnG'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnI'),
+					renderer,
 					id: 'columnI',
 					name: 'columnI'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnJ'),
+					renderer,
 					id: 'columnJ',
 					name: 'columnJ'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnK'),
+					renderer,
 					id: 'columnK',
 					name: 'columnK'
 				},
 				{
-					renderer: new ColumnRenderer<IDataShape>('columnL'),
+					renderer,
 					id: 'columnL',
 					name: 'columnL'
 				}

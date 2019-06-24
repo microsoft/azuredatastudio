@@ -34,6 +34,8 @@ import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
+import { Table } from 'sql/base/browser/ui/table/highPerf/tableWidget';
+import { attachListStyler } from 'vs/platform/theme/common/styler';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -360,18 +362,16 @@ interface ICellTemplate {
 }
 
 class TableFormatter<T> implements ITableRenderer<T, ICellTemplate> {
-	constructor(private key: string) { }
-
 	renderTemplate(container: HTMLElement): ICellTemplate {
 		const element = append(container, $('.cell'));
 		return { element };
 	}
 
-	renderCell(element: T, index: number, templateData: ICellTemplate, width: number): void {
-		templateData.element.innerText = element[this.key];
+	renderCell(element: T, index: number, columnId: string, templateData: ICellTemplate, width: number): void {
+		templateData.element.innerText = element[columnId];
 	}
 
-	disposeCell?(element: T, index: number, templateData: ICellTemplate, width: number): void {
+	disposeCell?(element: T, index: number, columnId: string, templateData: ICellTemplate, width: number): void {
 		templateData.element.innerText = '';
 	}
 
@@ -381,7 +381,7 @@ class TableFormatter<T> implements ITableRenderer<T, ICellTemplate> {
 }
 
 class GridTable<T> extends Disposable implements IView {
-	private table: TableView<T>;
+	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
 
@@ -411,14 +411,15 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	constructor(
-		private runner: QueryRunner,
+		private readonly runner: QueryRunner,
 		private _resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService private contextMenuService: IContextMenuService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IEditorService private editorService: IEditorService,
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
-		@IConfigurationService private configurationService: IConfigurationService
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IEditorService private readonly editorService: IEditorService,
+		@IUntitledEditorService private readonly untitledEditorService: IUntitledEditorService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IThemeService private readonly themeService: IThemeService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -433,10 +434,9 @@ class GridTable<T> extends Disposable implements IView {
 			name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
 				? 'XML Showplan'
 				: escape(c.columnName),
-			renderer: new TableFormatter(i.toString()),
+			renderer: new TableFormatter(),
 			width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
-		})
-		);
+		}));
 	}
 
 	private build(): void {
@@ -456,10 +456,12 @@ class GridTable<T> extends Disposable implements IView {
 			}));
 		});
 
-		this.table = new TableView<T>(tableContainer, this.columns, {
+		this.table = new Table<T>(tableContainer, this.columns, {
 			getRow: index => this.virtWindow.getIndex(index)
 		});
 		this.table.length = this.resultSet.rowCount;
+
+		attachListStyler(this.table, this.themeService);
 
 		let actions = this.getCurrentActions();
 
