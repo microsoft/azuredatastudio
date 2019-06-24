@@ -575,7 +575,7 @@ export class DefaultStyleController implements IStyleController {
 		}
 
 		if (styles.cellOutlineColor) {
-			content.push(`.monaco-perftable${suffix} .monaco-perftable-cell { box-shadow: 1px 1px 1px 1px ${styles.cellOutlineColor} inset; }`);
+			content.push(`.monaco-perftable${suffix} .monaco-perftable-cell { border: 1px solid ${styles.cellOutlineColor}; }`);
 		}
 
 		const newStyles = content.join('\n');

@@ -96,14 +96,14 @@ export class TableView<T> implements IDisposable {
 	private static InstanceCount = 0;
 	readonly domId = `table_id_${++TableView.InstanceCount}`;
 
-	readonly domNode = document.createElement('div');
+	readonly domNode = DOM.$('.monaco-perftable');
 
 	private visibleRows: IAsyncRowItem<T>[] = [];
 	private cache: CellCache<T>;
 	private renderers = new Map<string, ITableRenderer<T /* TODO@joao */, any>>();
 	private lastRenderTop = 0;
 	private lastRenderHeight = 0;
-	private readonly rowsContainer = document.createElement('div');
+	private readonly rowsContainer = DOM.$('.monaco-perftable-rows');
 	private scrollableElement: ScrollableElement;
 	private _scrollHeight: number;
 	private _scrollWidth: number;
@@ -166,7 +166,8 @@ export class TableView<T> implements IDisposable {
 		this.cache = new CellCache(this.renderers);
 		this.columns = columns.slice();
 
-		this.domNode.className = 'monaco-perftable';
+		this.domNode.setAttribute('role', 'table');
+		this.domNode.setAttribute('aria-rowcount', '0');
 
 		DOM.addClass(this.domNode, this.domId);
 		this.domNode.tabIndex = 0;
@@ -185,7 +186,7 @@ export class TableView<T> implements IDisposable {
 			return c;
 		});
 
-		this.rowsContainer.className = 'monaco-perftable-rows';
+		this.rowsContainer.setAttribute('role', 'rowgroup');
 
 		this.scrollableElement = new ScrollableElement(this.rowsContainer, {
 			horizontal: ScrollbarVisibility.Auto,
@@ -215,17 +216,18 @@ export class TableView<T> implements IDisposable {
 		this.headerContainer = DOM.append(container, DOM.$('.monaco-perftable-header'));
 		const sashContainer = DOM.append(this.headerContainer, DOM.$('.sash-container'));
 		this.headerContainer.style.height = this.headerHeight + 'px';
-		const element = this.columns.reduce((p, c) => {
-			p[c.id] = c.name;
-			return p;
-		}, Object.create(null));
+		this.headerContainer.setAttribute('role', 'rowgroup');
+		const headerCellContainer = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell-container'));
+		headerCellContainer.setAttribute('role', 'row');
 
 		for (const column of this.columns) {
 			this.createHeaderSash(sashContainer, column);
-			column.domNode = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell'));
-			column.domNode.style.width = column.width + 'px';
-			column.domNode.style.left = column.left + 'px';
-			column.domNode.innerText = column.name;
+			const domNode = DOM.append(headerCellContainer, DOM.$('.monaco-perftable-header-cell'));
+			domNode.setAttribute('role', 'columnheader');
+			domNode.style.width = column.width + 'px';
+			domNode.style.left = column.left + 'px';
+			domNode.innerText = column.name;
+			column.domNode = domNode;
 		}
 	}
 
@@ -561,11 +563,13 @@ export class TableView<T> implements IDisposable {
 			cell.style.left = `${column.left}px`;
 			cell.style.height = `${row.size}px`;
 			cell.setAttribute('data-column-id', `${column.id}`);
+			cell.setAttribute('role', 'cell');
 			row.row!.setAttribute('id', this.getElementDomId(index, column.id));
 		}
 
 		row.row!.setAttribute('data-index', `${index}`);
 		row.row!.setAttribute('data-last-element', index === this.length - 1 ? 'true' : 'false');
+		row.row!.setAttribute('role', 'row');
 		row.row!.setAttribute('aria-setsize', String(this.ariaSetProvider.getSetSize(row.element, index, this.length)));
 		row.row!.setAttribute('aria-posinset', String(this.ariaSetProvider.getPosInSet(row.element, index)));
 		row.row!.setAttribute('id', this.getElementDomId(index));
@@ -663,6 +667,7 @@ export class TableView<T> implements IDisposable {
 	}
 
 	set length(length: number) {
+		this.domNode.setAttribute('aria-rowcount', `${length}`);
 		const previousRenderRange = this.getRenderRange(this.lastRenderTop, this.lastRenderHeight);
 		const potentialRerenderRange = { start: this.length, end: length };
 		const rerenderRange = Range.intersect(potentialRerenderRange, previousRenderRange);
