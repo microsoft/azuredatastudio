@@ -793,10 +793,11 @@ export class SchemaCompareResult {
 			}
 
 			// convert include/exclude maps to arrays of object ids
-			let sourceExcludes: azdata.SchemaCompareObjectId[] = [];
-			let targetExcludes: azdata.SchemaCompareObjectId[] = [];
+			let sourceExcludes: azdata.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
+			let targetExcludes: azdata.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
+
 			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmp');
-			const service = await SchemaCompareResult.getService('MSSQL');
+			const service = await SchemaCompareResult.getService(msSqlProvider);
 			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpFailed', {
@@ -806,11 +807,25 @@ export class SchemaCompareResult {
 				vscode.window.showErrorMessage(
 					localize('schemaCompare.saveScmpErrorMessage', "Save scmp failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
 			}
+
 			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpEnded', {
 				'endTime:': Date.now().toString(),
 				'operationId': this.comparisonResult.operationId
 			});
 		});
+	}
+
+	// converts excluded diff entries into object ids which are needed to save them in an scmp
+	private convertExcludesToObjectIds(exludes: Map<string, azdata.DiffEntry>): azdata.SchemaCompareObjectId[] {
+		let result = [];
+		exludes.forEach((value: azdata.DiffEntry) => {
+			result.push({
+				nameParts: value.sourceValue ? value.sourceValue : value.targetValue,
+				sqlObjectType: `Microsoft.Data.Tools.Schema.Sql.SchemaModel.${value.name}`
+			});
+		});
+
+		return result;
 	}
 
 	private setButtonStatesForNoChanges(enableButtons: boolean): void {
