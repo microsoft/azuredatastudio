@@ -122,8 +122,8 @@ export class SchemaCompareResult {
 			this.createApplyButton(view);
 			this.createOptionsButton(view);
 			this.createSourceAndTargetButtons(view);
-			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
 			this.createSaveScmpButton(view);
+			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
 
 			let toolBar = view.modelBuilder.toolbarContainer();
 			toolBar.addToolbarItems([{
@@ -679,6 +679,7 @@ export class SchemaCompareResult {
 			this.optionsButton.enabled = true;
 			this.switchButton.enabled = true;
 			this.cancelCompareButton.enabled = false;
+			this.saveScmpButton.enabled = true;
 		}
 		else {
 			this.compareButton.enabled = false;
@@ -773,7 +774,8 @@ export class SchemaCompareResult {
 				light: path.join(__dirname, 'media', 'save-scmp.svg'),
 				dark: path.join(__dirname, 'media', 'save-scmp-inverse.svg')
 			},
-			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements')
+			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements'),
+			enabled: false
 		}).component();
 
 		this.saveScmpButton.onDidClick(async (click) => {
