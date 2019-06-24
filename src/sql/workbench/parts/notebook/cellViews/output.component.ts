@@ -135,36 +135,6 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 		return this._activeCellId;
 	}
 
-	protected createRenderedMimetype(options: MimeModel.IOptions, node: HTMLElement): void {
-		let mimeType = this.registry.preferredMimeType(
-			options.data,
-			options.trusted ? 'any' : 'ensure'
-		);
-		if (mimeType) {
-			let output = this.registry.createRenderer(mimeType);
-			output.node = node;
-			let model = new MimeModel(options);
-			output.renderModel(model).catch(error => {
-				// Manually append error message to output
-				output.node.innerHTML = `<pre>Javascript Error: ${error.message}</pre>`;
-				// Remove mime-type-specific CSS classes
-				output.node.className = 'p-Widget jp-RenderedText';
-				output.node.setAttribute(
-					'data-mime-type',
-					'application/vnd.jupyter.stderr'
-				);
-			});
-			//this.setState({ node: node });
-		} else {
-			// TODO Localize
-			node.innerHTML =
-				`No ${options.trusted ? '' : '(safe) '}renderer could be ` +
-				'found for output. It has the following MIME types: ' +
-				Object.keys(options.data).join(', ');
-			//this.setState({ node: node });
-		}
-	}
-
 	protected isActive() {
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
@@ -217,8 +187,9 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 		try {
 			componentRef = viewContainerRef.createComponent(componentFactory, 0);
 			this._componentInstance = componentRef.instance;
-			this._componentInstance.bundleOptions = options;
 			this._componentInstance.mimeType = mimeType;
+			this._componentInstance.cellModel = this.cellModel;
+			this._componentInstance.bundleOptions = options;
 			this._changeref.detectChanges();
 			let el = <HTMLElement>componentRef.location.nativeElement;
 

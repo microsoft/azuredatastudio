@@ -9,6 +9,7 @@ import { ReadonlyJSONObject } from 'sql/workbench/parts/notebook/models/jsonext'
 import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
 import * as types from 'vs/base/common/types';
 import { IRenderMime } from 'sql/workbench/parts/notebook/outputs/common/renderMimeInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 
 export type FactoryIdentifier = string;
 
@@ -19,6 +20,7 @@ export const Extensions = {
 export interface IMimeComponent {
 	bundleOptions: MimeModel.IOptions;
 	mimeType: string;
+	cellModel?: ICellModel;
 	layout(): void;
 }
 

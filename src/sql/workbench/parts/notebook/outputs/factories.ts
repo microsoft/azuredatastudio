@@ -36,16 +36,6 @@ export const imageRendererFactory: IRenderMime.IRendererFactory = {
 //   createRenderer: options => new widgets.RenderedLatex(options)
 // };
 
-// /**
-//  * A mime renderer factory for Markdown.
-//  */
-// export const markdownRendererFactory: IRenderMime.IRendererFactory = {
-//   safe: true,
-//   mimeTypes: ['text/markdown'],
-//   defaultRank: 60,
-//   createRenderer: options => new widgets.RenderedMarkdown(options)
-// };
-
 /**
  * A mime renderer factory for svg.
  */
@@ -95,7 +85,6 @@ export const dataResourceRendererFactory: IRenderMime.IRendererFactory = {
  */
 export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFactory> = [
 	htmlRendererFactory,
-	// markdownRendererFactory,
 	// latexRendererFactory,
 	svgRendererFactory,
 	imageRendererFactory,

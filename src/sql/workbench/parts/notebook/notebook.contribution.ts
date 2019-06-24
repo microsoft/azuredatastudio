@@ -15,6 +15,7 @@ import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { registerComponentType } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import { MimeRendererComponent as MimeRendererComponent } from 'sql/workbench/parts/notebook/outputs/mimeRenderer.component';
+import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/outputs/markdownOutput.component';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -129,4 +130,16 @@ registerComponentType({
 	safe: true,
 	ctor: MimeRendererComponent,
 	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for Markdown.
+ * This will be replaced by a dedicated component in the future
+ */
+registerComponentType({
+	mimeTypes: ['text/markdown'],
+	rank: 60,
+	safe: true,
+	ctor: MarkdownOutputComponent,
+	selector: MarkdownOutputComponent.SELECTOR
 });
