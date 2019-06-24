@@ -324,6 +324,11 @@ let registryProperties = {
 		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
 		'default': true
 	},
+	'sql.results.optimizedTable': {
+		'type': 'boolean',
+		'description': localize('sql.results.optimizedTable', '(Experimental) Use a optimized table in the results out. Some functionality might be missing and in the works.'),
+		'default': false
+	},
 	'sql.saveAsXml.formatted': {
 		'type': 'string',
 		'description': localize('sql.saveAsXml.formatted', '[Optional] When true, XML output will be formatted when saving results as XML'),

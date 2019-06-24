@@ -17,6 +17,7 @@ import { domEvent } from 'vs/base/browser/event';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import * as platform from 'vs/base/common/platform';
 import { IListStyles, IStyleController } from 'vs/base/browser/ui/list/listWidget';
+import { Color } from 'vs/base/common/color';
 
 interface ITraitChangeEvent {
 	indexes: ICellIndex[];
@@ -465,11 +466,15 @@ export class MouseController<T> implements IDisposable {
 	}
 }
 
+export interface ITableStyles extends IListStyles {
+	cellOutlineColor?: Color;
+}
+
 export class DefaultStyleController implements IStyleController {
 
 	constructor(private styleElement: HTMLStyleElement, private selectorSuffix?: string) { }
 
-	style(styles: IListStyles): void {
+	style(styles: ITableStyles): void {
 		const suffix = this.selectorSuffix ? `.${this.selectorSuffix}` : '';
 		const content: string[] = [];
 
@@ -567,6 +572,10 @@ export class DefaultStyleController implements IStyleController {
 
 		if (styles.listMatchesShadow) {
 			content.push(`.monaco-perftable-type-filter { box-shadow: 1px 1px 1px ${styles.listMatchesShadow}; }`);
+		}
+
+		if (styles.cellOutlineColor) {
+			content.push(`.monaco-perftable${suffix} .monaco-perftable-cell { box-shadow: 1px 1px 1px 1px ${styles.cellOutlineColor} inset; }`);
 		}
 
 		const newStyles = content.join('\n');
@@ -722,7 +731,7 @@ export class Table<T> implements IDisposable {
 		return this.focus.get();
 	}
 
-	style(styles: IListStyles): void {
+	style(styles: ITableStyles): void {
 		this.styleController.style(styles);
 	}
 
