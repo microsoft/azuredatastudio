@@ -103,3 +103,4 @@ export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFacto
 	textRendererFactory,
 	dataResourceRendererFactory
 ];
+
