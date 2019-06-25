@@ -265,7 +265,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 		},
 		{
 			name: 'Standard_Azure',
-			engineTypes: [EngineType.SQLDB],
+			engineTypes: [EngineType.AzureSQLDB],
 			defaultView: 'Standard View',
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON DATABASE

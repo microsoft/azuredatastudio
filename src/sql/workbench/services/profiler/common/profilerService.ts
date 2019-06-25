@@ -229,9 +229,9 @@ export class ProfilerService implements IProfilerService {
 		const serverInfo = this._connectionService.getConnectionInfo(input.id).serverInfo;
 		let templates = this.getSessionTemplates();
 		if (serverInfo) {
-			const engineType = serverInfo.isCloud ? EngineType.SQLDB : EngineType.Standalone;
+			const engineType = serverInfo.isCloud ? EngineType.AzureSQLDB : EngineType.Standalone;
 			// only use the templates that matches the following criteria:
-			// 1. the template doesn't have any engine types specified - for backward compatibility (user with custom templates) or the templates applicable to both SQLDB and standalone server
+			// 1. the template doesn't have any engine types specified - for backward compatibility (user with custom templates) or the templates applicable to both AzureSQLDB and standalone server
 			// 2. the template supports the current engine type
 			templates = templates.filter(template => !template.engineTypes || template.engineTypes.length === 0 || template.engineTypes.includes(engineType));
 		}

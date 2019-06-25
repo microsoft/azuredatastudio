@@ -148,7 +148,7 @@ export interface IProfilerViewTemplate {
 }
 
 export enum EngineType {
-	SQLDB = 'SQLDB',
+	AzureSQLDB = 'AzureSQLDB',
 	Standalone = 'Standalone'
 }
 
