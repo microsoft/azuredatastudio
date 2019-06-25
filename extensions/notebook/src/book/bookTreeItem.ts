@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 
-export class Book extends vscode.TreeItem {
+export class BookTreeItem extends vscode.TreeItem {
 
 	constructor(
 		public readonly title: string,
