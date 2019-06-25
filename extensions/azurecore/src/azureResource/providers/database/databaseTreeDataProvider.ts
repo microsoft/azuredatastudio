@@ -72,7 +72,8 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 					saveProfile: false,
 					options: {}
 				},
-				childProvider: 'MSSQL'
+				childProvider: 'MSSQL',
+				isDatabase: true
 			}
 		});
 	}

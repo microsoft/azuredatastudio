@@ -11,7 +11,7 @@ export enum AzureResourceItemType {
 	databaseContainer = 'azure.resource.itemType.databaseContainer',
 	database = 'azure.resource.itemType.database',
 	databaseServerContainer = 'azure.resource.itemType.databaseServerContainer',
-	databaseServer = 'azure.resource.itemType.databaseServer',
+	databaseServer = 'azure.resource.itemType.server',
 	message = 'azure.resource.itemType.message'
 }
 

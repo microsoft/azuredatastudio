@@ -2,8 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-
-import { Deferred } from 'sql/base/common/promise';
+import { IConnectionProfile } from 'azdata';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -17,6 +16,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -132,7 +132,9 @@ export class OEShimService extends Disposable implements IOEShimService {
 				sessionId,
 				rootNode: undefined,
 				errorMessage: undefined
-			}, treeNode).then(e => e.map(n => this.treeNodeToITreeItem(viewId, n, node)));
+			}, treeNode).then((e) => {
+				return e.map(n => this.treeNodeToITreeItem(viewId, n, node));
+			});
 		} else {
 			return Promise.resolve([]);
 		}
@@ -154,6 +156,30 @@ export class OEShimService extends Disposable implements IOEShimService {
 			}
 		}
 		icon = icon.toLowerCase();
+		// Change the database if the node has a different database
+		// than its parent
+		let updatedPayload: IConnectionProfile = undefined;
+		if (node.nodeTypeId === NodeType.Database) {
+			const database = node.getDatabaseName();
+			if (database) {
+				updatedPayload = {
+					connectionName: parentNode.payload.connectionName,
+					serverName: parentNode.payload.serverName,
+					databaseName: node.getDatabaseName(),
+					userName: parentNode.payload.userName,
+					password: parentNode.payload.password,
+					authenticationType: parentNode.payload.authenticationType,
+					savePassword: parentNode.payload.savePassword,
+					groupFullName: parentNode.payload.groupFullName,
+					groupId: parentNode.payload.groupId,
+					providerName: parentNode.payload.providerName,
+					saveProfile: false,
+					id: parentNode.payload.id,
+					azureTenantId: parentNode.payload.azureTenantId,
+					options: parentNode.payload.options
+				};
+			}
+		}
 		let newTreeItem: ITreeItem = {
 			parentHandle: node.parent.id,
 			handle,
@@ -163,7 +189,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			},
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
-			payload: node.payload || parentNode.payload,
+			payload: node.payload || (updatedPayload ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
 			sqlIcon: icon
 		};

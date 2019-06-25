@@ -58,7 +58,8 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			iconPath: {
 				dark: this.appContext.extensionContext.asAbsolutePath('resources/light/regserverserver.svg'),
 				light: this.appContext.extensionContext.asAbsolutePath('resources/light/regserverserver.svg')
-			}
+			},
+			isServer: true
 		};
 
 		return treeItem;
