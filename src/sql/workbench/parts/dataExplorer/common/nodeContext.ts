@@ -25,7 +25,6 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	static Node = new RawContextKey<INodeContextValue>('node', undefined);
 	static IsServer = new RawContextKey<boolean>('isServer', false);
 	static IsDatabase = new RawContextKey<boolean>('isDatabase', false);
-	static NodeType = new RawContextKey<NodeType>('nodeType', undefined);
 
 	private readonly _connectionContextKey: ConnectionContextKey;
 	private readonly _connectableKey: IContextKey<boolean>;
@@ -35,7 +34,6 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
 	private readonly _serverKey: IContextKey<boolean>;
 	private readonly _databaseKey: IContextKey<boolean>;
-	private readonly _nodeTypeKey: IContextKey<NodeType>;
 
 	constructor(
 		@IContextKeyService contextKeyService: IContextKeyService,
