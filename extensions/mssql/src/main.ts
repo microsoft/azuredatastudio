@@ -145,8 +145,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		if (endpointsArray.length > 0) {
 			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy' || e.serviceName === 'mgmtproxy');
 			if (managementProxyEp) {
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("grafana", "Metrics Dashboard"), '/grafana'));
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("kibana", "Log Search Dashboard"), '/kibana'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("grafana", "Metrics Dashboard"), '/grafana/d/wZx3OUdmz'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("kibana", "Log Search Dashboard"), '/kibana/app/kibana#/discover'));
 			}
 
 			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
@@ -162,11 +162,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
 				if (endpointInfo.isHyperlink) {
 					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink }).component();
-					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '60%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px' } });
+					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px' } });
 				}
 				else {
 					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
-					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '60%', 'user-select': 'text' } });
+					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '62%', 'user-select': 'text' } });
 				}
 				const copyValueCell = view.modelBuilder.button().component();
 				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.png'), dark: context.asAbsolutePath('resources/dark/copy_inverse.png') };
@@ -176,7 +176,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 				copyValueCell.title = localize("copyText", "Copy");
 				copyValueCell.iconHeight = '14px';
 				copyValueCell.iconWidth = '14px';
-				endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '5%', 'padding-top': '10px' } });
+				endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '3%', 'padding-top': '10px' } });
 
 				container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
 			});
