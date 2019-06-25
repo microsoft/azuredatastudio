@@ -143,7 +143,7 @@ describe('AzureResourceDatabaseServerTreeDataProvider.getChildren', function ():
 			should(child.treeItem.id).equal(`databaseServer_${databaseServer.name}`);
 			should(child.treeItem.label).equal(databaseServer.name);
 			should(child.treeItem.collapsibleState).equal(vscode.TreeItemCollapsibleState.Collapsed);
-			should(child.treeItem.contextValue).equal(AzureResourceItemType.databaseServer);
+			should(child.treeItem.contextValue).equal(AzureResourceItemType.server);
 		}
 	});
 });

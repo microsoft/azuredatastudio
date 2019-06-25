@@ -165,12 +165,12 @@
 				},
 				{
 					"command": "azure.resource.refresh",
-					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|databaseServerContainer)$/",
+					"when": "viewItem =~ /^azure\\.resource\\.itemType\\.(?:account|subscription|databaseContainer|serverContainer)$/",
 					"group": "inline"
 				},
 				{
 					"command": "azure.resource.connectsqlserver",
-					"when": "viewItem == azure.resource.itemType.databaseServer",
+					"when": "viewItem == azure.resource.itemType.server",
 					"group": "inline"
 				},
 				{

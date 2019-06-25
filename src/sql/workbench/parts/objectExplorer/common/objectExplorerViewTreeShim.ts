@@ -158,26 +158,14 @@ export class OEShimService extends Disposable implements IOEShimService {
 		icon = icon.toLowerCase();
 		// Change the database if the node has a different database
 		// than its parent
-		let updatedPayload: IConnectionProfile = undefined;
+		let databaseChanged = false;
+		let updatedPayload: IConnectionProfile | any = {};
 		if (node.nodeTypeId === NodeType.Database) {
 			const database = node.getDatabaseName();
 			if (database) {
-				updatedPayload = {
-					connectionName: parentNode.payload.connectionName,
-					serverName: parentNode.payload.serverName,
-					databaseName: node.getDatabaseName(),
-					userName: parentNode.payload.userName,
-					password: parentNode.payload.password,
-					authenticationType: parentNode.payload.authenticationType,
-					savePassword: parentNode.payload.savePassword,
-					groupFullName: parentNode.payload.groupFullName,
-					groupId: parentNode.payload.groupId,
-					providerName: parentNode.payload.providerName,
-					saveProfile: false,
-					id: parentNode.payload.id,
-					azureTenantId: parentNode.payload.azureTenantId,
-					options: parentNode.payload.options
-				};
+				databaseChanged = true;
+				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
+				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}
 		let newTreeItem: ITreeItem = {
@@ -189,7 +177,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			},
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
-			payload: node.payload || (updatedPayload ? updatedPayload : parentNode.payload),
+			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
 			sqlIcon: icon
 		};

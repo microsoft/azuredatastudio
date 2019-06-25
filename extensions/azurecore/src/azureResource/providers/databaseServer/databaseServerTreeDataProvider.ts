@@ -56,7 +56,7 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					light: this._extensionContext.asAbsolutePath('resources/light/sql_server.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServer,
+				contextValue: AzureResourceItemType.server,
 				payload: {
 					id: generateGuid(),
 					connectionName: undefined,
@@ -91,7 +91,7 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					light: this._extensionContext.asAbsolutePath('resources/light/folder.svg')
 				},
 				collapsibleState: TreeItemCollapsibleState.Collapsed,
-				contextValue: AzureResourceItemType.databaseServerContainer
+				contextValue: AzureResourceItemType.serverContainer
 			}
 		};
 	}

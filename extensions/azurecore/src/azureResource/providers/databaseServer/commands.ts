@@ -21,7 +21,7 @@ export function registerAzureResourceDatabaseServerCommands(appContext: AppConte
 		}
 
 		const treeItem = await node.getTreeItem();
-		if (treeItem.contextValue !== AzureResourceItemType.databaseServer) {
+		if (treeItem.contextValue !== AzureResourceItemType.server) {
 			return;
 		}
 
