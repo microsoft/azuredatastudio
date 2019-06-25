@@ -65,7 +65,7 @@ export class JupyterServerInstallation {
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 
-		this.configurePackagePaths();
+		this.configurePackagePaths().catch(err => this.apiWrapper.showErrorMessage(utils.getErrorMessage(err)));
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
@@ -217,7 +217,7 @@ export class JupyterServerInstallation {
 		});
 	}
 
-	private configurePackagePaths(): void {
+	private async configurePackagePaths(): Promise<void> {
 		//Python source path up to bundle version
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
@@ -255,6 +255,9 @@ export class JupyterServerInstallation {
 					this.pythonEnvVarPath
 				].join(delimiter);
 			}
+		} else if (this._usingExistingPython) {
+			let pythonUserDir = await this.getPythonUserDir();
+			this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
 		}
 
 		// Delete existing Python variables in ADS to prevent conflict with other installs
@@ -309,7 +312,7 @@ export class JupyterServerInstallation {
 			this._pythonInstallationPath = installSettings.installPath;
 			this._usingExistingPython = installSettings.existingPython;
 		}
-		this.configurePackagePaths();
+		await this.configurePackagePaths();
 
 		let updateConfig = async () => {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
@@ -575,6 +578,20 @@ export class JupyterServerInstallation {
 			pythonInstallPath,
 			useExistingInstall ? '' : constants.pythonBundleVersion,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
+	}
+
+	private async getPythonUserDir(): Promise<string> {
+		let cmd = `"${this.pythonExecutable}" -c "import site;print(site.USER_BASE)"`;
+		let packagesDir = await this.executeBufferedCommand(cmd);
+		if (packagesDir && packagesDir.length > 0) {
+			if (process.platform !== constants.winPlatform) {
+				packagesDir = path.join(packagesDir, 'bin');
+			}
+
+			return packagesDir;
+		}
+
+		return undefined;
 	}
 }
 
