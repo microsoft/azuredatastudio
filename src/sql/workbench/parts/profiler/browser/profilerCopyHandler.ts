@@ -5,7 +5,7 @@
 import * as os from 'os';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
-export function HandleCopyRequest(clipboardService: IClipboardService, range: Slick.Range, getCellValue: (row, cell) => string): void {
+export function handleCopyRequest(clipboardService: IClipboardService, range: Slick.Range, getCellValue: (row, cell) => string): void {
 	if (range) {
 		let results = '';
 		for (let i = range.fromRow; i <= range.toRow; i++) {

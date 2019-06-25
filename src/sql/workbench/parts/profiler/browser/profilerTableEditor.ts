@@ -31,7 +31,7 @@ import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/com
 import { localize } from 'vs/nls';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { HandleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -98,7 +98,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 			// in context of this table, the selection mode is row selection, copy the whole row will get a lot of unwanted data
 			// ignore the passed in range and create a range so that it only copies the currently selected cell value.
 			const activeCell = this._profilerTable.activeCell;
-			HandleCopyRequest(this._clipboardService, new Slick.Range(activeCell.row, activeCell.cell), (row, cell) => {
+			handleCopyRequest(this._clipboardService, new Slick.Range(activeCell.row, activeCell.cell), (row, cell) => {
 				const fieldName = this._input.columns[cell].field;
 				return this._input.data.getItem(row)[fieldName];
 			});

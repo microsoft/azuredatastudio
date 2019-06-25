@@ -49,7 +49,7 @@ import { clamp } from 'vs/base/common/numbers';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { HandleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -384,7 +384,7 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
-				HandleCopyRequest(this._clipboardService, ranges[0], (row, cell) => {
+				handleCopyRequest(this._clipboardService, ranges[0], (row, cell) => {
 					const item = this._detailTableData.getItem(row);
 					// only 2 columns in this table
 					return cell === 0 ? item.label : item.value;
