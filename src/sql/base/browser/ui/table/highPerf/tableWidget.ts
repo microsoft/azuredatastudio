@@ -671,6 +671,8 @@ export class Table<T> implements IDisposable {
 
 		this.view = new TableView(container, columns, dataSource, options);
 
+		this.view.domNode.setAttribute('aria-multiselectable', 'true');
+
 		this.styleElement = DOM.createStyleSheet(this.view.domNode);
 
 		this.styleController = new DefaultStyleController(this.styleElement, this.view.domId);

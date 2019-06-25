@@ -32,18 +32,36 @@ export interface ITableViewOptions<T> {
 	rowHeight?: number;
 	mouseSupport?: boolean;
 	initialLength?: number;
+	rowCountColumn?: boolean;
 }
 
 const DefaultOptions = {
 	rowHeight: 22,
 	columnWidth: 120,
-	minWidth: 20
+	minWidth: 20,
+	rowCountColumn: true,
+	resizeable: true
 };
+
+class RowCountRenderer implements ITableRenderer<any, HTMLElement> {
+	renderTemplate(container: HTMLElement): HTMLElement {
+		return DOM.append(container, DOM.$('.row-count'));
+	}
+
+	renderCell(element: any, index: number, columnId: string, templateData: HTMLElement, width: number): void {
+		templateData.innerText = `${index}`;
+	}
+
+	disposeTemplate(templateData: HTMLElement): void {
+		throw new Error('Method not implemented.');
+	}
+}
 
 export interface IColumn<T, TTemplateData> {
 	renderer: ITableRenderer<T, TTemplateData>;
 	width?: number;
 	minWidth?: number;
+	resizeable?: boolean;
 	id: string;
 	name: string;
 }
@@ -92,6 +110,14 @@ interface IAsyncRowItem<T> {
 	datapromise: CancelablePromise<void> | null;
 }
 
+const rowCountColumnDef: IColumn<any, HTMLElement> = {
+	id: 'rowCount',
+	name: '',
+	renderer: new RowCountRenderer(),
+	width: 30,
+	resizeable: false
+};
+
 export class TableView<T> implements IDisposable {
 	private static InstanceCount = 0;
 	readonly domId = `table_id_${++TableView.InstanceCount}`;
@@ -108,7 +134,7 @@ export class TableView<T> implements IDisposable {
 	private _scrollHeight: number;
 	private _scrollWidth: number;
 	private scrollableElementUpdateDisposable: IDisposable | null = null;
-	private ariaSetProvider: IAriaSetProvider<T>;
+	// private ariaSetProvider: IAriaSetProvider<T>;
 	private canUseTranslate3d: boolean | undefined = undefined;
 	private rowHeight: number;
 	private _length: number = 0;
@@ -163,24 +189,34 @@ export class TableView<T> implements IDisposable {
 			this.renderers.set(column.id, column.renderer);
 		}
 
-		this.cache = new CellCache(this.renderers);
 		this.columns = columns.slice();
 
-		this.domNode.setAttribute('role', 'table');
+		options.rowCountColumn = getOrDefault(options, o => o.rowCountColumn, DefaultOptions.rowCountColumn);
+
+		if (options.rowCountColumn) {
+			this.renderers.set(rowCountColumnDef.id, rowCountColumnDef.renderer);
+			this.columns.unshift(rowCountColumnDef);
+		}
+
+		this.cache = new CellCache(this.renderers);
+
+		this.domNode.setAttribute('role', 'grid');
 		this.domNode.setAttribute('aria-rowcount', '0');
+		this.domNode.setAttribute('aria-readonly', 'true');
 
 		DOM.addClass(this.domNode, this.domId);
 		this.domNode.tabIndex = 0;
 
 		DOM.toggleClass(this.domNode, 'mouse-support', typeof options.mouseSupport === 'boolean' ? options.mouseSupport : true);
 
-		this.ariaSetProvider = { getSetSize: (e, i, length) => length, getPosInSet: (_, index) => index + 1 };
+		// this.ariaSetProvider = { getSetSize: (e, i, length) => length, getPosInSet: (_, index) => index + 1 };
 
 		this.rowHeight = getOrDefault(options, o => o.rowHeight, DefaultOptions.rowHeight);
 		let left = 0;
 		this.columns = this.columns.map(c => {
-			c.width = c.width || DefaultOptions.columnWidth;
-			c.minWidth = c.minWidth || DefaultOptions.minWidth;
+			c.width = getOrDefault(c, o => o.width, DefaultOptions.columnWidth);
+			c.minWidth = getOrDefault(c, o => o.minWidth, DefaultOptions.minWidth);
+			c.resizeable = getOrDefault(c, c => c.resizeable, DefaultOptions.resizeable);
 			c.left = left;
 			left += c.width;
 			return c;
@@ -264,6 +300,9 @@ export class TableView<T> implements IDisposable {
 		const disposable = combinedDisposable([onStartDisposable, onChangeDisposable, /*onEndDisposable, onDidResetDisposable, */sash]);
 		const sashItem: ISashItem = { sash, disposable };
 		this.columnSashs.push(sashItem);
+		if (!column.resizeable) {
+			sash.hide();
+		}
 	}
 
 	private onSashStart({ sash, start }: ISashEvent<T>): void {
@@ -532,6 +571,10 @@ export class TableView<T> implements IDisposable {
 
 		if (row.datapromise) {
 			row.datapromise.then(() => this.renderRow(row, index));
+			// in this case we can special case the row count column
+			if (this.columns[0].id === 'rowCount') {
+				this.columns[0].renderer.renderCell(row.element, index, 'rowCount', row.cells[0].templateData, this.columns[0].width);
+			}
 		} else {
 			this.renderRow(row, index);
 		}
@@ -563,15 +606,15 @@ export class TableView<T> implements IDisposable {
 			cell.style.left = `${column.left}px`;
 			cell.style.height = `${row.size}px`;
 			cell.setAttribute('data-column-id', `${column.id}`);
-			cell.setAttribute('role', 'cell');
+			cell.setAttribute('role', 'gridcell');
 			row.row!.setAttribute('id', this.getElementDomId(index, column.id));
 		}
 
 		row.row!.setAttribute('data-index', `${index}`);
 		row.row!.setAttribute('data-last-element', index === this.length - 1 ? 'true' : 'false');
 		row.row!.setAttribute('role', 'row');
-		row.row!.setAttribute('aria-setsize', String(this.ariaSetProvider.getSetSize(row.element, index, this.length)));
-		row.row!.setAttribute('aria-posinset', String(this.ariaSetProvider.getPosInSet(row.element, index)));
+		// row.row!.setAttribute('aria-setsize', String(this.ariaSetProvider.getSetSize(row.element, index, this.length)));
+		// row.row!.setAttribute('aria-posinset', String(this.ariaSetProvider.getPosInSet(row.element, index)));
 		row.row!.setAttribute('id', this.getElementDomId(index));
 	}
 

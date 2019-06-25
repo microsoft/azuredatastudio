@@ -28,6 +28,8 @@
 	display: inline-block;
 	text-overflow: ellipsis;
 	overflow: hidden;
+	padding: 5px;
+	box-sizing: border-box;
 }
 
 .monaco-perftable-rows {
@@ -88,4 +90,9 @@
 
 .monaco-perftable .sash-container > .monaco-sash {
 	pointer-events: initial;
+}
+
+.monaco-perftable .monaco-perftable-cell * {
+	text-overflow: ellipsis;
+	overflow: hidden;
 }
