@@ -46,6 +46,7 @@ export class SchemaCompareResult {
 	private applyButton: azdata.ButtonComponent;
 	private selectSourceButton: azdata.ButtonComponent;
 	private selectTargetButton: azdata.ButtonComponent;
+	private saveScmpButton: azdata.ButtonComponent;
 	private SchemaCompareActionMap: Map<Number, string>;
 	private operationId: string;
 	private comparisonResult: azdata.SchemaCompareResult;
@@ -121,6 +122,7 @@ export class SchemaCompareResult {
 			this.createApplyButton(view);
 			this.createOptionsButton(view);
 			this.createSourceAndTargetButtons(view);
+			this.createSaveScmpButton(view);
 			this.resetButtons(false); // disable buttons because source and target aren't both selected yet
 
 			let toolBar = view.modelBuilder.toolbarContainer();
@@ -136,7 +138,10 @@ export class SchemaCompareResult {
 				component: this.optionsButton,
 				toolbarSeparatorAfter: true
 			}, {
-				component: this.switchButton
+				component: this.switchButton,
+				toolbarSeparatorAfter: true
+			}, {
+				component: this.saveScmpButton
 			}]);
 
 			let sourceLabel = view.modelBuilder.text().withProperties({
@@ -674,6 +679,7 @@ export class SchemaCompareResult {
 			this.optionsButton.enabled = true;
 			this.switchButton.enabled = true;
 			this.cancelCompareButton.enabled = false;
+			this.saveScmpButton.enabled = true;
 		}
 		else {
 			this.compareButton.enabled = false;
@@ -759,6 +765,72 @@ export class SchemaCompareResult {
 			let dialog = new SchemaCompareDialog(this);
 			dialog.openDialog();
 		});
+	}
+
+	private createSaveScmpButton(view: azdata.ModelView): void {
+		this.saveScmpButton = view.modelBuilder.button().withProperties({
+			label: localize('schemaCompare.saveScmpButton', 'Save .scmp file'),
+			iconPath: {
+				light: path.join(__dirname, 'media', 'save-scmp.svg'),
+				dark: path.join(__dirname, 'media', 'save-scmp-inverse.svg')
+			},
+			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements'),
+			enabled: false
+		}).component();
+
+		this.saveScmpButton.onDidClick(async (click) => {
+			const rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			const filePath = await vscode.window.showSaveDialog(
+				{
+					defaultUri: vscode.Uri.file(rootPath),
+					saveLabel: localize('schemaCompare.saveFile', 'Save'),
+					filters: {
+						'scmp Files': ['scmp'],
+					}
+				}
+			);
+
+			if (!filePath) {
+				return;
+			}
+
+			// convert include/exclude maps to arrays of object ids
+			let sourceExcludes: azdata.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalSourceExcludes);
+			let targetExcludes: azdata.SchemaCompareObjectId[] = this.convertExcludesToObjectIds(this.originalTargetExcludes);
+
+			let startTime = Date.now();
+			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmp');
+			const service = await SchemaCompareResult.getService(msSqlProvider);
+			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
+			if (!result || !result.success) {
+				Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpFailed', {
+					'errorType': getTelemetryErrorType(result.errorMessage),
+					'operationId': this.comparisonResult.operationId
+				});
+				vscode.window.showErrorMessage(
+					localize('schemaCompare.saveScmpErrorMessage', "Save scmp failed: '{0}'", (result && result.errorMessage) ? result.errorMessage : 'Unknown'));
+			}
+
+			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpEnded', {
+				'totalSaveTime:': (Date.now() - startTime).toString(),
+				'operationId': this.comparisonResult.operationId
+			});
+		});
+	}
+
+	/**
+	 * Converts excluded diff entries into object ids which are needed to save them in an scmp
+	*/
+	private convertExcludesToObjectIds(excludedDiffEntries: Map<string, azdata.DiffEntry>): azdata.SchemaCompareObjectId[] {
+		let result = [];
+		excludedDiffEntries.forEach((value: azdata.DiffEntry) => {
+			result.push({
+				nameParts: value.sourceValue ? value.sourceValue : value.targetValue,
+				sqlObjectType: `Microsoft.Data.Tools.Schema.Sql.SchemaModel.${value.name}`
+			});
+		});
+
+		return result;
 	}
 
 	private setButtonStatesForNoChanges(enableButtons: boolean): void {
