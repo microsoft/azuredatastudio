@@ -423,7 +423,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
 		if (displayName) {
 			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName);
-			this._defaultKernel = displayName ? { name: standardKernel.name, display_name: standardKernel.displayName } : this._defaultKernel;
+			this._defaultKernel = displayName ? { name: standardKernel.name, display_name: standardKernel.displayName, language: standardKernel.language } : this._defaultKernel;
 		}
 		if (this._defaultKernel) {
 			let clientSession = this._notebookOptions.factory.createClientSession({
@@ -751,6 +751,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
 				this._savedKernelInfo.name = standardKernel.name;
 				this._savedKernelInfo.display_name = standardKernel.displayName;
+				this._savedKernelInfo.language = standardKernel.language;
 			}
 		}
 	}

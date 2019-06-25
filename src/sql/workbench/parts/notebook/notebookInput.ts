@@ -241,6 +241,7 @@ export class NotebookInput extends EditorInput {
 				connectionProviderIds: kernel.connectionProviderIds,
 				name: kernel.name,
 				displayName: kernel.displayName,
+				language: kernel.language,
 				notebookProvider: kernel.notebookProvider
 			});
 		});

@@ -29,6 +29,7 @@ export namespace nbformat {
 	export interface IKernelspecMetadata extends JSONObject {
 		name: string;
 		display_name: string;
+		language: string;
 	}
 
 	/**

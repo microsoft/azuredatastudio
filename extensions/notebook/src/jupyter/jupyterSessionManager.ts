@@ -103,7 +103,8 @@ export class JupyterSessionManager implements nb.SessionManager {
 			let value = specs.kernelspecs[k];
 			let kernel: nb.IKernelSpec = {
 				name: k,
-				display_name: value.display_name ? value.display_name : k
+				display_name: value.display_name ? value.display_name : k,
+				language: value.language ? value.language : k
 			};
 			// TODO add more info to kernels
 			return kernel;
