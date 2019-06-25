@@ -102,7 +102,6 @@ suite('notebook model', function (): void {
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
-			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: [mssqlProviderName], notebookProvider: 'sql' }],
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,

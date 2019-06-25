@@ -268,11 +268,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.setLoading(false);
 		// Once contents loaded, wait on provider information to be available before loading kernel and other information
 		await this.awaitNonDefaultProvider();
+		await this.notebookParams.input.getProviderInfo();
 		await this._model.requestModelLoad();
 		this.detectChanges();
 		let elapsed = performance.now() - start;
 		console.log(`time to fully load notebook ${elapsed}ms`);
-		this.setLoading(false);
 		await this._model.startSession(this._model.notebookManager, undefined, true);
 		elapsed = performance.now() - start;
 		console.log(`time to fully start session ${elapsed}ms`);
@@ -290,7 +290,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			notificationService: this.notificationService,
 			notebookManagers: this.notebookManagers,
 			contentManager: this._notebookParams.input.contentManager,
-			standardKernels: this._notebookParams.input.standardKernels,
 			cellMagicMapper: new CellMagicMapper(this.notebookService.languageMagics),
 			providerId: 'sql',
 			defaultKernel: this._notebookParams.input.defaultKernel,
@@ -298,14 +297,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			capabilitiesService: this.capabilitiesService,
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
 		}, this.profile, this.logService, this.notificationService, this.telemetryService);
-		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
-		await model.loadContents(trusted);
+		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
 		model.contentChanged((change) => this.handleContentChanged(change));
 		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
 		model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs));
 		this._model = this._register(model);
-		this.updateToolbarComponents(this._model.trustedMode);
+		await this._model.loadContents(trusted);
+		this.updateToolbarComponents(trusted);
 		this.detectChanges();
 
 		let elapsed = performance.now() - start;
@@ -323,6 +322,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private async awaitNonDefaultProvider(): Promise<void> {
 		// Wait on registration for now. Long-term would be good to cache and refresh
 		await this.notebookService.registrationComplete;
+		this.model.standardKernels = this._notebookParams.input.standardKernels;
 		// Refresh the provider if we had been using default
 		let providerInfo = await this._notebookParams.providerInfo;
 
