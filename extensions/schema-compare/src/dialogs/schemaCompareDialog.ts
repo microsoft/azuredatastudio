@@ -649,8 +649,10 @@ export class SchemaCompareDialog {
 			};
 		});
 
-		if (idx >= 0) {
+		if (values) {
 			values.sort((a, b) => a.displayName.localeCompare(b.displayName));
+		}
+		if (idx >= 0) {
 			let tmp = values[0];
 			values[0] = values[idx];
 			values[idx] = tmp;
