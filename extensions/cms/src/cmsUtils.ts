@@ -262,8 +262,6 @@ export class CmsUtils {
 				await this.savePassword(connection.options.user, connection.options.password);
 			}
 			return connection;
-		} else {
-			return Promise.reject();
 		}
 	}
 
