@@ -69,7 +69,6 @@ export class MimeRendererComponent extends AngularDisposable implements IMimeCom
 				);
 			});
 		} else {
-			// TODO Localize
 			node.innerHTML = localize('noRendererFound',
 				"No {0} renderer could be found for output. It has the following MIME types: {1}",
 				options.trusted ? '' : localize('safe', "(safe) "),
