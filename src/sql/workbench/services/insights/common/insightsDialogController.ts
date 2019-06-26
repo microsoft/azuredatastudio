@@ -18,9 +18,7 @@ import Severity from 'vs/base/common/severity';
 import * as types from 'vs/base/common/types';
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
@@ -38,8 +36,6 @@ export class InsightsDialogController {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IWorkspaceContextService private _workspaceContextService: IWorkspaceContextService,
-		@IConfigurationResolverService private _configurationResolverService: IConfigurationResolverService,
 		@ILogService private logService: ILogService,
 		@IFileService private readonly fileService: IFileService
 	) { }
@@ -65,10 +61,7 @@ export class InsightsDialogController {
 			} else if (types.isString(input.queryFile)) {
 				let filePath: string;
 				try {
-					filePath = await resolveQueryFilePath(input.queryFile,
-						this._workspaceContextService,
-						this._configurationResolverService,
-						this.fileService);
+					filePath = await this._instantiationService.invokeFunction(resolveQueryFilePath, input.queryFile);
 				}
 				catch (e) {
 					this._notificationService.notify({

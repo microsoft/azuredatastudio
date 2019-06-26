@@ -9,6 +9,7 @@ import { IWorkspaceContextService, IWorkspaceFolder } from 'vs/platform/workspac
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
@@ -18,13 +19,14 @@ import { URI } from 'vs/base/common/uri';
  * @param workspaceContextService The workspace context to use for resolving workspace vars
  * @param configurationResolverService The resolver service to use to resolve the vars
  */
-export async function resolveQueryFilePath(filePath: string,
-	workspaceContextService: IWorkspaceContextService,
-	configurationResolverService: IConfigurationResolverService,
-	fileService: IFileService): Promise<string> {
-	if (!filePath || !workspaceContextService || !configurationResolverService) {
+export async function resolveQueryFilePath(services: ServicesAccessor, filePath: string): Promise<string> {
+	if (!filePath) {
 		return filePath;
 	}
+
+	const workspaceContextService = services.get(IWorkspaceContextService);
+	const configurationResolverService = services.get(IConfigurationResolverService);
+	const fileService = services.get(IFileService);
 
 	let workspaceFolders: IWorkspaceFolder[] = workspaceContextService.getWorkspace().folders;
 	// Resolve the path using each folder in our workspace, or undefined if there aren't any

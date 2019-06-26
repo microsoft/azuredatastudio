@@ -9,9 +9,7 @@ import * as os from 'os';
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
 
 import * as path from 'vs/base/common/path';
-import * as pfs from 'vs/base/node/pfs';
 
-import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { Workspace, toWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import { TestContextService } from 'vs/workbench/test/workbenchTestServices';
@@ -19,6 +17,8 @@ import { IExtensionHostDebugParams, IDebugParams, ParsedArgs } from 'vs/platform
 import { URI } from 'vs/base/common/uri';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	machineSettingsHome: string;
@@ -89,10 +89,6 @@ suite('Insights Utils tests', function () {
 	suiteSetup(async () => {
 		// Create test file - just needs to exist for verifying the path resolution worked correctly
 		testRootPath = path.join(os.tmpdir(), 'adstests');
-		queryFileDir = getRandomTestPath(testRootPath, 'insightsutils');
-		await pfs.mkdirp(queryFileDir);
-		queryFilePath = path.join(queryFileDir, 'test.sql');
-		await pfs.writeFile(queryFilePath, '');
 	});
 
 	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
@@ -104,7 +100,10 @@ suite('Insights Utils tests', function () {
 			new TestContextService(),
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(queryFilePath, new TestContextService(), configurationResolverService);
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, queryFilePath);
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -123,7 +122,10 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(path.join('${workspaceRoot}', 'test.sql'), contextService, configurationResolverService);
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${workspaceRoot}', 'test.sql'));
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -143,8 +145,11 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined);
 
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+
 		try {
-			await resolveQueryFilePath(tokenizedPath, contextService, configurationResolverService);
+			const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, tokenizedPath);
 			fail('Should have thrown');
 		}
 		catch (e) {
@@ -166,8 +171,11 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined);
 
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+
 		try {
-			await resolveQueryFilePath(tokenizedPath, contextService, configurationResolverService);
+			const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, tokenizedPath);
 			fail('Should have thrown');
 		}
 		catch (e) {
@@ -188,7 +196,9 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(path.join('${env:TEST_PATH}', 'test.sql'), contextService, configurationResolverService);
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -205,7 +215,9 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(path.join('${env:TEST_PATH}', 'test.sql'), contextService, configurationResolverService);
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -219,17 +231,14 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined);
 
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
 		try {
-			await resolveQueryFilePath(invalidPath, new TestContextService(), configurationResolverService);
+			const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, invalidPath);
 			fail('Should have thrown');
 		} catch (e) {
 			done();
 		}
 
-	});
-
-	suiteTeardown(() => {
-		// Clean up our test files
-		return pfs.rimraf(testRootPath, pfs.RimRafMode.MOVE);
 	});
 });
