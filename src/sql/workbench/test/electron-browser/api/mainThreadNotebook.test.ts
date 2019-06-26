@@ -11,7 +11,7 @@ import * as vscode from 'vscode';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
-import { ExtHostNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';

@@ -189,7 +189,7 @@ import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryEditorService } from 'sql/workbench/services/queryEditor/browser/queryEditorService';
 import { IQueryManagementService, QueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { IEditorDescriptorService, EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
+import { IEditorDescriptorService, EditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import { IScriptingService, ScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -441,6 +441,8 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 
 // {{SQL CARBON EDIT}}
 // SQL
+import 'sql/workbench/api/electron-browser/extensionHost.contribution';
+
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
 
 // data explorer
@@ -450,7 +452,6 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
-import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';

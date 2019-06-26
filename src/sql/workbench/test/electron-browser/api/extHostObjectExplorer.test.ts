@@ -7,8 +7,8 @@ import * as azdata from 'azdata';
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 
-import { MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ExtHostObjectExplorerNode } from 'sql/workbench/api/node/extHostObjectExplorer';
+import { MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostObjectExplorerNode } from 'sql/workbench/api/common/extHostObjectExplorer';
 
 const nodes: { [nodeName: string]: azdata.NodeInfo } =
 {

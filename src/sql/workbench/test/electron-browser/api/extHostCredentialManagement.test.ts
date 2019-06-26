@@ -6,10 +6,10 @@
 import * as assert from 'assert';
 import { TestRPCProtocol } from 'vs/workbench/test/electron-browser/api/testRPCProtocol';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { ExtHostCredentialManagement } from 'sql/workbench/api/node/extHostCredentialManagement';
-import { SqlMainContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
+import { SqlMainContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IRPCProtocol } from 'vs/workbench/services/extensions/common/proxyIdentifier';
-import { MainThreadCredentialManagement } from 'sql/workbench/api/node/mainThreadCredentialManagement';
+import { MainThreadCredentialManagement } from 'sql/workbench/api/browser/mainThreadCredentialManagement';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { Credential, CredentialProvider } from 'azdata';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';

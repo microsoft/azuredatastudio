@@ -6,10 +6,8 @@
 import * as assert from 'assert';
 import { Mock } from 'typemoq';
 import * as azdata from 'azdata';
-import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
+import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ProxyAuthHandler } from 'vs/code/electron-main/auth';
-import { MainThreadDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 
 suite('ExtHostDataProtocol', () => {
 

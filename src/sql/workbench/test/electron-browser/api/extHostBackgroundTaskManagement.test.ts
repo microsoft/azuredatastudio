@@ -6,8 +6,8 @@
 import * as azdata from 'azdata';
 import * as assert from 'assert';
 import { Mock, It, Times } from 'typemoq';
-import { ExtHostBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/node/extHostBackgroundTaskManagement';
-import { MainThreadBackgroundTaskManagementShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { ExtHostBackgroundTaskManagement, TaskStatus } from 'sql/workbench/api/common/extHostBackgroundTaskManagement';
+import { MainThreadBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 
 

@@ -15,7 +15,7 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/workbench/parts/query/browser/queryActions';
-import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
+import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
