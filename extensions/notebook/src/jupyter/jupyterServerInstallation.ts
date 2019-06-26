@@ -66,14 +66,6 @@ export class JupyterServerInstallation {
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
 	}
 
-	public async init(): Promise<void> {
-		try {
-			await this.configurePackagePaths();
-		} catch (err) {
-			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-		}
-	}
-
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
@@ -223,7 +215,7 @@ export class JupyterServerInstallation {
 		});
 	}
 
-	private async configurePackagePaths(): Promise<void> {
+	public async configurePackagePaths(): Promise<void> {
 		//Python source path up to bundle version
 		let pythonSourcePath = this._usingExistingPython
 			? this._pythonInstallationPath
