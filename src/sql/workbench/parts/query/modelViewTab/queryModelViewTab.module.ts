@@ -9,8 +9,8 @@ import { forwardRef, NgModule, ComponentFactoryResolver, Inject, ApplicationRef 
 import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { WizardNavigation } from 'sql/platform/dialog/wizardNavigation.component';
-import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
+import { WizardNavigation } from 'sql/platform/dialog/electron-browser/wizardNavigation.component';
+import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/electron-browser/modelComponentRegistry';
 import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/electron-browser/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';

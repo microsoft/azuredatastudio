@@ -11,7 +11,7 @@ import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/in
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
 import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';

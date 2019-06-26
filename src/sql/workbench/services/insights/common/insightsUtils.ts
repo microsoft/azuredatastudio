@@ -3,11 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as pfs from 'vs/base/node/pfs';
 import { localize } from 'vs/nls';
 
 import { IWorkspaceContextService, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { IFileService } from 'vs/platform/files/common/files';
+import { URI } from 'vs/base/common/uri';
 
 /**
  * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as
@@ -19,7 +20,8 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
  */
 export async function resolveQueryFilePath(filePath: string,
 	workspaceContextService: IWorkspaceContextService,
-	configurationResolverService: IConfigurationResolverService): Promise<string> {
+	configurationResolverService: IConfigurationResolverService,
+	fileService: IFileService): Promise<string> {
 	if (!filePath || !workspaceContextService || !configurationResolverService) {
 		return filePath;
 	}
@@ -32,7 +34,7 @@ export async function resolveQueryFilePath(filePath: string,
 
 	// Just need a single query file so use the first we find that exists
 	for (const path of resolvedFilePaths) {
-		if (await pfs.exists(path)) {
+		if (await fileService.exists(URI.file(path))) {
 			return path;
 		}
 	}

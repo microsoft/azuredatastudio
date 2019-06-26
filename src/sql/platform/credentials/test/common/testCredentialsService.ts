@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ICredentialsService, CredentialManagementEvents } from 'sql/platform/credentials/common/credentialsService';
-import { Credential } from 'azdata';
+import { Credential, CredentialProvider } from 'azdata';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 
@@ -38,5 +38,29 @@ export class TestCredentialsService implements ICredentialsService {
 
 	addEventListener(handle: number, events: CredentialManagementEvents): IDisposable {
 		throw new Error('Method not implemented.');
+	}
+}
+
+export class TestCredentialsProvider implements CredentialProvider {
+	handle: number;
+
+	public storedCredentials: { [K: string]: Credential } = {};
+
+	saveCredential(credentialId: string, password: string): Thenable<boolean> {
+		this.storedCredentials[credentialId] = {
+			credentialId: credentialId,
+			password: password
+		};
+		return Promise.resolve(true);
+	}
+
+	readCredential(credentialId: string): Thenable<Credential> {
+		return Promise.resolve(this.storedCredentials[credentialId]);
+	}
+
+	deleteCredential(credentialId: string): Thenable<boolean> {
+		let exists = this.storedCredentials[credentialId] !== undefined;
+		delete this.storedCredentials[credentialId];
+		return Promise.resolve(exists);
 	}
 }

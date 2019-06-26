@@ -213,7 +213,7 @@ import { InsightsDialogService } from 'sql/workbench/services/insights/browser/i
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
-import { ProfilerService } from 'sql/workbench/services/profiler/common/profilerService';
+import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
@@ -449,7 +449,7 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
-import 'sql/platform/telemetry/telemetry.contribution';
+import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
 import 'sql/workbench/parts/query/browser/query.contribution';

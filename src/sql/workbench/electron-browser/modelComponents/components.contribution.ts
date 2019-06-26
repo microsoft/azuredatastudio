@@ -24,7 +24,7 @@ import FileBrowserTreeComponent from './fileBrowserTree.component';
 import EditorComponent from './editor.component';
 import DiffEditorComponent from './diffeditor.component';
 import DomComponent from './dom.component';
-import { registerComponentType } from 'sql/platform/dashboard/common/modelComponentRegistry';
+import { registerComponentType } from 'sql/platform/dashboard/electron-browser/modelComponentRegistry';
 import { ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
 import HyperlinkComponent from 'sql/workbench/electron-browser/modelComponents/hyperlink.component';
 import SplitViewContainer from 'sql/workbench/electron-browser/modelComponents/splitviewContainer.component';

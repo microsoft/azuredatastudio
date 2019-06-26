@@ -8,7 +8,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { BackupModule } from 'sql/workbench/parts/backup/electron-browser/backup.module';
 import { BACKUP_SELECTOR } from 'sql/workbench/parts/backup/electron-browser/backup.component';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';

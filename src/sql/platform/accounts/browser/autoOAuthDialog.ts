@@ -19,7 +19,7 @@ import { Modal } from 'sql/workbench/browser/modal/modal';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';

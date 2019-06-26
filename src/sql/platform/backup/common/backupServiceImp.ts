@@ -5,8 +5,8 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as azdata from 'azdata';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/backupService';
 import { invalidProvider } from 'sql/base/common/errors';

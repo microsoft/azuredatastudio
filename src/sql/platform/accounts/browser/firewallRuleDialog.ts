@@ -26,7 +26,7 @@ import { FirewallRuleViewModel } from 'sql/platform/accounts/common/firewallRule
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 

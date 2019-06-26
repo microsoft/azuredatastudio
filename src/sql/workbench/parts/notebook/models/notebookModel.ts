@@ -13,7 +13,7 @@ import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptio
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/workbench/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

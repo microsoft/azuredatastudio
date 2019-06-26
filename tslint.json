@@ -35,6 +35,27 @@
 				"messageIndex": 1
 			}
 		],
+		"layering": [
+			true,
+			{
+				"common": [],
+				"node": [
+					"common"
+				],
+				"browser": [
+					"common"
+				],
+				"electron-main": [
+					"common",
+					"node"
+				],
+				"electron-browser": [
+					"common",
+					"browser",
+					"node"
+				]
+			}
+		],
 		// {{SQL CARBON EDIT}} @anthonydresser for the most part these rules should be the same as vscode with some changes
 		// anything that references **/vs/** should references **/{vs,sql}/** instead
 		// @angular/* and rxjs/* are added to browser and electron-browser restrictions since * doesn't cover them

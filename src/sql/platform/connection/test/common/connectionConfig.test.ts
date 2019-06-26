@@ -12,7 +12,7 @@ import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/co
 import { IConnectionProfile, IConnectionProfileStore } from 'sql/platform/connection/common/interfaces';
 import { TestConfigurationService } from 'sql/platform/connection/test/common/testConfigurationService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import * as TypeMoq from 'typemoq';
 import { Emitter } from 'vs/base/common/event';
 import { deepClone, deepFreeze } from 'vs/base/common/objects';
@@ -119,7 +119,7 @@ suite('ConnectionConfig', () => {
 	]);
 
 	setup(() => {
-		capabilitiesService = TypeMoq.Mock.ofType(CapabilitiesTestService);
+		capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
 		capabilities = [];
 		let connectionProvider: azdata.ConnectionProviderOptions = {
 			options: [

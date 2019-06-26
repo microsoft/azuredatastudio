@@ -12,7 +12,7 @@ import * as azdata from 'azdata';
 import { IModelStore, IComponentDescriptor, IComponent } from './interfaces';
 import { IItemConfig, ModelComponentTypes, IComponentShape } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IModelView, IModelViewEventArgs } from 'sql/platform/model/common/modelViewService';
-import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
+import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/electron-browser/modelComponentRegistry';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { ModelStore } from 'sql/workbench/electron-browser/modelComponents/modelStore';
 import { Event, Emitter } from 'vs/base/common/event';

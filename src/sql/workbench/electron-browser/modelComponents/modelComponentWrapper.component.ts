@@ -11,7 +11,7 @@ import {
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IComponent, IComponentConfig, IComponentDescriptor, IModelStore, COMPONENT_CONFIG } from './interfaces';
-import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/common/modelComponentRegistry';
+import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/electron-browser/modelComponentRegistry';
 
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -20,7 +20,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { Event } from 'vs/base/common/event';
-import { LayoutRequestParams } from 'sql/platform/dialog/dialogContainer.component';
+import { LayoutRequestParams } from 'sql/platform/dialog/electron-browser/dialogContainer.component';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 

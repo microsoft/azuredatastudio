@@ -12,7 +12,7 @@ import { Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditOperatorAction, DeleteOperatorAction, NewOperatorAction } from 'sql/platform/jobManagement/electron-browser/jobActions';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';

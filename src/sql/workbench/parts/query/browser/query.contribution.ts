@@ -35,6 +35,12 @@ import * as Constants from 'sql/workbench/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { TimeElapsedStatusBarItem } from 'sql/workbench/parts/query/browser/timeElapsedStatus';
+import { RowCountStatusBarItem } from 'sql/workbench/parts/query/browser/rowCountStatus';
+import { QueryStatusbarItem } from 'sql/workbench/parts/query/browser/queryStatus';
+import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
+import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -92,6 +98,32 @@ const editDataResultsEditorDescriptor = new EditorDescriptor(
 
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
+
+const statusBarRegistry = Registry.as<statusbar.IStatusbarRegistry>(statusbar.Extensions.Statusbar);
+
+statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
+	TimeElapsedStatusBarItem,
+	StatusbarAlignment.RIGHT,
+	100 /* Should appear to the right of the SQL editor status */
+));
+
+statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
+	RowCountStatusBarItem,
+	StatusbarAlignment.RIGHT,
+	100 /* Should appear to the right of the SQL editor status */
+));
+
+statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
+	QueryStatusbarItem,
+	StatusbarAlignment.RIGHT,
+	100 /* High Priority */
+));
+
+statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
+	SqlFlavorStatusbarItem,
+	StatusbarAlignment.RIGHT,
+	90 /* Should appear to the right of the SQL editor status */
+));
 
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 

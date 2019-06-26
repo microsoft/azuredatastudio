@@ -10,7 +10,7 @@ import { EditorInput, EditorModel, ConfirmResult } from 'vs/workbench/common/edi
 import * as DOM from 'vs/base/browser/dom';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { DialogPane } from 'sql/platform/dialog/dialogPane';
+import { DialogPane } from 'sql/platform/dialog/electron-browser/dialogPane';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
 import { IThemeService } from 'vs/platform/theme/common/themeService';

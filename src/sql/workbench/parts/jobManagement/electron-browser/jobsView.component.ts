@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/electron-browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -30,7 +30,7 @@ import { escape } from 'sql/base/common/strings';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/theme/common/colors';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';

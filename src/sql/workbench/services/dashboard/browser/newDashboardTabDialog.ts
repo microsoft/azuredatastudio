@@ -21,7 +21,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler, attachButtonStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { NewDashboardTabViewModel, IDashboardUITab } from 'sql/workbench/services/dashboard/common/newDashboardTabViewModel';
 import { IDashboardTab } from 'sql/platform/dashboard/common/dashboardRegistry';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';

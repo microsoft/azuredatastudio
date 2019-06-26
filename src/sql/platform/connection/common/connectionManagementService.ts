@@ -20,8 +20,8 @@ import * as ConnectionContracts from 'sql/workbench/parts/connection/common/conn
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
 import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';

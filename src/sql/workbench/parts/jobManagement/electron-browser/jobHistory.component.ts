@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/common/jobActions';
+import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/electron-browser/jobActions';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -32,7 +32,7 @@ import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export const DASHBOARD_SELECTOR: string = 'jobhistory-component';
 
