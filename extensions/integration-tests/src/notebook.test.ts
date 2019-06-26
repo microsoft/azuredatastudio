@@ -36,6 +36,10 @@ if (context.RunTest) {
 			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
 		});
 
+		test('Clear cell output - SQL notebook', async function () {
+			await (new NotebookTester()).sqlNbClearOutputs(this.test.title);
+		});
+
 		test('Clear all outputs - SQL notebook ', async function () {
 			await (new NotebookTester()).sqlNbClearAllOutputs(this.test.title);
 		});
@@ -131,6 +135,11 @@ class NotebookTester {
 	async sqlNbClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
 		await this.verifyClearAllOutputs(notebook);
+	}
+
+	async sqlNbClearOutputs(title: string): Promise<void> {
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
+		await this.verifyClearOutputs(notebook);
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount })
@@ -380,15 +389,22 @@ class NotebookTester {
 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
 		console.log('After clearing cell outputs');
 	}
+
+	async verifyClearOutputs(notebook: azdata.nb.NotebookEditor): Promise<void> {
+		let cellWithOutputs = notebook.document.cells[0].contents && notebook.document.cells[0].contents.outputs && notebook.document.cells[0].contents.outputs.length > 0;
+		assert(cellWithOutputs === true, 'Expected first cell to have outputs');
+		let clearedOutputs = await notebook.clearOutput(notebook.document.cells[0]);
+		let firstCell = notebook.document.cells[0];
+		assert(firstCell.contents && firstCell.contents.outputs && firstCell.contents.outputs.length === 0, `Expected Output: 0, Actual: '${firstCell.contents.outputs.length}'`);
+		assert(clearedOutputs, 'Outputs of requested code cell should be cleared');
+	}
+
 	async cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, metadataInfo: any) {
 		let notebookJson = Object.assign({}, content, { metadata: metadataInfo });
 		let uri = writeNotebookToFile(notebookJson, testName);
-		console.log('Notebook uri ' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
-		console.log('Notebook is opened');
 		await notebook.document.save();
 		let languageInNotebook = notebook.document.cells[0].contents.metadata.language;
-		console.log('Language set in cell: ' + languageInNotebook);
 		assert(languageInNotebook === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${languageInNotebook}`);
 	}
 }

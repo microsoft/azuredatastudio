@@ -102,7 +102,8 @@ export class SchemaCompareDialog {
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
-				packageFilePath: this.sourceTextBox.value
+				packageFilePath: this.sourceTextBox.value,
+				connectionDetails: undefined
 			};
 		} else {
 			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
@@ -113,7 +114,8 @@ export class SchemaCompareDialog {
 				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
-				packageFilePath: ''
+				packageFilePath: '',
+				connectionDetails: undefined
 			};
 		}
 
@@ -124,7 +126,8 @@ export class SchemaCompareDialog {
 				serverName: '',
 				databaseName: '',
 				ownerUri: '',
-				packageFilePath: this.targetTextBox.value
+				packageFilePath: this.targetTextBox.value,
+				connectionDetails: undefined
 			};
 		} else {
 			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
@@ -135,7 +138,8 @@ export class SchemaCompareDialog {
 				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
 				ownerUri: ownerUri,
-				packageFilePath: ''
+				packageFilePath: '',
+				connectionDetails: undefined
 			};
 		}
 
@@ -541,7 +545,7 @@ export class SchemaCompareDialog {
 				console.error('finalname: ' + finalName + ' endpointname: ' + endpointInfo.serverDisplayName);
 			}
 			// use previously selected server or current connection if there is one
-			if (endpointInfo && endpointInfo.serverName !== null
+			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
 				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
 				&& finalName.toLowerCase() === endpointInfo.serverDisplayName.toLowerCase()) {
 				idx = count;
@@ -634,7 +638,7 @@ export class SchemaCompareDialog {
 
 		let idx = -1;
 		let count = -1;
-		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
+		let values = (await azdata.connection.listDatabases(connectionId)).sort((a, b) => a.localeCompare(b)).map(db => {
 			count++;
 
 			// put currently selected db at the top of the dropdown if there is one
