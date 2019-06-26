@@ -18,7 +18,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { Emitter } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { DialogMessage } from '../../../workbench/api/common/sqlExtHostTypes';
+import { DialogMessage } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
