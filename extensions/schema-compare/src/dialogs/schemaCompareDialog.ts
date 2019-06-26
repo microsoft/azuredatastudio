@@ -638,7 +638,7 @@ export class SchemaCompareDialog {
 
 		let idx = -1;
 		let count = -1;
-		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
+		let values = (await azdata.connection.listDatabases(connectionId)).sort((a, b) => a.localeCompare(b)).map(db => {
 			count++;
 
 			// put currently selected db at the top of the dropdown if there is one
