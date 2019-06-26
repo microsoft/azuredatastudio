@@ -525,9 +525,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		let standardKernels = this._standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
-		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
-		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
+		if (this._standardKernels) {
+			let standardKernels = this._standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
+			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
+			return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
+		}
+		return false;
 	}
 
 	public getStandardKernelFromName(name: string): notebookUtils.IStandardKernelWithProvider {
@@ -953,10 +956,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}));
 	}
 
-	// Set this._kernelDisplayNameToConnectionProviderIds and
-	// this._kernelDisplayNameToNotebookProviderIds with values
-	// to have a way to determine the connection provider and notebook provider
-	// id's from a kernel display name
+	/**
+	 * Set maps with values to have a way to determine the connection
+	 * provider and notebook provider ids from a kernel display name
+	 */
 	private setKernelDisplayNameMapsWithStandardKernels(): void {
 		this._standardKernels.forEach(kernel => {
 			let displayName = kernel.displayName;

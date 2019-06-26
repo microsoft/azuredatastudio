@@ -15,6 +15,7 @@ import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { localize } from 'vs/nls';
+import product from 'vs/platform/product/node/product';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -45,10 +46,10 @@ configurationRegistry.registerConfiguration({
 	'title': 'Notebook',
 	'type': 'object',
 	'properties': {
-		'notebook.useSimpleMarkdown': {
+		'notebook.useInProcMarkdown': {
 			'type': 'boolean',
-			'default': false,
-			'description': localize('notebook.simplemarkdown', 'Use simple markdown viewer to render text cells.')
+			'default': product.quality === 'stable' ? false : true,
+			'description': localize('notebook.inProcMarkdown', 'Use in-process markdown viewer to render text cells more quickly (Experimental).')
 		}
 	}
 });

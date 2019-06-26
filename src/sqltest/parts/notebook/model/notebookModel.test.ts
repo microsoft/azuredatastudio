@@ -138,7 +138,7 @@ suite('notebook model', function (): void {
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.requestModelLoad();
+		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
 		should(model.cells).have.length(0);
@@ -153,6 +153,7 @@ suite('notebook model', function (): void {
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
+		await model.loadContents(true);
 		await model.requestModelLoad();
 
 		// Then Trust should be true

@@ -271,18 +271,13 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.notebookParams.input.getProviderInfo();
 		await this._model.requestModelLoad();
 		this.detectChanges();
-		let elapsed = performance.now() - start;
-		console.log(`time to fully load notebook ${elapsed}ms`);
 		await this._model.startSession(this._model.notebookManager, undefined, true);
-		elapsed = performance.now() - start;
-		console.log(`time to fully start session ${elapsed}ms`);
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
 
 	private async createModelAndLoadContents(): Promise<void> {
-		let start = performance.now();
 		let model = new NotebookModel({
 			factory: this.modelFactory,
 			notebookUri: this._notebookParams.notebookUri,
@@ -304,11 +299,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
-		this.updateToolbarComponents(trusted);
+		this.updateToolbarComponents(this._model.trustedMode);
 		this.detectChanges();
-
-		let elapsed = performance.now() - start;
-		console.log(`time to render notebook ${elapsed}ms`);
 	}
 
 	private async setNotebookManager(): Promise<void> {
