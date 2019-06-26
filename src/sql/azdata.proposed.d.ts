@@ -4401,6 +4401,11 @@ declare module 'azdata' {
 			 */
 			runAllCells(): Thenable<boolean>;
 
+			/**
+			 * Clears the outputs of the actice code cell in a notebook.
+			 */
+			clearOutput(cell?: NotebookCell): Thenable<boolean>;
+
 			/** Clears the outputs of all code cells in a Notebook
 			* @return A promise that resolves with a value indicating if the outputs are cleared or not.
 			*/
