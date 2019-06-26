@@ -803,6 +803,30 @@ export class SchemaCompareResult {
 		});
 	}
 
+	private createSourceAndTargetButtons(view: azdata.ModelView): void {
+		this.selectSourceButton = view.modelBuilder.button().withProperties({
+			label: '•••',
+			title: localize('schemaCompare.sourceButtonTitle', 'Select Source')
+		}).component();
+
+		this.selectSourceButton.onDidClick(() => {
+			Telemetry.sendTelemetryEvent('SchemaCompareSelectSource');
+			let dialog = new SchemaCompareDialog(this);
+			dialog.openDialog();
+		});
+
+		this.selectTargetButton = view.modelBuilder.button().withProperties({
+			label: '•••',
+			title: localize('schemaCompare.targetButtonTitle', 'Select Target')
+		}).component();
+
+		this.selectTargetButton.onDidClick(() => {
+			Telemetry.sendTelemetryEvent('SchemaCompareSelectTarget');
+			let dialog = new SchemaCompareDialog(this);
+			dialog.openDialog();
+		});
+	}
+
 	private createOpenScmpButton(view: azdata.ModelView) {
 		this.openScmpButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.openScmpButton', 'Open .scmp file'),
@@ -835,6 +859,7 @@ export class SchemaCompareResult {
 
 			let fileUri = fileUris[0];
 			const service = await SchemaCompareResult.getService('MSSQL');
+			let startTime = Date.now();
 			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpFailed', {
@@ -870,38 +895,14 @@ export class SchemaCompareResult {
 			this.deploymentOptions = result.deploymentOptions;
 			this.scmpSourceExcludes = result.excludedSourceElements;
 			this.scmpTargetExcludes = result.excludedTargetElements;
-			this.sourceTargetSwitched = result.originalTargetName.toLowerCase() !== this.targetEndpointInfo.databaseName.toLowerCase();
+			this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
 
 			// clear out any old results
 			this.resetForNewCompare();
 
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpEnded', {
-				'endTime:': Date.now().toString()
+				'elapsedTime:': (Date.now() - startTime).toString()
 			});
-		});
-	}
-
-	private createSourceAndTargetButtons(view: azdata.ModelView): void {
-		this.selectSourceButton = view.modelBuilder.button().withProperties({
-			label: '•••',
-			title: localize('schemaCompare.sourceButtonTitle', 'Select Source')
-		}).component();
-
-		this.selectSourceButton.onDidClick(() => {
-			Telemetry.sendTelemetryEvent('SchemaCompareSelectSource');
-			let dialog = new SchemaCompareDialog(this);
-			dialog.openDialog();
-		});
-
-		this.selectTargetButton = view.modelBuilder.button().withProperties({
-			label: '•••',
-			title: localize('schemaCompare.targetButtonTitle', 'Select Target')
-		}).component();
-
-		this.selectTargetButton.onDidClick(() => {
-			Telemetry.sendTelemetryEvent('SchemaCompareSelectTarget');
-			let dialog = new SchemaCompareDialog(this);
-			dialog.openDialog();
 		});
 	}
 
@@ -950,7 +951,7 @@ export class SchemaCompareResult {
 			}
 
 			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpEnded', {
-				'totalSaveTime:': (Date.now() - startTime).toString(),
+				'elapsedTime:': (Date.now() - startTime).toString(),
 				'operationId': this.comparisonResult.operationId
 			});
 		});
