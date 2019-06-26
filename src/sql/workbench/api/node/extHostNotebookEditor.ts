@@ -159,6 +159,11 @@ export class ExtHostNotebookEditor implements azdata.nb.NotebookEditor, IDisposa
 		return this._proxy.$runAllCells(this._id);
 	}
 
+	public clearOutput(cell: azdata.nb.NotebookCell): Thenable<boolean> {
+		let uri = cell ? cell.uri : undefined;
+		return this._proxy.$clearOutput(this._id, uri);
+	}
+
 	public clearAllOutputs(): Thenable<boolean> {
 		return this._proxy.$clearAllOutputs(this._id);
 	}

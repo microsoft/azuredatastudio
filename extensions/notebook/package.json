@@ -66,6 +66,10 @@
 				"icon": "resources/dark/touchbar_run_cell.png"
 			},
 			{
+				"command": "notebook.command.clearactivecellresult",
+				"title": "%notebook.command.clearactivecellresult%"
+			},
+			{
 				"command": "notebook.command.runallcells",
 				"title": "%notebook.command.runallcells%"
 			},
@@ -156,6 +160,10 @@
 					"when": "notebookEditorVisible"
 				},
 				{
+					"command": "notebook.command.clearactivecellresult",
+					"when": "notebookEditorVisible"
+				},
+				{
 					"command": "notebook.command.runallcells",
 					"when": "notebookEditorVisible"
 				},
@@ -232,6 +240,11 @@
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",
+				"when": "activeEditor == workbench.editor.notebookEditor"
+			},
+			{
+				"command": "notebook.command.clearactivecellresult",
+				"key": "Ctrl+Shift+R",
 				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
