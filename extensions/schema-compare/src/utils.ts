@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 
 export interface IPackageInfo {
 	name: string;
@@ -40,12 +41,46 @@ export function getTelemetryErrorType(msg: string): string {
  */
 export function getEndpointName(endpoint: azdata.SchemaCompareEndpointInfo): string {
 	if (!endpoint) {
-		return undefined;
+		return ' ';
 	}
 
 	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database) {
+		if (!endpoint.serverName && endpoint.connectionDetails) {
+			endpoint.serverName = endpoint.connectionDetails['serverName'];
+		}
 		return `${endpoint.serverName}.${endpoint.databaseName}`;
 	} else {
 		return endpoint.packageFilePath;
 	}
+}
+
+function connectionInfoToConnectionProfile(details: azdata.ConnectionInfo): azdata.IConnectionProfile {
+	return {
+		serverName: details['serverName'],
+		databaseName: details['databaseName'],
+		authenticationType: details['authenticationType'],
+		providerName: 'MSSQL',
+		connectionName: '',
+		userName: details['userName'],
+		password: details['password'],
+		savePassword: false,
+		groupFullName: undefined,
+		saveProfile: true,
+		id: undefined,
+		groupId: undefined,
+		options: details['options']
+	};
+}
+
+export async function verifyConnectionAndGetOwnerUri(endpoint: azdata.SchemaCompareEndpointInfo): Promise<string> {
+	if (endpoint.endpointType === azdata.SchemaCompareEndpointType.Database && endpoint.connectionDetails) {
+		let connection = await azdata.connection.connect(connectionInfoToConnectionProfile(endpoint.connectionDetails), false, false);
+
+		// show error message if the can't connect to the database
+		if (connection.errorMessage) {
+			vscode.window.showErrorMessage(connection.errorMessage);
+		}
+		return await azdata.connection.getUriForConnection(connection.connectionId);
+	}
+	return undefined;
 }

@@ -89,11 +89,11 @@
         }
       },
       {
-        "command": "mssqlCluster.livy.task.openSparkHistory",
-        "title": "%title.openSparkHistory%",
+        "command": "mssqlCluster.task.openClusterStatusNotebook",
+        "title": "%title.openClusterStatusNotebook%",
         "icon": {
-          "dark": "resources/dark/new_spark_job_inverse.svg",
-          "light": "resources/light/new_spark_job.svg"
+          "dark": "resources/dark/cluster_status_inverse.svg",
+          "light": "resources/light/cluster_status.svg"
         }
       },
       {
@@ -246,6 +246,10 @@
         },
         {
           "command": "mssqlCluster.livy.task.submitSparkJob",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.task.openClusterStatusNotebook",
           "when": "false"
         }
       ],
@@ -405,7 +409,8 @@
                 "tasks-widget": [
                   "mssqlCluster.task.newNotebook",
                   "mssqlCluster.task.openNotebook",
-                  "mssqlCluster.livy.task.submitSparkJob"
+                  "mssqlCluster.livy.task.submitSparkJob",
+                  "mssqlCluster.task.openClusterStatusNotebook"
                 ]
               }
             },
