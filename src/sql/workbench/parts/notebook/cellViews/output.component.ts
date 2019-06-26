@@ -153,14 +153,14 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 		);
 		this.errorText = undefined;
 		if (!mimeType) {
-			this.errorText = localize('noMimeTypeFound', "No {0}renderer could befound for output. It has the following MIME types: {1}",
+			this.errorText = localize('noMimeTypeFound', "No {0}renderer could be found for output. It has the following MIME types: {1}",
 				options.trusted ? '' : localize('safe', 'safe '),
 				Object.keys(options.data).join(', '));
 			return;
 		}
 		let selector = componentRegistry.getCtorFromMimeType(mimeType);
 		if (!selector) {
-			this.errorText = localize('noSelectorFound', "No component could befound for selector {0}", mimeType);
+			this.errorText = localize('noSelectorFound', "No component could be found for selector {0}", mimeType);
 			return;
 		}
 

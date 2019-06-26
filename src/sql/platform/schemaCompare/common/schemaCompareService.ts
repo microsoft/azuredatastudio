@@ -20,6 +20,8 @@ export interface ISchemaCompareService {
 	schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	schemaCompareGetDefaultOptions(): void;
 	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): void;
+	schemaCompareOpenScmp(filePath: string): void;
+	schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]);
 	schemaCompareCancel(operationId: string): void;
 }
 
@@ -60,6 +62,18 @@ export class SchemaCompareService implements ISchemaCompareService {
 	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		return this._runAction('', (runner) => {
 			return runner.schemaCompareIncludeExcludeNode(operationId, diffEntry, includeRequest, taskExecutionMode);
+		});
+	}
+
+	schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareOpenScmp(filePath);
+		});
+	}
+
+	schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]) {
+		return this._runAction('', (runner) => {
+			return runner.schemaCompareSaveScmp(sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions, scmpFilePath, excludedSourceObjects, excludedTargetObjects);
 		});
 	}
 

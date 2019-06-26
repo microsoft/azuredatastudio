@@ -146,8 +146,11 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
 		contracts.SchemaCompareRequest.type,
 		contracts.SchemaCompareGenerateScriptRequest.type,
+		contracts.SchemaComparePublishChangesRequest.type,
 		contracts.SchemaCompareGetDefaultOptionsRequest.type,
-		contracts.SchemaCompareIncludeExcludeNodeRequest.type
+		contracts.SchemaCompareIncludeExcludeNodeRequest.type,
+		contracts.SchemaCompareOpenScmpRequest.type,
+		contracts.SchemaCompareSaveScmpRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -219,7 +222,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
+		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
 			let params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
 				r => {
@@ -227,6 +230,32 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 				},
 				e => {
 					client.logFailedRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let schemaCompareOpenScmp = (filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> => {
+			let params: contracts.SchemaCompareOpenScmpParams = { filePath: filePath };
+			return client.sendRequest(contracts.SchemaCompareOpenScmpRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareOpenScmpRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let schemaCompareSaveScmp = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> => {
+			let params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
+			return client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareSaveScmpRequest.type, e);
 					return Promise.resolve(undefined);
 				}
 			);
@@ -252,6 +281,8 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			schemaComparePublishChanges,
 			schemaCompareGetDefaultOptions,
 			schemaCompareIncludeExcludeNode,
+			schemaCompareOpenScmp,
+			schemaCompareSaveScmp,
 			schemaCompareCancel
 		});
 	}
