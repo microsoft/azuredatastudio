@@ -95,6 +95,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			if (sec[i].url) {
 				let pathToNotebook = path.join(root, 'content', sec[i].url.concat('.ipynb'));
 				let pathToMarkdown = path.join(root, 'content', sec[i].url.concat('.md'));
+				// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
+				// Following Jupyter Books behavior for now
 				if (utils.pathExists(pathToNotebook)) {
 					let notebook = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToNotebook], });
 					notebooks.push(notebook);
