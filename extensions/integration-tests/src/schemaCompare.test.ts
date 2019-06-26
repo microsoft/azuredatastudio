@@ -57,22 +57,24 @@ class SchemaCompareTester {
 		const now = new Date();
 		const operationId = 'testOperationId_' + now.getTime().toString();
 
-		let source: azdata.SchemaCompareEndpointInfo = {
-			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-			packageFilePath: dacpac1,
-			serverDisplayName: '',
-			serverName: '',
-			databaseName: '',
-			ownerUri: '',
-		};
-		let target: azdata.SchemaCompareEndpointInfo = {
-			endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-			packageFilePath: dacpac2,
-			serverDisplayName: '',
-			serverName: '',
-			databaseName: '',
-			ownerUri: '',
-		};
+			let source: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac1,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				connectionDetails: undefined
+			};
+			let target: azdata.SchemaCompareEndpointInfo = {
+				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				packageFilePath: dacpac2,
+				serverDisplayName: '',
+				serverName: '',
+				databaseName: '',
+				ownerUri: '',
+				connectionDetails: undefined
+			};
 
 		let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
 		this.assertSchemaCompareResult(schemaCompareResult, operationId);
@@ -109,22 +111,24 @@ class SchemaCompareTester {
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 
-			let source: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
-				packageFilePath: '',
-				serverDisplayName: '',
-				serverName: server.serverName,
-				databaseName: sourceDB,
-				ownerUri: ownerUri,
-			};
-			let target: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
-				packageFilePath: '',
-				serverDisplayName: '',
-				serverName: server.serverName,
-				databaseName: targetDB,
-				ownerUri: ownerUri,
-			};
+				let source: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Database,
+					packageFilePath: '',
+					serverDisplayName: '',
+					serverName: server.serverName,
+					databaseName: sourceDB,
+					ownerUri: ownerUri,
+					connectionDetails: undefined
+				};
+				let target: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Database,
+					packageFilePath: '',
+					serverDisplayName: '',
+					serverName: server.serverName,
+					databaseName: targetDB,
+					ownerUri: ownerUri,
+					connectionDetails: undefined
+				};
 
 			let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
 			this.assertSchemaCompareResult(schemaCompareResult, operationId);
@@ -164,22 +168,24 @@ class SchemaCompareTester {
 
 			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
-			let source: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
-				packageFilePath: dacpac1,
-				serverDisplayName: '',
-				serverName: '',
-				databaseName: '',
-				ownerUri: ownerUri,
-			};
-			let target: azdata.SchemaCompareEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
-				packageFilePath: '',
-				serverDisplayName: '',
-				serverName: server.serverName,
-				databaseName: targetDB,
-				ownerUri: ownerUri,
-			};
+				let source: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					packageFilePath: dacpac1,
+					serverDisplayName: '',
+					serverName: '',
+					databaseName: '',
+					ownerUri: ownerUri,
+					connectionDetails: undefined
+				};
+				let target: azdata.SchemaCompareEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Database,
+					packageFilePath: '',
+					serverDisplayName: '',
+					serverName: server.serverName,
+					databaseName: targetDB,
+					ownerUri: ownerUri,
+					connectionDetails: undefined
+				};
 
 			assert(schemaCompareService, 'Schema Compare Service Provider is not available');
 

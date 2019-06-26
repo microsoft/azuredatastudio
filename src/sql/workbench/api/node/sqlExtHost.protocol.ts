@@ -489,6 +489,12 @@ export abstract class ExtHostDataProtocolShape {
 	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
+	 * Schema compare open scmp
+	 */
+	$schemaCompareOpenScmp(handle: number, filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> { throw ni(); }
+
+
+	/**
 	 * Schema compare save scmp
 	 */
 	$schemaCompareSaveScmp(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> { throw ni(); }
