@@ -25,6 +25,7 @@
 	"title.tasks": "Tasks",
 	"title.installPackages": "Install Packages",
 	"title.configurePython": "Configure Python for Notebooks",
+	"title.openClusterStatusNotebook": "Cluster Status",
 
 	"title.searchServers": "Search: Servers",
 	"title.clearSearchServerResult": "Search: Clear Search Server Results",

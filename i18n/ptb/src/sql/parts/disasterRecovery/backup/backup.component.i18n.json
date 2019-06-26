@@ -30,6 +30,8 @@
 	"backup.setBackupCompression": "Definir a compactação de backup",
 	"backup.encryption": "Criptografia",
 	"backup.transactionLog": "Log de transações",
+	"backup.truncateTransactionLog": "Truncar o log de transações",
+	"backup.backupTail": "Backup do final do log",
 	"backup.reliability": "Confiabilidade",
 	"backup.mediaNameRequired": "Nome da mídia é necessária",
 	"backup.noEncryptorWarning": "Nenhum certificado ou chave assimétrica está disponível",

@@ -123,11 +123,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
-			// add deploy plan and generate script pages
+			// add deploy plan page
 			let deployPlanPage = this.instance.pages.get('deployPlan');
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
-			let deployActionPage = this.instance.pages.get('deployAction');
-			this.instance.wizard.addPage(deployActionPage.wizardPage, DeployOperationPath.deployAction);
 		});
 
 		newRadioButton.onDidClick(() => {
@@ -137,8 +135,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = this.databaseTextBox.value;
 			this.instance.setDoneButton(Operation.deploy);
 
-			// remove deploy plan and generate script pages
-			this.instance.wizard.removePage(DeployOperationPath.deployAction);
+			// remove deploy plan page
 			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
 		});
 
@@ -160,14 +157,17 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
-		}).component();
+		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+
 		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 		});
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
+
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
+			required: true
+		}).component();
+
 		return {
 			component: this.databaseLoader,
 			title: localize('dacFx.targetDatabaseDropdownTitle', 'Database Name')

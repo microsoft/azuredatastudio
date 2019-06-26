@@ -16,6 +16,7 @@ import { ErrorMessageServiceStub } from 'sqltest/stubs/errorMessageServiceStub';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ContextKeyServiceStub } from 'sqltest/stubs/contextKeyServiceStub';
 import { Deferred } from 'sql/base/common/promise';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 // TESTS ///////////////////////////////////////////////////////////////////
 suite('Firewall rule dialog controller tests', () => {
@@ -88,7 +89,7 @@ suite('Firewall rule dialog controller tests', () => {
 			groupId: 'group id',
 			getOptionsKey: undefined,
 			matches: undefined,
-			providerName: 'MSSQL',
+			providerName: mssqlProviderName,
 			options: {},
 			saveProfile: true,
 			id: undefined

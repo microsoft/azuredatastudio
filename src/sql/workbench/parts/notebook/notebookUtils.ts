@@ -11,6 +11,7 @@ import { localize } from 'vs/nls';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IOutputChannel } from 'vs/workbench/contrib/output/common/output';
+import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 
 
 /**
@@ -120,4 +121,24 @@ export async function asyncForEach(array: any, callback: any): Promise<any> {
 	for (let index = 0; index < array.length; index++) {
 		await callback(array[index], index, array);
 	}
+}
+
+/**
+ * Only replace vscode-resource with file when in the same (or a sub) directory
+ * This matches Jupyter Notebook viewer behavior
+ */
+export function convertVscodeResourceToFileInSubDirectories(htmlContent: string, cellModel: ICellModel): string {
+	let htmlContentCopy = htmlContent;
+	while (htmlContentCopy.search('(?<=img src=\"vscode-resource:)') > 0) {
+		let pathStartIndex = htmlContentCopy.search('(?<=img src=\"vscode-resource:)');
+		let pathEndIndex = htmlContentCopy.indexOf('\" ', pathStartIndex);
+		let filePath = htmlContentCopy.substring(pathStartIndex, pathEndIndex);
+		// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
+		if (!path.relative(path.dirname(cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
+			// ok to change from vscode-resource: to file:
+			htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
+		}
+		htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
+	}
+	return htmlContent;
 }

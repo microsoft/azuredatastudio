@@ -9,15 +9,25 @@ import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { ICommandService, ICommandEvent } from 'vs/platform/commands/common/commands';
 
 export class SqlTelemetryContribution extends Disposable implements IWorkbenchContribution {
 
 	constructor(
 		@ITelemetryService private telemetryService: ITelemetryService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@ICommandService commandService: ICommandService
 	) {
 		super();
 
+		this._register(
+			commandService.onWillExecuteCommand(
+				(e: ICommandEvent) => {
+					// Filter out high-frequency events
+					if (!['type'].find(id => id === e.commandId)) {
+						telemetryService.publicLog('adsCommandExecuted', { id: e.commandId });
+					}
+				}));
 		const dailyLastUseDate: number = Date.parse(storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, '0'));
 		const weeklyLastUseDate: number = Date.parse(storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
 		const monthlyLastUseDate: number = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));

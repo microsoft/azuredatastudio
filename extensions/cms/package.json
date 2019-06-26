@@ -14,6 +14,7 @@
 	"activationEvents": [
 		"*"
 	],
+	"forceReload": true,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Microsoft/azuredatastudio.git"
@@ -624,5 +625,10 @@
 		"should": "^13.2.1",
 		"vscode": "^1.1.26",
 		"typemoq": "^2.1.0"
+	},
+	"__metadata": {
+		"id": "40",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }

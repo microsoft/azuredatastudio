@@ -45,7 +45,7 @@
 				"title": "%notebook.analyzeJupyterNotebook%"
 			},
 			{
-				"command": "notebook.command.new",
+				"command": "_notebook.command.new",
 				"title": "%notebook.command.new%",
 				"icon": {
 					"dark": "resources/dark/new_notebook_inverse.svg",
@@ -111,8 +111,8 @@
 				}
 			},
 			{
-				"command": "jupyter.cmd.installPackages",
-				"title": "%title.installPackages%",
+				"command": "jupyter.cmd.managePackages",
+				"title": "%title.managePackages%",
 				"icon": {
 					"dark": "resources/dark/manage_inverse.svg",
 					"light": "resources/light/manage.svg"
@@ -145,7 +145,8 @@
 					"when": "false"
 				},
 				{
-					"command": "notebook.command.new"
+					"command": "_notebook.command.new",
+					"when": "false"
 				},
 				{
 					"command": "notebook.command.open"
@@ -187,7 +188,7 @@
 					"when": "false"
 				},
 				{
-					"command": "jupyter.cmd.installPackages",
+					"command": "jupyter.cmd.managePackages",
 					"when": "false"
 				}
 			],
@@ -204,11 +205,6 @@
 				}
 			],
 			"objectExplorer/item/context": [
-				{
-					"command": "notebook.command.new",
-					"when": "isQueryProvider && nodeType == Server",
-					"group": "1root@1"
-				},
 				{
 					"command": "notebook.command.analyzeNotebook",
 					"when": "nodeType=~/^mssqlCluster/ && nodeLabel=~/[^\\s]+(\\.(csv|tsv|txt))$/ && nodeType == mssqlCluster:file",
@@ -227,16 +223,12 @@
 			],
 			"notebook/toolbar": [
 				{
-					"command": "jupyter.cmd.installPackages",
-					"when": "providerId == jupyter"
+					"command": "jupyter.cmd.managePackages",
+					"when": "providerId == jupyter && notebook:pythonInstalled"
 				}
 			]
 		},
 		"keybindings": [
-			{
-				"command": "notebook.command.new",
-				"key": "Ctrl+Shift+N"
-			},
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",

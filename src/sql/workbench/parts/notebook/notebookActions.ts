@@ -24,6 +24,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { generateUri } from 'sql/platform/connection/common/utils';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -251,19 +252,19 @@ export class TrustedAction extends ToggleableAction {
 // Action to run all code cells in a notebook.
 export class RunAllCellsAction extends Action {
 	constructor(
-		id: string, label: string, cssClass: string
+		id: string, label: string, cssClass: string,
+		@INotificationService private notificationService: INotificationService
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				context.runAllCells();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: NotebookComponent): Promise<boolean> {
+		try {
+			await context.runAllCells();
+			return true;
+		} catch (e) {
+			this.notificationService.error(getErrorMessage(e));
+			return false;
+		}
 	}
 }
 
@@ -538,4 +539,26 @@ export class AttachToDropdown extends SelectBox {
 			return false;
 		}
 	}
+}
+
+export class NewNotebookAction extends Action {
+
+	public static readonly ID = 'notebook.command.new';
+	public static readonly LABEL = localize('newNotebookAction', "New Notebook");
+
+	private static readonly INTERNAL_NEW_NOTEBOOK_CMD_ID = '_notebook.command.new';
+	constructor(
+		id: string,
+		label: string,
+		@ICommandService private commandService: ICommandService
+	) {
+		super(id, label);
+		this.class = 'notebook-action new-notebook';
+	}
+
+	run(context?: azdata.ConnectedContext): Promise<void> {
+		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, context);
+
+	}
+
 }

@@ -10,9 +10,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
-import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/models/contracts';
+import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/workbench/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -23,6 +24,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -72,13 +74,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
+	private _textCellsLoading: number = 0;
+
 	public requestConnectionHandler: () => Promise<boolean>;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
-		@INotificationService private readonly notificationService: INotificationService
+		@INotificationService private readonly notificationService: INotificationService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -292,7 +297,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
-					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
+					this._cells = contents.cells.map(c => {
+						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
+						return cellModel;
+					});
 				}
 			}
 			this.setDefaultKernelAndProviderId();
@@ -332,7 +341,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.updateActiveCell(cell);
 
 		this._contentChangedEmitter.fire({
-			changeType: NotebookChangeType.CellsAdded,
+			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
 			cellIndex: index
 		});
@@ -366,9 +375,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (index > -1) {
 			this._cells.splice(index, 1);
 			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellDeleted,
+				changeType: NotebookChangeType.CellsModified,
 				cells: [cellModel],
-				cellIndex: index
+				cellIndex: index,
+				isDirty: true
 			});
 		} else {
 			this.notifyError(localize('deleteCellFailed', "Failed to delete cell."));
@@ -392,7 +402,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.updateActiveCell(newCells[0]);
 			}
 			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsAdded
+				changeType: NotebookChangeType.CellsModified,
+				isDirty: true
 			});
 		}
 	}
@@ -921,6 +932,26 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
+	 * Track time it takes to render all markdown cells
+	 */
+	private trackMarkdownTelemetry(cellContent: nb.ICellContents, cellModel: ICellModel): void {
+		if (cellContent && cellContent.cell_type === CellTypes.Markdown) {
+			this._textCellsLoading++;
+		}
+		this._register(cellModel.onLoaded((cell_type) => {
+			if (cell_type === CellTypes.Markdown) {
+				this._textCellsLoading--;
+				if (this._textCellsLoading <= 0) {
+					if (this._notebookOptions.editorLoadedTimestamp) {
+						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
+						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingElapsedMs: markdownRenderingTime });
+					}
+				}
+			}
+		}));
+	}
+
+	/**
 	 * Serialize the model to JSON.
 	 */
 	toJSON(): nb.INotebookContents {
@@ -951,6 +982,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			default:
 			// Do nothing for now
 		}
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	serializationStateChanged(changeType: NotebookChangeType): void {
+		let changeInfo: NotebookContentChange = {
+			changeType: changeType,
+			cells: undefined
+		};
+
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 

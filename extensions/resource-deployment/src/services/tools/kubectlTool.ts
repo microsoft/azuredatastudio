@@ -13,7 +13,7 @@ export class KubeCtlTool implements ITool {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.KubeCtlDescription', 'Tool used for managing the Kubernetes cluster');
+		return localize('resourceDeployment.KubeCtlDescription', 'A command-line tool allows you to run commands against Kubernetes clusters');
 	}
 
 	get type(): ToolType {

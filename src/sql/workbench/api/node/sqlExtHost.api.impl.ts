@@ -42,6 +42,7 @@ import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { ISchemeTransformer } from 'vs/workbench/api/common/extHostLanguageFeatures';
 import { AzureResource } from 'sql/platform/accounts/common/interfaces';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -98,9 +99,13 @@ export function createApiFactory(
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
 					return extHostConnectionManagement.$getCurrentConnection();
 				},
+				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+				},
 
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
+					console.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
 					return extHostConnectionManagement.$getActiveConnections();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -460,7 +465,7 @@ export function createApiFactory(
 				},
 
 				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
-					extHostQueryEditor.$registerQueryInfoListener('MSSQL', listener);
+					extHostQueryEditor.$registerQueryInfoListener(mssqlProviderName, listener);
 				},
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
@@ -496,7 +501,8 @@ export function createApiFactory(
 				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
 				},
-				CellRange: sqlExtHostTypes.CellRange
+				CellRange: sqlExtHostTypes.CellRange,
+				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
 
 			return {
@@ -545,6 +551,8 @@ export function createApiFactory(
 				SchemaObjectType: sqlExtHostTypes.SchemaObjectType,
 				ColumnType: sqlExtHostTypes.ColumnType,
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
+				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
+				AgentSubSystem: sqlExtHostTypes.AgentSubSystem
 			};
 		},
 

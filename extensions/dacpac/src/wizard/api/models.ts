@@ -10,13 +10,11 @@ import * as azdata from 'azdata';
  * Data model to communicate between DacFx pages
  */
 export interface DacFxDataModel {
-	server: azdata.connection.Connection;
+	server: azdata.connection.ConnectionProfile;
 	database: string;
 	serverName: string;
 	serverId: string;
 	filePath: string;
 	version: string;
 	upgradeExisting: boolean;
-	scriptFilePath: string;
-	generateScriptAndDeploy: boolean;
 }

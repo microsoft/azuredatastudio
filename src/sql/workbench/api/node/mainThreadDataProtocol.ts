@@ -456,8 +456,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
 			},
-			generateDeployScript(packageFilePath: string, databaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$generateDeployScript(handle, packageFilePath, databaseName, scriptFilePath, ownerUri, taskExecutionMode);
+			generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
+				return self._proxy.$generateDeployScript(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
 			},
 			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
 				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
@@ -470,8 +470,8 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
 		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
-			schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
-				return self._proxy.$schemaCompare(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
+			schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
+				return self._proxy.$schemaCompare(handle, operationId, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
 			},
 			schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
@@ -484,6 +484,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
+			},
+			schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
+				return self._proxy.$schemaCompareOpenScmp(handle, filePath);
+			},
+			schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareSaveScmp(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions, scmpFilePath, excludedSourceObjects, excludedTargetObjects);
+			},
+			schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareCancel(handle, operationId);
 			}
 		});
 

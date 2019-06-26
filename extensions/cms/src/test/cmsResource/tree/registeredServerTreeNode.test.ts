@@ -31,6 +31,7 @@ describe('RegisteredServerTreeNode.info', function(): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+		mockCmsUtils = TypeMoq.Mock.ofType<CmsUtils>();
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object, mockCmsUtils.object);
 		mockTreeChangeHandler = TypeMoq.Mock.ofType<ICmsResourceTreeChangeHandler>();
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<cmsResource.ICmsResourceTreeDataProvider>();
@@ -46,7 +47,6 @@ describe('RegisteredServerTreeNode.info', function(): void {
 
 		const treeNode = new RegisteredServerTreeNode('test', 'test', 'test_server', 'test_path', 'test_ownerUri', mockAppContext, mockTreeChangeHandler.object, null);
 
-		should(treeNode.nodePathValue).equal('cms_registeredServer_test');
 		should(treeNode.relativePath).equal('test_path');
 
 		const treeItem = await treeNode.getTreeItem();

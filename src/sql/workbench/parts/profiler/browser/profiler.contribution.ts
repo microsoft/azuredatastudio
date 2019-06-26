@@ -12,7 +12,7 @@ import * as nls from 'vs/nls';
 
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerEditor } from 'sql/workbench/parts/profiler/browser/profilerEditor';
-import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate } from 'sql/workbench/services/profiler/common/interfaces';
+import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate, EngineType } from 'sql/workbench/services/profiler/common/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
 	ProfilerEditor,
@@ -86,6 +86,14 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				{
 					name: 'Duration',
 					eventsMapped: ['duration']
+				},
+				{
+					name: 'DatabaseID',
+					eventsMapped: ['database_id']
+				},
+				{
+					name: 'DatabaseName',
+					eventsMapped: ['database_name']
 				}
 			]
 		},
@@ -107,6 +115,14 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				{
 					name: 'StartTime',
 					eventsMapped: ['timestamp']
+				},
+				{
+					name: 'DatabaseID',
+					eventsMapped: ['database_id']
+				},
+				{
+					name: 'DatabaseName',
+					eventsMapped: ['database_name']
 				}
 			]
 		},
@@ -197,6 +213,14 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				{
 					name: 'Duration',
 					eventsMapped: ['duration']
+				},
+				{
+					name: 'DatabaseID',
+					eventsMapped: ['database_id']
+				},
+				{
+					name: 'DatabaseName',
+					eventsMapped: ['database_name']
 				}
 			]
 		},
@@ -218,6 +242,14 @@ const profilerViewTemplateSchema: IJSONSchema = {
 				{
 					name: 'SPID',
 					eventsMapped: ['session_id']
+				},
+				{
+					name: 'DatabaseID',
+					eventsMapped: ['database_id']
+				},
+				{
+					name: 'DatabaseName',
+					eventsMapped: ['database_name']
 				}
 			]
 		}
@@ -239,6 +271,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 		{
 			name: 'Standard_OnPrem',
 			defaultView: 'Standard View',
+			engineTypes: [EngineType.Standalone],
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON SERVER
 					ADD EVENT sqlserver.attention(
@@ -251,19 +284,20 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 					ADD EVENT sqlserver.logout(
 						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.nt_username,sqlserver.server_principal_name,sqlserver.session_id)),
 					ADD EVENT sqlserver.rpc_completed(
-						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.database_name,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
 					ADD EVENT sqlserver.sql_batch_completed(
-						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.database_name,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
 					ADD EVENT sqlserver.sql_batch_starting(
-						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
+						ACTION(package0.event_sequence,sqlserver.client_app_name,sqlserver.client_pid,sqlserver.database_id,sqlserver.database_name,sqlserver.nt_username,sqlserver.query_hash,sqlserver.server_principal_name,sqlserver.session_id)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
 					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
 					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`
 		},
 		{
 			name: 'Standard_Azure',
+			engineTypes: [EngineType.AzureSQLDB],
 			defaultView: 'Standard View',
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON DATABASE
@@ -290,6 +324,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 		},
 		{
 			name: 'TSQL_OnPrem',
+			engineTypes: [EngineType.Standalone],
 			defaultView: 'TSQL View',
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON SERVER
@@ -300,10 +335,10 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 					ADD EVENT sqlserver.logout(
 						ACTION(package0.event_sequence,sqlserver.session_id)),
 					ADD EVENT sqlserver.rpc_starting(
-						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_name)
+						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_id,sqlserver.database_name)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0)))),
 					ADD EVENT sqlserver.sql_batch_starting(
-						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_name)
+						ACTION(package0.event_sequence,sqlserver.session_id,sqlserver.database_id,sqlserver.database_name)
 						WHERE ([package0].[equal_boolean]([sqlserver].[is_system],(0))))
 					ADD TARGET package0.ring_buffer(SET max_events_limit=(1000),max_memory=(51200))
 					WITH (MAX_MEMORY=8192 KB,EVENT_RETENTION_MODE=ALLOW_SINGLE_EVENT_LOSS,MAX_DISPATCH_LATENCY=5 SECONDS,MAX_EVENT_SIZE=0 KB,MEMORY_PARTITION_MODE=PER_CPU,TRACK_CAUSALITY=ON,STARTUP_STATE=OFF)`

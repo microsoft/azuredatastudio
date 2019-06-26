@@ -10,6 +10,9 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { TestEnvironmentService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 let connections: ConnectionStatusManager;
 let capabilitiesService: CapabilitiesTestService;
@@ -26,7 +29,7 @@ let connectionProfile: IConnectionProfile = {
 	groupId: 'group id',
 	getOptionsKey: () => 'connection1',
 	matches: undefined,
-	providerName: 'MSSQL',
+	providerName: mssqlProviderName,
 	options: {},
 	saveProfile: true,
 	id: undefined
@@ -43,7 +46,7 @@ let editorConnectionProfile: IConnectionProfile = {
 	groupId: 'group id',
 	getOptionsKey: () => 'connection2',
 	matches: undefined,
-	providerName: 'MSSQL',
+	providerName: mssqlProviderName,
 	options: {},
 	saveProfile: true,
 	id: undefined
@@ -60,7 +63,7 @@ let connectionProfileWithoutDbName: IConnectionProfile = {
 	groupId: 'group id',
 	getOptionsKey: () => 'connection1',
 	matches: undefined,
-	providerName: 'MSSQL',
+	providerName: mssqlProviderName,
 	options: {},
 	saveProfile: true,
 	id: undefined
@@ -74,7 +77,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 	setup(() => {
 		capabilitiesService = new CapabilitiesTestService();
 		connectionProfileObject = new ConnectionProfile(capabilitiesService, connectionProfile);
-		connections = new ConnectionStatusManager(capabilitiesService);
+		connections = new ConnectionStatusManager(capabilitiesService, new TestLogService(), TestEnvironmentService, new TestNotificationService());
 		connection1Id = Utils.generateUri(connectionProfile);
 		connection2Id = 'connection2Id';
 		connection3Id = 'connection3Id';

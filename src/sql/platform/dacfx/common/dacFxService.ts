@@ -19,7 +19,7 @@ export interface IDacFxService {
 	importBacpac(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	extractDacpac(sourceDatabaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	deployDacpac(packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
-	generateDeployScript(packageFilePath: string, targetDatabaseName: string, scriptFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
+	generateDeployScript(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 	generateDeployPlan(packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): void;
 }
 
@@ -60,9 +60,9 @@ export class DacFxService implements IDacFxService {
 		});
 	}
 
-	generateDeployScript(packageFilePath: string, databaseName: string, generateDeployScript: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
+	generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
 		return this._runAction(ownerUri, (runner) => {
-			return runner.generateDeployScript(packageFilePath, databaseName, generateDeployScript, ownerUri, taskExecutionMode);
+			return runner.generateDeployScript(packageFilePath, databaseName, ownerUri, taskExecutionMode);
 		});
 	}
 

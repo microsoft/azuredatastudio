@@ -232,7 +232,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
 		this._register(this.cellModel.onExecutionStateChange(event => {
-			if (event === CellExecutionState.Running) {
+			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
 			}
 		}));

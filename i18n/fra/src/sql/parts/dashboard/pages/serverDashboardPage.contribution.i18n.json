@@ -9,9 +9,11 @@
 	"dashboardServerProperties": "Activer ou désactiver le widget de propriétés",
 	"dashboard.serverproperties": "Valeurs de propriété à afficher",
 	"dashboard.serverproperties.displayName": "Nom d'affichage de la propriété",
+	"dashboard.serverproperties.value": "Valeur de l’objet Server Info",
 	"version": "Version",
 	"edition": "Edition",
 	"computerName": "Nom de l'ordinateur",
 	"osVersion": "Version du système d'exploitation",
-	"dashboardServer": "Personnalise la page de tableau de bord du serveur"
+	"dashboardServer": "Personnalise la page de tableau de bord du serveur",
+	"dashboardServerTabs": "Personnalise les onglets du tableau de bord du Serveur"
 }

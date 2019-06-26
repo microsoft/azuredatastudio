@@ -5,21 +5,21 @@
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download the latest Azure Data Studio release**
+## **Download the latest Azure Data Studio release**
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2091882
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2091491
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2091490
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2091489
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2091488
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2091487
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2092022
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2094100
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2094200
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2094201
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2094202
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2094101
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2094102
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2094203
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
-Try out the latest insiders build from `master`:
+## Try out the latest insiders build from `master`:
 - [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
 - [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
 - [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
@@ -28,7 +28,7 @@ Try out the latest insiders build from `master`:
 
 See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
 
-**Feature Highlights**
+## **Feature Highlights**
 
 - Cross-Platform DB management for Windows, macOS and Linux with simple XCopy deployment
 - SQL Server Connection Management with Connection Dialog, Server Groups, Azure Integration and Registered Servers
@@ -68,7 +68,8 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
-* yamatoya for `fix the format (#4899)`
+* Stevoni for `Corrected Keyboard Shortcut Execution Issue #5480`
+* yamatoya for `fix the format #4899`
 * GeoffYoung for `Fix sqlDropColumn description #4422`
 * AlexFsmn for `Added context menu for DBs in explorer view to backup & restore db. #2277`
 * sadedil for `Missing feature request: Save as XML #3729`

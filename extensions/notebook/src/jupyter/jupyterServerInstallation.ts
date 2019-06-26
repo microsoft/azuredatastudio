@@ -35,7 +35,7 @@ const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already ex
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
-export default class JupyterServerInstallation {
+export class JupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
 	public pythonBinPath: string;
@@ -86,11 +86,11 @@ export default class JupyterServerInstallation {
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 
 			if (this._usingConda) {
-				await this.installCondaPackages();
+				await this.installCondaDependencies();
 			} else if (this._usingExistingPython) {
-				await this.installPipPackages();
+				await this.installPipDependencies();
 			} else {
-				await this.installOfflinePipPackages();
+				await this.installOfflinePipDependencies();
 			}
 			let doOnlineInstall = this._usingExistingPython;
 			await this.installSparkMagic(doOnlineInstall);
@@ -347,7 +347,58 @@ export default class JupyterServerInstallation {
 		}
 	}
 
-	private async installOfflinePipPackages(): Promise<void> {
+	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
+		let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
+		let packagesInfo = await this.executeBufferedCommand(cmd);
+
+		let packagesResult: PythonPkgDetails[] = [];
+		if (packagesInfo) {
+			packagesResult = <PythonPkgDetails[]>JSON.parse(packagesInfo);
+		}
+		return packagesResult;
+	}
+
+	public installPipPackage(packageName: string, version: string): Promise<void> {
+		let cmd = `"${this.pythonExecutable}" -m pip install ${packageName}==${version}`;
+		return this.executeStreamedCommand(cmd);
+	}
+
+	public uninstallPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let cmd = `"${this.pythonExecutable}" -m pip uninstall -y ${packagesStr}`;
+		return this.executeStreamedCommand(cmd);
+	}
+
+	public async getInstalledCondaPackages(): Promise<PythonPkgDetails[]> {
+		let condaExe = this.getCondaExePath();
+		let cmd = `"${condaExe}" list --json`;
+		let packagesInfo = await this.executeBufferedCommand(cmd);
+
+		if (packagesInfo) {
+			let packagesResult = JSON.parse(packagesInfo);
+			if (Array.isArray(packagesResult)) {
+				return packagesResult
+					.filter(pkg => pkg && pkg.channel && pkg.channel !== 'pypi')
+					.map(pkg => <PythonPkgDetails>{ name: pkg.name, version: pkg.version });
+			}
+		}
+		return [];
+	}
+
+	public installCondaPackage(packageName: string, version: string): Promise<void> {
+		let condaExe = this.getCondaExePath();
+		let cmd = `"${condaExe}" install -y ${packageName}==${version}`;
+		return this.executeStreamedCommand(cmd);
+	}
+
+	public uninstallCondaPackages(packages: PythonPkgDetails[]): Promise<void> {
+		let condaExe = this.getCondaExePath();
+		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
+		let cmd = `"${condaExe}" uninstall -y ${packagesStr}`;
+		return this.executeStreamedCommand(cmd);
+	}
+
+	private async installOfflinePipDependencies(): Promise<void> {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform) {
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
@@ -357,7 +408,7 @@ export default class JupyterServerInstallation {
 		if (installJupyterCommand) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
-			await this.executeCommand(installJupyterCommand);
+			await this.executeStreamedCommand(installJupyterCommand);
 			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
 			return Promise.resolve();
@@ -378,24 +429,24 @@ export default class JupyterServerInstallation {
 		if (installSparkMagic) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
-			await this.executeCommand(installSparkMagic);
+			await this.executeStreamedCommand(installSparkMagic);
 		}
 	}
 
-	private async installPipPackages(): Promise<void> {
+	private async installPipDependencies(): Promise<void> {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let installCommand = `"${this._pythonExecutable}" -m pip install jupyter==1.0.0 pandas==0.24.2`;
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
 
-	private async installCondaPackages(): Promise<void> {
+	private async installCondaDependencies(): Promise<void> {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
@@ -403,25 +454,33 @@ export default class JupyterServerInstallation {
 		if (process.platform !== constants.winPlatform) {
 			installCommand = `${installCommand} pykerberos==1.2.1`;
 		}
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
-		await this.executeCommand(installCommand);
+		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 	}
 
-	private async executeCommand(command: string): Promise<void> {
+	private async executeStreamedCommand(command: string): Promise<void> {
 		await utils.executeStreamedCommand(command, { env: this.execOptions.env }, this.outputChannel);
+	}
+
+	public async executeBufferedCommand(command: string): Promise<string> {
+		return await utils.executeBufferedCommand(command, { env: this.execOptions.env });
 	}
 
 	public get pythonExecutable(): string {
 		return this._pythonExecutable;
 	}
 
-	private getCondaExePath(): string {
+	public getCondaExePath(): string {
 		return path.join(this._pythonInstallationPath,
 			process.platform === constants.winPlatform ? 'Scripts\\conda.exe' : 'bin/conda');
+	}
+
+	public get usingConda(): boolean {
+		return this._usingConda;
 	}
 
 	private checkCondaExists(): boolean {
@@ -506,4 +565,15 @@ export default class JupyterServerInstallation {
 			useExistingInstall ? '' : constants.pythonBundleVersion,
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
+}
+
+export interface PythonPkgDetails {
+	name: string;
+	version: string;
+}
+
+export interface PipPackageOverview {
+	name: string;
+	versions: string[];
+	summary: string;
 }

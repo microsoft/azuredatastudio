@@ -15,6 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import * as types from 'vs/base/common/types';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -22,7 +23,7 @@ import {
 } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
-import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
@@ -560,13 +561,40 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let changeData: INotebookModelChangedData = {
 			// Note: we just send all cells for now, not a diff
 			cells: this.convertCellModelToNotebookCell(editor.cells),
-			isDirty: e.isDirty,
+			isDirty: this.getDirtyState(e, editor),
 			providerId: editor.providerId,
 			providers: editor.providers,
 			uri: editor.uri,
-			kernelSpec: this.getKernelSpec(editor)
+			kernelSpec: this.getKernelSpec(editor),
+			changeKind: this.mapChangeKind(e.changeType)
 		};
 		return changeData;
+	}
+
+	private getDirtyState(e: NotebookContentChange, editor: MainThreadNotebookEditor): boolean {
+		if (!types.isUndefinedOrNull(e.isDirty)) {
+			return e.isDirty;
+		}
+		return editor.isDirty;
+	}
+
+	mapChangeKind(changeType: NotebookChangeType): NotebookChangeKind {
+		switch (changeType) {
+			case NotebookChangeType.CellsModified:
+			case NotebookChangeType.CellOutputUpdated:
+			case NotebookChangeType.CellSourceUpdated:
+			case NotebookChangeType.DirtyStateChanged:
+				return NotebookChangeKind.ContentUpdated;
+			case NotebookChangeType.KernelChanged:
+			case NotebookChangeType.TrustChanged:
+				return NotebookChangeKind.MetadataUpdated;
+			case NotebookChangeType.Saved:
+				return NotebookChangeKind.Save;
+			case NotebookChangeType.CellExecuted:
+				return NotebookChangeKind.CellExecuted;
+			default:
+				return NotebookChangeKind.ContentUpdated;
+		}
 	}
 
 	private getKernelSpec(editor: MainThreadNotebookEditor): azdata.nb.IKernelSpec {

@@ -7,6 +7,7 @@ import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 
 const localize = nls.loadMessageBundle();
 
@@ -144,4 +145,10 @@ function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChan
 		.forEach(line => {
 			outputChannel.appendLine(header + line);
 		});
+}
+
+export function isEditorTitleFree(title: string): boolean {
+	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+	let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
+	return !hasTextDoc && !hasNotebookDoc;
 }

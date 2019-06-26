@@ -169,6 +169,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.nameTextBox.onTextChanged(() => {
 				if (this.nameTextBox.value && this.nameTextBox.value.length > 0) {
 					this.dialog.message = null;
+					// Change the job name immediately since steps
+					// depends on the job name
+					this.model.name = this.nameTextBox.value;
 				}
 			});
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
@@ -242,12 +245,14 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.moveStepUpButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepUpButtonString,
+					title: this.MoveStepUpButtonString,
 					width: 120
 				}).component();
 
 			this.moveStepDownButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.MoveStepDownButtonString,
+					title: this.MoveStepDownButtonString,
 					width: 120
 				}).component();
 
@@ -256,6 +261,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.newStepButton = view.modelBuilder.button().withProperties({
 				label: this.NewStepButtonString,
+				title: this.NewStepButtonString,
 				width: 140
 			}).component();
 
@@ -283,11 +289,13 @@ export class JobDialog extends AgentDialog<JobData>  {
 
 			this.editStepButton = view.modelBuilder.button().withProperties({
 				label: this.EditStepButtonString,
+				title: this.EditStepButtonString,
 				width: 140
 			}).component();
 
 			this.deleteStepButton = view.modelBuilder.button().withProperties({
 				label: this.DeleteStepButtonString,
+				title: this.DeleteStepButtonString,
 				width: 140
 			}).component();
 
@@ -651,9 +659,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			let cols = [];
 			cols.push(jobStep.id);
 			cols.push(jobStep.stepName);
-			cols.push(jobStep.subSystem);
-			cols.push(jobStep.successAction);
-			cols.push(jobStep.failureAction);
+			cols.push(JobStepData.convertToSubSystemDisplayName(jobStep.subSystem));
+			cols.push(JobStepData.convertToCompletionActionDisplayName(jobStep.successAction));
+			cols.push(JobStepData.convertToCompletionActionDisplayName(jobStep.failureAction));
 			result.push(cols);
 		});
 		return result;
@@ -700,6 +708,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.model.jobSteps = [];
 		}
 		this.model.jobSteps = this.steps;
+		// Change the last step's success action to quit because the
+		// default is "Go To Next Step"
+		if (this.model.jobSteps.length > 0) {
+			this.model.jobSteps[this.model.jobSteps.length - 1].successAction = azdata.StepCompletionAction.QuitWithSuccess;
+		}
 		if (!this.model.jobSchedules) {
 			this.model.jobSchedules = [];
 		}

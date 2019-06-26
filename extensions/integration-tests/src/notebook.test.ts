@@ -10,9 +10,9 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySpark3KernelSpec } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySpark3KernelSpec, CellTypes } from './notebook.util';
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
-import { connectToServer } from './utils';
+import { connectToServer, sleep } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
 
@@ -42,6 +42,10 @@ if (context.RunTest) {
 
 		test('sql language test', async function () {
 			await (new NotebookTester()).sqlLanguageTest(this.test.title);
+		});
+
+		test('should not be dirty after saving notebook test', async function () {
+			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
 		});
 
 		if (process.env['RUN_PYTHON3_TEST'] === '1') {
@@ -178,6 +182,41 @@ class NotebookTester {
 		kernelChanged = await notebook.changeKernel(sqlKernelSpec);
 		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
 		assert(kernelChanged && notebook.document.kernelSpec.name === 'SQL', `Expected third kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+	}
+
+	async shouldNotBeDirtyAfterSavingNotebookTest(title: string): Promise<void> {
+		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title);
+		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
+		assert(notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+		assert(notebook.document.isDirty === true, 'Notebook should be dirty after edit');
+
+		// When I save it, it should no longer be dirty
+		let saved = await notebook.document.save();
+		assert(saved === true, 'Expect initial save to succeed');
+		// Note: need to sleep after save as the change events happen after save
+		// We need to give back the thread or the event won't have been drained.
+		// This is consistent with VSCode APIs, so keeping as-is
+		await sleep(100);
+		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after initial save');
+
+		// And when I edit again, should become dirty
+		let edited = await notebook.edit(builder => {
+			builder.insertCell({
+				cell_type: CellTypes.Code,
+				source: ''
+			});
+		});
+		assert(edited === true, 'Expect edit to succeed');
+		await sleep(100);
+		assert(notebook.document.isDirty === true, 'Notebook should be dirty after edit');
+
+		// Finally on 2nd save it should no longer be dirty
+		saved = await notebook.document.save();
+		await sleep(100);
+		assert(saved === true, 'Expect save after edit to succeed');
+		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after 2nd save');
+
 	}
 
 	async pythonChangeKernelDifferentProviderTest(title: string): Promise<void> {
