@@ -30,6 +30,7 @@ enum ResetButtonState {
 	noSourceTarget,
 	beforeCompareStart,
 	comparing,
+	afterCompareComplete
 }
 
 export class SchemaCompareResult {
@@ -340,11 +341,7 @@ export class SchemaCompareResult {
 
 		this.flexModel.removeItem(this.loader);
 		this.flexModel.removeItem(this.waitText);
-		this.switchButton.enabled = true;
-		this.compareButton.enabled = true;
-		this.optionsButton.enabled = true;
-		this.openScmpButton.enabled = true;
-		this.cancelCompareButton.enabled = false;
+		this.resetButtons(ResetButtonState.afterCompareComplete);
 
 		if (this.comparisonResult.differences.length > 0) {
 			this.flexModel.addItem(this.splitView, { CSSStyles: { 'overflow': 'hidden' } });
@@ -714,15 +711,21 @@ export class SchemaCompareResult {
 				this.switchButton.enabled = this.sourceEndpointInfo ? true : false; // allows switching if the source is set
 				this.openScmpButton.enabled = true;
 				this.cancelCompareButton.enabled = false;
+				this.selectSourceButton.enabled = true;
+				this.selectTargetButton.enabled = true;
 				break;
 			}
-			case (ResetButtonState.beforeCompareStart): {
+			// Before start and after complete are same functionally. Adding two enum values for clarity.
+			case (ResetButtonState.beforeCompareStart):
+			case (ResetButtonState.afterCompareComplete): {
 				this.compareButton.enabled = true;
 				this.optionsButton.enabled = true;
 				this.switchButton.enabled = true;
 				this.openScmpButton.enabled = true;
 				this.saveScmpButton.enabled = true;
 				this.cancelCompareButton.enabled = false;
+				this.selectSourceButton.enabled = true;
+				this.selectTargetButton.enabled = true;
 				break;
 			}
 			case (ResetButtonState.comparing): {
@@ -731,10 +734,13 @@ export class SchemaCompareResult {
 				this.switchButton.enabled = false;
 				this.openScmpButton.enabled = false;
 				this.cancelCompareButton.enabled = true;
+				this.selectSourceButton.enabled = false;
+				this.selectTargetButton.enabled = false;
 				break;
 			}
 		}
 
+		// Set generate script and apply to false because specific values depend on result and are set separately
 		this.generateScriptButton.enabled = false;
 		this.applyButton.enabled = false;
 		this.generateScriptButton.title = generateScriptEnabledMessage;
