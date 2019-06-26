@@ -4402,7 +4402,7 @@ declare module 'azdata' {
 			runAllCells(): Thenable<boolean>;
 
 			/**
-			 * Clears the outputs of the actice code cell in a notebook.
+			 * Clears the outputs of the active code cell in a notebook.
 			 */
 			clearOutput(cell?: NotebookCell): Thenable<boolean>;
 
