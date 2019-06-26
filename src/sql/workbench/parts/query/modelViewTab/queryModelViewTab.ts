@@ -28,9 +28,14 @@ export class QueryModelViewTab implements IPanelTab {
 	}
 }
 
-export class QueryModelViewTabView implements IPanelView {
+export class QueryModelViewState {
+	public componentId: string;
+	public dispose() {
+	}
+}
 
-	public _componentId: string;
+export class QueryModelViewTabView implements IPanelView {
+	public state: QueryModelViewState = new QueryModelViewState();
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService) {
@@ -40,7 +45,7 @@ export class QueryModelViewTabView implements IPanelView {
 		this.bootstrapAngular(container);
 	}
 
-	dispose() {
+	public dispose() {
 	}
 
 	public clear() {
@@ -50,7 +55,14 @@ export class QueryModelViewTabView implements IPanelView {
 	}
 
 	public focus(): void {
+	}
 
+	public get componentId(): string {
+		return this.state.componentId;
+	}
+
+	public set componentId(value: string) {
+		this.state.componentId = value;
 	}
 
 	/**
@@ -61,7 +73,7 @@ export class QueryModelViewTabView implements IPanelView {
 			QueryModelViewTabModule,
 			container,
 			'querytab-modelview-container',
-			{ modelViewId: this._componentId });
+			{ modelViewId: this.state.componentId });
 		return uniqueSelector;
 	}
 }
