@@ -17,16 +17,15 @@ import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
+import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 
 export interface IGridActionContext {
-	cell: { row: number; cell: number; };
-	selection: Slick.Range[];
-	runner: QueryRunner;
-	batchId: number;
-	resultId: number;
+	gridDataProvider: IGridDataProvider;
 	table: Table<any>;
-	selectionModel: CellSelectionModel<any>;
 	tableState: GridTableState;
+	cell?: { row: number; cell: number; };
+	selection?: Slick.Range[];
+	selectionModel?: CellSelectionModel<any>;
 }
 
 export interface IMessagesActionContext {
@@ -71,10 +70,9 @@ export class SaveResultAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		if (this.accountForNumberColumn) {
-			context.runner.serializeResults(context.batchId, context.resultId, this.format,
-				mapForNumberColumn(context.selection));
+			context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
 		} else {
-			context.runner.serializeResults(context.batchId, context.resultId, this.format, context.selection);
+			context.gridDataProvider.serializeResults(this.format, context.selection);
 		}
 		return Promise.resolve(true);
 	}
@@ -98,11 +96,11 @@ export class CopyResultAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		if (this.accountForNumberColumn) {
-			context.runner.copyResults(
+			context.gridDataProvider.copyResults(
 				mapForNumberColumn(context.selection),
-				context.batchId, context.resultId, this.copyHeader);
+				this.copyHeader);
 		} else {
-			context.runner.copyResults(context.selection, context.batchId, context.resultId, this.copyHeader);
+			context.gridDataProvider.copyResults(context.selection, this.copyHeader);
 		}
 		return Promise.resolve(true);
 	}

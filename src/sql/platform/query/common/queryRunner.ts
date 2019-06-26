@@ -26,6 +26,8 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
+import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -98,7 +100,6 @@ export default class QueryRunner extends Disposable {
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@INotificationService private _notificationService: INotificationService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@IClipboardService private _clipboardService: IClipboardService,
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
 	) {
@@ -437,10 +438,7 @@ export default class QueryRunner extends Disposable {
 
 			// TODO issue #228 add statusview callbacks here
 			this._isExecuting = false;
-			this._notificationService.notify({
-				severity: Severity.Error,
-				message: nls.localize('query.initEditExecutionFailed', 'Init Edit Execution failed: ') + error
-			});
+			this._notificationService.error(nls.localize('query.initEditExecutionFailed', "Initialize edit data session failed: ") + error);
 		});
 	}
 
@@ -541,60 +539,15 @@ export default class QueryRunner extends Disposable {
 	 * @param includeHeaders [Optional]: Should column headers be included in the copy selection
 	 */
 	copyResults(selection: Slick.Range[], batchId: number, resultId: number, includeHeaders?: boolean): void {
-		const self = this;
-		let copyString = '';
-		const eol = this.getEolString();
-
-		// create a mapping of the ranges to get promises
-		let tasks = selection.map((range, i) => {
-			return () => {
-				return self.getQueryRows(range.fromRow, range.toRow - range.fromRow + 1, batchId, resultId).then((result) => {
-					// If there was a previous selection separate it with a line break. Currently
-					// when there are multiple selections they are never on the same line
-					if (i > 0) {
-						copyString += eol;
-					}
-
-					if (self.shouldIncludeHeaders(includeHeaders)) {
-						let columnHeaders = self.getColumnHeaders(batchId, resultId, range);
-						if (columnHeaders !== undefined) {
-							copyString += columnHeaders.join('\t') + eol;
-						}
-					}
-
-					// Iterate over the rows to paste into the copy string
-					for (let rowIndex: number = 0; rowIndex < result.resultSubset.rows.length; rowIndex++) {
-						let row = result.resultSubset.rows[rowIndex];
-						let cellObjects = row.slice(range.fromCell, (range.toCell + 1));
-						// Remove newlines if requested
-						let cells = self.shouldRemoveNewLines()
-							? cellObjects.map(x => self.removeNewLines(x.displayValue))
-							: cellObjects.map(x => x.displayValue);
-						copyString += cells.join('\t');
-						if (rowIndex < result.resultSubset.rows.length - 1) {
-							copyString += eol;
-						}
-					}
-				});
-			};
-		});
-
-		if (tasks.length > 0) {
-			let p = tasks[0]();
-			for (let i = 1; i < tasks.length; i++) {
-				p = p.then(tasks[i]);
-			}
-			p.then(() => {
-				this._clipboardService.writeText(copyString);
-			});
-		}
+		let provider = this.getGridDataProvider(batchId, resultId);
+		provider.copyResults(selection, includeHeaders);
 	}
 
-	private getEolString(): string {
+	public getEolString(): string {
 		return this._textResourcePropertiesService.getEOL(URI.parse(this.uri), 'sql');
 	}
 
-	private shouldIncludeHeaders(includeHeaders: boolean): boolean {
+	public shouldIncludeHeaders(includeHeaders: boolean): boolean {
 		if (includeHeaders !== undefined) {
 			// Respect the value explicity passed into the method
 			return includeHeaders;
@@ -604,13 +557,13 @@ export default class QueryRunner extends Disposable {
 		return !!includeHeaders;
 	}
 
-	private shouldRemoveNewLines(): boolean {
+	public shouldRemoveNewLines(): boolean {
 		// get config copyRemoveNewLine option from vscode config
 		let removeNewLines: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configCopyRemoveNewLine);
 		return !!removeNewLines;
 	}
 
-	private getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
+	public getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
 		let batchSummary: azdata.BatchSummary = this._batchSets[batchId];
 		if (batchSummary !== undefined) {
@@ -620,19 +573,6 @@ export default class QueryRunner extends Disposable {
 			});
 		}
 		return headers;
-	}
-
-	private removeNewLines(inputString: string): string {
-		// This regex removes all newlines in all OS types
-		// Windows(CRLF): \r\n
-		// Linux(LF)/Modern MacOS: \n
-		// Old MacOs: \r
-		if (types.isUndefinedOrNull(inputString)) {
-			return 'null';
-		}
-
-		let outputString: string = inputString.replace(/(\r\n|\n|\r)/gm, '');
-		return outputString;
 	}
 
 	private sendBatchTimeMessage(batchId: number, executionTime: string): void {
@@ -654,4 +594,58 @@ export default class QueryRunner extends Disposable {
 	public serializeResults(batchId: number, resultSetId: number, format: SaveFormat, selection: Slick.Range[]) {
 		return this.instantiationService.createInstance(ResultSerializer).saveResults(this.uri, { selection, format, batchIndex: batchId, resultSetNumber: resultSetId });
 	}
+
+	public getGridDataProvider(batchId: number, resultSetId: number): IGridDataProvider {
+		return this.instantiationService.createInstance(QueryGridDataProvider, this, batchId, resultSetId);
+	}
+}
+
+export class QueryGridDataProvider implements IGridDataProvider {
+
+	constructor(
+		private queryRunner: QueryRunner,
+		private batchId: number,
+		private resultSetId: number,
+		@INotificationService private _notificationService: INotificationService,
+		@IClipboardService private _clipboardService: IClipboardService
+	) {
+	}
+
+	getRowData(rowStart: number, numberOfRows: number): Thenable<azdata.QueryExecuteSubsetResult> {
+		return this.queryRunner.getQueryRows(rowStart, numberOfRows, this.batchId, this.resultSetId);
+	}
+
+	copyResults(selection: Slick.Range[], includeHeaders?: boolean): void {
+		this.copyResultsAsync(selection, includeHeaders);
+	}
+
+	private async copyResultsAsync(selection: Slick.Range[], includeHeaders?: boolean): Promise<void> {
+		try {
+			let results = await getResultsString(this, selection, includeHeaders);
+			this._clipboardService.writeText(results);
+		} catch (error) {
+			this._notificationService.error(nls.localize('copyFailed', "Copy failed with error {0}", getErrorMessage(error)));
+		}
+	}
+	getEolString(): string {
+		return this.queryRunner.getEolString();
+	}
+	shouldIncludeHeaders(includeHeaders: boolean): boolean {
+		return this.queryRunner.shouldIncludeHeaders(includeHeaders);
+	}
+	shouldRemoveNewLines(): boolean {
+		return this.queryRunner.shouldRemoveNewLines();
+	}
+	getColumnHeaders(range: Slick.Range): string[] {
+		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
+	}
+
+	get canSerialize(): boolean {
+		return true;
+	}
+
+	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
+		return this.queryRunner.serializeResults(this.batchId, this.resultSetId, format, selection);
+	}
+
 }

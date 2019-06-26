@@ -59,6 +59,9 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 
 	@Input() set cellModel(value: ICellModel) {
 		this._cellModel = value;
+		if (this._initialized) {
+			this.updatePreview();
+		}
 	}
 
 	public get isTrusted(): boolean {
