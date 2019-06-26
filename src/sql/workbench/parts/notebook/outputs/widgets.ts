@@ -7,7 +7,6 @@ import * as renderers from './renderers';
 import { IRenderMime } from './common/renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../models/jsonext';
 import * as tableRenderers from 'sql/workbench/parts/notebook/outputs/tableRenderers';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 
 /**
  * A common base class for mime renderers.
