@@ -64,8 +64,14 @@ export class JupyterServerInstallation {
 		this._usingConda = false;
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+	}
 
-		this.configurePackagePaths().catch(err => this.apiWrapper.showErrorMessage(utils.getErrorMessage(err)));
+	public async init(): Promise<void> {
+		try {
+			await this.configurePackagePaths();
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
+		}
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
@@ -256,8 +262,10 @@ export class JupyterServerInstallation {
 				].join(delimiter);
 			}
 		} else if (this._usingExistingPython) {
-			let pythonUserDir = await this.getPythonUserDir();
-			this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
+			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
+			if (pythonUserDir) {
+				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
+			}
 		}
 
 		// Delete existing Python variables in ADS to prevent conflict with other installs
@@ -580,10 +588,11 @@ export class JupyterServerInstallation {
 			process.platform === constants.winPlatform ? 'python.exe' : 'bin/python3');
 	}
 
-	private async getPythonUserDir(): Promise<string> {
-		let cmd = `"${this.pythonExecutable}" -c "import site;print(site.USER_BASE)"`;
-		let packagesDir = await this.executeBufferedCommand(cmd);
+	private async getPythonUserDir(pythonExecutable: string): Promise<string> {
+		let cmd = `"${pythonExecutable}" -c "import site;print(site.USER_BASE)"`;
+		let packagesDir = await utils.executeBufferedCommand(cmd, {});
 		if (packagesDir && packagesDir.length > 0) {
+			packagesDir = packagesDir.trim();
 			if (process.platform !== constants.winPlatform) {
 				packagesDir = path.join(packagesDir, 'bin');
 			}
