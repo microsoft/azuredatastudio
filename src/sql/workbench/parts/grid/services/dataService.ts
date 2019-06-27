@@ -146,16 +146,6 @@ export class DataService {
 	}
 
 	/**
-	 * send request to open content in new editor
-	 * @param content The content to be opened
-	 * @param columnName The column name of the content
-	 */
-	openLink(content: string, columnName: string, linkType: string): void {
-		let serializer = this._instantiationService.createInstance(ResultSerializer);
-		serializer.openLink(content, columnName, linkType);
-	}
-
-	/**
 	 * Sends a copy request
 	 * @param selection The selection range to copy
 	 * @param batchId The batch id of the result to copy from
