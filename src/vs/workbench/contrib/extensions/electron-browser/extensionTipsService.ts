@@ -18,7 +18,7 @@ import { ITextModel } from 'vs/editor/common/model';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
+import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction, ShowVisualizerExtensionsAction, InstallVisualizerExtensionsAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -172,7 +172,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 		// {{SQL CARBON EDIT}} Extension Recommendation on ADS Launch
 		this.promptADSLaunchRecommendedExtensions();
-	//	this.promptVisualizerExtension();
+		this.promptVisualizerRecommendedExtensions();
 	}
 
 	private isEnabled(): boolean {
@@ -1133,76 +1133,83 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 
-	private promptVisualizerRecommendations(): void {
-		/*
-		// nps.contribution.ts
-		const date = new Date().toDateString();
-		const lastSessionDate = storageService.get(LAST_SESSION_DATE_KEY, StorageScope.GLOBAL, new Date(0).toDateString());
+	private promptVisualizerRecommendedExtensions(): void {
+		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
 
-		if (date === lastSessionDate) {
+		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
 			return;
 		}
 
-		const sessionCount = (storageService.getNumber(SESSION_COUNT_KEY, StorageScope.GLOBAL, 0) || 0) + 1;
-		storageService.store(LAST_SESSION_DATE_KEY, date, StorageScope.GLOBAL);
-		storageService.store(SESSION_COUNT_KEY, sessionCount, StorageScope.GLOBAL);
+		let recommendations: IExtensionRecommendation[];
+		let localExtensions: ILocalExtension[];
+		const getRecommendationPromise = this.getVisualizerRecommendations().then(recs => { recommendations = recs; });
+		const getLocalExtensionPromise = this.extensionsService.getInstalled(ExtensionType.User).then(local => { localExtensions = local; });
+		Promise.all([getRecommendationPromise, getLocalExtensionPromise]).then(() => {
+			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
+				return new Promise<void>(c => {
+					this.notificationService.prompt(
+						Severity.Info,
+						localize('VisualizerExtensions', "Would you like to visualize your data? Please install the recommended visualizer extensions."),
+						[{
+							label: localize('installAll', "Install All"),
+							run: () => {
+								/* __GDPR__
+								"extensionAppLaunchRecommendations:popup" : {
+									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+								}
+								*/
+								//this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'install' });
+								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
+								installAllAction.run();
+								installAllAction.dispose();
+								c(undefined);
+							}
+						}, {
+							label: localize('showRecommendations', "Show Recommendations"),
+							run: () => {
+								/* __GDPR__
+									"extensionAppLaunchRecommendations:popup" : {
+										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+									}
+								*/
+								//this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'show' });
 
-		if (sessionCount < 9) {
-			return;
-		}
-		*/
-		/*
-		const storageKey = 'extensionsAssistant/workspaceRecommendationsIgnore';
-		const config = this.configurationService.getValue<IExtensionsConfiguration>(ConfigurationKey);
-		const filteredRecs = this._allWorkspaceRecommendedExtensions;//.filter(rec => this.isExtensionAllowedToBeRecommended(rec.extensionId));
-
-		if (filteredRecs.length === 0
-			|| config.ignoreRecommendations
-			|| config.showRecommendationsOnlyOnDemand){
-		//	|| this.storageService.getBoolean(storageKey, StorageScope.WORKSPACE, false)) {
-
-			return;
-		}
-	*/
-		const filteredRecs = this._allWorkspaceRecommendedExtensions;
-		this.extensionsService.getInstalled(ExtensionType.User).then(local => {
-			const recommendations = filteredRecs.filter(({ extensionId }) => local.every(local => !areSameExtensions({ id: extensionId }, local.identifier)));
-
-			if (!recommendations.length) {
-				return Promise.resolve(undefined);
+								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+								showAction.run();
+								showAction.dispose();
+								c(undefined);
+							}
+						}, {
+							label: choiceNever,
+							isSecondary: true,
+							run: () => {
+								/* __GDPR__
+									"extensionAppLaunchRecommendations:popup" : {
+										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+									}
+								*/
+							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'neverShowAgain' });
+							//	this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+								c(undefined);
+							}
+						}],
+						{
+							sticky: true,
+							onCancel: () => {
+								/* __GDPR__
+									"extensionAppLaunchRecommendations:popup" : {
+										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+									}
+								*/
+							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
+								c(undefined);
+							}
+						}
+					);
+				});
+			} else {
+				return Promise.resolve();
 			}
-
-			return new Promise<void>(c => {
-				this.notificationService.prompt(
-					Severity.Info,
-					localize('downloadSandDance.notice', "The SandDance extension is required to use this feature. Would you like to download the SandDance extension?"),
-					[{
-						label: localize('downloadSandDanceNotice.yes', "Download"),
-						run: () => {
-							//telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'install' });
-							const installAllAction = this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
-							installAllAction.run();
-							installAllAction.dispose();
-							c(undefined);
-						}
-					}, {
-						label: localize('downloadSandDanceNotice.never', "Don't ask again"), //label: choiceNever,
-						isSecondary: true,
-						run: () => {
-							// this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'neverShowAgain' });
-							// this.storageService.store(storageKey, true, StorageScope.WORKSPACE);
-							c(undefined);
-						}
-					}],
-					{
-						sticky: true,
-						onCancel: () => {
-							// this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'cancelled' });
-							c(undefined);
-						}
-					}
-				);
-			});
 		});
 	}
 
@@ -1211,7 +1218,5 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
-
-
 	// End of {{SQL CARBON EDIT}}
 }
