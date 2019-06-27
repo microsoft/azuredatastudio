@@ -10,13 +10,7 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { Dimension, clearNode } from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { dispose } from 'vs/base/common/lifecycle';
-
-export class QueryPlanState {
-	xml: string;
-	dispose() {
-
-	}
-}
+import { QueryPlanState } from 'sql/workbench/parts/queryPlan/common/queryPlanState';
 
 export class QueryPlanTab implements IPanelTab {
 	public readonly title = localize('queryPlanTitle', 'Query Plan');

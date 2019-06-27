@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
-import { InsightType, IInsightOptions, DataDirection, DataType, LegendPosition, ChartType } from './interfaces';
+import { IInsightOptions, DataDirection, DataType, LegendPosition, ChartType, InsightType } from 'sql/workbench/parts/charts/common/interfaces';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 

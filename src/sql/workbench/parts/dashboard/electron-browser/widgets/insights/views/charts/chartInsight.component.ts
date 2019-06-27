@@ -19,8 +19,9 @@ import * as nls from 'vs/nls';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IInsightData, ChartType, IPointDataSet, LegendPosition } from 'sql/workbench/parts/charts/browser/interfaces';
+import { IInsightData, IPointDataSet } from 'sql/workbench/parts/charts/browser/interfaces';
 import { IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
+import { ChartType, LegendPosition } from 'sql/workbench/parts/charts/common/interfaces';
 
 declare const Chart: any;
 

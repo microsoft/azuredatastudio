@@ -8,8 +8,7 @@ import { Injectable, Inject } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 
 /* SQL imports */
-import { IDefaultComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
+import { IDefaultComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';

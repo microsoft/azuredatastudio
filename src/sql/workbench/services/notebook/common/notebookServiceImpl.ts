@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, ILanguageMagic
 } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/electron-browser/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/parts/notebook/electron-browser/outputs/factories';
@@ -30,7 +30,7 @@ import { NotebookEditor } from 'sql/workbench/parts/notebook/electron-browser/no
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { registerNotebookThemes } from 'sql/workbench/parts/notebook/common/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { notebookConstants } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';

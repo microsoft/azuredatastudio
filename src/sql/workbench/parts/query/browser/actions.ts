@@ -12,11 +12,11 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { GridTableState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
+import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 export interface IGridActionContext {
 	cell: { row: number; cell: number; };

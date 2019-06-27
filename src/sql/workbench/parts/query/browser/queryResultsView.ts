@@ -7,10 +7,10 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { MessagePanel, MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
-import { GridPanel, GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
+import { MessagePanel } from 'sql/workbench/parts/query/browser/messagePanel';
+import { GridPanel } from 'sql/workbench/parts/query/browser/gridPanel';
 import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
-import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
+import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
 
@@ -20,6 +20,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
+import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;

@@ -3,12 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, enableProdMode, InjectionToken, Type, PlatformRef, Provider } from '@angular/core';
+import { NgModuleRef, enableProdMode, PlatformRef, Provider } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
 import { Trace } from 'vs/platform/instantiation/common/instantiationService';
 import { values } from 'vs/base/common/map';
+import { IModuleFactory, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 const selectorCounter = new Map<string, number>();
 
@@ -23,14 +24,6 @@ export function providerIterator(service: IInstantiationService): Provider[] {
 		};
 	});
 }
-
-export const ISelector = new InjectionToken<string>('selector');
-
-export const IBootstrapParams = new InjectionToken<IBootstrapParams>('bootstrap_params');
-export interface IBootstrapParams {
-}
-
-export type IModuleFactory<T> = (params: IBootstrapParams, selector: string, service: IInstantiationService) => Type<T>;
 
 function createUniqueSelector(selector: string): string {
 	let num: number;

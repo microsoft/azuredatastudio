@@ -12,7 +12,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { QueryPlanModule } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.module';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
-import { IQueryPlanParams } from 'sql/platform/bootstrap/node/bootstrapParams';
+import { IQueryPlanParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { QUERYPLAN_SELECTOR } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.component';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';

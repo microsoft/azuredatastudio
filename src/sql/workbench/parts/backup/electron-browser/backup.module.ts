@@ -11,10 +11,11 @@ import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
+import { providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { BackupComponent } from 'sql/workbench/parts/backup/electron-browser/backup.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 // work around
 const BrowserAnimationsModule = (<any>require.__$__nodeRequire('@angular/platform-browser/animations')).BrowserAnimationsModule;

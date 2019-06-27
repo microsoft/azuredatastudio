@@ -12,7 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 import { CellType, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookManager, ILanguageMagic } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -512,13 +512,6 @@ export interface INotebookModelOptions {
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
 	editorLoadedTimestamp?: number;
-}
-
-export interface ILanguageMagic {
-	magic: string;
-	language: string;
-	kernels?: string[];
-	executionTarget?: string;
 }
 
 export interface ICellMagicMapper {

@@ -5,11 +5,11 @@
 
 import 'vs/css!./media/wizardNavigation';
 import { Component, Inject, forwardRef, ElementRef, AfterViewInit, ChangeDetectorRef, ViewChild } from '@angular/core';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Wizard } from '../common/dialogTypes';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
+import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 export class WizardNavigationParams implements IBootstrapParams {
 	wizard: Wizard;

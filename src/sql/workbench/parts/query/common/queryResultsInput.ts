@@ -7,11 +7,11 @@ import { localize } from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 
-import { GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
-import { MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
-import { QueryPlanState } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
-import { ChartState } from 'sql/workbench/parts/charts/browser/chartView';
-import { TopOperationsState } from 'sql/workbench/parts/queryPlan/browser/topOperations';
+import { TopOperationsState } from 'sql/workbench/parts/queryPlan/common/topOperationsState';
+import { ChartState } from 'sql/workbench/parts/charts/common/interfaces';
+import { QueryPlanState } from 'sql/workbench/parts/queryPlan/common/queryPlanState';
+import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
+import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();

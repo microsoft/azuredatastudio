@@ -7,23 +7,7 @@ import { Dimension } from 'vs/base/browser/dom';
 import { mixin } from 'sql/base/common/objects';
 import * as types from 'vs/base/common/types';
 import { Color } from 'vs/base/common/color';
-
-export interface IInsightOptions {
-	type: InsightType | ChartType;
-	dataDirection?: DataDirection;
-	dataType?: DataType;
-	labelFirstColumn?: boolean;
-	columnsAsLabels?: boolean;
-	legendPosition?: LegendPosition;
-	yAxisLabel?: string;
-	yAxisMin?: number;
-	yAxisMax?: number;
-	xAxisLabel?: string;
-	xAxisMin?: number;
-	xAxisMax?: number;
-	encoding?: string;
-	imageFormat?: string;
-}
+import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface IPointDataSet {
 	data: Array<{ x: number | string, y: number }>;
@@ -49,34 +33,6 @@ export function customMixin(destination: any, source: any, overwrite?: boolean):
 	return destination;
 }
 
-export enum ChartType {
-	Bar = 'bar',
-	Doughnut = 'doughnut',
-	HorizontalBar = 'horizontalBar',
-	Line = 'line',
-	Pie = 'pie',
-	TimeSeries = 'timeSeries',
-	Scatter = 'scatter'
-}
-
-export enum DataDirection {
-	Vertical = 'vertical',
-	Horizontal = 'horizontal'
-}
-
-export enum LegendPosition {
-	Top = 'top',
-	Bottom = 'bottom',
-	Left = 'left',
-	Right = 'right',
-	None = 'none'
-}
-
-export enum DataType {
-	Number = 'number',
-	Point = 'point'
-}
-
 export interface IInsightData {
 	columns: Array<string>;
 	rows: Array<Array<string>>;
@@ -93,10 +49,4 @@ export interface IInsight {
 export interface IInsightCtor {
 	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
 	readonly types: Array<InsightType | ChartType>;
-}
-
-export enum InsightType {
-	Image = 'image',
-	Table = 'table',
-	Count = 'count'
 }

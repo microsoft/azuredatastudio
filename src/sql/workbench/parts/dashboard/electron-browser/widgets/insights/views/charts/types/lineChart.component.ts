@@ -12,7 +12,8 @@ import { ChangeDetectorRef, Inject, forwardRef } from '@angular/core';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { DataType, ChartType, IPointDataSet } from 'sql/workbench/parts/charts/browser/interfaces';
+import { IPointDataSet } from 'sql/workbench/parts/charts/browser/interfaces';
+import { DataType, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface ILineConfig extends IBarChartConfig {
 	dataType?: DataType;

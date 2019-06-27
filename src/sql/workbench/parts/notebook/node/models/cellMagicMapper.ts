@@ -3,7 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ICellMagicMapper, ILanguageMagic } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ICellMagicMapper } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ILanguageMagic } from 'sql/workbench/services/notebook/common/notebookService';
 
 const defaultKernel = '*';
 export class CellMagicMapper implements ICellMagicMapper {

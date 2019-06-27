@@ -8,7 +8,7 @@ import { forwardRef, Inject, ChangeDetectorRef } from '@angular/core';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ChartType } from 'sql/workbench/parts/charts/browser/interfaces';
+import { ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 export default class HorizontalBarChart extends BarChart {
 	protected readonly chartType: ChartType = ChartType.HorizontalBar;

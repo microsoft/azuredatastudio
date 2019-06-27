@@ -7,10 +7,11 @@ import { NgModule, Inject, forwardRef, ApplicationRef, ComponentFactoryResolver,
 import { APP_BASE_HREF, CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
+import { providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { QueryPlanComponent } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.component';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 // Connection Dashboard main angular module
 export const QueryPlanModule = (params: IBootstrapParams, selector: string, instantiationService: IInstantiationService): Type<any> => {

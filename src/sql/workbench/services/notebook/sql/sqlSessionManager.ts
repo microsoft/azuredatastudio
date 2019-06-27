@@ -6,8 +6,7 @@
 import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
-import * as strings from 'vs/base/common/strings';
-import { FutureInternal, ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { FutureInternal, notebookConstants } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -18,12 +17,12 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { escape } from 'sql/base/common/strings';
-import { elapsedTimeLabel } from 'sql/workbench/parts/query/common/localizedConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/node/models/notebookUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { ILanguageMagic } from 'sql/workbench/services/notebook/common/notebookService';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;

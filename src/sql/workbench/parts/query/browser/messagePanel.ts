@@ -20,7 +20,6 @@ import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
 import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
-import { IMouseEvent } from 'vs/base/browser/mouseEvent';
 import { isArray } from 'vs/base/common/types';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -30,6 +29,7 @@ import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
+import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -59,14 +59,6 @@ const TemplateIds = {
 	MODEL: 'model',
 	ERROR: 'error'
 };
-
-export class MessagePanelState {
-	public scrollPosition: number;
-
-	dispose() {
-
-	}
-}
 
 export class MessagePanel extends Disposable {
 	private ds = new MessageDataSource();

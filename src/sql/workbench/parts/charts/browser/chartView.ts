@@ -10,7 +10,7 @@ import { Insight } from './insight';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
 import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
-import { IInsightOptions, ChartType, IInsightData } from './interfaces';
+import { IInsightData } from './interfaces';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -24,17 +24,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext } from 'sql/workbench/parts/charts/browser/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-
-export class ChartState {
-	dataId: { batchId: number, resultId: number };
-	options: IInsightOptions = {
-		type: ChartType.Bar
-	};
-
-	dispose() {
-
-	}
-}
+import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 declare class Proxy {
 	constructor(object, handler);

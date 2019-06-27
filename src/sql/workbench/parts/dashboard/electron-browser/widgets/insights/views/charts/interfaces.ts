@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { LegendPosition, DataDirection } from 'sql/workbench/parts/charts/browser/interfaces';
+import { LegendPosition, DataDirection } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface IDataSet {
 	data: Array<number>;

@@ -11,7 +11,8 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
-import { IInsightOptions, IInsight, ChartType, DataDirection, IInsightData, IPointDataSet, customMixin, LegendPosition, DataType } from './interfaces';
+import { IInsight, IInsightData, IPointDataSet, customMixin } from './interfaces';
+import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/charts/common/interfaces';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 

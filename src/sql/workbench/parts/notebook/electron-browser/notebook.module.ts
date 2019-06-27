@@ -9,7 +9,7 @@ import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/electron-browser/core/componentHost.directive';
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
+import { providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/electron-browser/notebook.component';
@@ -28,6 +28,7 @@ import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.compone
 import { IMimeComponentRegistry, Extensions } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { LinkHandlerDirective } from 'sql/workbench/parts/notebook/electron-browser/cellViews/linkHandler.directive';
+import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	let outputComponents = Registry.as<IMimeComponentRegistry>(Extensions.MimeComponentContribution).getAllCtors();

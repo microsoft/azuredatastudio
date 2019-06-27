@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsightOptions, IInsight } from './interfaces';
+import { IInsight } from './interfaces';
 import { Graph } from './graphInsight';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtilities';
@@ -20,6 +20,7 @@ import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/un
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightOptions } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface IChartActionContext {
 	options: IInsightOptions;

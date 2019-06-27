@@ -8,8 +8,7 @@ import 'vs/css!./media/qp';
 import { ElementRef, Component, Inject, forwardRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import * as QP from 'html-query-plan';
 
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
-import { IQueryPlanParams } from 'sql/platform/bootstrap/node/bootstrapParams';
+import { IQueryPlanParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { registerThemingParticipant, ICssStyleCollector, ITheme } from 'vs/platform/theme/common/themeService';

@@ -41,6 +41,7 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
+import { GridPanelState, GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -54,63 +55,6 @@ const ACTIONBAR_HEIGHT = 120;
 
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
-
-export class GridPanelState {
-	public tableStates: GridTableState[] = [];
-	public scrollPosition: number;
-
-	dispose() {
-		dispose(this.tableStates);
-	}
-}
-
-export class GridTableState extends Disposable {
-
-	private _maximized: boolean;
-
-	private _onMaximizedChange = this._register(new Emitter<boolean>());
-	public onMaximizedChange: Event<boolean> = this._onMaximizedChange.event;
-
-	private _onCanBeMaximizedChange = this._register(new Emitter<boolean>());
-	public onCanBeMaximizedChange: Event<boolean> = this._onCanBeMaximizedChange.event;
-
-	private _canBeMaximized: boolean;
-
-	/* The top row of the current scroll */
-	public scrollPositionY = 0;
-	public scrollPositionX = 0;
-	public columnSizes: number[] = undefined;
-	public selection: Slick.Range[];
-	public activeCell: Slick.Cell;
-
-	constructor(public readonly resultId: number, public readonly batchId: number) {
-		super();
-	}
-
-	public get canBeMaximized(): boolean {
-		return this._canBeMaximized;
-	}
-
-	public set canBeMaximized(val: boolean) {
-		if (val === this._canBeMaximized) {
-			return;
-		}
-		this._canBeMaximized = val;
-		this._onCanBeMaximizedChange.fire(val);
-	}
-
-	public get maximized(): boolean {
-		return this._maximized;
-	}
-
-	public set maximized(val: boolean) {
-		if (val === this._maximized) {
-			return;
-		}
-		this._maximized = val;
-		this._onMaximizedChange.fire(val);
-	}
-}
 
 export class GridPanel {
 	private container = document.createElement('div');

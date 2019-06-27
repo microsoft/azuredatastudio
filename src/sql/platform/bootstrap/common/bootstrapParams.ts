@@ -7,8 +7,8 @@ import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { Event } from 'vs/base/common/event';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export interface IQueryComponentParams extends IBootstrapParams {
 	dataService: DataService;
@@ -39,3 +39,15 @@ export interface ITaskDialogComponentParams extends IBootstrapParams {
 export interface IQueryPlanParams extends IBootstrapParams {
 	planXml: string;
 }
+
+export const ISelector = 'selector';
+
+export const IBootstrapParams = 'bootstrap_params';
+export interface IBootstrapParams {
+}
+
+export interface Type<T> {
+	new (...args: any[]): T;
+}
+
+export type IModuleFactory<T> = (params: IBootstrapParams, selector: string, service: IInstantiationService) => Type<T>;

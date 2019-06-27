@@ -18,11 +18,11 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { memoize } from 'vs/base/common/decorators';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { Event } from 'vs/base/common/event';
 import { LayoutRequestParams } from 'sql/platform/dialog/electron-browser/dialogContainer.component';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 const componentRegistry = <IComponentRegistry>Registry.as(Extensions.ComponentContribution);
 

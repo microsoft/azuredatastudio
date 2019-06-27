@@ -25,7 +25,6 @@ import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/node/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/node/models/modelFactory';
 import * as notebookUtils from 'sql/workbench/parts/notebook/node/models/notebookUtils';
@@ -50,6 +49,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';

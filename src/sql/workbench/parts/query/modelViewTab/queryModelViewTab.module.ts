@@ -14,7 +14,7 @@ import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/electron-
 import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/electron-browser/modelComponents/modelComponentWrapper.component';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/electron-browser/core/componentHost.directive';
-import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
+import { providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';
 import { QueryModelViewTabContainer } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTabContainer.component';
@@ -24,6 +24,7 @@ import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.compone
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 export const QueryModelViewTabModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 

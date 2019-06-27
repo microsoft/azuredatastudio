@@ -14,7 +14,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { DashboardInput } from './core/dashboardInput';
 import { DashboardModule } from './dashboard.module';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
-import { IDashboardComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
+import { IDashboardComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { DASHBOARD_SELECTOR } from 'sql/workbench/parts/dashboard/electron-browser/dashboard.component';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
