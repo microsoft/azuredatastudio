@@ -10,6 +10,7 @@
 	"notebook.command.open": "Open Notebook",
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",
 	"notebook.command.runactivecell": "Run Cell",
+	"notebook.command.clearactivecellresult": "Clear Cell Result",
 	"notebook.command.runallcells": "Run Cells",
 	"notebook.command.addcode": "Add Code Cell",
 	"notebook.command.addtext": "Add Text Cell",

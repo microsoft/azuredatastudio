@@ -535,6 +535,26 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return true;
 	}
 
+	public async clearOutput(cell: ICellModel): Promise<boolean> {
+		try {
+			await this.modelReady;
+			let uriString = cell.cellUri.toString();
+			if (this._model.cells.findIndex(c => c.cellUri.toString() === uriString) > -1) {
+				this.selectCell(cell);
+				// Clear outputs of the requested cell if cell type is code cell.
+				// If cell is markdown cell, clearOutputs() is a no-op
+				if (cell.cellType === CellTypes.Code) {
+					(cell as CellModel).clearOutputs();
+				}
+				return true;
+			} else {
+				return Promise.reject(new Error(localize('cellNotFound', "cell with URI {0} was not found in this model", uriString)));
+			}
+		} catch (e) {
+			return Promise.reject(e);
+		}
+	}
+
 	public async clearAllOutputs(): Promise<boolean> {
 		try {
 			await this.modelReady;

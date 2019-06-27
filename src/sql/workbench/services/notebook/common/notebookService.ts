@@ -129,5 +129,6 @@ export interface INotebookEditor {
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
 	runAllCells(): Promise<boolean>;
+	clearOutput(cell: ICellModel): Promise<boolean>;
 	clearAllOutputs(): Promise<boolean>;
 }

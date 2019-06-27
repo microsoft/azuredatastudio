@@ -11,16 +11,12 @@ import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
-import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { Schemas } from 'vs/base/common/network';
 import * as path from 'vs/base/common/path';
 import * as nls from 'vs/nls';
-import * as pretty from 'pretty-data';
 
 import Severity from 'vs/base/common/severity';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -38,13 +34,11 @@ let prevSavePath: string;
  */
 export class ResultSerializer {
 	public static tempFileCount: number = 1;
-	private static MAX_FILENAMES = 100;
 
 	private _uri: string;
 	private _filePath: string;
 
 	constructor(
-		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
 		@IConfigurationService private _workspaceConfigurationService: IConfigurationService,
@@ -52,7 +46,6 @@ export class ResultSerializer {
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
 		@IWindowService private _windowService: IWindowService,
-		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
 		@INotificationService private _notificationService: INotificationService
 	) { }
 
@@ -70,59 +63,6 @@ export class ResultSerializer {
 			}
 			return Promise.resolve(undefined);
 		});
-	}
-
-	/**
-	 * Open a xml/json link - Opens the content in a new editor pane
-	 */
-	public openLink(content: string, columnName: string, linkType: string): void {
-		let fileMode: string = undefined;
-		let fileUri = this.getUntitledFileUri(columnName);
-
-		if (linkType === SaveFormat.XML) {
-			fileMode = SaveFormat.XML;
-			try {
-				content = pretty.pd.xml(content);
-			} catch (e) {
-				// If Xml fails to parse, fall back on original Xml content
-			}
-		} else if (linkType === SaveFormat.JSON) {
-			let jsonContent: string = undefined;
-			fileMode = SaveFormat.JSON;
-			try {
-				jsonContent = JSON.parse(content);
-			} catch (e) {
-				// If Json fails to parse, fall back on original Json content
-			}
-			if (jsonContent) {
-				// If Json content was valid and parsed, pretty print content to a string
-				content = JSON.stringify(jsonContent, undefined, 4);
-			}
-		}
-
-		this.openUntitledFile(fileMode, content, fileUri);
-	}
-
-	private getUntitledFileUri(columnName: string): URI {
-		let fileName = columnName;
-
-		let uri: URI = URI.from({ scheme: Schemas.untitled, path: fileName });
-
-		// If the current filename is taken, try another up to a max number
-		if (this._untitledEditorService.exists(uri)) {
-			let i = 1;
-			while (i < ResultSerializer.MAX_FILENAMES
-				&& this._untitledEditorService.exists(uri)) {
-				fileName = [columnName, i.toString()].join('-');
-				uri = URI.from({ scheme: Schemas.untitled, path: fileName });
-				i++;
-			}
-			if (this._untitledEditorService.exists(uri)) {
-				// If this fails, return undefined and let the system figure out the right name
-				uri = undefined;
-			}
-		}
-		return uri;
 	}
 
 	private ensureOutputChannelExists(): void {
@@ -386,24 +326,5 @@ export class ResultSerializer {
 				});
 			});
 		}
-	}
-
-	/**
-	 * Open the saved file in a new vscode editor pane
-	 */
-	private openUntitledFile(fileMode: string, contents: string, fileUri: URI = undefined): void {
-		const input = this._untitledEditorService.createOrGet(fileUri, fileMode, contents);
-
-		this._editorService.openEditor(input, { pinned: true })
-			.then(
-				(success) => {
-				},
-				(error: any) => {
-					this._notificationService.notify({
-						severity: Severity.Error,
-						message: error
-					});
-				}
-			);
 	}
 }

@@ -46,7 +46,6 @@ expressly granted herein, whether by implication, estoppel or otherwise.
     node-fetch: https://github.com/bitinn/node-fetch
     node-pty: https://github.com/Tyriar/node-pty
     nsfw: https://github.com/Axosoft/nsfw
-    pretty-data: https://github.com/vkiryukhin/pretty-data
     primeng: https://github.com/primefaces/primeng
     process-nextick-args: https://github.com/calvinmetcalf/process-nextick-args
     pty.js: https://github.com/chjj/pty.js
@@ -1419,16 +1418,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 =========================================
 END OF nsfw NOTICES AND INFORMATION
-
-%% pretty-data NOTICES AND INFORMATION BEGIN HERE
-=========================================
-License: Dual licensed under the MIT and GPL licenses:
-
-http://www.opensource.org/licenses/mit-license.php
-
-http://www.gnu.org/licenses/gpl.html
-=========================================
-END OF pretty-data NOTICES AND INFORMATION
 
 %% primeng NOTICES AND INFORMATION BEGIN HERE
 =========================================
