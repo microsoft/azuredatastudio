@@ -10,7 +10,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	constructor(
 		public readonly title: string,
 		public readonly root: string,
-		public readonly tableOfContents: Object[],
+		public readonly tableOfContents: any[],
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
 		public uri?: string,
 		public readonly type?: vscode.FileType,

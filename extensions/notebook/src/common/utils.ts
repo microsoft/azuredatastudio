@@ -129,16 +129,6 @@ export function getOSPlatformId(): string {
 	return platformId;
 }
 
-export function pathExists(p: string): boolean {
-	try {
-		fs.accessSync(p);
-	} catch (e) {
-		return false;
-	}
-	return true;
-}
-
-
 // PRIVATE HELPERS /////////////////////////////////////////////////////////
 function outputDataChunk(data: string | Buffer, outputChannel: vscode.OutputChannel, header: string): void {
 	data.toString().split(/\r?\n/)

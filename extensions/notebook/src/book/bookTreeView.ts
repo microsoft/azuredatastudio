@@ -8,7 +8,6 @@ import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { BookTreeItem } from './bookTreeItem';
-import * as utils from '../common/utils';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -17,16 +16,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
-	private tableOfContentsPath: string[];
+	private _tableOfContentsPath: string[];
 
 	constructor(private workspaceRoot: string) {
 		if (workspaceRoot !== '') {
-			this.tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
-			if (this.tableOfContentsPath === undefined || this.tableOfContentsPath.length === 0) {
-				vscode.commands.executeCommand('setContext', 'bookOpened', false);
-			} else {
-				vscode.commands.executeCommand('setContext', 'bookOpened', true);
-			}
+			this._tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
+			let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
+			vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		}
 	}
 
@@ -73,11 +69,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private getBooks(): BookTreeItem[] {
 		let books: BookTreeItem[] = [];
-		for (let i in this.tableOfContentsPath) {
-			let root = path.dirname(path.dirname(this.tableOfContentsPath[i]));
+		for (let i in this._tableOfContentsPath) {
+			let root = path.dirname(path.dirname(this._tableOfContentsPath[i]));
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
-				const tableOfContents = yaml.safeLoad(fs.readFileSync(this.tableOfContentsPath[i], 'utf-8'));
+				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentsPath[i], 'utf-8'));
 				let book = new BookTreeItem(config.title, root, tableOfContents, vscode.TreeItemCollapsibleState.Collapsed);
 				books.push(book);
 			} catch (e) {
@@ -97,10 +93,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let pathToMarkdown = path.join(root, 'content', sec[i].url.concat('.md'));
 				// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 				// Following Jupyter Books behavior for now
-				if (utils.pathExists(pathToNotebook)) {
+				if (fs.existsSync(pathToNotebook)) {
 					let notebook = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToNotebook], });
 					notebooks.push(notebook);
-				} else if (utils.pathExists(pathToMarkdown)) {
+				} else if (fs.existsSync(pathToMarkdown)) {
 					let markdown = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToMarkdown], });
 					notebooks.push(markdown);
 				} else {
