@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsight, IInsightOptions, InsightType } from './interfaces';
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { IInsight, IInsightOptions, InsightType, IInsightData } from './interfaces';
 
 import { $ } from 'vs/base/browser/dom';
 import { mixin } from 'vs/base/common/objects';

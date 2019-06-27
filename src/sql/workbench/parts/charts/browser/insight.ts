@@ -4,11 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Graph } from './graphInsight';
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
 import { ImageInsight } from './imageInsight';
 import { TableInsight } from './tableInsight';
-import { IInsightOptions, IInsight, InsightType, IInsightCtor } from './interfaces';
+import { IInsightOptions, IInsight, InsightType, IInsightCtor, IInsightData, ChartType, DataDirection } from './interfaces';
 import { CountInsight } from './countInsight';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

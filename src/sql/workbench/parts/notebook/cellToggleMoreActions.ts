@@ -15,7 +15,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { CellContext, CellActionBase } from 'sql/workbench/parts/notebook/cellViews/codeActions';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
-import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/common/actions';
+import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/electron-browser/core/actions';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
 

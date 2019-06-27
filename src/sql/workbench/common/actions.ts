@@ -7,11 +7,10 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -27,6 +26,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;

@@ -8,7 +8,7 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule, APP_BASE_HREF } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/electron-browser/core/componentHost.directive';
 import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';

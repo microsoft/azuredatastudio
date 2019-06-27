@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dimension } from 'vs/base/browser/dom';
-
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { mixin } from 'sql/base/common/objects';
+import * as types from 'vs/base/common/types';
+import { Color } from 'vs/base/common/color';
 
 export interface IInsightOptions {
 	type: InsightType | ChartType;
@@ -23,6 +23,63 @@ export interface IInsightOptions {
 	xAxisMax?: number;
 	encoding?: string;
 	imageFormat?: string;
+}
+
+export interface IPointDataSet {
+	data: Array<{ x: number | string, y: number }>;
+	label?: string;
+	fill: boolean;
+	backgroundColor?: Color;
+}
+
+export function customMixin(destination: any, source: any, overwrite?: boolean): any {
+	if (types.isObject(source)) {
+		mixin(destination, source, overwrite, customMixin);
+	} else if (types.isArray(source)) {
+		for (let i = 0; i < source.length; i++) {
+			if (destination[i]) {
+				mixin(destination[i], source[i], overwrite, customMixin);
+			} else {
+				destination[i] = source[i];
+			}
+		}
+	} else {
+		destination = source;
+	}
+	return destination;
+}
+
+export enum ChartType {
+	Bar = 'bar',
+	Doughnut = 'doughnut',
+	HorizontalBar = 'horizontalBar',
+	Line = 'line',
+	Pie = 'pie',
+	TimeSeries = 'timeSeries',
+	Scatter = 'scatter'
+}
+
+export enum DataDirection {
+	Vertical = 'vertical',
+	Horizontal = 'horizontal'
+}
+
+export enum LegendPosition {
+	Top = 'top',
+	Bottom = 'bottom',
+	Left = 'left',
+	Right = 'right',
+	None = 'none'
+}
+
+export enum DataType {
+	Number = 'number',
+	Point = 'point'
+}
+
+export interface IInsightData {
+	columns: Array<string>;
+	rows: Array<Array<string>>;
 }
 
 export interface IInsight {

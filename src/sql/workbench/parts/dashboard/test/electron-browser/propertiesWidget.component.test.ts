@@ -7,10 +7,10 @@ import { Observable } from 'rxjs/Observable';
 // of is not on Observable by default, need to import it
 import 'rxjs/add/observable/of';
 
-import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
-import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/services/dashboardServiceInterface.service';
+import { WidgetConfig } from 'sql/workbench/parts/dashboard/electron-browser/core/dashboardWidget';
+import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/electron-browser/services/dashboardServiceInterface.service';
 import { SingleAdminService, SingleConnectionManagementService } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
-import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/widgets/properties/propertiesWidget.component';
+import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/electron-browser/widgets/properties/propertiesWidget.component';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 
 import * as TypeMoq from 'typemoq';

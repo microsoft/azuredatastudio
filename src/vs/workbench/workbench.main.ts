@@ -202,14 +202,14 @@ import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiS
 import { BackupUiService } from 'sql/workbench/services/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/platform/restore/common/restoreService';
 import { RestoreService, RestoreDialogController } from 'sql/platform/restore/common/restoreServiceImpl';
-import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/common/newDashboardTabDialog';
-import { NewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialogService';
+import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/electron-browser/newDashboardTabDialog';
+import { NewDashboardTabDialogService } from 'sql/workbench/services/dashboard/electron-browser/newDashboardTabDialogService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { FileBrowserService } from 'sql/platform/fileBrowser/common/fileBrowserService';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { FileBrowserDialogController } from 'sql/workbench/services/fileBrowser/browser/fileBrowserDialogController';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
-import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
+import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogServiceImpl';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
@@ -461,25 +461,25 @@ import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/doughnutChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/horizontalBarChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/pieChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/scatterChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/charts/types/timeSeriesChart.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution';
-import 'sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution';
-import 'sql/workbench/parts/dashboard/dashboard.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/barChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/doughnutChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/horizontalBarChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/lineChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/pieChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/scatterChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/charts/types/timeSeriesChart.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/countInsight.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/imageInsight.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/views/tableInsight.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/dashboard.contribution';
 /* Tasks */
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */
-import 'sql/workbench/parts/dashboard/widgets/insights/insightsWidget.contribution';
-import 'sql/workbench/parts/dashboard/widgets/explorer/explorerWidget.contribution';
-import 'sql/workbench/parts/dashboard/widgets/tasks/tasksWidget.contribution';
-import 'sql/workbench/parts/dashboard/widgets/webview/webviewWidget.contribution';
-import 'sql/workbench/parts/dashboard/dashboardConfig.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/insights/insightsWidget.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/explorer/explorerWidget.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/tasks/tasksWidget.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/webview/webviewWidget.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/dashboardConfig.contribution';
 /* Model-based Views */
 import 'sql/workbench/electron-browser/modelComponents/components.contribution';
 /* View Model Editor */
@@ -487,11 +487,11 @@ import 'sql/workbench/electron-browser/modelComponents/modelViewEditor.contribut
 /* Notebook Editor */
 import 'sql/workbench/parts/notebook/notebook.contribution';
 /* Containers */
-import 'sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution';
-import 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution';
-import 'sql/workbench/parts/dashboard/containers/dashboardGridContainer.contribution';
-import 'sql/workbench/parts/dashboard/containers/dashboardWidgetContainer.contribution';
-import 'sql/workbench/parts/dashboard/containers/dashboardContainer.contribution';
-import 'sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution';
-import 'sql/workbench/parts/dashboard/containers/dashboardModelViewContainer.contribution';
-import 'sql/workbench/parts/dashboard/common/dashboardTab.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardControlHostContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardGridContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWidgetContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardNavSection.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardModelViewContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/core/dashboardTab.contribution';

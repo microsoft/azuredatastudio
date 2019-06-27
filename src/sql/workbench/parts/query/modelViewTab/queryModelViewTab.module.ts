@@ -13,7 +13,7 @@ import { WizardNavigation } from 'sql/platform/dialog/electron-browser/wizardNav
 import { Extensions, IComponentRegistry } from 'sql/platform/dashboard/electron-browser/modelComponentRegistry';
 import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/electron-browser/modelComponents/modelComponentWrapper.component';
-import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/electron-browser/core/componentHost.directive';
 import { IBootstrapParams, ISelector, providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown/editableDropdown.component';

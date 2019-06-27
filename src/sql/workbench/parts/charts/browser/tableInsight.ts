@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsight, InsightType } from './interfaces';
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { IInsight, InsightType, IInsightData } from './interfaces';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';

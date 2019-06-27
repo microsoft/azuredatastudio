@@ -13,7 +13,7 @@ import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces'
 import * as outputProcessor from 'sql/workbench/parts/notebook/outputs/common/outputProcessor';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/common/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/electron-browser/core/componentHost.directive';
 import { Extensions, IMimeComponent, IMimeComponentRegistry } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';
