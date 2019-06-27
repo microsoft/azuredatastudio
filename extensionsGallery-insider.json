@@ -1394,7 +1394,6 @@
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
 									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/powershell/ms-vscode.PowerShell-2019.5.0.vsix"
-
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -1840,6 +1839,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "de"
 								}
 							]
 						}
@@ -1901,6 +1904,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "es"
 								}
 							]
 						}
@@ -1962,6 +1969,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "fr"
 								}
 							]
 						}
@@ -2023,6 +2034,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "it"
 								}
 							]
 						}
@@ -2084,6 +2099,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "ko"
 								}
 							]
 						}
@@ -2145,6 +2164,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "pt-br"
 								}
 							]
 						}
@@ -2206,6 +2229,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "ru"
 								}
 							]
 						}
@@ -2267,6 +2294,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "zh-cn"
 								}
 							]
 						}
@@ -2328,6 +2359,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "zh-tw"
 								}
 							]
 						}
@@ -2389,6 +2424,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/Microsoft/azuredatastudio"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.LocalizedLanguages",
+									"value": "ja"
 								}
 							]
 						}
