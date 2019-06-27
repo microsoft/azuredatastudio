@@ -40,13 +40,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return allFiles;
 	}
 
-	async openNotebook(resource: vscode.Uri): Promise<void> {
+	async openNotebook(resource: string): Promise<void> {
 		try {
 			let doc = await vscode.workspace.openTextDocument(resource);
 			vscode.window.showTextDocument(doc);
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openNotebookError', 'Open file {0} failed: {1}',
-				resource.fsPath,
+				resource,
+				e instanceof Error ? e.message : e));
+		}
+	}
+
+	async openMarkdown(resource: string): Promise<void> {
+		try {
+			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+		} catch (e) {
+			vscode.window.showErrorMessage(localize('openMarkdownError', 'Open file {0} failed: {1}',
+				resource,
 				e instanceof Error ? e.message : e));
 		}
 	}
@@ -94,10 +104,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 				// Following Jupyter Books behavior for now
 				if (fs.existsSync(pathToNotebook)) {
-					let notebook = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToNotebook], });
+					let notebook = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToNotebook], });
 					notebooks.push(notebook);
 				} else if (fs.existsSync(pathToMarkdown)) {
-					let markdown = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, vscode.FileType.File, { command: 'bookTreeView.openNotebook', title: 'Open Notebook', arguments: [pathToMarkdown], });
+					let markdown = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, { command: 'bookTreeView.openMarkdown', title: 'Open Markdown', arguments: [pathToMarkdown], });
 					notebooks.push(markdown);
 				} else {
 					vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sec[i].title));
