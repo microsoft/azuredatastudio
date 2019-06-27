@@ -47,8 +47,8 @@ export abstract class ComponentWithIconBase extends ComponentBase {
 			removeCSSRulesContainingSelector(this._iconClass);
 			const icon = this.getLightIconPath(this.iconPath);
 			const iconDark = this.getDarkIconPath(this.iconPath) || icon;
-			createCSSRule(`.icon.${this._iconClass}`, `background-image: url("${icon}");background-size: ${this.iconHeight};`);
-			createCSSRule(`.vs-dark .icon.${this._iconClass}, .hc-black .icon.${this._iconClass}`, `background-image: url("${iconDark}");width: ${this.iconWidth};height: ${this.iconHeight};`);
+			createCSSRule(`.icon.${this._iconClass}`, `background-image: url("${icon}")`);
+			createCSSRule(`.vs-dark .icon.${this._iconClass}, .hc-black .icon.${this._iconClass}`, `background-image: url("${iconDark}")`);
 			this._changeRef.detectChanges();
 		}
 	}
