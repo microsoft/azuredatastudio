@@ -240,6 +240,12 @@ export class QueryResultsView extends Disposable {
 		}
 
 		// restore query model view tabs
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+
 		this.input.state.visibleTabs.forEach(tabId => {
 			if (tabId.startsWith('querymodelview;')) {
 				// tab id format is 'tab type;title;model view id'
