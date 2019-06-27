@@ -6,14 +6,14 @@ import 'vs/css!./code';
 import 'vs/css!./media/output';
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, SimpleChange, AfterViewInit, forwardRef, ChangeDetectorRef, ComponentRef, ComponentFactoryResolver } from '@angular/core';
-import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Event } from 'vs/base/common/event';
 import { nb } from 'azdata';
 import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import * as outputProcessor from 'sql/workbench/parts/notebook/common/models/outputProcessor';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import * as DOM from 'vs/base/browser/dom';
-import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/electron-browser/core/componentHost.directive';
+import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
 import { Extensions, IMimeComponent, IMimeComponentRegistry } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
 import * as colors from 'vs/platform/theme/common/colorRegistry';
 import * as themeColors from 'vs/workbench/common/theme';

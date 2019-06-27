@@ -10,9 +10,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { MainThreadModelViewDialogShape, SqlMainContext, ExtHostModelViewDialogShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Dialog, DialogTab, DialogButton, WizardPage, Wizard } from 'sql/platform/dialog/common/dialogTypes';
-import { CustomDialogService } from 'sql/platform/dialog/electron-browser/customDialogService';
+import { CustomDialogService } from 'sql/platform/dialog/browser/customDialogService';
 import { IModelViewDialogDetails, IModelViewTabDetails, IModelViewButtonDetails, IModelViewWizardPageDetails, IModelViewWizardDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/electron-browser/modelComponents/modelViewInput';
+import { ModelViewInput, ModelViewInputModel, ModeViewSaveHandler } from 'sql/workbench/browser/modelComponents/modelViewInput';
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';

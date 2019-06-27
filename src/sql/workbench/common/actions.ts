@@ -11,10 +11,10 @@ import { IScriptingService } from 'sql/platform/scripting/common/scriptingServic
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { Task } from 'sql/platform/tasks/common/tasks';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import { Task } from 'sql/platform/tasks/browser/tasksRegistry'
 
 import { ObjectMetadata } from 'azdata';
 

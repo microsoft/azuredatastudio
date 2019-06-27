@@ -86,7 +86,9 @@
 				"restrictions": [
 					"vs/nls",
 					"vs/css!./**/*",
-					"**/{vs,sql}/base/{common,browser}/**"
+					"**/{vs,sql}/base/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*"
 				]
 			},
 			{
@@ -94,9 +96,7 @@
 				"restrictions": [
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
-					"*", // node modules
-					"@angular/*", // angular
-					"rxjs/*" // rxjs
+					"*" // node modules
 				]
 			},
 			{
@@ -106,7 +106,9 @@
 					"assert",
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/test/{common,browser}/**"
+					"**/{vs,sql}/base/test/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*"
 				]
 			},
 			{
@@ -123,7 +125,9 @@
 					"vs/nls",
 					"vs/css!./**/*",
 					"**/{vs,sql}/base/{common,browser}/**",
-					"**/{vs,sql}/base/parts/*/{common,browser}/**"
+					"**/{vs,sql}/base/parts/*/{common,browser}/**",
+					"@angular/*",
+					"rxjs/*"
 				]
 			},
 			{
@@ -132,9 +136,7 @@
 					"vs/nls",
 					"**/{vs,sql}/base/{common,browser,node}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node}/**",
-					"*", // node modules
-					"@angular/*", // angular
-					"rxjs/*" // rxjs
+					"*" // node modules
 				]
 			},
 			{
@@ -145,8 +147,8 @@
 					"**/{vs,sql}/base/{common,browser,node,electron-browser}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-browser}/**",
 					"*", // node modules
-					"@angular/*", // angular
-					"rxjs/*" // rxjs
+					"@angular/*",
+					"rxjs/*"
 				]
 			},
 			{
@@ -156,8 +158,8 @@
 					"**/{vs,sql}/base/{common,browser,node,electron-main}/**",
 					"**/{vs,sql}/base/parts/*/{common,browser,node,electron-main}/**",
 					"*", // node modules
-					"@angular/*", // angular
-					"rxjs/*" // rxjs
+					"@angular/*",
+					"rxjs/*"
 				]
 			}
 		],

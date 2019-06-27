@@ -18,7 +18,7 @@ import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as DOM from 'vs/base/browser/dom';
 
-import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
+import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { CellView } from 'sql/workbench/parts/notebook/electron-browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/electron-browser/outputs/sanitizer';

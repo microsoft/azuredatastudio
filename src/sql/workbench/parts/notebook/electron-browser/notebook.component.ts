@@ -20,7 +20,7 @@ import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 
-import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';

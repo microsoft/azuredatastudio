@@ -21,7 +21,7 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { attachInputBoxStyler } from 'sql/platform/theme/common/styler';
-import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { Deferred } from 'sql/base/common/promise';
 import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 

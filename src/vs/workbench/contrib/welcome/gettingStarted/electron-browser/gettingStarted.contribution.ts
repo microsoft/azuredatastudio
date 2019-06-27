@@ -9,7 +9,7 @@ import { TelemetryOptOut } from './telemetryOptOut';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 // {{SQL CARBON EDIT}} - Add preview feature switch
-import { EnablePreviewFeatures } from 'sql/workbench/electron-browser/enablePreviewFeatures';
+import { EnablePreviewFeatures } from 'sql/workbench/common/enablePreviewFeatures';
 
 // {{SQL CARBON EDIT}}
 // Registry

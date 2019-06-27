@@ -10,7 +10,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { SlickGrid } from 'angular2-slickgrid';
 
 import { EditDataComponent } from 'sql/workbench/parts/grid/views/editData/editData.component';
-import { providerIterator } from 'sql/platform/bootstrap/node/bootstrapService';
+import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';

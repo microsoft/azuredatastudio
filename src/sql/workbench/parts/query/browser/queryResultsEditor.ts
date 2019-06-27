@@ -19,11 +19,7 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { QueryResultsView } from 'sql/workbench/parts/query/browser/queryResultsView';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-
-export const RESULTS_GRID_DEFAULTS = {
-	cellPadding: [5, 8, 4],
-	rowHeight: 24
-};
+import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/parts/query/common/resultsGridContribution';
 
 export const TextCompareEditorVisible = new RawContextKey<boolean>('textCompareEditorVisible', false);
 

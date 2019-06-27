@@ -5,7 +5,7 @@
 
 import * as azdata from 'azdata';
 import * as TypeMoq from 'typemoq';
-import { JobsRefreshAction, NewJobAction, EditJobAction, RunJobAction, StopJobAction, DeleteJobAction, NewStepAction, DeleteStepAction, NewAlertAction, EditAlertAction, DeleteAlertAction, NewOperatorAction, EditOperatorAction, DeleteOperatorAction, NewProxyAction, EditProxyAction, DeleteProxyAction } from 'sql/platform/jobManagement/electron-browser/jobActions';
+import { JobsRefreshAction, NewJobAction, EditJobAction, RunJobAction, StopJobAction, DeleteJobAction, NewStepAction, DeleteStepAction, NewAlertAction, EditAlertAction, DeleteAlertAction, NewOperatorAction, EditOperatorAction, DeleteOperatorAction, NewProxyAction, EditProxyAction, DeleteProxyAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
 
 // Mock View Components

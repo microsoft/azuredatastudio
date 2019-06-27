@@ -9,7 +9,10 @@ import * as nls from 'vs/nls';
 import * as editorOptions from 'vs/editor/common/config/editorOptions';
 import EDITOR_FONT_DEFAULTS = editorOptions.EDITOR_FONT_DEFAULTS;
 
-import { RESULTS_GRID_DEFAULTS } from 'sql/workbench/parts/query/browser/queryResultsEditor';
+export const RESULTS_GRID_DEFAULTS = {
+	cellPadding: [5, 8, 4],
+	rowHeight: 24
+};
 
 const configurationRegistry = <IConfigurationRegistry>Registry.as(Extensions.Configuration);
 

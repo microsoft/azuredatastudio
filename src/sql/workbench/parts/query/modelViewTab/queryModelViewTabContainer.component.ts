@@ -5,9 +5,9 @@
 
 import 'vs/css!./media/dialogModal';
 import { Component, ViewChild, Inject, forwardRef, ElementRef, AfterViewInit } from '@angular/core';
-import { ModelViewContent } from 'sql/workbench/electron-browser/modelComponents/modelViewContent.component';
-import { DialogPane } from 'sql/platform/dialog/electron-browser/dialogPane';
-import { ComponentEventType } from 'sql/workbench/electron-browser/modelComponents/interfaces';
+import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
+import { DialogPane } from 'sql/platform/dialog/browser/dialogPane';
+import { ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 

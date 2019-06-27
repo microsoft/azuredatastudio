@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IMimeComponent } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
-import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ElementRef, forwardRef, Inject, Component, OnInit, Input } from '@angular/core';
 import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';

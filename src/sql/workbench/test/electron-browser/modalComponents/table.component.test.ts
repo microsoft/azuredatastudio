@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import TableComponent from 'sql/workbench/electron-browser/modelComponents/table.component';
+import TableComponent from 'sql/workbench/browser/modelComponents/table.component';
 
 suite('TableComponent Tests', () => {
 

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { OnDestroy } from '@angular/core';
-import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 export abstract class CellView extends AngularDisposable implements OnDestroy {
 	constructor() {
@@ -13,5 +13,3 @@ export abstract class CellView extends AngularDisposable implements OnDestroy {
 
 	public abstract layout(): void;
 }
-
-

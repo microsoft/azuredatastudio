@@ -8,7 +8,7 @@ import { Mock, It, Times } from 'typemoq';
 import { MainThreadModelViewDialog } from 'sql/workbench/api/electron-browser/mainThreadModelViewDialog';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IModelViewButtonDetails, IModelViewTabDetails, IModelViewDialogDetails, IModelViewWizardPageDetails, IModelViewWizardDetails, DialogMessage, MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { CustomDialogService } from 'sql/platform/dialog/electron-browser/customDialogService';
+import { CustomDialogService } from 'sql/platform/dialog/browser/customDialogService';
 import { Dialog, DialogTab, Wizard } from 'sql/platform/dialog/common/dialogTypes';
 import { ExtHostModelViewDialogShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { Emitter } from 'vs/base/common/event';

@@ -7,7 +7,7 @@ import { Dimension } from 'vs/base/browser/dom';
 import { dispose } from 'vs/base/common/lifecycle';
 import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab.module';
 
 export class QueryModelViewTab implements IPanelTab {

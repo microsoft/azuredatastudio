@@ -5,9 +5,9 @@
 
 import * as assert from 'assert';
 import { Dialog, DialogTab } from 'sql/platform/dialog/common/dialogTypes';
-import { DialogPane } from 'sql/platform/dialog/electron-browser/dialogPane';
-import { DialogComponentParams } from 'sql/platform/dialog/electron-browser/dialogContainer.component';
-import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
+import { DialogPane } from 'sql/platform/dialog/browser/dialogPane';
+import { DialogComponentParams } from 'sql/platform/dialog/browser/dialogContainer.component';
+import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 
 

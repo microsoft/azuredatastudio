@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/electron-browser/widgets/explorer/explorerTree';
+import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTree';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 
 import * as assert from 'assert';

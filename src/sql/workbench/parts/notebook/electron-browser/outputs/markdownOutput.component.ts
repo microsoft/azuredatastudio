@@ -10,7 +10,7 @@ import 'vs/css!../cellViews/media/highlight';
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/electron-browser/outputs/sanitizer';
-import { AngularDisposable } from 'sql/base/node/lifecycle';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';

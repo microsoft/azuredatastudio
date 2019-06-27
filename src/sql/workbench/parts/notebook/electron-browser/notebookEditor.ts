@@ -7,7 +7,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
-import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
+import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import { CancellationToken } from 'vs/base/common/cancellation';

@@ -10,7 +10,7 @@ import { ExtHostModelView } from 'sql/workbench/api/common/extHostModelView';
 import { MainThreadModelViewShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IComponentShape, IItemConfig, ComponentEventType, IComponentEventArgs, ModelComponentTypes } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { TitledFormItemLayout } from 'sql/workbench/electron-browser/modelComponents/formContainer.component';
+import { TitledFormItemLayout } from 'sql/workbench/browser/modelComponents/formContainer.component';
 
 interface InternalItemConfig {
 	toIItemConfig(): IItemConfig;

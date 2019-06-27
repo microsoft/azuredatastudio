@@ -28,7 +28,7 @@ import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/co
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/electron-browser/notebookEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { registerNotebookThemes } from 'sql/workbench/parts/notebook/common/notebookStyles';
+import { registerNotebookThemes } from 'sql/workbench/parts/notebook/browser/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { notebookConstants } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
