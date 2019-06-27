@@ -57,6 +57,9 @@
 		"Microsoft.admin-pack",
 		"msrvida.azdata-sanddance"
 	],
+	"recommendedVisualizers" :[
+		"msrvida.azdata-sanddance"
+	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	}

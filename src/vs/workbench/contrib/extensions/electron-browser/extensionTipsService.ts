@@ -172,6 +172,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 		// {{SQL CARBON EDIT}} Extension Recommendation on ADS Launch
 		this.promptADSLaunchRecommendedExtensions();
+	//	this.promptVisualizerExtension();
 	}
 
 	private isEnabled(): boolean {
@@ -1131,6 +1132,86 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
+
+	private promptVisualizerRecommendations(): void {
+		/*
+		// nps.contribution.ts
+		const date = new Date().toDateString();
+		const lastSessionDate = storageService.get(LAST_SESSION_DATE_KEY, StorageScope.GLOBAL, new Date(0).toDateString());
+
+		if (date === lastSessionDate) {
+			return;
+		}
+
+		const sessionCount = (storageService.getNumber(SESSION_COUNT_KEY, StorageScope.GLOBAL, 0) || 0) + 1;
+		storageService.store(LAST_SESSION_DATE_KEY, date, StorageScope.GLOBAL);
+		storageService.store(SESSION_COUNT_KEY, sessionCount, StorageScope.GLOBAL);
+
+		if (sessionCount < 9) {
+			return;
+		}
+		*/
+		/*
+		const storageKey = 'extensionsAssistant/workspaceRecommendationsIgnore';
+		const config = this.configurationService.getValue<IExtensionsConfiguration>(ConfigurationKey);
+		const filteredRecs = this._allWorkspaceRecommendedExtensions;//.filter(rec => this.isExtensionAllowedToBeRecommended(rec.extensionId));
+
+		if (filteredRecs.length === 0
+			|| config.ignoreRecommendations
+			|| config.showRecommendationsOnlyOnDemand){
+		//	|| this.storageService.getBoolean(storageKey, StorageScope.WORKSPACE, false)) {
+
+			return;
+		}
+	*/
+		const filteredRecs = this._allWorkspaceRecommendedExtensions;
+		this.extensionsService.getInstalled(ExtensionType.User).then(local => {
+			const recommendations = filteredRecs.filter(({ extensionId }) => local.every(local => !areSameExtensions({ id: extensionId }, local.identifier)));
+
+			if (!recommendations.length) {
+				return Promise.resolve(undefined);
+			}
+
+			return new Promise<void>(c => {
+				this.notificationService.prompt(
+					Severity.Info,
+					localize('downloadSandDance.notice', "The SandDance extension is required to use this feature. Would you like to download the SandDance extension?"),
+					[{
+						label: localize('downloadSandDanceNotice.yes', "Download"),
+						run: () => {
+							//telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'install' });
+							const installAllAction = this.instantiationService.createInstance(InstallWorkspaceRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
+							installAllAction.run();
+							installAllAction.dispose();
+							c(undefined);
+						}
+					}, {
+						label: localize('downloadSandDanceNotice.never', "Don't ask again"), //label: choiceNever,
+						isSecondary: true,
+						run: () => {
+							// this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'neverShowAgain' });
+							// this.storageService.store(storageKey, true, StorageScope.WORKSPACE);
+							c(undefined);
+						}
+					}],
+					{
+						sticky: true,
+						onCancel: () => {
+							// this.telemetryService.publicLog('extensionWorkspaceRecommendations:popup', { userReaction: 'cancelled' });
+							c(undefined);
+						}
+					}
+				);
+			});
+		});
+	}
+
+	getVisualizerRecommendations(): Promise<IExtensionRecommendation[]> {
+		return Promise.resolve((product.recommendedVisualizers || [])
+			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
+			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
+	}
+
 
 	// End of {{SQL CARBON EDIT}}
 }

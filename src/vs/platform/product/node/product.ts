@@ -38,6 +38,7 @@ export interface IProductConfiguration {
 	// {{SQL CARBON EDIT}}
 	recommendedExtensions: string[];
 	recommendedExtensionsOnAppLaunch: string[];
+	recommendedVisualizers: string[];
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; }; };
 	exeBasedExtensionTips: { [id: string]: { friendlyName: string, windowsPath?: string, recommendations: string[] }; };
 	extensionKeywords: { [extension: string]: string[]; };
