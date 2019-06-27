@@ -378,11 +378,11 @@ import 'vs/workbench/contrib/terminal/browser/terminalPanel';
 // Relauncher
 import 'vs/workbench/contrib/relauncher/electron-browser/relauncher.contribution';
 
-// Tasks {{SQL CARBON EDIT}}
-import 'vs/workbench/contrib/tasks/browser/task.contribution';
-import * as vsTasks from 'vs/workbench/contrib/tasks/electron-browser/taskService';
-import * as vsTasksCommon from 'vs/workbench/contrib/tasks/common/taskService';
-registerSingleton(vsTasksCommon.ITaskService, vsTasks.TaskService, true);
+// Tasks {{SQL CARBON EDIT}} remove tasks
+// import 'vs/workbench/contrib/tasks/browser/task.contribution';
+// import { TaskService } from 'vs/workbench/contrib/tasks/electron-browser/taskService';
+// import { ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
+// registerSingleton(ITaskService, TaskService, true);
 
 // Remote
 // import 'vs/workbench/contrib/remote/electron-browser/remote.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our remote
