@@ -418,6 +418,9 @@ export class ExtensionsListView extends ViewletPanel {
 		if (/@recommendedOnAppLaunch/i.test(query.value)) {
 			return this.getAppLaunchRecommendations(token);
 		}
+		if (/@visualizerExtensions/i.test(query.value)) {
+			return this.getVisualizerRecommendations(token);
+		}
 		// End of {{SQL CARBON EDIT}}
 
 		if (ExtensionsListView.isWorkspaceRecommendedExtensionsQuery(query.value)) {
