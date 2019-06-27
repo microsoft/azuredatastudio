@@ -28,8 +28,9 @@ export class ResultsViewState {
 	public saveDynamicTabState(tabs: QueryModelViewTab[]): void {
 		this.dynamicModelViewTabsState.clear();
 		tabs.forEach(t => {
-			if (!this.dynamicModelViewTabsState.has(t.identifier)) {
-				this.dynamicModelViewTabsState.set(t.identifier, t.view.state);
+			let identifier: string = t.view.componentId;
+			if (!this.dynamicModelViewTabsState.has(identifier)) {
+				this.dynamicModelViewTabsState.set(identifier, t.view.state);
 			}
 		});
 	}
