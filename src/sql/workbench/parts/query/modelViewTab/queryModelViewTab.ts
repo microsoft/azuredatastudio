@@ -29,6 +29,7 @@ export class QueryModelViewTab implements IPanelTab {
 			let currentIdentifier = dynamicModelViewTabsState[dynamicModelViewTabsState.keys[i]];
 			if (currentIdentifier === this.view.componentId) {
 				this.view.state = dynamicModelViewTabsState[dynamicModelViewTabsState.keys[i]];
+				break;
 			}
 		}
 	}
