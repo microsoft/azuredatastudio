@@ -47,7 +47,7 @@ export interface IBootstrapParams {
 }
 
 export interface Type<T> {
-	new (...args: any[]): T;
+	new(...args: any[]): T;
 }
 
 export type IModuleFactory<T> = (params: IBootstrapParams, selector: string, service: IInstantiationService) => Type<T>;
