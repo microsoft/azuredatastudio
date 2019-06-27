@@ -245,6 +245,7 @@ export class QueryResultsView extends Disposable {
 				this._panelView.removeTab(tab.identifier);
 			}
 		});
+		this.dynamicModelViewTabs = [];
 
 		this.input.state.visibleTabs.forEach(tabId => {
 			if (tabId.startsWith('querymodelview;')) {
@@ -288,7 +289,9 @@ export class QueryResultsView extends Disposable {
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
-		this.input.state.restoreDynamicTabState(this.dynamicModelViewTabs);
+		this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
+			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
+		});
 
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {
@@ -405,6 +408,6 @@ export class QueryResultsView extends Disposable {
 			this._panelView.pushTab(tab, undefined, true);
 		}
 
-		this.input.state.saveDynamicTabState(this.dynamicModelViewTabs);
+		tab.putState(this.input.state.dynamicModelViewTabsState);
 	}
 }

@@ -9,6 +9,7 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab.module';
+import { ResultsViewState } from 'sql/workbench/parts/query/common/queryResultsInput';
 
 export class QueryModelViewTab implements IPanelTab {
 	public identifier = 'QueryModelViewTab_';
@@ -17,6 +18,19 @@ export class QueryModelViewTab implements IPanelTab {
 	constructor(public title: string, @IInstantiationService instantiationService: IInstantiationService) {
 		this.identifier += title;
 		this.view = instantiationService.createInstance(QueryModelViewTabView);
+	}
+
+	public putState(dynamicModelViewTabsState: Map<string, QueryModelViewState>): void {
+		dynamicModelViewTabsState.set(this.view.componentId, this.view.state);
+	}
+
+	public captureState(dynamicModelViewTabsState: Map<string, QueryModelViewState>): void {
+		for (let i = 0; i < dynamicModelViewTabsState.keys.length; ++i) {
+			let currentIdentifier = dynamicModelViewTabsState[dynamicModelViewTabsState.keys[i]];
+			if (currentIdentifier === this.view.componentId) {
+				this.view.state = dynamicModelViewTabsState[dynamicModelViewTabsState.keys[i]];
+			}
+		}
 	}
 
 	public dispose() {

@@ -25,27 +25,6 @@ export class ResultsViewState {
 	public activeTab: string;
 	public visibleTabs: Set<string> = new Set<string>();
 
-	public saveDynamicTabState(tabs: QueryModelViewTab[]): void {
-		this.dynamicModelViewTabsState.clear();
-		tabs.forEach(t => {
-			let identifier: string = t.view.componentId;
-			if (!this.dynamicModelViewTabsState.has(identifier)) {
-				this.dynamicModelViewTabsState.set(identifier, t.view.state);
-			}
-		});
-	}
-
-	public restoreDynamicTabState(tabs: QueryModelViewTab[]): void {
-		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
-			for (let i = 0; i < tabs.length; ++i) {
-				if (identifier === tabs[i].identifier) {
-					tabs[i].view.state = state;
-					break;
-				}
-			}
-		});
-	}
-
 	dispose() {
 		this.gridPanelState.dispose();
 		this.messagePanelState.dispose();
@@ -54,6 +33,7 @@ export class ResultsViewState {
 		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
 			state.dispose();
 		});
+		this.dynamicModelViewTabsState.clear();
 	}
 }
 
