@@ -12,8 +12,8 @@ import {
 	INotebookService, INotebookManager, INotebookProvider,
 	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
 } from 'sql/workbench/services/notebook/common/notebookService';
-import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
-import { standardRendererFactories } from 'sql/workbench/parts/notebook/outputs/factories';
+import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/electron-browser/outputs/registry';
+import { standardRendererFactories } from 'sql/workbench/parts/notebook/electron-browser/outputs/factories';
 import { Extensions, INotebookProviderRegistry, NotebookProviderRegistration } from 'sql/workbench/services/notebook/common/notebookRegistry';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Memento } from 'vs/workbench/common/memento';
@@ -26,11 +26,11 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
+import { NotebookEditor } from 'sql/workbench/parts/notebook/electron-browser/notebookEditor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { registerNotebookThemes } from 'sql/workbench/parts/notebook/notebookStyles';
+import { registerNotebookThemes } from 'sql/workbench/parts/notebook/common/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { ILanguageMagic, notebookConstants } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -40,7 +40,7 @@ import { RunOnceScheduler } from 'vs/base/common/async';
 import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
-import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 
 export interface NotebookProviderProperties {
 	provider: string;

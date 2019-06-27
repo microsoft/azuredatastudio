@@ -485,7 +485,7 @@ import 'sql/workbench/electron-browser/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/workbench/electron-browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/workbench/parts/notebook/notebook.contribution';
+import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
 /* Containers */
 import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardControlHostContainer.contribution';

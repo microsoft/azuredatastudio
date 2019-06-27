@@ -15,7 +15,7 @@ import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workb
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
-import { FutureInternal } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { FutureInternal } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
