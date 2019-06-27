@@ -102,7 +102,7 @@ export class NotebookMarkdownRenderer {
 			}
 			return '<img ' + attributes.join(' ') + '>';
 		};
-		renderer.link = (href, title, text): string => {
+		renderer.link = (href: string, title: string, text: string): string => {
 			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			if (href === null) {
 				return text;
@@ -176,9 +176,9 @@ export class NotebookMarkdownRenderer {
 
 	// This following methods have been adapted from marked.js
 	// Copyright (c) 2011-2014, Christopher Jeffrey (https://github.com/chjj/)
-	cleanUrl(sanitize, base, href) {
+	cleanUrl(sanitize: boolean, base: string, href: string) {
 		if (sanitize) {
-			let prot;
+			let prot: string;
 			try {
 				prot = decodeURIComponent(unescape(href))
 					.replace(/[^\w:]/g, '')
