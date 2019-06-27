@@ -430,7 +430,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
-		if (displayName) {
+		if (displayName && this._standardKernels) {
 			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName);
 			this._defaultKernel = displayName ? { name: standardKernel.name, display_name: standardKernel.displayName } : this._defaultKernel;
 		}
@@ -534,7 +534,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getStandardKernelFromName(name: string): notebookUtils.IStandardKernelWithProvider {
-		if (name) {
+		if (name && this._standardKernels) {
 			let kernel = this._standardKernels.find(kernel => kernel.name.toLowerCase() === name.toLowerCase());
 			return kernel;
 		}
@@ -542,7 +542,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getStandardKernelFromDisplayName(displayName: string): notebookUtils.IStandardKernelWithProvider {
-		if (displayName) {
+		if (displayName && this._standardKernels) {
 			let kernel = this._standardKernels.find(kernel => kernel.displayName.toLowerCase() === displayName.toLowerCase());
 			return kernel;
 		}
@@ -751,11 +751,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
 			}
-
-			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
-			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-				this._savedKernelInfo.name = standardKernel.name;
-				this._savedKernelInfo.display_name = standardKernel.displayName;
+			if (this._standardKernels) {
+				let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
+				if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+					this._savedKernelInfo.name = standardKernel.name;
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				}
 			}
 		}
 	}
@@ -961,14 +962,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * provider and notebook provider ids from a kernel display name
 	 */
 	private setKernelDisplayNameMapsWithStandardKernels(): void {
-		this._standardKernels.forEach(kernel => {
-			let displayName = kernel.displayName;
-			if (!displayName) {
-				displayName = kernel.name;
-			}
-			this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
-			this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
-		});
+		if (this._standardKernels) {
+			this._standardKernels.forEach(kernel => {
+				let displayName = kernel.displayName;
+				if (!displayName) {
+					displayName = kernel.name;
+				}
+				this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
+				this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
+			});
+		}
 	}
 
 	/**

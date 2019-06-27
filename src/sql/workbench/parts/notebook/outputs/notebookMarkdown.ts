@@ -6,7 +6,7 @@ import * as path from 'path';
 
 import { URI } from 'vs/base/common/uri';
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { dispose } from 'vs/base/common/lifecycle';
 import { RenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
@@ -15,6 +15,7 @@ import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import * as fs from 'fs';
 
+// Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
 	private _notebookURI: URI;
 	private _baseUrls: string[] = [];
@@ -23,11 +24,10 @@ export class NotebookMarkdownRenderer {
 	}
 
 	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		let disposables: IDisposable[] = [];
 		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined) : document.createElement('span');
 		return {
 			element,
-			dispose: () => dispose(disposables)
+			dispose: () => dispose()
 		};
 	}
 

@@ -101,7 +101,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownResult.dispose();
 			}
 		}));
-
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -179,6 +178,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 					value: this._content,
 					uris: uri
 				});
+				this.setLoading(false);
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = this.markdownResult.element.innerHTML;
 			} else {

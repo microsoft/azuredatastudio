@@ -264,11 +264,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	private async loadModel(): Promise<void> {
-		let start = performance.now();
-		this.setLoading(false);
-		// Once contents loaded, wait on provider information to be available before loading kernel and other information
+		// Wait on provider information to be available before loading kernel and other information
 		await this.awaitNonDefaultProvider();
-		await this.notebookParams.input.getProviderInfo();
 		await this._model.requestModelLoad();
 		this.detectChanges();
 		await this._model.startSession(this._model.notebookManager, undefined, true);
@@ -299,6 +296,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
+		this.setLoading(false);
 		this.updateToolbarComponents(this._model.trustedMode);
 		this.detectChanges();
 	}
