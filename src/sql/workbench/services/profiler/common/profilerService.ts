@@ -4,17 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import {
-	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate,
-	PROFILER_SETTINGS, IProfilerSettings, EngineType
-} from './interfaces';
+import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/workbench/parts/profiler/browser/profilerColumnEditorDialog';
 
 import * as azdata from 'azdata';
 
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -241,5 +238,15 @@ export class ProfilerService implements IProfilerService {
 	public launchFilterSessionDialog(input: ProfilerInput): void {
 		let dialog = this._instantiationService.createInstance(ProfilerFilterDialog);
 		dialog.open(input);
+	}
+
+	public getFilters(): ProfilerFilter[] {
+		const config = <ProfilerFilter[]>this._configurationService.getValue(PROFILER_FILTER_SETTINGS);
+		return config;
+	}
+
+	public saveFilter(filter: ProfilerFilter): void {
+		const config = [filter];
+		this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
 	}
 }
