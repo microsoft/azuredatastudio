@@ -25,7 +25,6 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { IProfilerController } from 'sql/workbench/parts/profiler/common/interfaces';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
@@ -33,7 +32,7 @@ const ApplyText: string = localize('profilerFilterDialog.apply', "Apply");
 const OkText: string = localize('profilerFilterDialog.ok', "OK");
 const CancelText: string = localize('profilerFilterDialog.cancel', "Cancel");
 const DialogTitle: string = localize('profilerFilterDialog.title', "Filters");
-const RemoveText: string = localize('profilerFilterDialog.remove', "Remove");
+const RemoveText: string = localize('profilerFilterDialog.remove', "Remove this clause");
 const SaveFilterText: string = localize('profilerFilterDialog.saveFilter', "Save Filter");
 const LoadFilterText: string = localize('profilerFilterDialog.loadFilter', "Load Filter");
 const AddClauseText: string = localize('profilerFilterDialog.addClauseText', "Add a clause");
@@ -156,7 +155,10 @@ export class ProfilerFilterDialog extends Modal {
 	}
 
 	private createClauseTableActionLink(text: string, parent: HTMLElement, handler: () => void): void {
-		const actionLink = DOM.append(parent, DOM.$('.profiler-filter-clause-table-action', { tabIndex: '0' }));
+		const actionLink = DOM.append(parent, DOM.$('.profiler-filter-clause-table-action', {
+			'tabIndex': '0',
+			'role': 'button'
+		}));
 		actionLink.innerText = text;
 		DOM.addDisposableListener(actionLink, DOM.EventType.CLICK, handler);
 		DOM.addStandardDisposableListener(actionLink, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
@@ -234,7 +236,8 @@ export class ProfilerFilterDialog extends Modal {
 		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.icon.remove', {
 			'tabIndex': '0',
 			'aria-label': RemoveText,
-			'title': RemoveText
+			'title': RemoveText,
+			'role': 'button'
 		}));
 
 		DOM.addStandardDisposableListener(removeClauseButton, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
