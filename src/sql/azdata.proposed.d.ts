@@ -2635,6 +2635,7 @@ declare module 'azdata' {
 	export class TreeItem extends vscode.TreeItem {
 		payload?: IConnectionProfile;
 		childProvider?: string;
+		type?: string;
 	}
 
 	export namespace tasks {

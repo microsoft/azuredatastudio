@@ -30,9 +30,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
 	},
-	when: ContextKeyExpr.and(
-		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*|^database$/i))
+	when: NodeContextKey.IsDatabaseOrServer
 });
 
 // Note that we don't show this for Databases under Server nodes (viewItem == Database) because
@@ -44,9 +42,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: MANAGE_COMMAND_ID,
 		title: localize('manage', 'Manage')
 	},
-	when: ContextKeyExpr.and(
-		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*/i))
+	when: NodeContextKey.IsDatabaseOrServer
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {

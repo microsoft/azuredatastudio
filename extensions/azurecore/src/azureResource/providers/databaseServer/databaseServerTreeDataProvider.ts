@@ -72,7 +72,8 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					saveProfile: false,
 					options: {}
 				},
-				childProvider: 'MSSQL'
+				childProvider: 'MSSQL',
+				type: 'server'
 			}
 		});
 	}
