@@ -12,7 +12,7 @@ import { GridPanel } from 'sql/workbench/parts/query/browser/gridPanel';
 import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
-import { QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
+import { QueryModelViewTab } from 'sql/workbench/parts/query/browser/modelViewTab/queryModelViewTab';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -242,13 +242,20 @@ export class QueryResultsView extends Disposable {
 		}
 
 		// restore query model view tabs
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+		this.dynamicModelViewTabs = [];
+
 		this.input.state.visibleTabs.forEach(tabId => {
 			if (tabId.startsWith('querymodelview;')) {
 				// tab id format is 'tab type;title;model view id'
 				let parts = tabId.split(';');
 				if (parts.length === 3) {
 					let tab = this._register(new QueryModelViewTab(parts[1], this.instantiationService));
-					tab.view._componentId = parts[2];
+					tab.view.componentId = parts[2];
 					this.dynamicModelViewTabs.push(tab);
 					if (!this._panelView.contains(tab)) {
 						this._panelView.pushTab(tab, undefined, true);
@@ -277,12 +284,16 @@ export class QueryResultsView extends Disposable {
 		this.runnerDisposables = [];
 
 		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+		this.dynamicModelViewTabs.forEach(t => t.clear());
 
 		this.resultsTab.view.state = this.input.state.gridPanelState;
 		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
+		this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
+			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
+		});
 
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {
@@ -308,6 +319,7 @@ export class QueryResultsView extends Disposable {
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
+		this.dynamicModelViewTabs.forEach(t => t.clear());
 	}
 
 	public get input(): QueryResultsInput {
@@ -390,12 +402,14 @@ export class QueryResultsView extends Disposable {
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {
 		let tab = this._register(new QueryModelViewTab(title, this.instantiationService));
-		tab.view._componentId = componentId;
+		tab.view.componentId = componentId;
 		this.dynamicModelViewTabs.push(tab);
 
 		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
 		if (!this._panelView.contains(tab)) {
 			this._panelView.pushTab(tab, undefined, true);
 		}
+
+		tab.putState(this.input.state.dynamicModelViewTabsState);
 	}
 }
