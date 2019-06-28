@@ -237,6 +237,8 @@ after(async function () {
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
 });
 
+export const allExtensionsLoadedText = 'All Extensions Loaded';
+
 describe('Running Code', () => {
 	before(async function () {
 		const app = new Application(this.defaultOptions);
@@ -244,7 +246,6 @@ describe('Running Code', () => {
 		//{{SQL CARBON EDIT}}
 		const testExtLoadedText = 'Test Extension Loaded';
 		const testSetupCompletedText = 'Test Setup Completed';
-		const allExtensionsLoadedText = 'All Extensions Loaded';
 		const setupTestCommand = 'Test: Setup Integration Test';
 		const waitForExtensionsCommand = 'Test: Wait For Extensions To Load';
 		await app.workbench.statusbar.waitForStatusbarText(testExtLoadedText, testExtLoadedText);
