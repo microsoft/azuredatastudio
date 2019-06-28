@@ -103,6 +103,40 @@ class ResultsView extends Disposable implements IPanelView {
 	}
 }
 
+class VisualizerView extends Disposable implements IPanelView {
+	private container = document.createElement('div');
+
+	constructor(private instantiationService: IInstantiationService) {
+		super();
+	}
+
+	render(container: HTMLElement): void {
+		container.appendChild(this.container);
+		//this.container.innerText += "Hello World!";
+	}
+
+	layout(dimension: DOM.Dimension): void {
+		this.container.style.width = `${dimension.width}px`;
+		this.container.style.height = `${dimension.height}px`;
+	}
+
+	focus(): void {
+	}
+
+	public clear() {
+	}
+
+	remove(): void {
+		this.container.remove();
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+	}
+
+	public set state(val: GridPanelState) {
+	}
+}
+
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', 'Results');
 	public readonly identifier = 'resultsTab';
@@ -123,6 +157,29 @@ class ResultsTab implements IPanelTab {
 	public clear() {
 		this.view.clear();
 	}
+}
+
+class VisualizerTab implements IPanelTab {
+	public readonly title = nls.localize('visualizerTabTitle', 'Visualizer');
+	public readonly identifier = 'visualizerTab';
+	public readonly view: VisualizerView;
+
+	constructor(instantiationService: IInstantiationService) {
+		this.view = new VisualizerView(instantiationService);
+	}
+
+	public set queryRunner(runner: QueryRunner) {
+		this.view.queryRunner = runner;
+	}
+
+	public dispose() {
+		dispose(this.view);
+	}
+
+	public clear() {
+		this.view.clear();
+	}
+
 }
 
 class MessagesTab implements IPanelTab {
@@ -153,6 +210,7 @@ export class QueryResultsView extends Disposable {
 	private resultsTab: ResultsTab;
 	private messagesTab: MessagesTab;
 	private chartTab: ChartTab;
+	private visualizerTab: VisualizerTab;
 	private qpTab: QueryPlanTab;
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
@@ -169,6 +227,7 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
 		this.messagesTab = this._register(new MessagesTab(instantiationService));
 		this.chartTab = this._register(new ChartTab(instantiationService));
+		this.visualizerTab = this._register(new VisualizerTab(instantiationService));
 		this._panelView = this._register(new TabbedPanel(container, { showHeaderWhenSingleView: true }));
 		this._register(attachTabbedPanelStyler(this._panelView, themeService));
 		this.qpTab = this._register(new QueryPlanTab());
@@ -204,9 +263,11 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
+		this.visualizerTab.queryRunner = runner;
 		this.runnerDisposables.push(runner.onQueryStart(e => {
 			this.showResults();
 			this.hideChart();
+			this.hideDataAsVisualizer();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
@@ -225,6 +286,12 @@ export class QueryResultsView extends Disposable {
 			this._panelView.pushTab(this.chartTab);
 		} else if (!this.input.state.visibleTabs.has(this.chartTab.identifier) && this._panelView.contains(this.chartTab)) {
 			this._panelView.removeTab(this.chartTab.identifier);
+		}
+
+		if (this.input.state.visibleTabs.has(this.visualizerTab.identifier) && !this._panelView.contains(this.visualizerTab)) {
+			this._panelView.pushTab(this.visualizerTab);
+		} else if (!this.input.state.visibleTabs.has(this.visualizerTab.identifier) && this._panelView.contains(this.visualizerTab)) {
+			this._panelView.removeTab(this.visualizerTab.identifier);
 		}
 
 		if (this.input.state.visibleTabs.has(this.qpTab.identifier) && !this._panelView.contains(this.qpTab)) {
@@ -282,6 +349,8 @@ export class QueryResultsView extends Disposable {
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
 
+		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab, this.visualizerTab].forEach(t => t.clear());
+
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {
 			this.setQueryRunner(info.queryRunner);
@@ -306,6 +375,7 @@ export class QueryResultsView extends Disposable {
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
+		this.visualizerTab.clear();
 	}
 
 	public get input(): QueryResultsInput {
@@ -326,9 +396,24 @@ export class QueryResultsView extends Disposable {
 		this.chartTab.chart(dataId);
 	}
 
+	public showDataAsVisualizer(dataId: { resultId: number, batchId: number }): void {
+		this.input.state.visibleTabs.add(this.visualizerTab.identifier);
+		if (!this._panelView.contains(this.visualizerTab)) {
+			this._panelView.pushTab(this.visualizerTab);
+		}
+
+		this._panelView.showTab(this.visualizerTab.identifier);
+	}
+
 	public hideChart() {
 		if (this._panelView.contains(this.chartTab)) {
 			this._panelView.removeTab(this.chartTab.identifier);
+		}
+	}
+
+	public hideDataAsVisualizer() {
+		if (this._panelView.contains(this.visualizerTab)) {
+			this._panelView.removeTab(this.visualizerTab.identifier);
 		}
 	}
 

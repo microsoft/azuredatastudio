@@ -528,4 +528,8 @@ export class QueryEditor extends BaseEditor {
 	public chart(dataId: { batchId: number, resultId: number }) {
 		this.resultsEditor.chart(dataId);
 	}
+
+	public visualizer(dataId: { batchId: number, resultId: number }) {
+		this.resultsEditor.visualizer(dataId);
+	}
 }

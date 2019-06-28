@@ -158,6 +158,10 @@ export class QueryResultsEditor extends BaseEditor {
 		this.resultsView.chartData(dataId);
 	}
 
+	public visualizer(dataId: { batchId: number, resultId: number }) {
+		this.resultsView.showDataAsVisualizer(dataId);
+	}
+
 	public showQueryPlan(xml: string) {
 		this.resultsView.showPlan(xml);
 	}
