@@ -5,7 +5,6 @@
 
 import { IAdsTelemetryService, ITelemetryInfo, ITelemetryEvent, ITelemetryConnectionInfo, ITelemetryEventMeasures, ITelemetryEventProperties } from 'sql/platform/telemetry/telemetry';
 import { ILogService } from 'vs/platform/log/common/log';
-import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 
@@ -48,7 +47,8 @@ class TelemetryEventImpl implements ITelemetryEvent {
 			{
 				authenticationType: connectionInfo.authenticationType,
 				providerName: connectionInfo.providerName,
-				serverType: connectionInfo.serverType
+				serverType: connectionInfo.serverType,
+				engineType: connectionInfo.engineType
 			});
 		return this;
 	}
