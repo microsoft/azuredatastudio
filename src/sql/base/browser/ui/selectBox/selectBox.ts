@@ -84,7 +84,11 @@ export class SelectBox extends vsSelectBox {
 		}
 
 		// explicitly set the accessible role so that the screen readers can read the control type properly
-		this.selectElement.setAttribute('role', 'combobox');
+		// for windows, this role of combobox is read as 'combo box'; for mac, the role of 'combobox' is read as a 'button'
+		// not setting a role for Mac means that it is read as a 'popup button', which is the correct behavior.
+		if (process.platform === 'win32') {
+			this.selectElement.setAttribute('role', 'combobox');
+		}
 
 		this._selectBoxOptions = selectBoxOptions;
 		let focusTracker = dom.trackFocus(this.selectElement);
