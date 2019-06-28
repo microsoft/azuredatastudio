@@ -171,12 +171,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			}
 
 			if (useInProcMarkdown(this.configurationService)) {
-				let uri = Object.create(null);
 				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 				this.markdownResult = this.markdownRenderer.render({
 					isTrusted: this.cellModel.trustedMode,
-					value: this._content,
-					uris: uri
+					value: this._content
 				});
 				this.setLoading(false);
 				let outputElement = <HTMLElement>this.output.nativeElement;

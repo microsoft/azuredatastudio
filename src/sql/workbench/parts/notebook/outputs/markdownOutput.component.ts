@@ -103,12 +103,10 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 			this._lastTrustedMode = this.isTrusted;
 			let content = this._bundleOptions.data['text/markdown'];
 			if (useInProcMarkdown(this._configurationService)) {
-				let uri = Object.create(null);
 				this._markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 				let markdownResult = this._markdownRenderer.render({
 					isTrusted: this.cellModel.trustedMode,
-					value: content.toString(),
-					uris: uri
+					value: content.toString()
 				});
 				let outputElement = <HTMLElement>this.output.nativeElement;
 				outputElement.innerHTML = markdownResult.element.innerHTML;
