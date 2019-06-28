@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------------------------
  *  Copyright (c) Microsoft Corporation. All rights reserved.
- *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -8,6 +8,20 @@ import { URI } from 'vs/base/common/uri';
 import * as modes from 'vs/editor/common/modes';
 import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
 import { ITunnelService, RemoteTunnel } from 'vs/platform/remote/common/tunnel';
+
+export function extractLocalHostUriMetaDataForPortMapping(uri: URI): { address: string, port: number } | undefined {
+	if (uri.scheme !== 'http' && uri.scheme !== 'https') {
+		return undefined;
+	}
+	const localhostMatch = /^(localhost):(\d+)$/.exec(uri.authority);
+	if (!localhostMatch) {
+		return undefined;
+	}
+	return {
+		address: localhostMatch[1],
+		port: +localhostMatch[2],
+	};
+}
 
 export class WebviewPortMappingManager extends Disposable {
 
@@ -23,31 +37,25 @@ export class WebviewPortMappingManager extends Disposable {
 
 	public async getRedirect(url: string): Promise<string | undefined> {
 		const uri = URI.parse(url);
-		if (uri.scheme !== 'http' && uri.scheme !== 'https') {
+		const requestLocalHostInfo = extractLocalHostUriMetaDataForPortMapping(uri);
+		if (!requestLocalHostInfo) {
 			return undefined;
 		}
-
-		const localhostMatch = /^localhost:(\d+)$/.exec(uri.authority);
-		if (!localhostMatch) {
-			return undefined;
-		}
-
-		const port = +localhostMatch[1];
 		for (const mapping of this.mappings()) {
-			if (mapping.webviewPort === port) {
+			if (mapping.webviewPort === requestLocalHostInfo.port) {
 				if (this.extensionLocation && this.extensionLocation.scheme === REMOTE_HOST_SCHEME) {
 					const tunnel = await this.getOrCreateTunnel(mapping.extensionHostPort);
 					if (tunnel) {
-						return url.replace(
-							new RegExp(`^${uri.scheme}://localhost:${mapping.webviewPort}(/|$)`),
-							`${uri.scheme}://localhost:${tunnel.tunnelLocalPort}$1`);
+						return uri.with({
+							authority: `127.0.0.1:${tunnel.tunnelLocalPort}`,
+						}).toString();
 					}
 				}
 
 				if (mapping.webviewPort !== mapping.extensionHostPort) {
-					return url.replace(
-						new RegExp(`^${uri.scheme}://localhost:${mapping.webviewPort}(/|$)`),
-						`${uri.scheme}://localhost:${mapping.extensionHostPort}$1`);
+					return uri.with({
+						authority: `${requestLocalHostInfo.address}:${mapping.extensionHostPort}`
+					}).toString();
 				}
 			}
 		}
