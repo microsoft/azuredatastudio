@@ -687,6 +687,25 @@ export class ExtensionsListView extends ViewletPanel {
 				});
 			});
 	}
+	private getVisualizerRecommendations(token: CancellationToken): Promise<IPagedModel<IExtension>> {
+		return this.extensionsWorkbenchService.queryLocal()
+			.then(result => result.filter(e => e.type === ExtensionType.User))
+			.then(local => {
+				return this.tipsService.getVisualizerRecommendations().then((recommmended) => {
+					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
+					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
+						// filter out installed extensions and the extensions not in the recommended list
+						pager.firstPage = pager.firstPage.filter((p) => {
+							const extensionId = `${p.publisher}.${p.name}`;
+							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
+						});
+						pager.total = pager.firstPage.length;
+						pager.pageSize = pager.firstPage.length;
+						return this.getPagedModel(pager);
+					});
+				});
+			});
+	}
 	// End of {{SQL CARBON EDIT}}
 
 	// Given all recommendations, trims and returns recommendations in the relevant order after filtering out installed extensions

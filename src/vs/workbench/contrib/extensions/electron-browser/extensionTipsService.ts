@@ -1149,9 +1149,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('VisualizerExtensions', "Would you like to visualize your data? Please install the recommended visualizer extensions."),
+						localize('VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
 						[{
-							label: localize('installAll', "Install All"),
+							label: localize('installAll', "Install SandDance"),
 							run: () => {
 								/* __GDPR__
 								"extensionAppLaunchRecommendations:popup" : {
@@ -1165,7 +1165,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								c(undefined);
 							}
 						}, {
-							label: localize('showRecommendations', "Show Recommendations"),
+							label: localize('showRecommendations', "Show SandDance"),
 							run: () => {
 								/* __GDPR__
 									"extensionAppLaunchRecommendations:popup" : {
@@ -1211,6 +1211,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return Promise.resolve();
 			}
 		});
+
 	}
 
 	getVisualizerRecommendations(): Promise<IExtensionRecommendation[]> {

@@ -1825,7 +1825,7 @@ export class InstallAppLaunchRecommendedExtensionsAction extends Action {
 export class ShowVisualizerExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.showVisualizerExtensions';
-	static LABEL = localize('showVisualizerExtensions', "Show Visualizer Extensions");
+	static LABEL = localize('showVisualizerExtensions', "Show Visualizers");
 
 	constructor(
 		id: string,
@@ -1839,7 +1839,7 @@ export class ShowVisualizerExtensionsAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
-				viewlet.search('@visualizerExtensions '); //@recommendedOnAppLaunch
+				viewlet.search('@visualizerExtensions');
 				viewlet.focus();
 			});
 	}
@@ -1874,7 +1874,7 @@ export class InstallVisualizerExtensionsAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
-				viewlet.search('@visualizerExtensions ');
+				viewlet.search('@visualizerExtensions');
 				viewlet.focus();
 				const names = this.recommendations.map(({ extensionId }) => extensionId);
 				return this.extensionWorkbenchService.queryGallery({ names, source: 'install-visualizer-extensions' }, CancellationToken.None).then(pager => {
