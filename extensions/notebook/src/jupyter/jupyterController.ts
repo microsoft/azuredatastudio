@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import * as constants from '../common/constants';
 import * as localizedConstants from '../common/localizedConstants';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import { IServerInstance } from './common';
 import * as utils from '../common/utils';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
@@ -208,20 +208,6 @@ export class JupyterController implements vscode.Disposable {
 		pythonDialog.showDialog().catch((err: any) => {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		});
-	}
-
-	public getTextToSendToTerminal(shellType: any): string {
-		if (utils.getOSPlatform() === utils.Platform.Windows && typeof shellType === 'string') {
-			if (shellType.endsWith('powershell.exe')) {
-				return localizedConstants.msgManagePackagesPowershell;
-			} else if (shellType.endsWith('cmd.exe')) {
-				return localizedConstants.msgManagePackagesCmd;
-			} else {
-				return localizedConstants.msgManagePackagesBash;
-			}
-		} else {
-			return localizedConstants.msgManagePackagesBash;
-		}
 	}
 
 	public get jupyterInstallation() {

@@ -465,7 +465,7 @@ export abstract class ExtHostDataProtocolShape {
 	/**
 	 * Schema compare
 	 */
-	$schemaCompare(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> { throw ni(); }
+	$schemaCompare(handle: number, operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> { throw ni(); }
 
 	/**
 	 * Schema compare generate script
@@ -487,6 +487,23 @@ export abstract class ExtHostDataProtocolShape {
 	 * Schema compare Include node
 	 */
 	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Schema compare open scmp
+	 */
+	$schemaCompareOpenScmp(handle: number, filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> { throw ni(); }
+
+
+	/**
+	 * Schema compare save scmp
+	 */
+	$schemaCompareSaveScmp(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> { throw ni(); }
+
+	/**
+	 * Schema compare cancel
+	 */
+	$schemaCompareCancel(handle: number, operationId: string): Thenable<azdata.ResultStatus> { throw ni(); }
+
 }
 
 /**
@@ -589,6 +606,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
+	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
@@ -902,6 +920,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
 	$runAllCells(id: string): Promise<boolean>;
+	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
 }

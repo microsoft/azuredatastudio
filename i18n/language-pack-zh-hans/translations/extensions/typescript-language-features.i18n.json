@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "启用或禁用编辑器中 TypeScript 文件的建议诊断。要求工作区使用高于 2.8 版本的 TypeScript。",
 			"typescript.preferences.quoteStyle": "用于快速修复的首选引用样式: `single` (单引号)、`double` (双引号) 或 `auto` (从已有 import 语句中推测引号类型)。要求工作区使用高于 2.9 版本的 TypeScript。",
 			"typescript.preferences.importModuleSpecifier": "自动 import 语句中路径的首选样式。",
-			"typescript.preferences.importModuleSpecifier.auto": "推断最短的路径类型。",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "相对于文件位置。",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "根据 `jsconfig.json` 或 `tsconfig.json` 中配置的 `baseUrl` 。",
 			"typescript.updateImportsOnFileMove.enabled": "当在 VS Code 中重命名或移动文件时，启用或禁用自动更新导入路径。要求工作区使用高于 2.9 版本的 TypeScript。",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "启用或禁用偶尔出现的有关 JavaScript 和 TypeScript 的调查，帮助我们改善 VS Code 对两者的支持。",
 			"configuration.suggest.completeJSDocs": "启用/禁用对完成 JSDoc 注释的建议。",
 			"typescript.preferences.renameShorthandProperties": "启用/禁用在重命名过程中引入对象速记属性的别名。需要在工作区中使用 TypeScript 3.4 或更高版本。"
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "无法获取此目录 TypeScript 的版本",
@@ -102,6 +105,7 @@
 			"neverAgain": "禁用 js/ts 调查"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "若要启用项目范围内的 JavaScript/TypeScript 语言功能，请排除包含多个文件的文件夹，例如: {0}",
 			"hintExclude.generic": "若要启用项目范围内的 JavaScript/TypeScript 语言功能，请排除包含不需要处理的源文件的大型文件夹。",
 			"large.label": "配置排除",

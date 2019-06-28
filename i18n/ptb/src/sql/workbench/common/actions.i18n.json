@@ -8,14 +8,17 @@
 	],
 	"newQueryAction.newQuery": "Nova consulta",
 	"scriptSelect": "Selecione Top 1000",
+	"scriptExecute": "Script  executar como",
 	"scriptAlter": "Script como Alter",
 	"editData": "Editar dados",
 	"scriptCreate": "Script de criação",
-	"scriptDelete": "Script como excluir",
+	"scriptDelete": "Script apagado",
 	"backupAction.backup": "Backup",
+	"backup.isPreviewFeature": "Você precisa habilitar as funcionalidades em versão prévia para poder utilizar o backup",
 	"restoreAction.restore": "Restaurar",
+	"restore.isPreviewFeature": "Você precisa habilitar recursos em versão prévia para poder utilizar a restauração",
 	"manage": "Gerenciar",
 	"showDetails": "Mostrar detalhes",
 	"newDatabase": "Novo banco de dados",
-	"configureDashboard": "Configurar"
+	"configureDashboard": "Aprenda a Configurar o Painel"
 }

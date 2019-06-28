@@ -22,7 +22,12 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 
 		this._register(
 			commandService.onWillExecuteCommand(
-				(e: ICommandEvent) => telemetryService.publicLog('adsCommandExecuted', { id: e.commandId })));
+				(e: ICommandEvent) => {
+					// Filter out high-frequency events
+					if (!['type', 'cursorUp', 'cursorDown', 'cursorRight', 'cursorLeft', 'deleteLeft', 'deleteRight'].find(id => id === e.commandId)) {
+						telemetryService.publicLog('adsCommandExecuted', { id: e.commandId });
+					}
+				}));
 		const dailyLastUseDate: number = Date.parse(storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, '0'));
 		const weeklyLastUseDate: number = Date.parse(storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
 		const monthlyLastUseDate: number = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));

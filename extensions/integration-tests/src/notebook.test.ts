@@ -10,9 +10,9 @@ import * as assert from 'assert';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { context } from './testContext';
-import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySpark3KernelSpec } from './notebook.util';
+import { sqlNotebookContent, writeNotebookToFile, sqlKernelMetadata, getFileName, pySparkNotebookContent, pySpark3KernelMetadata, pythonKernelMetadata, sqlNotebookMultipleCellsContent, notebookContentForCellLanguageTest, sqlKernelSpec, pythonKernelSpec, pySpark3KernelSpec, CellTypes } from './notebook.util';
 import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from './testConfig';
-import { connectToServer } from './utils';
+import { connectToServer, sleep } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
 
@@ -36,12 +36,20 @@ if (context.RunTest) {
 			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
 		});
 
+		test('Clear cell output - SQL notebook', async function () {
+			await (new NotebookTester()).sqlNbClearOutputs(this.test.title);
+		});
+
 		test('Clear all outputs - SQL notebook ', async function () {
 			await (new NotebookTester()).sqlNbClearAllOutputs(this.test.title);
 		});
 
 		test('sql language test', async function () {
 			await (new NotebookTester()).sqlLanguageTest(this.test.title);
+		});
+
+		test('should not be dirty after saving notebook test', async function () {
+			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
 		});
 
 		if (process.env['RUN_PYTHON3_TEST'] === '1') {
@@ -129,6 +137,11 @@ class NotebookTester {
 		await this.verifyClearAllOutputs(notebook);
 	}
 
+	async sqlNbClearOutputs(title: string): Promise<void> {
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
+		await this.verifyClearOutputs(notebook);
+	}
+
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbMultipleCellsTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++, true);
@@ -178,6 +191,41 @@ class NotebookTester {
 		kernelChanged = await notebook.changeKernel(sqlKernelSpec);
 		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
 		assert(kernelChanged && notebook.document.kernelSpec.name === 'SQL', `Expected third kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+	}
+
+	async shouldNotBeDirtyAfterSavingNotebookTest(title: string): Promise<void> {
+		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title);
+		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
+		assert(notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
+		assert(notebook.document.isDirty === true, 'Notebook should be dirty after edit');
+
+		// When I save it, it should no longer be dirty
+		let saved = await notebook.document.save();
+		assert(saved === true, 'Expect initial save to succeed');
+		// Note: need to sleep after save as the change events happen after save
+		// We need to give back the thread or the event won't have been drained.
+		// This is consistent with VSCode APIs, so keeping as-is
+		await sleep(100);
+		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after initial save');
+
+		// And when I edit again, should become dirty
+		let edited = await notebook.edit(builder => {
+			builder.insertCell({
+				cell_type: CellTypes.Code,
+				source: ''
+			});
+		});
+		assert(edited === true, 'Expect edit to succeed');
+		await sleep(100);
+		assert(notebook.document.isDirty === true, 'Notebook should be dirty after edit');
+
+		// Finally on 2nd save it should no longer be dirty
+		saved = await notebook.document.save();
+		await sleep(100);
+		assert(saved === true, 'Expect save after edit to succeed');
+		assert(notebook.document.isDirty === false, 'Notebook should not be dirty after 2nd save');
+
 	}
 
 	async pythonChangeKernelDifferentProviderTest(title: string): Promise<void> {
@@ -341,15 +389,22 @@ class NotebookTester {
 		assert(clearedOutputs, 'Outputs of all the code cells from Python notebook should be cleared');
 		console.log('After clearing cell outputs');
 	}
+
+	async verifyClearOutputs(notebook: azdata.nb.NotebookEditor): Promise<void> {
+		let cellWithOutputs = notebook.document.cells[0].contents && notebook.document.cells[0].contents.outputs && notebook.document.cells[0].contents.outputs.length > 0;
+		assert(cellWithOutputs === true, 'Expected first cell to have outputs');
+		let clearedOutputs = await notebook.clearOutput(notebook.document.cells[0]);
+		let firstCell = notebook.document.cells[0];
+		assert(firstCell.contents && firstCell.contents.outputs && firstCell.contents.outputs.length === 0, `Expected Output: 0, Actual: '${firstCell.contents.outputs.length}'`);
+		assert(clearedOutputs, 'Outputs of requested code cell should be cleared');
+	}
+
 	async cellLanguageTest(content: azdata.nb.INotebookContents, testName: string, languageConfigured: string, metadataInfo: any) {
 		let notebookJson = Object.assign({}, content, { metadata: metadataInfo });
 		let uri = writeNotebookToFile(notebookJson, testName);
-		console.log('Notebook uri ' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
-		console.log('Notebook is opened');
 		await notebook.document.save();
 		let languageInNotebook = notebook.document.cells[0].contents.metadata.language;
-		console.log('Language set in cell: ' + languageInNotebook);
 		assert(languageInNotebook === languageConfigured, `Expected cell language is: ${languageConfigured}, Actual: ${languageInNotebook}`);
 	}
 }

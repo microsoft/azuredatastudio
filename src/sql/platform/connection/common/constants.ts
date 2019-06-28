@@ -29,6 +29,5 @@ export const azureMFA = 'AzureMFA';
 
 /* CMS constants */
 export const cmsProviderName = 'MSSQL-CMS';
-export const cmsProviderDisplayName = localize('constants.cmsProviderDisplayName', 'Microsoft SQL Server - CMS');
 
 export const UNSAVED_GROUP_ID = 'unsaved';

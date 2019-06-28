@@ -14,6 +14,7 @@
 	"changeConnectionDatabaseLabel": "Alterar a Conexão",
 	"connectDatabaseLabel": "Conectar-se",
 	"selectDatabase": "Selecione o banco de dados",
+	"listDatabases.toggleDatabaseNameDropdown": "Selecione a lista suspensa de bancos de dados disponíveis",
 	"changeDatabase.failed": "Falha ao mudar o banco de dados",
 	"changeDatabase.failedWithError": "Falha ao alterar o banco de dados {0}"
 }

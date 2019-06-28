@@ -9,6 +9,7 @@
 	"saveAsCsv": "Guardar como CSV",
 	"saveAsJson": "Guardar como JSON",
 	"saveAsExcel": "Guardar como Excel",
+	"saveAsXml": "Guardar como XML",
 	"copySelection": "Copiar",
 	"copyWithHeaders": "Copiar con encabezados",
 	"selectAll": "Seleccionar todo",

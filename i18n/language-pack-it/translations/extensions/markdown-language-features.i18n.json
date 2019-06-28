@@ -47,6 +47,9 @@
 			"previewTitle": "Anteprima {0}",
 			"preview.clickOpenFailed": "Non è stato possibile aprire {0}"
 		},
+		"out/features/documentLinkProvider": {
+			"documentLink.tooltip": "follow link"
+		},
 		"out/security": {
 			"strict.title": "Strict",
 			"strict.description": "Carica solo contenuto protetto",

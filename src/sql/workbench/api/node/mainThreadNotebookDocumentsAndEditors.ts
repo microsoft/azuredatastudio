@@ -15,6 +15,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import * as types from 'vs/base/common/types';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -136,6 +137,13 @@ class MainThreadNotebookEditor extends Disposable {
 			return Promise.resolve(false);
 		}
 		return this.editor.runAllCells();
+	}
+
+	public clearOutput(cell: ICellModel): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.clearOutput(cell);
 	}
 
 	public clearAllOutputs(): Promise<boolean> {
@@ -383,6 +391,28 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return editor.runAllCells();
 	}
 
+	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean> {
+		// Requires an editor and the matching cell in that editor
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		let cell: ICellModel;
+		if (cellUri) {
+			let uriString = URI.revive(cellUri).toString();
+			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			// If it's markdown what should we do? Show notification??
+		} else {
+			// Use the active cell in this case, or 1st cell if there's none active
+			cell = editor.model.activeCell;
+		}
+		if (!cell || (cell && cell.cellType !== CellTypes.Code)) {
+			return Promise.reject(localize('clearResultActiveCell', "Clear result requires a code cell to be selected. Please select a code cell to run."));
+		}
+
+		return editor.clearOutput(cell);
+	}
+
 	$clearAllOutputs(id: string): Promise<boolean> {
 		let editor = this.getEditor(id);
 		if (!editor) {
@@ -560,7 +590,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		let changeData: INotebookModelChangedData = {
 			// Note: we just send all cells for now, not a diff
 			cells: this.convertCellModelToNotebookCell(editor.cells),
-			isDirty: e.isDirty,
+			isDirty: this.getDirtyState(e, editor),
 			providerId: editor.providerId,
 			providers: editor.providers,
 			uri: editor.uri,
@@ -570,10 +600,16 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		return changeData;
 	}
 
+	private getDirtyState(e: NotebookContentChange, editor: MainThreadNotebookEditor): boolean {
+		if (!types.isUndefinedOrNull(e.isDirty)) {
+			return e.isDirty;
+		}
+		return editor.isDirty;
+	}
+
 	mapChangeKind(changeType: NotebookChangeType): NotebookChangeKind {
 		switch (changeType) {
-			case NotebookChangeType.CellDeleted:
-			case NotebookChangeType.CellsAdded:
+			case NotebookChangeType.CellsModified:
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
