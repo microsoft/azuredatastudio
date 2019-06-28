@@ -468,6 +468,7 @@ export class MouseController<T> implements IDisposable {
 
 export interface ITableStyles extends IListStyles {
 	cellOutlineColor?: Color;
+	tableHeaderAndRowCountColor?: Color;
 }
 
 export class DefaultStyleController implements IStyleController {
@@ -576,6 +577,12 @@ export class DefaultStyleController implements IStyleController {
 
 		if (styles.cellOutlineColor) {
 			content.push(`.monaco-perftable${suffix} .monaco-perftable-cell { border: 1px solid ${styles.cellOutlineColor}; }`);
+			content.push(`.monaco-perftable${suffix} .monaco-perftable-header-cell { border: 1px solid ${styles.cellOutlineColor}; }`);
+		}
+
+		if (styles.tableHeaderAndRowCountColor) {
+			content.push(`.monaco-perftable${suffix} .monaco-perftable-header-cell { background-color: ${styles.tableHeaderAndRowCountColor}; }`);
+			content.push(`.monaco-perftable${suffix} .monaco-perftable-cell.row-count-cell { background-color: ${styles.tableHeaderAndRowCountColor}; }`);
 		}
 
 		const newStyles = content.join('\n');

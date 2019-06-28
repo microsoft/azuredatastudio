@@ -208,7 +208,8 @@ export function attachHighPerfTableStyler(widget: IThemable, themeService: IThem
 	listHoverOutline?: cr.ColorIdentifier,
 	tableHeaderBackground?: cr.ColorIdentifier,
 	tableHeaderForeground?: cr.ColorIdentifier,
-	cellOutlineColor?: cr.ColorIdentifier
+	cellOutlineColor?: cr.ColorIdentifier,
+	tableHeaderAndRowCountColor?: cr.ColorIdentifier
 }): IDisposable {
 	return attachStyler(themeService, {
 		listFocusBackground: (style && style.listFocusBackground) || cr.listFocusBackground,
@@ -229,7 +230,8 @@ export function attachHighPerfTableStyler(widget: IThemable, themeService: IThem
 		listInactiveFocusOutline: style && style.listInactiveFocusOutline,
 		tableHeaderBackground: (style && style.tableHeaderBackground) || sqlcolors.tableHeaderBackground,
 		tableHeaderForeground: (style && style.tableHeaderForeground) || sqlcolors.tableHeaderForeground,
-		cellOutlineColor: (style && style.cellOutlineColor) || editorColors.editorIndentGuides
+		cellOutlineColor: (style && style.cellOutlineColor) || editorColors.editorIndentGuides,
+		tableHeaderAndRowCountColor: (style && style.tableHeaderAndRowCountColor) || editorColors.editorIndentGuides
 	}, widget);
 }
 

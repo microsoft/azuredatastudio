@@ -33,6 +33,7 @@ export interface ITableViewOptions<T> {
 	mouseSupport?: boolean;
 	initialLength?: number;
 	rowCountColumn?: boolean;
+	headerHeight?: number;
 }
 
 const DefaultOptions = {
@@ -40,7 +41,8 @@ const DefaultOptions = {
 	columnWidth: 120,
 	minWidth: 20,
 	rowCountColumn: true,
-	resizeable: true
+	resizeable: true,
+	headerHeight: 22
 };
 
 class RowCountRenderer implements ITableRenderer<any, HTMLElement> {
@@ -58,11 +60,31 @@ class RowCountRenderer implements ITableRenderer<any, HTMLElement> {
 }
 
 export interface IColumn<T, TTemplateData> {
+	/**
+	 * Renderer associated with this column
+	 */
 	renderer: ITableRenderer<T, TTemplateData>;
+	/**
+	 * Initial width of this column
+	 */
 	width?: number;
+	/**
+	 * Minimum allowed width of this column
+	 */
 	minWidth?: number;
+	/**
+	 * Is this column resizable?
+	 */
 	resizeable?: boolean;
+	/**
+	 * This string will be added to the cell as a class
+	 * Useful for styling specific columns
+	 */
+	cellClass?: string;
 	id: string;
+	/**
+	 * Name to display in the column header
+	 */
 	name: string;
 }
 
@@ -114,6 +136,7 @@ const rowCountColumnDef: IColumn<any, HTMLElement> = {
 	id: 'rowCount',
 	name: '',
 	renderer: new RowCountRenderer(),
+	cellClass: 'row-count-cell',
 	width: 30,
 	resizeable: false
 };
@@ -147,7 +170,7 @@ export class TableView<T> implements IDisposable {
 	private scheduledRender: IDisposable;
 	private bigNumberDelta = 0;
 
-	private headerHeight = 22;
+	private headerHeight: number;
 
 	private disposables: IDisposable[];
 
@@ -212,6 +235,8 @@ export class TableView<T> implements IDisposable {
 		// this.ariaSetProvider = { getSetSize: (e, i, length) => length, getPosInSet: (_, index) => index + 1 };
 
 		this.rowHeight = getOrDefault(options, o => o.rowHeight, DefaultOptions.rowHeight);
+		this.headerHeight = getOrDefault(options, o => o.headerHeight, DefaultOptions.headerHeight);
+
 		let left = 0;
 		this.columns = this.columns.map(c => {
 			c.width = getOrDefault(c, o => o.width, DefaultOptions.columnWidth);
@@ -252,6 +277,7 @@ export class TableView<T> implements IDisposable {
 		this.headerContainer = DOM.append(container, DOM.$('.monaco-perftable-header'));
 		const sashContainer = DOM.append(this.headerContainer, DOM.$('.sash-container'));
 		this.headerContainer.style.height = this.headerHeight + 'px';
+		this.headerContainer.style.lineHeight = this.headerHeight + 'px';
 		this.headerContainer.setAttribute('role', 'rowgroup');
 		const headerCellContainer = DOM.append(this.headerContainer, DOM.$('.monaco-perftable-header-cell-container'));
 		headerCellContainer.setAttribute('role', 'row');
@@ -585,6 +611,9 @@ export class TableView<T> implements IDisposable {
 		row.row = DOM.$('.monaco-perftable-row');
 		for (const [index, column] of this.columns.entries()) {
 			row.cells[index] = this.cache.alloc(column.id);
+			if (column.cellClass) {
+				DOM.addClass(row.cells[index].domNode, column.cellClass);
+			}
 			row.row.appendChild(row.cells[index].domNode);
 		}
 	}
@@ -605,6 +634,7 @@ export class TableView<T> implements IDisposable {
 			cell.style.width = `${column.width}px`;
 			cell.style.left = `${column.left}px`;
 			cell.style.height = `${row.size}px`;
+			cell.style.lineHeight = `${row.size}px`;
 			cell.setAttribute('data-column-id', `${column.id}`);
 			cell.setAttribute('role', 'gridcell');
 			row.row!.setAttribute('id', this.getElementDomId(index, column.id));

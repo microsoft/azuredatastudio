@@ -28,7 +28,7 @@
 	display: inline-block;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	padding: 5px;
+	padding-left: 3px;
 	box-sizing: border-box;
 }
 
@@ -79,6 +79,9 @@
 	text-overflow: ellipsis;
 	overflow: hidden;
 	position: absolute;
+	height: 100%;
+	padding-left: 3px;
+	box-sizing: border-box;
 }
 
 .monaco-perftable .sash-container {
