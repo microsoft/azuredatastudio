@@ -12,6 +12,7 @@ import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IOutputChannel } from 'vs/workbench/contrib/output/common/output';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 
 /**
@@ -141,4 +142,8 @@ export function convertVscodeResourceToFileInSubDirectories(htmlContent: string,
 		htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
 	}
 	return htmlContent;
+}
+
+export function useInProcMarkdown(configurationService: IConfigurationService): boolean {
+	return configurationService.getValue('notebook.useInProcMarkdown');
 }

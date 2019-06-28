@@ -13,6 +13,9 @@ import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { localize } from 'vs/nls';
+import product from 'vs/platform/product/node/product';
 import { registerComponentType } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import { MimeRendererComponent as MimeRendererComponent } from 'sql/workbench/parts/notebook/outputs/mimeRenderer.component';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/outputs/markdownOutput.component';
@@ -40,6 +43,19 @@ actionRegistry.registerWorkbenchAction(
 	),
 	NewNotebookAction.LABEL
 );
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.useInProcMarkdown': {
+			'type': 'boolean',
+			'default': product.quality === 'stable' ? false : true,
+			'description': localize('notebook.inProcMarkdown', 'Use in-process markdown viewer to render text cells more quickly (Experimental).')
+		}
+	}
+});
 
 /* *************** Output components *************** */
 // Note: most existing types use the same component to render. In order to
