@@ -12,7 +12,7 @@ import * as nls from 'vs/nls';
 
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerEditor } from 'sql/workbench/parts/profiler/browser/profilerEditor';
-import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate } from 'sql/workbench/services/profiler/common/interfaces';
+import { PROFILER_VIEW_TEMPLATE_SETTINGS, PROFILER_SESSION_TEMPLATE_SETTINGS, IProfilerViewTemplate, IProfilerSessionTemplate, EngineType, PROFILER_FILTER_SETTINGS } from 'sql/workbench/services/profiler/common/interfaces';
 
 const profilerDescriptor = new EditorDescriptor(
 	ProfilerEditor,
@@ -271,6 +271,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 		{
 			name: 'Standard_OnPrem',
 			defaultView: 'Standard View',
+			engineTypes: [EngineType.Standalone],
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON SERVER
 					ADD EVENT sqlserver.attention(
@@ -296,6 +297,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 		},
 		{
 			name: 'Standard_Azure',
+			engineTypes: [EngineType.AzureSQLDB],
 			defaultView: 'Standard View',
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON DATABASE
@@ -322,6 +324,7 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 		},
 		{
 			name: 'TSQL_OnPrem',
+			engineTypes: [EngineType.Standalone],
 			defaultView: 'TSQL View',
 			createStatement:
 				`CREATE EVENT SESSION [{sessionName}] ON SERVER
@@ -343,14 +346,20 @@ const profilerSessionTemplateSchema: IJSONSchema = {
 	]
 };
 
+const profilerFiltersSchema: IJSONSchema = {
+	description: nls.localize('profiler.settings.Filters', "Profiler Filters"),
+	type: 'array'
+};
+
 const configurationRegistry = Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration);
-const dashboardConfig: IConfigurationNode = {
+const profilerConfig: IConfigurationNode = {
 	id: 'Profiler',
 	type: 'object',
 	properties: {
 		[PROFILER_VIEW_TEMPLATE_SETTINGS]: profilerViewTemplateSchema,
-		[PROFILER_SESSION_TEMPLATE_SETTINGS]: profilerSessionTemplateSchema
+		[PROFILER_SESSION_TEMPLATE_SETTINGS]: profilerSessionTemplateSchema,
+		[PROFILER_FILTER_SETTINGS]: profilerFiltersSchema
 	}
 };
 
-configurationRegistry.registerConfiguration(dashboardConfig);
+configurationRegistry.registerConfiguration(profilerConfig);

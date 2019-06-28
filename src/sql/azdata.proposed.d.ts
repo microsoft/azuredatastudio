@@ -1779,6 +1779,12 @@ declare module 'azdata' {
 		serverName: string;
 		databaseName: string;
 		ownerUri: string;
+		connectionDetails: ConnectionInfo;
+	}
+
+	export interface SchemaCompareObjectId {
+		nameParts: string[];
+		sqlObjectType: string;
 	}
 
 	export interface SchemaCompareOptionsResult extends ResultStatus {
@@ -1935,12 +1941,29 @@ declare module 'azdata' {
 		ServerTriggers = 65
 	}
 
+	export interface SchemaCompareObjectId {
+		nameParts: string[];
+		sqlObjectType: string;
+	}
+
+	export interface SchemaCompareOpenScmpResult extends ResultStatus {
+		sourceEndpointInfo: SchemaCompareEndpointInfo;
+		targetEndpointInfo: SchemaCompareEndpointInfo;
+		originalTargetName: string;
+		originalConnectionString: string;
+		deploymentOptions: DeploymentOptions;
+		excludedSourceElements: SchemaCompareObjectId[];
+		excludedTargetElements: SchemaCompareObjectId[];
+	}
+
 	export interface SchemaCompareServicesProvider extends DataProvider {
 		schemaCompare(operationId: string, sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions): Thenable<SchemaCompareResult>;
 		schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareOpenScmp(filePath: string): Thenable<SchemaCompareOpenScmpResult>;
+		schemaCompareSaveScmp(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions, scmpFilePath: string, excludedSourceObjects: SchemaCompareObjectId[], excludedTargetObjects: SchemaCompareObjectId[]): Thenable<ResultStatus>;
 		schemaCompareCancel(operationId: string): Thenable<ResultStatus>;
 	}
 
@@ -4394,6 +4417,11 @@ declare module 'azdata' {
 			 * Kicks off execution of all code cells. Thenable will resolve only when full execution of all cells is completed.
 			 */
 			runAllCells(): Thenable<boolean>;
+
+			/**
+			 * Clears the outputs of the active code cell in a notebook.
+			 */
+			clearOutput(cell?: NotebookCell): Thenable<boolean>;
 
 			/** Clears the outputs of all code cells in a Notebook
 			* @return A promise that resolves with a value indicating if the outputs are cleared or not.

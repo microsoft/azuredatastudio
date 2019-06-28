@@ -6,7 +6,7 @@ import 'vs/css!./textCell';
 import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener, AfterContentInit } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
 import * as path from 'path';
 
 import { localize } from 'vs/nls';
@@ -24,9 +24,16 @@ import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces'
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/outputs/sanitizer';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/cellToggleMoreActions';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { toDisposable } from 'vs/base/common/lifecycle';
+import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/outputs/notebookMarkdown';
+import { convertVscodeResourceToFileInSubDirectories, useInProcMarkdown } from 'sql/workbench/parts/notebook/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
+
 
 @Component({
 	selector: TEXT_SELECTOR,
@@ -72,17 +79,28 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	public readonly onDidClickLink = this._onDidClickLink.event;
 	private _cellToggleMoreActions: CellToggleMoreActions;
 	private _hover: boolean;
+	private markdownRenderer: NotebookMarkdownRenderer;
+	private markdownResult: IMarkdownRenderResult;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrapService: CommonServiceInterface,
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(IInstantiationService) private _instantiationService: IInstantiationService,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(ICommandService) private _commandService: ICommandService
+		@Inject(ICommandService) private _commandService: ICommandService,
+		@Inject(IOpenerService) private readonly openerService: IOpenerService,
+		@Inject(IConfigurationService) private configurationService: IConfigurationService,
+
 	) {
 		super();
 		this.isEditMode = true;
 		this._cellToggleMoreActions = this._instantiationService.createInstance(CellToggleMoreActions);
+		this.markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
+		this._register(toDisposable(() => {
+			if (this.markdownResult) {
+				this.markdownResult.dispose();
+			}
+		}));
 	}
 
 	//Gets sanitizer from ISanitizer interface
@@ -141,7 +159,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 * If content is empty and in non-edit mode, default it to 'Double-click to edit'
 	 * Sanitizes the data to be shown in markdown cell
 	 */
-	private updatePreview() {
+	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
 		if (trustedChanged || contentChanged) {
@@ -152,13 +170,24 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this._content = this.cellModel.source;
 			}
 
-			this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
-				htmlcontent = this.convertVscodeResourceToFileInSubDirectories(htmlcontent);
-				htmlcontent = this.sanitizeContent(htmlcontent);
-				let outputElement = <HTMLElement>this.output.nativeElement;
-				outputElement.innerHTML = htmlcontent;
+			if (useInProcMarkdown(this.configurationService)) {
+				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
+				this.markdownResult = this.markdownRenderer.render({
+					isTrusted: this.cellModel.trustedMode,
+					value: this._content
+				});
 				this.setLoading(false);
-			});
+				let outputElement = <HTMLElement>this.output.nativeElement;
+				outputElement.innerHTML = this.markdownResult.element.innerHTML;
+			} else {
+				this._commandService.executeCommand<string>('notebook.showPreview', this.cellModel.notebookModel.notebookUri, this._content).then((htmlcontent) => {
+					htmlcontent = convertVscodeResourceToFileInSubDirectories(htmlcontent, this.cellModel);
+					htmlcontent = this.sanitizeContent(htmlcontent);
+					let outputElement = <HTMLElement>this.output.nativeElement;
+					outputElement.innerHTML = htmlcontent;
+					this.setLoading(false);
+				});
+			}
 		}
 	}
 
@@ -169,24 +198,6 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		}
 		return content;
 	}
-	// Only replace vscode-resource with file when in the same (or a sub) directory
-	// This matches Jupyter Notebook viewer behavior
-	private convertVscodeResourceToFileInSubDirectories(htmlContent: string): string {
-		let htmlContentCopy = htmlContent;
-		while (htmlContentCopy.search('(?<=img src=\"vscode-resource:)') > 0) {
-			let pathStartIndex = htmlContentCopy.search('(?<=img src=\"vscode-resource:)');
-			let pathEndIndex = htmlContentCopy.indexOf('\" ', pathStartIndex);
-			let filePath = htmlContentCopy.substring(pathStartIndex, pathEndIndex);
-			// If the asset is in the same folder or a subfolder, replace 'vscode-resource:' with 'file:', so the image is visible
-			if (!path.relative(path.dirname(this.cellModel.notebookModel.notebookUri.fsPath), filePath).includes('..')) {
-				// ok to change from vscode-resource: to file:
-				htmlContent = htmlContent.replace('vscode-resource:' + filePath, 'file:' + filePath);
-			}
-			htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
-		}
-		return htmlContent;
-	}
-
 
 	// Todo: implement layout
 	public layout() {

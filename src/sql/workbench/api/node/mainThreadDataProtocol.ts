@@ -485,6 +485,12 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
 			},
+			schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
+				return self._proxy.$schemaCompareOpenScmp(handle, filePath);
+			},
+			schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+				return self._proxy.$schemaCompareSaveScmp(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions, scmpFilePath, excludedSourceObjects, excludedTargetObjects);
+			},
 			schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareCancel(handle, operationId);
 			}

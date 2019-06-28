@@ -3,9 +3,5 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-declare module 'pretty-data' {
-	export interface PrettyData {
-		xml(input: string): string;
-	}
-	export var pd: PrettyData;
-}
+/// <reference path='../../../../src/vs/vscode.d.ts'/>
+/// <reference path='../../../../src/vs/vscode.proposed.d.ts'/>

@@ -25,9 +25,13 @@ import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadi
 import { Checkbox } from 'sql/base/electron-browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/platform/ui/electron-browser/selectBox/selectBox.component';
 import { InputBox } from 'sql/base/electron-browser/ui/inputBox/inputBox.component';
+import { IMimeComponentRegistry, Extensions } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
+import { Registry } from 'vs/platform/registry/common/platform';
 import { LinkHandlerDirective } from 'sql/workbench/parts/notebook/cellViews/linkHandler.directive';
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
+	let outputComponents = Registry.as<IMimeComponentRegistry>(Extensions.MimeComponentContribution).getAllCtors();
+
 	@NgModule({
 		declarations: [
 			Checkbox,
@@ -44,9 +48,13 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			OutputAreaComponent,
 			OutputComponent,
 			StdInComponent,
-			LinkHandlerDirective
+			LinkHandlerDirective,
+			...outputComponents
 		],
-		entryComponents: [NotebookComponent],
+		entryComponents: [
+			NotebookComponent,
+			...outputComponents
+		],
 		imports: [
 			FormsModule,
 			CommonModule,
