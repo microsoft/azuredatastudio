@@ -115,7 +115,6 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/router',
 		'angular2-grid',
 		'ansi_up',
-		'pretty-data',
 		'html-query-plan',
 		'ng2-charts',
 		'rxjs/Observable',
