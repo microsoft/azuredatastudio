@@ -31,7 +31,7 @@ import { IJSONEditingService } from 'vs/workbench/services/configuration/common/
 import { JSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditingService';
 import { createHash } from 'crypto';
 import { Schemas } from 'vs/base/common/network';
-import { originalFSPath } from 'vs/base/common/resources';
+import { originalFSPath, dirname } from 'vs/base/common/resources';
 import { isLinux } from 'vs/base/common/platform';
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
@@ -41,19 +41,20 @@ import { FileService } from 'vs/workbench/services/files/common/fileService';
 import { NullLogService } from 'vs/platform/log/common/log';
 import { DiskFileSystemProvider } from 'vs/workbench/services/files/node/diskFileSystemProvider';
 import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';
-import { ConfigurationFileService } from 'vs/workbench/services/configuration/node/configurationFileService';
 import { IRemoteAgentEnvironment } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { IConfigurationCache } from 'vs/workbench/services/configuration/common/configuration';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { SignService } from 'vs/platform/sign/browser/signService';
+import { FileUserDataService } from 'vs/workbench/services/userData/common/fileUserDataService';
 
 class SettingsTestEnvironmentService extends EnvironmentService {
 
-	constructor(args: ParsedArgs, _execPath: string, private customAppSettingsHome: string) {
+	constructor(args: ParsedArgs, _execPath: string, private _settingsPath: string) {
 		super(args, _execPath);
 	}
 
-	get settingsResource(): URI { return URI.file(this.customAppSettingsHome); }
+	get appSettingsHome(): URI { return dirname(this.settingsResource); }
+	get settingsResource(): URI { return URI.file(this._settingsPath); }
 }
 
 function setUpFolderWorkspace(folderName: string): Promise<{ parentDir: string, folderDir: string }> {
@@ -95,8 +96,6 @@ function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configP
 
 
 suite('WorkspaceContextService - Folder', () => {
-	let workspaceName = `testWorkspace${uuid.generateUuid()}`, parentResource: string, workspaceResource: string, workspaceContextService: IWorkspaceContextService;
-
 	setup(() => {
 		// {{SQL CARBON EDIT}} - Remove tests
 	});
@@ -162,10 +161,9 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 				const remoteAgentService = instantiationService.stub(IRemoteAgentService, <Partial<IRemoteAgentService>>{ getEnvironment: () => remoteEnvironmentPromise });
 				const fileService = new FileService(new NullLogService());
 				fileService.registerProvider(Schemas.file, diskFileSystemProvider);
-				const configurationFileService = new ConfigurationFileService();
-				configurationFileService.fileService = fileService;
 				const configurationCache: IConfigurationCache = { read: () => Promise.resolve(''), write: () => Promise.resolve(), remove: () => Promise.resolve() };
-				testObject = new WorkspaceService({ userSettingsResource: environmentService.settingsResource, configurationCache, remoteAuthority }, configurationFileService, remoteAgentService);
+				const userDataService = new FileUserDataService(environmentService, fileService);
+				testObject = new WorkspaceService({ configurationCache, remoteAuthority }, fileService, userDataService, remoteAgentService);
 				instantiationService.stub(IWorkspaceContextService, testObject);
 				instantiationService.stub(IConfigurationService, testObject);
 				instantiationService.stub(IEnvironmentService, environmentService);
