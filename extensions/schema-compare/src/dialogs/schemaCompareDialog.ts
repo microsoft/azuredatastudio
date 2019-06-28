@@ -177,7 +177,7 @@ export class SchemaCompareDialog {
 	private endpointChanged(previousEndpoint: azdata.SchemaCompareEndpointInfo, updatedEndpoint: azdata.SchemaCompareEndpointInfo): boolean {
 		if (previousEndpoint && updatedEndpoint) {
 			return getEndpointName(previousEndpoint).toLowerCase() !== getEndpointName(updatedEndpoint).toLowerCase()
-				|| previousEndpoint.serverDisplayName.toLocaleLowerCase() !== updatedEndpoint.serverDisplayName.toLowerCase();
+				|| (previousEndpoint.serverDisplayName && updatedEndpoint.serverDisplayName && previousEndpoint.serverDisplayName.toLowerCase() !== updatedEndpoint.serverDisplayName.toLowerCase());
 		}
 		return false;
 	}
@@ -541,9 +541,6 @@ export class SchemaCompareDialog {
 			}
 
 			let finalName = `${srv} (${usr})`;
-			if (endpointInfo) {
-				console.error('finalname: ' + finalName + ' endpointname: ' + endpointInfo.serverDisplayName);
-			}
 			// use previously selected server or current connection if there is one
 			if (endpointInfo && !isNullOrUndefined(endpointInfo.serverName) && !isNullOrUndefined(endpointInfo.serverDisplayName)
 				&& c.options.server.toLowerCase() === endpointInfo.serverName.toLowerCase()
@@ -638,7 +635,7 @@ export class SchemaCompareDialog {
 
 		let idx = -1;
 		let count = -1;
-		let values = (await azdata.connection.listDatabases(connectionId)).map(db => {
+		let values = (await azdata.connection.listDatabases(connectionId)).sort((a, b) => a.localeCompare(b)).map(db => {
 			count++;
 
 			// put currently selected db at the top of the dropdown if there is one

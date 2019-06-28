@@ -17,6 +17,7 @@ export type ProfilerSessionID = string;
 
 export const PROFILER_VIEW_TEMPLATE_SETTINGS = 'profiler.viewTemplates';
 export const PROFILER_SESSION_TEMPLATE_SETTINGS = 'profiler.sessionTemplates';
+export const PROFILER_FILTER_SETTINGS = 'profiler.filters';
 export const PROFILER_SETTINGS = 'profiler';
 
 /**
@@ -130,11 +131,21 @@ export interface IProfilerService {
 	 * @param input input object
 	 */
 	launchFilterSessionDialog(input: ProfilerInput): void;
+	/**
+	 * Gets the filters
+	 */
+	getFilters(): Array<ProfilerFilter>;
+	/**
+	 * Saves the filter
+	 * @param filter filter object
+	 */
+	saveFilter(filter: ProfilerFilter): void;
 }
 
 export interface IProfilerSettings {
 	viewTemplates: Array<IProfilerViewTemplate>;
 	sessionTemplates: Array<IProfilerSessionTemplate>;
+	filters: Array<ProfilerFilter>;
 }
 
 export interface IColumnViewTemplate {
@@ -160,6 +171,7 @@ export interface IProfilerSessionTemplate {
 }
 
 export interface ProfilerFilter {
+	name?: string;
 	clauses: ProfilerFilterClause[];
 }
 

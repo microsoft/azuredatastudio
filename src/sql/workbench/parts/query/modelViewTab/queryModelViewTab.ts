@@ -9,6 +9,7 @@ import { IPanelView, IPanelTab } from 'sql/base/browser/ui/panel/panel';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { bootstrapAngular } from 'sql/platform/bootstrap/node/bootstrapService';
 import { QueryModelViewTabModule } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab.module';
+import { ResultsViewState } from 'sql/workbench/parts/query/common/queryResultsInput';
 
 export class QueryModelViewTab implements IPanelTab {
 	public identifier = 'QueryModelViewTab_';
@@ -17,6 +18,20 @@ export class QueryModelViewTab implements IPanelTab {
 	constructor(public title: string, @IInstantiationService instantiationService: IInstantiationService) {
 		this.identifier += title;
 		this.view = instantiationService.createInstance(QueryModelViewTabView);
+	}
+
+	public putState(dynamicModelViewTabsState: Map<string, QueryModelViewState>): void {
+		dynamicModelViewTabsState.set(this.view.componentId, this.view.state);
+	}
+
+	public captureState(dynamicModelViewTabsState: Map<string, QueryModelViewState>): void {
+		for (let i = 0; i < dynamicModelViewTabsState.keys.length; ++i) {
+			let currentIdentifier = dynamicModelViewTabsState[dynamicModelViewTabsState.keys[i]];
+			if (currentIdentifier === this.view.componentId) {
+				this.view.state = dynamicModelViewTabsState[dynamicModelViewTabsState.keys[i]];
+				break;
+			}
+		}
 	}
 
 	public dispose() {
@@ -28,9 +43,14 @@ export class QueryModelViewTab implements IPanelTab {
 	}
 }
 
-export class QueryModelViewTabView implements IPanelView {
+export class QueryModelViewState {
+	public componentId: string;
+	public dispose() {
+	}
+}
 
-	public _componentId: string;
+export class QueryModelViewTabView implements IPanelView {
+	public state: QueryModelViewState = new QueryModelViewState();
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService) {
@@ -40,7 +60,7 @@ export class QueryModelViewTabView implements IPanelView {
 		this.bootstrapAngular(container);
 	}
 
-	dispose() {
+	public dispose() {
 	}
 
 	public clear() {
@@ -50,7 +70,14 @@ export class QueryModelViewTabView implements IPanelView {
 	}
 
 	public focus(): void {
+	}
 
+	public get componentId(): string {
+		return this.state.componentId;
+	}
+
+	public set componentId(value: string) {
+		this.state.componentId = value;
 	}
 
 	/**
@@ -61,7 +88,7 @@ export class QueryModelViewTabView implements IPanelView {
 			QueryModelViewTabModule,
 			container,
 			'querytab-modelview-container',
-			{ modelViewId: this._componentId });
+			{ modelViewId: this.state.componentId });
 		return uniqueSelector;
 	}
 }

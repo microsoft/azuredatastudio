@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as pretty from 'pretty-data';
-
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -43,6 +41,8 @@ import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
 import { localize } from 'vs/nls';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
+import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
+import { CancellationToken } from 'vs/base/common/cancellation';
 
 const ROW_HEIGHT = 29;
 const HEADER_HEIGHT = 26;
@@ -602,30 +602,14 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		let column = this.resultSet.columnInfo[event.cell.cell - 1];
 		// handle if a showplan link was clicked
 		if (column && (column.isXml || column.isJson)) {
-			this.gridDataProvider.getRowData(event.cell.row, 1).then(d => {
+			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
 				let value = d.resultSubset.rows[0][event.cell.cell - 1];
 				let content = value.displayValue;
-				if (column.isXml) {
-					try {
-						content = pretty.pd.xml(content);
-					} catch (e) {
-						// If Xml fails to parse, fall back on original Xml content
-					}
-				} else {
-					let jsonContent: string = undefined;
-					try {
-						jsonContent = JSON.parse(content);
-					} catch (e) {
-						// If Json fails to parse, fall back on original Json content
-					}
-					if (jsonContent) {
-						// If Json content was valid and parsed, pretty print content to a string
-						content = JSON.stringify(jsonContent, undefined, 4);
-					}
-				}
 
-				let input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', content);
-				this.editorService.openEditor(input);
+				const input = this.untitledEditorService.createOrGet(undefined, column.isXml ? 'xml' : 'json', content);
+				const model = await input.resolve();
+				await this.instantiationService.invokeFunction(formatDocumentWithSelectedProvider, model.textEditorModel, FormattingMode.Explicit, CancellationToken.None);
+				return this.editorService.openEditor(input);
 			});
 		}
 	}
