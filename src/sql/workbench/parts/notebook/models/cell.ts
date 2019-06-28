@@ -43,6 +43,7 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
+	private _metadata: { language?: string; };
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -511,8 +512,7 @@ export class CellModel implements ICellModel {
 		let cellJson: Partial<nb.ICellContents> = {
 			cell_type: this._cellType,
 			source: this._source,
-			metadata: {
-			}
+			metadata: this._metadata || {}
 		};
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language,
@@ -529,6 +529,7 @@ export class CellModel implements ICellModel {
 		this._cellType = cell.cell_type;
 		this.executionCount = cell.execution_count;
 		this._source = Array.isArray(cell.source) ? cell.source.join('') : cell.source;
+		this._metadata = cell.metadata;
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
