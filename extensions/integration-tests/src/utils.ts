@@ -138,14 +138,11 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
 	while (retryCount > 0 && !exists) {
 		--retryCount;
 		exists = fs.existsSync(filepath);
-
-		if (!exists) {
-			await sleep(5000);
-		}
+		await sleep(5000);
 	}
 
 	assert(exists, `File ${filepath} is expected to be present`);
-	assert(fs.readFileSync(filepath).byteLength > 0, 'File should not be empty');
+	assert(fs.readFileSync(filepath).byteLength > 0, 'File ${filepath} should not be empty');
 	fs.unlinkSync(filepath);
 }
 
@@ -153,17 +150,19 @@ export async function assertFileGenerationResult(filepath: string, retryCount: n
  *
  * @param databaseName name of database where to look for table
  * @param tableName table to look for
+ * @param schema schema to look for
  * @param ownerUri owner uri
  * @param retryCount number of times to retry with a 5 second wait between each try
+ * @param checkForData whether or not to check if the table has data
  * Checks for table existing
  */
-export async function assertTableCreationResult(databaseName: string, tableName: string, ownerUri: string, retryCount: number, checkForData?: boolean): Promise<void> {
+export async function assertTableCreationResult(databaseName: string, schema: string, tableName: string, ownerUri: string, retryCount: number, checkForData?: boolean): Promise<void> {
 	let result: azdata.SimpleExecuteResult;
 	while (retryCount > 0) {
 		--retryCount;
 		let query = `BEGIN TRY
 				USE ${databaseName}
-				SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = '${tableName}'
+				SELECT * FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '${schema}' AND TABLE_NAME = '${tableName}'
 			END TRY
 			BEGIN CATCH
 				SELECT ERROR_MESSAGE() AS ErrorMessage;
@@ -175,8 +174,8 @@ export async function assertTableCreationResult(databaseName: string, tableName:
 		await sleep(5000);
 	}
 
-	assert(result.rowCount === 1, `Table ${tableName} should be created`);
-	assert(result.columnInfo[0].columnName !== 'ErrorMessage', 'Checking for table creation threw error');
+	assert(result.rowCount === 1, `Table ${tableName} should be created. ${result.rowCount} rows were found`);
+	assert(result.columnInfo[0].columnName !== 'ErrorMessage', `Checking for table creation threw error ${result.rows[0][0].displayValue}`);
 
 	if (checkForData) {
 		while (retryCount > 0) {
@@ -194,7 +193,7 @@ export async function assertTableCreationResult(databaseName: string, tableName:
 			await sleep(5000);
 		}
 
-		assert(result.rowCount > 0, `Table ${tableName} should have at least one row of data`);
-		assert(result.columnInfo[0].columnName !== 'ErrorMessage', 'Checking for table data threw error');
+		assert(result.rowCount > 0, `Table ${tableName} should have at least one row of data. ${result.rowCount} rows were found`);
+		assert(result.columnInfo[0].columnName !== 'ErrorMessage', `Checking for table creation threw error ${result.rows[0][0].displayValue}`);
 	}
 }

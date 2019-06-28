@@ -40,8 +40,8 @@ if (context.RunTest) {
 				// Deploy dacpac
 				const deployResult = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database1.dacpac'), databaseName, false, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
-				await utils.assertTableCreationResult(databaseName, 'Table1', ownerUri, retryCount);
-				await utils.assertTableCreationResult(databaseName, 'Table2', ownerUri, retryCount);
+				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount);
+				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount);
 				assert(deployResult.success === true && deployResult.errorMessage === '', `Deploy dacpac should succeed Expected: there should be no error. Actual Error message: "${deployResult.errorMessage}"`);
 
 				// Extract dacpac
@@ -76,8 +76,8 @@ if (context.RunTest) {
 				// Import bacpac
 				const importResult = await dacfxService.importBacpac(path.join(__dirname, 'testData/Database1.bacpac'), databaseName, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
-				await utils.assertTableCreationResult(databaseName, 'Table1', ownerUri, retryCount, true);
-				await utils.assertTableCreationResult(databaseName, 'Table2', ownerUri, retryCount, true);
+				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount, true);
+				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount, true);
 				assert(importResult.success === true && importResult.errorMessage === '', `Expected: Import bacpac should succeed and there should be no error. Actual Error message: "${importResult.errorMessage}"`);
 
 				// Export bacpac
