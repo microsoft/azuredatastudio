@@ -385,7 +385,9 @@ import 'vs/workbench/contrib/relauncher/electron-browser/relauncher.contribution
 // registerSingleton(ITaskService, TaskService, true);
 
 // Remote
-// import 'vs/workbench/contrib/remote/electron-browser/remote.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our remote
+// {{SQL CARBON EDIT}} @anthonydresser comment our remote
+// import 'vs/workbench/contrib/remote/common/remote.contribution';
+// import 'vs/workbench/contrib/remote/electron-browser/remote.contribution';
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our emmet
