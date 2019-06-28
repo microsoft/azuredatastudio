@@ -125,7 +125,7 @@ function removeFromParent(element: HTMLElement): void {
 
 interface IAsyncRowItem<T> {
 	readonly id: string;
-	element: T;
+	element: T | undefined;
 	row: HTMLElement | null;
 	cells: ICell[] | null;
 	size: number;
@@ -298,7 +298,7 @@ export class TableView<T> implements IDisposable {
 			getVerticalSashLeft: (sash: Sash) => {
 				let left = 0;
 				for (const c of this.columns) {
-					left += c.width;
+					left += c.width!;
 					if (column === c) {
 						break;
 					}
@@ -333,8 +333,8 @@ export class TableView<T> implements IDisposable {
 
 	private onSashStart({ sash, start }: ISashEvent<T>): void {
 		const index = firstIndex(this.columnSashs, item => item.sash === sash);
-		const sizes = this.columns.map(i => i.width);
-		const lefts = this.columns.map(i => i.left);
+		const sizes = this.columns.map(i => i.width!);
+		const lefts = this.columns.map(i => i.left!);
 		this.sashDragState = { start, current: start, index, sizes, lefts };
 	}
 
@@ -343,14 +343,14 @@ export class TableView<T> implements IDisposable {
 		this.sashDragState.current = current;
 
 		const delta = current - start;
-		const adjustedDelta = sizes[index] + delta < column.minWidth ? column.minWidth - sizes[index] : delta;
+		const adjustedDelta = sizes[index] + delta < column.minWidth! ? column.minWidth! - sizes[index] : delta;
 
 		column.width = sizes[index] + adjustedDelta;
-		column.domNode.style.width = column.width + 'px';
+		column.domNode!.style.width = column.width + 'px';
 		for (let i = index + 1; i < this.columns.length; i++) {
 			const resizeColumn = this.columns[i];
 			resizeColumn.left = lefts[i] + adjustedDelta;
-			resizeColumn.domNode.style.left = resizeColumn.left + 'px';
+			resizeColumn.domNode!.style.left = resizeColumn.left + 'px';
 		}
 		for (const [index, row] of this.visibleRows.entries()) {
 			if (row) {
@@ -493,7 +493,7 @@ export class TableView<T> implements IDisposable {
 		const scrollDimensions: INewScrollDimensions = {
 			height: typeof height === 'number' ? height : DOM.getContentHeight(this.domNode)
 		};
-		scrollDimensions.height = scrollDimensions.height - this.headerHeight;
+		scrollDimensions.height = scrollDimensions.height! - this.headerHeight;
 		if (this.scrollableElementUpdateDisposable) {
 			this.scrollableElementUpdateDisposable.dispose();
 			this.scrollableElementUpdateDisposable = null;
@@ -551,7 +551,7 @@ export class TableView<T> implements IDisposable {
 
 	domElement(index: number, column: string): HTMLElement | null {
 		const row = this.visibleRows[index];
-		const cell = row && row.cells.find(v => v.templateId === column);
+		const cell = row && row.cells!.find(v => v.templateId === column);
 		return cell && cell.domNode;
 	}
 
@@ -565,7 +565,7 @@ export class TableView<T> implements IDisposable {
 		if (!row) {
 			row = {
 				id: String(index),
-				element: null,
+				element: undefined,
 				row: null,
 				size: this.rowHeight,
 				cells: null,
@@ -599,7 +599,7 @@ export class TableView<T> implements IDisposable {
 			row.datapromise.then(() => this.renderRow(row, index));
 			// in this case we can special case the row count column
 			if (this.columns[0].id === 'rowCount') {
-				this.columns[0].renderer.renderCell(row.element, index, 'rowCount', row.cells[0].templateData, this.columns[0].width);
+				this.columns[0].renderer.renderCell(row.element!, index, 'rowCount', row.cells![0].templateData!, this.columns[0].width);
 			}
 		} else {
 			this.renderRow(row, index);
@@ -612,16 +612,16 @@ export class TableView<T> implements IDisposable {
 		for (const [index, column] of this.columns.entries()) {
 			row.cells[index] = this.cache.alloc(column.id);
 			if (column.cellClass) {
-				DOM.addClass(row.cells[index].domNode, column.cellClass);
+				DOM.addClass(row.cells[index].domNode!, column.cellClass);
 			}
-			row.row.appendChild(row.cells[index].domNode);
+			row.row.appendChild(row.cells[index].domNode!);
 		}
 	}
 
 	private renderRow(row: IAsyncRowItem<T>, index: number): void {
 		for (const [i, column] of this.columns.entries()) {
-			const cell = row.cells[i];
-			column.renderer.renderCell(row.element, index, column.id, cell.templateData, column.width);
+			const cell = row.cells![i];
+			column.renderer.renderCell(row.element!, index, column.id, cell.templateData, column.width);
 		}
 	}
 
@@ -630,13 +630,13 @@ export class TableView<T> implements IDisposable {
 		row.row!.style.height = `${row.size}px`;
 
 		for (const [columnIndex, column] of this.columns.entries()) {
-			const cell = row.cells[columnIndex].domNode;
-			cell.style.width = `${column.width}px`;
-			cell.style.left = `${column.left}px`;
-			cell.style.height = `${row.size}px`;
-			cell.style.lineHeight = `${row.size}px`;
-			cell.setAttribute('data-column-id', `${column.id}`);
-			cell.setAttribute('role', 'gridcell');
+			const cell = row.cells![columnIndex].domNode;
+			cell!.style.width = `${column.width}px`;
+			cell!.style.left = `${column.left}px`;
+			cell!.style.height = `${row.size}px`;
+			cell!.style.lineHeight = `${row.size}px`;
+			cell!.setAttribute('data-column-id', `${column.id}`);
+			cell!.setAttribute('role', 'gridcell');
 			row.row!.setAttribute('id', this.getElementDomId(index, column.id));
 		}
 
@@ -655,21 +655,26 @@ export class TableView<T> implements IDisposable {
 			return;
 		}
 
+		let canceled = false;
 		if (item.datapromise) {
 			item.datapromise.cancel();
+			canceled = true;
 		}
 
 		for (const [i, column] of this.columns.entries()) {
-			const renderer = column.renderer;
-			const cell = item.cells[i];
-			if (renderer && renderer.disposeCell) {
-				renderer.disposeCell(item.element, index, column.id, cell.templateData, column.width);
+			const cell = item.cells![i];
+
+			if (!canceled) {
+				const renderer = column.renderer;
+				if (renderer && renderer.disposeCell) {
+					renderer.disposeCell(item.element!, index, column.id, cell.templateData, column.width);
+				}
 			}
 
 			this.cache.release(cell!);
 		}
 
-		removeFromParent(item.row);
+		removeFromParent(item.row!);
 
 		delete this.visibleRows[index];
 	}
@@ -717,7 +722,7 @@ export class TableView<T> implements IDisposable {
 				}
 			}
 
-			element = element.parentElement;
+			element = element!.parentElement;
 		}
 
 		return undefined;

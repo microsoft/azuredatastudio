@@ -38,7 +38,7 @@ class DataWindow<T> {
 	}
 
 	public getItem(index: number): Promise<T> {
-		return this.dataReady.then(() => this._data[index - this._offsetFromDataSource]);
+		return this.dataReady.then(() => this._data![index - this._offsetFromDataSource]);
 	}
 
 	public positionWindow(offset: number, length: number): void {

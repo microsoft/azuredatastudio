@@ -612,7 +612,7 @@ export class Table<T> implements IDisposable {
 	}
 
 	private toTableEvent({ indexes, browserEvent }: ITraitChangeEvent) {
-		return { indexes, elements: indexes.map(i => this.view.element(i.row)), browserEvent };
+		return { indexes, elements: indexes.map(i => this.view.element(i.row)!), browserEvent };
 	}
 
 	get onDidScroll(): Event<ScrollEvent> { return this.view.onDidScroll; }
@@ -686,13 +686,13 @@ export class Table<T> implements IDisposable {
 
 		this.disposables.push(new DOMFocusController(this, this.view));
 
-		this.disposables.push(this.createMouseController(options));
+		this.disposables.push(this.createMouseController());
 
 		this.onFocusChange(this._onFocusChange, this, this.disposables);
 		this.onSelectionChange(this._onSelectionChange, this, this.disposables);
 	}
 
-	protected createMouseController(options: ITableViewOptions<T>): MouseController<T> {
+	protected createMouseController(): MouseController<T> {
 		return new MouseController(this);
 	}
 
