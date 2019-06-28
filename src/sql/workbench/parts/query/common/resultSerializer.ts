@@ -12,7 +12,7 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
+import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
@@ -23,9 +23,10 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/node/pathUtilities';
+import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
 import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 let prevSavePath: string;
 
@@ -45,7 +46,7 @@ export class ResultSerializer {
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
-		@IWindowService private _windowService: IWindowService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@INotificationService private _notificationService: INotificationService
 	) { }
 
@@ -88,15 +89,18 @@ export class ResultSerializer {
 	}
 
 	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
-		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
-		return this._windowService.showSaveDialog({
+		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
+		if (filepathPlaceHolder) {
+			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
+		}
+
+		return this.fileDialogService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: path.normalize(filepathPlaceHolder),
+			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
-			prevSavePath = filePath;
-			return Promise.resolve(filePath);
+			prevSavePath = filePath.fsPath;
+			return filePath.fsPath;
 		});
 	}
 
