@@ -21,14 +21,14 @@ import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
-import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
 	let editorDescriptorService: TypeMoq.Mock<EditorDescriptorService>;
 	let connectionManagementService: TypeMoq.Mock<ConnectionManagementService>;
-	let configurationService: TypeMoq.Mock<ConfigurationService>;
+	let configurationService: TypeMoq.Mock<TestConfigurationService>;
 	let memento: TypeMoq.Mock<Memento>;
 
 	let mockEditor: any;

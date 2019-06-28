@@ -6,7 +6,7 @@
 import { IInsight } from './interfaces';
 import { Graph } from './graphInsight';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { resolveCurrentDirectory, getRootPath } from 'sql/platform/node/pathUtilities';
+import { resolveCurrentDirectory, getRootPath } from 'sql/platform/common/pathUtilities';
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';

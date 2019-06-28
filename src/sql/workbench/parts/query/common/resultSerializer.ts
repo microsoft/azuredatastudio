@@ -23,11 +23,12 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ShowFileInFolderAction, OpenFileInFolderAction } from 'sql/workbench/common/workspaceActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/node/pathUtilities';
+import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
 import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
-let prevSavePath: string;
+let prevSavePath: URI;
 
 /**
  *  Handles save results request from the context menu of slickGrid
@@ -45,7 +46,7 @@ export class ResultSerializer {
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
-		@IWindowService private _windowService: IWindowService,
+		@IWindowService private readonly fileDialogService: IFileDialogService,
 		@INotificationService private _notificationService: INotificationService
 	) { }
 
@@ -59,7 +60,7 @@ export class ResultSerializer {
 		// prompt for filepath
 		return self.promptForFilepath(saveRequest).then(filePath => {
 			if (filePath) {
-				return self.sendRequestToService(filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
+				return self.sendRequestToService(filePath.fsPath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
 			}
 			return Promise.resolve(undefined);
 		});
@@ -87,12 +88,15 @@ export class ResultSerializer {
 		this.outputChannel.append(message);
 	}
 
-	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
-		let filepathPlaceHolder = (prevSavePath) ? path.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
-		filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
-		return this._windowService.showSaveDialog({
+	private promptForFilepath(saveRequest: ISaveRequest): Thenable<URI> {
+		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath.fsPath) : resolveCurrentDirectory(this._uri, this.rootPath);
+		if (filepathPlaceHolder) {
+			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
+		}
+
+		return this.fileDialogService.showSaveDialog({
 			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
-			defaultPath: path.normalize(filepathPlaceHolder),
+			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
 			prevSavePath = filePath;
