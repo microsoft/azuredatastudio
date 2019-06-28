@@ -306,7 +306,7 @@ export class RestoreAction extends Task {
 			}
 
 			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', 'Backup command is not supported in Server Context. Please select a Database and try again.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', 'Restore command is not supported in Server Context. Please select a Database and try again.'));
 			}
 		}
 
