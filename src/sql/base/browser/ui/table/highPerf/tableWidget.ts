@@ -3,14 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, ICellIndex } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, ICellIndex, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
 import { Event, Emitter, EventBufferer } from 'vs/base/common/event';
-import { firstIndex, binarySearch } from 'vs/base/common/arrays';
+import { firstIndex } from 'vs/base/common/arrays';
 import * as DOM from 'vs/base/browser/dom';
-import { TableView, ITableViewOptions, IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
+import { TableView, ITableViewOptions, IColumn, IStaticColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
 import { ScrollEvent } from 'vs/base/common/scrollable';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { domEvent } from 'vs/base/browser/event';
@@ -18,6 +18,9 @@ import { KeyCode } from 'vs/base/common/keyCodes';
 import * as platform from 'vs/base/common/platform';
 import { IListStyles, IStyleController } from 'vs/base/browser/ui/list/listWidget';
 import { Color } from 'vs/base/common/color';
+import { getOrDefault } from 'vs/base/common/objects';
+import { isNumber } from 'vs/base/common/types';
+import { clamp } from 'vs/base/common/numbers';
 
 interface ITraitChangeEvent {
 	indexes: ICellIndex[];
@@ -325,6 +328,144 @@ export interface IMultipleSelectionController<T> {
 	isSelectionRangeChangeEvent(event: ITableMouseEvent<T>): boolean;
 }
 
+class RowCountRenderer implements IStaticTableRenderer<any, HTMLElement> {
+	renderTemplate(container: HTMLElement): HTMLElement {
+		return DOM.append(container, DOM.$('.row-count'));
+	}
+
+	renderCell(element: undefined, index: number, columnId: string, templateData: HTMLElement, width: number): void {
+		templateData.innerText = `${index}`;
+	}
+
+	disposeTemplate(templateData: HTMLElement): void {
+		throw new Error('Method not implemented.');
+	}
+}
+
+const rowCountColumnDef: IStaticColumn<any, HTMLElement> = {
+	id: 'rowCount',
+	name: '',
+	renderer: new RowCountRenderer(),
+	cellClass: 'row-count-cell',
+	static: true,
+	width: 30,
+	resizeable: false
+};
+
+function rowCountFilter(column: IColumn<any, any>): boolean {
+	return column.id !== rowCountColumnDef.id;
+}
+
+class KeyboardController<T> implements IDisposable {
+
+	private disposables: IDisposable[];
+	// private openController: IOpenController;
+
+	constructor(
+		private table: Table<T>,
+		private view: TableView<T>,
+		options?: ITableOptions<T>
+	) {
+		// const multipleSelectionSupport = !(options.multipleSelectionSupport === false);
+		this.disposables = [];
+
+		// this.openController = options.openController || DefaultOpenController;
+
+		const onKeyDown = Event.chain(domEvent(view.domNode, 'keydown'))
+			// .filter(e => !isInputElement(e.target as HTMLElement))
+			.map(e => new StandardKeyboardEvent(e));
+
+		onKeyDown.filter(e => e.keyCode === KeyCode.Enter).on(this.onEnter, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.UpArrow).on(this.onUpArrow, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.DownArrow).on(this.onDownArrow, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.LeftArrow).on(this.onLeftArrow, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.RightArrow).on(this.onRightArrow, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.PageUp).on(this.onPageUpArrow, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.PageDown).on(this.onPageDownArrow, this, this.disposables);
+		onKeyDown.filter(e => e.keyCode === KeyCode.Escape).on(this.onEscape, this, this.disposables);
+
+		// if (multipleSelectionSupport) {
+		onKeyDown.filter(e => (platform.isMacintosh ? e.metaKey : e.ctrlKey) && e.keyCode === KeyCode.KEY_A).on(this.onCtrlA, this, this.disposables);
+		// }
+	}
+
+	private onEnter(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		this.table.setSelection(this.table.getFocus(), e.browserEvent);
+
+		// if (this.openController.shouldOpen(e.browserEvent)) {
+		// 	this.list.open(this.list.getFocus(), e.browserEvent);
+		// }
+	}
+
+	private onUpArrow(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		this.table.focusPreviousRow(1, false, e.browserEvent);
+		this.table.reveal(this.table.getFocus()[0].row);
+		this.view.domNode.focus();
+	}
+
+	private onDownArrow(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		this.table.focusNextRow(1, false, e.browserEvent);
+		this.table.reveal(this.table.getFocus()[0].row);
+		this.view.domNode.focus();
+	}
+
+	private onRightArrow(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		this.table.focusNextCell(1, false, e.browserEvent);
+		this.table.reveal(this.table.getFocus()[0].row);
+		this.view.domNode.focus();
+	}
+
+	private onLeftArrow(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		this.table.focusPreviousCell(1, false, e.browserEvent);
+		this.table.reveal(this.table.getFocus()[0].row);
+		this.view.domNode.focus();
+	}
+
+	private onPageUpArrow(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		// this.table.focusPreviousPage(e.browserEvent);
+		// this.table.reveal(this.table.getFocus()[0]);
+		this.view.domNode.focus();
+	}
+
+	private onPageDownArrow(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		// this.table.focusNextPage(e.browserEvent);
+		// this.table.reveal(this.table.getFocus()[0]);
+		this.view.domNode.focus();
+	}
+
+	private onCtrlA(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		// this.table.setSelection(range(this.table.length), e.browserEvent);
+		this.view.domNode.focus();
+	}
+
+	private onEscape(e: StandardKeyboardEvent): void {
+		e.preventDefault();
+		e.stopPropagation();
+		this.table.setSelection([], e.browserEvent);
+		this.view.domNode.focus();
+	}
+
+	dispose() {
+		this.disposables = dispose(this.disposables);
+	}
+}
+
 export class MouseController<T> implements IDisposable {
 
 	private multipleSelectionSupport: boolean;
@@ -466,6 +607,10 @@ export class MouseController<T> implements IDisposable {
 	}
 }
 
+export interface ITableOptions<T> extends ITableViewOptions<T> {
+	keyboardSupport?: boolean;
+}
+
 export interface ITableStyles extends IListStyles {
 	cellOutlineColor?: Color;
 	tableHeaderAndRowCountColor?: Color;
@@ -592,6 +737,10 @@ export class DefaultStyleController implements IStyleController {
 	}
 }
 
+const DefaultOptions = {
+	rowCountColumn: true,
+};
+
 export class Table<T> implements IDisposable {
 
 	private focus: Trait<T>;
@@ -664,7 +813,7 @@ export class Table<T> implements IDisposable {
 		container: HTMLElement,
 		columns: IColumn<T, any>[],
 		dataSource: ITableDataSource<T>,
-		options?: ITableViewOptions<T>
+		options: ITableOptions<T> = DefaultOptions
 	) {
 		this.focus = new FocusTrait();
 		this.selection = new Trait('selected');
@@ -676,6 +825,12 @@ export class Table<T> implements IDisposable {
 			return r;
 		});
 
+		options.rowCountColumn = getOrDefault(options, o => o.rowCountColumn, DefaultOptions.rowCountColumn);
+
+		if (options.rowCountColumn) {
+			columns.unshift(rowCountColumnDef);
+		}
+
 		this.view = new TableView(container, columns, dataSource, options);
 
 		this.view.domNode.setAttribute('aria-multiselectable', 'true');
@@ -685,6 +840,11 @@ export class Table<T> implements IDisposable {
 		this.styleController = new DefaultStyleController(this.styleElement, this.view.domId);
 
 		this.disposables.push(new DOMFocusController(this, this.view));
+
+		if (!options || typeof options.keyboardSupport !== 'boolean' || options.keyboardSupport) {
+			const controller = new KeyboardController(this, this.view, options);
+			this.disposables.push(controller);
+		}
 
 		this.disposables.push(this.createMouseController());
 
@@ -702,6 +862,10 @@ export class Table<T> implements IDisposable {
 
 	set length(length: number) {
 		this.view.length = length;
+	}
+
+	get columnLength(): number {
+		return this.view.columnLength;
 	}
 
 	layout(height?: number, width?: number): void {
@@ -734,6 +898,156 @@ export class Table<T> implements IDisposable {
 		// }
 
 		this.focus.set(indexes, browserEvent);
+	}
+
+	reveal(index: number, relativeTop?: number): void {
+		if (index < 0 || index >= this.length) {
+			throw new Error(`Invalid index ${index}`);
+		}
+
+		const scrollTop = this.view.getScrollTop();
+		const elementTop = this.view.elementTop(index);
+		const elementHeight = this.view.rowHeight;
+
+		if (isNumber(relativeTop)) {
+			// y = mx + b
+			const m = elementHeight - this.view.renderHeight;
+			this.view.setScrollTop(m * clamp(relativeTop, 0, 1) + elementTop);
+		} else {
+			const viewItemBottom = elementTop + elementHeight;
+			const wrapperBottom = scrollTop + this.view.renderHeight;
+
+			if (elementTop < scrollTop) {
+				this.view.setScrollTop(elementTop);
+			} else if (viewItemBottom >= wrapperBottom) {
+				this.view.setScrollTop(viewItemBottom - this.view.renderHeight);
+			}
+		}
+	}
+
+
+	focusNextCell(n = 1, loop = false, browserEvent?: UIEvent, filter: (column: IColumn<T, any>) => boolean = rowCountFilter): void {
+		if (this.length === 0) { return; }
+
+		const focus = this.focus.get();
+		const cellIndex = focus.length > 0 ? this.view.indexOfColumn(focus[0].columnId)! : 0;
+		const targetColumn = this.view.column(this.findNextColumn(cellIndex + n, loop, filter));
+		const targetRow = focus.length > 0 ? focus[0].row : 0;
+
+		if (targetColumn) {
+			this.setFocus([{ columnId: targetColumn.id, row: targetRow }], browserEvent);
+		}
+	}
+
+	focusPreviousCell(n = 1, loop = false, browserEvent?: UIEvent, filter: (column: IColumn<T, any>) => boolean = rowCountFilter): void {
+		if (this.length === 0) { return; }
+
+		const focus = this.focus.get();
+		const cellIndex = focus.length > 0 ? this.view.indexOfColumn(focus[0].columnId)! : 0;
+		const targetColumn = this.view.column(this.findPreviousColumn(cellIndex - n, loop, filter));
+		const targetRow = focus.length > 0 ? focus[0].row : 0;
+
+		if (targetColumn) {
+			this.setFocus([{ columnId: targetColumn.id, row: targetRow }], browserEvent);
+		}
+	}
+
+	focusNextRow(n = 1, loop = false, browserEvent?: UIEvent, filter?: (element: T) => boolean): void {
+		if (this.length === 0) { return; }
+
+		const focus = this.focus.get();
+		const index = this.findNextRowIndex(focus.length > 0 ? focus[0].row + n : 0, loop, filter);
+
+		const targetColumn = focus.length > 0 ? focus[0].columnId : this.view.column(0)!.id;
+
+		if (index > -1) {
+			this.setFocus([{ row: index, columnId: targetColumn }], browserEvent);
+		}
+	}
+
+	focusPreviousRow(n = 1, loop = false, browserEvent?: UIEvent, filter?: (element: T) => boolean): void {
+		if (this.length === 0) { return; }
+
+		const focus = this.focus.get();
+		const index = this.findPreviousRowIndex(focus.length > 0 ? focus[0].row - n : 0, loop, filter);
+
+		const targetColumn = focus.length > 0 ? focus[0].columnId : this.view.column(0)!.id;
+
+		if (index > -1) {
+			this.setFocus([{ row: index, columnId: targetColumn }], browserEvent);
+		}
+	}
+
+	private findNextColumn(index: number, loop = false, filter?: (column: IColumn<T, any>) => boolean): number {
+		for (let i = 0; i < this.columnLength; i++) {
+			if (index >= this.columnLength && !loop) {
+				return -1;
+			}
+
+			index = index % this.columnLength;
+
+			if (!filter || filter(this.view.column(index)!)) {
+				return index;
+			}
+
+			index++;
+		}
+
+		return -1;
+	}
+
+	private findPreviousColumn(index: number, loop = false, filter?: (column: IColumn<T, any>) => boolean): number {
+		for (let i = 0; i < this.columnLength; i++) {
+			if (index < 0 && !loop) {
+				return -1;
+			}
+
+			index = (this.columnLength + (index % this.columnLength)) % this.columnLength;
+
+			if (!filter || filter(this.view.column(index)!)) {
+				return index;
+			}
+
+			index--;
+		}
+
+		return -1;
+	}
+
+	private findNextRowIndex(index: number, loop = false, filter?: (element: T) => boolean): number {
+		for (let i = 0; i < this.length; i++) {
+			if (index >= this.length && !loop) {
+				return -1;
+			}
+
+			index = index % this.length;
+
+			// if (!filter || filter(this.view.element(index))) {
+			return index;
+			// }
+
+			index++;
+		}
+
+		return -1;
+	}
+
+	private findPreviousRowIndex(index: number, loop = false, filter?: (element: T) => boolean): number {
+		for (let i = 0; i < this.length; i++) {
+			if (index < 0 && !loop) {
+				return -1;
+			}
+
+			index = (this.length + (index % this.length)) % this.length;
+
+			// if (!filter || filter(this.view.element(index))) {
+			return index;
+			// }
+
+			index--;
+		}
+
+		return -1;
 	}
 
 	getFocus(): Array<ICellIndex> {

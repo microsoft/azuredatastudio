@@ -10,6 +10,11 @@ export interface ITableRenderer<T, TTemplateData> {
 	disposeTemplate(templateData: TTemplateData): void;
 }
 
+export interface IStaticTableRenderer<T, TTemplateData> extends ITableRenderer<T, TTemplateData> {
+	renderCell(element: T | undefined, index: number, columnId: string, templateData: TTemplateData, width: number | undefined): void;
+	disposeCell?(element: T | undefined, index: number, columnId: string, templateData: TTemplateData, width: number | undefined): void;
+}
+
 export interface ITableDataSource<T> {
 	getRow(index: number): Promise<T>;
 }

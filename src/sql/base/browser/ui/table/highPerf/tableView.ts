@@ -21,7 +21,7 @@ import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser
 import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { ITableRenderer, ITableDataSource, ITableMouseEvent, ICellIndex } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer, ITableDataSource, ITableMouseEvent, ICellIndex, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -40,30 +40,15 @@ const DefaultOptions = {
 	rowHeight: 22,
 	columnWidth: 120,
 	minWidth: 20,
-	rowCountColumn: true,
 	resizeable: true,
 	headerHeight: 22
 };
-
-class RowCountRenderer implements ITableRenderer<any, HTMLElement> {
-	renderTemplate(container: HTMLElement): HTMLElement {
-		return DOM.append(container, DOM.$('.row-count'));
-	}
-
-	renderCell(element: any, index: number, columnId: string, templateData: HTMLElement, width: number): void {
-		templateData.innerText = `${index}`;
-	}
-
-	disposeTemplate(templateData: HTMLElement): void {
-		throw new Error('Method not implemented.');
-	}
-}
 
 export interface IColumn<T, TTemplateData> {
 	/**
 	 * Renderer associated with this column
 	 */
-	renderer: ITableRenderer<T, TTemplateData>;
+	renderer: ITableRenderer<T, TTemplateData> | IStaticTableRenderer<T, TTemplateData>;
 	/**
 	 * Initial width of this column
 	 */
@@ -81,6 +66,11 @@ export interface IColumn<T, TTemplateData> {
 	 * Useful for styling specific columns
 	 */
 	cellClass?: string;
+	/**
+	 * Specifies this column doesn't need data to render
+	 * Useful when you don't need to wait for data you render a column
+	 */
+	static?: boolean;
 	id: string;
 	/**
 	 * Name to display in the column header
@@ -88,9 +78,20 @@ export interface IColumn<T, TTemplateData> {
 	name: string;
 }
 
+export interface IStaticColumn<T, TTemplateData> extends IColumn<T, TTemplateData> {
+	/**
+	 * Renderer associated with this column
+	 */
+	renderer: IStaticTableRenderer<T, TTemplateData>;
+}
+
 interface IInternalColumn<T, TTemplateData> extends IColumn<T, TTemplateData> {
 	domNode?: HTMLElement;
 	left?: number;
+}
+
+interface IInternalStaticColumn<T, TTemplateData> extends IInternalColumn<T, TTemplateData> {
+	renderer: IStaticTableRenderer<T, TTemplateData>;
 }
 
 interface ISashItem {
@@ -132,15 +133,6 @@ interface IAsyncRowItem<T> {
 	datapromise: CancelablePromise<void> | null;
 }
 
-const rowCountColumnDef: IColumn<any, HTMLElement> = {
-	id: 'rowCount',
-	name: '',
-	renderer: new RowCountRenderer(),
-	cellClass: 'row-count-cell',
-	width: 30,
-	resizeable: false
-};
-
 export class TableView<T> implements IDisposable {
 	private static InstanceCount = 0;
 	readonly domId = `table_id_${++TableView.InstanceCount}`;
@@ -159,10 +151,11 @@ export class TableView<T> implements IDisposable {
 	private scrollableElementUpdateDisposable: IDisposable | null = null;
 	// private ariaSetProvider: IAriaSetProvider<T>;
 	private canUseTranslate3d: boolean | undefined = undefined;
-	private rowHeight: number;
+	public readonly rowHeight: number;
 	private _length: number = 0;
 
 	private columns: IInternalColumn<T, any>[];
+	private staticColumns: IInternalStaticColumn<T, any>[];
 	private columnSashs: ISashItem[] = [];
 	private sashDragState: ISashDragState;
 	private headerContainer: HTMLElement;
@@ -213,13 +206,7 @@ export class TableView<T> implements IDisposable {
 		}
 
 		this.columns = columns.slice();
-
-		options.rowCountColumn = getOrDefault(options, o => o.rowCountColumn, DefaultOptions.rowCountColumn);
-
-		if (options.rowCountColumn) {
-			this.renderers.set(rowCountColumnDef.id, rowCountColumnDef.renderer);
-			this.columns.unshift(rowCountColumnDef);
-		}
+		this.staticColumns = this.columns.filter(c => c.static);
 
 		this.cache = new CellCache(this.renderers);
 
@@ -559,6 +546,19 @@ export class TableView<T> implements IDisposable {
 		return this.visibleRows[index].element;
 	}
 
+	column(index: number): IColumn<T, any> | undefined {
+		return this.columns[index];
+	}
+
+	indexOfColumn(columnId: string): number | undefined {
+		return this.columns.findIndex(v => v.id === columnId);
+	}
+
+	get renderHeight(): number {
+		const scrollDimensions = this.scrollableElement.getScrollDimensions();
+		return scrollDimensions.height;
+	}
+
 	private insertRowInDOM(index: number, beforeElement: HTMLElement | null): void {
 		let row = this.visibleRows[index];
 
@@ -598,8 +598,9 @@ export class TableView<T> implements IDisposable {
 		if (row.datapromise) {
 			row.datapromise.then(() => this.renderRow(row, index));
 			// in this case we can special case the row count column
-			if (this.columns[0].id === 'rowCount') {
-				this.columns[0].renderer.renderCell(row.element!, index, 'rowCount', row.cells![0].templateData!, this.columns[0].width);
+			for (const [i, column] of this.staticColumns.entries()) {
+				const cell = row.cells![i];
+				column.renderer.renderCell(undefined, index, column.id, cell.templateData, column.width);
 			}
 		} else {
 			this.renderRow(row, index);
@@ -757,6 +758,10 @@ export class TableView<T> implements IDisposable {
 			this.insertRowInDOM(i, null);
 		}
 		this.eventuallyUpdateScrollDimensions();
+	}
+
+	get columnLength(): number {
+		return this.columns.length;
 	}
 
 	dispose(): void {
