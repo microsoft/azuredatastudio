@@ -366,6 +366,11 @@ export class GridPanel {
 	}
 }
 
+export interface IDataSet {
+	rowCount: number;
+	columnInfo: azdata.IDbColumn[];
+}
+
 export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
@@ -401,6 +406,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	constructor(
 		state: GridTableState,
+		protected _resultSet: azdata.ResultSetSummary,
 		protected contextMenuService: IContextMenuService,
 		protected instantiationService: IInstantiationService,
 		protected editorService: IEditorService,
@@ -431,6 +437,10 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	}
 
 	abstract get gridDataProvider(): IGridDataProvider;
+
+	public get resultSet(): azdata.ResultSetSummary {
+		return this._resultSet;
+	}
 
 	public onAdd() {
 		this.visible = true;
@@ -514,7 +524,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		let context: IGridActionContext = {
 			gridDataProvider: this.gridDataProvider,
 			table: this.table,
-			tableState: this.state
+			tableState: this.state,
+			batchId: this.resultSet.batchId,
+			resultId: this.resultSet.id
 		};
 		this.actionBar = new ActionBar(actionBarContainer, {
 			orientation: ActionsOrientation.VERTICAL, context: context
@@ -787,7 +799,7 @@ class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
 		runner: QueryRunner,
-		private _resultSet: azdata.ResultSetSummary,
+		resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -795,16 +807,11 @@ class GridTable<T> extends GridTableBase<T> {
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
-		super(state, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, runner, _resultSet.batchId, _resultSet.id);
+		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, runner, resultSet.batchId, resultSet.id);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
 		return this._gridDataProvider;
 	}
-
-	public get resultSet(): azdata.ResultSetSummary {
-		return this._resultSet;
-	}
-
 }

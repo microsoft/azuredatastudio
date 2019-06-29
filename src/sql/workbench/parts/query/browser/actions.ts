@@ -26,6 +26,8 @@ export interface IGridActionContext {
 	cell?: { row: number; cell: number; };
 	selection?: Slick.Range[];
 	selectionModel?: CellSelectionModel<any>;
+	batchId: number;
+	resultId: number;
 }
 
 export interface IMessagesActionContext {

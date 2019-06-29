@@ -19,6 +19,7 @@ import product from 'vs/platform/product/node/product';
 import { registerComponentType } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import { MimeRendererComponent as MimeRendererComponent } from 'sql/workbench/parts/notebook/outputs/mimeRenderer.component';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/outputs/markdownOutput.component';
+import { GridOutputComponent } from 'sql/workbench/parts/notebook/outputs/gridOutput.component';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -132,8 +133,8 @@ registerComponentType({
 	],
 	rank: 40,
 	safe: true,
-	ctor: MimeRendererComponent,
-	selector: MimeRendererComponent.SELECTOR
+	ctor: GridOutputComponent,
+	selector: GridOutputComponent.SELECTOR
 });
 
 /**

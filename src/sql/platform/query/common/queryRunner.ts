@@ -213,7 +213,7 @@ export default class QueryRunner extends Disposable {
 
 	private handleFailureRunQueryResult(error: any) {
 		// Attempting to launch the query failed, show the error message
-		const eol = this.getEolString();
+		const eol = getEolString(this._textResourcePropertiesService, this.uri);
 		if (error instanceof Error) {
 			error = error.message;
 		}
@@ -543,25 +543,6 @@ export default class QueryRunner extends Disposable {
 		provider.copyResults(selection, includeHeaders);
 	}
 
-	public getEolString(): string {
-		return this._textResourcePropertiesService.getEOL(URI.parse(this.uri), 'sql');
-	}
-
-	public shouldIncludeHeaders(includeHeaders: boolean): boolean {
-		if (includeHeaders !== undefined) {
-			// Respect the value explicity passed into the method
-			return includeHeaders;
-		}
-		// else get config option from vscode config
-		includeHeaders = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.copyIncludeHeaders);
-		return !!includeHeaders;
-	}
-
-	public shouldRemoveNewLines(): boolean {
-		// get config copyRemoveNewLine option from vscode config
-		let removeNewLines: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configCopyRemoveNewLine);
-		return !!removeNewLines;
-	}
 
 	public getColumnHeaders(batchId: number, resultId: number, range: Slick.Range): string[] {
 		let headers: string[] = undefined;
@@ -607,7 +588,10 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		private batchId: number,
 		private resultSetId: number,
 		@INotificationService private _notificationService: INotificationService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
+
 	) {
 	}
 
@@ -628,13 +612,13 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		}
 	}
 	getEolString(): string {
-		return this.queryRunner.getEolString();
+		return getEolString(this._textResourcePropertiesService, this.queryRunner.uri);
 	}
 	shouldIncludeHeaders(includeHeaders: boolean): boolean {
-		return this.queryRunner.shouldIncludeHeaders(includeHeaders);
+		return shouldIncludeHeaders(includeHeaders, this._configurationService);
 	}
 	shouldRemoveNewLines(): boolean {
-		return this.queryRunner.shouldRemoveNewLines();
+		return shouldRemoveNewLines(this._configurationService);
 	}
 	getColumnHeaders(range: Slick.Range): string[] {
 		return this.queryRunner.getColumnHeaders(this.batchId, this.resultSetId, range);
@@ -647,5 +631,25 @@ export class QueryGridDataProvider implements IGridDataProvider {
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
 		return this.queryRunner.serializeResults(this.batchId, this.resultSetId, format, selection);
 	}
+}
 
+
+export function getEolString(textResourcePropertiesService: ITextResourcePropertiesService, uri: string): string {
+	return textResourcePropertiesService.getEOL(URI.parse(uri), 'sql');
+}
+
+export function shouldIncludeHeaders(includeHeaders: boolean, configurationService: IConfigurationService): boolean {
+	if (includeHeaders !== undefined) {
+		// Respect the value explicity passed into the method
+		return includeHeaders;
+	}
+	// else get config option from vscode config
+	includeHeaders = WorkbenchUtils.getSqlConfigValue<boolean>(configurationService, Constants.copyIncludeHeaders);
+	return !!includeHeaders;
+}
+
+export function shouldRemoveNewLines(configurationService: IConfigurationService): boolean {
+	// get config copyRemoveNewLine option from vscode config
+	let removeNewLines: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(configurationService, Constants.configCopyRemoveNewLine);
+	return !!removeNewLines;
 }
