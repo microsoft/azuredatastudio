@@ -28,7 +28,6 @@
 	display: inline-block;
 	text-overflow: ellipsis;
 	overflow: hidden;
-	padding-left: 3px;
 	box-sizing: border-box;
 }
 
@@ -98,4 +97,10 @@
 .monaco-perftable .monaco-perftable-cell * {
 	text-overflow: ellipsis;
 	overflow: hidden;
+	padding-left: 3px;
+}
+
+.monaco-perftable .monaco-perftable-cell .row-count {
+	text-align: center;
+	padding-left: 0;
 }
