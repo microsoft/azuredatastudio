@@ -7,7 +7,7 @@ import 'vs/css!./table';
 
 import { IDisposable, dispose, combinedDisposable } from 'vs/base/common/lifecycle';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
-import { Event } from 'vs/base/common/event';
+import { Event, Emitter } from 'vs/base/common/event';
 import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions } from 'vs/base/common/scrollable';
 import * as DOM from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
@@ -581,7 +581,7 @@ export class TableView<T> implements IDisposable {
 		}
 
 		if (!row.row) {
-			this.allocRow(row);
+			this.allocRow(row, index);
 			row.row!.setAttribute('role', 'treeitem');
 		}
 
@@ -607,15 +607,16 @@ export class TableView<T> implements IDisposable {
 		}
 	}
 
-	private allocRow(row: IAsyncRowItem<T>): void {
+	private allocRow(row: IAsyncRowItem<T>, index: number): void {
 		row.cells = new Array<ICell>();
 		row.row = DOM.$('.monaco-perftable-row');
 		for (const [index, column] of this.columns.entries()) {
-			row.cells[index] = this.cache.alloc(column.id);
+			const cell = this.cache.alloc(column.id);
+			row.cells[index] = cell;
 			if (column.cellClass) {
-				DOM.addClass(row.cells[index].domNode!, column.cellClass);
+				DOM.addClass(cell.domNode!, column.cellClass);
 			}
-			row.row.appendChild(row.cells[index].domNode!);
+			row.row.appendChild(cell.domNode!);
 		}
 	}
 
