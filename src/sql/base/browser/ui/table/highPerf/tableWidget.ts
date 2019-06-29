@@ -356,51 +356,6 @@ function rowCountFilter(column: IColumn<any, any>): boolean {
 	return column.id !== rowCountColumnDef.id;
 }
 
-class DragAndDropController<T> implements IDisposable {
-
-	private disposables: IDisposable[];
-	// private openController: IOpenController;
-	private lastCell: ICellIndex | undefined;
-	private _inDrag: boolean;
-
-	constructor(
-		private table: Table<T>,
-		private view: TableView<T>,
-		options?: ITableOptions<T>
-	) {
-		this.disposables = [];
-
-		this.view.onMouseDown(this.onDragStart, this, this.disposables);
-		Event.filter(this.view.onMouseMove, () => this._inDrag)(this.onDrag, this, this.disposables);
-		this.view.onMouseUp(this.onDragEnd, this, this.disposables);
-		Event.filter(domEvent(this.view.domNode, 'mouseleave'), e => this.table.inDrag)(this.onDragEnd, this, this.disposables);
-	}
-
-	private onDragStart(e: ITableMouseEvent<T>): void {
-		this.lastCell = e.index;
-		this._inDrag = true;
-	}
-
-	private onDrag(e: ITableMouseEvent<T>): void {
-		if (e.index.columnId !== this.lastCell.columnId || e.index.row !== this.lastCell.row) {
-			this.table.inDrag = true;
-			const selection = this.table.getSelection();
-			selection.push(e.index);
-			this.table.setSelection(selection, e.browserEvent);
-		}
-	}
-
-	private onDragEnd(): void {
-		this.lastCell = undefined;
-		this._inDrag = false;
-		setTimeout(() => this.table.inDrag = false);
-	}
-
-	dispose() {
-		this.disposables = dispose(this.disposables);
-	}
-}
-
 class KeyboardController<T> implements IDisposable {
 
 	private disposables: IDisposable[];
@@ -516,7 +471,6 @@ export class MouseController<T> implements IDisposable {
 	private multipleSelectionSupport: boolean;
 	readonly multipleSelectionController: IMultipleSelectionController<T>;
 	private openController: IOpenController;
-	private mouseSupport: boolean;
 	private disposables: IDisposable[] = [];
 
 	constructor(protected table: Table<T>) {
@@ -527,15 +481,12 @@ export class MouseController<T> implements IDisposable {
 		}
 
 		this.openController = DefaultOpenController;
-		this.mouseSupport = true;
 
-		if (this.mouseSupport) {
-			table.onMouseDown(this.onMouseDown, this, this.disposables);
-			table.onContextMenu(this.onContextMenu, this, this.disposables);
-			table.onMouseDblClick(this.onDoubleClick, this, this.disposables);
-		}
+		table.onMouseDown(this.onMouseDown, this, this.disposables);
+		table.onContextMenu(this.onContextMenu, this, this.disposables);
+		table.onMouseDblClick(this.onDoubleClick, this, this.disposables);
 
-		Event.filter(table.onMouseClick, () => !this.table.inDrag)(this.onPointer, this, this.disposables);
+		table.onMouseClick(this.onPointer, this, this.disposables);
 		table.onMouseMiddleClick(this.onPointer, this, this.disposables);
 	}
 
@@ -571,9 +522,6 @@ export class MouseController<T> implements IDisposable {
 	}
 
 	protected onPointer(e: ITableMouseEvent<T>): void {
-		if (!this.mouseSupport) {
-			return;
-		}
 
 		let reference = this.table.getFocus()[0];
 		const selection = this.table.getSelection();
@@ -891,11 +839,6 @@ export class Table<T> implements IDisposable {
 
 		if (!options || typeof options.keyboardSupport !== 'boolean' || options.keyboardSupport) {
 			const controller = new KeyboardController(this, this.view, options);
-			this.disposables.push(controller);
-		}
-
-		if (!options || typeof options.dnd !== 'boolean' || options.dnd) {
-			const controller = new DragAndDropController(this, this.view, options);
 			this.disposables.push(controller);
 		}
 
