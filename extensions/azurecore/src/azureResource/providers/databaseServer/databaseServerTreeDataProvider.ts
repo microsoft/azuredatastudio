@@ -73,7 +73,7 @@ export class AzureResourceDatabaseServerTreeDataProvider implements azureResourc
 					options: {}
 				},
 				childProvider: 'MSSQL',
-				type: 'server'
+				type: 'Server'
 			}
 		});
 	}

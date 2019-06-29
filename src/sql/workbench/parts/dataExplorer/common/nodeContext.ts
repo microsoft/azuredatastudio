@@ -9,6 +9,7 @@ import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -22,7 +23,6 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	static ViewId = new RawContextKey<string>('view', undefined);
 	static ViewItem = new RawContextKey<string>('viewItem', undefined);
 	static Node = new RawContextKey<INodeContextValue>('node', undefined);
-	static IsDatabaseOrServer = new RawContextKey<boolean>('isDatabaseOrServer', false);
 
 	private readonly _connectionContextKey: ConnectionContextKey;
 	private readonly _connectableKey: IContextKey<boolean>;
@@ -30,10 +30,11 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	private readonly _viewIdKey: IContextKey<string>;
 	private readonly _viewItemKey: IContextKey<string>;
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
-	private readonly _isDatabaseOrServerKey: IContextKey<boolean>;
+
+	private _nodeContextUtils: NodeContextUtils;
 
 	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IOEShimService private oeService: IOEShimService,
 		@IQueryManagementService queryManagementService: IQueryManagementService
 	) {
@@ -44,7 +45,6 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._viewIdKey = NodeContextKey.ViewId.bindTo(contextKeyService);
 		this._viewItemKey = NodeContextKey.ViewItem.bindTo(contextKeyService);
 		this._nodeContextKey = NodeContextKey.Node.bindTo(contextKeyService);
-		this._isDatabaseOrServerKey = NodeContextKey.IsDatabaseOrServer.bindTo(contextKeyService);
 		this._connectionContextKey = new ConnectionContextKey(contextKeyService, queryManagementService);
 	}
 
@@ -60,15 +60,12 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		}
 		if (value.node) {
 			this._viewItemKey.set(value.node.contextValue);
-			if (value.node.type) {
-				const isDatabaseOrServer = this.isDatabaseOrServer(value);
-				this._isDatabaseOrServerKey.set(isDatabaseOrServer);
-			}
 		} else {
 			this._viewItemKey.reset();
 		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
+		this._nodeContextUtils = new NodeContextUtils(this._nodeContextKey.get(), this.contextKeyService);
 	}
 
 	reset(): void {
@@ -78,17 +75,10 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._connectedKey.reset();
 		this._connectionContextKey.reset();
 		this._nodeContextKey.reset();
+		this._nodeContextUtils.dispose();
 	}
 
 	get(): INodeContextValue | undefined {
 		return this._nodeContextKey.get();
-	}
-
-
-	private isDatabaseOrServer(nodeContextValue: INodeContextValue): boolean {
-		if (nodeContextValue.node.type) {
-			return nodeContextValue.node.type === 'database' || nodeContextValue.node.type === 'server';
-		}
-		return false;
 	}
 }

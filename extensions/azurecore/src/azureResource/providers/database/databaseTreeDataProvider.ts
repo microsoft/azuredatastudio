@@ -73,7 +73,7 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 					options: {}
 				},
 				childProvider: 'MSSQL',
-				type: 'database'
+				type: 'Database'
 			}
 		});
 	}

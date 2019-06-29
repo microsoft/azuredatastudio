@@ -558,7 +558,6 @@ export class NewNotebookAction extends Action {
 
 	run(context?: azdata.ConnectedContext): Promise<void> {
 		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, context);
-
 	}
 
 }
