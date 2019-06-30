@@ -194,9 +194,8 @@ export class Workbench extends Layout {
 		const instantiationService = new InstantiationService(serviceCollection, true);
 
 		// {{SQL CARBON EDIT }}
-		// TODO@Davidshi These services currently have no referents, so force their creation
+		// TODO@Davidshi commandLineService currently has no referents, so force its creation
 		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
-		serviceCollection.set(IAdsTelemetryService, instantiationService.createInstance(AdsTelemetryService));
 		// {{SQL CARBON EDIT}} - End
 
 		// Wrap up
