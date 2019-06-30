@@ -77,6 +77,7 @@ export interface ParsedArgs {
 	user?: string;
 	command?: string;
 	// {{SQL CARBON EDIT}}
+	'disable-inspect'?: boolean;
 }
 
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');
