@@ -41,6 +41,7 @@ export class WebviewPortMappingManager extends Disposable {
 		if (!requestLocalHostInfo) {
 			return undefined;
 		}
+
 		for (const mapping of this.mappings()) {
 			if (mapping.webviewPort === requestLocalHostInfo.port) {
 				if (this.extensionLocation && this.extensionLocation.scheme === REMOTE_HOST_SCHEME) {
