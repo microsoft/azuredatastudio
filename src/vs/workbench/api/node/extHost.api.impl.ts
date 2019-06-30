@@ -272,7 +272,6 @@ export function createApiFactory(
 				return initData.environment.webviewResourceRoot;
 			},
 			get remoteName() {
-				checkProposedApiEnabled(extension);
 				if (!initData.remote.authority) {
 					return undefined;
 				}
