@@ -12,38 +12,38 @@ class TelemetryEventImpl implements ITelemetryEvent {
 	constructor(
 		private _telemetryService: ITelemetryService,
 		private _logService: ILogService,
-		private eventName: string,
-		private properties?: ITelemetryEventProperties,
-		private measurements?: ITelemetryEventMeasures) {
-		properties = properties || {};
-		measurements = measurements || {};
+		private _eventName: string,
+		private _properties?: ITelemetryEventProperties,
+		private _measurements?: ITelemetryEventMeasures) {
+		_properties = _properties || {};
+		_measurements = _measurements || {};
 	}
 
 	public send(): void {
 		try {
-			this._telemetryService.publicLog(this.eventName, { properties: this.properties, measurements: this.measurements });
+			this._telemetryService.publicLog(this._eventName, { properties: this._properties, measurements: this._measurements });
 		}
 		catch (e) {
 			// We don't want exceptions sending telemetry to break functionality so just log and ignore
 			if (this._logService) {
 				const msg = e instanceof Error ? e.message : e;
-				this._logService.warn(`Error sending ${this.eventName} event ${msg}`);
+				this._logService.warn(`Error sending ${this._eventName} event ${msg}`);
 			}
 		}
 	}
 
 	public withAdditionalProperties(additionalProperties: ITelemetryEventProperties): ITelemetryEvent {
-		Object.assign(this.properties, additionalProperties);
+		Object.assign(this._properties, additionalProperties);
 		return this;
 	}
 
 	public withAdditionalMeasurements(additionalMeasurements: ITelemetryEventMeasures): ITelemetryEvent {
-		Object.assign(this.measurements, additionalMeasurements);
+		Object.assign(this._measurements, additionalMeasurements);
 		return this;
 	}
 
 	public withConnectionInfo(connectionInfo: ITelemetryConnectionInfo): ITelemetryEvent {
-		Object.assign(this.properties,
+		Object.assign(this._properties,
 			{
 				authenticationType: connectionInfo.authenticationType,
 				providerName: connectionInfo.providerName,
