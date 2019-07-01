@@ -362,20 +362,20 @@ function generateServerOptions(executablePath: string): ServerOptions {
 function generateHandleServerProviderEvent() {
 	let dots = 0;
 	return (e: string, ...args: any[]) => {
-		outputChannel.show();
-		statusView.show();
 		switch (e) {
 			case Events.INSTALL_START:
-				outputChannel.appendLine(`Installing ${Constants.serviceName} service to ${args[0]}`);
-				statusView.text = 'Installing Service';
+				outputChannel.show(true);
+				statusView.show();
+				outputChannel.appendLine(localize('installingServiceChannelMsg', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
+				statusView.text = localize('installingServiceStatusMsg', 'Installing Service');
 				break;
 			case Events.INSTALL_END:
-				outputChannel.appendLine('Installed');
+				outputChannel.appendLine(localize('installedServiceChannelMsg', 'Installed'));
 				break;
 			case Events.DOWNLOAD_START:
-				outputChannel.appendLine(`Downloading ${args[0]}`);
-				outputChannel.append(`(${Math.ceil(args[1] / 1024)} KB)`);
-				statusView.text = 'Downloading Service';
+				outputChannel.appendLine(localize('downloadingServiceChannelMsg', 'Downloading {0}', args[0]));
+				outputChannel.append(localize('downloadingServiceSizeChannelMsg', '({0} KB)', Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
+				statusView.text = localize('downloadingServiceStatusMsg', 'Downloading Service');
 				break;
 			case Events.DOWNLOAD_PROGRESS:
 				let newDots = Math.ceil(args[0] / 5);
@@ -385,7 +385,7 @@ function generateHandleServerProviderEvent() {
 				}
 				break;
 			case Events.DOWNLOAD_END:
-				outputChannel.appendLine('Done!');
+				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', 'Done!'));
 				break;
 		}
 	};

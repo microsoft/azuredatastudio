@@ -109,20 +109,20 @@ export class ServiceClient {
 	private generateHandleServerProviderEvent(): EventAndListener {
 		let dots = 0;
 		return (e: string, ...args: any[]) => {
-			this.outputChannel.show();
-			this.statusView.show();
 			switch (e) {
 				case Events.INSTALL_START:
-					this.outputChannel.appendLine(localize('installingServiceDetailed', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
-					this.statusView.text = localize('installingService', 'Installing Service');
+					this.outputChannel.show(true);
+					this.statusView.show();
+					this.outputChannel.appendLine(localize('installingServiceChannelMsg', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
+					this.statusView.text = localize('installingServiceStatusMsg', 'Installing Service');
 					break;
 				case Events.INSTALL_END:
-					this.outputChannel.appendLine(localize('serviceInstalled', 'Installed'));
+					this.outputChannel.appendLine(localize('installedServiceChannelMsg', 'Installed'));
 					break;
 				case Events.DOWNLOAD_START:
-					this.outputChannel.appendLine(localize('downloadingService', 'Downloading {0}', args[0]));
-					this.outputChannel.append(`(${Math.ceil(args[1] / 1024)} KB)`);
-					this.statusView.text = localize('downloadingServiceStatus', 'Downloading Service');
+					this.outputChannel.appendLine(localize('downloadingServiceChannelMsg', 'Downloading {0}', args[0]));
+					this.outputChannel.append(localize('downloadingServiceSizeChannelMsg', '({0} KB)', Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
+					this.statusView.text = localize('downloadingServiceStatusMsg', 'Downloading Service');
 					break;
 				case Events.DOWNLOAD_PROGRESS:
 					let newDots = Math.ceil(args[0] / 5);
@@ -132,9 +132,7 @@ export class ServiceClient {
 					}
 					break;
 				case Events.DOWNLOAD_END:
-					this.outputChannel.appendLine(localize('downloadingServiceComplete', 'Done!'));
-					break;
-				default:
+					this.outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', 'Done!'));
 					break;
 			}
 		};
