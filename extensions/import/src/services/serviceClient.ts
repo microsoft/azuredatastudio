@@ -134,6 +134,9 @@ export class ServiceClient {
 				case Events.DOWNLOAD_END:
 					this.outputChannel.appendLine(localize('downloadingServiceComplete', 'Done!'));
 					break;
+				default:
+					console.error(`Unknown event from Server Provider ${e}`);
+					break;
 			}
 		};
 	}
