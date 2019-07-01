@@ -318,7 +318,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._model.providerName = this._currentProviderType;
 
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		this.uiController.showUiComponent(input.container);
+		if (this._inputModel && this._inputModel.options) {
+			this.uiController.showUiComponent(input.container,
+				this._inputModel.options.authTypeChanged);
+		} else {
+			this.uiController.showUiComponent(input.container);
+		}
 
 	}
 
