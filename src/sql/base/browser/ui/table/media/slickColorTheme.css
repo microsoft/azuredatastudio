@@ -122,9 +122,9 @@
 	background-image: url("viewChart.svg");
 }
 
-.vs .icon.viewSandDance {
+.vs .icon.viewVisualizer {
 	/* ResultToXlsx_16x_vscode */
-	background-image: url("viewSandDance.svg");
+	background-image: url("viewVisualizer.svg");
 }
 
 /* headers */
@@ -265,10 +265,10 @@
 	background-image: url("viewChart_inverse.svg");
 }
 
-.vs-dark .icon.viewSandDance,
-.hc-black .icon.viewSandDance {
+.vs-dark .icon.viewVisualizer,
+.hc-black .icon.viewVisualizer {
 	/* ResultToXlsx_16x_vscode */
-	background-image: url("viewSandDance_inverse.svg");
+	background-image: url("viewVisualizer_inverse.svg");
 }
 
 .grid-panel .action-label.icon {

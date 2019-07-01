@@ -211,18 +211,18 @@ export class ChartDataAction extends Action {
 	}
 }
 
-export class SandDanceDataAction extends Action {
-	public static ID = 'grid.sandDance';
-	public static LABEL = localize('sandDance', 'SandDance');
-	public static ICON = 'viewSandDance';
+export class VisualizerDataAction extends Action {
+	public static ID = 'grid.visualizer';
+	public static LABEL = localize('visualizer', 'Visualizer');
+	public static ICON = 'viewVisualizer';
 
 	constructor(@IEditorService private editorService: IEditorService) {
-		super(SandDanceDataAction.ID, SandDanceDataAction.LABEL, SandDanceDataAction.ICON);
+		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
-		activeEditor.sandDance({ batchId: context.batchId, resultId: context.resultId });
+		activeEditor.visualizer({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}
 }

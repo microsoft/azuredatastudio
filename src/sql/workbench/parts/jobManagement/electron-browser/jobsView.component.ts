@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -863,10 +863,12 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
 		const editAction = this._instantiationService.createInstance(EditJobAction);
+		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		if (!targetObject.canEdit) {
 			editAction.enabled = false;
 		}
 		return [
+			runJobAction,
 			editAction,
 			this._instantiationService.createInstance(DeleteJobAction)
 		];

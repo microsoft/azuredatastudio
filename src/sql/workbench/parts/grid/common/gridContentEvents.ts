@@ -17,6 +17,6 @@ export const SaveAsJSON = 'SaveAsJSON';
 export const SaveAsExcel = 'SaveAsExcel';
 export const SaveAsXML = 'SaveAsXML';
 export const ViewAsChart = 'ViewAsChart';
-export const ViewAsSandDance = 'ViewAsSandDance';
+export const ViewAsVisualizer = 'ViewAsVisualizer';
 export const GoToNextQueryOutputTab = 'GoToNextQueryOutputTab';
 export const GoToNextGrid = 'GoToNextGrid';

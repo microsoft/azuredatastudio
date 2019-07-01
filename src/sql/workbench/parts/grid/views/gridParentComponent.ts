@@ -157,8 +157,8 @@ export abstract class GridParentComponent {
 				case GridContentEvents.ViewAsChart:
 					self.showChartForGrid(self.activeGrid);
 					break;
-				case GridContentEvents.ViewAsSandDance:
-					self.showSandDanceForGrid(self.activeGrid);
+				case GridContentEvents.ViewAsVisualizer:
+					self.showVisualizerForGrid(self.activeGrid);
 					break;
 				case GridContentEvents.GoToNextGrid:
 					self.goToNextGrid();
@@ -281,7 +281,7 @@ export abstract class GridParentComponent {
 	protected showChartForGrid(index: number) {
 	}
 
-	protected showSandDanceForGrid(index: number) {
+	protected showVisualizerForGrid(index: number) {
 	}
 
 	protected goToNextGrid() {

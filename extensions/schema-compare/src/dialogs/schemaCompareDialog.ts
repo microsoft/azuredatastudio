@@ -421,7 +421,8 @@ export class SchemaCompareDialog {
 		this.sourceServerDropdown.onValueChanged(async (value) => {
 			if (this.sourceServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
 				this.sourceDatabaseDropdown.updateProperties({
-					values: []
+					values: [],
+					value: '  '
 				});
 			}
 			else {
@@ -445,7 +446,8 @@ export class SchemaCompareDialog {
 		this.targetServerDropdown.onValueChanged(async (value) => {
 			if (this.targetServerDropdown.values.findIndex(x => this.matchesValue(x, value)) === -1) {
 				this.targetDatabaseDropdown.updateProperties({
-					values: []
+					values: [],
+					value: '  '
 				});
 			}
 			else {
@@ -463,9 +465,12 @@ export class SchemaCompareDialog {
 		let currentDropdown = isTarget ? this.targetServerDropdown : this.sourceServerDropdown;
 		let values = await this.getServerValues();
 
-		currentDropdown.updateProperties({
-			values: values
-		});
+		if (values && values.length > 0) {
+			currentDropdown.updateProperties({
+				values: values,
+				value: values[0]
+			});
+		}
 	}
 
 	protected async getServerValues(): Promise<{ connection: azdata.connection.Connection, displayName: string, name: string }[]> {
@@ -562,12 +567,15 @@ export class SchemaCompareDialog {
 
 	protected async populateDatabaseDropdown(connectionId: string, isTarget: boolean): Promise<void> {
 		let currentDropdown = isTarget ? this.targetDatabaseDropdown : this.sourceDatabaseDropdown;
-		currentDropdown.updateProperties({ values: [] });
+		currentDropdown.updateProperties({ values: [], value: null });
 
 		let values = await this.getDatabaseValues(connectionId);
-		currentDropdown.updateProperties({
-			values: values
-		});
+		if (values && values.length > 0) {
+			currentDropdown.updateProperties({
+				values: values,
+				value: values[0],
+			});
+		}
 	}
 
 	protected async getDatabaseValues(connectionId: string): Promise<{ displayName, name }[]> {

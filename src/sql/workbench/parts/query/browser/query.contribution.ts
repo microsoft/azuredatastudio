@@ -432,7 +432,7 @@ let registryProperties = {
 	},
 	'mssql.query.arithAbort': {
 		'type': 'boolean',
-		'default': false,
+		'default': true,
 		'description': localize('mssql.query.arithAbort', 'Enable SET ARITHABORT option')
 	},
 	'mssql.query.statisticsTime': {

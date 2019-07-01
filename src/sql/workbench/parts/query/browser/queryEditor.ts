@@ -294,7 +294,8 @@ export class QueryEditor extends BaseEditor {
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
 	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
-		this.currentTextEditor.setVisible(visible, group);
+		this.textFileEditor.setVisible(visible, group);
+		this.textResourceEditor.setVisible(visible, group);
 		this.resultsEditor.setVisible(visible, group);
 		super.setEditorVisible(visible, group);
 
@@ -528,7 +529,7 @@ export class QueryEditor extends BaseEditor {
 		this.resultsEditor.chart(dataId);
 	}
 
-	public sandDance(dataId: { batchId: number, resultId: number }) {
-		this.resultsEditor.sandDance(dataId);
+	public visualizer(dataId: { batchId: number, resultId: number }) {
+		this.resultsEditor.visualizer(dataId);
 	}
 }
