@@ -134,7 +134,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
 		if (!this._scrollbarHeight) {
-			this._scrollbarHeight = editorWidget.getLayoutInfo().horizontalScrollbarHeight;
+			this._scrollbarHeight = layoutInfo.horizontalScrollbarHeight;
 		}
 		let editorWidgetModel = editorWidget.getModel();
 		if (!editorWidgetModel) {
