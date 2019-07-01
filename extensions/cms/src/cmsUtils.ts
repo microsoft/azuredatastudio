@@ -111,7 +111,7 @@ export class CmsUtils {
 			ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 			// If the ownerUri is still undefined, then open a connection dialog with the connection
 			if (!ownerUri) {
-				let result = await this.connection(initialConnectionProfile);
+				let result = await this.makeConnection(initialConnectionProfile);
 				if (result) {
 					ownerUri = await azdata.connection.getUriForConnection(result.connectionId);
 					connection = result;
@@ -158,7 +158,7 @@ export class CmsUtils {
 		this._registeredCmsServers.push(cmsServerNode);
 
 		// save the CMS Servers for future use
-		let toSaveCmsServers: ICmsResourceNodeInfo[] = JSON.parse(JSON.stringify(this._registeredCmsServers));
+		let toSaveCmsServers: ICmsResourceNodeInfo[] = this._registeredCmsServers.map(server => Object.assign({}, server));
 		toSaveCmsServers.forEach(server => {
 			server.ownerUri = undefined;
 			// don't save password in config
@@ -234,7 +234,7 @@ export class CmsUtils {
 		return this._credentialProvider;
 	}
 
-	public async connection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection> {
+	public async makeConnection(initialConnectionProfile?: azdata.IConnectionProfile): Promise<azdata.connection.Connection> {
 		if (!initialConnectionProfile) {
 			initialConnectionProfile = {
 				connectionName: undefined,

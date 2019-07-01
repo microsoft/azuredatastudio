@@ -63,20 +63,18 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					});
 				}
 				if (result.listRegisteredServersResult.registeredServerGroups) {
-					if (result.listRegisteredServersResult.registeredServerGroups) {
-						this._serverGroupNodes = [];
-						result.listRegisteredServersResult.registeredServerGroups.forEach((serverGroup) => {
-							let serverGroupNode = new ServerGroupTreeNode(
-								serverGroup.name,
-								serverGroup.description,
-								serverGroup.relativePath,
-								this.ownerUri,
-								this.appContext,
-								this.treeChangeHandler, this);
-							nodes.push(serverGroupNode);
-							this._serverGroupNodes.push(serverGroupNode);
-						});
-					}
+					this._serverGroupNodes = [];
+					result.listRegisteredServersResult.registeredServerGroups.forEach((serverGroup) => {
+						let serverGroupNode = new ServerGroupTreeNode(
+							serverGroup.name,
+							serverGroup.description,
+							serverGroup.relativePath,
+							this.ownerUri,
+							this.appContext,
+							this.treeChangeHandler, this);
+						nodes.push(serverGroupNode);
+						this._serverGroupNodes.push(serverGroupNode);
+					});
 				}
 				if (nodes.length > 0) {
 					return nodes.sort((node1, node2) => node1.name > node2.name ? 1 : -1);

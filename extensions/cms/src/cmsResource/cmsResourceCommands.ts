@@ -22,7 +22,7 @@ export function registerCmsServerCommand(appContext: AppContext, tree: CmsResour
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		let connection = await appContext.cmsUtils.connection(connectionProfile);
+		let connection = await appContext.cmsUtils.makeConnection(connectionProfile);
 		if (connection && connection.options) {
 			let registeredCmsServerName = connection.options.registeredServerName ?
 				connection.options.registeredServerName : connection.options.server;
