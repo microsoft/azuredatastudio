@@ -113,16 +113,16 @@ export class ServiceClient {
 				case Events.INSTALL_START:
 					this.outputChannel.show(true);
 					this.statusView.show();
-					this.outputChannel.appendLine(localize('installingServiceChannelMsg', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
-					this.statusView.text = localize('installingServiceStatusMsg', 'Installing Service');
+					this.outputChannel.appendLine(localize('installingServiceDetailed', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
+					this.statusView.text = localize('installingService', 'Installing Service');
 					break;
 				case Events.INSTALL_END:
-					this.outputChannel.appendLine(localize('installedServiceChannelMsg', 'Installed'));
+					this.outputChannel.appendLine(localize('serviceInstalled', 'Installed'));
 					break;
 				case Events.DOWNLOAD_START:
-					this.outputChannel.appendLine(localize('downloadingServiceChannelMsg', 'Downloading {0}', args[0]));
-					this.outputChannel.append(localize('downloadingServiceSizeChannelMsg', '({0} KB)', Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
-					this.statusView.text = localize('downloadingServiceStatusMsg', 'Downloading Service');
+					this.outputChannel.appendLine(localize('downloadingService', 'Downloading {0}', args[0]));
+					this.outputChannel.append(localize('downloadingServiceSize', '({0} KB)', Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
+					this.statusView.text = localize('downloadingServiceStatus', 'Downloading Service');
 					break;
 				case Events.DOWNLOAD_PROGRESS:
 					let newDots = Math.ceil(args[0] / 5);
@@ -132,7 +132,7 @@ export class ServiceClient {
 					}
 					break;
 				case Events.DOWNLOAD_END:
-					this.outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', 'Done!'));
+					this.outputChannel.appendLine(localize('downloadingServiceComplete', 'Done!'));
 					break;
 			}
 		};
