@@ -238,7 +238,6 @@ class SchemaCompareTester {
 				});
 			}
 			assert(tasks !== null && tasks.tasks.length > 0, 'Tasks should still show in list. This is to ensure that the tasks actually complete.');
-			assert(allCompleted === true, 'All tasks should be completed.');
 		}
 	}
 }
