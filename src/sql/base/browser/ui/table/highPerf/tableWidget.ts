@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, ICellIndex, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
@@ -21,9 +21,12 @@ import { Color } from 'vs/base/common/color';
 import { getOrDefault } from 'vs/base/common/objects';
 import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
+import { GlobalMouseMoveMonitor } from 'vs/base/browser/globalMouseMoveMonitor';
+import { Range } from 'vs/editor/common/core/range';
+import { Position } from 'vs/editor/common/core/position';
 
 interface ITraitChangeEvent {
-	indexes: ICellIndex[];
+	indexes: Range[];
 	browserEvent?: UIEvent;
 }
 
@@ -31,7 +34,7 @@ type ITraitTemplateData = HTMLElement;
 
 interface IRenderedContainer {
 	templateData: ITraitTemplateData;
-	index: ICellIndex;
+	index: Position;
 }
 
 class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
@@ -48,24 +51,24 @@ class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
 		return container;
 	}
 
-	renderCell(element: T, row: number, columnId: string, templateData: ITraitTemplateData): void {
+	renderCell(element: T, row: number, cell: number, columnId: string, templateData: ITraitTemplateData): void {
 		const renderedElementIndex = firstIndex(this.renderedElements, el => el.templateData === templateData);
 
 		if (renderedElementIndex >= 0) {
 			const rendered = this.renderedElements[renderedElementIndex];
 			this.trait.unrender(templateData);
-			rendered.index = { row, columnId };
+			rendered.index = new Position(row, cell);
 		} else {
-			const rendered = { index: { row, columnId }, templateData };
+			const rendered = { index: new Position(row, cell), templateData };
 			this.renderedElements.push(rendered);
 		}
 
-		this.trait.renderIndex({ row, columnId }, templateData);
+		this.trait.renderIndex(new Position(row, cell), templateData);
 	}
 
-	renderIndexes(indexes: ICellIndex[]): void {
+	renderIndexes(indexes: Range[]): void {
 		for (const { index, templateData } of this.renderedElements) {
-			if (!!indexes.find(v => v.columnId === index.columnId && v.row === v.row)) {
+			if (!!indexes.find(v => v.containsPosition(index))) {
 				this.trait.renderIndex(index, templateData);
 			}
 		}
@@ -118,7 +121,7 @@ class DOMFocusController<T> implements IDisposable {
 			return;
 		}
 
-		const focusedDomElement = this.view.domElement(focus[0].row, focus[0].columnId);
+		const focusedDomElement = this.view.domElement(focus[0].startLineNumber, focus[0].startColumn);
 
 		if (!focusedDomElement) {
 			return;
@@ -147,8 +150,8 @@ class DOMFocusController<T> implements IDisposable {
 
 class Trait<T> implements IDisposable {
 
-	private indexes: Array<ICellIndex> = [];
-	private sortedIndexes: Array<ICellIndex> = [];
+	private indexes: Array<Range> = [];
+	private sortedIndexes: Array<Range> = [];
 
 	private _onChange = new Emitter<ITraitChangeEvent>();
 	get onChange(): Event<ITraitChangeEvent> { return this._onChange.event; }
@@ -162,7 +165,7 @@ class Trait<T> implements IDisposable {
 
 	constructor(private _trait: string) { }
 
-	renderIndex(index: ICellIndex, container: HTMLElement): void {
+	renderIndex(index: Position, container: HTMLElement): void {
 		DOM.toggleClass(container, this._trait, this.contains(index));
 	}
 
@@ -176,11 +179,11 @@ class Trait<T> implements IDisposable {
 	 * @param indexes Indexes which should have this trait.
 	 * @return The old indexes which had this trait.
 	 */
-	set(indexes: Array<ICellIndex>, browserEvent?: UIEvent): Array<ICellIndex> {
+	set(indexes: Array<Range>, browserEvent?: UIEvent): Array<Range> {
 		return this._set(indexes, indexes, browserEvent);
 	}
 
-	private _set(indexes: Array<ICellIndex>, sortedIndexes: Array<ICellIndex>, browserEvent?: UIEvent): Array<ICellIndex> {
+	private _set(indexes: Array<Range>, sortedIndexes: Array<Range>, browserEvent?: UIEvent): Array<Range> {
 		const result = this.indexes;
 		const sortedResult = this.sortedIndexes;
 
@@ -194,12 +197,12 @@ class Trait<T> implements IDisposable {
 		return result;
 	}
 
-	get(): Array<ICellIndex> {
+	get(): Array<Range> {
 		return this.indexes;
 	}
 
-	contains(index: ICellIndex): boolean {
-		return !!this.indexes.find(v => v.columnId === index.columnId && v.row === index.row);
+	contains(index: Position): boolean {
+		return !!this.indexes.find(v => v.containsPosition(index));
 	}
 
 	dispose() {
@@ -242,7 +245,7 @@ class FocusTrait<T> extends Trait<T> {
 		super('focused');
 	}
 
-	renderIndex(index: ICellIndex, container: HTMLElement): void {
+	renderIndex(index: Position, container: HTMLElement): void {
 		super.renderIndex(index, container);
 
 		if (this.contains(index)) {
@@ -263,20 +266,20 @@ class PipelineRenderer<T> implements ITableRenderer<T, any> {
 		return this.renderers.map(r => r.renderTemplate(container));
 	}
 
-	renderCell(element: T, index: number, columnId: string, templateData: any[], height: number | undefined): void {
+	renderCell(element: T, index: number, cell: number, columnId: string, templateData: any[], height: number | undefined): void {
 		let i = 0;
 
 		for (const renderer of this.renderers) {
-			renderer.renderCell(element, index, columnId, templateData[i++], height);
+			renderer.renderCell(element, index, cell, columnId, templateData[i++], height);
 		}
 	}
 
-	disposeCell(element: T, index: number, columnId: string, templateData: any[], height: number | undefined): void {
+	disposeCell(element: T, index: number, cell: number, columnId: string, templateData: any[], height: number | undefined): void {
 		let i = 0;
 
 		for (const renderer of this.renderers) {
 			if (renderer.disposeCell) {
-				renderer.disposeCell(element, index, columnId, templateData[i], height);
+				renderer.disposeCell(element, index, cell, columnId, templateData[i], height);
 			}
 
 			i += 1;
@@ -333,7 +336,7 @@ class RowCountRenderer implements IStaticTableRenderer<any, HTMLElement> {
 		return DOM.append(container, DOM.$('.row-count'));
 	}
 
-	renderCell(element: undefined, index: number, columnId: string, templateData: HTMLElement, width: number): void {
+	renderCell(element: undefined, index: number, ccell: number, olumnId: string, templateData: HTMLElement, width: number): void {
 		templateData.innerText = `${index}`;
 	}
 
@@ -403,7 +406,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusPreviousRow(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].row);
+		this.table.reveal(this.table.getFocus()[0].startLineNumber);
 		this.view.domNode.focus();
 	}
 
@@ -411,7 +414,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusNextRow(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].row);
+		this.table.reveal(this.table.getFocus()[0].startLineNumber);
 		this.view.domNode.focus();
 	}
 
@@ -419,7 +422,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusNextCell(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].row);
+		this.table.reveal(this.table.getFocus()[0].startLineNumber);
 		this.view.domNode.focus();
 	}
 
@@ -427,7 +430,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusPreviousCell(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].row);
+		this.table.reveal(this.table.getFocus()[0].startLineNumber);
 		this.view.domNode.focus();
 	}
 
@@ -472,6 +475,7 @@ export class MouseController<T> implements IDisposable {
 	readonly multipleSelectionController: IMultipleSelectionController<T>;
 	private openController: IOpenController;
 	private disposables: IDisposable[] = [];
+	private readonly _mouseMoveMonitor= new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();
 
 	constructor(protected table: Table<T>) {
 		this.multipleSelectionSupport = true;
@@ -482,12 +486,10 @@ export class MouseController<T> implements IDisposable {
 
 		this.openController = DefaultOpenController;
 
+		this.disposables.push(this._mouseMoveMonitor);
+
 		table.onMouseDown(this.onMouseDown, this, this.disposables);
 		table.onContextMenu(this.onContextMenu, this, this.disposables);
-		table.onMouseDblClick(this.onDoubleClick, this, this.disposables);
-
-		table.onMouseClick(this.onPointer, this, this.disposables);
-		table.onMouseMiddleClick(this.onPointer, this, this.disposables);
 	}
 
 	protected isSelectionSingleChangeEvent(event: ITableMouseEvent<any>): boolean {
@@ -554,18 +556,7 @@ export class MouseController<T> implements IDisposable {
 		}
 	}
 
-	private onDoubleClick(e: ITableMouseEvent<T>): void {
-
-		if (this.multipleSelectionSupport && this.isSelectionChangeEvent(e)) {
-			return;
-		}
-
-		const focus = this.table.getFocus();
-		this.table.setSelection(focus, e.browserEvent);
-		// this.table.pin(focus);
-	}
-
-	private changeSelection(e: ITableMouseEvent<T>, reference: ICellIndex | undefined): void {
+	private changeSelection(e: ITableMouseEvent<T>, reference: Range | undefined): void {
 		const focus = e.index!;
 
 		/*
@@ -1046,7 +1037,7 @@ export class Table<T> implements IDisposable {
 		return -1;
 	}
 
-	getFocus(): Array<ICellIndex> {
+	getFocus(): Array<Range> {
 		return this.focus.get();
 	}
 
@@ -1058,7 +1049,7 @@ export class Table<T> implements IDisposable {
 		const focus = this.focus.get();
 
 		if (focus.length > 0) {
-			this.view.domNode.setAttribute('aria-activedescendant', this.view.getElementDomId(focus[0].row, focus[0].columnId));
+			this.view.domNode.setAttribute('aria-activedescendant', this.view.getElementDomId(focus[0].startLineNumber, focus[0].startColumn));
 		} else {
 			this.view.domNode.removeAttribute('aria-activedescendant');
 		}

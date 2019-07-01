@@ -21,7 +21,8 @@ import { Sash, Orientation, ISashEvent as IBaseSashEvent } from 'vs/base/browser
 import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
-import { ITableRenderer, ITableDataSource, ITableMouseEvent, ICellIndex, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableRenderer, ITableDataSource, ITableMouseEvent, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { Position } from 'vs/editor/common/core/position';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -536,9 +537,9 @@ export class TableView<T> implements IDisposable {
 		return this.getScrollLeft();
 	}
 
-	domElement(index: number, column: string): HTMLElement | null {
+	domElement(index: number, column: number): HTMLElement | null {
 		const row = this.visibleRows[index];
-		const cell = row && row.cells!.find(v => v.templateId === column);
+		const cell = row && row.cells[column];
 		return cell && cell.domNode;
 	}
 
@@ -600,7 +601,7 @@ export class TableView<T> implements IDisposable {
 			// in this case we can special case the row count column
 			for (const [i, column] of this.staticColumns.entries()) {
 				const cell = row.cells![i];
-				column.renderer.renderCell(undefined, index, column.id, cell.templateData, column.width);
+				column.renderer.renderCell(undefined, index, i, column.id, cell.templateData, column.width);
 			}
 		} else {
 			this.renderRow(row, index);
@@ -623,7 +624,7 @@ export class TableView<T> implements IDisposable {
 	private renderRow(row: IAsyncRowItem<T>, index: number): void {
 		for (const [i, column] of this.columns.entries()) {
 			const cell = row.cells![i];
-			column.renderer.renderCell(row.element!, index, column.id, cell.templateData, column.width);
+			column.renderer.renderCell(row.element!, index, i, column.id, cell.templateData, column.width);
 		}
 	}
 
@@ -637,9 +638,9 @@ export class TableView<T> implements IDisposable {
 			cell!.style.left = `${column.left}px`;
 			cell!.style.height = `${row.size}px`;
 			cell!.style.lineHeight = `${row.size}px`;
-			cell!.setAttribute('data-column-id', `${column.id}`);
+			cell!.setAttribute('data-column-id', `${columnIndex}`);
 			cell!.setAttribute('role', 'gridcell');
-			row.row!.setAttribute('id', this.getElementDomId(index, column.id));
+			row.row!.setAttribute('id', this.getElementDomId(index, columnIndex));
 		}
 
 		row.row!.setAttribute('data-index', `${index}`);
@@ -669,7 +670,7 @@ export class TableView<T> implements IDisposable {
 			if (!canceled) {
 				const renderer = column.renderer;
 				if (renderer && renderer.disposeCell) {
-					renderer.disposeCell(item.element!, index, column.id, cell.templateData, column.width);
+					renderer.disposeCell(item.element!, index, i, column.id, cell.templateData, column.width);
 				}
 			}
 
@@ -698,16 +699,16 @@ export class TableView<T> implements IDisposable {
 		return { browserEvent, index, element };
 	}
 
-	private getItemIndexFromEventTarget(target: EventTarget | null): ICellIndex | undefined {
+	private getItemIndexFromEventTarget(target: EventTarget | null): Position | undefined {
 		let element: HTMLElement | null = target as (HTMLElement | null);
 
 		while (element instanceof HTMLElement && element !== this.rowsContainer) {
 			const rawColumn = element.getAttribute('data-column-id');
 
 			if (rawColumn) {
-				const columnId = String(rawColumn);
+				const column = Number(rawColumn);
 
-				if (columnId) {
+				if (column) {
 					while (element instanceof HTMLElement && element !== this.rowsContainer) {
 						const rawIndex = element.getAttribute('data-index');
 
@@ -715,7 +716,7 @@ export class TableView<T> implements IDisposable {
 							const row = Number(rawIndex);
 
 							if (!isNaN(row)) {
-								return { row, columnId };
+								return new Position(row, column);
 							}
 						}
 
@@ -734,7 +735,7 @@ export class TableView<T> implements IDisposable {
 		return Math.floor(index * this.rowHeight) - this.bigNumberDelta;
 	}
 
-	getElementDomId(index: number, column?: string): string {
+	getElementDomId(index: number, column?: number): string {
 		if (column) {
 			return `${this.domId}_${index}_${column}`;
 		} else {
