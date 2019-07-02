@@ -276,19 +276,7 @@ export class JupyterServerInstallation {
 	}
 
 	private isPythonRunning(pythonInstallPath: string): Promise<boolean> {
-		let pythonExePath = JupyterServerInstallation.getPythonExePath(pythonInstallPath, this._usingExistingPython);
-		return new Promise<boolean>(resolve => {
-			fs.open(pythonExePath, 'r+', (err, fd) => {
-				if (!err) {
-					fs.close(fd, err => {
-						this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
-					});
-					resolve(false);
-				} else {
-					resolve(err.code === 'EBUSY' || err.code === 'EPERM');
-				}
-			});
-		});
+		return Promise.resolve(false);
 	}
 
 	/**
