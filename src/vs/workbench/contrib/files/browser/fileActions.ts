@@ -148,7 +148,7 @@ export class NewFolderAction extends Action {
 export class GlobalNewUntitledPlainFileAction extends Action {
 	// {{SQL CARBON EDIT}} - Use different command name to reserve original name for SQL files
 	public static readonly ID = 'workbench.action.files.newUntitledPlainFile';
-	public static readonly LABEL = nls.localize('newUntitledFile', "New Untitled File");
+	public static readonly LABEL = nls.localize('newPlainTextFile', "New Plain Text File");
 
 	constructor(
 		id: string,
