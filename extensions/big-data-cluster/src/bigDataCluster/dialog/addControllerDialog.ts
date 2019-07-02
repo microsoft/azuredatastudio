@@ -245,7 +245,6 @@ export class AddControllerDialog {
 					label: localize('textRememberPassword', 'Remember Password'),
 					checked: this.model.prefilledRememberPassword
 				}).component();
-			this.rememberPwCheckBox.enabled = false;
 
 			wrapperContainer.addItem(this.rememberPwCheckBox, {
 				flex: '1, 1, 0%',
