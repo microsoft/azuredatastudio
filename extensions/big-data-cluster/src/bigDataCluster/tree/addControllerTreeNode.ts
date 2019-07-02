@@ -6,8 +6,8 @@
 'use strict';
 
 import * as nls from 'vscode-nls';
-import { TreeItem, TreeItemCollapsibleState } from 'vscode';
-import { NodeInfo } from 'azdata';
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { TreeNode } from './treeNode';
 import { BdcItemType } from '../constants';
 
@@ -17,7 +17,7 @@ export class AddControllerNode extends TreeNode {
 	private readonly nodeType: string;
 
 	constructor() {
-		super({ label: localize('bigDataClusters.addControllerNodeLabel', 'Add Big Data Cluster Controller...') });
+		super({ label: localize('textBigDataClusterControllerWithDots', 'Add Big Data Cluster Controller...') });
 		this.nodeType = BdcItemType.addController;
 	}
 
@@ -25,10 +25,10 @@ export class AddControllerNode extends TreeNode {
 		return [];
 	}
 
-	public getTreeItem(): TreeItem {
-		let item = new TreeItem(this.label, TreeItemCollapsibleState.None);
+	public getTreeItem(): vscode.TreeItem {
+		let item = new vscode.TreeItem(this.label, vscode.TreeItemCollapsibleState.None);
 		item.command = {
-			title: 'Add SQL Server Big Data Cluster Controller',
+			title: localize('textConnectToController', 'Connect to Controller'),
 			command: 'bigDataClusters.command.addController',
 			arguments: [this]
 		};
@@ -36,7 +36,7 @@ export class AddControllerNode extends TreeNode {
 		return item;
 	}
 
-	public getNodeInfo(): NodeInfo {
+	public getNodeInfo(): azdata.NodeInfo {
 		return {
 			label: this.label,
 			isLeaf: this.isLeaf,

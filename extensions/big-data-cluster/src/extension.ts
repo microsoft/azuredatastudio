@@ -32,7 +32,7 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 
 function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 	vscode.commands.registerCommand('bigDataClusters.command.addController', (node?: TreeNode) => {
-		addBdcControllerCommnad(treeDataProvider, node);
+		addBdcControllerCommand(treeDataProvider, node);
 	});
 
 	vscode.commands.registerCommand('bigDataClusters.command.deleteController', (node: TreeNode) => {
@@ -47,7 +47,7 @@ function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 	});
 }
 
-function addBdcControllerCommnad(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
+function addBdcControllerCommand(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
 	let model = new AddControllerDialogModel(treeDataProvider, node);
 	let dialog = new AddControllerDialog(model);
 	dialog.showDialog();
@@ -59,15 +59,22 @@ function deleteBdcControllerCommand(treeDataProvider: ControllerTreeDataProvider
 	}
 
 	let controllerNode = node as ControllerNode;
-	vscode.window.showWarningMessage(
-		`${localize('bigDataClusters.confirmDeleteController', 'Are you sure you want to delete')} ${controllerNode.label}?`,
-		{ modal: true },
-		localize('bigDataClusters.yes', 'Yes'),
-		localize('bigDataClusters.no', 'No')
-	).then(async (result) => {
-		if (result && result === localize('bigDataClusters.yes', 'Yes')) {
+
+	let choices: { [id: string]: boolean } = {};
+	choices[localize('textYes', 'Yes')] = true;
+	choices[localize('textNo', 'No')] = false;
+
+	let options = {
+		ignoreFocusOut: false,
+		placeHolder: localize('textConfirmDeleteController', 'Are you sure you want to delete \'{0}\'?', controllerNode.label)
+	};
+
+	vscode.window.showQuickPick(Object.keys(choices), options).then(result => {
+		let remove: boolean = !!(result && choices[result]);
+		if (remove) {
 			deleteControllerInternal(treeDataProvider, controllerNode);
 		}
+		return remove;
 	});
 }
 

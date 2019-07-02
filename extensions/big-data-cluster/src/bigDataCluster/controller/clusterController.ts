@@ -4,24 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EndpointRouterApi } from './apiGenerated';
-import { IEndPointsResponse, IControllerError, IEndPointsRequest, IHttpResponse, IEndPoint } from './types';
+// import { Socket } from 'net';
+// import { IncomingHttpHeaders } from 'http';
 
-export class BdcController {
+export class ClusterController {
 
-	// this fixes missing protocol and wrong character for port entered by user
-	private static adjustUrl(url: string): string {
-		if (!url) {
-			return undefined;
-		}
-
-		url = url.trim().replace(/ /g, '').replace(/,(\d+)$/, ':$1');
-		if (!url.includes('://')) {
-			url = `https://${url}`;
-		}
-		return url;
-	}
-
-	public static async getEndPoints(
+	public async getEndPoints(
 		url: string, username: string, password: string, ignoreSslVerification?: boolean
 	): Promise<IEndPointsResponse> {
 
@@ -49,6 +37,7 @@ export class BdcController {
 				endPoints: result.body as IEndPoint[],
 				request
 			};
+			return controllerResponse;
 		} catch (error) {
 			if ('response' in error) {
 				let err: IEndPointsResponse = error as IEndPointsResponse;
@@ -65,19 +54,73 @@ export class BdcController {
 			} else {
 				controllerError = error as IControllerError;
 			}
-			controllerError = Object.assign(controllerError, { request }) as IControllerError;
+			throw Object.assign(controllerError, { request }) as IControllerError;
 		}
+	}
 
-		if (!controllerResponse && !controllerError) {
+	/**
+	 * Fixes missing protocol and wrong character for port entered by user
+	 */
+	private adjustUrl(url: string): string {
+		if (!url) {
 			return undefined;
 		}
 
-		return new Promise<IEndPointsResponse>((resolve, reject) => {
-			if (controllerResponse) {
-				resolve(controllerResponse);
-			} else {
-				reject(controllerError);
-			}
-		});
+		url = url.trim().replace(/ /g, '').replace(/,(\d+)$/, ':$1');
+		if (!url.includes('://')) {
+			url = `https://${url}`;
+		}
+		return url;
 	}
+}
+
+export interface IEndPointsRequest {
+	url: string;
+	username: string;
+	password?: string;
+	method?: string;
+}
+
+export interface IEndPointsResponse {
+	request?: IEndPointsRequest;
+	response: IHttpResponse;
+	endPoints: IEndPoint[];
+}
+
+export interface IHttpResponse {
+	// httpVersion: string;
+	// httpVersionMajor: number;
+	// httpVersionMinor: number;
+	// connection: Socket;
+	// headers: IncomingHttpHeaders;
+	// rawHeaders: string[];
+	// trailers: { [key: string]: string | undefined };
+	// rawTrailers: string[];
+	method?: string;
+	url?: string;
+	statusCode?: number;
+	statusMessage?: string;
+	// socket: Socket;
+}
+
+export interface IEndPoint {
+	name?: string;
+	description?: string;
+	endpoint?: string;
+	ip?: string;
+	port?: number;
+	// path?: string;
+	// protocol?: string;
+	// service?: string;
+}
+
+export interface IControllerError extends Error {
+	// address?: string;
+	code?: string;
+	errno?: string;
+	message: string;
+	// port?: number;
+	// stack?: string;
+	// syscall?: string;
+	request?: any;
 }

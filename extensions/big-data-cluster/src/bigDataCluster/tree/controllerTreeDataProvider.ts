@@ -10,7 +10,7 @@ import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { AddControllerNode } from './addControllerTreeNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
-import { IEndPoint } from '../controller/types';
+import { IEndPoint } from '../controller/clusterController';
 
 export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeNode>, IControllerTreeChangeHandler {
 
@@ -71,8 +71,8 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 				this.root.addChild(new ControllerNode({
 					url: c.url,
 					username: c.username,
-					password: c.password,
-					rememberPassword: c.password !== undefined,
+					password: undefined,
+					rememberPassword: false,
 					parent: this.root,
 					treeChangeHandler: this
 				}));
@@ -83,11 +83,10 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 	public async saveControllers(): Promise<void> {
 		let controllers = this.root.children.map(e => {
-			let c = e as ControllerNode;
+			let controller = e as ControllerNode;
 			return {
-				url: c.url,
-				username: c.username,
-				password: c.rememberPassword ? c.password : undefined
+				url: controller.url,
+				username: controller.username
 			};
 		});
 

@@ -7,8 +7,7 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { IControllerError, IEndPoint } from '../controller/types';
-import { BdcController } from '../controller/controller';
+import { ClusterController, IEndPoint, IControllerError } from '../controller/clusterController';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { TreeNode } from '../tree/treeNode';
 
@@ -30,7 +29,8 @@ export class AddControllerDialogModel {
 	}
 
 	public async onComplete(url: string, username: string, password: string, rememberPassword: boolean): Promise<void> {
-		let response = await BdcController.getEndPoints(url, username, password, true);
+		let clusterController = new ClusterController();
+		let response = await clusterController.getEndPoints(url, username, password, true);
 		if (response && response.request) {
 			let masterInstance: IEndPoint = undefined;
 			if (response.endPoints) {
@@ -55,9 +55,9 @@ export class AddControllerDialogModel {
 
 export class AddControllerDialog {
 
-	private readonly DialogTitle: string = localize('bigDataClusters.addControllerDialog.addNewController', 'Add New Controller');
-	private readonly SignInButtonText: string = localize('bigDataClusters.addControllerDialog.add', 'Add');
-	private readonly CancelButtonText: string = localize('bigDataClusters.addControllerDialog.cancel', 'Cancel');
+	private readonly DialogTitle: string = localize('textAddNewController', 'Add New Controller');
+	private readonly SignInButtonText: string = localize('textAdd', 'Add');
+	private readonly CancelButtonText: string = localize('textCancel', 'Cancel');
 
 	private dialog: azdata.window.Dialog;
 	private uiModelBuilder: azdata.ModelBuilder;
@@ -84,7 +84,7 @@ export class AddControllerDialog {
 			this.uiModelBuilder = view.modelBuilder;
 
 			let titledContainer = new TitledContainer(this.uiModelBuilder);
-			titledContainer.title = localize('bigDataClusters.addControllerDialog.signInToController', 'Sign In to Controller');
+			titledContainer.title = localize('textSignInToController', 'Sign In to Controller');
 			titledContainer.setTitleMargin(6, 0, 11, 0);
 			titledContainer.setPadding(15, 30, 0, 30);
 			titledContainer.contentTopLine = true;
@@ -149,10 +149,15 @@ export class AddControllerDialog {
 				.component();
 
 			let usernameInputText = this.uiModelBuilder.text()
-				.withProperties<azdata.TextComponentProperties>({ value: 'Username' }).component();
+				.withProperties<azdata.TextComponentProperties>({
+					value: localize('textUsernameCapital', 'Username')
+				}).component();
 
 			this.usernameInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({ placeHolder: 'username', value: this.model.prefilledUsername }).component();
+				.withProperties<azdata.InputBoxProperties>({
+					placeHolder: localize('textUsernameLower', 'username'),
+					value: this.model.prefilledUsername
+				}).component();
 			this.usernameInputBox.onTextChanged(e => this.toggleSignInButton());
 
 			usernameInputContainer.addItem(usernameInputText, {
@@ -193,11 +198,13 @@ export class AddControllerDialog {
 				.component();
 
 			let passwordInputText = this.uiModelBuilder.text()
-				.withProperties<azdata.TextComponentProperties>({ value: 'Password' }).component();
+				.withProperties<azdata.TextComponentProperties>({
+					value: localize('textPasswordCapital', 'Password')
+				}).component();
 
 			this.passwordInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: 'password',
+					placeHolder: localize('textPasswordLower', 'password'),
 					inputType: 'password',
 					value: this.model.prefilledPassword
 				})
@@ -235,7 +242,7 @@ export class AddControllerDialog {
 
 			this.rememberPwCheckBox = this.uiModelBuilder.checkBox()
 				.withProperties<azdata.CheckBoxProperties>({
-					label: localize('bigDataClusters.addControllerDialog.rememberPassword', 'Remember Password'),
+					label: localize('textRememberPassword', 'Remember Password'),
 					checked: this.model.prefilledRememberPassword
 				}).component();
 			this.rememberPwCheckBox.enabled = false;

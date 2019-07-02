@@ -1,7 +1,7 @@
 {
 	"name": "big-data-cluster",
-	"displayName": "%bigDataClusters.displayName%",
-	"description": "%bigDataClusters.description%",
+	"displayName": "%displayName%",
+	"description": "%description%",
 	"version": "0.0.1",
 	"publisher": "Microsoft",
 	"preview": true,
@@ -25,7 +25,7 @@
 			"sqlBigDataCluster": [
 				{
 					"id": "sqlBigDataCluster",
-					"name": "%bigDataClusters.explorer.title%"
+					"name": "%explorer.title%"
 				}
 			]
 		},
@@ -42,17 +42,12 @@
 					"command": "bigDataClusters.command.deleteController",
 					"when": "viewItem == bigDataClusters.itemType.ControllerNode",
 					"group": "navigation@1"
-				},
-				{
-					"command": "bigDataClusters.command.refreshController",
-					"when": "viewItem == bigDataClusters.itemType.ControllerNode",
-					"group": "navigation@2"
 				}
 			]
 		},
 		"configuration": {
 			"type": "object",
-			"title": "%bigDataClusters.config.title%",
+			"title": "%config.title%",
 			"properties": {
 				"bigDataClusterControllers.controllers": {
 					"type": "array"
@@ -62,7 +57,7 @@
 		"commands": [
 			{
 				"command": "bigDataClusters.command.addController",
-				"title": "%bigDataClusters.command.addController.title%",
+				"title": "%command.addController.title%",
 				"icon": {
 					"light": "resources/light/add.svg",
 					"dark": "resources/dark/add_inverse.svg"
@@ -70,12 +65,12 @@
 			},
 			{
 				"command": "bigDataClusters.command.deleteController",
-				"title": "%bigDataClusters.command.deleteController.title%",
+				"title": "%command.deleteController.title%",
 				"when": "viewItem == bigDataClusters.itemType.ControllerNode"
 			},
 			{
 				"command": "bigDataClusters.command.refreshController",
-				"title": "%bigDataClusters.command.refreshController.title%",
+				"title": "%command.refreshController.title%",
 				"icon": {
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh_inverse.svg"
