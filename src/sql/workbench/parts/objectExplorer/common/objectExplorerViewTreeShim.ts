@@ -28,6 +28,7 @@ export interface IOEShimService {
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
+	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo;
 }
 
 export class OEShimService extends Disposable implements IOEShimService {
@@ -35,6 +36,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private sessionMap = new Map<number, string>();
 	private nodeHandleMap = new Map<number, string>();
+	private nodeInfoMap = new Map<ITreeItem, azdata.NodeInfo>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -167,7 +169,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}
-		const nodeInfo = {
+		const nodeInfo: azdata.NodeInfo = {
 			nodePath: nodePath,
 			nodeType: node.nodeTypeId,
 			nodeSubType: node.nodeSubType,
@@ -191,10 +193,10 @@ export class OEShimService extends Disposable implements IOEShimService {
 			providerHandle: parentNode.childProvider,
 			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
-			sqlIcon: icon,
-			nodeInfo: nodeInfo
+			sqlIcon: icon
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
+		this.nodeInfoMap.set(newTreeItem, nodeInfo);
 		return newTreeItem;
 	}
 
@@ -204,6 +206,13 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public isNodeConnected(viewId: string, node: ITreeItem): boolean {
 		return this.sessionMap.has(generateSessionMapKey(viewId, node));
+	}
+
+	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo {
+		if (this.nodeInfoMap.has(treeItem)) {
+			return this.nodeInfoMap.get(treeItem);
+		}
+		return undefined;
 	}
 }
 

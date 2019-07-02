@@ -7,14 +7,17 @@ import { localize } from 'vs/nls';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
 	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID,
-	NEW_NOTEBOOK_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, PROFILER_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
-	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID,
-	PROPERTIES_COMMAND_ID
+	NEW_NOTEBOOK_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
+	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID
 } from './nodeCommands';
+import {
+	PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
+} from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShimActions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+
 
 // Disconnect
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {

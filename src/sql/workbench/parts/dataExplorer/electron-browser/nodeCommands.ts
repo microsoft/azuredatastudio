@@ -134,19 +134,6 @@ CommandsRegistry.registerCommand({
 	}
 });
 
-// Profiler
-CommandsRegistry.registerCommand({
-	id: PROFILER_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		const objectExplorerContext: azdata.ObjectExplorerContext = {
-			connectionProfile: args.$treeItem.payload,
-			isConnectionNode: true,
-			nodeInfo: args.$treeItem.nodeInfo
-		};
-		return commandService.executeCommand('profiler.newProfiler', objectExplorerContext);
-	}
-});
 
 // Flat File Import
 CommandsRegistry.registerCommand({
@@ -188,34 +175,3 @@ CommandsRegistry.registerCommand({
 	}
 });
 
-// Generate Scripts
-CommandsRegistry.registerCommand({
-	id: GENERATE_SCRIPTS_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		const objectExplorerContext: azdata.ObjectExplorerContext = {
-			connectionProfile: args.$treeItem.payload,
-			isConnectionNode: true,
-			nodeInfo: args.$treeItem.nodeInfo
-		};
-		return commandService.executeCommand('adminToolExtWin.launchSsmsMinGswDialog', objectExplorerContext);
-	}
-});
-
-// Properties
-CommandsRegistry.registerCommand({
-	id: PROPERTIES_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		await connectionManagementService.connectIfNotConnected(profile);
-		const objectExplorerContext: azdata.ObjectExplorerContext = {
-			connectionProfile: args.$treeItem.payload,
-			isConnectionNode: true,
-			nodeInfo: args.$treeItem.nodeInfo
-		};
-		return commandService.executeCommand('adminToolExtWin.launchSsmsMinPropertiesDialog', objectExplorerContext);
-	}
-});

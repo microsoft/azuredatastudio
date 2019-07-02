@@ -23,7 +23,6 @@ export interface ITreeItem extends vsITreeItem {
 	payload?: IConnectionProfile; // its possible we will want this to be more generic
 	sqlIcon?: string;
 	type?: string;
-	nodeInfo?: NodeInfo;
 }
 
 export interface ITreeView extends vsITreeView {
