@@ -18,6 +18,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/common/actions';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { CellModel } from 'sql/workbench/parts/notebook/models/cell';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 
 export const HIDDEN_CLASS = 'actionhidden';
 
@@ -33,7 +34,9 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code After'), CellTypes.Code, true),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Text Before'), CellTypes.Markdown, false),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Text After'), CellTypes.Markdown, true),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear Output'))
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear Output')),
+			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
+			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true)
 		);
 	}
 
@@ -140,4 +143,40 @@ export class ClearCellOutputAction extends CellActionBase {
 		return Promise.resolve();
 	}
 
+}
+
+export class RunCellsAction extends CellActionBase {
+	constructor(id: string, label: string, private isAfter: boolean,
+		@INotificationService notificationService: INotificationService,
+		@INotebookService private notebookService: INotebookService,
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	public canRun(context: CellContext): boolean {
+		return context.cell && context.cell.cellType === CellTypes.Code;
+	}
+
+	doRun(context: CellContext): Promise<void> {
+		try {
+			let cell = context.cell || context.model.activeCell;
+			if (cell) {
+				let editor = this.notebookService.findNotebookEditor(cell.notebookModel.notebookUri);
+				if (editor) {
+					if (this.isAfter) {
+						editor.runAllCells(cell.id, undefined);
+					} else {
+						editor.runAllCells(undefined, cell.id);
+					}
+				}
+			}
+		} catch (error) {
+			let message = getErrorMessage(error);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
 }

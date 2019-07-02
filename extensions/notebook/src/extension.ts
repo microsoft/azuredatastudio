@@ -175,11 +175,11 @@ async function clearActiveCellOutput(): Promise<void> {
 	}
 }
 
-async function runAllCells(): Promise<void> {
+async function runAllCells(startId?: string, endId?: string): Promise<void> {
 	try {
 		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
-			await notebook.runAllCells();
+			await notebook.runAllCells(startId, endId);
 		} else {
 			throw new Error(noNotebookVisible);
 		}
