@@ -75,6 +75,9 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
+		if (connectionProfile) {
+			connectionProfile.options.savePassword = connectionProfile.savePassword;
+		}
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
