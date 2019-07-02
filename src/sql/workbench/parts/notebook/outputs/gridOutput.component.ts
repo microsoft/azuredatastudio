@@ -33,11 +33,10 @@ import { localize } from 'vs/nls';
 	selector: GridOutputComponent.SELECTOR,
 	template: `
 		<div #output class="notebook-cellTable">
-
 		</div>
 	`
 })
-export class GridOutputComponent extends AngularDisposable implements IMimeComponent, AfterViewInit {
+export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'grid-output';
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
@@ -75,7 +74,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 	}
 
-	ngAfterViewInit() {
+	ngOnInit() {
 		this.renderGrid();
 	}
 
@@ -90,13 +89,16 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			let outputElement = <HTMLElement>this.output.nativeElement;
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
-
+			this.layout();
+			this._table.onAdd();
+			this._initialized = true;
 		}
 	}
 
 	layout(): void {
 		if (this._table) {
-			this._table.layout();
+			let maxSize = Math.min(this._table.maximumSize, 500);
+			this._table.layout(maxSize);
 		}
 	}
 }
@@ -115,7 +117,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, documentUri);
+		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -127,6 +129,7 @@ class DataResourceTable extends GridTableBase<any> {
 class DataResourceDataProvider implements IGridDataProvider {
 	private rows: azdata.DbCellValue[][];
 	constructor(source: IDataResource,
+		private resultSet: azdata.ResultSetSummary,
 		private documentUri: string,
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
@@ -191,7 +194,10 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	getColumnHeaders(range: Slick.Range): string[] {
-		throw new Error('Method not implemented.');
+		let headers: string[] = this.resultSet.columnInfo.slice(range.fromCell, range.toCell + 1).map((info, i) => {
+			return info.columnName;
+		});
+		return headers;
 	}
 
 	get canSerialize(): boolean {
