@@ -1,0 +1,9 @@
+{
+	"bigDataClusters.displayName": "SQL Server Big Data Clusters",
+	"bigDataClusters.description": "Support for managing SQL Server Big Data Clusters",
+	"bigDataClusters.explorer.title": "SQL Server Big Data Clusters",
+	"bigDataClusters.config.title": "SQL Server Big Data Clusters",
+	"bigDataClusters.command.addController.title": "Add SQL Server Big Data Cluster Controller",
+	"bigDataClusters.command.deleteController.title" : "Delete",
+	"bigDataClusters.command.refreshController.title" : "Refresh"
+}
