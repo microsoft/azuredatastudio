@@ -368,8 +368,8 @@ class TitledContainer {
 	public contentTopLine: boolean;
 	public contentBottomLine: boolean;
 
-	private static readonly _pBeforePx: number = 16;
-	private static readonly _pAfterPx: number = 16;
+	private static readonly _pxBeforeText: number = 16;
+	private static readonly _pxAfterText: number = 16;
 
 	constructor(modelBuilder: azdata.ModelBuilder) {
 		this._modelBuilder = modelBuilder;
@@ -383,11 +383,11 @@ class TitledContainer {
 	}
 
 	public set titleTopMargin(px: number) {
-		this._titleTopMargin = px - TitledContainer._pBeforePx;
+		this._titleTopMargin = px - TitledContainer._pxBeforeText;
 	}
 
 	public set titleBottomMargin(px: number) {
-		this._titleBottomMargin = px - TitledContainer._pAfterPx;
+		this._titleBottomMargin = px - TitledContainer._pxAfterText;
 	}
 
 	public setTitleMargin(topPx: number, rightPx: number, bottomPx: number, leftPx: number) {

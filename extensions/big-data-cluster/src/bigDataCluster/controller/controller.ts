@@ -8,6 +8,7 @@ import { IEndPointsResponse, IControllerError, IEndPointsRequest, IHttpResponse,
 
 export class BdcController {
 
+	// this fixes missing protocol and wrong character for port entered by user
 	private static adjustUrl(url: string): string {
 		if (!url) {
 			return undefined;
@@ -41,32 +42,31 @@ export class BdcController {
 			method: 'endPointsGet'
 		};
 
-		await ep.endpointsGet().then(result => {
+		try {
+			let result = await ep.endpointsGet();
 			controllerResponse = <IEndPointsResponse>{
 				response: result.response as IHttpResponse,
 				endPoints: result.body as IEndPoint[],
 				request
 			};
-		}, error => {
-			if (error) {
-				if ('response' in error) {
-					let err: IEndPointsResponse = error as IEndPointsResponse;
-					let errCode = `${err.response.statusCode || ''}`;
-					let errMessage = err.response.statusMessage;
-					let errUrl = err.response.url;
-					controllerError = <IControllerError>{
-						address: errUrl,
-						code: errCode,
-						errno: errCode,
-						message: errMessage,
-						name: undefined
-					};
-				} else {
-					controllerError = error as IControllerError;
-				}
-				controllerError = Object.assign(controllerError, { request }) as IControllerError;
+		} catch (error) {
+			if ('response' in error) {
+				let err: IEndPointsResponse = error as IEndPointsResponse;
+				let errCode = `${err.response.statusCode || ''}`;
+				let errMessage = err.response.statusMessage;
+				let errUrl = err.response.url;
+				controllerError = <IControllerError>{
+					address: errUrl,
+					code: errCode,
+					errno: errCode,
+					message: errMessage,
+					name: undefined
+				};
+			} else {
+				controllerError = error as IControllerError;
 			}
-		});
+			controllerError = Object.assign(controllerError, { request }) as IControllerError;
+		}
 
 		if (!controllerResponse && !controllerError) {
 			return undefined;

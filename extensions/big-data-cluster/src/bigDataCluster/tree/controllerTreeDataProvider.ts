@@ -90,11 +90,11 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 				password: c.rememberPassword ? c.password : undefined
 			};
 		});
-		await vscode.workspace.getConfiguration('bigDataClusterControllers').update('controllers', controllers, true).then(
-			() => { },
-			error => {
-				vscode.window.showErrorMessage(error.message);
-			}
-		);
+
+		try {
+			await vscode.workspace.getConfiguration('bigDataClusterControllers').update('controllers', controllers, true);
+		} catch (error) {
+			vscode.window.showErrorMessage(error.message);
+		}
 	}
 }

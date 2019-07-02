@@ -22,9 +22,9 @@
 	"main": "./out/extension",
 	"contributes": {
 		"dataExplorer": {
-			"bigDataClusters": [
+			"sqlBigDataCluster": [
 				{
-					"id": "bigDataClusterExplorer",
+					"id": "sqlBigDataCluster",
 					"name": "%bigDataClusters.explorer.title%"
 				}
 			]
@@ -33,7 +33,7 @@
 			"view/title": [
 				{
 					"command": "bigDataClusters.command.addController",
-					"when": "view == bigDataClusterExplorer",
+					"when": "view == sqlBigDataCluster",
 					"group": "navigation"
 				}
 			],

@@ -19,7 +19,7 @@ export abstract class ControllerTreeNode extends TreeNode {
 	private _iconPath: { dark: string, light: string };
 	private _treeChangeHandler: IControllerTreeChangeHandler;
 
-	constructor(p?: {
+	constructor(properties?: {
 		label: string;
 		treeChangeHandler: IControllerTreeChangeHandler;
 		parent?: ControllerTreeNode;
@@ -27,11 +27,11 @@ export abstract class ControllerTreeNode extends TreeNode {
 		nodeType?: string;
 		iconPath?: { dark: string, light: string };
 	}) {
-		super(p);
-		this._treeChangeHandler = p.treeChangeHandler;
-		this._description = p.description || p.label;
-		this._nodeType = p.nodeType;
-		this._iconPath = p.iconPath;
+		super(properties);
+		this._treeChangeHandler = properties.treeChangeHandler;
+		this._description = properties.description || properties.label;
+		this._nodeType = properties.nodeType;
+		this._iconPath = properties.iconPath;
 	}
 
 	public async getChildren(): Promise<ControllerTreeNode[]> {
@@ -105,11 +105,12 @@ export abstract class ControllerTreeNode extends TreeNode {
 }
 
 export class ControllerRootNode extends ControllerTreeNode {
-	constructor(p?: { treeChangeHandler: IControllerTreeChangeHandler }) {
+
+	constructor(properties?: { treeChangeHandler: IControllerTreeChangeHandler }) {
 		super(Object.assign({
 			label: 'root',
 			nodeType: BdcItemType.controllerRoot,
-		}, p));
+		}, properties));
 	}
 
 	public async getChildren(): Promise<ControllerNode[]> {
@@ -160,7 +161,7 @@ export class ControllerNode extends ControllerTreeNode {
 	private _password: string;
 	private _rememberPassword: boolean;
 
-	constructor(p?: {
+	constructor(properties?: {
 		url: string,
 		username: string,
 		password: string,
@@ -174,15 +175,15 @@ export class ControllerNode extends ControllerTreeNode {
 			label: undefined,
 			nodeType: BdcItemType.controller,
 			iconPath: IconPath.controllerNode
-		}, p));
+		}, properties));
 
-		let address = ControllerNode.toIpAndPort(p.url);
-		this.label = p.label || `controller: ${address} (${p.username})`;
-		this.description = p.description || this.label;
-		this._url = p.url;
-		this._username = p.username;
-		this._password = p.password;
-		this._rememberPassword = !!p.rememberPassword;
+		let address = ControllerNode.toIpAndPort(properties.url);
+		this.label = properties.label || `controller: ${address} (${properties.username})`;
+		this.description = properties.description || this.label;
+		this._url = properties.url;
+		this._username = properties.username;
+		this._password = properties.password;
+		this._rememberPassword = !!properties.rememberPassword;
 	}
 
 
@@ -196,17 +197,18 @@ export class ControllerNode extends ControllerTreeNode {
 			return this.children as ControllerTreeNode[];
 		}
 
-		return BdcController.getEndPoints(this._url, this._username, this._password, true).then(response => {
+		try {
+			let response = await BdcController.getEndPoints(this._url, this._username, this._password, true);
 			if (response && response.endPoints) {
 				let master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
 				this.addSqlMasterNode(master.endpoint, master.description);
 			}
 			return this.children as ControllerTreeNode[];
-		}, error => {
+		} catch (error) {
 			let e = error as IControllerError;
 			vscode.window.showErrorMessage(e.message);
 			return this.children as ControllerTreeNode[];
-		});
+		}
 	}
 
 	private static toIpAndPort(url: string): string {
@@ -271,16 +273,16 @@ export class ControllerNode extends ControllerTreeNode {
 }
 
 export class FolderNode extends ControllerTreeNode {
-	constructor(p?: {
+	constructor(properties?: {
 		label: string;
 		parent: ControllerTreeNode;
 		treeChangeHandler: IControllerTreeChangeHandler;
 	}) {
 		super(Object.assign({
-			description: p.label,
+			description: properties.label,
 			nodeType: BdcItemType.folder,
 			iconPath: IconPath.folderNode
-		}, p));
+		}, properties));
 	}
 }
 
@@ -290,7 +292,7 @@ export class SqlMasterNode extends ControllerTreeNode {
 	private _username: string;
 	private _password: string;
 
-	constructor(p?: {
+	constructor(properties?: {
 		endPointAddress: string,
 		parent: ControllerTreeNode,
 		treeChangeHandler: IControllerTreeChangeHandler,
@@ -301,13 +303,13 @@ export class SqlMasterNode extends ControllerTreeNode {
 			label: undefined,
 			nodeType: BdcItemType.sqlMaster,
 			iconPath: IconPath.sqlMasterNode
-		}, p));
+		}, properties));
 
-		this._endPointAddress = p.endPointAddress;
+		this._endPointAddress = properties.endPointAddress;
 		this._username = 'sa';
 		this._role = 'sql-server-master';
-		this.label = p.label || `master: ${this._endPointAddress} (${this._username})`;
-		this.description = p.description || this.label;
+		this.label = properties.label || `master: ${this._endPointAddress} (${this._username})`;
+		this.description = properties.description || this.label;
 	}
 
 	private getPassword(): string {

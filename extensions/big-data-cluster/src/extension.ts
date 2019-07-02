@@ -27,7 +27,7 @@ export function deactivate() {
 }
 
 function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.window.registerTreeDataProvider('bigDataClusterExplorer', treeDataProvider);
+	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 }
 
 function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
