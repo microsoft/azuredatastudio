@@ -15,6 +15,7 @@ import { getBdcServer, getConfigValue, EnvironmentVariable_PYTHON_PATH } from '.
 import { connectToServer, sleep } from './utils';
 import * as fs from 'fs';
 import { stressify } from 'adstest';
+import { isNullOrUndefined } from 'util';
 
 if (context.RunTest) {
 	suite('Notebook integration test suite', function () {
@@ -34,6 +35,10 @@ if (context.RunTest) {
 
 		test('Sql NB multiple cells test', async function () {
 			await (new NotebookTester()).sqlNbMultipleCellsTest(this.test.title);
+		});
+
+		test('Sql NB run cells above and below test', async function () {
+			await (new NotebookTester()).sqlNbRunCellsAboveBelowTest(this.test.title);
 		});
 
 		test('Clear cell output - SQL notebook', async function () {
@@ -108,6 +113,7 @@ class NotebookTester {
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async pySpark3NbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pySpark3KernelMetadata, title + this.invocationCount++);
+		await this.runCell(notebook);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		let sparkResult = (<azdata.nb.IStreamResult>cellOutputs[3]).text;
 		assert(sparkResult === '2', `Expected spark result: 2, Actual: ${sparkResult}`);
@@ -116,12 +122,14 @@ class NotebookTester {
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async python3ClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
+		await this.runCell(notebook);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async python3NbTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title + this.invocationCount++);
+		await this.runCell(notebook);
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		console.log('Got cell outputs ---');
 		if (cellOutputs) {
@@ -134,17 +142,20 @@ class NotebookTester {
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbClearAllOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
+		await this.runCell(notebook);
 		await this.verifyClearAllOutputs(notebook);
 	}
 
 	async sqlNbClearOutputs(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++);
+		await this.runCell(notebook);
 		await this.verifyClearOutputs(notebook);
 	}
 
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbMultipleCellsTest(title: string): Promise<void> {
-		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++, true);
+		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++);
+		await this.runCells(notebook);
 		const expectedOutput0 = '(1 row affected)';
 		for (let i = 0; i < 3; i++) {
 			let cellOutputs = notebook.document.cells[i].contents.outputs;
@@ -162,9 +173,27 @@ class NotebookTester {
 		}
 	}
 
+	async sqlNbRunCellsAboveBelowTest(title: string): Promise<void> {
+		let notebook = await this.openNotebook(sqlNotebookMultipleCellsContent, sqlKernelMetadata, title + this.invocationCount++);
+		// When running all cells above a cell, ensure that only cells preceding current cell have output
+		await this.runCells(notebook, true, undefined, notebook.document.cells[1]);
+		assert(notebook.document.cells[0].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[0].contents.outputs.length}'`);
+		assert(notebook.document.cells[1].contents.outputs.length === 0, `Expected length: '0', Actual: '${notebook.document.cells[1].contents.outputs.length}'`);
+		assert(notebook.document.cells[2].contents.outputs.length === 0, `Expected length: '0', Actual: '${notebook.document.cells[2].contents.outputs.length}'`);
+
+		await notebook.clearAllOutputs();
+
+		// When running all cells below a cell, ensure that current cell and cells after have output
+		await this.runCells(notebook, undefined, true, notebook.document.cells[1]);
+		assert(notebook.document.cells[0].contents.outputs.length === 0, `Expected length: '0', Actual: '${notebook.document.cells[0].contents.outputs.length}'`);
+		assert(notebook.document.cells[1].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[1].contents.outputs.length}'`);
+		assert(notebook.document.cells[2].contents.outputs.length === 3, `Expected length: '3', Actual: '${notebook.document.cells[2].contents.outputs.length}'`);
+	}
+
 	@stressify({ dop: NotebookTester.ParallelCount })
 	async sqlNbTest(title: string): Promise<void> {
-		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++, false, true);
+		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title + this.invocationCount++, true);
+		await this.runCell(notebook);
 		const expectedOutput0 = '(1 row affected)';
 		let cellOutputs = notebook.document.cells[0].contents.outputs;
 		console.log('Got cell outputs ---');
@@ -181,6 +210,7 @@ class NotebookTester {
 
 	async sqlNbChangeKernelDifferentProviderTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title);
+		await this.runCell(notebook);
 		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
 		assert(notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
 
@@ -196,6 +226,7 @@ class NotebookTester {
 	async shouldNotBeDirtyAfterSavingNotebookTest(title: string): Promise<void> {
 		// Given a notebook that's been edited (in this case, open notebook runs the 1st cell and adds an output)
 		let notebook = await this.openNotebook(sqlNotebookContent, sqlKernelMetadata, title);
+		await this.runCell(notebook);
 		assert(notebook.document.providerId === 'sql', `Expected providerId to be sql, Actual: ${notebook.document.providerId}`);
 		assert(notebook.document.kernelSpec.name === 'SQL', `Expected first kernel name: SQL, Actual: ${notebook.document.kernelSpec.name}`);
 		assert(notebook.document.isDirty === true, 'Notebook should be dirty after edit');
@@ -230,6 +261,7 @@ class NotebookTester {
 
 	async pythonChangeKernelDifferentProviderTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title);
+		await this.runCell(notebook);
 		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
 		assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 
@@ -244,6 +276,7 @@ class NotebookTester {
 
 	async pythonChangeKernelSameProviderTest(title: string): Promise<void> {
 		let notebook = await this.openNotebook(pySparkNotebookContent, pythonKernelMetadata, title);
+		await this.runCell(notebook);
 		assert(notebook.document.providerId === 'jupyter', `Expected providerId to be jupyter, Actual: ${notebook.document.providerId}`);
 		assert(notebook.document.kernelSpec.name === 'python3', `Expected first kernel name: python3, Actual: ${notebook.document.kernelSpec.name}`);
 
@@ -348,7 +381,7 @@ class NotebookTester {
 		}
 	}
 
-	async openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, runAllCells?: boolean, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
+	async openNotebook(content: azdata.nb.INotebookContents, kernelMetadata: any, testName: string, connectToDifferentServer?: boolean): Promise<azdata.nb.NotebookEditor> {
 		let notebookConfig = vscode.workspace.getConfiguration('notebook');
 		notebookConfig.update('pythonPath', getConfigValue(EnvironmentVariable_PYTHON_PATH), 1);
 		if (!connectToDifferentServer) {
@@ -360,23 +393,30 @@ class NotebookTester {
 		let uri = writeNotebookToFile(notebookJson, testName);
 		console.log('Notebook uri ' + uri);
 		let notebook = await azdata.nb.showNotebookDocument(uri);
-		console.log('Notebook is opened');
-
-		if (!runAllCells) {
-			assert(notebook.document.cells.length === 1, 'Notebook should have 1 cell');
-			console.log('Before run notebook cell');
-			let ran = await notebook.runCell(notebook.document.cells[0]);
-			console.log('After run notebook cell');
-			assert(ran, 'Notebook runCell should succeed');
-		} else {
-			console.log('Before run all notebook cells');
-			let ran = await notebook.runAllCells();
-			assert(ran, 'Notebook runCell should succeed');
-			assert(notebook !== undefined && notebook !== null, 'Expected notebook object is defined');
-		}
-
 		return notebook;
 	}
+
+	async runCells(notebook: azdata.nb.NotebookEditor, runCellsAbove?: boolean, runCellsBelow?: boolean, currentCell?: azdata.nb.NotebookCell) {
+		assert(notebook !== undefined && notebook !== null, 'Expected notebook object is defined');
+		let ran;
+		if (runCellsAbove) {
+			ran = await notebook.runAllCells(undefined, currentCell);
+		} else if (runCellsBelow) {
+			ran = await notebook.runAllCells(currentCell, undefined);
+		} else {
+			ran = await notebook.runAllCells();
+		}
+		assert(ran, 'Notebook runCell should succeed');
+	}
+
+	async runCell(notebook: azdata.nb.NotebookEditor, cell?: azdata.nb.NotebookCell) {
+		if (isNullOrUndefined(cell)) {
+			cell = notebook.document.cells[0];
+		}
+		let ran = await notebook.runCell(cell);
+		assert(ran, 'Notebook runCell should succeed');
+	}
+
 	async verifyClearAllOutputs(notebook: azdata.nb.NotebookEditor): Promise<void> {
 		let cellWithOutputs = notebook.document.cells.find(cell => cell.contents && cell.contents.outputs && cell.contents.outputs.length > 0);
 		assert(cellWithOutputs !== undefined, 'Could not find notebook cells with outputs');
