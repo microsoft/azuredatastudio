@@ -81,7 +81,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		const devOpts = parseExtensionDevOptions(this._environmentService);
 		this._isExtensionDevHost = devOpts.isExtensionDevHost;
 		this._isExtensionDevDebug = devOpts.isExtensionDevDebug;
-		this._isExtensionDevDebugBrk = devOpts.isExtensionDevDebugBrk;
+		this._isExtensionDevDebugBrk = false; // true; // devOpts.isExtensionDevDebugBrk;
 		this._isExtensionDevTestFromCli = devOpts.isExtensionDevTestFromCli;
 
 		this._lastExtensionHostError = null;
@@ -235,7 +235,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 							}],
 							{ sticky: true }
 						);
-					}, 10000);
+					}, 60000);
 				}
 
 				// Initialize extension host process with hand shakes

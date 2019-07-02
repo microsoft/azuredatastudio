@@ -845,25 +845,26 @@ export class ExtensionService extends Disposable implements IExtensionService {
 	}
 
 	private _updateEnableProposedApi(extension: IExtensionDescription, enableProposedApiForAll: boolean, enableProposedApiFor: string | string[]): IExtensionDescription {
-		if (allowProposedApiFromProduct(extension.identifier)) {
-			// fast lane -> proposed api is available to all extensions
-			// that are listed in product.json-files
-			extension.enableProposedApi = true;
+		// if (allowProposedApiFromProduct(extension.identifier)) {
+		// 	// fast lane -> proposed api is available to all extensions
+		// 	// that are listed in product.json-files
+		// 	extension.enableProposedApi = true;
 
-		} else if (extension.enableProposedApi && !extension.isBuiltin) {
-			if (
-				!enableProposedApiForAll &&
-				enableProposedApiFor.indexOf(extension.identifier.value.toLowerCase()) < 0
-			) {
-				extension.enableProposedApi = false;
-				console.error(`Extension '${extension.identifier.value} cannot use PROPOSED API (must started out of dev or enabled via --enable-proposed-api)`);
+		// } else if (extension.enableProposedApi && !extension.isBuiltin) {
+		// 	if (
+		// 		!enableProposedApiForAll &&
+		// 		enableProposedApiFor.indexOf(extension.identifier.value.toLowerCase()) < 0
+		// 	) {
+		// 		extension.enableProposedApi = false;
+		// 		console.error(`Extension '${extension.identifier.value} cannot use PROPOSED API (must started out of dev or enabled via --enable-proposed-api)`);
 
-			} else {
-				// proposed api is available when developing or when an extension was explicitly
-				// spelled out via a command line argument
-				console.warn(`Extension '${extension.identifier.value}' uses PROPOSED API which is subject to change and removal without notice.`);
-			}
-		}
+		// 	} else {
+		// 		// proposed api is available when developing or when an extension was explicitly
+		// 		// spelled out via a command line argument
+		// 		console.warn(`Extension '${extension.identifier.value}' uses PROPOSED API which is subject to change and removal without notice.`);
+		// 	}
+		// }
+		extension.enableProposedApi = true;
 		return extension;
 	}
 
