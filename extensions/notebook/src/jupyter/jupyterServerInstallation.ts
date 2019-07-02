@@ -254,7 +254,9 @@ export class JupyterServerInstallation {
 					this.pythonEnvVarPath
 				].join(delimiter);
 			}
-		} else if (this._usingExistingPython) {
+		}
+
+		if (this._usingExistingPython) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -570,11 +572,20 @@ export class JupyterServerInstallation {
 	}
 
 	private async getPythonUserDir(pythonExecutable: string): Promise<string> {
-		let cmd = `"${pythonExecutable}" -c "import site;print(site.USER_BASE)"`;
+		let sitePath: string;
+		if (process.platform === constants.winPlatform) {
+			sitePath = 'USER_SITE';
+		} else {
+			sitePath = 'USER_BASE';
+		}
+		let cmd = `"${pythonExecutable}" -c "import site;print(site.${sitePath})"`;
+
 		let packagesDir = await utils.executeBufferedCommand(cmd, {});
 		if (packagesDir && packagesDir.length > 0) {
 			packagesDir = packagesDir.trim();
-			if (process.platform !== constants.winPlatform) {
+			if (process.platform === constants.winPlatform) {
+				packagesDir = path.resolve(path.join(packagesDir, '..', 'Scripts'));
+			} else {
 				packagesDir = path.join(packagesDir, 'bin');
 			}
 
