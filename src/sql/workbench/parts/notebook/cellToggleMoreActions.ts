@@ -34,9 +34,9 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code After'), CellTypes.Code, true),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Text Before'), CellTypes.Markdown, false),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Text After'), CellTypes.Markdown, true),
-			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear Output')),
 			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
-			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true)
+			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
+			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear Output'))
 		);
 	}
 
@@ -146,7 +146,9 @@ export class ClearCellOutputAction extends CellActionBase {
 }
 
 export class RunCellsAction extends CellActionBase {
-	constructor(id: string, label: string, private isAfter: boolean,
+	constructor(id: string,
+		label: string,
+		private isAfter: boolean,
 		@INotificationService notificationService: INotificationService,
 		@INotebookService private notebookService: INotebookService,
 	) {
@@ -157,16 +159,16 @@ export class RunCellsAction extends CellActionBase {
 		return context.cell && context.cell.cellType === CellTypes.Code;
 	}
 
-	doRun(context: CellContext): Promise<void> {
+	async doRun(context: CellContext): Promise<void> {
 		try {
 			let cell = context.cell || context.model.activeCell;
 			if (cell) {
 				let editor = this.notebookService.findNotebookEditor(cell.notebookModel.notebookUri);
 				if (editor) {
 					if (this.isAfter) {
-						editor.runAllCells(cell.id, undefined);
+						await editor.runAllCells(cell, undefined);
 					} else {
-						editor.runAllCells(undefined, cell.id);
+						await editor.runAllCells(undefined, cell);
 					}
 				}
 			}

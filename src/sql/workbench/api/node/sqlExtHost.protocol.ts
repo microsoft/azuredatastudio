@@ -919,7 +919,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$tryShowNotebookDocument(resource: UriComponents, options: INotebookShowOptions): Promise<string>;
 	$tryApplyEdits(id: string, modelVersionId: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): Promise<boolean>;
 	$runCell(id: string, cellUri: UriComponents): Promise<boolean>;
-	$runAllCells(id: string, startId?: string, endId?: string): Promise<boolean>;
+	$runAllCells(id: string, startCellUri?: UriComponents, endCellUri?: UriComponents): Promise<boolean>;
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;

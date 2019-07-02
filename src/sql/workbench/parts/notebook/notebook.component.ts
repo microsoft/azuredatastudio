@@ -50,6 +50,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -523,18 +524,18 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public async runAllCells(startId?: string, endId?: string): Promise<boolean> {
+	public async runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean> {
 		await this.modelReady;
 		let codeCells = this._model.cells.filter(cell => cell.cellType === CellTypes.Code);
 		if (codeCells && codeCells.length) {
 			// For the run all cells scenario where neither startId not endId are provided, set defaults
 			let startIndex = 0;
 			let endIndex = codeCells.length;
-			if (startId) {
-				startIndex = codeCells.findIndex(c => c.id === startId);
+			if (!isUndefinedOrNull(startCell)) {
+				startIndex = codeCells.findIndex(c => c.id === startCell.id);
 			}
-			if (endId) {
-				endIndex = codeCells.findIndex(c => c.id === endId);
+			if (!isUndefinedOrNull(endCell)) {
+				endIndex = codeCells.findIndex(c => c.id === endCell.id);
 			}
 			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
