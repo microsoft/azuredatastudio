@@ -11,6 +11,7 @@ import { localize } from 'vs/nls';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IOutputChannel } from 'vs/workbench/contrib/output/common/output';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 
 
@@ -141,4 +142,8 @@ export function convertVscodeResourceToFileInSubDirectories(htmlContent: string,
 		htmlContentCopy = htmlContentCopy.slice(pathEndIndex);
 	}
 	return htmlContent;
+}
+
+export function useInProcMarkdown(configurationService: IConfigurationService): boolean {
+	return configurationService.getValue('notebook.useInProcMarkdown');
 }

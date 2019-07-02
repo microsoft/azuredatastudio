@@ -192,7 +192,7 @@
       </trans-unit>
       <trans-unit id="createOperator.PagerSundayCheckBox">
         <source xml:lang="en">Sunday</source>
-        <target state="translated">星期日</target>
+        <target state="translated">星期天</target>
       </trans-unit>
       <trans-unit id="createOperator.workdayBegin">
         <source xml:lang="en">Workday begin</source>
@@ -346,6 +346,14 @@
         <source xml:lang="en">All Files (*)</source>
         <target state="translated">所有檔案 (*)</target>
       </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">新增作業步驟</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">編輯作業步驟</target>
+      </trans-unit>
       <trans-unit id="jobStepDialog.TSQL">
         <source xml:lang="en">Transact-SQL script (T-SQL)</source>
         <target state="translated">Transact-SQL 指令碼 (T-SQL)</target>
@@ -356,7 +364,39 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.CmdExec">
         <source xml:lang="en">Operating system (CmdExec)</source>
-        <target state="translated">作業系統 (CmdExec)</target>
+        <target state="translated">作業系統 (cmdexec)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">複寫散發者</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">複寫合併</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">複本佇列讀取器</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">複寫快照集</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">複寫交易 - 記錄讀取器</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">SQL Server Analysis Services 命令</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">SQL Server Analysis Services 查詢</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="new">SQL Server Integration Service Package</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
@@ -373,14 +413,6 @@
       <trans-unit id="jobStepDialog.quitJobFailure">
         <source xml:lang="en">Quit the job reporting failure</source>
         <target state="translated">結束作業報告失敗</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">新增作業步驟</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">編輯作業步驟</target>
       </trans-unit>
     </body>
   </file>

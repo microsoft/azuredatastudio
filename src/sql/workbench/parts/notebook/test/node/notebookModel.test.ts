@@ -102,7 +102,6 @@ suite('notebook model', function (): void {
 			notificationService: notificationService.object,
 			connectionService: queryConnectionService.object,
 			providerId: 'SQL',
-			standardKernels: [{ name: 'SQL', displayName: 'SQL', connectionProviderIds: [mssqlProviderName], notebookProvider: 'sql' }],
 			cellMagicMapper: undefined,
 			defaultKernel: undefined,
 			layoutChanged: undefined,
@@ -139,7 +138,7 @@ suite('notebook model', function (): void {
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.requestModelLoad();
+		await model.loadContents();
 
 		// Then I expect to have 0 code cell as the contents
 		should(model.cells).have.length(0);
@@ -154,7 +153,8 @@ suite('notebook model', function (): void {
 		notebookManagers[0].contentManager = mockContentManager.object;
 		// When I initialize the model
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.requestModelLoad(true);
+		await model.loadContents(true);
+		await model.requestModelLoad();
 
 		// Then Trust should be true
 		should(model.trustedMode).be.true();
@@ -277,7 +277,7 @@ suite('notebook model', function (): void {
 		mockContentManager.setup(c => c.getNotebookContents(TypeMoq.It.isAny())).returns(() => Promise.resolve(expectedNotebookContent));
 		notebookManagers[0].contentManager = mockContentManager.object;
 		let model = new NotebookModel(defaultModelOptions, undefined, logService, undefined, undefined);
-		await model.requestModelLoad(false);
+		await model.requestModelLoad();
 
 		let actualChanged: NotebookContentChange;
 		model.contentChanged((changed) => actualChanged = changed);

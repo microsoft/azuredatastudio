@@ -17,6 +17,7 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	public trustedMode: boolean;
 	language: string;
+	standardKernels: IStandardKernelWithProvider[];
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._languageInfo;

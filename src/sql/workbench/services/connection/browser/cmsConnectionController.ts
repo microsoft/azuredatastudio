@@ -36,8 +36,8 @@ export class CmsConnectionController extends ConnectionController {
 		}, providerName);
 	}
 
-	public showUiComponent(container: HTMLElement): void {
+	public showUiComponent(container: HTMLElement, authTypeChanged: boolean = false): void {
 		this._databaseCache = new Map<string, string[]>();
-		this._connectionWidget.createConnectionWidget(container);
+		this._connectionWidget.createConnectionWidget(container, authTypeChanged);
 	}
 }
