@@ -8,7 +8,8 @@ import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
 	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID,
 	NEW_NOTEBOOK_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, PROFILER_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
-	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID
+	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID,
+	PROPERTIES_COMMAND_ID
 } from './nodeCommands';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
@@ -178,5 +179,19 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('generateScripts', 'Generate Scripts...')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'))
+		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'),
+		NodeContextUtils.IsWindows)
+});
+
+// Properties Action
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'z-AdminToolExt@2',
+	order: 12,
+	command: {
+		id: PROPERTIES_COMMAND_ID,
+		title: localize('properties', 'Properties')
+	},
+	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+		NodeContextUtils.IsServer, ContextKeyExpr.not('isCloud'),
+		NodeContextUtils.IsWindows)
 });

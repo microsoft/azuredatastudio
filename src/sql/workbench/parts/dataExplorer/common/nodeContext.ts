@@ -11,6 +11,8 @@ import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/cont
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -38,7 +40,8 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IOEShimService private oeService: IOEShimService,
 		@IQueryManagementService queryManagementService: IQueryManagementService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
 		super();
 
@@ -67,7 +70,8 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
-		this._nodeContextUtils = new NodeContextUtils(this._nodeContextKey.get(), this.contextKeyService, this.connectionManagementService);
+		this._nodeContextUtils = new NodeContextUtils(this._nodeContextKey.get(), this.contextKeyService,
+			this.connectionManagementService, this.capabilitiesService);
 	}
 
 	reset(): void {

@@ -38,7 +38,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			serverName: this.serverName,
 			databaseName: '',
 			userName: undefined,
-			password: undefined,
+			password: '',
 			authenticationType: 'Integrated',
 			savePassword: false,
 			groupFullName: '',
