@@ -36,8 +36,9 @@ export const notebookModeId = 'notebook';
  * @param instantiationService The instantiation service to use to create the new input types
  */
 export function convertEditorInput(input: EditorInput, options: IQueryEditorOptions, instantiationService: IInstantiationService): EditorInput {
+	let untitledEditorInput: UntitledEditorInput = input as UntitledEditorInput;
 	let denyQueryEditor = options && options.denyQueryEditor;
-	if (input && !denyQueryEditor) {
+	if (input && !denyQueryEditor && untitledEditorInput && untitledEditorInput.getMode() === 'sql') {
 		//QueryInput
 		let uri: URI = getQueryEditorFileUri(input);
 		if (uri) {
