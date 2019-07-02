@@ -32,6 +32,7 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider);
 	vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource));
 	vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource));
+	vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
