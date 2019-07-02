@@ -158,7 +158,7 @@ export abstract class GridParentComponent {
 					self.showChartForGrid(self.activeGrid);
 					break;
 				case GridContentEvents.ViewAsVisualizer:
-					self.showChartForGrid(self.activeGrid);
+					self.showVisualizerForGrid(self.activeGrid);
 					break;
 				case GridContentEvents.GoToNextGrid:
 					self.goToNextGrid();
