@@ -76,22 +76,23 @@ export class JupyterServerInstallation {
 
 			try {
 				await this.installPythonPackage(backgroundOperation);
+
+				this.outputChannel.appendLine(msgPythonDownloadComplete);
+				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
+
+				if (this._usingConda) {
+					await this.installCondaDependencies();
+				} else if (this._usingExistingPython) {
+					await this.installPipDependencies();
+				} else {
+					await this.installOfflinePipDependencies();
+				}
+				let doOnlineInstall = this._usingExistingPython;
+				await this.installSparkMagic(doOnlineInstall);
 			} catch (err) {
 				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 				throw err;
 			}
-			this.outputChannel.appendLine(msgPythonDownloadComplete);
-			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-
-			if (this._usingConda) {
-				await this.installCondaDependencies();
-			} else if (this._usingExistingPython) {
-				await this.installPipDependencies();
-			} else {
-				await this.installOfflinePipDependencies();
-			}
-			let doOnlineInstall = this._usingExistingPython;
-			await this.installSparkMagic(doOnlineInstall);
 
 			fs.remove(this._pythonPackageDir, (err: Error) => {
 				if (err) {
