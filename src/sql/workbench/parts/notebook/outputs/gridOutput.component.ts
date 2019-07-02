@@ -28,6 +28,7 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
 import { localize } from 'vs/nls';
+import { IAction } from 'vs/base/common/actions';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -122,6 +123,14 @@ class DataResourceTable extends GridTableBase<any> {
 
 	get gridDataProvider(): IGridDataProvider {
 		return this._gridDataProvider;
+	}
+
+	protected getCurrentActions(): IAction[] {
+		return [];
+	}
+
+	protected getContextActions(): IAction[] {
+		return [];
 	}
 
 }

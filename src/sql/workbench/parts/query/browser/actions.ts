@@ -9,7 +9,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 
-import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { GridTableState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
@@ -18,6 +17,7 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -65,18 +65,17 @@ export class SaveResultAction extends Action {
 		label: string,
 		icon: string,
 		private format: SaveFormat,
-		private accountForNumberColumn = true
+		@INotificationService private notificationService: INotificationService
 	) {
 		super(id, label, icon);
 	}
 
-	public run(context: IGridActionContext): Promise<boolean> {
-		if (this.accountForNumberColumn) {
-			context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
-		} else {
-			context.gridDataProvider.serializeResults(this.format, context.selection);
+	public async run(context: IGridActionContext): Promise<boolean> {
+		if (!context.gridDataProvider.canSerialize) {
+			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
 		}
-		return Promise.resolve(true);
+		await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
+		return true;
 	}
 }
 

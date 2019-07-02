@@ -653,28 +653,9 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
-	private getCurrentActions(): IAction[] {
+	protected abstract getCurrentActions(): IAction[];
 
-		let actions = [];
-
-		if (this.state.canBeMaximized) {
-			if (this.state.maximized) {
-				actions.splice(1, 0, new RestoreTableAction());
-			} else {
-				actions.splice(1, 0, new MaximizeTableAction());
-			}
-		}
-
-		actions.push(
-			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
-		);
-
-		return actions;
-	}
+	protected abstract getContextActions(): IAction[];
 
 	public layout(size?: number): void {
 		if (!this.table) {
@@ -723,17 +704,19 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => {
-				let actions = [
+				let actions: IAction[] = [
 					new SelectAllGridAction(),
-					new Separator(),
-					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-					new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-					new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-					new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-					new Separator(),
+					new Separator()
+				];
+				let contributedActions: IAction[] = this.getContextActions();
+				if (contributedActions && contributedActions.length > 0) {
+					actions.push(...contributedActions);
+					actions.push(new Separator());
+				}
+				actions.push(
 					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
-				];
+				);
 
 				if (this.state.canBeMaximized) {
 					if (this.state.maximized) {
@@ -813,5 +796,37 @@ class GridTable<T> extends GridTableBase<T> {
 
 	get gridDataProvider(): IGridDataProvider {
 		return this._gridDataProvider;
+	}
+
+	protected getCurrentActions(): IAction[] {
+
+		let actions = [];
+
+		if (this.state.canBeMaximized) {
+			if (this.state.maximized) {
+				actions.splice(1, 0, new RestoreTableAction());
+			} else {
+				actions.splice(1, 0, new MaximizeTableAction());
+			}
+		}
+
+		actions.push(
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+			this.instantiationService.createInstance(ChartDataAction)
+		);
+
+		return actions;
+	}
+
+	protected getContextActions(): IAction[] {
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+		];
 	}
 }
