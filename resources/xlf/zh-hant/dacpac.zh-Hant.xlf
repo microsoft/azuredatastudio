@@ -148,30 +148,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployActionPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
-    <body>
-      <trans-unit id="dacFx.deployRadioButtonLabel">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">部署</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployScriptRadioButtonLabel">
-        <source xml:lang="en">Generate Deployment Script and Deploy</source>
-        <target state="translated">產生部署指令碼並部署</target>
-      </trans-unit>
-      <trans-unit id="dacFx.scriptRadioButtonLabel">
-        <source xml:lang="en">Generate Deployment Script</source>
-        <target state="translated">產生部署指令碼</target>
-      </trans-unit>
-      <trans-unit id="dacfxDeployScript.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">儲存</target>
-      </trans-unit>
-      <trans-unit id="dacfx.generatedScriptLocation">
-        <source xml:lang="en">Deployment Script Location</source>
-        <target state="translated">部署指令碼位置</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="zh-Hant" datatype="plaintext">
     <body>
       <trans-unit id="dacfx.targetServerName">
@@ -193,22 +169,6 @@
       <trans-unit id="dacfx.fileLocation">
         <source xml:lang="en">File Location</source>
         <target state="translated">檔案位置</target>
-      </trans-unit>
-      <trans-unit id="dacfx.scriptLocation">
-        <source xml:lang="en">Deployment Script Location</source>
-        <target state="translated">部署指令碼位置</target>
-      </trans-unit>
-      <trans-unit id="dacfx.action">
-        <source xml:lang="en">Action</source>
-        <target state="translated">動作</target>
-      </trans-unit>
-      <trans-unit id="dacfx.deploy">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">部署</target>
-      </trans-unit>
-      <trans-unit id="dacfx.generateScript">
-        <source xml:lang="en">Generate Deployment Script</source>
-        <target state="translated">產生部署指令碼</target>
       </trans-unit>
       <trans-unit id="dacfxExtract.version">
         <source xml:lang="en">Version</source>
@@ -244,12 +204,16 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="basePage.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">預設</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="zh-Hant" datatype="plaintext">
     <body>
-      <trans-unit id="dacfx.needConnection">
-        <source xml:lang="en">Please connect to a server before using this wizard.</source>
-        <target state="translated">請先連線至伺服器再使用本精靈。</target>
-      </trans-unit>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
         <target state="translated">選取作業</target>
@@ -261,10 +225,6 @@
       <trans-unit id="dacFx.deployPlanPage">
         <source xml:lang="en">Review the deploy plan</source>
         <target state="translated">檢閱部署計劃</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployActionPageName">
-        <source xml:lang="en">Select Action</source>
-        <target state="translated">選取動作</target>
       </trans-unit>
       <trans-unit id="dacFx.summaryPageName">
         <source xml:lang="en">Summary</source>
@@ -319,8 +279,8 @@
         <target state="translated">匯入失敗的 ‘{0}'</target>
       </trans-unit>
       <trans-unit id="dacfx.scriptGeneratingMessage">
-        <source xml:lang="en">You can view the status of script generation in the Task History once the wizard is closed</source>
-        <target state="translated">精靈關閉後，您即可在 [工作歷程記錄] 中檢視指令碼產生的狀態</target>
+        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
+        <target state="new">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</target>
       </trans-unit>
       <trans-unit id="alertData.deployPlanErrorMessage">
         <source xml:lang="en">Generating deploy plan failed '{0}'</source>

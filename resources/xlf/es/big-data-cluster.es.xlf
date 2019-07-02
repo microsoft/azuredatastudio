@@ -56,7 +56,7 @@
       </trans-unit>
       <trans-unit id="bdc-create.BigDataClusterGroupTitle">
         <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
-        <target state="translated">CLÚSTER DE MACRODATOS DE SQL SERVER</target>
+        <target state="translated">Clúster de macrodatos de SQL Server</target>
       </trans-unit>
       <trans-unit id="bdc-create.YesText">
         <source xml:lang="en">Yes</source>
@@ -377,7 +377,7 @@
       </trans-unit>
       <trans-unit id="bdc-create.DataPoolDescription">
         <source xml:lang="en">TODO: Add description</source>
-        <target state="translated">TODO: Agregar Descripción</target>
+        <target state="translated">TODO: Agregar descripción</target>
       </trans-unit>
       <trans-unit id="bdc-create.StoragePoolDescription">
         <source xml:lang="en">TODO: Add description</source>

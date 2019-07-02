@@ -38,13 +38,17 @@
   </file>
   <file original="extensions/import/out/wizard/pages/prosePreviewPage" source-language="en" target-language="ko" datatype="plaintext">
     <body>
-      <trans-unit id="flatFileImport.refresh">
-        <source xml:lang="en">Refresh</source>
-        <target state="translated">새로 고침</target>
-      </trans-unit>
       <trans-unit id="flatFileImport.prosePreviewMessage">
         <source xml:lang="en">This operation analyzed the input file structure to generate the preview below for up to the first 50 rows.</source>
         <target state="translated">이 작업은 입력 파일 구조를 분석하여 처음 50개 행까지 아래에 미리 보기를 생성합니다.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.prosePreviewMessageFail">
+        <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
+        <target state="new">This operation was unsuccessful. Please try a different input file.</target>
+      </trans-unit>
+      <trans-unit id="flatFileImport.refresh">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">새로 고침</target>
       </trans-unit>
     </body>
   </file>

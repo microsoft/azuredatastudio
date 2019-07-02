@@ -5,7 +5,7 @@
 
 import 'vs/css!./dashboardGridContainer';
 
-import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, Inject, Input, forwardRef, ElementRef, ViewChildren, QueryList, OnDestroy, ChangeDetectorRef, ContentChild } from '@angular/core';
 
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
 import { TabConfig, WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
@@ -15,6 +15,8 @@ import { WebviewContent } from 'sql/workbench/parts/dashboard/contents/webviewCo
 import { TabChild } from 'sql/base/electron-browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
+import { ScrollableDirective } from 'sql/base/electron-browser/ui/scrollable/scrollable.directive';
+import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
 
 export interface GridCellConfig {
 	id?: string;
@@ -52,6 +54,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 	public readonly onResize: Event<void> = this._onResize.event;
 	private cellWidth: number = 270;
 	private cellHeight: number = 270;
+	private ScrollbarVisibility = ScrollbarVisibility;
 
 	protected SKELETON_WIDTH = 5;
 
@@ -175,6 +178,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
 	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
+	@ContentChild(ScrollableDirective) private _scrollable;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,
@@ -235,6 +239,9 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 			this._webViews.forEach(item => {
 				item.layout();
 			});
+		}
+		if (this._scrollable) {
+			this._scrollable.layout();
 		}
 	}
 

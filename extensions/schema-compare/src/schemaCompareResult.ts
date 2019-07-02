@@ -325,7 +325,8 @@ export class SchemaCompareResult {
 					width: 150
 				}
 			],
-			CSSStyles: { 'left': '15px' }
+			CSSStyles: { 'left': '15px' },
+			width: '98%'
 		});
 
 		this.splitView.addItem(this.differencesTable);
@@ -880,7 +881,16 @@ export class SchemaCompareResult {
 					this.sourceEndpointInfo.ownerUri = ownerUri;
 				}
 			} else {
-				this.sourceEndpointInfo = result.sourceEndpointInfo;
+				// need to do this instead of just setting it to the result.sourceEndpointInfo because some fields are null which will cause an error when sending the compare request
+				this.sourceEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					serverDisplayName: '',
+					serverName: '',
+					databaseName: '',
+					ownerUri: '',
+					packageFilePath: result.sourceEndpointInfo.packageFilePath,
+					connectionDetails: undefined
+				};
 			}
 
 			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
@@ -890,7 +900,16 @@ export class SchemaCompareResult {
 					this.targetEndpointInfo.ownerUri = ownerUri;
 				}
 			} else {
-				this.targetEndpointInfo = result.targetEndpointInfo;
+				// need to do this instead of just setting it to the result.targetEndpointInfo because some fields are null which will cause an error when sending the compare request
+				this.targetEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					serverDisplayName: '',
+					serverName: '',
+					databaseName: '',
+					ownerUri: '',
+					packageFilePath: result.targetEndpointInfo.packageFilePath,
+					connectionDetails: undefined
+				};
 			}
 
 			this.updateSourceAndTarget();

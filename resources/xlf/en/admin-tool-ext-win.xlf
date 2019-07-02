@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/admin-tool-ext-win/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="adminToolExtWin.displayName">
+      <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.description">
+      <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.propertiesMenuItem">
+      <source xml:lang="en">Properties</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.launchGswMenuItem">
+      <source xml:lang="en">Generate Scripts...</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/admin-tool-ext-win/out/main" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="adminToolExtWin.noConnectionContextForProp">
+      <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.noOENode">
+      <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
+      <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.noConnectionProfile">
+      <source xml:lang="en">No connectionProfile provided from connectionContext : {0}</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.launchingDialogStatus">
+      <source xml:lang="en">Launching dialog...</source>
+    </trans-unit>
+    <trans-unit id="adminToolExtWin.ssmsMinError">
+      <source xml:lang="en">Error calling SsmsMin with args '{0}' - {1}</source>
+    </trans-unit>
+  </body></file>
+</xliff>

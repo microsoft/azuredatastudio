@@ -442,7 +442,7 @@
     <body>
       <trans-unit id="bigDataClusterOutputChannel">
         <source xml:lang="en">SQL Server big data cluster</source>
-        <target state="translated">SQL Server 大数据群集</target>
+        <target state="translated">SQL SERVER 大数据群集</target>
       </trans-unit>
     </body>
   </file>
