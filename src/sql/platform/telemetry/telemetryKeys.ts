@@ -62,3 +62,7 @@ export const DeleteAgentProxy = 'DeleteAgentProxy';
 
 // Notebook Events:
 export const NotebookMarkdownRendered = 'NotebookMarkdownRendered';
+
+export enum TelemetryView {
+	Shell = 'Shell'
+}

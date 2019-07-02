@@ -346,6 +346,14 @@
         <source xml:lang="en">All Files (*)</source>
         <target state="translated">Todos los archivos (*)</target>
       </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">Nuevo paso de trabajo</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">Modificar paso de trabajo</target>
+      </trans-unit>
       <trans-unit id="jobStepDialog.TSQL">
         <source xml:lang="en">Transact-SQL script (T-SQL)</source>
         <target state="translated">Script de Transact-SQL(T-SQL)</target>
@@ -357,6 +365,38 @@
       <trans-unit id="jobStepDialog.CmdExec">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">Sistema operativo (CmdExec)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">Distribuidor de replicación</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">Fusión de replicación</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">Lector de cola de replicación</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">Instantánea de replicación</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">Lector del registro de transacciones de replicación</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">Comando de servicios de análisis de SQL Server</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">Consulta de SQL Server Analysis Services</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="new">SQL Server Integration Service Package</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
@@ -374,14 +414,6 @@
         <source xml:lang="en">Quit the job reporting failure</source>
         <target state="translated">Cerrar el trabajo que notifica el error</target>
       </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">Nuevo paso de trabajo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">Modificar paso de trabajo</target>
-      </trans-unit>
     </body>
   </file>
   <file original="extensions/agent/out/dialogs/jobDialog" source-language="en" target-language="es" datatype="plaintext">
@@ -396,7 +428,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.schedules">
         <source xml:lang="en">Schedules</source>
-        <target state="translated">Horarios</target>
+        <target state="translated">Programaciones</target>
       </trans-unit>
       <trans-unit id="jobDialog.alerts">
         <source xml:lang="en">Alerts</source>
@@ -628,7 +660,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity009">
         <source xml:lang="en">009 - User Defined</source>
-        <target state="translated">009 - definidos por el usuario</target>
+        <target state="translated">009 - Definido por el usuario</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity010">
         <source xml:lang="en">010 - Information</source>
@@ -656,7 +688,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity016">
         <source xml:lang="en">016 - Miscellaneous User Error</source>
-        <target state="translated">016: Error de usuario del grupo de varios</target>
+        <target state="translated">016 - Error de usuario del tipo varios</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity017">
         <source xml:lang="en">017 - Insufficient Resources</source>
@@ -676,7 +708,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity021">
         <source xml:lang="en">021 - Fatal Error in Database Processes</source>
-        <target state="translated">021: Error fatal en los procesos de la base de datos</target>
+        <target state="translated">021 - Error fatal en procesos de base de datos</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity022">
         <source xml:lang="en">022 - Fatal Error: Table Integrity Suspect</source>
