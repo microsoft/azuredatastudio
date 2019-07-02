@@ -42,6 +42,7 @@ export interface IQueryMessage extends azdata.IResultMessage {
 * and handles getting more rows from the service layer and disposing when the content is closed.
 */
 export default class QueryRunner extends Disposable {
+
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _resultLineOffset: number;
 	private _totalElapsedMilliseconds: number = 0;
@@ -82,6 +83,9 @@ export default class QueryRunner extends Disposable {
 
 	private _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
+
+	private _onVisualize = this._register(new Emitter<azdata.ResultSetSummary>());
+	public readonly onVisualize = this._onVisualize.event;
 
 	private _queryStartTime: Date;
 	public get queryStartTime(): Date {
@@ -653,5 +657,16 @@ export default class QueryRunner extends Disposable {
 
 	public serializeResults(batchId: number, resultSetId: number, format: SaveFormat, selection: Slick.Range[]) {
 		return this.instantiationService.createInstance(ResultSerializer).saveResults(this.uri, { selection, format, batchIndex: batchId, resultSetNumber: resultSetId });
+	}
+
+	public notifyVisualizeRequested(batchId: number, resultSetId: number): void {
+		let result: azdata.ResultSetSummary = {
+			batchId: batchId,
+			id: resultSetId,
+			columnInfo: undefined,
+			complete: true,
+			rowCount: undefined
+		};
+		this._onVisualize.fire(result);
 	}
 }
