@@ -591,7 +591,6 @@ export class QueryGridDataProvider implements IGridDataProvider {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
-
 	) {
 	}
 

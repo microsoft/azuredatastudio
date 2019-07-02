@@ -114,8 +114,6 @@ export class GridTableState extends Disposable {
 	}
 }
 
-
-
 export class GridPanel {
 	private container = document.createElement('div');
 	private splitView: ScrollableSplitView;

@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 import { OnInit, Component, Input, Inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import * as azdata from 'azdata';
 
@@ -32,10 +31,7 @@ import { IAction } from 'vs/base/common/actions';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
-	template: `
-		<div #output class="notebook-cellTable">
-		</div>
-	`
+	template: `<div #output class="notebook-cellTable"></div>`
 })
 export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'grid-output';
@@ -48,9 +44,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _table: DataResourceTable;
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IThemeService) private readonly themeService: IThemeService,
-
-
+		@Inject(IThemeService) private readonly themeService: IThemeService
 	) {
 		super();
 	}
@@ -132,7 +126,6 @@ class DataResourceTable extends GridTableBase<any> {
 	protected getContextActions(): IAction[] {
 		return [];
 	}
-
 }
 
 class DataResourceDataProvider implements IGridDataProvider {
@@ -218,6 +211,34 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 }
 
+function createResultSet(source: IDataResource): azdata.ResultSetSummary {
+	let columnInfo: azdata.IDbColumn[] = source.schema.fields.map(field => {
+		let column = new SimpleDbColumn(field.name);
+		if (field.type) {
+			switch (field.type) {
+				case 'xml':
+					column.isXml = true;
+					break;
+				case 'json':
+					column.isJson = true;
+					break;
+				default:
+					// Only handling a few cases for now
+					break;
+			}
+		}
+		return column;
+	});
+	let summary: azdata.ResultSetSummary = {
+		batchId: 0,
+		id: 0,
+		complete: true,
+		rowCount: source.data.length,
+		columnInfo: columnInfo
+	};
+	return summary;
+}
+
 class SimpleDbColumn implements azdata.IDbColumn {
 
 	constructor(columnName: string) {
@@ -252,32 +273,4 @@ class SimpleDbColumn implements azdata.IDbColumn {
 	numericScale?: number;
 	udtAssemblyQualifiedName: string;
 	dataTypeName: string;
-}
-
-function createResultSet(source: IDataResource): azdata.ResultSetSummary {
-	let columnInfo: azdata.IDbColumn[] = source.schema.fields.map(field => {
-		let column = new SimpleDbColumn(field.name);
-		if (field.type) {
-			switch (field.type) {
-				case 'xml':
-					column.isXml = true;
-					break;
-				case 'json':
-					column.isJson = true;
-					break;
-				default:
-					// Only handling a few cases for now
-					break;
-			}
-		}
-		return column;
-	});
-	let summary: azdata.ResultSetSummary = {
-		batchId: 0,
-		id: 0,
-		complete: true,
-		rowCount: source.data.length,
-		columnInfo: columnInfo
-	};
-	return summary;
 }
