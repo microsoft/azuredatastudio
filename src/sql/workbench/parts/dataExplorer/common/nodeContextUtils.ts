@@ -7,6 +7,7 @@ import { INodeContextValue } from 'sql/workbench/parts/dataExplorer/common/nodeC
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 export class NodeContextUtils extends Disposable {
 
@@ -19,10 +20,13 @@ export class NodeContextUtils extends Disposable {
 	private isMssqlProvidedKey: IContextKey<boolean>;
 	private isDatabaseFolderKey: IContextKey<boolean>;
 	private isServerKey: IContextKey<boolean>;
+	//iswindows
+	//iscloud
 
 	constructor(
 		private nodeContextValue: INodeContextValue,
-		@IContextKeyService private contextKeyService: IContextKeyService
+		@IContextKeyService private contextKeyService: IContextKeyService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService
 	) {
 		super();
 		this.bindContextKeys();
@@ -93,6 +97,13 @@ export class NodeContextUtils extends Disposable {
 					this.nodeContextValue.node.contextValue === NodeType.Server) {
 					this.isServerKey.set(true);
 				}
+				// if (this.nodeContextValue.node.payload) {
+				// 	const connectionId = this.nodeContextValue.node.payload.id;
+				// 	const serverInfo = this.connectionManagementService.getServerInfo(connectionId);
+				// 	if (serverInfo.isCloud) {
+				// 		return;
+				// 	}
+				// }
 			}
 		}
 	}

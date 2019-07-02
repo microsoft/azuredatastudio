@@ -29,6 +29,7 @@ export const IMPORT_COMMAND_ID = 'dataExplorer.flatFileImport';
 export const SCHEMA_COMPARE_COMMAND_ID = 'dataExplorer.schemaCompare';
 export const BACKUP_COMMAND_ID = 'dataExplorer.backup';
 export const RESTORE_COMMAND_ID = 'dataExplorer.restore';
+export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
 
 // Disconnect
 CommandsRegistry.registerCommand({
@@ -117,7 +118,7 @@ CommandsRegistry.registerCommand({
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
 		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		let connectedContext: azdata.ConnectedContext = { connectionProfile: profile };
+		const connectedContext: azdata.ConnectedContext = { connectionProfile: profile };
 		return commandService.executeCommand(NewNotebookAction.ID, connectedContext);
 	}
 });
@@ -126,10 +127,9 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: DATA_TIER_WIZARD_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
-		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		return commandService.executeCommand('dacFx.start', profile);
+		const connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('dacFx.start', connectedContext);
 	}
 });
 
@@ -137,10 +137,13 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: PROFILER_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
-		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		return commandService.executeCommand('profiler.newProfiler', profile);
+		const objectExplorerContext: azdata.ObjectExplorerContext = {
+			connectionProfile: args.$treeItem.payload,
+			isConnectionNode: true,
+			nodeInfo: args.$treeItem.nodeInfo
+		};
+		return commandService.executeCommand('profiler.newProfiler', objectExplorerContext);
 	}
 });
 
@@ -148,10 +151,9 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: IMPORT_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
-		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		return commandService.executeCommand('flatFileImport.start', profile);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('flatFileImport.start', connectedContext);
 	}
 });
 
@@ -159,10 +161,9 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: SCHEMA_COMPARE_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
-		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		return commandService.executeCommand('schemaCompare.start', profile);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('schemaCompare.start', connectedContext);
 	}
 });
 
@@ -170,10 +171,9 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: BACKUP_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
-		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		return commandService.executeCommand(BackupAction.ID, profile);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand(BackupAction.ID, connectedContext);
 	}
 });
 
@@ -181,9 +181,22 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: RESTORE_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const commandService = accessor.get(ICommandService);
-		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		return commandService.executeCommand(RestoreAction.ID, profile);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand(RestoreAction.ID, connectedContext);
+	}
+});
+
+// Generate Scripts
+CommandsRegistry.registerCommand({
+	id: GENERATE_SCRIPTS_COMMAND_ID,
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		const objectExplorerContext: azdata.ObjectExplorerContext = {
+			connectionProfile: args.$treeItem.payload,
+			isConnectionNode: true,
+			nodeInfo: args.$treeItem.nodeInfo
+		};
+		return commandService.executeCommand('adminToolExtWin.launchSsmsMinGswDialog', objectExplorerContext);
 	}
 });

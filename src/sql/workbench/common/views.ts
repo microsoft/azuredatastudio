@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITreeViewDataProvider, ITreeItem as vsITreeItem, IViewDescriptor, ITreeView as vsITreeView } from 'vs/workbench/common/views';
-import { IConnectionProfile } from 'azdata';
+import { IConnectionProfile, NodeInfo } from 'azdata';
 
 export interface ITreeComponentItem extends vsITreeItem {
 	checked?: boolean;
@@ -23,6 +23,7 @@ export interface ITreeItem extends vsITreeItem {
 	payload?: IConnectionProfile; // its possible we will want this to be more generic
 	sqlIcon?: string;
 	type?: string;
+	nodeInfo?: NodeInfo;
 }
 
 export interface ITreeView extends vsITreeView {

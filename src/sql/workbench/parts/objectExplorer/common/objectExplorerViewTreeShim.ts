@@ -141,8 +141,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let handle = generateUuid();
-		let nodePath = node.nodePath;
 		let icon: string = '';
+		let nodePath = node.nodePath;
 		if (node.iconType) {
 			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
 		} else {
@@ -167,6 +167,19 @@ export class OEShimService extends Disposable implements IOEShimService {
 				updatedPayload.databaseName = node.getDatabaseName();
 			}
 		}
+		const nodeInfo = {
+			nodePath: nodePath,
+			nodeType: node.nodeTypeId,
+			nodeSubType: node.nodeSubType,
+			nodeStatus: node.nodeStatus,
+			label: node.label,
+			isLeaf: node.isAlwaysLeaf,
+			metadata: node.metadata,
+			errorMessage: node.errorStateMessage,
+			iconType: icon,
+			childProvider: node.childProvider || parentNode.childProvider,
+			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload)
+		};
 		let newTreeItem: ITreeItem = {
 			parentHandle: node.parent.id,
 			handle,
@@ -178,7 +191,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 			providerHandle: parentNode.childProvider,
 			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
-			sqlIcon: icon
+			sqlIcon: icon,
+			nodeInfo: nodeInfo
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
 		return newTreeItem;

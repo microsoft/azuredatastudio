@@ -43,7 +43,6 @@ import { dirname } from 'vs/base/common/resources';
 
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { fillInActionBarActions, fillInContextMenuActions, ContextAwareMenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
