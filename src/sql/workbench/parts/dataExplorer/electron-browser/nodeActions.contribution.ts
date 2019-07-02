@@ -14,6 +14,7 @@ import {
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 // Disconnect
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -107,7 +108,8 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('dacFx', 'Data-tier Application Wizard')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.isDatabasesFolder)
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Folder),
+		NodeContextUtils.NodeLabel.isEqualTo('Databases'))
 });
 
 // Profiler
@@ -119,7 +121,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('profiler', 'Launch Profiler')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsServer)
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Server))
 });
 
 // Flat File Import
@@ -131,7 +133,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('flatFileImport', 'Import Wizard')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'))
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
 // Schema Compare
@@ -143,7 +145,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('schemaCompare', 'Schema Compare')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'))
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
 // Backup Action
@@ -155,7 +157,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('backup', 'Backup')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'))
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
 // Restore Action
@@ -167,7 +169,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('restore', 'Restore')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'))
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
 // Generate Scripts Action
@@ -179,7 +181,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('generateScripts', 'Generate Scripts...')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsDatabaseOrServer, ContextKeyExpr.not('isServer'),
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Database),
 		NodeContextUtils.IsWindows)
 });
 
@@ -192,6 +194,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('properties', 'Properties')
 	},
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
-		NodeContextUtils.IsServer, ContextKeyExpr.not('isCloud'),
+		NodeContextUtils.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
 		NodeContextUtils.IsWindows)
 });
