@@ -54,8 +54,8 @@
 		"IDERA.sqldm-performance-insights"
 	],
 	"recommendedExtensionsOnAppLaunch": [
-		"Microsoft.admin-pack"
-
+		"Microsoft.admin-pack",
+		"msrvida.azdata-sanddance"
 	],
 	"recommendedVisualizers" :[
 		"msrvida.azdata-sanddance"

@@ -172,7 +172,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 		// {{SQL CARBON EDIT}} Extension Recommendation on ADS Launch
 		this.promptADSLaunchRecommendedExtensions();
-		this.promptVisualizerRecommendedExtensions();
+	//	this.promptVisualizerRecommendedExtensions();
 	}
 
 	private isEnabled(): boolean {
@@ -1133,7 +1133,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 
-	private promptVisualizerRecommendedExtensions(): void {
+	promptVisualizerRecommendedExtensions(): void {
 		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
 
 		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
@@ -1149,9 +1149,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
+						localize('visualizer.VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
 						[{
-							label: localize('installAll', "Install SandDance"),
+							label: localize('visualizer.installAll', "Install SandDance"),
 							run: () => {
 								/* __GDPR__
 								"extensionAppLaunchRecommendations:popup" : {
@@ -1165,7 +1165,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								c(undefined);
 							}
 						}, {
-							label: localize('showRecommendations', "Show SandDance"),
+							label: localize('visualizer.showRecommendations', "Show SandDance"),
 							run: () => {
 								/* __GDPR__
 									"extensionAppLaunchRecommendations:popup" : {

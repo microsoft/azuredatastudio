@@ -8,6 +8,7 @@ import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
@@ -216,11 +217,15 @@ export class VisualizerDataAction extends Action {
 	public static LABEL = localize('visualizer', 'Visualizer');
 	public static ICON = 'viewVisualizer';
 
-	constructor(@IEditorService private editorService: IEditorService) {
+	constructor(
+		@IEditorService private editorService: IEditorService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
+	) {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
+		this.extensionTipsService.promptVisualizerRecommendedExtensions();
 		const activeEditor = this.editorService.activeControl as QueryEditor;
 		activeEditor.visualizer({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);

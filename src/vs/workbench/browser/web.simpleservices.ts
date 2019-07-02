@@ -426,6 +426,10 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 	getVisualizerRecommendations(): Promise<IExtensionRecommendation[]> {
 		return Promise.resolve([]);
 	}
+
+	promptVisualizerRecommendedExtensions(): void {
+		return;
+	}
 	// End of {{SQL CARBON EDIT}}
 }
 

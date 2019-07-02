@@ -11,6 +11,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
@@ -107,7 +108,8 @@ export class RunQueryAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', 'Run');
@@ -117,6 +119,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
+				this.extensionTipsService.promptVisualizerRecommendedExtensions();
 				this.runQuery(this.editor);
 			} else {
 				// If we are not already connected, prompt for connection and run the query if the
