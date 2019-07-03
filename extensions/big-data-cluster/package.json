@@ -1,6 +1,6 @@
 {
 	"name": "big-data-cluster",
-	"displayName": "%displayName%",
+	"displayName": "%text.sqlServerBigDataClusters%",
 	"description": "%description%",
 	"version": "0.0.1",
 	"publisher": "Microsoft",
@@ -25,11 +25,21 @@
 			"sqlBigDataCluster": [
 				{
 					"id": "sqlBigDataCluster",
-					"name": "%explorer.title%"
+					"name": "%text.sqlServerBigDataClusters%"
 				}
 			]
 		},
 		"menus": {
+			"commandPalette": [
+				{
+					"command": "bigDataClusters.command.addController",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.deleteController",
+					"when": "false"
+				}
+			],
 			"view/title": [
 				{
 					"command": "bigDataClusters.command.addController",
@@ -47,7 +57,7 @@
 		},
 		"configuration": {
 			"type": "object",
-			"title": "%config.title%",
+			"title": "%text.sqlServerBigDataClusters%",
 			"properties": {
 				"clusterControllers.controllers": {
 					"type": "array"

@@ -4,8 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EndpointRouterApi } from './apiGenerated';
-// import { Socket } from 'net';
-// import { IncomingHttpHeaders } from 'http';
 
 export async function getEndPoints(
 	url: string, username: string, password: string, ignoreSslVerification?: boolean
@@ -85,19 +83,10 @@ export interface IEndPointsResponse {
 }
 
 export interface IHttpResponse {
-	// httpVersion: string;
-	// httpVersionMajor: number;
-	// httpVersionMinor: number;
-	// connection: Socket;
-	// headers: IncomingHttpHeaders;
-	// rawHeaders: string[];
-	// trailers: { [key: string]: string | undefined };
-	// rawTrailers: string[];
 	method?: string;
 	url?: string;
 	statusCode?: number;
 	statusMessage?: string;
-	// socket: Socket;
 }
 
 export interface IEndPoint {
@@ -106,18 +95,11 @@ export interface IEndPoint {
 	endpoint?: string;
 	ip?: string;
 	port?: number;
-	// path?: string;
-	// protocol?: string;
-	// service?: string;
 }
 
 export interface IControllerError extends Error {
-	// address?: string;
 	code?: string;
 	errno?: string;
 	message: string;
-	// port?: number;
-	// stack?: string;
-	// syscall?: string;
 	request?: any;
 }

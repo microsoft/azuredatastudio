@@ -26,7 +26,7 @@ export class IconPath {
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPath.extensionContext = extensionContext;
 		IconPath.controllerNode = {
-			dark: IconPath.extensionContext.asAbsolutePath('resources/light/bigDataCluster_controller.svg'),
+			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/bigDataCluster_controller.svg'),
 			light: IconPath.extensionContext.asAbsolutePath('resources/light/bigDataCluster_controller.svg')
 		};
 		IconPath.folderNode = {
