@@ -15,6 +15,7 @@ export interface IGridDataProvider {
 	 * @param numberOfRows total number of rows of data to retrieve
 	 */
 	getRowData(rowStart: number, numberOfRows: number): Thenable<azdata.QueryExecuteSubsetResult>;
+
 	/**
 	 * Sends a copy request to copy data to the clipboard
 	 * @param selection The selection range to copy
