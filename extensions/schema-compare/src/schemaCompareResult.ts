@@ -468,17 +468,19 @@ export class SchemaCompareResult {
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
 		let data = [];
+		let finalDifferences: azdata.DiffEntry[] = [];
 		if (differences) {
 			differences.forEach(difference => {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 					if ((difference.sourceValue !== null && difference.sourceValue.length > 0) || (difference.targetValue !== null && difference.targetValue.length > 0)) {
+						finalDifferences.push(difference); // Add only non-null changes to ensure index does not mismatch between dictionay and UI - #6234
 						let state: boolean = this.shouldDiffBeIncluded(difference);
 						data.push([difference.name, this.createName(difference.sourceValue), state, this.SchemaCompareActionMap[difference.updateAction], this.createName(difference.targetValue)]);
 					}
 				}
 			});
 		}
-
+		this.comparisonResult.differences = finalDifferences;
 		return data;
 	}
 

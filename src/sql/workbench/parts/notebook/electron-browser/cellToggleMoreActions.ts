@@ -12,11 +12,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import * as DOM from 'vs/base/browser/dom';
 
-import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
-import { CellContext, CellActionBase } from 'sql/workbench/parts/notebook/electron-browser/cellViews/codeActions';
-import { NotebookModel } from 'sql/workbench/parts/notebook/node/models/notebookModel';
-import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { CellActionBase, CellContext } from 'sql/workbench/parts/notebook/electron-browser/cellViews/codeActions';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { NotebookModel } from 'sql/workbench/parts/notebook/node/models/notebookModel';
+import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
 import { CellModel } from 'sql/workbench/parts/notebook/node/models/cell';
 
 export const HIDDEN_CLASS = 'actionhidden';
@@ -33,6 +34,8 @@ export class CellToggleMoreActions {
 			instantiationService.createInstance(AddCellFromContextAction, 'codeAfter', localize('codeAfter', 'Insert Code After'), CellTypes.Code, true),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownBefore', localize('markdownBefore', 'Insert Text Before'), CellTypes.Markdown, false),
 			instantiationService.createInstance(AddCellFromContextAction, 'markdownAfter', localize('markdownAfter', 'Insert Text After'), CellTypes.Markdown, true),
+			instantiationService.createInstance(RunCellsAction, 'runAllBefore', localize('runAllBefore', "Run Cells Before"), false),
+			instantiationService.createInstance(RunCellsAction, 'runAllAfter', localize('runAllAfter', "Run Cells After"), true),
 			instantiationService.createInstance(ClearCellOutputAction, 'clear', localize('clear', 'Clear Output'))
 		);
 	}
@@ -46,7 +49,7 @@ export class CellToggleMoreActions {
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a.canRun(context));
-		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false, isMenu: true });
+		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
 	}
 
 	public toggleVisible(visible: boolean): void {
@@ -140,4 +143,42 @@ export class ClearCellOutputAction extends CellActionBase {
 		return Promise.resolve();
 	}
 
+}
+
+export class RunCellsAction extends CellActionBase {
+	constructor(id: string,
+		label: string,
+		private isAfter: boolean,
+		@INotificationService notificationService: INotificationService,
+		@INotebookService private notebookService: INotebookService,
+	) {
+		super(id, label, undefined, notificationService);
+	}
+
+	public canRun(context: CellContext): boolean {
+		return context.cell && context.cell.cellType === CellTypes.Code;
+	}
+
+	async doRun(context: CellContext): Promise<void> {
+		try {
+			let cell = context.cell || context.model.activeCell;
+			if (cell) {
+				let editor = this.notebookService.findNotebookEditor(cell.notebookModel.notebookUri);
+				if (editor) {
+					if (this.isAfter) {
+						await editor.runAllCells(cell, undefined);
+					} else {
+						await editor.runAllCells(undefined, cell);
+					}
+				}
+			}
+		} catch (error) {
+			let message = getErrorMessage(error);
+			this.notificationService.notify({
+				severity: Severity.Error,
+				message: message
+			});
+		}
+		return Promise.resolve();
+	}
 }

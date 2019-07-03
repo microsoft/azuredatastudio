@@ -22,7 +22,6 @@ import { SimpleExecuteResult } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
-import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
@@ -31,6 +30,8 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IFileService } from 'vs/platform/files/common/files';
+import { URI } from 'vs/base/common/uri';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
@@ -73,6 +74,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
 		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService,
+		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -295,7 +297,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		} else if (this.insightConfig.queryFile) {
 			const filePath = await this.instantiationService.invokeFunction(resolveQueryFilePath, this.insightConfig.queryFile);
 
-			this.insightConfig.query = (await pfs.readFile(filePath)).toString();
+			this.insightConfig.query = (await this.fileService.readFile(URI.file(filePath))).value.toString();
 		}
 	}
 }

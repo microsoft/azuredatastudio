@@ -7,9 +7,9 @@ import { localize } from 'vs/nls';
 
 import { IWorkspaceContextService, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 
 /**
  * Resolves the given file path using the VS ConfigurationResolver service, replacing macros such as

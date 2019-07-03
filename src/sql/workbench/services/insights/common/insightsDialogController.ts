@@ -7,9 +7,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { IInsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { resolveQueryFilePath } from '../common/insightsUtils';
+import { resolveQueryFilePath } from './insightsUtils';
 
 import { DbCellValue, IDbColumn, QueryExecuteSubsetResult } from 'azdata';
 
@@ -21,6 +20,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ILogService } from 'vs/platform/log/common/log';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { IInsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export class InsightsDialogController {
@@ -31,12 +31,12 @@ export class InsightsDialogController {
 	private _rows: DbCellValue[][];
 
 	constructor(
-		private _model: IInsightsDialogModel,
-		@INotificationService private _notificationService: INotificationService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@ILogService private logService: ILogService,
+		private readonly _model: IInsightsDialogModel,
+		@INotificationService private readonly _notificationService: INotificationService,
+		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@ILogService private readonly logService: ILogService,
 		@IFileService private readonly fileService: IFileService
 	) { }
 
@@ -73,7 +73,7 @@ export class InsightsDialogController {
 
 				try {
 					let buffer = await this.fileService.readFile(URI.file(filePath));
-					this.createQuery(buffer.toString(), connectionProfile).catch(e => {
+					this.createQuery(buffer.value.toString(), connectionProfile).catch(e => {
 						this._errorMessageService.showDialog(Severity.Error, nls.localize("insightsError", "Insights error"), e);
 					});
 				}

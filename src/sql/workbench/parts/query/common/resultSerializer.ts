@@ -12,7 +12,7 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWindowsService, IWindowService, FileFilter } from 'vs/platform/windows/common/windows';
+import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
@@ -28,7 +28,7 @@ import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as O
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
-let prevSavePath: URI;
+let prevSavePath: string;
 
 /**
  *  Handles save results request from the context menu of slickGrid
@@ -46,7 +46,7 @@ export class ResultSerializer {
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
-		@IWindowService private readonly fileDialogService: IFileDialogService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@INotificationService private _notificationService: INotificationService
 	) { }
 
@@ -60,7 +60,7 @@ export class ResultSerializer {
 		// prompt for filepath
 		return self.promptForFilepath(saveRequest).then(filePath => {
 			if (filePath) {
-				return self.sendRequestToService(filePath.fsPath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
+				return self.sendRequestToService(filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
 			}
 			return Promise.resolve(undefined);
 		});
@@ -88,8 +88,8 @@ export class ResultSerializer {
 		this.outputChannel.append(message);
 	}
 
-	private promptForFilepath(saveRequest: ISaveRequest): Thenable<URI> {
-		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath.fsPath) : resolveCurrentDirectory(this._uri, this.rootPath);
+	private promptForFilepath(saveRequest: ISaveRequest): Thenable<string> {
+		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath) : resolveCurrentDirectory(this._uri, this.rootPath);
 		if (filepathPlaceHolder) {
 			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(saveRequest));
 		}
@@ -99,8 +99,8 @@ export class ResultSerializer {
 			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
-			prevSavePath = filePath;
-			return Promise.resolve(filePath);
+			prevSavePath = filePath.fsPath;
+			return filePath.fsPath;
 		});
 	}
 

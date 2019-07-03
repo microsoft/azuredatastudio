@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { TelemetryView } from 'sql/platform/telemetry/telemetryKeys';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry, IWorkbenchContribution } from 'vs/workbench/common/contributions';
@@ -11,6 +10,7 @@ import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { ICommandService, ICommandEvent } from 'vs/platform/commands/common/commands';
+import { TelemetryView } from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class SqlTelemetryContribution extends Disposable implements IWorkbenchContribution {
 

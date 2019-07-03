@@ -15,8 +15,8 @@ import { WebviewContent } from 'sql/workbench/parts/dashboard/electron-browser/c
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { ScrollableDirective } from 'sql/base/electron-browser/ui/scrollable/scrollable.directive';
 import { ScrollbarVisibility } from 'vs/editor/common/standalone/standaloneEnums';
+import { ScrollableDirective } from 'sql/base/browser/ui/scrollable/scrollable.directive';
 
 export interface GridCellConfig {
 	id?: string;

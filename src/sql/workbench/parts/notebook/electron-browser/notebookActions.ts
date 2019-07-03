@@ -11,11 +11,7 @@ import { IContextViewProvider } from 'vs/base/browser/ui/contextview/contextview
 import { INotificationService, Severity, INotificationActions } from 'vs/platform/notification/common/notification';
 
 import { SelectBox, ISelectBoxOptionsWithLabel } from 'sql/base/browser/ui/selectBox/selectBox';
-import { INotebookModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
-import { CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { NotebookComponent } from 'sql/workbench/parts/notebook/electron-browser/notebook.component';
-import { getErrorMessage } from 'sql/workbench/parts/notebook/node/models/notebookUtils';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
@@ -25,6 +21,10 @@ import { generateUri } from 'sql/platform/connection/common/utils';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ICommandService } from 'vs/platform/commands/common/commands';
+import { CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { NotebookComponent } from 'sql/workbench/parts/notebook/electron-browser/notebook.component';
+import { getErrorMessage } from 'vs/base/common/errors';
+import { INotebookModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -494,7 +494,7 @@ export class AttachToDropdown extends SelectBox {
 		try {
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
-					connectionType: 1,
+					connectionType: ConnectionType.temporary,
 					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
 				},
 				useProfile ? this.model.connectionProfile : undefined);

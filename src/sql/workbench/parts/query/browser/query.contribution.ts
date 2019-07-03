@@ -21,26 +21,14 @@ import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResul
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/workbench/parts/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
-import { QueryPlanEditor } from 'sql/workbench/parts/queryPlan/browser/queryPlanEditor';
-import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import { localize } from 'vs/nls';
-import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
-import { TimeElapsedStatusBarItem } from 'sql/workbench/parts/query/browser/timeElapsedStatus';
-import { RowCountStatusBarItem } from 'sql/workbench/parts/query/browser/rowCountStatus';
-import { QueryStatusbarItem } from 'sql/workbench/parts/query/browser/queryStatus';
-import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -68,63 +56,6 @@ const queryEditorDescriptor = new EditorDescriptor(
 Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 	.registerEditor(queryEditorDescriptor, [new SyncDescriptor(QueryInput)]);
 
-// Query Plan editor registration
-
-const queryPlanEditorDescriptor = new EditorDescriptor(
-	QueryPlanEditor,
-	QueryPlanEditor.ID,
-	'QueryPlan'
-);
-
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(queryPlanEditorDescriptor, [new SyncDescriptor(QueryPlanInput)]);
-
-// Editor
-const editDataEditorDescriptor = new EditorDescriptor(
-	EditDataEditor,
-	EditDataEditor.ID,
-	'EditData'
-);
-
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(editDataEditorDescriptor, [new SyncDescriptor(EditDataInput)]);
-
-// Editor
-const editDataResultsEditorDescriptor = new EditorDescriptor(
-	EditDataResultsEditor,
-	EditDataResultsEditor.ID,
-	'EditDataResults'
-);
-
-Registry.as<IEditorRegistry>(EditorExtensions.Editors)
-	.registerEditor(editDataResultsEditorDescriptor, [new SyncDescriptor(EditDataResultsInput)]);
-
-const statusBarRegistry = Registry.as<statusbar.IStatusbarRegistry>(statusbar.Extensions.Statusbar);
-
-statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-	TimeElapsedStatusBarItem,
-	StatusbarAlignment.RIGHT,
-	100 /* Should appear to the right of the SQL editor status */
-));
-
-statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-	RowCountStatusBarItem,
-	StatusbarAlignment.RIGHT,
-	100 /* Should appear to the right of the SQL editor status */
-));
-
-statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-	QueryStatusbarItem,
-	StatusbarAlignment.RIGHT,
-	100 /* High Priority */
-));
-
-statusBarRegistry.registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-	SqlFlavorStatusbarItem,
-	StatusbarAlignment.RIGHT,
-	90 /* Should appear to the right of the SQL editor status */
-));
-
 let actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
 // Query Actions
@@ -147,7 +78,6 @@ if (isMacintosh) {
 		when: new ContextKeyEqualsExpr('activeEditor', 'workbench.editor.queryEditor')
 	});
 }
-
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(

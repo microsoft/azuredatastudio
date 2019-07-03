@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InsightsDialogController } from 'sql/workbench/services/insights/browser/insightsDialogController';
-import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
+import { InsightsDialogController } from 'sql/workbench/services/insights/common/insightsDialogController';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -16,6 +15,7 @@ import { equal } from 'assert';
 import { Mock, MockBehavior, It } from 'typemoq';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { Emitter } from 'vs/base/common/event';
+import { InsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogModel';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 
 const testData: string[][] = [

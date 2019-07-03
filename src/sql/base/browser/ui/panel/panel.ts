@@ -33,6 +33,8 @@ export interface IPanelView {
 	layout(dimension: DOM.Dimension): void;
 	focus(): void;
 	remove?(): void;
+	onShow?(): void;
+	onHide?(): void;
 }
 
 export interface IPanelTab {
@@ -190,6 +192,9 @@ export class TabbedPanel extends Disposable {
 				shownTab.header.setAttribute('aria-selected', 'false');
 				if (shownTab.body) {
 					shownTab.body.remove();
+					if (shownTab.tab.view.onHide) {
+						shownTab.tab.view.onHide();
+					}
 				}
 			}
 		}
@@ -215,6 +220,9 @@ export class TabbedPanel extends Disposable {
 		DOM.addClass(tab.header, 'active');
 		tab.header.setAttribute('aria-selected', 'true');
 		this._onTabChange.fire(id);
+		if (tab.tab.view.onShow) {
+			tab.tab.view.onShow();
+		}
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
