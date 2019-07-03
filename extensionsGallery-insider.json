@@ -1618,14 +1618,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.6",
-							"lastUpdated": "6/18/2019",
+							"version": "0.3.7",
+							"lastUpdated": "7/3/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.3.6.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/managed-instance-dashboard/managed-instance-dashboard-0.3.7.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
