@@ -28,7 +28,6 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { IProgressService } from 'vs/platform/progress/common/progress';
 
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
@@ -53,14 +52,13 @@ export class OEAction extends ExecuteCommandAction {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICommandService commandService: ICommandService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IProgressService private _progressService: IProgressService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
 	) {
 		super(id, label, commandService);
 	}
 
 	public async run(actionContext: any): Promise<boolean> {
-		this._treeSelectionHandler = new TreeSelectionHandler(this._progressService);
+		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
 		let profile: IConnectionProfile;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
