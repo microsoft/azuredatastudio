@@ -208,7 +208,6 @@ export class ControllerNode extends ControllerTreeNode {
 		let node = (this.root as ControllerRootNode).sqlMasterNodeFactory
 			.getSqlMasterNode(endPointAddress, epFolder, undefined, this.treeChangeHandler, description);
 		epFolder.addChild(node);
-		// epFolder.addChild(new SqlMasterNode(endPointAddress, epFolder, undefined, this.treeChangeHandler, description));
 	}
 
 	private getEndPointFolderNode(): FolderNode {
