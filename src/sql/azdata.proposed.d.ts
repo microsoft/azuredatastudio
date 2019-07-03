@@ -5249,6 +5249,14 @@ declare module 'azdata' {
 			value: string;
 		}
 
+		export function registerNavigationProvider(provider: (notebookEditor: NotebookEditor) => NavigationResult): void;
+
+		export interface NavigationResult {
+			hasNavigation: boolean;
+			previous?: vscode.Uri;
+			next?: vscode.Uri;
+		}
+
 		//#endregion
 
 	}

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
+import * as vscode from 'vscode';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -74,6 +75,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _runAllCellsAction: RunAllCellsAction;
 	private _providerRelatedActions: IAction[] = [];
 	private _scrollTop: number;
+	private _bookOpened: boolean;
 
 
 	constructor(
@@ -123,6 +125,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
+		this.setBookOpenedContextKey();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -474,6 +477,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	private setBookOpenedContextKey(): void {
+		this._bookOpened = this.contextKeyService.getContextKeyValue(localize("bookOpenedContextKey", "bookOpened"));
+	}
+
 	private setContextKeyServiceWithProviderId(providerId: string) {
 		let provider = new RawContextKey<string>('providerId', providerId);
 		provider.bindTo(this.contextKeyService);
@@ -572,4 +579,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
+	public async nextPage(navigation: nb.NavigationResult): Promise<void> {
+		console.log(localize('next', "next page"));
+	}
+
+	public previousPage(navigation: nb.NavigationResult): void {
+		console.log(localize('previou', "previous page"));
+	}
 }
