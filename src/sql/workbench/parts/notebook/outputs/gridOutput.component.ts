@@ -126,6 +126,12 @@ class DataResourceTable extends GridTableBase<any> {
 	protected getContextActions(): IAction[] {
 		return [];
 	}
+
+	public get maximumSize(): number {
+		// Overriding action bar size calculation for now.
+		// When we add this back in, we should update this calculation
+		return Math.max(this.maxSize, /* ACTIONBAR_HEIGHT + BOTTOM_PADDING */ 0);
+	}
 }
 
 class DataResourceDataProvider implements IGridDataProvider {

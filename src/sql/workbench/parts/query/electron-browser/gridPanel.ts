@@ -398,7 +398,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 	public isOnlyTable: boolean = true;
 
 	// this handles if the row count is small, like 4-5 rows
-	private get maxSize(): number {
+	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
