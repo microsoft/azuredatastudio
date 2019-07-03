@@ -455,8 +455,17 @@ import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contributi
 import 'sql/platform/telemetry/telemetry.contribution';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
+
+// query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';
+
+// edit data editor
+import 'sql/workbench/parts/editData/browser/editData.contribution';
+
+// query plan editor
+import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
+
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
