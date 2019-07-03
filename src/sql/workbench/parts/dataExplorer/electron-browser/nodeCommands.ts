@@ -98,11 +98,11 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: REFRESH_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const progressSerivce = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService2);
 		if (args.$treeItem) {
 			const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 			if (args.$treeContainerId) {
-				return progressSerivce.withProgress({ location: args.$treeContainerId }, () => treeView.refresh([args.$treeItem]).then(() => true));
+				return progressService.withProgress({ location: args.$treeContainerId }, () => treeView.refresh([args.$treeItem]).then(() => true));
 			} else {
 				return treeView.refresh([args.$treeItem]).then(() => true);
 			}
