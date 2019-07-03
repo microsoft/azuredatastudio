@@ -109,12 +109,7 @@ export class AddNewPackageTab {
 				value: '',
 				placeHolder: this.SearchPlaceholder(this.dialog.currentPkgType)
 			});
-			await this.newPackagesName.updateProperties({ value: this.InvalidTextPlaceholder });
-			await this.newPackagesVersions.updateProperties({
-				values: [this.InvalidTextPlaceholder],
-				value: this.InvalidTextPlaceholder
-			});
-			await this.newPackagesSummary.updateProperties({ value: this.InvalidTextPlaceholder });
+			await this.setFieldsToEmpty();
 		} finally {
 			await this.toggleNewPackagesFields(true);
 		}
@@ -125,6 +120,19 @@ export class AddNewPackageTab {
 		await this.newPackagesNameLoader.updateProperties({ loading: !enable });
 		await this.newPackagesVersionsLoader.updateProperties({ loading: !enable });
 		await this.newPackagesSummaryLoader.updateProperties({ loading: !enable });
+	}
+
+	private async setFieldsToEmpty(): Promise<void> {
+		await this.newPackagesName.updateProperties({
+			value: this.InvalidTextPlaceholder
+		});
+		await this.newPackagesVersions.updateProperties({
+			values: [this.InvalidTextPlaceholder],
+			value: this.InvalidTextPlaceholder
+		});
+		await this.newPackagesSummary.updateProperties({
+			value: this.InvalidTextPlaceholder
+		});
 	}
 
 	private async loadNewPackageInfo(): Promise<void> {
@@ -146,6 +154,7 @@ export class AddNewPackageTab {
 				this.dialog.showErrorMessage(
 					localize('managePackages.noVersionsFound',
 						"Could not find any valid versions for the specified package"));
+				await this.setFieldsToEmpty();
 				return;
 			}
 
@@ -164,17 +173,7 @@ export class AddNewPackageTab {
 			await this.packageInstallButton.updateProperties({ enabled: true });
 		} catch (err) {
 			this.dialog.showErrorMessage(utils.getErrorMessage(err));
-
-			await this.newPackagesName.updateProperties({
-				value: this.InvalidTextPlaceholder
-			});
-			await this.newPackagesVersions.updateProperties({
-				value: this.InvalidTextPlaceholder,
-				values: [this.InvalidTextPlaceholder],
-			});
-			await this.newPackagesSummary.updateProperties({
-				value: this.InvalidTextPlaceholder
-			});
+			await this.setFieldsToEmpty();
 		} finally {
 			await this.toggleNewPackagesFields(true);
 		}

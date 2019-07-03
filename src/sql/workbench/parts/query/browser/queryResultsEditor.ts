@@ -55,7 +55,7 @@ export class BareResultsGridInfo extends BareFontInfo {
 	}
 }
 
-function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string {
+export function getBareResultsGridInfoStyles(info: BareResultsGridInfo): string {
 	let content = '';
 	if (info.fontFamily) {
 		content += `font-family: ${info.fontFamily};`;
