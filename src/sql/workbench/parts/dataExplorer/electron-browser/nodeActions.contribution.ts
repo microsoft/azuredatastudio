@@ -9,9 +9,9 @@ import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
 	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID
 } from './nodeCommands';
-import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
-import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
 
 
 // Disconnect
@@ -33,8 +33,8 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('disconnect', 'Disconnect')
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
-		NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
-		NodeContextUtils.IsDatabaseOrServer)
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+		MssqlNodeContext.IsDatabaseOrServer)
 });
 
 // New Query
@@ -45,7 +45,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
 	},
-	when: NodeContextUtils.IsDatabaseOrServer
+	when: MssqlNodeContext.IsDatabaseOrServer
 });
 
 // Manage
@@ -56,7 +56,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: MANAGE_COMMAND_ID,
 		title: localize('manage', 'Manage')
 	},
-	when: NodeContextUtils.IsDatabaseOrServer
+	when: MssqlNodeContext.IsDatabaseOrServer
 });
 
 

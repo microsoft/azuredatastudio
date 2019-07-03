@@ -14,7 +14,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
-export class NodeContextUtils extends Disposable {
+export class MssqlNodeContext extends Disposable {
 
 	static readonly canSelect = new Set([NodeType.Table, NodeType.View]);
 	static readonly canEditData = new Set([NodeType.Table]);
@@ -83,16 +83,16 @@ export class NodeContextUtils extends Disposable {
 	}
 
 	private bindContextKeys(): void {
-		this.isCloudKey = NodeContextUtils.IsCloud.bindTo(this.contextKeyService);
-		this.nodeTypeKey = NodeContextUtils.NodeType.bindTo(this.contextKeyService);
-		this.nodeLabelKey = NodeContextUtils.NodeLabel.bindTo(this.contextKeyService);
-		this.isDatabaseOrServerKey = NodeContextUtils.IsDatabaseOrServer.bindTo(this.contextKeyService);
-		this.canScriptAsSelectKey = NodeContextUtils.CanScriptAsSelect.bindTo(this.contextKeyService);
-		this.canEditDataKey = NodeContextUtils.CanEditData.bindTo(this.contextKeyService);
-		this.canScriptAsCreateOrDeleteKey = NodeContextUtils.CanScriptAsCreateOrDelete.bindTo(this.contextKeyService);
-		this.canScriptAsExecuteKey = NodeContextUtils.CanScriptAsExecute.bindTo(this.contextKeyService);
-		this.canScriptAsAlterKey = NodeContextUtils.CanScriptAsAlter.bindTo(this.contextKeyService);
-		this.nodeProviderKey = NodeContextUtils.NodeProvider.bindTo(this.contextKeyService);
+		this.isCloudKey = MssqlNodeContext.IsCloud.bindTo(this.contextKeyService);
+		this.nodeTypeKey = MssqlNodeContext.NodeType.bindTo(this.contextKeyService);
+		this.nodeLabelKey = MssqlNodeContext.NodeLabel.bindTo(this.contextKeyService);
+		this.isDatabaseOrServerKey = MssqlNodeContext.IsDatabaseOrServer.bindTo(this.contextKeyService);
+		this.canScriptAsSelectKey = MssqlNodeContext.CanScriptAsSelect.bindTo(this.contextKeyService);
+		this.canEditDataKey = MssqlNodeContext.CanEditData.bindTo(this.contextKeyService);
+		this.canScriptAsCreateOrDeleteKey = MssqlNodeContext.CanScriptAsCreateOrDelete.bindTo(this.contextKeyService);
+		this.canScriptAsExecuteKey = MssqlNodeContext.CanScriptAsExecute.bindTo(this.contextKeyService);
+		this.canScriptAsAlterKey = MssqlNodeContext.CanScriptAsAlter.bindTo(this.contextKeyService);
+		this.nodeProviderKey = MssqlNodeContext.NodeProvider.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -140,19 +140,19 @@ export class NodeContextUtils extends Disposable {
 	 */
 	private setScriptingContextKeys(): void {
 		const nodeType = this.nodeContextValue.node.contextValue;
-		if (NodeContextUtils.canCreateOrDelete.has(nodeType)) {
+		if (MssqlNodeContext.canCreateOrDelete.has(nodeType)) {
 			this.canScriptAsCreateOrDeleteKey.set(true);
 		}
-		if (NodeContextUtils.canEditData.has(nodeType)) {
+		if (MssqlNodeContext.canEditData.has(nodeType)) {
 			this.canEditDataKey.set(true);
 		}
-		if (NodeContextUtils.canAlter.has(nodeType)) {
+		if (MssqlNodeContext.canAlter.has(nodeType)) {
 			this.canScriptAsAlterKey.set(true);
 		}
-		if (NodeContextUtils.canExecute.has(nodeType)) {
+		if (MssqlNodeContext.canExecute.has(nodeType)) {
 			this.canScriptAsExecuteKey.set(true);
 		}
-		if (NodeContextUtils.canSelect.has(nodeType)) {
+		if (MssqlNodeContext.canSelect.has(nodeType)) {
 			this.canScriptAsSelectKey.set(true);
 		}
 	}

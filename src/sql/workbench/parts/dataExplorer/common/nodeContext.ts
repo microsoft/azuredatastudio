@@ -9,10 +9,9 @@ import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -34,7 +33,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	private readonly _viewItemKey: IContextKey<string>;
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
 
-	private _nodeContextUtils: NodeContextUtils;
+	private _nodeContextUtils: MssqlNodeContext;
 
 	constructor(
 		@IContextKeyService private contextKeyService: IContextKeyService,
@@ -70,7 +69,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
-		this._nodeContextUtils = new NodeContextUtils(this._nodeContextKey.get(), this.contextKeyService,
+		this._nodeContextUtils = new MssqlNodeContext(this._nodeContextKey.get(), this.contextKeyService,
 			this.connectionManagementService, this.capabilitiesService);
 	}
 
