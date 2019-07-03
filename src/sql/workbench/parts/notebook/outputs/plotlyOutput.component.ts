@@ -5,7 +5,6 @@
 
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
-import * as Plotly from 'plotly.js-dist';
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
@@ -17,9 +16,15 @@ import * as types from 'vs/base/common/types';
 
 type ObjectType = object;
 
+interface FigureLayout extends ObjectType {
+	width?: string | number;
+	height?: string;
+	autosize?: boolean;
+}
+
 interface Figure extends ObjectType {
-	data: Plotly.Data[];
-	layout: Partial<Plotly.Layout>;
+	data: object[];
+	layout: Partial<FigureLayout>;
 }
 
 declare class PlotlyHTMLElement extends HTMLDivElement {
@@ -37,6 +42,15 @@ declare class PlotlyHTMLElement extends HTMLDivElement {
 })
 export class PlotlyOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'plotly-output';
+
+	Plotly!: {
+		newPlot: (
+			div: PlotlyHTMLElement | null | undefined,
+			data: object,
+			layout: FigureLayout
+		) => void;
+		redraw: (div?: PlotlyHTMLElement) => void;
+	};
 
 	@ViewChild('output', { read: ElementRef }) private output: ElementRef;
 
@@ -74,6 +88,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	}
 
 	ngOnInit() {
+		this.Plotly = require.__$__nodeRequire('plotly.js-dist');
 		this._plotDiv = this.output.nativeElement;
 		this.renderPlotly();
 		this._initialized = true;
@@ -102,7 +117,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 				figure.layout.width = Math.min(700, this._plotDiv.clientWidth);
 			}
 			try {
-				Plotly.newPlot(this._plotDiv, figure.data, figure.layout);
+				this.Plotly.newPlot(this._plotDiv, figure.data, figure.layout);
 			} catch (error) {
 				this.displayError(error);
 			}
@@ -122,12 +137,6 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 			}
 		}
 
-		// The Plotly API *mutates* the figure to include a UID, which means
-		// they won't take our frozen objects
-		// if (Object.isFrozen(figure)) {
-		//   return cloneDeep(figure) as Figure;
-		// }
-
 		const { data = [], layout = {} } = figure;
 
 		return { data, layout };
@@ -138,27 +147,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	}
 
 	layout(): void {
-		// if (this.mimeType === 'text/vnd.plotly.v1+html') {
-		// 	// Do nothing - this is our way to ignore the offline init Plotly attempts to do via a <script> tag.
-		// 	// We have "handled" it by pulling in the plotly library into this component instead
-		// 	return;
-		// }
-		// if (!this._initialized) {
-		// 	// wait until initialized
-		// 	return;
-		// }
-		// // Update graph
-		// const figure = this.getFigure(false);
-		// if (!this._plotDiv || !figure) {
-		// 	return;
-		// }
-		// this._plotDiv.data = figure.data;
-		// this._plotDiv.layout = figure.layout;
-		// try {
-		// 	Plotly.redraw(this._plotDiv);
-		// } catch (error) {
-		// 	this.displayError(error);
-		// }
+		// No need to re-layout for now as Plotly is doing its own resize handling.
 	}
 
 	public hasError(): boolean {
