@@ -127,8 +127,8 @@ export class AddNewPackageTab {
 			value: this.InvalidTextPlaceholder
 		});
 		await this.newPackagesVersions.updateProperties({
-			value: this.InvalidTextPlaceholder,
 			values: [this.InvalidTextPlaceholder],
+			value: this.InvalidTextPlaceholder
 		});
 		await this.newPackagesSummary.updateProperties({
 			value: this.InvalidTextPlaceholder
