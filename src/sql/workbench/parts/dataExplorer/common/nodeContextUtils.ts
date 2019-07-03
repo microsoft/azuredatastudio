@@ -67,13 +67,13 @@ export class NodeContextUtils extends Disposable {
 			if (node.payload) {
 				this.setNodeProvider();
 				this.setIsCloud();
-				if (node.contextValue && node.providerHandle === mssqlProviderName) {
+				if (node.type) {
+					this.setIsDatabaseOrServer();
+					this.nodeTypeKey.set(node.type);
+				} else if (node.contextValue && node.providerHandle === mssqlProviderName) {
 					this.setIsDatabaseOrServer();
 					this.setScriptingContextKeys();
 					this.nodeTypeKey.set(node.contextValue);
-				} else if (node.type) {
-					this.setIsDatabaseOrServer();
-					this.nodeTypeKey.set(node.type);
 				}
 			}
 			if (node.label) {
@@ -83,7 +83,6 @@ export class NodeContextUtils extends Disposable {
 	}
 
 	private bindContextKeys(): void {
-		this.nodeProviderKey = NodeContextUtils.NodeProvider.bindTo(this.contextKeyService);
 		this.isCloudKey = NodeContextUtils.IsCloud.bindTo(this.contextKeyService);
 		this.nodeTypeKey = NodeContextUtils.NodeType.bindTo(this.contextKeyService);
 		this.nodeLabelKey = NodeContextUtils.NodeLabel.bindTo(this.contextKeyService);
@@ -93,6 +92,7 @@ export class NodeContextUtils extends Disposable {
 		this.canScriptAsCreateOrDeleteKey = NodeContextUtils.CanScriptAsCreateOrDelete.bindTo(this.contextKeyService);
 		this.canScriptAsExecuteKey = NodeContextUtils.CanScriptAsExecute.bindTo(this.contextKeyService);
 		this.canScriptAsAlterKey = NodeContextUtils.CanScriptAsAlter.bindTo(this.contextKeyService);
+		this.nodeProviderKey = NodeContextUtils.NodeProvider.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -100,7 +100,9 @@ export class NodeContextUtils extends Disposable {
 	 */
 	private setNodeProvider(): void {
 		if (this.nodeContextValue.node.payload.providerName) {
-			this.nodeLabelKey.set(this.nodeContextValue.node.payload.providerName);
+			this.nodeProviderKey.set(this.nodeContextValue.node.payload.providerName);
+		} else if (this.nodeContextValue.node.childProvider) {
+			this.nodeProviderKey.set(this.nodeContextValue.node.childProvider);
 		}
 	}
 

@@ -30,8 +30,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
-		ContextKeyExpr.not('isMssqlProvided'))
+	when: NodeContextKey.IsConnected //add for folders
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
