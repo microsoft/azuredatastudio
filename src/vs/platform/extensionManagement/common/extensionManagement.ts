@@ -309,6 +309,7 @@ export interface IExtensionTipsService {
 	getAppLaunchRecommendations(): Promise<IExtensionRecommendation[]>;
 	getVisualizerRecommendations(): Promise<IExtensionRecommendation[]>;
 	promptVisualizerRecommendedExtensions(): void;
+	promptVisualizerExtensions():void;
 }
 
 export const enum ExtensionRecommendationReason {

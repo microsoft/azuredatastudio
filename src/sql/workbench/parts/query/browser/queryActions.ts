@@ -119,7 +119,6 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
-				this.extensionTipsService.promptVisualizerRecommendedExtensions();
 				this.runQuery(this.editor);
 			} else {
 				// If we are not already connected, prompt for connection and run the query if the
@@ -152,6 +151,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		if (this.isConnected(editor)) {
 			// if the selection isn't empty then execute the selection
 			// otherwise, either run the statement or the script depending on parameter
+			this.extensionTipsService.promptVisualizerRecommendedExtensions();
 			let selection: ISelectionData = editor.getSelection(false);
 			if (runCurrentStatement && selection && this.isCursorPosition(selection)) {
 				editor.input.runQueryStatement(selection);

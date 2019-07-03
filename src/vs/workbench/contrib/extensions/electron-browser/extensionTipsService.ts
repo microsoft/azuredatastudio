@@ -1133,6 +1133,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 
+	// called when runQuery to make visualizer extensions more discoverable
 	promptVisualizerRecommendedExtensions(): void {
 		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
 
@@ -1190,6 +1191,75 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								*/
 							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'neverShowAgain' });
 							//	this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+								c(undefined);
+							}
+						}],
+						{
+							sticky: true,
+							onCancel: () => {
+								/* __GDPR__
+									"extensionAppLaunchRecommendations:popup" : {
+										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+									}
+								*/
+							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
+								c(undefined);
+							}
+						}
+					);
+				});
+			} else {
+				return Promise.resolve();
+			}
+		});
+
+	}
+
+	// called when Visualizer icon is clicked in the Query Results grid; "Never Show Again" is not an option
+	promptVisualizerExtensions(): void {
+		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
+
+		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
+			return;
+		}
+
+		let recommendations: IExtensionRecommendation[];
+		let localExtensions: ILocalExtension[];
+		const getRecommendationPromise = this.getVisualizerRecommendations().then(recs => { recommendations = recs; });
+		const getLocalExtensionPromise = this.extensionsService.getInstalled(ExtensionType.User).then(local => { localExtensions = local; });
+		Promise.all([getRecommendationPromise, getLocalExtensionPromise]).then(() => {
+			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
+				return new Promise<void>(c => {
+					this.notificationService.prompt(
+						Severity.Info,
+						localize('visualizer.VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
+						[{
+							label: localize('visualizer.installAll', "Install SandDance"),
+							run: () => {
+								/* __GDPR__
+								"extensionAppLaunchRecommendations:popup" : {
+									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+								}
+								*/
+								//this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'install' });
+								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
+								installAllAction.run();
+								installAllAction.dispose();
+								c(undefined);
+							}
+						}, {
+							label: localize('visualizer.showRecommendations', "Show SandDance"),
+							run: () => {
+								/* __GDPR__
+									"extensionAppLaunchRecommendations:popup" : {
+										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+									}
+								*/
+								//this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'show' });
+
+								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+								showAction.run();
+								showAction.dispose();
 								c(undefined);
 							}
 						}],

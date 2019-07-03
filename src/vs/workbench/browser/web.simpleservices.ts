@@ -430,6 +430,10 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 	promptVisualizerRecommendedExtensions(): void {
 		return;
 	}
+
+	promptVisualizerExtensions(): void {
+		return;
+	}
 	// End of {{SQL CARBON EDIT}}
 }
 
