@@ -191,6 +191,11 @@ export enum StepCompletionAction {
 	GoToStep = 4
 }
 
+export enum ExtensionNodeType {
+	Server = 'Server',
+	Database = 'Database'
+}
+
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
