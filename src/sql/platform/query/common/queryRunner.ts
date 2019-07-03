@@ -12,7 +12,7 @@ import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { IQueryPlanInfo } from 'sql/platform/query/common/queryModel';
-import { ResultSerializer } from 'sql/platform/node/resultSerializer';
+import { ResultSerializer } from 'sql/workbench/parts/query/common/resultSerializer';
 
 import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
