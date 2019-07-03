@@ -38,6 +38,10 @@
 				{
 					"command": "bigDataClusters.command.deleteController",
 					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.refreshController",
+					"when": "false"
 				}
 			],
 			"view/title": [
@@ -50,6 +54,11 @@
 			"view/item/context": [
 				{
 					"command": "bigDataClusters.command.deleteController",
+					"when": "viewItem == bigDataClusters.itemType.ControllerNode",
+					"group": "navigation@1"
+				},
+				{
+					"command": "bigDataClusters.command.refreshController",
 					"when": "viewItem == bigDataClusters.itemType.ControllerNode",
 					"group": "navigation@1"
 				}

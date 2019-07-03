@@ -28,12 +28,20 @@ export abstract class TreeNode {
 	}
 
 	public set label(label: string) {
-		this._label = label;
-		this.resetId();
+		if (!this._label) {
+			this._label = label;
+			this.resetId();
+		} else {
+			this._label = label;
+		}
 	}
 
 	public get label(): string {
 		return this._label;
+	}
+
+	public set parent(parent: TreeNode) {
+		this._parent = parent;
 	}
 
 	public get parent(): TreeNode {

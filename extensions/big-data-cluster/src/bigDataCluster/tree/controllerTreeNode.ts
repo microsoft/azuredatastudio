@@ -102,8 +102,11 @@ export abstract class ControllerTreeNode extends TreeNode {
 
 export class ControllerRootNode extends ControllerTreeNode {
 
+	private _masterNodeFactory: SqlMasterNodeFactory;
+
 	constructor(treeChangeHandler: IControllerTreeChangeHandler) {
 		super('root', undefined, treeChangeHandler, undefined, BdcItemType.controllerRoot);
+		this._masterNodeFactory = new SqlMasterNodeFactory();
 	}
 
 	public async getChildren(): Promise<ControllerNode[]> {
@@ -146,6 +149,10 @@ export class ControllerRootNode extends ControllerTreeNode {
 		let nodes = this.children as ControllerNode[];
 		return nodes.find(e => e.url === url && e.username === username);
 	}
+
+	public get sqlMasterNodeFactory(): SqlMasterNodeFactory {
+		return this._masterNodeFactory;
+	}
 }
 
 export class ControllerNode extends ControllerTreeNode {
@@ -161,11 +168,10 @@ export class ControllerNode extends ControllerTreeNode {
 		description?: string,
 	) {
 		super(label, parent, treeChangeHandler, description, BdcItemType.controller, IconPath.controllerNode);
-		let address = ControllerNode.toIpAndPort(this._url);
-		this.label = this.label || `controller: ${address} (${this._username})`;
-		this.description = this.description || this.label;
-	}
+		this.label = label;
+		this.description = description;
 
+	}
 
 	public async getChildren(): Promise<ControllerTreeNode[]> {
 		if (this.children && this.children.length > 0) {
@@ -199,7 +205,10 @@ export class ControllerNode extends ControllerTreeNode {
 
 	public addSqlMasterNode(endPointAddress: string, description: string): void {
 		let epFolder = this.getEndPointFolderNode();
-		epFolder.addChild(new SqlMasterNode(endPointAddress, epFolder, undefined, this.treeChangeHandler, description));
+		let node = (this.root as ControllerRootNode).sqlMasterNodeFactory
+			.getSqlMasterNode(endPointAddress, epFolder, undefined, this.treeChangeHandler, description);
+		epFolder.addChild(node);
+		// epFolder.addChild(new SqlMasterNode(endPointAddress, epFolder, undefined, this.treeChangeHandler, description));
 	}
 
 	private getEndPointFolderNode(): FolderNode {
@@ -249,6 +258,22 @@ export class ControllerNode extends ControllerTreeNode {
 	public set rememberPassword(rememberPassword: boolean) {
 		this._rememberPassword = rememberPassword;
 	}
+
+	public set label(label: string) {
+		super.label = label || `controller: ${ControllerNode.toIpAndPort(this._url)} (${this._username})`;
+	}
+
+	public get label(): string {
+		return super.label;
+	}
+
+	public set description(description: string) {
+		super.description = description || super.label;
+	}
+
+	public get description(): string {
+		return super.description;
+	}
 }
 
 export class FolderNode extends ControllerTreeNode {
@@ -283,8 +308,8 @@ export class SqlMasterNode extends ControllerTreeNode {
 	) {
 		super(label, parent, treeChangeHandler, description, BdcItemType.sqlMaster, IconPath.sqlMasterNode);
 		this._username = 'sa';
-		this.label = this.label || `master: ${this._endPointAddress} (${this._username})`;
-		this.description = this.description || this.label;
+		this.label = label;
+		this.description = description;
 	}
 
 	private getControllerPassword(): string {
@@ -328,5 +353,49 @@ export class SqlMasterNode extends ControllerTreeNode {
 
 	public set endPointAddress(endPointAddress: string) {
 		this._endPointAddress = endPointAddress;
+	}
+
+	public set label(label: string) {
+		super.label = label || `master: ${this._endPointAddress} (${this._username})`;
+	}
+
+	public get label(): string {
+		return super.label;
+	}
+
+	public set description(description: string) {
+		super.description = description || super.label;
+	}
+
+	public get description(): string {
+		return super.description;
+	}
+}
+
+export class SqlMasterNodeFactory {
+	private registry: {} = {};
+
+	public getSqlMasterNode(
+		endPointAddress: string,
+		parent: ControllerTreeNode,
+		label: string,
+		treeChangeHandler: IControllerTreeChangeHandler,
+		description?: string
+	): SqlMasterNode {
+		let id = this.createRegistryId(endPointAddress, 'sa');
+		if (!this.registry[id]) {
+			this.registry[id] = new SqlMasterNode(endPointAddress, parent, label, treeChangeHandler, description);
+		} else {
+			let node = this.registry[id] as SqlMasterNode;
+			node.parent = parent;
+			node.label = label;
+			node.treeChangeHandler = treeChangeHandler;
+			description = description;
+		}
+		return this.registry[id] as SqlMasterNode;
+	}
+
+	private createRegistryId(endPointAddress: string, username: string): string {
+		return `${endPointAddress}::${username}`;
 	}
 }
