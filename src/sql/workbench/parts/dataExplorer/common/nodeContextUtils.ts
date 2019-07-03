@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as os from 'os';
-import { ExtensionNodeType } from 'azdata';
 import { INodeContextValue } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -13,6 +12,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export class NodeContextUtils extends Disposable {
 
