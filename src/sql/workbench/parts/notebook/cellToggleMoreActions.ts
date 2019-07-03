@@ -49,7 +49,7 @@ export class CellToggleMoreActions {
 		this._moreActions = new ActionBar(this._moreActionsElement, { orientation: ActionsOrientation.VERTICAL });
 		this._moreActions.context = { target: this._moreActionsElement };
 		let validActions = this._actions.filter(a => a.canRun(context));
-		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false, isMenu: true });
+		this._moreActions.push(this.instantiationService.createInstance(ToggleMoreWidgetAction, validActions, context), { icon: true, label: false });
 	}
 
 	public toggleVisible(visible: boolean): void {
