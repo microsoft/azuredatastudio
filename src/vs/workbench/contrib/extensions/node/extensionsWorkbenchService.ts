@@ -789,9 +789,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 				// This is the error handler when installing local VSIX file.
 				// Prompt the user about the error detail.
 				try {
-					const extensionIdentifier = await this.extensionService.install(URI.file(extension));
-					this.checkAndEnableDisabledDependencies(extensionIdentifier);
-					return this.local.filter(local => areSameExtensions(local.identifier, extensionIdentifier))[0];
+					const { identifier } = await this.extensionService.install(URI.file(extension));
+					this.checkAndEnableDisabledDependencies(identifier);
+					return this.local.filter(local => areSameExtensions(local.identifier, identifier))[0];
 				} catch (error) {
 					this.notificationService.error(error);
 					return Promise.reject(error);

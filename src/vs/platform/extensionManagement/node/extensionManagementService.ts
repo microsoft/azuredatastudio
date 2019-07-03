@@ -112,7 +112,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private uninstalledFileLimiter: Queue<any>;
 	private reportedExtensions: Promise<IReportedExtension[]> | undefined;
 	private lastReportTimestamp = 0;
-	private readonly installingExtensions: Map<string, CancelablePromise<void>> = new Map<string, CancelablePromise<void>>();
+	private readonly installingExtensions: Map<string, CancelablePromise<ILocalExtension>> = new Map<string, CancelablePromise<ILocalExtension>>();
 	private readonly uninstallingExtensions: Map<string, CancelablePromise<void>> = new Map<string, CancelablePromise<void>>();
 	private readonly manifestCache: ExtensionsManifestCache;
 	private readonly extensionLifecycle: ExtensionsLifecycle;
@@ -161,7 +161,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	unzip(zipLocation: URI, type: ExtensionType): Promise<IExtensionIdentifier> {
 		this.logService.trace('ExtensionManagementService#unzip', zipLocation.toString());
-		return this.install(zipLocation, type);
+		return this.install(zipLocation, type).then(local => local.identifier);
 	}
 
 	private collectFiles(extension: ILocalExtension): Promise<IFile[]> {
@@ -190,7 +190,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 
 	}
 
-	install(vsix: URI, type: ExtensionType = ExtensionType.User): Promise<IExtensionIdentifier> {
+	install(vsix: URI, type: ExtensionType = ExtensionType.User): Promise<ILocalExtension> {
 		// {{SQL CARBON EDIT}}
 		let startTime = new Date().getTime();
 
@@ -232,20 +232,20 @@ export class ExtensionManagementService extends Disposable implements IExtension
 										local => {
 											this.reportTelemetry(this.getTelemetryEvent(InstallOperation.Install), getLocalExtensionTelemetryData(local), new Date().getTime() - startTime, void 0);
 											this._onDidInstallExtension.fire({ identifier, zipPath, local, operation: InstallOperation.Install });
-											return identifier;
+											return local;
 										},
 										error => { this._onDidInstallExtension.fire({ identifier, zipPath, error, operation: InstallOperation.Install }); return Promise.reject(error); }
 									);
 								// return this.getMetadata(getGalleryExtensionId(manifest.publisher, manifest.name))
 								// 	.then(
 								// 		metadata => this.installFromZipPath(identifierWithVersion, zipPath, metadata, type, operation, token),
-								// 		() => this.installFromZipPath(identifierWithVersion, zipPath, null, type, operation, token))
-								// 	.then(
-								// 		() => { this.logService.info('Successfully installed the extension:', identifier.id); return identifier; },
-								// 		e => {
-								// 			this.logService.error('Failed to install the extension:', identifier.id, e.message);
-								// 			return Promise.reject(e);
-								// 		});
+								// () => this.installFromZipPath(identifierWithVersion, zipPath, null, type, operation, token))
+								// .then(
+								// 	local => { this.logService.info('Successfully installed the extension:', identifier.id); return local; },
+								// 	e => {
+								// 		this.logService.error('Failed to install the extension:', identifier.id, e.message);
+								// 		return Promise.reject(e);
+								// 	});
 								// {{SQL CARBON EDIT}} - End
 							});
 					});
@@ -284,7 +284,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			));
 	}
 
-	async installFromGallery(extension: IGalleryExtension): Promise<void> {
+	async installFromGallery(extension: IGalleryExtension): Promise<ILocalExtension> {
 		if (!this.galleryService.isEnabled()) {
 			return Promise.reject(new Error(nls.localize('MarketPlaceDisabled', "Marketplace is not enabled")));
 		}
@@ -321,7 +321,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 			this._onInstallExtension.fire({ identifier: extension.identifier, gallery: extension });
 
 			let operation: InstallOperation = InstallOperation.Install;
-			let cancellationToken: CancellationToken, successCallback: (a?: any) => void, errorCallback: (e?: any) => any | null;
+			let cancellationToken: CancellationToken, successCallback: (local: ILocalExtension) => void, errorCallback: (e?: any) => any | null;
 			cancellablePromise = createCancelablePromise(token => { cancellationToken = token; return new Promise((c, e) => { successCallback = c; errorCallback = e; }); });
 			this.installingExtensions.set(key, cancellablePromise);
 			try {
@@ -343,7 +343,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 							}
 							this.installingExtensions.delete(key);
 							onDidInstallExtensionSuccess(extension, operation, local);
-							successCallback(null);
+							successCallback(local);
 						},
 						error => {
 							this.installingExtensions.delete(key);

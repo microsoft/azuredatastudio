@@ -7,7 +7,7 @@ import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbenc
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IExtensionManagementService, IExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionManagementService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
@@ -27,6 +27,6 @@ export class MainThreadExtensionManagement implements MainThreadExtensionManagem
 	}
 
 	public $install(vsixPath: string): Thenable<string> {
-		return this._extensionService.install(URI.file(vsixPath)).then((value: IExtensionIdentifier) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
+		return this._extensionService.install(URI.file(vsixPath)).then((value: ILocalExtension) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
 	}
 }
