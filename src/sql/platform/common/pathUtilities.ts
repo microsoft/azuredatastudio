@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { normalize, join, dirname } from 'vs/base/common/path';
-import * as os from 'os';
 
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
@@ -12,7 +11,7 @@ import { Schemas } from 'vs/base/common/network';
 
 export const FILE_SCHEMA: string = 'file';
 
-export function resolveCurrentDirectory(uri: string, rootPath: string): string {
+export function resolveCurrentDirectory(uri: string, rootPath: string): string | undefined {
 	let sqlUri = URI.parse(uri);
 	let currentDirectory: string;
 
@@ -24,9 +23,6 @@ export function resolveCurrentDirectory(uri: string, rootPath: string): string {
 		let root = rootPath;
 		if (root) {
 			currentDirectory = root;
-		} else {
-			// use temp directory
-			currentDirectory = os.tmpdir();
 		}
 	} else {
 		currentDirectory = dirname(sqlUri.path);

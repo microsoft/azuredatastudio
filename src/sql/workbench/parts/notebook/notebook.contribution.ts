@@ -20,6 +20,7 @@ import { registerComponentType } from 'sql/workbench/parts/notebook/outputs/mime
 import { MimeRendererComponent as MimeRendererComponent } from 'sql/workbench/parts/notebook/outputs/mimeRenderer.component';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/outputs/markdownOutput.component';
 import { GridOutputComponent } from 'sql/workbench/parts/notebook/outputs/gridOutput.component';
+import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/outputs/plotlyOutput.component';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -154,7 +155,6 @@ if (product.quality !== 'stable') {
 
 /**
  * A mime renderer component for LaTeX.
- * This will be replaced by a dedicated component in the future
  */
 registerComponentType({
 	mimeTypes: ['text/latex'],
@@ -166,7 +166,6 @@ registerComponentType({
 
 /**
  * A mime renderer component for Markdown.
- * This will be replaced by a dedicated component in the future
  */
 registerComponentType({
 	mimeTypes: ['text/markdown'],
@@ -174,4 +173,27 @@ registerComponentType({
 	safe: true,
 	ctor: MarkdownOutputComponent,
 	selector: MarkdownOutputComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for Plotly graphs.
+ */
+registerComponentType({
+	mimeTypes: ['application/vnd.plotly.v1+json'],
+	rank: 45,
+	safe: true,
+	ctor: PlotlyOutputComponent,
+	selector: PlotlyOutputComponent.SELECTOR
+});
+/**
+ * A mime renderer component for Plotly HTML output
+ * that will ensure this gets ignored if possible since it's only output
+ * on offline init and adds a <script> tag which does what we've done (add Plotly support into the app)
+ */
+registerComponentType({
+	mimeTypes: ['text/vnd.plotly.v1+html'],
+	rank: 46,
+	safe: true,
+	ctor: PlotlyOutputComponent,
+	selector: PlotlyOutputComponent.SELECTOR
 });

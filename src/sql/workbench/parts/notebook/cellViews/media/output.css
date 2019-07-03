@@ -463,3 +463,8 @@ output-component .jp-RenderedHTMLCommon > *:last-child {
 .jp-RenderedPDF {
 	font-size: var(--jp-ui-font-size1);
 }
+
+plotly-output .plotly-wrapper {
+	display: block;
+	overflow-y: hidden;
+}
