@@ -285,14 +285,6 @@ export class FolderNode extends ControllerTreeNode {
 	}
 }
 
-export type SqlMasterNodeArg = {
-	endPointAddress: string,
-	parent: ControllerTreeNode,
-	treeChangeHandler: IControllerTreeChangeHandler,
-	label?: string,
-	description?: string,
-};
-
 export class SqlMasterNode extends ControllerTreeNode {
 	private static readonly _role: string = 'sql-server-master';
 	private _username: string;

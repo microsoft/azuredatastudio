@@ -8,12 +8,12 @@
 import * as vscode from 'vscode';
 
 export enum BdcItemType {
-	controllerRoot = 'bigDataClusters.itemType.ControllerRootNode',
-	controller = 'bigDataClusters.itemType.ControllerNode',
-	folder = 'bigDataClusters.itemType.FolderNode',
-	sqlMaster = 'bigDataClusters.itemType.SqlMasterNode',
-	EndPoint = 'bigDataClusters.itemType.EndPointNode',
-	addController = 'bigDataClusters.itemType.AddControllerNode',
+	controllerRoot = 'bigDataClusters.itemType.controllerRootNode',
+	controller = 'bigDataClusters.itemType.controllerNode',
+	folder = 'bigDataClusters.itemType.folderNode',
+	sqlMaster = 'bigDataClusters.itemType.sqlMasterNode',
+	EndPoint = 'bigDataClusters.itemType.endPointNode',
+	addController = 'bigDataClusters.itemType.addControllerNode'
 }
 
 export class IconPath {

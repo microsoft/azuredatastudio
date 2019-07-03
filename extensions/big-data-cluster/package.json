@@ -53,12 +53,12 @@
 			"view/item/context": [
 				{
 					"command": "bigDataClusters.command.deleteController",
-					"when": "viewItem == bigDataClusters.itemType.ControllerNode",
+					"when": "viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@1"
 				},
 				{
 					"command": "bigDataClusters.command.refreshController",
-					"when": "viewItem == bigDataClusters.itemType.ControllerNode",
+					"when": "viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@1"
 				}
 			]
@@ -84,7 +84,7 @@
 			{
 				"command": "bigDataClusters.command.deleteController",
 				"title": "%command.deleteController.title%",
-				"when": "viewItem == bigDataClusters.itemType.ControllerNode"
+				"when": "viewItem == bigDataClusters.itemType.controllerNode"
 			},
 			{
 				"command": "bigDataClusters.command.refreshController",

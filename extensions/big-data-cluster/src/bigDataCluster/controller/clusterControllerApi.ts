@@ -14,8 +14,8 @@ export async function getEndPoints(
 	}
 
 	url = adjustUrl(url);
-	let ep = new EndpointRouterApi(username, password, url);
-	ep.ignoreSslVerification = !!ignoreSslVerification;
+	let endPointApi = new EndpointRouterApi(username, password, url);
+	endPointApi.ignoreSslVerification = !!ignoreSslVerification;
 
 	let controllerResponse: IEndPointsResponse = undefined;
 	let controllerError: IControllerError = undefined;
@@ -27,7 +27,7 @@ export async function getEndPoints(
 	};
 
 	try {
-		let result = await ep.endpointsGet();
+		let result = await endPointApi.endpointsGet();
 		controllerResponse = <IEndPointsResponse>{
 			response: result.response as IHttpResponse,
 			endPoints: result.body as IEndPoint[],
