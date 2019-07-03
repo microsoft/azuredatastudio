@@ -2632,10 +2632,15 @@ declare module 'azdata' {
 		serverInfo: ServerInfo;
 	}
 
+	export enum ExtensionNodeType {
+		Server = 'Server',
+		Database = 'Database'
+	}
+
 	export class TreeItem extends vscode.TreeItem {
 		payload?: IConnectionProfile;
 		childProvider?: string;
-		type?: string;
+		type?: ExtensionNodeType;
 	}
 
 	export namespace tasks {

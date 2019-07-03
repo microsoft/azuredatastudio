@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
 	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID,
@@ -41,7 +42,8 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('disconnect', 'Disconnect')
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
-		NodeContextUtils.IsMssqlProvided, NodeContextUtils.IsDatabaseOrServer)
+		NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
+		NodeContextUtils.IsDatabaseOrServer)
 });
 
 // New Query
@@ -89,7 +91,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnectable,
 		NodeContextUtils.IsDatabaseOrServer,
-		NodeContextUtils.IsMssqlProvided)
+		NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName))
 });
 
 // Data-Tier Application Wizard
@@ -100,7 +102,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
 		title: localize('dacFx', 'Data-tier Application Wizard')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.IsDatabaseOrServer)
 });
 
@@ -112,7 +114,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
 		title: localize('dacFx', 'Data-tier Application Wizard')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Folder),
 		NodeContextUtils.NodeLabel.isEqualTo('Databases'))
 });
@@ -125,7 +127,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: PROFILER_COMMAND_ID,
 		title: localize('profiler', 'Launch Profiler')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Server))
 });
 
@@ -137,7 +139,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: IMPORT_COMMAND_ID,
 		title: localize('flatFileImport', 'Import Wizard')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
@@ -149,7 +151,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: SCHEMA_COMPARE_COMMAND_ID,
 		title: localize('schemaCompare', 'Schema Compare')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
@@ -161,7 +163,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: BACKUP_COMMAND_ID,
 		title: localize('backup', 'Backup')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
@@ -173,7 +175,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: RESTORE_COMMAND_ID,
 		title: localize('restore', 'Restore')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Database))
 });
 
@@ -185,7 +187,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: GENERATE_SCRIPTS_COMMAND_ID,
 		title: localize('generateScripts', 'Generate Scripts...')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Database),
 		NodeContextUtils.IsWindows)
 });
@@ -198,7 +200,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: PROPERTIES_COMMAND_ID,
 		title: localize('properties', 'Properties')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
 		NodeContextUtils.IsWindows)
 });
@@ -210,7 +212,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: PROPERTIES_COMMAND_ID,
 		title: localize('properties', 'Properties')
 	},
-	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+	when: ContextKeyExpr.and(NodeContextUtils.NodeProvider.isEqualTo(mssqlProviderName),
 		NodeContextUtils.IsWindows,
 		new ContextKeyRegexExpr('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
 });

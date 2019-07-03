@@ -5,7 +5,7 @@
 
 'use strict';
 
-import { AzureResource } from 'azdata';
+import { AzureResource, ExtensionNodeType } from 'azdata';
 import { TreeItem, TreeItemCollapsibleState, ExtensionContext } from 'vscode';
 import { TokenCredentials } from 'ms-rest';
 import * as nls from 'vscode-nls';
@@ -73,7 +73,7 @@ export class AzureResourceDatabaseTreeDataProvider implements azureResource.IAzu
 					options: {}
 				},
 				childProvider: 'MSSQL',
-				type: 'Database'
+				type: ExtensionNodeType.Database
 			}
 		});
 	}

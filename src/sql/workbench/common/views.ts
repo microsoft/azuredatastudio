@@ -4,7 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITreeViewDataProvider, ITreeItem as vsITreeItem, IViewDescriptor, ITreeView as vsITreeView } from 'vs/workbench/common/views';
-import { IConnectionProfile, NodeInfo } from 'azdata';
+import { IConnectionProfile } from 'azdata';
+import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export interface ITreeComponentItem extends vsITreeItem {
 	checked?: boolean;
@@ -22,7 +23,7 @@ export interface ITreeItem extends vsITreeItem {
 	childProvider?: string;
 	payload?: IConnectionProfile; // its possible we will want this to be more generic
 	sqlIcon?: string;
-	type?: string;
+	type?: ExtensionNodeType;
 }
 
 export interface ITreeView extends vsITreeView {

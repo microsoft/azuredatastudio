@@ -552,7 +552,8 @@ export function createApiFactory(
 				ColumnType: sqlExtHostTypes.ColumnType,
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
-				AgentSubSystem: sqlExtHostTypes.AgentSubSystem
+				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
+				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType
 			};
 		},
 
