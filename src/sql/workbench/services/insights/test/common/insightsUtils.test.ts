@@ -12,13 +12,16 @@ import * as path from 'vs/base/common/path';
 import * as pfs from 'vs/base/node/pfs';
 
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
-import { Workspace, toWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
+import { Workspace, toWorkspaceFolder, IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { ConfigurationResolverService } from 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
-import { TestContextService } from 'vs/workbench/test/workbenchTestServices';
+import { TestContextService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
 import { IExtensionHostDebugParams, IDebugParams, ParsedArgs } from 'vs/platform/environment/common/environment';
 import { URI } from 'vs/base/common/uri';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { IFileService } from 'vs/platform/files/common/files';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	machineSettingsHome: string;
@@ -104,7 +107,19 @@ suite('Insights Utils tests', function () {
 			new TestContextService(),
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(queryFilePath, new TestContextService(), configurationResolverService);
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, new TestContextService());
+		instantiationService.set(IFileService, fileService);
+
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, queryFilePath);
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -123,7 +138,18 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(path.join('${workspaceRoot}', 'test.sql'), contextService, configurationResolverService);
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, contextService);
+		instantiationService.set(IFileService, fileService);
+
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${workspaceRoot}', 'test.sql'));
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -143,8 +169,19 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined);
 
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, contextService);
+		instantiationService.set(IFileService, fileService);
+
 		try {
-			await resolveQueryFilePath(tokenizedPath, contextService, configurationResolverService);
+			await instantiationService.invokeFunction(resolveQueryFilePath, tokenizedPath);
 			fail('Should have thrown');
 		}
 		catch (e) {
@@ -166,8 +203,19 @@ suite('Insights Utils tests', function () {
 			contextService,
 			undefined);
 
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, contextService);
+		instantiationService.set(IFileService, fileService);
+
 		try {
-			await resolveQueryFilePath(tokenizedPath, contextService, configurationResolverService);
+			await instantiationService.invokeFunction(resolveQueryFilePath, tokenizedPath);
 			fail('Should have thrown');
 		}
 		catch (e) {
@@ -188,7 +236,18 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(path.join('${env:TEST_PATH}', 'test.sql'), contextService, configurationResolverService);
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, contextService);
+		instantiationService.set(IFileService, fileService);
+
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -205,7 +264,18 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined);
 
-		const resolvedPath = await resolveQueryFilePath(path.join('${env:TEST_PATH}', 'test.sql'), contextService, configurationResolverService);
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, contextService);
+		instantiationService.set(IFileService, fileService);
+
+		const resolvedPath = await instantiationService.invokeFunction(resolveQueryFilePath, path.join('${env:TEST_PATH}', 'test.sql'));
 		equal(resolvedPath, queryFilePath);
 	});
 
@@ -219,8 +289,19 @@ suite('Insights Utils tests', function () {
 			undefined,
 			undefined);
 
+		const fileService = new class extends TestFileService {
+			exists(uri: URI): Promise<boolean> {
+				return pfs.exists(uri.fsPath);
+			}
+		};
+
+		const instantiationService = new TestInstantiationService();
+		instantiationService.set(IConfigurationResolverService, configurationResolverService);
+		instantiationService.set(IWorkspaceContextService, new TestContextService());
+		instantiationService.set(IFileService, fileService);
+
 		try {
-			await resolveQueryFilePath(invalidPath, new TestContextService(), configurationResolverService);
+			await instantiationService.invokeFunction(resolveQueryFilePath, invalidPath);
 			fail('Should have thrown');
 		} catch (e) {
 			done();
