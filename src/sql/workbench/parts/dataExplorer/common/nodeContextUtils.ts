@@ -15,6 +15,16 @@ import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 export class NodeContextUtils extends Disposable {
 
+	static readonly canSelect = new Set([NodeType.Table, NodeType.View]);
+	static readonly canEditData = new Set([NodeType.Table]);
+	static readonly canCreateOrDelete = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
+	NodeType.Schema, NodeType.StoredProcedure, NodeType.Table, NodeType.TableValuedFunction,
+	NodeType.User, NodeType.UserDefinedTableType, NodeType.View]);
+	static readonly canExecute = new Set([NodeType.StoredProcedure]);
+	static readonly canAlter = new Set([NodeType.AggregateFunction, NodeType.PartitionFunction, NodeType.ScalarValuedFunction,
+	NodeType.StoredProcedure, NodeType.TableValuedFunction, NodeType.View]);
+
+	// General node context keys
 	static IsMssqlProvided = new RawContextKey<boolean>('isMssqlProvided', false);
 	static IsDatabaseOrServer = new RawContextKey<boolean>('isDatabaseOrServer', false);
 	static IsWindows = new RawContextKey<boolean>('isWindows', os.platform() === 'win32');
@@ -22,11 +32,24 @@ export class NodeContextUtils extends Disposable {
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);
 
+	// Scripting context keys
+	static CanScriptAsSelect = new RawContextKey<boolean>('canScriptAsSelect', false);
+	static CanEditData = new RawContextKey<boolean>('canEditData', false);
+	static CanScriptAsCreateOrDelete = new RawContextKey<boolean>('canScriptAsCreateOeDelete', false);
+	static CanScriptAsExecute = new RawContextKey<boolean>('canScriptAsExecute', false);
+	static CanScriptAsAlter = new RawContextKey<boolean>('canScriptAsAlter', false);
+
 	private isMssqlProvidedKey: IContextKey<boolean>;
 	private isCloudKey: IContextKey<boolean>;
 	private nodeTypeKey: IContextKey<string>;
 	private nodeLabelKey: IContextKey<string>;
 	private isDatabaseOrServerKey: IContextKey<boolean>;
+
+	private canScriptAsSelectKey: IContextKey<boolean>;
+	private canEditDataKey: IContextKey<boolean>;
+	private canScriptAsCreateOrDeleteKey: IContextKey<boolean>;
+	private canScriptAsExecuteKey: IContextKey<boolean>;
+	private canScriptAsAlterKey: IContextKey<boolean>;
 
 	constructor(
 		private nodeContextValue: INodeContextValue,
@@ -45,6 +68,7 @@ export class NodeContextUtils extends Disposable {
 				this.isCloud();
 				if (node.contextValue && node.providerHandle === mssqlProviderName) {
 					this.isDatabaseOrServer();
+					this.setScriptingContextKeys();
 					this.nodeTypeKey.set(node.contextValue);
 				} else if (node.type) {
 					this.isDatabaseOrServer();
@@ -63,6 +87,11 @@ export class NodeContextUtils extends Disposable {
 		this.nodeTypeKey = NodeContextUtils.NodeType.bindTo(this.contextKeyService);
 		this.nodeLabelKey = NodeContextUtils.NodeLabel.bindTo(this.contextKeyService);
 		this.isDatabaseOrServerKey = NodeContextUtils.IsDatabaseOrServer.bindTo(this.contextKeyService);
+		this.canScriptAsSelectKey = NodeContextUtils.CanScriptAsSelect.bindTo(this.contextKeyService);
+		this.canEditDataKey = NodeContextUtils.CanEditData.bindTo(this.contextKeyService);
+		this.canScriptAsCreateOrDeleteKey = NodeContextUtils.CanScriptAsCreateOrDelete.bindTo(this.contextKeyService);
+		this.canScriptAsExecuteKey = NodeContextUtils.CanScriptAsExecute.bindTo(this.contextKeyService);
+		this.canScriptAsAlterKey = NodeContextUtils.CanScriptAsAlter.bindTo(this.contextKeyService);
 	}
 
 	/**
@@ -100,5 +129,28 @@ export class NodeContextUtils extends Disposable {
 			this.nodeContextValue.node.type === NodeType.Server ||
 			this.nodeContextValue.node.type === NodeType.Database);
 		this.isDatabaseOrServerKey.set(isDatabaseOrServer);
+	}
+
+	/**
+	 * Helper function to get the correct context from node for showing
+	 * scripting context menu actions
+	 */
+	private setScriptingContextKeys(): void {
+		const nodeType = this.nodeContextValue.node.contextValue;
+		if (NodeContextUtils.canCreateOrDelete.has(nodeType)) {
+			this.canScriptAsCreateOrDeleteKey.set(true);
+		}
+		if (NodeContextUtils.canEditData.has(nodeType)) {
+			this.canEditDataKey.set(true);
+		}
+		if (NodeContextUtils.canAlter.has(nodeType)) {
+			this.canScriptAsAlterKey.set(true);
+		}
+		if (NodeContextUtils.canExecute.has(nodeType)) {
+			this.canScriptAsExecuteKey.set(true);
+		}
+		if (NodeContextUtils.canSelect.has(nodeType)) {
+			this.canScriptAsSelectKey.set(true);
+		}
 	}
 }

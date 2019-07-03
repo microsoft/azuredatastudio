@@ -11,9 +11,11 @@ import {
 	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID
 } from './nodeCommands';
 import {
-	PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
+	PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID,
+	SCRIPT_AS_CREATE_COMMAND_ID, SCRIPT_AS_DELETE_COMMAND_ID, SCRIPT_AS_SELECT_COMMAND_ID,
+	SCRIPT_AS_EXECUTE_COMMAND_ID, SCRIPT_AS_ALTER_COMMAND_ID, EDIT_DATA_COMMAND_ID
 } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShimActions';
-import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { NodeContextUtils } from 'sql/workbench/parts/dataExplorer/common/nodeContextUtils';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
@@ -199,4 +201,84 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
 		NodeContextUtils.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
 		NodeContextUtils.IsWindows)
+});
+
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'z-AdminToolExt@2',
+	order: 12,
+	command: {
+		id: PROPERTIES_COMMAND_ID,
+		title: localize('properties', 'Properties')
+	},
+	when: ContextKeyExpr.and(NodeContextUtils.IsMssqlProvided,
+		NodeContextUtils.IsWindows,
+		new ContextKeyRegexExpr('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
+});
+
+//////////////// Scripting Actions /////////////////
+
+// Script as Create
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 3,
+	command: {
+		id: SCRIPT_AS_CREATE_COMMAND_ID,
+		title: localize('scriptAsCreate', 'Script as Create')
+	},
+	when: NodeContextUtils.CanScriptAsCreateOrDelete
+});
+
+// Script as Delete
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 4,
+	command: {
+		id: SCRIPT_AS_DELETE_COMMAND_ID,
+		title: localize('scriptAsDelete', 'Script as Drop')
+	},
+	when: NodeContextUtils.CanScriptAsCreateOrDelete
+});
+
+// Script as Select
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 1,
+	command: {
+		id: SCRIPT_AS_SELECT_COMMAND_ID,
+		title: localize('scriptAsSelect', 'Select Top 1000')
+	},
+	when: NodeContextUtils.CanScriptAsSelect
+});
+
+// Script as Execute
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 5,
+	command: {
+		id: SCRIPT_AS_EXECUTE_COMMAND_ID,
+		title: localize('scriptAsExecute', 'Script as Execute')
+	},
+	when: NodeContextUtils.CanScriptAsExecute
+});
+
+// Script as Alter
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 5,
+	command: {
+		id: SCRIPT_AS_ALTER_COMMAND_ID,
+		title: localize('scriptAsAlter', 'Script as Alter')
+	},
+	when: NodeContextUtils.CanScriptAsAlter
+});
+
+// Edit Data
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 2,
+	command: {
+		id: EDIT_DATA_COMMAND_ID,
+		title: localize('editData', 'Edit Data')
+	},
+	when: NodeContextUtils.CanEditData
 });

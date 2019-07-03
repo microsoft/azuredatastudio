@@ -28,6 +28,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
@@ -52,14 +53,14 @@ export class OEAction extends ExecuteCommandAction {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@ICommandService commandService: ICommandService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@IProgressService private _progressService: IProgressService
 	) {
 		super(id, label, commandService);
 	}
 
 	public async run(actionContext: any): Promise<boolean> {
-		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
-
+		this._treeSelectionHandler = new TreeSelectionHandler(this._progressService);
 
 		let profile: IConnectionProfile;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
@@ -240,7 +241,7 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		@IScriptingService protected _scriptingService: IScriptingService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService,
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}

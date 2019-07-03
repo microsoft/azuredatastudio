@@ -174,4 +174,3 @@ CommandsRegistry.registerCommand({
 		return commandService.executeCommand(RestoreAction.ID, connectedContext);
 	}
 });
-
