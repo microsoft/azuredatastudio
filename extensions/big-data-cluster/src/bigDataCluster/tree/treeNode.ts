@@ -9,19 +9,13 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { generateGuid } from '../utils';
 
-export type TreeNodeArg = { label: string; parent?: TreeNode };
-
 export abstract class TreeNode {
 
 	private _id: string;
-	private _label: string;
-	private _parent: TreeNode;
 	private _children: TreeNode[];
 	private _isLeaf: boolean;
 
-	constructor(arg?: TreeNodeArg) {
-		this._label = arg.label;
-		this._parent = arg.parent;
+	constructor(private _label: string, private _parent?: TreeNode) {
 		this.resetId();
 	}
 

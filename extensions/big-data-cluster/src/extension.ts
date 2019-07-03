@@ -32,11 +32,11 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 
 function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 	vscode.commands.registerCommand('bigDataClusters.command.addController', (node?: TreeNode) => {
-		addBdcControllerCommand(treeDataProvider, node);
+		addBdcController(treeDataProvider, node);
 	});
 
 	vscode.commands.registerCommand('bigDataClusters.command.deleteController', (node: TreeNode) => {
-		deleteBdcControllerCommand(treeDataProvider, node);
+		deleteBdcController(treeDataProvider, node);
 	});
 
 	vscode.commands.registerCommand('bigDataClusters.command.refreshController', (node: TreeNode) => {
@@ -47,13 +47,13 @@ function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 	});
 }
 
-function addBdcControllerCommand(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
+function addBdcController(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
 	let model = new AddControllerDialogModel(treeDataProvider, node);
 	let dialog = new AddControllerDialog(model);
 	dialog.showDialog();
 }
 
-function deleteBdcControllerCommand(treeDataProvider: ControllerTreeDataProvider, node: TreeNode): void {
+async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider, node: TreeNode): Promise<boolean> {
 	if (!node && !(node instanceof ControllerNode)) {
 		return;
 	}
@@ -69,13 +69,12 @@ function deleteBdcControllerCommand(treeDataProvider: ControllerTreeDataProvider
 		placeHolder: localize('textConfirmDeleteController', 'Are you sure you want to delete \'{0}\'?', controllerNode.label)
 	};
 
-	vscode.window.showQuickPick(Object.keys(choices), options).then(result => {
-		let remove: boolean = !!(result && choices[result]);
-		if (remove) {
-			deleteControllerInternal(treeDataProvider, controllerNode);
-		}
-		return remove;
-	});
+	let result = await vscode.window.showQuickPick(Object.keys(choices), options);
+	let remove: boolean = !!(result && choices[result]);
+	if (remove) {
+		deleteControllerInternal(treeDataProvider, controllerNode);
+	}
+	return remove;
 }
 
 function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): void {

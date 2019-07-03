@@ -11,7 +11,8 @@ import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { AddControllerNode } from './addControllerTreeNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
-import { IEndPoint } from '../controller/clusterController';
+import { IEndPoint } from '../controller/clusterControllerApi';
+import { showErrorMessage } from '../utils';
 
 const ConfigNamespace = 'clusterControllers';
 const CredentialNamespace = 'clusterControllerCredentials';
@@ -24,7 +25,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	private credentialProvider: azdata.CredentialProvider;
 
 	constructor() {
-		this.root = new ControllerRootNode({ treeChangeHandler: this });
+		this.root = new ControllerRootNode(this);
 		this.loadSavedControllers();
 	}
 
@@ -77,14 +78,10 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 				if (c.rememberPassword) {
 					password = await this.getPassword(c.url, c.username);
 				}
-				this.root.addChild(new ControllerNode({
-					url: c.url,
-					username: c.username,
-					password: password,
-					rememberPassword: c.rememberPassword,
-					parent: this.root,
-					treeChangeHandler: this
-				}));
+				this.root.addChild(new ControllerNode(
+					c.url, c.username, password, c.rememberPassword,
+					undefined, this.root, this, undefined
+				));
 			}
 			this.notifyNodeChanged();
 		}
@@ -112,11 +109,15 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		try {
 			await vscode.workspace.getConfiguration(ConfigNamespace).update('controllers', controllersWithoutPassword, true);
 		} catch (error) {
-			vscode.window.showErrorMessage(error.message);
+			showErrorMessage(error);
 		}
 
 		for (let e of controllers) {
-			await this.savePassword(e.url, e.username, e.password);
+			if (e.rememberPassword) {
+				await this.savePassword(e.url, e.username, e.password);
+			} else {
+				await this.deletePassword(e.url, e.username);
+			}
 		}
 	}
 
@@ -124,6 +125,13 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		let provider = await this.getCredentialProvider();
 		let id = this.createId(url, username);
 		let result = await provider.saveCredential(id, password);
+		return result;
+	}
+
+	private async deletePassword(url: string, username: string): Promise<boolean> {
+		let provider = await this.getCredentialProvider();
+		let id = this.createId(url, username);
+		let result = await provider.deleteCredential(id);
 		return result;
 	}
 

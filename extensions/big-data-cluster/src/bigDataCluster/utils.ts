@@ -5,6 +5,8 @@
 
 'use strict';
 
+import * as vscode from 'vscode';
+
 export function generateGuid(): string {
 	let hexValues: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
 	let oct: string = '';
@@ -22,4 +24,20 @@ export function generateGuid(): string {
 	}
 	let clockSequenceHi: string = hexValues[8 + (Math.random() * 4) | 0];
 	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
+}
+
+export function showErrorMessage(error: any): void {
+	if (error) {
+		let text: string = undefined;
+		if (typeof error === 'string') {
+			text = error as string;
+		} else if (typeof error === 'object' && error !== null) {
+			let message = error.message;
+			let code = error.code || error.errno;
+			text = (code ? `${code} ` : '') + message;
+		} else {
+			text = `${error}`;
+		}
+		vscode.window.showErrorMessage(text);
+	}
 }
