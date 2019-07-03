@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner, { QueryGridDataProvider } from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
@@ -39,6 +39,8 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IAction } from 'vs/base/common/actions';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { ILogService } from 'vs/platform/log/common/log';
+import { localize } from 'vs/nls';
+import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { formatDocumentWithSelectedProvider, FormattingMode } from 'vs/editor/contrib/format/format';
 import { CancellationToken } from 'vs/base/common/cancellation';
 
@@ -362,7 +364,12 @@ export class GridPanel {
 	}
 }
 
-class GridTable<T> extends Disposable implements IView {
+export interface IDataSet {
+	rowCount: number;
+	columnInfo: azdata.IDbColumn[];
+}
+
+export abstract class GridTableBase<T> extends Disposable implements IView {
 	private table: Table<T>;
 	private actionBar: ActionBar;
 	private container = document.createElement('div');
@@ -390,24 +397,19 @@ class GridTable<T> extends Disposable implements IView {
 
 	public isOnlyTable: boolean = true;
 
-	public get resultSet(): azdata.ResultSetSummary {
-		return this._resultSet;
-	}
-
 	// this handles if the row count is small, like 4-5 rows
-	private get maxSize(): number {
+	protected get maxSize(): number {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 	}
 
 	constructor(
-		private runner: QueryRunner,
-		private _resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
-		@IContextMenuService private contextMenuService: IContextMenuService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IEditorService private editorService: IEditorService,
-		@IUntitledEditorService private untitledEditorService: IUntitledEditorService,
-		@IConfigurationService private configurationService: IConfigurationService
+		protected _resultSet: azdata.ResultSetSummary,
+		protected contextMenuService: IContextMenuService,
+		protected instantiationService: IInstantiationService,
+		protected editorService: IEditorService,
+		protected untitledEditorService: IUntitledEditorService,
+		protected configurationService: IConfigurationService
 	) {
 		super();
 		let config = this.configurationService.getValue<{ rowHeight: number }>('resultsGrid');
@@ -423,13 +425,19 @@ class GridTable<T> extends Disposable implements IView {
 			return <Slick.Column<T>>{
 				id: i.toString(),
 				name: c.columnName === 'Microsoft SQL Server 2005 XML Showplan'
-					? 'XML Showplan'
+					? localize('xmlShowplan', "XML Showplan")
 					: escape(c.columnName),
 				field: i.toString(),
 				formatter: isLinked ? hyperLinkFormatter : textFormatter,
 				width: this.state.columnSizes && this.state.columnSizes[i] ? this.state.columnSizes[i] : undefined
 			};
 		});
+	}
+
+	abstract get gridDataProvider(): IGridDataProvider;
+
+	public get resultSet(): azdata.ResultSetSummary {
+		return this._resultSet;
 	}
 
 	public onAdd() {
@@ -505,28 +513,27 @@ class GridTable<T> extends Disposable implements IView {
 			this.table.style(this.styles);
 		}
 
-		let actions = this.getCurrentActions();
-
 		let actionBarContainer = document.createElement('div');
 		actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
 		actionBarContainer.style.display = 'inline-block';
 		actionBarContainer.style.height = '100%';
 		actionBarContainer.style.verticalAlign = 'top';
 		this.container.appendChild(actionBarContainer);
+		let context: IGridActionContext = {
+			gridDataProvider: this.gridDataProvider,
+			table: this.table,
+			tableState: this.state,
+			batchId: this.resultSet.batchId,
+			resultId: this.resultSet.id
+		};
 		this.actionBar = new ActionBar(actionBarContainer, {
-			orientation: ActionsOrientation.VERTICAL, context: {
-				runner: this.runner,
-				batchId: this.resultSet.batchId,
-				resultId: this.resultSet.id,
-				table: this.table,
-				tableState: this.state
-			}
+			orientation: ActionsOrientation.VERTICAL, context: context
 		});
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			this.actionBar.context = this.generateContext();
 		});
-		this.actionBar.push(actions, { icon: true, label: false });
+		this.rebuildActionBar();
 
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
 			if (this.state) {
@@ -605,7 +612,7 @@ class GridTable<T> extends Disposable implements IView {
 		let column = this.resultSet.columnInfo[event.cell.cell - 1];
 		// handle if a showplan link was clicked
 		if (column && (column.isXml || column.isJson)) {
-			this.runner.getQueryRows(event.cell.row, 1, this.resultSet.batchId, this.resultSet.id).then(async d => {
+			this.gridDataProvider.getRowData(event.cell.row, 1).then(async d => {
 				let value = d.resultSubset.rows[0][event.cell.cell - 1];
 				let content = value.displayValue;
 
@@ -631,9 +638,7 @@ class GridTable<T> extends Disposable implements IView {
 		return <IGridActionContext>{
 			cell,
 			selection,
-			runner: this.runner,
-			batchId: this.resultSet.batchId,
-			resultId: this.resultSet.id,
+			gridDataProvider: this.gridDataProvider,
 			table: this.table,
 			tableState: this.state,
 			selectionModel: this.selectionModel
@@ -646,28 +651,9 @@ class GridTable<T> extends Disposable implements IView {
 		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
-	private getCurrentActions(): IAction[] {
+	protected abstract getCurrentActions(): IAction[];
 
-		let actions = [];
-
-		if (this.state.canBeMaximized) {
-			if (this.state.maximized) {
-				actions.splice(1, 0, new RestoreTableAction());
-			} else {
-				actions.splice(1, 0, new MaximizeTableAction());
-			}
-		}
-
-		actions.push(
-			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
-		);
-
-		return actions;
-	}
+	protected abstract getContextActions(): IAction[];
 
 	public layout(size?: number): void {
 		if (!this.table) {
@@ -692,7 +678,7 @@ class GridTable<T> extends Disposable implements IView {
 	}
 
 	private loadData(offset: number, count: number): Thenable<T[]> {
-		return this.runner.getQueryRows(offset, count, this.resultSet.batchId, this.resultSet.id).then(response => {
+		return this.gridDataProvider.getRowData(offset, count).then(response => {
 			if (!response.resultSubset) {
 				return [];
 			}
@@ -716,17 +702,19 @@ class GridTable<T> extends Disposable implements IView {
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => e.anchor,
 			getActions: () => {
-				let actions = [
+				let actions: IAction[] = [
 					new SelectAllGridAction(),
-					new Separator(),
-					new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-					new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-					new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-					new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-					new Separator(),
+					new Separator()
+				];
+				let contributedActions: IAction[] = this.getContextActions();
+				if (contributedActions && contributedActions.length > 0) {
+					actions.push(...contributedActions);
+					actions.push(new Separator());
+				}
+				actions.push(
 					new CopyResultAction(CopyResultAction.COPY_ID, CopyResultAction.COPY_LABEL, false),
 					new CopyResultAction(CopyResultAction.COPYWITHHEADERS_ID, CopyResultAction.COPYWITHHEADERS_LABEL, true)
-				];
+				);
 
 				if (this.state.canBeMaximized) {
 					if (this.state.maximized) {
@@ -785,5 +773,58 @@ class GridTable<T> extends Disposable implements IView {
 			this.actionBar.dispose();
 		}
 		super.dispose();
+	}
+}
+
+class GridTable<T> extends GridTableBase<T> {
+	private _gridDataProvider: IGridDataProvider;
+	constructor(
+		runner: QueryRunner,
+		resultSet: azdata.ResultSetSummary,
+		state: GridTableState,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IInstantiationService instantiationService: IInstantiationService,
+		@IEditorService editorService: IEditorService,
+		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
+		@IConfigurationService configurationService: IConfigurationService
+	) {
+		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, runner, resultSet.batchId, resultSet.id);
+	}
+
+	get gridDataProvider(): IGridDataProvider {
+		return this._gridDataProvider;
+	}
+
+	protected getCurrentActions(): IAction[] {
+
+		let actions = [];
+
+		if (this.state.canBeMaximized) {
+			if (this.state.maximized) {
+				actions.splice(1, 0, new RestoreTableAction());
+			} else {
+				actions.splice(1, 0, new MaximizeTableAction());
+			}
+		}
+
+		actions.push(
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+			this.instantiationService.createInstance(ChartDataAction)
+		);
+
+		return actions;
+	}
+
+	protected getContextActions(): IAction[] {
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+		];
 	}
 }

@@ -19,6 +19,7 @@ import product from 'vs/platform/product/node/product';
 import { registerComponentType } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
 import { MimeRendererComponent as MimeRendererComponent } from 'sql/workbench/parts/notebook/outputs/mimeRenderer.component';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/outputs/markdownOutput.component';
+import { GridOutputComponent } from 'sql/workbench/parts/notebook/outputs/gridOutput.component';
 import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/outputs/plotlyOutput.component';
 
 // Model View editor registration
@@ -126,16 +127,31 @@ registerComponentType({
  * A mime renderer component for grid data.
  * This will be replaced by a dedicated component in the future
  */
-registerComponentType({
-	mimeTypes: [
-		'application/vnd.dataresource+json',
-		'application/vnd.dataresource'
-	],
-	rank: 40,
-	safe: true,
-	ctor: MimeRendererComponent,
-	selector: MimeRendererComponent.SELECTOR
-});
+if (product.quality !== 'stable') {
+	registerComponentType({
+		mimeTypes: [
+			'application/vnd.dataresource+json',
+			'application/vnd.dataresource'
+		],
+		rank: 40,
+		safe: true,
+		ctor: GridOutputComponent,
+		selector: GridOutputComponent.SELECTOR
+	});
+} else {
+	// Default to existing grid view until we're sure the new
+	// implementation is fully stable
+	registerComponentType({
+		mimeTypes: [
+			'application/vnd.dataresource+json',
+			'application/vnd.dataresource'
+		],
+		rank: 40,
+		safe: true,
+		ctor: MimeRendererComponent,
+		selector: MimeRendererComponent.SELECTOR
+	});
+}
 
 /**
  * A mime renderer component for LaTeX.
