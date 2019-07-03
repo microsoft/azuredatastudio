@@ -74,6 +74,8 @@ const vscodeResources = [
 	'out-build/bootstrap-amd.js',
 	'out-build/bootstrap-window.js',
 	'out-build/paths.js',
+	'out-build/telemetry-core.json',
+	'out-build/telemetry-extensions.json',
 	'out-build/vs/**/*.{svg,png,cur,html}',
 	'!out-build/vs/code/browser/**/*.html',
 	'out-build/vs/base/common/performance.js',
@@ -354,7 +356,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		], { base: '.', dot: true });
 
 		let all = es.merge(
-		packageJsonStream,
+			packageJsonStream,
 			productJsonStream,
 			license,
 			api,
