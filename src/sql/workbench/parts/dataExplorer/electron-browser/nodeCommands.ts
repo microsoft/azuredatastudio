@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionType, IConnectableInput, IConnectionCompletionOptions, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -14,11 +15,22 @@ import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/c
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
 import { IProgressService2 } from 'vs/platform/progress/common/progress';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
+import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 export const MANAGE_COMMAND_ID = 'dataExplorer.manage';
 export const NEW_QUERY_COMMAND_ID = 'dataExplorer.newQuery';
 export const REFRESH_COMMAND_ID = 'dataExplorer.refresh';
+export const NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
+export const DATA_TIER_WIZARD_COMMAND_ID = 'dataExplorer.dataTierWizard';
+export const PROFILER_COMMAND_ID = 'dataExplorer.profiler';
+export const IMPORT_COMMAND_ID = 'dataExplorer.flatFileImport';
+export const SCHEMA_COMPARE_COMMAND_ID = 'dataExplorer.schemaCompare';
+export const BACKUP_COMMAND_ID = 'dataExplorer.backup';
+export const RESTORE_COMMAND_ID = 'dataExplorer.restore';
+export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
+export const PROPERTIES_COMMAND_ID = 'dataExplorer.properties';
 
 // Disconnect
 CommandsRegistry.registerCommand({
@@ -86,16 +98,79 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: REFRESH_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const progressSerivce = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService2);
 		if (args.$treeItem) {
 			const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 			if (args.$treeContainerId) {
-				return progressSerivce.withProgress({ location: args.$treeContainerId }, () => treeView.refresh([args.$treeItem]).then(() => true));
+				return progressService.withProgress({ location: args.$treeContainerId }, () => treeView.refresh([args.$treeItem]).then(() => true));
 			} else {
 				return treeView.refresh([args.$treeItem]).then(() => true);
 			}
 
 		}
 		return Promise.resolve(true);
+	}
+});
+
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const capabilitiesService = accessor.get(ICapabilitiesService);
+		const commandService = accessor.get(ICommandService);
+		let profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
+		const connectedContext: azdata.ConnectedContext = { connectionProfile: profile };
+		return commandService.executeCommand(NewNotebookAction.ID, connectedContext);
+	}
+});
+
+// Data Tier Wizard
+CommandsRegistry.registerCommand({
+	id: DATA_TIER_WIZARD_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		const connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('dacFx.start', connectedContext);
+	}
+});
+
+
+// Flat File Import
+CommandsRegistry.registerCommand({
+	id: IMPORT_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('flatFileImport.start', connectedContext);
+	}
+});
+
+// Schema Compare
+CommandsRegistry.registerCommand({
+	id: SCHEMA_COMPARE_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand('schemaCompare.start', connectedContext);
+	}
+});
+
+// Backup
+CommandsRegistry.registerCommand({
+	id: BACKUP_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand(BackupAction.ID, connectedContext);
+	}
+});
+
+// Restore
+CommandsRegistry.registerCommand({
+	id: RESTORE_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const commandService = accessor.get(ICommandService);
+		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return commandService.executeCommand(RestoreAction.ID, connectedContext);
 	}
 });
