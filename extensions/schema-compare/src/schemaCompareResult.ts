@@ -325,7 +325,8 @@ export class SchemaCompareResult {
 					width: 150
 				}
 			],
-			CSSStyles: { 'left': '15px' }
+			CSSStyles: { 'left': '15px' },
+			width: '98%'
 		});
 
 		this.splitView.addItem(this.differencesTable);
@@ -467,17 +468,19 @@ export class SchemaCompareResult {
 
 	private getAllDifferences(differences: azdata.DiffEntry[]): string[][] {
 		let data = [];
+		let finalDifferences: azdata.DiffEntry[] = [];
 		if (differences) {
 			differences.forEach(difference => {
 				if (difference.differenceType === azdata.SchemaDifferenceType.Object) {
 					if ((difference.sourceValue !== null && difference.sourceValue.length > 0) || (difference.targetValue !== null && difference.targetValue.length > 0)) {
+						finalDifferences.push(difference); // Add only non-null changes to ensure index does not mismatch between dictionay and UI - #6234
 						let state: boolean = this.shouldDiffBeIncluded(difference);
 						data.push([difference.name, this.createName(difference.sourceValue), state, this.SchemaCompareActionMap[difference.updateAction], this.createName(difference.targetValue)]);
 					}
 				}
 			});
 		}
-
+		this.comparisonResult.differences = finalDifferences;
 		return data;
 	}
 
@@ -880,7 +883,16 @@ export class SchemaCompareResult {
 					this.sourceEndpointInfo.ownerUri = ownerUri;
 				}
 			} else {
-				this.sourceEndpointInfo = result.sourceEndpointInfo;
+				// need to do this instead of just setting it to the result.sourceEndpointInfo because some fields are null which will cause an error when sending the compare request
+				this.sourceEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					serverDisplayName: '',
+					serverName: '',
+					databaseName: '',
+					ownerUri: '',
+					packageFilePath: result.sourceEndpointInfo.packageFilePath,
+					connectionDetails: undefined
+				};
 			}
 
 			if (result.targetEndpointInfo && result.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
@@ -890,7 +902,16 @@ export class SchemaCompareResult {
 					this.targetEndpointInfo.ownerUri = ownerUri;
 				}
 			} else {
-				this.targetEndpointInfo = result.targetEndpointInfo;
+				// need to do this instead of just setting it to the result.targetEndpointInfo because some fields are null which will cause an error when sending the compare request
+				this.targetEndpointInfo = {
+					endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+					serverDisplayName: '',
+					serverName: '',
+					databaseName: '',
+					ownerUri: '',
+					packageFilePath: result.targetEndpointInfo.packageFilePath,
+					connectionDetails: undefined
+				};
 			}
 
 			this.updateSourceAndTarget();

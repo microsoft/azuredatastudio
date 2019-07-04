@@ -31,6 +31,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.rootPath || '');
 	vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider);
 	vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource));
+	vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource));
+	vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
@@ -174,11 +176,11 @@ async function clearActiveCellOutput(): Promise<void> {
 	}
 }
 
-async function runAllCells(): Promise<void> {
+async function runAllCells(startCell?: azdata.nb.NotebookCell, endCell?: azdata.nb.NotebookCell): Promise<void> {
 	try {
 		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
-			await notebook.runAllCells();
+			await notebook.runAllCells(startCell, endCell);
 		} else {
 			throw new Error(noNotebookVisible);
 		}

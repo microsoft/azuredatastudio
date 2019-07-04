@@ -15,7 +15,10 @@ import { IMimeComponent } from 'sql/workbench/parts/notebook/outputs/mimeRegistr
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/notebookUtils';
+import { convertVscodeResourceToFileInSubDirectories, useInProcMarkdown } from 'sql/workbench/parts/notebook/notebookUtils';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/outputs/notebookMarkdown';
 
 @Component({
 	selector: MarkdownOutputComponent.SELECTOR,
@@ -33,15 +36,19 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 	private _initialized: boolean = false;
 	public loading: boolean = false;
 	private _cellModel: ICellModel;
+	private _markdownRenderer: NotebookMarkdownRenderer;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(ICommandService) private _commandService: ICommandService,
-		@Inject(INotebookService) private _notebookService: INotebookService
+		@Inject(INotebookService) private _notebookService: INotebookService,
+		@Inject(IConfigurationService) private _configurationService: IConfigurationService,
+		@Inject(IInstantiationService) private _instantiationService: IInstantiationService
 
 	) {
 		super();
 		this._sanitizer = this._notebookService.getMimeRegistry().sanitizer;
+		this._markdownRenderer = this._instantiationService.createInstance(NotebookMarkdownRenderer);
 	}
 
 	@Input() set bundleOptions(value: MimeModel.IOptions) {
@@ -59,6 +66,9 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 
 	@Input() set cellModel(value: ICellModel) {
 		this._cellModel = value;
+		if (this._initialized) {
+			this.updatePreview();
+		}
 	}
 
 	public get isTrusted(): boolean {
@@ -95,16 +105,26 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 		if (trustedChanged || !this._initialized) {
 			this._lastTrustedMode = this.isTrusted;
 			let content = this._bundleOptions.data['text/markdown'];
-			if (!content) {
-
-			} else {
-				this._commandService.executeCommand<string>('notebook.showPreview', this._cellModel.notebookModel.notebookUri, content).then((htmlcontent) => {
-					htmlcontent = convertVscodeResourceToFileInSubDirectories(htmlcontent, this._cellModel);
-					htmlcontent = this.sanitizeContent(htmlcontent);
-					let outputElement = <HTMLElement>this.output.nativeElement;
-					outputElement.innerHTML = htmlcontent;
-					this.setLoading(false);
+			if (useInProcMarkdown(this._configurationService)) {
+				this._markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
+				let markdownResult = this._markdownRenderer.render({
+					isTrusted: this.cellModel.trustedMode,
+					value: content.toString()
 				});
+				let outputElement = <HTMLElement>this.output.nativeElement;
+				outputElement.innerHTML = markdownResult.element.innerHTML;
+			} else {
+				if (!content) {
+
+				} else {
+					this._commandService.executeCommand<string>('notebook.showPreview', this._cellModel.notebookModel.notebookUri, content).then((htmlcontent) => {
+						htmlcontent = convertVscodeResourceToFileInSubDirectories(htmlcontent, this._cellModel);
+						htmlcontent = this.sanitizeContent(htmlcontent);
+						let outputElement = <HTMLElement>this.output.nativeElement;
+						outputElement.innerHTML = htmlcontent;
+						this.setLoading(false);
+					});
+				}
 			}
 			this._initialized = true;
 		}

@@ -349,7 +349,7 @@
       </trans-unit>
       <trans-unit id="bdc-create.SQLServerMasterDisplayName">
         <source xml:lang="en">SQL Server master</source>
-        <target state="translated">SQL Server mestre</target>
+        <target state="translated">Mestre do SQL Server</target>
       </trans-unit>
       <trans-unit id="bdc-create.ComputePoolDisplayName">
         <source xml:lang="en">Compute pool</source>
@@ -373,7 +373,7 @@
       </trans-unit>
       <trans-unit id="bdc-create.ComputePoolDescription">
         <source xml:lang="en">TODO: Add description</source>
-        <target state="translated">FAZER: Adicionar descrição</target>
+        <target state="translated">TODO: Adicionar Descrição</target>
       </trans-unit>
       <trans-unit id="bdc-create.DataPoolDescription">
         <source xml:lang="en">TODO: Add description</source>
@@ -442,7 +442,7 @@
     <body>
       <trans-unit id="bigDataClusterOutputChannel">
         <source xml:lang="en">SQL Server big data cluster</source>
-        <target state="translated">Cluster de Big Data do SQL Server</target>
+        <target state="translated">CLUSTER DE BIG DATA DO SQL SERVER</target>
       </trans-unit>
     </body>
   </file>

@@ -9,8 +9,12 @@ import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_H
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IDisposable } from 'vscode-xterm';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
+import { getZoomLevel } from 'vs/base/browser/browser';
+import * as types from 'vs/base/common/types';
 
-export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDisposable {
+export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
 
 		let lightBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 0.14)';
@@ -231,5 +235,23 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean): IDi
 			}
 			`);
 		}
+
+		// Results grid options. Putting these here since query editor only adds them on query editor load.
+		// We may want to remove from query editor as it can just live here and be loaded once, instead of once
+		// per editor group which is inefficient
+		let rawOptions = BareResultsGridInfo.createFromRawSettings(configurationService.getValue('resultsGrid'), getZoomLevel());
+
+		let cssRuleText = '';
+		if (types.isNumber(rawOptions.cellPadding)) {
+			cssRuleText = rawOptions.cellPadding + 'px';
+		} else {
+			cssRuleText = rawOptions.cellPadding.join('px ') + 'px;';
+		}
+		collector.addRule(`.grid-panel .monaco-table .slick-cell {
+			padding: ${cssRuleText}
+		}
+		.grid-panel .monaco-table, .message-tree {
+			${getBareResultsGridInfoStyles(rawOptions)}
+		}`);
 	});
 }

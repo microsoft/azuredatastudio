@@ -4422,7 +4422,7 @@ declare module 'azdata' {
 			/**
 			 * Kicks off execution of all code cells. Thenable will resolve only when full execution of all cells is completed.
 			 */
-			runAllCells(): Thenable<boolean>;
+			runAllCells(startCell?: NotebookCell, endCell?: NotebookCell): Thenable<boolean>;
 
 			/**
 			 * Clears the outputs of the active code cell in a notebook.

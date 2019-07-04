@@ -184,7 +184,7 @@
       </trans-unit>
       <trans-unit id="createOperator.PagerFridayCheckBox">
         <source xml:lang="en">Friday  </source>
-        <target state="translated">venerdì</target>
+        <target state="translated">Venerdì</target>
       </trans-unit>
       <trans-unit id="createOperator.PagerSaturdayCheckBox">
         <source xml:lang="en">Saturday</source>
@@ -346,6 +346,14 @@
         <source xml:lang="en">All Files (*)</source>
         <target state="translated">Tutti i file (*)</target>
       </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">Nuovo passaggio di processo</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">Modifica passaggio del processo</target>
+      </trans-unit>
       <trans-unit id="jobStepDialog.TSQL">
         <source xml:lang="en">Transact-SQL script (T-SQL)</source>
         <target state="translated">Script Transact-SQL (T-SQL)</target>
@@ -357,6 +365,38 @@
       <trans-unit id="jobStepDialog.CmdExec">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">Sistema operativo (CmdExec)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">Server di distribuzione repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">Merge repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">Lettura coda repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">Snapshot repliche</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">Lettura log delle transazioni di replica</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">Comando di SQL Server Analysis Services</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">Query di SQL Server Analysis Services</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="new">SQL Server Integration Service Package</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
@@ -373,14 +413,6 @@
       <trans-unit id="jobStepDialog.quitJobFailure">
         <source xml:lang="en">Quit the job reporting failure</source>
         <target state="translated">Termina il processo e segnala il fallimento</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">Nuovo passaggio di processo</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">Modifica passaggio del processo</target>
       </trans-unit>
     </body>
   </file>

@@ -6,7 +6,7 @@
 'use strict';
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { TreeItemCollapsibleState } from 'vscode';
+import { TreeItemCollapsibleState, TreeItem } from 'vscode';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
@@ -38,48 +38,52 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 		try {
 			let nodes: CmsResourceTreeNodeBase[] = [];
 			if (!this.ownerUri) {
-				this._ownerUri = await this.appContext.cmsUtils.getUriForConnection(this.connection);
+				// Set back password to get ownerUri
+				if (this.connection.options.authenticationType === 'SqlLogin' && this.connection.options.savePassword === true) {
+					this.connection.options.password = await this.appContext.cmsUtils.getPassword(this.connection.options.user);
+				}
 			}
 			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
-				if (result) {
-					if (result.registeredServersList) {
-						result.registeredServersList.forEach((registeredServer) => {
-							nodes.push(new RegisteredServerTreeNode(
-								registeredServer.name,
-								registeredServer.description,
-								registeredServer.serverName,
-								registeredServer.relativePath,
-								this.ownerUri,
-								this.appContext,
-								this.treeChangeHandler, this));
-						});
-					}
-					if (result.registeredServerGroups) {
-						if (result.registeredServerGroups) {
-							this._serverGroupNodes = [];
-							result.registeredServerGroups.forEach((serverGroup) => {
-								let serverGroupNode = new ServerGroupTreeNode(
-									serverGroup.name,
-									serverGroup.description,
-									serverGroup.relativePath,
-									this.ownerUri,
-									this.appContext,
-									this.treeChangeHandler, this);
-								nodes.push(serverGroupNode);
-								this._serverGroupNodes.push(serverGroupNode);
-							});
-						}
-					}
-					if (nodes.length > 0) {
-						return nodes.sort((node1, node2) => node1.name > node2.name ? 1 : -1);
-					} else {
-						return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
-					}
+				// cache new connection is different from old one
+				if (this.appContext.cmsUtils.didConnectionChange(this._connection, result.connection)) {
+					this._connection = result.connection;
+					this._ownerUri = result.ownerUri;
+					this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
+				}
+				if (result.listRegisteredServersResult.registeredServersList) {
+					result.listRegisteredServersResult.registeredServersList.forEach((registeredServer) => {
+						nodes.push(new RegisteredServerTreeNode(
+							registeredServer.name,
+							registeredServer.description,
+							registeredServer.serverName,
+							registeredServer.relativePath,
+							this.ownerUri,
+							this.appContext,
+							this.treeChangeHandler, this));
+					});
+				}
+				if (result.listRegisteredServersResult.registeredServerGroups) {
+					this._serverGroupNodes = [];
+					result.listRegisteredServersResult.registeredServerGroups.forEach((serverGroup) => {
+						let serverGroupNode = new ServerGroupTreeNode(
+							serverGroup.name,
+							serverGroup.description,
+							serverGroup.relativePath,
+							this.ownerUri,
+							this.appContext,
+							this.treeChangeHandler, this);
+						nodes.push(serverGroupNode);
+						this._serverGroupNodes.push(serverGroupNode);
+					});
+				}
+				if (nodes.length > 0) {
+					return nodes.sort((node1, node2) => node1.name > node2.name ? 1 : -1);
+				} else {
+					return [CmsResourceMessageTreeNode.create(CmsResourceTreeNode.noResourcesLabel, undefined)];
 				}
 			}, (error) => {
-				let errorText = localize('cms.errors.expandCmsFail', 'The Central Management Server {0} could not be found or is offline', this.name);
-				this.appContext.apiWrapper.showErrorMessage(error ? error : errorText);
-				return [];
+				this.treeChangeHandler.notifyNodeChanged(undefined);
+				throw error;
 			});
 		} catch {
 			return [];

@@ -148,30 +148,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/dacpac/out/wizard/pages/deployActionPage" source-language="en" target-language="ja" datatype="plaintext">
-    <body>
-      <trans-unit id="dacFx.deployRadioButtonLabel">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">展開</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployScriptRadioButtonLabel">
-        <source xml:lang="en">Generate Deployment Script and Deploy</source>
-        <target state="translated">展開スクリプトを生成して展開</target>
-      </trans-unit>
-      <trans-unit id="dacFx.scriptRadioButtonLabel">
-        <source xml:lang="en">Generate Deployment Script</source>
-        <target state="translated">展開スクリプトの生成</target>
-      </trans-unit>
-      <trans-unit id="dacfxDeployScript.saveFile">
-        <source xml:lang="en">Save</source>
-        <target state="translated">保存</target>
-      </trans-unit>
-      <trans-unit id="dacfx.generatedScriptLocation">
-        <source xml:lang="en">Deployment Script Location</source>
-        <target state="translated">展開スクリプトの場所</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/dacpac/out/wizard/pages/dacFxSummaryPage" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="dacfx.targetServerName">
@@ -193,22 +169,6 @@
       <trans-unit id="dacfx.fileLocation">
         <source xml:lang="en">File Location</source>
         <target state="translated">ファイルの場所</target>
-      </trans-unit>
-      <trans-unit id="dacfx.scriptLocation">
-        <source xml:lang="en">Deployment Script Location</source>
-        <target state="translated">展開スクリプトの場所</target>
-      </trans-unit>
-      <trans-unit id="dacfx.action">
-        <source xml:lang="en">Action</source>
-        <target state="translated">アクション</target>
-      </trans-unit>
-      <trans-unit id="dacfx.deploy">
-        <source xml:lang="en">Deploy</source>
-        <target state="translated">展開</target>
-      </trans-unit>
-      <trans-unit id="dacfx.generateScript">
-        <source xml:lang="en">Generate Deployment Script</source>
-        <target state="translated">展開スクリプトの生成</target>
       </trans-unit>
       <trans-unit id="dacfxExtract.version">
         <source xml:lang="en">Version</source>
@@ -244,12 +204,16 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/dacpac/out/wizard/api/basePage" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="basePage.defaultUser">
+        <source xml:lang="en">default</source>
+        <target state="translated">既定</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/dacpac/out/wizard/dataTierApplicationWizard" source-language="en" target-language="ja" datatype="plaintext">
     <body>
-      <trans-unit id="dacfx.needConnection">
-        <source xml:lang="en">Please connect to a server before using this wizard.</source>
-        <target state="translated">このウィザードを使用する前に、サーバーに接続してください。</target>
-      </trans-unit>
       <trans-unit id="dacFx.selectOperationPageName">
         <source xml:lang="en">Select an Operation</source>
         <target state="translated">操作を選択します</target>
@@ -261,10 +225,6 @@
       <trans-unit id="dacFx.deployPlanPage">
         <source xml:lang="en">Review the deploy plan</source>
         <target state="translated">展開計画を確認します</target>
-      </trans-unit>
-      <trans-unit id="dacFx.deployActionPageName">
-        <source xml:lang="en">Select Action</source>
-        <target state="translated">アクションの選択</target>
       </trans-unit>
       <trans-unit id="dacFx.summaryPageName">
         <source xml:lang="en">Summary</source>
@@ -319,8 +279,8 @@
         <target state="translated">インポートに失敗しました '{0}'</target>
       </trans-unit>
       <trans-unit id="dacfx.scriptGeneratingMessage">
-        <source xml:lang="en">You can view the status of script generation in the Task History once the wizard is closed</source>
-        <target state="translated">ウィザードが終了したら、タスク履歴でスクリプト生成状態を確認できます</target>
+        <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
+        <target state="new">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</target>
       </trans-unit>
       <trans-unit id="alertData.deployPlanErrorMessage">
         <source xml:lang="en">Generating deploy plan failed '{0}'</source>

@@ -13,7 +13,6 @@ export class BookTreeItem extends vscode.TreeItem {
 		public readonly tableOfContents: any[],
 		public readonly collapsibleState: vscode.TreeItemCollapsibleState,
 		public uri?: string,
-		public readonly type?: vscode.FileType,
 		public command?: vscode.Command
 	) {
 		super(title, collapsibleState);
