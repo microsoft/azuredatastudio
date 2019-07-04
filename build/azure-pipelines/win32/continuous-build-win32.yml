@@ -16,7 +16,7 @@ steps:
 #     vstsFeed: '$(ArtifactFeed)'
 #   condition: eq(variables['System.PullRequest.PullRequestId'], '')
 - powershell: |
-    yarn
+    yarn --frozen-lockfile
   displayName: Install Dependencies
   # condition: or(ne(variables['System.PullRequest.PullRequestId'], ''), ne(variables['CacheRestored'], 'true'))
 # - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
