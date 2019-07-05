@@ -19,13 +19,7 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	}
 
 	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
-		let connection: any = this._proxy.$getCurrentConnection();
-		connection.then((conn) => {
-			if (conn && conn.providerId) {
-				conn.providerId = conn.providerName;
-			}
-		});
-		return connection;
+		return this._proxy.$getCurrentConnectionProfile();
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
