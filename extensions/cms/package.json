@@ -88,6 +88,10 @@
 					"objectType": null,
 					"categoryValues": [
 						{
+							"displayName": "%cms.connectionOptions.authType.categoryValues.sqlLogin%",
+							"name": "SqlLogin"
+						},
+						{
 							"displayName": "%cms.connectionOptions.authType.categoryValues.integrated%",
 							"name": "Integrated"
 						}

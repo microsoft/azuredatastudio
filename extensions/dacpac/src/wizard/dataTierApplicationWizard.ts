@@ -86,9 +86,9 @@ export class DataTierApplicationWizard {
 		}
 
 		this.connection = await azdata.connection.getCurrentConnection();
-		if (!this.connection) {
+		if (!this.connection || (profile && this.connection.connectionId !== profile.id)) {
 			// @TODO: remove cast once azdata update complete - karlb 3/1/2019
-			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
+			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog(undefined, profile);
 
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {

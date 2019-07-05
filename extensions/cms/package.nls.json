@@ -12,7 +12,6 @@
 	"cms.resource.addServerGroup.title": "New Server Group...",
 	"cms.resource.registerCmsServer.title": "Add Central Management Server",
 	"cms.resource.deleteCmsServer.title": "Delete",
-
 	"cms.configuration.title": "MSSQL configuration",
 	"cms.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"cms.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",

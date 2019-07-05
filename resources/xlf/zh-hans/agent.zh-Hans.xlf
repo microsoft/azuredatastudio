@@ -346,6 +346,14 @@
         <source xml:lang="en">All Files (*)</source>
         <target state="translated">所有文件(*)</target>
       </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">新建作业步骤</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">编辑作业步骤</target>
+      </trans-unit>
       <trans-unit id="jobStepDialog.TSQL">
         <source xml:lang="en">Transact-SQL script (T-SQL)</source>
         <target state="translated">Transact-SQL 脚本(T-SQL)</target>
@@ -357,6 +365,38 @@
       <trans-unit id="jobStepDialog.CmdExec">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">操作系统(CmdExec)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">复制分发器</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">复制合并</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">复制队列读取器</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">复制快照</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">复制事务日志读取器</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">SQL Server 分析服务命令</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">Sql Server 分析服务查询</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="new">SQL Server Integration Service Package</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
@@ -373,14 +413,6 @@
       <trans-unit id="jobStepDialog.quitJobFailure">
         <source xml:lang="en">Quit the job reporting failure</source>
         <target state="translated">未能退出作业报告</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">新建作业步骤</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">编辑作业步骤</target>
       </trans-unit>
     </body>
   </file>
@@ -656,7 +688,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity016">
         <source xml:lang="en">016 - Miscellaneous User Error</source>
-        <target state="translated">016-其他用户错误</target>
+        <target state="translated">016 - 其他用户错误</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity017">
         <source xml:lang="en">017 - Insufficient Resources</source>
@@ -668,7 +700,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity019">
         <source xml:lang="en">019 - Fatal Error in Resource</source>
-        <target state="translated">019-资源中的致命错误</target>
+        <target state="translated">019 - 资源中的致命错误</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity020">
         <source xml:lang="en">020 - Fatal Error in Current Process</source>

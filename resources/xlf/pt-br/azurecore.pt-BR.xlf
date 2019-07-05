@@ -27,16 +27,16 @@
         <target state="translated">Azure</target>
       </trans-unit>
       <trans-unit id="azure.resource.refreshall.title">
-        <source xml:lang="en">Refresh All</source>
-        <target state="translated">Atualizar tudo</target>
+        <source xml:lang="en">Azure: Refresh All Accounts</source>
+        <target state="new">Azure: Refresh All Accounts</target>
       </trans-unit>
       <trans-unit id="azure.resource.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">Atualizar</target>
       </trans-unit>
       <trans-unit id="azure.resource.signin.title">
-        <source xml:lang="en">Sign In</source>
-        <target state="translated">entrar</target>
+        <source xml:lang="en">Azure: Sign In</source>
+        <target state="new">Azure: Sign In</target>
       </trans-unit>
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
@@ -47,8 +47,8 @@
         <target state="translated">Conectar-se</target>
       </trans-unit>
       <trans-unit id="azure.resource.connectsqldb.title">
-        <source xml:lang="en">Connect</source>
-        <target state="translated">Conectar-se</target>
+        <source xml:lang="en">Add to Servers</source>
+        <target state="new">Add to Servers</target>
       </trans-unit>
       <trans-unit id="accounts.clearTokenCache">
         <source xml:lang="en">Clear Azure Account Token Cache</source>
@@ -72,19 +72,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="pt-BR" datatype="plaintext">
-    <body>
-      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL Servers</source>
-        <target state="translated">Servidores SQL</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
         <source xml:lang="en">SQL Databases</source>
         <target state="translated">Bancos de Dados SQL</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="pt-BR" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
+        <source xml:lang="en">SQL Servers</source>
+        <target state="translated">Servidores SQL</target>
       </trans-unit>
     </body>
   </file>
@@ -108,7 +108,7 @@
     <body>
       <trans-unit id="azure.resource.tree.accountTreeNode.credentialError">
         <source xml:lang="en">Failed to get credential for account {0}. Please refresh the account.</source>
-        <target state="translated">Falha ao obter a credencial para conta {0}. Atualize a conta.</target>
+        <target state="translated">Falha ao obter a credencial da conta {0}. Atualize a conta.</target>
       </trans-unit>
       <trans-unit id="azure.resource.tree.accountTreeNode.noSubscriptionsLabel">
         <source xml:lang="en">No Subscriptions found.</source>
@@ -135,8 +135,8 @@
   <file original="extensions/azurecore/out/azureResource/resourceTreeNode" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
       <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found.</source>
-        <target state="translated">Nenhum recurso encontrado.</target>
+        <source xml:lang="en">No Resources found</source>
+        <target state="new">No Resources found</target>
       </trans-unit>
     </body>
   </file>

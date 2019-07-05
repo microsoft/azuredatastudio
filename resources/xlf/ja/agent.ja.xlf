@@ -346,6 +346,14 @@
         <source xml:lang="en">All Files (*)</source>
         <target state="translated">すべてのファイル (*)</target>
       </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">新しいジョブ ステップ</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">ジョブ ステップの編集</target>
+      </trans-unit>
       <trans-unit id="jobStepDialog.TSQL">
         <source xml:lang="en">Transact-SQL script (T-SQL)</source>
         <target state="translated">Transact-SQL スクリプト (T-SQL)</target>
@@ -357,6 +365,38 @@
       <trans-unit id="jobStepDialog.CmdExec">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">オペレーティング システム (CmdExec)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">レプリケーション ディストリビューター</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">レプリケーション マージ</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">レプリケーション キュー リーダー</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">レプリケーション スナップショット</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">レプリケーション トランザクション ログ リーダー</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">SQL Server Analysis Services コマンド</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">SQL Server Analysis Services クエリ</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="new">SQL Server Integration Service Package</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
@@ -373,14 +413,6 @@
       <trans-unit id="jobStepDialog.quitJobFailure">
         <source xml:lang="en">Quit the job reporting failure</source>
         <target state="translated">失敗を報告してジョブを終了する</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">新しいジョブ ステップ</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">ジョブ ステップの編集</target>
       </trans-unit>
     </body>
   </file>
@@ -532,7 +564,7 @@
       </trans-unit>
       <trans-unit id="jobDialog.editJob">
         <source xml:lang="en">Edit Job</source>
-        <target state="translated">ジョブを編集</target>
+        <target state="translated">ジョブの編集</target>
       </trans-unit>
     </body>
   </file>
@@ -596,7 +628,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity001">
         <source xml:lang="en">001 - Miscellaneous System Information</source>
-        <target state="translated">001 - その他システム情報</target>
+        <target state="translated">001 - その他のシステム情報</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity002">
         <source xml:lang="en">002 - Reserved</source>
@@ -648,7 +680,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity014">
         <source xml:lang="en">014 - Insufficient Permission</source>
-        <target state="translated">014 - 十分なアクセス許可がありません</target>
+        <target state="translated">014 - アクセス権不足</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity015">
         <source xml:lang="en">015 - Syntax Error in SQL Statements</source>
@@ -668,11 +700,11 @@
       </trans-unit>
       <trans-unit id="alertDialog.Severity019">
         <source xml:lang="en">019 - Fatal Error in Resource</source>
-        <target state="translated">019 - リソースの致命的なエラー</target>
+        <target state="translated">019 - リソースにおける致命的なエラー</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity020">
         <source xml:lang="en">020 - Fatal Error in Current Process</source>
-        <target state="translated">020 - 現在のプロセスの致命的なエラー</target>
+        <target state="translated">020 - 現在のプロセス内の致命的なエラー</target>
       </trans-unit>
       <trans-unit id="alertDialog.Severity021">
         <source xml:lang="en">021 - Fatal Error in Database Processes</source>
