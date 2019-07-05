@@ -10,7 +10,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
-	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING
+	DEFAULT_NOTEBOOK_FILETYPE, INotebookEditor, SQL_NOTEBOOK_PROVIDER, OVERRIDE_EDITOR_THEMING_SETTING, INavigationProvider
 } from 'sql/workbench/services/notebook/common/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
 import { standardRendererFactories } from 'sql/workbench/parts/notebook/outputs/factories';
@@ -97,6 +97,7 @@ export class NotebookService extends Disposable implements INotebookService {
 	private _trustedNotebooksMemento: Memento;
 	private _mimeRegistry: RenderMimeRegistry;
 	private _providers: Map<string, ProviderDescriptor> = new Map();
+	private _navigationProviders: Map<string, INavigationProvider> = new Map();
 	private _managersMap: Map<string, INotebookManager[]> = new Map();
 	private _onNotebookEditorAdd = new Emitter<INotebookEditor>();
 	private _onNotebookEditorRemove = new Emitter<INotebookEditor>();
@@ -266,6 +267,15 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	unregisterProvider(providerId: string): void {
 		this._providers.delete(providerId);
+	}
+
+	registerNavigationProvider(provider: INavigationProvider): void {
+		this._navigationProviders.set(provider.providerId, provider);
+	}
+
+	getNavigationProvider(notebookUri: URI): INavigationProvider {
+		let provider = this._navigationProviders.size > 0 ? this._navigationProviders.values().next().value : undefined;
+		return provider;
 	}
 
 	get isRegistrationComplete(): boolean {

@@ -45,6 +45,10 @@ export interface INotebookService {
 	 */
 	unregisterProvider(providerId: string): void;
 
+	registerNavigationProvider(provider: INavigationProvider): void;
+
+	getNavigationProvider(notebookUri: URI): INavigationProvider;
+
 	getSupportedFileExtensions(): string[];
 
 	getProvidersForFileType(fileType: string): string[];
@@ -131,4 +135,10 @@ export interface INotebookEditor {
 	runAllCells(): Promise<boolean>;
 	clearOutput(cell: ICellModel): Promise<boolean>;
 	clearAllOutputs(): Promise<boolean>;
+}
+
+export interface INavigationProvider {
+	providerId: string;
+	onNext(uri: URI): void;
+	onPrevious(uri: URI): void;
 }

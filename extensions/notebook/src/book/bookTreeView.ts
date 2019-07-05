@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -12,7 +13,8 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 
-export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem> {
+export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
+	readonly providerId: string = 'BookNavigator';
 
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
@@ -138,4 +140,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return notebooks;
 	}
+
+	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
+		// TODO: search for / find the matching notebook inside all books. Consider building a map for this
+		let result: azdata.nb.NavigationResult = {
+			hasNavigation: true,
+			previous: vscode.Uri.parse('/Users/lucyzhang/Desktop/example_books/DeploySQLServer2019BDCBooks/LinuxBook/content/Azure_Settings.ipynb'),
+			next: vscode.Uri.parse('/Users/lucyzhang/Desktop/example_books/DeploySQLServer2019BDCBooks/LinuxBook/content/Create_AKS_Cluster_for_Linux.ipynb')
+		};
+		return Promise.resolve(result);
+	}
+
 }

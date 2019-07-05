@@ -19,10 +19,8 @@
 			<placeholder-cell-component [cellModel]="cell" [model]="model">
 			</placeholder-cell-component>
 		</div>
-		<!-- TODO: only show if book is opened -->
-		<div id="bookNavigationButtons" *ngIf="_bookOpened">
-			<button type="button" (click)="previousPage()">Previous</button>
-			<button type="button" (click)="nextPage()">Next</button>
+		<!-- TODO: make it pretty -->
+		<div class="book-nav" #bookNav>
 		</div>
 	</div>
 </div>

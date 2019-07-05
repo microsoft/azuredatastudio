@@ -5249,7 +5249,12 @@ declare module 'azdata' {
 			value: string;
 		}
 
-		export function registerNavigationProvider(provider: (notebookEditor: NotebookEditor) => NavigationResult): void;
+		export function registerNavigationProvider(provider: NavigationProvider): vscode.Disposable;
+
+		export interface NavigationProvider {
+			readonly providerId: string;
+			getNavigation(notebookUri: vscode.Uri): Thenable<NavigationResult>;
+		}
 
 		export interface NavigationResult {
 			hasNavigation: boolean;
