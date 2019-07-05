@@ -7,7 +7,7 @@ import 'vs/css!./table';
 
 import { IDisposable, dispose, combinedDisposable } from 'vs/base/common/lifecycle';
 import { ScrollableElement } from 'vs/base/browser/ui/scrollbar/scrollableElement';
-import { Event, Emitter } from 'vs/base/common/event';
+import { Event } from 'vs/base/common/event';
 import { ScrollEvent, ScrollbarVisibility, INewScrollDimensions } from 'vs/base/common/scrollable';
 import * as DOM from 'vs/base/browser/dom';
 import { domEvent } from 'vs/base/browser/event';
@@ -22,7 +22,7 @@ import { firstIndex } from 'vs/base/common/arrays';
 
 import { CellCache, ICell } from 'sql/base/browser/ui/table/highPerf/cellCache';
 import { ITableRenderer, ITableDataSource, ITableMouseEvent, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
-import { Position } from 'vs/editor/common/core/position';
+import { GridPosition } from 'sql/base/common/gridPosition';
 
 export interface IAriaSetProvider<T> {
 	getSetSize(element: T, index: number, listLength: number): number;
@@ -699,7 +699,7 @@ export class TableView<T> implements IDisposable {
 		return { browserEvent, index, element };
 	}
 
-	private getItemIndexFromEventTarget(target: EventTarget | null): Position | undefined {
+	private getItemIndexFromEventTarget(target: EventTarget | null): GridPosition | undefined {
 		let element: HTMLElement | null = target as (HTMLElement | null);
 
 		while (element instanceof HTMLElement && element !== this.rowsContainer) {
@@ -716,7 +716,7 @@ export class TableView<T> implements IDisposable {
 							const row = Number(rawIndex);
 
 							if (!isNaN(row)) {
-								return new Position(row, column);
+								return new GridPosition(row, column);
 							}
 						}
 

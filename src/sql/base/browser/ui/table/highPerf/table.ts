@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Range } from 'vs/editor/common/core/range';
-import { Position } from 'vs/editor/common/core/position';
+import { GridRange } from 'sql/base/common/gridRange';
+import { GridPosition } from 'sql/base/common/gridPosition';
 
 export interface ITableRenderer<T, TTemplateData> {
 	renderTemplate(container: HTMLElement): TTemplateData;
@@ -24,7 +24,7 @@ export interface ITableDataSource<T> {
 
 export interface ITableEvent<T> {
 	elements: T[];
-	indexes: Range;
+	indexes: GridRange;
 	browserEvent?: UIEvent;
 }
 
@@ -37,6 +37,6 @@ export interface ITableMouseEvent<T> {
 export interface ITableContextMenuEvent<T> {
 	browserEvent: UIEvent;
 	element: T | undefined;
-	index: Position | undefined;
+	index: GridPosition | undefined;
 	anchor: HTMLElement | { x: number; y: number; };
 }

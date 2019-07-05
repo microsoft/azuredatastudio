@@ -22,8 +22,8 @@ import { getOrDefault } from 'vs/base/common/objects';
 import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
 import { GlobalMouseMoveMonitor } from 'vs/base/browser/globalMouseMoveMonitor';
-import { Range } from 'vs/editor/common/core/range';
-import { Position } from 'vs/editor/common/core/position';
+import { GridPosition } from 'sql/base/common/gridPosition';
+import { GridRange } from 'sql/base/common/gridRange';
 
 interface ITraitChangeEvent {
 	indexes: Range[];
@@ -34,7 +34,7 @@ type ITraitTemplateData = HTMLElement;
 
 interface IRenderedContainer {
 	templateData: ITraitTemplateData;
-	index: Position;
+	index: GridPosition;
 }
 
 class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
@@ -57,16 +57,16 @@ class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
 		if (renderedElementIndex >= 0) {
 			const rendered = this.renderedElements[renderedElementIndex];
 			this.trait.unrender(templateData);
-			rendered.index = new Position(row, cell);
+			rendered.index = new GridPosition(row, cell);
 		} else {
-			const rendered = { index: new Position(row, cell), templateData };
+			const rendered = { index: new GridPosition(row, cell), templateData };
 			this.renderedElements.push(rendered);
 		}
 
-		this.trait.renderIndex(new Position(row, cell), templateData);
+		this.trait.renderIndex(new GridPosition(row, cell), templateData);
 	}
 
-	renderIndexes(indexes: Range[]): void {
+	renderIndexes(indexes: GridRange[]): void {
 		for (const { index, templateData } of this.renderedElements) {
 			if (!!indexes.find(v => v.containsPosition(index))) {
 				this.trait.renderIndex(index, templateData);
@@ -121,7 +121,7 @@ class DOMFocusController<T> implements IDisposable {
 			return;
 		}
 
-		const focusedDomElement = this.view.domElement(focus[0].startLineNumber, focus[0].startColumn);
+		const focusedDomElement = this.view.domElement(focus[0].startRow, focus[0].startColumn);
 
 		if (!focusedDomElement) {
 			return;
@@ -150,8 +150,8 @@ class DOMFocusController<T> implements IDisposable {
 
 class Trait<T> implements IDisposable {
 
-	private indexes: Array<Range> = [];
-	private sortedIndexes: Array<Range> = [];
+	private indexes: Array<GridRange> = [];
+	private sortedIndexes: Array<GridRange> = [];
 
 	private _onChange = new Emitter<ITraitChangeEvent>();
 	get onChange(): Event<ITraitChangeEvent> { return this._onChange.event; }
@@ -165,7 +165,7 @@ class Trait<T> implements IDisposable {
 
 	constructor(private _trait: string) { }
 
-	renderIndex(index: Position, container: HTMLElement): void {
+	renderIndex(index: GridPosition, container: HTMLElement): void {
 		DOM.toggleClass(container, this._trait, this.contains(index));
 	}
 
@@ -179,11 +179,11 @@ class Trait<T> implements IDisposable {
 	 * @param indexes Indexes which should have this trait.
 	 * @return The old indexes which had this trait.
 	 */
-	set(indexes: Array<Range>, browserEvent?: UIEvent): Array<Range> {
+	set(indexes: Array<GridRange>, browserEvent?: UIEvent): Array<GridRange> {
 		return this._set(indexes, indexes, browserEvent);
 	}
 
-	private _set(indexes: Array<Range>, sortedIndexes: Array<Range>, browserEvent?: UIEvent): Array<Range> {
+	private _set(indexes: Array<GridRange>, sortedIndexes: Array<GridRange>, browserEvent?: UIEvent): Array<GridRange> {
 		const result = this.indexes;
 		const sortedResult = this.sortedIndexes;
 
@@ -197,11 +197,11 @@ class Trait<T> implements IDisposable {
 		return result;
 	}
 
-	get(): Array<Range> {
+	get(): Array<GridRange> {
 		return this.indexes;
 	}
 
-	contains(index: Position): boolean {
+	contains(index: GridPosition): boolean {
 		return !!this.indexes.find(v => v.containsPosition(index));
 	}
 
@@ -245,7 +245,7 @@ class FocusTrait<T> extends Trait<T> {
 		super('focused');
 	}
 
-	renderIndex(index: Position, container: HTMLElement): void {
+	renderIndex(index: GridPosition, container: HTMLElement): void {
 		super.renderIndex(index, container);
 
 		if (this.contains(index)) {
@@ -406,7 +406,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusPreviousRow(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].startLineNumber);
+		this.table.reveal(this.table.getFocus()[0].startRow);
 		this.view.domNode.focus();
 	}
 
@@ -414,7 +414,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusNextRow(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].startLineNumber);
+		this.table.reveal(this.table.getFocus()[0].startRow);
 		this.view.domNode.focus();
 	}
 
@@ -422,7 +422,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusNextCell(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].startLineNumber);
+		this.table.reveal(this.table.getFocus()[0].startRow);
 		this.view.domNode.focus();
 	}
 
@@ -430,7 +430,7 @@ class KeyboardController<T> implements IDisposable {
 		e.preventDefault();
 		e.stopPropagation();
 		this.table.focusPreviousCell(1, false, e.browserEvent);
-		this.table.reveal(this.table.getFocus()[0].startLineNumber);
+		this.table.reveal(this.table.getFocus()[0].startRow);
 		this.view.domNode.focus();
 	}
 
@@ -475,7 +475,7 @@ export class MouseController<T> implements IDisposable {
 	readonly multipleSelectionController: IMultipleSelectionController<T>;
 	private openController: IOpenController;
 	private disposables: IDisposable[] = [];
-	private readonly _mouseMoveMonitor= new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();
+	private readonly _mouseMoveMonitor = new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();
 
 	constructor(protected table: Table<T>) {
 		this.multipleSelectionSupport = true;
@@ -556,7 +556,7 @@ export class MouseController<T> implements IDisposable {
 		}
 	}
 
-	private changeSelection(e: ITableMouseEvent<T>, reference: Range | undefined): void {
+	private changeSelection(e: ITableMouseEvent<T>, reference: GridRange | undefined): void {
 		const focus = e.index!;
 
 		/*
@@ -1037,7 +1037,7 @@ export class Table<T> implements IDisposable {
 		return -1;
 	}
 
-	getFocus(): Array<Range> {
+	getFocus(): Array<GridRange> {
 		return this.focus.get();
 	}
 
@@ -1049,7 +1049,7 @@ export class Table<T> implements IDisposable {
 		const focus = this.focus.get();
 
 		if (focus.length > 0) {
-			this.view.domNode.setAttribute('aria-activedescendant', this.view.getElementDomId(focus[0].startLineNumber, focus[0].startColumn));
+			this.view.domNode.setAttribute('aria-activedescendant', this.view.getElementDomId(focus[0].startRow, focus[0].startColumn));
 		} else {
 			this.view.domNode.removeAttribute('aria-activedescendant');
 		}
