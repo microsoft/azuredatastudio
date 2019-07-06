@@ -27,11 +27,11 @@ class ColumnRenderer<IDataShape> implements ITableRenderer<IDataShape, { element
 		return { element };
 	}
 
-	renderCell(element: IDataShape, index: number, columnId: string, templateData: { element: HTMLElement; }, width: number): void {
+	renderCell(element: IDataShape, index: number, ccellIndex: number, columnId: string, templateData: { element: HTMLElement; }, width: number): void {
 		templateData.element.innerText = element[columnId] as string;
 	}
 
-	disposeCell(element: IDataShape, index: number, columnId: string, templateData: { element: HTMLElement }, width: number | undefined): void {
+	disposeCell(element: IDataShape, index: number, cellIndex: number, columnId: string, templateData: { element: HTMLElement }, width: number | undefined): void {
 		templateData.element.innerText = '';
 	}
 

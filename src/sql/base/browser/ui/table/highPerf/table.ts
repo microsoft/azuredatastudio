@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { GridRange } from 'sql/base/common/gridRange';
-import { GridPosition } from 'sql/base/common/gridPosition';
+import { IGridRange } from 'sql/base/common/gridRange';
+import { IGridPosition } from 'sql/base/common/gridPosition';
 
 export interface ITableRenderer<T, TTemplateData> {
 	renderTemplate(container: HTMLElement): TTemplateData;
@@ -24,19 +24,19 @@ export interface ITableDataSource<T> {
 
 export interface ITableEvent<T> {
 	elements: T[];
-	indexes: GridRange;
+	indexes: IGridRange[];
 	browserEvent?: UIEvent;
 }
 
 export interface ITableMouseEvent<T> {
 	browserEvent: MouseEvent;
 	element: T | undefined;
-	index: Position | undefined;
+	index: IGridPosition | undefined;
 }
 
 export interface ITableContextMenuEvent<T> {
 	browserEvent: UIEvent;
 	element: T | undefined;
-	index: GridPosition | undefined;
+	index: IGridPosition | undefined;
 	anchor: HTMLElement | { x: number; y: number; };
 }

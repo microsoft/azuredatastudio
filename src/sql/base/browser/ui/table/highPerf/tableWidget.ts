@@ -23,10 +23,10 @@ import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
 import { GlobalMouseMoveMonitor } from 'vs/base/browser/globalMouseMoveMonitor';
 import { GridPosition } from 'sql/base/common/gridPosition';
-import { GridRange } from 'sql/base/common/gridRange';
+import { GridRange, IGridRange } from 'sql/base/common/gridRange';
 
 interface ITraitChangeEvent {
-	indexes: Range[];
+	indexes: IGridRange[];
 	browserEvent?: UIEvent;
 }
 
@@ -66,9 +66,9 @@ class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
 		this.trait.renderIndex(new GridPosition(row, cell), templateData);
 	}
 
-	renderIndexes(indexes: GridRange[]): void {
+	renderIndexes(indexes: IGridRange[]): void {
 		for (const { index, templateData } of this.renderedElements) {
-			if (!!indexes.find(v => v.containsPosition(index))) {
+			if (!!indexes.find(v => GridRange.containsPosition(v, index))) {
 				this.trait.renderIndex(index, templateData);
 			}
 		}
@@ -84,14 +84,6 @@ class TraitRenderer<T> implements ITableRenderer<T, ITraitTemplateData>
 		this.renderedElements.splice(index, 1);
 	}
 }
-
-const numericSort = (a: { row: number, column: number }, b: { row: number, column: number }) => {
-	if (a.row === b.row) {
-		return a.column - b.column;
-	} else {
-		return a.row - b.row;
-	}
-};
 
 class DOMFocusController<T> implements IDisposable {
 
@@ -150,8 +142,8 @@ class DOMFocusController<T> implements IDisposable {
 
 class Trait<T> implements IDisposable {
 
-	private indexes: Array<GridRange> = [];
-	private sortedIndexes: Array<GridRange> = [];
+	private indexes: Array<IGridRange> = [];
+	private sortedIndexes: Array<IGridRange> = [];
 
 	private _onChange = new Emitter<ITraitChangeEvent>();
 	get onChange(): Event<ITraitChangeEvent> { return this._onChange.event; }
@@ -179,11 +171,11 @@ class Trait<T> implements IDisposable {
 	 * @param indexes Indexes which should have this trait.
 	 * @return The old indexes which had this trait.
 	 */
-	set(indexes: Array<GridRange>, browserEvent?: UIEvent): Array<GridRange> {
+	set(indexes: Array<IGridRange>, browserEvent?: UIEvent): Array<IGridRange> {
 		return this._set(indexes, indexes, browserEvent);
 	}
 
-	private _set(indexes: Array<GridRange>, sortedIndexes: Array<GridRange>, browserEvent?: UIEvent): Array<GridRange> {
+	private _set(indexes: Array<IGridRange>, sortedIndexes: Array<IGridRange>, browserEvent?: UIEvent): Array<IGridRange> {
 		const result = this.indexes;
 		const sortedResult = this.sortedIndexes;
 
@@ -197,12 +189,12 @@ class Trait<T> implements IDisposable {
 		return result;
 	}
 
-	get(): Array<GridRange> {
+	get(): Array<IGridRange> {
 		return this.indexes;
 	}
 
 	contains(index: GridPosition): boolean {
-		return !!this.indexes.find(v => v.containsPosition(index));
+		return !!this.indexes.find(v => GridRange.containsPosition(v, index));
 	}
 
 	dispose() {
@@ -489,6 +481,7 @@ export class MouseController<T> implements IDisposable {
 		this.disposables.push(this._mouseMoveMonitor);
 
 		table.onMouseDown(this.onMouseDown, this, this.disposables);
+		table.onMouseClick(this.onPointer, this, this.disposables);
 		table.onContextMenu(this.onContextMenu, this, this.disposables);
 	}
 
@@ -519,15 +512,15 @@ export class MouseController<T> implements IDisposable {
 	}
 
 	private onContextMenu(e: ITableContextMenuEvent<T>): void {
-		const focus = typeof e.index === 'undefined' ? [] : [e.index];
+		const focus = typeof e.index === 'undefined' ? [] : [new GridRange(e.index.row, e.index.column)];
 		this.table.setFocus(focus, e.browserEvent);
 	}
 
 	protected onPointer(e: ITableMouseEvent<T>): void {
 
-		let reference = this.table.getFocus()[0];
+		let reference = this.table.getFocus();
 		const selection = this.table.getSelection();
-		reference = reference === undefined ? selection[0] : reference;
+		reference = reference === undefined ? selection : reference;
 
 		const focus = e.index;
 
@@ -545,10 +538,10 @@ export class MouseController<T> implements IDisposable {
 			return this.changeSelection(e, reference);
 		}
 
-		this.table.setFocus([focus], e.browserEvent);
+		this.table.setFocus([new GridRange(focus.row, focus.column)], e.browserEvent);
 
 		if (!isMouseRightClick(e.browserEvent)) {
-			this.table.setSelection([focus], e.browserEvent);
+			this.table.setSelection([new GridRange(focus.row, focus.column)], e.browserEvent);
 
 			if (this.openController.shouldOpen(e.browserEvent)) {
 				// this.table.open([focus], e.browserEvent);
@@ -556,34 +549,18 @@ export class MouseController<T> implements IDisposable {
 		}
 	}
 
-	private changeSelection(e: ITableMouseEvent<T>, reference: GridRange | undefined): void {
+	private changeSelection(e: ITableMouseEvent<T>, reference: IGridRange[] | undefined): void {
 		const focus = e.index!;
 
-		/*
 		if (this.isSelectionRangeChangeEvent(e) && reference !== undefined) {
-			const min = Math.min(reference, focus);
-			const max = Math.max(reference, focus);
-			const rangeSelection = range(min, max + 1);
 			const selection = this.table.getSelection();
-			const contiguousRange = getContiguousRangeContaining(disjunction(selection, [reference]), reference);
-
-			if (contiguousRange.length === 0) {
-				return;
-			}
-
-			const newSelection = disjunction(rangeSelection, relativeComplement(selection, contiguousRange));
-			this.table.setSelection(newSelection, e.browserEvent);
-
-		} else if (this.isSelectionSingleChangeEvent(e)) { */
-		const selection = this.table.getSelection();
-		const newSelection = selection.filter(i => i !== focus);
-
-		if (selection.length === newSelection.length) {
-			this.table.setSelection([...newSelection, focus], e.browserEvent);
-		} else {
-			this.table.setSelection(newSelection, e.browserEvent);
+			const lastSelection = selection.pop();
+			this.table.setSelection([...selection, GridRange.plusRange(lastSelection, new GridRange(focus.row, focus.column))]);
+		} else if (this.isSelectionSingleChangeEvent(e)) {
+			const selection = this.table.getSelection();
+			selection.push(new GridRange(focus.row, focus.column));
+			this.table.setSelection(selection);
 		}
-		// }
 	}
 
 	dispose() {
@@ -748,7 +725,7 @@ export class Table<T> implements IDisposable {
 	}
 
 	private toTableEvent({ indexes, browserEvent }: ITraitChangeEvent) {
-		return { indexes, elements: indexes.map(i => this.view.element(i.row)!), browserEvent };
+		return { indexes, elements: indexes.map(i => this.view.element(i.startRow)!), browserEvent };
 	}
 
 	get onDidScroll(): Event<ScrollEvent> { return this.view.onDidScroll; }
@@ -775,12 +752,12 @@ export class Table<T> implements IDisposable {
 				this.didJustPressContextMenuKey = false;
 				return didJustPressContextMenuKey;
 			})
-			.filter(() => this.getFocus().length > 0 && !!this.view.domElement(this.getFocus()[0].row, this.getFocus()[0].columnId))
+			.filter(() => this.getFocus().length > 0 && !!this.view.domElement(this.getFocus()[0].startRow, this.getFocus()[0].startColumn))
 			.map(browserEvent => {
 				const index = this.getFocus()[0];
-				const element = this.view.element(index.row);
-				const anchor = this.view.domElement(index.row, index.columnId) as HTMLElement;
-				return { index, element, anchor, browserEvent };
+				const element = this.view.element(index.startRow);
+				const anchor = this.view.domElement(index.startRow, index.startColumn) as HTMLElement;
+				return { index: GridRange.lift(index).getStartPosition(), element, anchor, browserEvent };
 			})
 			.event;
 
@@ -863,7 +840,7 @@ export class Table<T> implements IDisposable {
 		this.view.domNode.focus();
 	}
 
-	setSelection(indexes: ICellIndex[], browserEvent?: UIEvent): void {
+	setSelection(indexes: IGridRange[], browserEvent?: UIEvent): void {
 		// for (const index of indexes) {
 		// 	if (index < 0 || index >= this.length) {
 		// 		throw new Error(`Invalid index ${index}`);
@@ -873,11 +850,11 @@ export class Table<T> implements IDisposable {
 		this.selection.set(indexes, browserEvent);
 	}
 
-	getSelection(): ICellIndex[] {
+	getSelection(): IGridRange[] {
 		return this.selection.get();
 	}
 
-	setFocus(indexes: ICellIndex[], browserEvent?: UIEvent): void {
+	setFocus(indexes: IGridRange[], browserEvent?: UIEvent): void {
 		// for (const index of indexes) {
 		// 	if (index < 0 || index >= this.length) {
 		// 		throw new Error(`Invalid index ${index}`);
@@ -917,12 +894,12 @@ export class Table<T> implements IDisposable {
 		if (this.length === 0) { return; }
 
 		const focus = this.focus.get();
-		const cellIndex = focus.length > 0 ? this.view.indexOfColumn(focus[0].columnId)! : 0;
-		const targetColumn = this.view.column(this.findNextColumn(cellIndex + n, loop, filter));
-		const targetRow = focus.length > 0 ? focus[0].row : 0;
+		const cellIndex = focus.length > 0 ? focus[0].startColumn! : 0;
+		const targetColumn = this.findNextColumn(cellIndex + n, loop, filter);
+		const targetRow = focus.length > 0 ? focus[0].startRow : 0;
 
 		if (targetColumn) {
-			this.setFocus([{ columnId: targetColumn.id, row: targetRow }], browserEvent);
+			this.setFocus([new GridRange(targetRow, targetColumn)], browserEvent);
 		}
 	}
 
@@ -930,12 +907,12 @@ export class Table<T> implements IDisposable {
 		if (this.length === 0) { return; }
 
 		const focus = this.focus.get();
-		const cellIndex = focus.length > 0 ? this.view.indexOfColumn(focus[0].columnId)! : 0;
-		const targetColumn = this.view.column(this.findPreviousColumn(cellIndex - n, loop, filter));
-		const targetRow = focus.length > 0 ? focus[0].row : 0;
+		const cellIndex = focus.length > 0 ? focus[0].startColumn! : 0;
+		const targetColumn = this.findPreviousColumn(cellIndex - n, loop, filter);
+		const targetRow = focus.length > 0 ? focus[0].startRow : 0;
 
 		if (targetColumn) {
-			this.setFocus([{ columnId: targetColumn.id, row: targetRow }], browserEvent);
+			this.setFocus([new GridRange(targetRow, targetColumn)], browserEvent);
 		}
 	}
 
@@ -943,12 +920,12 @@ export class Table<T> implements IDisposable {
 		if (this.length === 0) { return; }
 
 		const focus = this.focus.get();
-		const index = this.findNextRowIndex(focus.length > 0 ? focus[0].row + n : 0, loop, filter);
+		const index = this.findNextRowIndex(focus.length > 0 ? focus[0].startRow + n : 0, loop, filter);
 
-		const targetColumn = focus.length > 0 ? focus[0].columnId : this.view.column(0)!.id;
+		const targetColumn = focus.length > 0 ? focus[0].startColumn : 0;
 
 		if (index > -1) {
-			this.setFocus([{ row: index, columnId: targetColumn }], browserEvent);
+			this.setFocus([new GridRange(index, targetColumn)], browserEvent);
 		}
 	}
 
@@ -956,12 +933,12 @@ export class Table<T> implements IDisposable {
 		if (this.length === 0) { return; }
 
 		const focus = this.focus.get();
-		const index = this.findPreviousRowIndex(focus.length > 0 ? focus[0].row - n : 0, loop, filter);
+		const index = this.findPreviousRowIndex(focus.length > 0 ? focus[0].startRow - n : 0, loop, filter);
 
-		const targetColumn = focus.length > 0 ? focus[0].columnId : this.view.column(0)!.id;
+		const targetColumn = focus.length > 0 ? focus[0].startColumn : 0;
 
 		if (index > -1) {
-			this.setFocus([{ row: index, columnId: targetColumn }], browserEvent);
+			this.setFocus([new GridRange(index, targetColumn)], browserEvent);
 		}
 	}
 
@@ -1037,7 +1014,7 @@ export class Table<T> implements IDisposable {
 		return -1;
 	}
 
-	getFocus(): Array<GridRange> {
+	getFocus(): Array<IGridRange> {
 		return this.focus.get();
 	}
 

@@ -109,9 +109,10 @@ class DataResourceTable extends GridTableBase<any> {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IThemeService themeService: IThemeService
 	) {
-		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
+		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService, themeService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
 	}
 

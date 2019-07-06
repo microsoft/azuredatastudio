@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IGridPosition, GridPosition } from 'sql/base/common/gridPosition.ts';
+import { IGridPosition, GridPosition } from 'sql/base/common/gridPosition';
 
 /**
  * A range in a grid. This interface is suitable for serialization.
@@ -49,8 +49,8 @@ export class GridRange {
 	 */
 	public readonly endColumn: number;
 
-	constructor(startRow: number, startColumn: number, endRow: number, endColumn: number) {
-		if ((startRow > endRow) || (startRow === endRow && startColumn > endColumn)) {
+	constructor(startRow: number, startColumn: number, endRow?: number, endColumn?: number) {
+		if (endRow && endColumn && ((startRow > endRow) || (startRow === endRow && startColumn > endColumn))) {
 			this.startRow = endRow;
 			this.startColumn = endColumn;
 			this.endRow = startRow;
@@ -58,23 +58,9 @@ export class GridRange {
 		} else {
 			this.startRow = startRow;
 			this.startColumn = startColumn;
-			this.endRow = endRow;
-			this.endColumn = endColumn;
+			this.endRow = endRow || startRow;
+			this.endColumn = endColumn || startColumn;
 		}
-	}
-
-	/**
-	 * Test if this range is empty.
-	 */
-	public isEmpty(): boolean {
-		return GridRange.isEmpty(this);
-	}
-
-	/**
-	 * Test if `range` is empty.
-	 */
-	public static isEmpty(range: IGridRange): boolean {
-		return (range.startRow === range.endRow && range.startColumn === range.endColumn);
 	}
 
 	/**
@@ -88,16 +74,10 @@ export class GridRange {
 	 * Test if `position` is in `range`. If the position is at the edges, will return true.
 	 */
 	public static containsPosition(range: IGridRange, position: IGridPosition): boolean {
-		if (position.row < range.startRow || position.row > range.endRow) {
-			return false;
-		}
-		if (position.row === range.startRow && position.column < range.startColumn) {
-			return false;
-		}
-		if (position.row === range.endRow && position.column > range.endColumn) {
-			return false;
-		}
-		return true;
+		return position.row >= range.startRow
+			&& position.row <= range.endRow
+			&& position.column >= range.startColumn
+			&& position.column <= range.endColumn;
 	}
 
 	/**
