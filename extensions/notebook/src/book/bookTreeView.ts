@@ -20,6 +20,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _tableOfContentsPath: string[];
 
+	private _allNotebooks = new Map();
+
 	constructor(private workspaceRoot: string) {
 		if (workspaceRoot !== '') {
 			this._tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
@@ -108,12 +110,30 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return books;
 	}
 
+	private getPreviousUri(sec: any[], index: number, root: string): string {
+		let i = index - 1;
+		// !TODO: check for url
+		if (i === -1) {
+			return null;
+		}
+		return path.join(root, 'content', sec[i].url.concat('.ipynb'));
+	}
+
+	private getNextUri(sec: any[], index: number, root: string): string {
+		let i = index + 1;
+		// !TODO: check for url
+		if (i === sec.length) {
+			return null;
+		}
+		return path.join(root, 'content', sec[i].url.concat('.ipynb'));
+	}
+
 	private getSections(sec: any[], root: string): BookTreeItem[] {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sec.length; i++) {
 			if (sec[i].url) {
 				if (sec[i].external) {
-					let externalLink = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', 'Open External Link'), arguments: [sec[i].url], });
+					let externalLink = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, null, null, { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', 'Open External Link'), arguments: [sec[i].url], });
 					notebooks.push(externalLink);
 				} else {
 					let pathToNotebook = path.join(root, 'content', sec[i].url.concat('.ipynb'));
@@ -123,30 +143,34 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					if (fs.existsSync(pathToNotebook)) {
 						let notebook = new BookTreeItem(sec[i].title, root, sec[i].sections || sec[i].subsections,
 							(sec[i].sections || sec[i].subsections) && sec[i].expand_sections ? vscode.TreeItemCollapsibleState.Expanded : sec[i].sections || sec[i].subsections ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
-							sec[i].url, { command: 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], });
+							sec[i].url, this.getPreviousUri(sec, i, root), this.getNextUri(sec, i, root),
+							{ command: 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], });
 						notebooks.push(notebook);
+						this._allNotebooks.set(pathToNotebook, notebook);
 					} else if (fs.existsSync(pathToMarkdown)) {
 						let markdown = new BookTreeItem(sec[i].title, root, sec[i].sections || sec[i].subsections,
 							(sec[i].sections || sec[i].subsections) && sec[i].expand_sections ? vscode.TreeItemCollapsibleState.Expanded : sec[i].sections || sec[i].subsections ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
-							sec[i].url, { command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', 'Open Markdown'), arguments: [pathToMarkdown], });
+							sec[i].url, this.getPreviousUri(sec, i, root), this.getNextUri(sec, i, root),
+							{ command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', 'Open Markdown'), arguments: [pathToMarkdown], });
 						notebooks.push(markdown);
 					} else {
 						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sec[i].title));
 					}
 				}
 			} else {
-				// TODO: search functionality (#6160)
+				// !TODO: search functionality (#6160)
 			}
 		}
 		return notebooks;
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		// TODO: search for / find the matching notebook inside all books. Consider building a map for this
+		// !TODO: prev / next not working for first and last pages
+		let notebook = this._allNotebooks.get(uri.fsPath);
 		let result: azdata.nb.NavigationResult = {
 			hasNavigation: true,
-			previous: vscode.Uri.parse('/Users/lucyzhang/Desktop/example_books/DeploySQLServer2019BDCBooks/LinuxBook/content/Azure_Settings.ipynb'),
-			next: vscode.Uri.parse('/Users/lucyzhang/Desktop/example_books/DeploySQLServer2019BDCBooks/LinuxBook/content/Create_AKS_Cluster_for_Linux.ipynb')
+			previous: vscode.Uri.file(notebook.previousUri),
+			next: vscode.Uri.file(notebook.nextUri)
 		};
 		return Promise.resolve(result);
 	}
