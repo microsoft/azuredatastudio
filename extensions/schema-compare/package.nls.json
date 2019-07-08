@@ -1,0 +1,5 @@
+{
+	"displayName": "SQL Server Schema Compare",
+	"description": "SQL Server Schema Compare for Azure Data Studio supports comparing the schemas of databases and dacpacs.",
+	"schemaCompare.start": "Schema Compare"
+}

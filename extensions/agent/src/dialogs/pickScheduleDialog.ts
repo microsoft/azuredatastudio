@@ -27,6 +27,7 @@ export class PickScheduleDialog {
 	// UI Components
 	private dialog: azdata.window.Dialog;
 	private schedulesTable: azdata.TableComponent;
+	private loadingComponent: azdata.LoadingComponent;
 
 	private model: PickScheduleData;
 
@@ -38,7 +39,17 @@ export class PickScheduleDialog {
 	}
 
 	public async showDialog() {
-		await this.model.initialize();
+		this.model.initialize().then((result) => {
+			this.loadingComponent.loading = false;
+			if (this.model.schedules) {
+				let data: any[][] = [];
+				for (let i = 0; i < this.model.schedules.length; ++i) {
+					let schedule = this.model.schedules[i];
+					data[i] = [schedule.id, schedule.name, schedule.description];
+				}
+				this.schedulesTable.data = data;
+			}
+		});
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 		this.initializeContent();
 		this.dialog.okButton.onClick(async () => await this.execute());
@@ -68,16 +79,9 @@ export class PickScheduleDialog {
 					title: this.SchedulesLabelText
 				}]).withLayout({ width: '100%' }).component();
 
-			await view.initializeModel(formModel);
-
-			if (this.model.schedules) {
-				let data: any[][] = [];
-				for (let i = 0; i < this.model.schedules.length; ++i) {
-					let schedule = this.model.schedules[i];
-					data[i] = [schedule.id, schedule.name, schedule.description];
-				}
-				this.schedulesTable.data = data;
-			}
+			this.loadingComponent = view.modelBuilder.loadingComponent().withItem(formModel).component();
+			this.loadingComponent.loading = true;
+			await view.initializeModel(this.loadingComponent);
 		});
 	}
 

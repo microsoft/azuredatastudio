@@ -226,13 +226,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			setTimeout(() => this._layoutEmitter.fire(), 250);
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('editor.wordWrap')) {
+			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
 				this._editor.setHeightToScrollHeight(true);
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
 		this._register(this.cellModel.onExecutionStateChange(event => {
-			if (event === CellExecutionState.Running) {
+			if (event === CellExecutionState.Running && !this.cellModel.stdInVisible) {
 				this.setFocusAndScroll();
 			}
 		}));

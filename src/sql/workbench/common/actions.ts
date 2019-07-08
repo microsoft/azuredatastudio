@@ -26,6 +26,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -253,8 +254,12 @@ export class BackupAction extends Task {
 		}
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
-			if (serverInfo && serverInfo.isCloud) {
+			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
 				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', 'Backup command is not supported for Azure SQL databases.'));
+			}
+
+			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', 'Backup command is not supported in Server Context. Please select a Database and try again.'));
 			}
 		}
 
@@ -296,8 +301,12 @@ export class RestoreAction extends Task {
 		}
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
-			if (serverInfo && serverInfo.isCloud) {
+			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
 				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', 'Restore command is not supported for Azure SQL databases.'));
+			}
+
+			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', 'Restore command is not supported in Server Context. Please select a Database and try again.'));
 			}
 		}
 

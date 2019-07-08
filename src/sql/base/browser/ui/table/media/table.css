@@ -97,6 +97,7 @@
 	padding: 4px;
 	white-space: nowrap;
 	width: 200px;
+	display: grid;
 }
 
 .monaco-table label {

@@ -18,14 +18,11 @@ if (context.RunTest) {
 		test('BDC instance node label test', async function () {
 			await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
-		test('Standard alone instance node label test', async function () {
+		test('Standalone instance node label test', async function () {
 			await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
 		test('Azure SQL DB instance node label test', async function () {
 			await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
-		});
-		test('Standard SQL DB context menu test', async function () {
-			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
 		test('BDC instance context menu test', async function () {
 			await (new ObjectExplorerTester()).bdcContextMenuTest();
@@ -33,8 +30,8 @@ if (context.RunTest) {
 		test('Azure SQL DB context menu test', async function () {
 			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test('Stand alone database context menu test', async function () {
-			await (new ObjectExplorerTester()).standAloneContextMenuTest();
+		test('Standalone database context menu test', async function () {
+			await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
 }
@@ -45,7 +42,7 @@ class ObjectExplorerTester {
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async bdcNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
-		let server = await getBdcServer();
+		const server = await getBdcServer();
 		await this.verifyOeNode(server, 6000, expectedNodeLabel);
 	}
 
@@ -53,7 +50,7 @@ class ObjectExplorerTester {
 	async standaloneNodeLabelTest(): Promise<void> {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
-			let server = await getStandaloneServer();
+			const server = await getStandaloneServer();
 			await this.verifyOeNode(server, 3000, expectedNodeLabel);
 		}
 	}
@@ -61,76 +58,70 @@ class ObjectExplorerTester {
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security'];
-		let server = await getAzureServer();
+		const server = await getAzureServer();
 		await this.verifyOeNode(server, 3000, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbContextMenuTest(): Promise<void> {
-		let server = await getStandaloneServer();
-		let expectedActions: string[];
-		// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
-		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
-		}
-		else {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
-		}
+		const server = await getAzureServer();
+		const expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		await this.verifyContextMenu(server, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
-	async standAloneContextMenuTest(): Promise<void> {
-		let server = await getStandaloneServer();
+	async standaloneContextMenuTest(): Promise<void> {
+		const server = await getStandaloneServer();
 		let expectedActions: string[] = [];
+		// Generate Scripts and Properties come from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
 		await this.verifyDBContextMenu(server, 3000, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async bdcContextMenuTest(): Promise<void> {
-		let server = await getBdcServer();
+		const server = await getBdcServer();
 		let expectedActions: string[];
 		// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'Disconnect', 'Delete Connection', 'Refresh', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		}
 		await this.verifyContextMenu(server, expectedActions);
 	}
 
 	async verifyContextMenu(server: TestServerProfile, expectedActions: string[]): Promise<void> {
 		await connectToServer(server, 3000);
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		const nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
-		let node = nodes[index];
-		let actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
+		const node = nodes[index];
+		const actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
 
-		let expectedString = expectedActions.join(',');
+		const expectedString = expectedActions.join(',');
 		const actualString = actions.join(',');
 		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 
 	async verifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
 		await connectToServer(server, timeout);
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		const nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-		let actualNodeLabel = [];
-		let children = await nodes[index].getChildren();
+		const actualNodeLabel = [];
+		const children = await nodes[index].getChildren();
 		assert(children.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${children.length}`);
 
 		children.forEach(c => actualNodeLabel.push(c.label));
@@ -141,27 +132,27 @@ class ObjectExplorerTester {
 
 		await connectToServer(server, timeoutinMS);
 
-		let nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		const nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
-		let index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
+		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
 
-		let ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
-		let dbName: string = 'ads_test_VerifyDBContextMenu_' + new Date().getTime().toString();
+		const ownerUri = await azdata.connection.getUriForConnection(nodes[index].connectionId);
+		const dbName: string = 'ads_test_VerifyDBContextMenu_' + new Date().getTime().toString();
 		try {
 			await createDB(dbName, ownerUri);
 
-			let serverNode = nodes[index];
-			let children = await serverNode.getChildren();
+			const serverNode = nodes[index];
+			const children = await serverNode.getChildren();
 
 			assert(children[0].label.toLocaleLowerCase === 'Databases'.toLocaleLowerCase, `Expected Databases node. Actual ${children[0].label}`);
-			let databasesFolder = children[0];
+			const databasesFolder = children[0];
 
-			let databases = await databasesFolder.getChildren();
+			const databases = await databasesFolder.getChildren();
 			assert(databases.length > 2, `No database present, can not test further`); // System Databses folder and at least one database
 
-			let actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
+			const actions = await azdata.objectexplorer.getNodeActions(databases[1].connectionId, databases[1].nodePath);
 
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');

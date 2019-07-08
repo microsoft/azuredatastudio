@@ -22,7 +22,7 @@ export default () => `
 	<div class="welcomePage">
 		<div class="title">
 			<h1 class="caption">${escape(localize('welcomePage.azdata', "Azure Data Studio"))}</h1>
-			<p class="subtitle detail">${escape(localize({ key: 'welcomePage.azdataTagline', comment: ['Shown as subtitle on the Welcome page.'] }, ""))}</p>
+			<p class="subtitle detail"></p>
 		</div>
 		<div class="row">
 			<div class="splash">

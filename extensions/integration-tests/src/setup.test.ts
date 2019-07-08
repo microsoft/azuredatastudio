@@ -25,9 +25,12 @@ assert(getConfigValue(EnvironmentVariable_BDC_SERVER) !== undefined &&
 if (!context.RunTest) {
 	suite('integration test setup', () => {
 		test('test setup', async function () {
-			//Prepare the environment and make it ready for testing
+			this.timeout(5 * 60 * 1000);
+			// Prepare the environment and make it ready for testing
 			await vscode.commands.executeCommand('test.setupIntegrationTest');
-			//Reload the window, this is required for some changes made by the 'test.setupIntegrationTest' to work
+			// Wait for the extensions to load
+			await vscode.commands.executeCommand('test.waitForExtensionsToLoad');
+			// Reload the window, this is required for some changes made by the 'test.setupIntegrationTest' to work
 			await vscode.commands.executeCommand('workbench.action.reloadWindow');
 		});
 	});

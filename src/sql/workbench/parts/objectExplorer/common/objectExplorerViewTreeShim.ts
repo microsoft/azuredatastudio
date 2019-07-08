@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Deferred } from 'sql/base/common/promise';
+import * as azdata from 'azdata';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -17,6 +17,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -27,6 +28,7 @@ export interface IOEShimService {
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
+	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo;
 }
 
 export class OEShimService extends Disposable implements IOEShimService {
@@ -34,6 +36,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private sessionMap = new Map<number, string>();
 	private nodeHandleMap = new Map<number, string>();
+	private nodeInfoMap = new Map<ITreeItem, azdata.NodeInfo>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -140,8 +143,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let handle = generateUuid();
-		let nodePath = node.nodePath;
 		let icon: string = '';
+		let nodePath = node.nodePath;
 		if (node.iconType) {
 			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
 		} else {
@@ -154,6 +157,31 @@ export class OEShimService extends Disposable implements IOEShimService {
 			}
 		}
 		icon = icon.toLowerCase();
+		// Change the database if the node has a different database
+		// than its parent
+		let databaseChanged = false;
+		let updatedPayload: azdata.IConnectionProfile | any = {};
+		if (node.nodeTypeId === NodeType.Database) {
+			const database = node.getDatabaseName();
+			if (database) {
+				databaseChanged = true;
+				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
+				updatedPayload.databaseName = node.getDatabaseName();
+			}
+		}
+		const nodeInfo: azdata.NodeInfo = {
+			nodePath: nodePath,
+			nodeType: node.nodeTypeId,
+			nodeSubType: node.nodeSubType,
+			nodeStatus: node.nodeStatus,
+			label: node.label,
+			isLeaf: node.isAlwaysLeaf,
+			metadata: node.metadata,
+			errorMessage: node.errorStateMessage,
+			iconType: icon,
+			childProvider: node.childProvider || parentNode.childProvider,
+			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload)
+		};
 		let newTreeItem: ITreeItem = {
 			parentHandle: node.parent.id,
 			handle,
@@ -163,11 +191,12 @@ export class OEShimService extends Disposable implements IOEShimService {
 			},
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
-			payload: node.payload || parentNode.payload,
+			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
 			sqlIcon: icon
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
+		this.nodeInfoMap.set(newTreeItem, nodeInfo);
 		return newTreeItem;
 	}
 
@@ -177,6 +206,13 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public isNodeConnected(viewId: string, node: ITreeItem): boolean {
 		return this.sessionMap.has(generateSessionMapKey(viewId, node));
+	}
+
+	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo {
+		if (this.nodeInfoMap.has(treeItem)) {
+			return this.nodeInfoMap.get(treeItem);
+		}
+		return undefined;
 	}
 }
 

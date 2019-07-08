@@ -1,0 +1,537 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/summaryPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.summaryPageTitle">
+        <source xml:lang="en">Summary</source>
+        <target state="translated">摘要</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterTypeText">
+        <source xml:lang="en">Cluster type</source>
+        <target state="translated">群集类型</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterContextText">
+        <source xml:lang="en">Cluster context</source>
+        <target state="translated">群集上下文</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterNameText">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">群集名称</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterAdminUsernameText">
+        <source xml:lang="en">Cluster Admin username</source>
+        <target state="translated">群集管理员用户名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AcceptEulaText">
+        <source xml:lang="en">Accept license agreement</source>
+        <target state="translated">接受许可协议</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DeploymentProfileText">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">部署配置文件</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SqlServerMasterScaleText">
+        <source xml:lang="en">SQL Server master scale</source>
+        <target state="translated">SQL Server 主服务器规模</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolScaleText">
+        <source xml:lang="en">Compute pool scale</source>
+        <target state="translated">计算池规模</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolScaleText">
+        <source xml:lang="en">Data pool scale</source>
+        <target state="translated">数据池规模</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolScaleText">
+        <source xml:lang="en">Storage pool scale</source>
+        <target state="translated">存储池规模</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolScaleText">
+        <source xml:lang="en">Spark pool scale</source>
+        <target state="translated">Spark 池规模</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterGroupTitle">
+        <source xml:lang="en">TARGET CLUSTER</source>
+        <target state="translated">目标集群</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.BigDataClusterGroupTitle">
+        <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
+        <target state="translated">SQL SERVER 大数据群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.YesText">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/settingsPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.RestoreDefaultValuesText">
+        <source xml:lang="en">Restore Default Values</source>
+        <target state="translated">恢复默认值</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.settingsPageTitle">
+        <source xml:lang="en">Settings</source>
+        <target state="translated">设置</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.settingsPageDescription">
+        <source xml:lang="en">Configure the settings required for deploying SQL Server big data cluster</source>
+        <target state="translated">配置部署 SQL Server 大数据群集所需的设置</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EulaNotAccepted">
+        <source xml:lang="en">You need to accept the terms of services and privacy policy in order to proceed</source>
+        <target state="translated">你需要接受服务条款和隐私政策才能继续</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterName">
+        <source xml:lang="en">Cluster name</source>
+        <target state="translated">群集名称</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AdminUsernameText">
+        <source xml:lang="en">Admin username</source>
+        <target state="translated">管理员用户名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AdminUserPasswordText">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLPortText">
+        <source xml:lang="en">SQL Server master</source>
+        <target state="translated">SQL Server 主服务器</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.KnoxPortText">
+        <source xml:lang="en">Knox</source>
+        <target state="translated">Knox</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ControllerPortText">
+        <source xml:lang="en">Controller</source>
+        <target state="translated">控制器</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ProxyPortText">
+        <source xml:lang="en">Proxy</source>
+        <target state="translated">代理</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.GrafanaPortText">
+        <source xml:lang="en">Grafana dashboard</source>
+        <target state="translated">Grafana 仪表板</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.KibanaPortText">
+        <source xml:lang="en">Kibana dashboard</source>
+        <target state="translated">Kibana 仪表板</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryUserNamePasswordHintText">
+        <source xml:lang="en">only required for private registries</source>
+        <target state="translated">仅限专用注册表</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryText">
+        <source xml:lang="en">Registry</source>
+        <target state="translated">注册表</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RepositoryText">
+        <source xml:lang="en">Repository</source>
+        <target state="translated">存储库</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ImageTagText">
+        <source xml:lang="en">Image tag</source>
+        <target state="translated">图像标签</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryUserNameText">
+        <source xml:lang="en">Username</source>
+        <target state="translated">用户名</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RegistryPasswordText">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密码</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.BasicSettingsText">
+        <source xml:lang="en">Basic Settings</source>
+        <target state="translated">基本设置</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ContainerRegistrySettings">
+        <source xml:lang="en">Container Registry Settings</source>
+        <target state="translated">容器注册表设置</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PortSettings">
+        <source xml:lang="en">Port Settings (Optional)</source>
+        <target state="translated">端口设置(可选)</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.LicenseTerms">
+        <source xml:lang="en">license terms</source>
+        <target state="translated">许可条款</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PrivacyPolicyText">
+        <source xml:lang="en">privacy policy</source>
+        <target state="translated">隐私策略</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AcceptTermsText">
+        <source xml:lang="en">I accept the {0} and {1}.</source>
+        <target state="translated">我接受{0}和{1}。</target>
+        <note>{0} is the place holder for license terms, {1} is the place holder for privacy policy</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectTargetClusterTypePage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.InstallToolsText">
+        <source xml:lang="en">Install Tools</source>
+        <target state="translated">安装工具</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstallingButtonText">
+        <source xml:lang="en">Installing...</source>
+        <target state="translated">正在安装...</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterTypePageTitle">
+        <source xml:lang="en">What is your target cluster environment?</source>
+        <target state="translated">你的目标集群环境是什么?</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterTypePageDescription">
+        <source xml:lang="en">Choose the target environment and then install the required tools for it.</source>
+        <target state="translated">选择目标环境，然后为其安装所需的工具。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RefreshToolsButtonText">
+        <source xml:lang="en">Refresh Status</source>
+        <target state="translated">刷新状态</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolNameColumnHeader">
+        <source xml:lang="en">Tool</source>
+        <target state="translated">工具</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolDescriptionColumnHeader">
+        <source xml:lang="en">Description</source>
+        <target state="translated">说明</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolVersionColumnHeader">
+        <source xml:lang="en">Version</source>
+        <target state="translated">版本</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.toolStatusColumnHeader">
+        <source xml:lang="en">Status</source>
+        <target state="translated">状态</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.PickTargetEnvironmentText">
+        <source xml:lang="en">Pick target environment</source>
+        <target state="translated">选择目标环境</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ToolsRefreshingText">
+        <source xml:lang="en">Please wait while the required tools status is being refreshed.</source>
+        <target state="translated">正在刷新所需工具的状态，请稍候。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterTypeNotSelectedText">
+        <source xml:lang="en">Please select a target cluster type.</source>
+        <target state="translated">请选择目标群集类型。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.MissingToolsText">
+        <source xml:lang="en">Please install the required tools.</source>
+        <target state="translated">请安装所需的工具。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComingSoonText">
+        <source xml:lang="en">(Coming Soon)</source>
+        <target state="translated">(即将推出)</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.RequiredToolsText">
+        <source xml:lang="en">Required tools</source>
+        <target state="translated">所需工具</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstalledText">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">已安装</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.NotInstalledText">
+        <source xml:lang="en">Not Installed</source>
+        <target state="translated">未安装</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.InstallingText">
+        <source xml:lang="en">Installing...</source>
+        <target state="translated">正在安装...</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.FailedToInstallText">
+        <source xml:lang="en">Install Failed</source>
+        <target state="translated">安装失败</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/selectExistingClusterPage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.selectTargetClusterPageTitle">
+        <source xml:lang="en">Where do you want to deploy this SQL Server big data cluster?</source>
+        <target state="translated">要在何处部署此 SQL Server 大数据群集?</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.selectTargetClusterPageDescription">
+        <source xml:lang="en">Select the kubeconfig file and then select a cluster context from the list</source>
+        <target state="translated">选择 kubeconfig 文件，然后从列表中选择群集上下文</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ClusterContextNotSelectedMessage">
+        <source xml:lang="en">Please select a cluster context.</source>
+        <target state="translated">请选择群集上下文。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.kubeConfigFileLabelText">
+        <source xml:lang="en">Kube config file path</source>
+        <target state="translated">Kube 配置文件路径</target>
+      </trans-unit>
+      <trans-unit id="bdc-browseText">
+        <source xml:lang="en">Browse</source>
+        <target state="translated">浏览</target>
+      </trans-unit>
+      <trans-unit id="bdc-clusterContextsLabelText">
+        <source xml:lang="en">Cluster Contexts</source>
+        <target state="translated">群集上下文</target>
+      </trans-unit>
+      <trans-unit id="bdc-errorLoadingClustersText">
+        <source xml:lang="en">No cluster information is found in the config file or an error ocurred while loading the config file</source>
+        <target state="translated">配置文件中找不到群集信息，或者加载配置文件时出错</target>
+      </trans-unit>
+      <trans-unit id="bdc-selectKubeConfigFileText">
+        <source xml:lang="en">Select</source>
+        <target state="translated">选择</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/pages/clusterProfilePage" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.clusterProfilePageTitle">
+        <source xml:lang="en">Select a cluster profile</source>
+        <target state="translated">选择群集配置文件</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.clusterProfilePageDescription">
+        <source xml:lang="en">Select your requirement and we will provide you a pre-defined default scaling. You can later go to cluster configuration and customize it.</source>
+        <target state="translated">请选择你的要求，我们将为你提供预定义的默认缩放。你稍后可转到群集配置进行自定义。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TargetClusterOverview">
+        <source xml:lang="en">Target cluster scale overview</source>
+        <target state="translated">目标群集规模概述</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.clusterProfileLabel">
+        <source xml:lang="en">Deployment profile</source>
+        <target state="translated">部署配置文件</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareProfileText">
+        <source xml:lang="en">Hardware profile</source>
+        <target state="translated">硬件配置文件</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareLabelColumnName">
+        <source xml:lang="en">Label</source>
+        <target state="translated">标签</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalNodesColumnName">
+        <source xml:lang="en">Nodes</source>
+        <target state="translated">节点</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalCoresColumnName">
+        <source xml:lang="en">Cores</source>
+        <target state="translated">核心</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalMemoryColumnName">
+        <source xml:lang="en">Memory</source>
+        <target state="translated">内存</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.TotalDisksColumnName">
+        <source xml:lang="en">Disks</source>
+        <target state="translated">磁盘</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ScaleLabel">
+        <source xml:lang="en">Scale</source>
+        <target state="translated">缩放</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.HardwareProfileLabel">
+        <source xml:lang="en">Hardware profile label</source>
+        <target state="translated">硬件配置文件标签</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.FeatureSetLabel">
+        <source xml:lang="en">Feature set</source>
+        <target state="translated">功能集</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EngineOnlyText">
+        <source xml:lang="en">Engine only</source>
+        <target state="translated">仅限引擎</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.EngineWithFeaturesText">
+        <source xml:lang="en">Engine with optional features</source>
+        <target state="translated">具有可选特性的引擎</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLServerMasterDisplayName">
+        <source xml:lang="en">SQL Server master</source>
+        <target state="translated">SQL Server 主服务器</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolDisplayName">
+        <source xml:lang="en">Compute pool</source>
+        <target state="translated">计算池</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolDisplayName">
+        <source xml:lang="en">Data pool</source>
+        <target state="translated">数据池</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolDisplayName">
+        <source xml:lang="en">Storage pool</source>
+        <target state="translated">存储池</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolDisplayName">
+        <source xml:lang="en">Spark pool</source>
+        <target state="translated">Spark 池</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SQLServerMasterDescription">
+        <source xml:lang="en">The SQL Server instance provides an externally accessible TDS endpoint for the cluster</source>
+        <target state="translated">SQL Server 实例为群集提供了一个外部可访问的 TDS 终结点</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ComputePoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 添加说明</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.DataPoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 添加说明</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.StoragePoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 添加说明</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.SparkPoolDescription">
+        <source xml:lang="en">TODO: Add description</source>
+        <target state="translated">TODO: 添加说明</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.poolLabelTemplate">
+        <source xml:lang="en">{0} ({1})</source>
+        <target state="translated">{0} ({1})</target>
+        <note>{0} is the pool name, {1} is the scale number</note>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterWizard" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.wizardTitle">
+        <source xml:lang="en">Create a big data cluster</source>
+        <target state="translated">创建大数据群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.generateScriptsButtonText">
+        <source xml:lang="en">Generate Scripts</source>
+        <target state="translated">生成脚本</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.createClusterButtonText">
+        <source xml:lang="en">Create</source>
+        <target state="translated">创建</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/wizards/create-cluster/createClusterModel" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bdc-create.AKSClusterCardText">
+        <source xml:lang="en">New AKS Cluster</source>
+        <target state="translated">新的 AKS 集群</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AKSClusterFullName">
+        <source xml:lang="en">New Azure Kubernetes Service cluster</source>
+        <target state="translated">新的 Azure Kubernetes 服务群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.AKSClusterDescription">
+        <source xml:lang="en">This option configures new Azure Kubernetes Service (AKS) for SQL Server big data cluster deployments. AKS makes it simple to create, configure and manage a cluster of virutal machines that are preconfigured with a Kubernetes cluster to run containerized applications.</source>
+        <target state="translated">此选项为 SQL Server 大数据群集部署配置新的 Azure Kubernetes 服务(AKS)。借助 AKS，可轻松创建、配置和管理一组虚拟机，它们预配置有 Kubernetes 群集来运行容器化的应用程序。</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterCardText">
+        <source xml:lang="en">Existing Cluster</source>
+        <target state="translated">现有群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterFullName">
+        <source xml:lang="en">Existing Kubernetes cluster</source>
+        <target state="translated">现有的 Kubernetes 群集</target>
+      </trans-unit>
+      <trans-unit id="bdc-create.ExistingClusterDescription">
+        <source xml:lang="en">This option assumes you already have a Kubernetes cluster installed, Once a prerequisite check is done, ensure the correct cluster context is selected.</source>
+        <target state="translated">此选项假定你已安装 Kubernetes 群集。完成先决条件检查后，请确保选择了正确的群集上下文。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/sqlServerBigDataClusterChannel" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="bigDataClusterOutputChannel">
+        <source xml:lang="en">SQL Server big data cluster</source>
+        <target state="translated">SQL SERVER 大数据群集</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/kubectlUtils" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="runKubectlFailed">
+        <source xml:lang="en">Unable to run kubectl</source>
+        <target state="translated">无法运行 kubectl</target>
+      </trans-unit>
+      <trans-unit id="setClusterFailed">
+        <source xml:lang="en">Failed to set '{0}' as current cluster: {1}</source>
+        <target state="translated">未能将“{0}”设置为当前群集: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/kubectl" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="binaryNotFound">
+        <source xml:lang="en">Could not find {0} binary. {1}</source>
+        <target state="translated">找不到 {0} 二进制文件。{1}</target>
+      </trans-unit>
+      <trans-unit id="binaryNotInstalled">
+        <source xml:lang="en">{0} is not installed. {1}</source>
+        <target state="translated">未安装 {0}。{1}</target>
+      </trans-unit>
+      <trans-unit id="kubernetesRequired">
+        <source xml:lang="en"> SQL Server Big data cluster requires kubernetes.</source>
+        <target state="translated">SQL Server 大数据群集需使用 kubernetes。</target>
+      </trans-unit>
+      <trans-unit id="cannotExecuteCmd">
+        <source xml:lang="en"> Cannot execute command.</source>
+        <target state="translated">无法执行命令。</target>
+      </trans-unit>
+      <trans-unit id="kubectlVersionIncompatible">
+        <source xml:lang="en">kubectl version ${0} may be incompatible with cluster Kubernetes version {1}</source>
+        <target state="translated">kubectl 版本 ${0} 可能与群集 Kubectl 版本 {1} 不兼容</target>
+      </trans-unit>
+      <trans-unit id="cannotRunCommand">
+        <source xml:lang="en">Unable to run command ({0})</source>
+        <target state="translated">无法运行命令({0})</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/kubectl/binutil" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="installDependenciesAction">
+        <source xml:lang="en">Install dependencies</source>
+        <target state="translated">安装依赖项</target>
+      </trans-unit>
+      <trans-unit id="learnMoreAction">
+        <source xml:lang="en">Learn more</source>
+        <target state="translated">了解详细信息</target>
+      </trans-unit>
+      <trans-unit id="moreInfoMsg">
+        <source xml:lang="en">Add {0} directory to path, or set "mssql-bdc.{0}-path" config to {0} binary.</source>
+        <target state="translated">将 {0} 目录添加到路径，或者将 "mssql-bdc.{0}-path" 配置设为 {0} 二进制文件。</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/installer/installer" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="downloadKubectlFailed">
+        <source xml:lang="en">Failed to download kubectl: {0}</source>
+        <target state="translated">未能下载 kubectl: {0}</target>
+      </trans-unit>
+      <trans-unit id="kubectlVersionCheckFailed">
+        <source xml:lang="en">Failed to establish kubectl stable version: {0}</source>
+        <target state="translated">未能创建 kubectl 稳定版本: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/main" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="done">
+        <source xml:lang="en">Done</source>
+        <target state="translated">已完成</target>
+      </trans-unit>
+      <trans-unit id="dependencyInstalled">
+        <source xml:lang="en">{0} already installed...</source>
+        <target state="translated">{0} 已安装...</target>
+      </trans-unit>
+      <trans-unit id="installingDependency">
+        <source xml:lang="en">Installing {0}...</source>
+        <target state="translated">正在安装 {0}...</target>
+      </trans-unit>
+      <trans-unit id="installingDependencyFailed">
+        <source xml:lang="en">Unable to install {0}: {1}</source>
+        <target state="translated">无法安装 {0}: {1}</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

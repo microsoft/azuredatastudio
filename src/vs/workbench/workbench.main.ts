@@ -231,6 +231,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
+import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -271,6 +273,7 @@ registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
 registerSingleton(IDacFxService, DacFxService);
 registerSingleton(ISchemaCompareService, SchemaCompareService);
+registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 // {{SQL CARBON EDIT}} - End
 
 //#region --- workbench parts
@@ -452,8 +455,17 @@ import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contributi
 import 'sql/platform/telemetry/telemetry.contribution';
 import 'sql/workbench/api/node/sqlExtHost.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
+
+// query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';
+
+// edit data editor
+import 'sql/workbench/parts/editData/browser/editData.contribution';
+
+// query plan editor
+import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
+
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';

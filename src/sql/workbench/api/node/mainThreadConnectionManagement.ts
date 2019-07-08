@@ -18,6 +18,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { deepClone } from 'vs/base/common/objects';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -41,6 +42,10 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 
 	public dispose(): void {
 		this._toDispose = dispose(this._toDispose);
+	}
+
+	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile)));
 	}
 
 	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
@@ -70,6 +75,9 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
+		if (connectionProfile) {
+			connectionProfile.options.savePassword = connectionProfile.savePassword;
+		}
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
@@ -113,6 +121,30 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: profile.options
+		};
+		return connection;
+	}
+
+	private convertToConnectionProfile(profile: IConnectionProfile): azdata.connection.ConnectionProfile {
+		if (!profile) {
+			return undefined;
+		}
+
+		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			options: deepClone(profile.options),
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			saveProfile: profile.saveProfile
 		};
 		return connection;
 	}

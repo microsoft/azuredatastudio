@@ -46,7 +46,7 @@ export abstract class BasePage {
 	public abstract setupNavigationValidator();
 
 	protected async getServerValues(): Promise<{ connection, displayName, name }[]> {
-		let cons = await azdata.connection.getActiveConnections();
+		let cons = await azdata.connection.getConnections(/* activeConnectionsOnly */ true);
 		// This user has no active connections ABORT MISSION
 		if (!cons || cons.length === 0) {
 			return undefined;
@@ -67,19 +67,14 @@ export abstract class BasePage {
 				}
 			}
 
-			let db = c.options.databaseDisplayName;
 			let usr = c.options.user;
 			let srv = c.options.server;
-
-			if (!db) {
-				db = localize('basePage.defaultDb', '<default>');
-			}
 
 			if (!usr) {
 				usr = localize('basePage.defaultUser', 'default');
 			}
 
-			let finalName = `${srv}, ${db} (${usr})`;
+			let finalName = `${srv} (${usr})`;
 			return {
 				connection: c,
 				displayName: finalName,

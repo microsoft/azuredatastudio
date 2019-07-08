@@ -8,5 +8,6 @@
 	],
 	"seachObjects": "按類型名稱搜索 (a:, t:, v:, f: 或 sp:)",
 	"searchDatabases": "搜尋資料庫",
+	"dashboard.explorer.objectError": "無法載入物件",
 	"dashboard.explorer.databaseError": "無法載入資料庫"
 }

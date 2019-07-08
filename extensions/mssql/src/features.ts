@@ -146,8 +146,11 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messageTypes: RPCMessageType[] = [
 		contracts.SchemaCompareRequest.type,
 		contracts.SchemaCompareGenerateScriptRequest.type,
+		contracts.SchemaComparePublishChangesRequest.type,
 		contracts.SchemaCompareGetDefaultOptionsRequest.type,
-		contracts.SchemaCompareIncludeExcludeNodeRequest.type
+		contracts.SchemaCompareIncludeExcludeNodeRequest.type,
+		contracts.SchemaCompareOpenScmpRequest.type,
+		contracts.SchemaCompareSaveScmpRequest.type
 	];
 
 	constructor(client: SqlOpsDataClient) {
@@ -167,8 +170,8 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 	protected registerProvider(options: undefined): Disposable {
 		const client = this._client;
 
-		let schemaCompare = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
-			let params: contracts.SchemaCompareParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
+		let schemaCompare = (operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
+			let params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
 			return client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
 				r => {
 					return r;
@@ -219,7 +222,7 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
+		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
 			let params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
 			return client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
 				r => {
@@ -232,13 +235,55 @@ export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let schemaCompareOpenScmp = (filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> => {
+			let params: contracts.SchemaCompareOpenScmpParams = { filePath: filePath };
+			return client.sendRequest(contracts.SchemaCompareOpenScmpRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareOpenScmpRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let schemaCompareSaveScmp = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> => {
+			let params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
+			return client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareSaveScmpRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let schemaCompareCancel = (operationId: string): Thenable<azdata.ResultStatus> => {
+			let params: contracts.SchemaCompareCancelParams = { operationId: operationId };
+			return client.sendRequest(contracts.SchemaCompareCancellationRequest.type, params).then(
+				r => {
+					return r;
+				},
+				e => {
+					client.logFailedRequest(contracts.SchemaCompareCancellationRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
 		return azdata.dataprotocol.registerSchemaCompareServicesProvider({
 			providerId: client.providerId,
 			schemaCompare,
 			schemaCompareGenerateScript,
 			schemaComparePublishChanges,
 			schemaCompareGetDefaultOptions,
-			schemaCompareIncludeExcludeNode
+			schemaCompareIncludeExcludeNode,
+			schemaCompareOpenScmp,
+			schemaCompareSaveScmp,
+			schemaCompareCancel
 		});
 	}
 }

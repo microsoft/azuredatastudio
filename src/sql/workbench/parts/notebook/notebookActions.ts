@@ -15,7 +15,7 @@ import { INotebookModel } from 'sql/workbench/parts/notebook/models/modelInterfa
 import { CellType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/notebook.component';
 import { getErrorMessage, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/parts/notebook/notebookUtils';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { noKernel } from 'sql/workbench/services/notebook/common/sessionManager';
@@ -252,26 +252,26 @@ export class TrustedAction extends ToggleableAction {
 // Action to run all code cells in a notebook.
 export class RunAllCellsAction extends Action {
 	constructor(
-		id: string, label: string, cssClass: string
+		id: string, label: string, cssClass: string,
+		@INotificationService private notificationService: INotificationService
 	) {
 		super(id, label, cssClass);
 	}
-	public run(context: NotebookComponent): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			try {
-				context.runAllCells();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+	public async run(context: NotebookComponent): Promise<boolean> {
+		try {
+			await context.runAllCells();
+			return true;
+		} catch (e) {
+			this.notificationService.error(getErrorMessage(e));
+			return false;
+		}
 	}
 }
 
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
-		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
+		super([msgLoading], msgLoading, contextViewProvider, container, { labelText: kernelLabel, labelOnTop: false, ariaLabel: kernelLabel } as ISelectBoxOptionsWithLabel);
 
 		if (modelReady) {
 			modelReady
@@ -327,7 +327,7 @@ export class AttachToDropdown extends SelectBox {
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@ILogService private readonly logService: ILogService
 	) {
-		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false } as ISelectBoxOptionsWithLabel);
+		super([msgLoadingContexts], msgLoadingContexts, contextViewProvider, container, { labelText: attachToLabel, labelOnTop: false, ariaLabel: attachToLabel } as ISelectBoxOptionsWithLabel);
 		if (modelReady) {
 			modelReady
 				.then(model => {
@@ -494,7 +494,7 @@ export class AttachToDropdown extends SelectBox {
 		try {
 			let connection = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
 				{
-					connectionType: 1,
+					connectionType: ConnectionType.temporary,
 					providers: this.model.getApplicableConnectionProviderIds(this.model.clientSession.kernel.name)
 				},
 				useProfile ? this.model.connectionProfile : undefined);
@@ -558,7 +558,6 @@ export class NewNotebookAction extends Action {
 
 	run(context?: azdata.ConnectedContext): Promise<void> {
 		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, context);
-
 	}
 
 }

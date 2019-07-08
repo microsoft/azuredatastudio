@@ -1262,6 +1262,20 @@ class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
 		this.setProperty('iconPath', v);
 	}
 
+	public get iconHeight(): string | number {
+		return this.properties['iconHeight'];
+	}
+	public set iconHeight(v: string | number) {
+		this.setProperty('iconHeight', v);
+	}
+
+	public get iconWidth(): string | number {
+		return this.properties['iconWidth'];
+	}
+	public set iconWidth(v: string | number) {
+		this.setProperty('iconWidth', v);
+	}
+
 	public get title(): string {
 		return this.properties['title'];
 	}

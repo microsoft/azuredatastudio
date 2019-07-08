@@ -60,7 +60,6 @@ export class OEAction extends ExecuteCommandAction {
 	public async run(actionContext: any): Promise<boolean> {
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 
-
 		let profile: IConnectionProfile;
 		if (actionContext instanceof ObjectExplorerActionsContext) {
 			if (actionContext.isConnectionNode) {
@@ -240,7 +239,7 @@ export class OEScriptCreateAction extends ScriptCreateAction {
 		@IScriptingService protected _scriptingService: IScriptingService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
+		@IErrorMessageService protected _errorMessageService: IErrorMessageService,
 	) {
 		super(id, label, _queryEditorService, _connectionManagementService, _scriptingService, _errorMessageService);
 	}
