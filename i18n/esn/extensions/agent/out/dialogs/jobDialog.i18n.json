@@ -8,7 +8,7 @@
 	],
 	"jobDialog.general": "General",
 	"jobDialog.steps": "Pasos",
-	"jobDialog.schedules": "Horarios",
+	"jobDialog.schedules": "Programaciones",
 	"jobDialog.alerts": "Alertas",
 	"jobDialog.notifications": "Notificaciones",
 	"jobDialog.blankJobNameError": "El nombre del trabajo no puede estar en vacío.",
