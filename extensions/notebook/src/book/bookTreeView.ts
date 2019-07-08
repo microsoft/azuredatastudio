@@ -112,7 +112,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private getPreviousUri(sec: any[], index: number, root: string): string {
 		let i = index - 1;
-		// !TODO: check for url
+		// TODO: check for url
 		if (i === -1) {
 			return null;
 		}
@@ -121,7 +121,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	private getNextUri(sec: any[], index: number, root: string): string {
 		let i = index + 1;
-		// !TODO: check for url
+		// TODO: check for url
 		if (i === sec.length) {
 			return null;
 		}
@@ -158,19 +158,18 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 				}
 			} else {
-				// !TODO: search functionality (#6160)
+				// TODO: search functionality (#6160)
 			}
 		}
 		return notebooks;
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		// !TODO: prev / next not working for first and last pages
 		let notebook = this._allNotebooks.get(uri.fsPath);
 		let result: azdata.nb.NavigationResult = {
 			hasNavigation: true,
-			previous: vscode.Uri.file(notebook.previousUri),
-			next: vscode.Uri.file(notebook.nextUri)
+			previous: notebook.previousUri ? vscode.Uri.file(notebook.previousUri) : null,
+			next: notebook.nextUri ? vscode.Uri.file(notebook.nextUri) : null
 		};
 		return Promise.resolve(result);
 	}
