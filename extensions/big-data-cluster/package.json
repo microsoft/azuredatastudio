@@ -1,0 +1,94 @@
+{
+  "name": "big-data-cluster",
+  "displayName": "SQL Server big data cluster",
+  "description": "SQL Server big data cluster",
+  "version": "0.0.1",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "engines": {
+    "vscode": "*",
+    "azdata": "^1.4.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "configuration": {
+      "type": "object",
+      "title": "Kubernetes configuration",
+      "properties": {
+        "mssql-bdc": {
+          "type": "object",
+          "description": "Kubernetes configuration",
+          "properties": {
+            "mssql-bdc.kubectl-path": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "mssql-bdc.kubectl-path.windows": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "mssql-bdc.kubectl-path.mac": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "mssql-bdc.kubectl-path.linux": {
+              "type": "string",
+              "description": "File path to a kubectl binary."
+            },
+            "mssql-bdc.kubeconfig": {
+              "type": "string",
+              "description": "File path to the kubeconfig file."
+            },
+            "mssql-bdc.knownKubeconfigs": {
+              "type": "array",
+              "description": "File paths to kubeconfig files from which you can select."
+            },
+            "mssql-bdc.outputFormat": {
+              "enum": [
+                "json",
+                "yaml"
+              ],
+              "type": "string",
+              "description": "Output format for Kubernetes specs. One of 'json' or 'yaml' (default)."
+            }
+          },
+          "default": {
+            "mssql-bdc.namespace": "",
+            "mssql-bdc.kubectl-path": "",
+            "mssql-bdc.kubeconfig": "",
+            "mssql-bdc.knownKubeconfigs": []
+          }
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "mssql.cluster.create",
+        "title": "Create SQL Server big data cluster",
+        "category": "SQL Server"
+      }
+    ]
+  },
+  "dependencies": {
+    "vscode-nls": "^3.2.1",
+    "download": "^6.2.5",
+    "shelljs": "^0.8.3"
+  },
+  "devDependencies": {
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7"
+  }
+}

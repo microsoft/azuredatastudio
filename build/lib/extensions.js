@@ -263,6 +263,7 @@ const sqlBuiltInExtensions = [
     'import',
     'profiler',
     'admin-pack',
+    'big-data-cluster',
     'dacpac',
     'schema-compare',
     'cms'
