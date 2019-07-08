@@ -20,7 +20,7 @@
 	"createOperator.PagerThursdayCheckBox": "星期四",
 	"createOperator.PagerFridayCheckBox": "星期五",
 	"createOperator.PagerSaturdayCheckBox": "星期六",
-	"createOperator.PagerSundayCheckBox": "星期日",
+	"createOperator.PagerSundayCheckBox": "星期天",
 	"createOperator.workdayBegin": "工作日開始",
 	"createOperator.workdayEnd": "工作日結束",
 	"createOperator.PagerDutySchedule": "呼叫器待命排程",

@@ -502,14 +502,6 @@
       <source xml:lang="en">Process exited with code {0}</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/mssql/out/prompts/confirm" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="msgYes">
-      <source xml:lang="en">Yes</source>
-    </trans-unit>
-    <trans-unit id="msgNo">
-      <source xml:lang="en">No</source>
-    </trans-unit>
-  </body></file>
   <file original="extensions/mssql/out/objectExplorerNodeProvider/webhdfs" source-language="en" datatype="plaintext"><body>
     <trans-unit id="webhdfs.invalidDataStructure">
       <source xml:lang="en">Invalid Data Structure</source>
@@ -664,6 +656,14 @@
       <source xml:lang="en">Stream operation canceled by the user</source>
     </trans-unit>
   </body></file>
+  <file original="extensions/mssql/out/prompts/confirm" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="msgYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="msgNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+  </body></file>
   <file original="extensions/mssql/out/main" source-language="en" datatype="plaintext"><body>
     <trans-unit id="msgSampleCodeDataFrame">
       <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
@@ -706,6 +706,27 @@
     </trans-unit>
     <trans-unit id="fileNotFound">
       <source xml:lang="en">Unable to find the file specified</source>
+    </trans-unit>
+    <trans-unit id="installingServiceChannelMsg">
+      <source xml:lang="en">Installing {0} service to {1}</source>
+    </trans-unit>
+    <trans-unit id="installingServiceStatusMsg">
+      <source xml:lang="en">Installing Service</source>
+    </trans-unit>
+    <trans-unit id="installedServiceChannelMsg">
+      <source xml:lang="en">Installed</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceChannelMsg">
+      <source xml:lang="en">Downloading {0}</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceSizeChannelMsg">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
+    <trans-unit id="downloadingServiceStatusMsg">
+      <source xml:lang="en">Downloading Service</source>
+    </trans-unit>
+    <trans-unit id="downloadServiceDoneChannelMsg">
+      <source xml:lang="en">Done!</source>
     </trans-unit>
   </body></file>
   <file original="extensions/mssql/out/localizedConstants" source-language="en" datatype="plaintext"><body>
