@@ -74,8 +74,8 @@ Agradecimentos especiais para a comunidade de contribuidores por tornar isso pos
 **Aproveite!**
 
 
-# Portuguese (Brazil) Language Pack for VS Code
-Portuguese (Brazil) Language Pack provides localized UI experience for VS Code.
+# Portuguese (Brazil) Language Pack for Azure Data Studio
+Portuguese (Brazil) Language Pack provides localized UI experience for Azure Data Studio.
 
 ## Usage
 
@@ -83,7 +83,7 @@ Once installed, set `"locale": "pt-br"` in `locale.json` to load Portuguese (Bra
 
 ## Contributing
 
-The translation strings are maintained in "DevTools - VS Code" project in Microsoft Localization Community Platform (MLCP).
+The translation strings are maintained in "DevTools - Azure Data Studio" project in Microsoft Localization Community Platform (MLCP).
 
 If you'd like to participate in the translation, see [community localization page](https://aka.ms/vscodeloc) for more information.
 

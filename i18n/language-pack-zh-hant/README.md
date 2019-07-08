@@ -47,9 +47,9 @@
 
 **請享用！**
 
-#  Chinese (Traditional) Language Pack for VS Code
+#  Chinese (Traditional) Language Pack for Azure Data Studio
 
-Chinese (Traditional) Language Pack provides localized UI experience for VS Code.
+Chinese (Traditional) Language Pack provides localized UI experience for Azure Data Studio.
 
 ## Usage
 
@@ -57,7 +57,7 @@ Once installed, set `"locale": "zh-tw"` in `locale.json` to load Chinese (Tradit
 
 ## Contributing
 
-The translation strings are maintained in "DevTools - VS Code" project in Microsoft Localization Community Platform (MLCP).
+The translation strings are maintained in "DevTools - Azure Data Studio" project in Microsoft Localization Community Platform (MLCP).
 
 If you'd like to participate in the effort either to contribue translation or improve translation, see [community localization page](https://aka.ms/vscodeloc) for more information.
 

@@ -28,7 +28,7 @@
 	"bdc-create.SparkPoolDisplayName": "Grupo de Spark",
 	"bdc-create.SQLServerMasterDescription": "La instancia de SQL Server proporciona un punto de conexión TDS accesible desde el exterior para el clúster",
 	"bdc-create.ComputePoolDescription": "TODO: Agregar descripción",
-	"bdc-create.DataPoolDescription": "TODO: Agregar Descripción",
+	"bdc-create.DataPoolDescription": "TODO: Agregar descripción",
 	"bdc-create.StoragePoolDescription": "TODO: Agregar descripción",
 	"bdc-create.SparkPoolDescription": "TODO: Agregar descripción",
 	"bdc-create.poolLabelTemplate": "{0} ({1})"
