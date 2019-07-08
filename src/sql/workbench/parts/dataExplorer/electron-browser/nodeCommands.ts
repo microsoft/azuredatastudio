@@ -15,8 +15,8 @@ import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/c
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
 import { IProgressService2 } from 'vs/platform/progress/common/progress';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/electron-browser/notebookActions';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 export const MANAGE_COMMAND_ID = 'dataExplorer.manage';

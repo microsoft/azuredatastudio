@@ -51,6 +51,7 @@ import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/br
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -249,7 +250,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 						}
 					}
 				} else {
-					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", notebookUtils.getErrorMessage(error)));
+					this.setViewInErrorState(localize('displayFailed', "Could not display contents: {0}", getErrorMessage(error)));
 					this.setLoading(false);
 					this._modelReadyDeferred.reject(error);
 
@@ -387,7 +388,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private setViewInErrorState(error: any): any {
 		this._isInErrorState = true;
-		this._errorMessage = notebookUtils.getErrorMessage(error);
+		this._errorMessage = getErrorMessage(error);
 		// For now, send message as error notification #870 covers having dedicated area for this
 		this.notificationService.error(error);
 	}

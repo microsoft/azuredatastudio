@@ -10,12 +10,12 @@ import * as types from 'vs/base/common/types';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 
 import { NotebookModel } from 'sql/workbench/parts/notebook/node/models/notebookModel';
-import { getErrorMessage } from 'sql/workbench/parts/notebook/node/models/notebookUtils';
 import { ICellModel, CellExecutionState } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MultiStateAction, IMultiStateData } from 'sql/workbench/parts/notebook/electron-browser/notebookActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ILogService } from 'vs/platform/log/common/log';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 let notebookMoreActionMsg = localize('notebook.failed', "Please select active cell and try again");
 const emptyExecutionCountLabel = '[ ]';

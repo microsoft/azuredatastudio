@@ -20,6 +20,7 @@ import { INotificationService, Severity } from 'vs/platform/notification/common/
 import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
+import { getErrorMessage } from 'vs/base/common/errors';
 let modelId = 0;
 
 export class CellModel implements ICellModel {
@@ -288,7 +289,7 @@ export class CellModel implements ICellModel {
 			if (error.message === 'Canceled') {
 				message = localize('executionCanceled', 'Query execution was canceled');
 			} else {
-				message = notebookUtils.getErrorMessage(error);
+				message = getErrorMessage(error);
 			}
 			this.sendNotification(notificationService, Severity.Error, message);
 			// TODO track error state for the cell

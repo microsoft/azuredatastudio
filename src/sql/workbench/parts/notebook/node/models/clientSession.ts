@@ -13,9 +13,9 @@ import { localize } from 'vs/nls';
 import { IClientSession, IKernelPreference, IClientSessionOptions } from './modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 
-import * as notebookUtils from './notebookUtils';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 type KernelChangeHandler = (kernel: nb.IKernelChangedArgs) => Promise<void>;
 /**
@@ -67,7 +67,7 @@ export class ClientSession implements IClientSession {
 			await this.initializeSession();
 			await this.updateCachedKernelSpec();
 		} catch (err) {
-			this._errorMessage = notebookUtils.getErrorMessage(err) || localize('clientSession.unknownError', "An error occurred while starting the notebook session");
+			this._errorMessage = getErrorMessage(err) || localize('clientSession.unknownError', "An error occurred while starting the notebook session");
 		}
 		// Always resolving for now. It's up to callers to check for error case
 		this._isReady = true;

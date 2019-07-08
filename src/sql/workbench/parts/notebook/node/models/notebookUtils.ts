@@ -22,10 +22,6 @@ export function isStream(output: nb.ICellOutput): output is nb.IStreamResult {
 	return output.output_type === 'stream';
 }
 
-export function getErrorMessage(error: Error | string): string {
-	return (error instanceof Error) ? error.message : error;
-}
-
 export function getUserHome(): string {
 	return process.env.HOME || process.env.USERPROFILE;
 }

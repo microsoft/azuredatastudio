@@ -25,6 +25,7 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -626,13 +627,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						await this.updateKernelInfoOnKernelChange(kernel);
 					} catch (err2) {
 						// TODO should we handle this in any way?
-						this.logService.error(`doChangeKernel: ignoring error ${notebookUtils.getErrorMessage(err2)}`);
+						this.logService.error(`doChangeKernel: ignoring error ${getErrorMessage(err2)}`);
 					}
 				}
 			}
 		} catch (err) {
 			if (oldDisplayName && restoreOnFail) {
-				this.notifyError(localize('changeKernelFailedRetry', "Failed to change kernel. Kernel {0} will be used. Error was: {1}", oldDisplayName, notebookUtils.getErrorMessage(err)));
+				this.notifyError(localize('changeKernelFailedRetry', "Failed to change kernel. Kernel {0} will be used. Error was: {1}", oldDisplayName, getErrorMessage(err)));
 				// Clear out previous kernel
 				let failedProviderId = this.tryFindProviderForKernel(displayName, true);
 				let oldProviderId = this.tryFindProviderForKernel(oldDisplayName, true);
@@ -643,7 +644,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 				return this.doChangeKernel(oldDisplayName, mustSetProvider, false);
 			} else {
-				this.notifyError(localize('changeKernelFailed', "Failed to change kernel due to error: {0}", notebookUtils.getErrorMessage(err)));
+				this.notifyError(localize('changeKernelFailed', "Failed to change kernel due to error: {0}", getErrorMessage(err)));
 				this._kernelChangedEmitter.fire({
 					newValue: undefined,
 					oldValue: undefined
@@ -698,7 +699,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					error => {
 						if (error) {
 							if (!hideErrorMessage) {
-								this.notifyError(notebookUtils.getErrorMessage(error));
+								this.notifyError(getErrorMessage(error));
 							}
 							//Selected a wrong connection, Attach to should be defaulted with 'Select connection'
 							this._onValidConnectionSelected.fire(false);
@@ -708,7 +709,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this._onValidConnectionSelected.fire(false);
 			}
 		} catch (err) {
-			let msg = notebookUtils.getErrorMessage(err);
+			let msg = getErrorMessage(err);
 			this.notifyError(localize('changeContextFailed', "Changing context failed: {0}", msg));
 		}
 	}
@@ -807,7 +808,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			}
 			await this.shutdownActiveSession();
 		} catch (err) {
-			this.logService.error('An error occurred when closing the notebook: {0}', notebookUtils.getErrorMessage(err));
+			this.logService.error('An error occurred when closing the notebook: {0}', getErrorMessage(err));
 		}
 	}
 
@@ -817,7 +818,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				await this._activeClientSession.ready;
 			}
 			catch (err) {
-				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", notebookUtils.getErrorMessage(err)));
+				this.notifyError(localize('shutdownClientSessionError', "A client session error occurred when closing the notebook: {0}", getErrorMessage(err)));
 			}
 			await this._activeClientSession.shutdown();
 			this.clearClientSessionListeners();

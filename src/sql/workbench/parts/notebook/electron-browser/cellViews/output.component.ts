@@ -20,7 +20,7 @@ import * as themeColors from 'vs/workbench/common/theme';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
-import { getErrorMessage } from 'sql/workbench/parts/notebook/node/models/notebookUtils';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 export const OUTPUT_SELECTOR: string = 'output-component';
 const USER_SELECT_CLASS = 'actionselect';
