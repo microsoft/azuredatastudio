@@ -24,7 +24,7 @@ import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
@@ -581,5 +581,52 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			return Promise.reject(e);
 		}
 	}
+
+	getSections(): INotebookSection[] {
+		return this.getSectionElements();
+	}
+
+	private getSectionElements(): NotebookSection[] {
+		let headers: NotebookSection[] = [];
+		let el: HTMLElement = this.container.nativeElement;
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		for (let i = 0; i < headerElements.length; i++) {
+			let headerEl = headerElements[i] as HTMLElement;
+			if (headerEl['id']) {
+				headers.push(new NotebookSection(headerEl));
+			}
+		}
+		return headers;
+	}
+
+	navigateToSection(id: string): void {
+		id = id.toLowerCase();
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		if (section) {
+			// Scroll this section to the top of the
+			let scrollTop = jQuery(section.headerEl).offset().top;
+			(<HTMLElement>this.container.nativeElement).scrollTo({
+				top: scrollTop,
+				behavior: 'smooth'
+			});
+			section.headerEl.focus();
+		}
+	}
+}
+
+class NotebookSection implements INotebookSection {
+
+	constructor(public headerEl: HTMLElement) {
+	}
+
+	get relativeUri(): string {
+		return this.headerEl['id'];
+	}
+
+	get header(): string {
+		return this.headerEl.textContent;
+	}
+
+
 
 }
