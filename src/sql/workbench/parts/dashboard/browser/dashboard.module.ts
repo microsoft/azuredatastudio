@@ -37,7 +37,7 @@ import { DashboardComponent } from 'sql/workbench/parts/dashboard/browser/dashbo
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/browser/contents/dashboardWidgetWrapper.component';
 import { DashboardWidgetContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.component';
 import { DashboardGridContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.component';
-import { DashboardWebviewContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.component';
+import { DashboardWebviewContainer } from 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.component';
 import { DashboardModelViewContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.component';
 import { DashboardErrorContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.component';

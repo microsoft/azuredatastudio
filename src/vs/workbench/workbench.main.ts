@@ -499,7 +499,7 @@ import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
 import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
 /* Containers */
-import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';

@@ -25,13 +25,12 @@ import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
-
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
 import { TestStorageService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 let none: void;
 
@@ -41,7 +40,7 @@ suite('SQL QueryAction Tests', () => {
 	let editor: TypeMoq.Mock<QueryEditor>;
 	let calledRunQueryOnInput: boolean = undefined;
 	let testQueryInput: TypeMoq.Mock<QueryInput>;
-	let configurationService: TypeMoq.Mock<ConfigurationService>;
+	let configurationService: TypeMoq.Mock<IConfigurationService>;
 
 	setup(() => {
 		// Setup a reusable mock QueryInput
