@@ -4,11 +4,11 @@
     <body>
       <trans-unit id="adminToolExtWin.displayName">
         <source xml:lang="en">Database Administration Tool Extensions for Windows</source>
-        <target state="new">Database Administration Tool Extensions for Windows</target>
+        <target state="translated">Windows용 데이터베이스 관리 도구 확장</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.description">
         <source xml:lang="en">Adds additional Windows-specific functionality to Azure Data Studio</source>
-        <target state="new">Adds additional Windows-specific functionality to Azure Data Studio</target>
+        <target state="translated">Azure Data Studio에 Windows 관련 추가 기능 추가</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.propertiesMenuItem">
         <source xml:lang="en">Properties</source>
@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="adminToolExtWin.launchGswMenuItem">
         <source xml:lang="en">Generate Scripts...</source>
-        <target state="new">Generate Scripts...</target>
+        <target state="translated">스크립트 생성...</target>
       </trans-unit>
     </body>
   </file>
@@ -24,27 +24,27 @@
     <body>
       <trans-unit id="adminToolExtWin.noConnectionContextForProp">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
-        <target state="new">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</target>
+        <target state="translated">handleLaunchSsmsMinPropertiesDialogCommand의 ConnectionContext가 제공되지 않았습니다.</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.noOENode">
         <source xml:lang="en">Could not determine Object Explorer node from connectionContext : {0}</source>
-        <target state="new">Could not determine Object Explorer node from connectionContext : {0}</target>
+        <target state="translated">connectionContext에서 개체 탐색기 노드를 확인할 수 없습니다. {0}</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.noConnectionContextForGsw">
         <source xml:lang="en">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</source>
-        <target state="new">No ConnectionContext provided for handleLaunchSsmsMinPropertiesDialogCommand</target>
+        <target state="translated">handleLaunchSsmsMinPropertiesDialogCommand에 대해 제공된 ConnectionContext 없음</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.noConnectionProfile">
         <source xml:lang="en">No connectionProfile provided from connectionContext : {0}</source>
-        <target state="new">No connectionProfile provided from connectionContext : {0}</target>
+        <target state="translated">connectionContext에서 제공된 connectionProfile 없음: {0}</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.launchingDialogStatus">
         <source xml:lang="en">Launching dialog...</source>
-        <target state="new">Launching dialog...</target>
+        <target state="translated">대화 상자를 시작하는 중...</target>
       </trans-unit>
       <trans-unit id="adminToolExtWin.ssmsMinError">
         <source xml:lang="en">Error calling SsmsMin with args '{0}' - {1}</source>
-        <target state="new">Error calling SsmsMin with args '{0}' - {1}</target>
+        <target state="translated">'{0}' 인수로 SsmsMin을 호출하는 동안 오류 발생 - {1}</target>
       </trans-unit>
     </body>
   </file>

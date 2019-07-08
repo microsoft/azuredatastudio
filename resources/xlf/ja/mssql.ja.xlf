@@ -28,11 +28,11 @@
       </trans-unit>
       <trans-unit id="mssqlCluster.uploadFiles">
         <source xml:lang="en">Upload files</source>
-        <target state="new">Upload files</target>
+        <target state="translated">ファイルのアップロード</target>
       </trans-unit>
       <trans-unit id="mssqlCluster.mkdir">
         <source xml:lang="en">New directory</source>
-        <target state="new">New directory</target>
+        <target state="translated">新しいディレクトリ</target>
       </trans-unit>
       <trans-unit id="mssqlCluster.deleteFiles">
         <source xml:lang="en">Delete</source>
@@ -52,15 +52,15 @@
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
-        <target state="new">New Notebook</target>
+        <target state="translated">新しいノートブック</target>
       </trans-unit>
       <trans-unit id="notebook.command.open">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">ノートブックを開く</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
         <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
-        <target state="new">Tasks and information about your SQL Server Big Data Cluster</target>
+        <target state="translated">SQL Server Big Data Cluster に関するタスクと情報</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
         <source xml:lang="en">SQL Server Big Data Cluster</source>
@@ -68,19 +68,19 @@
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
         <source xml:lang="en">Submit Spark Job</source>
-        <target state="new">Submit Spark Job</target>
+        <target state="translated">Spark ジョブの送信</target>
       </trans-unit>
       <trans-unit id="title.newSparkJob">
         <source xml:lang="en">New Spark Job</source>
-        <target state="new">New Spark Job</target>
+        <target state="translated">新しい Spark ジョブ</target>
       </trans-unit>
       <trans-unit id="title.openSparkHistory">
         <source xml:lang="en">View Spark History</source>
-        <target state="new">View Spark History</target>
+        <target state="translated">Spark 履歴の表示</target>
       </trans-unit>
       <trans-unit id="title.openYarnHistory">
         <source xml:lang="en">View Yarn History</source>
-        <target state="new">View Yarn History</target>
+        <target state="translated">Yarn 履歴を表示</target>
       </trans-unit>
       <trans-unit id="title.tasks">
         <source xml:lang="en">Tasks</source>
@@ -88,31 +88,31 @@
       </trans-unit>
       <trans-unit id="title.installPackages">
         <source xml:lang="en">Install Packages</source>
-        <target state="new">Install Packages</target>
+        <target state="translated">パッケージのインストール</target>
       </trans-unit>
       <trans-unit id="title.configurePython">
         <source xml:lang="en">Configure Python for Notebooks</source>
-        <target state="new">Configure Python for Notebooks</target>
+        <target state="translated">ノートブック用 Python の構成</target>
       </trans-unit>
       <trans-unit id="title.openClusterStatusNotebook">
         <source xml:lang="en">Cluster Status</source>
-        <target state="new">Cluster Status</target>
+        <target state="translated">クラスター状態</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>
-        <target state="new">Search: Servers</target>
+        <target state="translated">検索: サーバー</target>
       </trans-unit>
       <trans-unit id="title.clearSearchServerResult">
         <source xml:lang="en">Search: Clear Search Server Results</source>
-        <target state="new">Search: Clear Search Server Results</target>
+        <target state="translated">検索: 検索サーバーの結果を消去する</target>
       </trans-unit>
       <trans-unit id="title.endpoints">
         <source xml:lang="en">Service Endpoints</source>
-        <target state="new">Service Endpoints</target>
+        <target state="translated">サービス エンドポイント</target>
       </trans-unit>
       <trans-unit id="mssql.configuration.title">
         <source xml:lang="en">MSSQL configuration</source>
-        <target state="new">MSSQL configuration</target>
+        <target state="translated">MSSQL 構成</target>
       </trans-unit>
       <trans-unit id="mssql.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
@@ -140,23 +140,23 @@
       </trans-unit>
       <trans-unit id="mssql.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="new">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</target>
+        <target state="translated">[オプション] コンソールへのデバッグ出力 ([表示] -&gt; [出力}) をログに記録し、ドロップダウンから適切な出力チャネルを選択します</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="new">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</target>
+        <target state="translated">[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel の場合、ログに記録される数が多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。重大を含むエラー、エラーを含む警告、警告を含む情報、情報を含む詳細です</target>
       </trans-unit>
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="new">Number of minutes to retain log files for backend services. Default is 1 week.</target>
+        <target state="translated">バックエンド サービスのログ ファイルを保持する分数。既定値は 1 週間です。</target>
       </trans-unit>
       <trans-unit id="mssql.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="new">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</target>
+        <target state="translated">mssql.logRetentionMinutes の有効期限が切れた、起動時に削除する古いファイルの最大数。この制限のためにクリーンアップされないファイルは、Azure Data Studio の次回の起動時にクリーンアップされます。</target>
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="new">[Optional] Do not show unsupported platform warnings</target>
+        <target state="translated">[オプション] サポートされていないプラットフォームの警告を表示しない</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
         <source xml:lang="en">Pricing Tier</source>
-        <target state="new">Pricing Tier</target>
+        <target state="translated">価格レベル</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
@@ -220,15 +220,15 @@
       </trans-unit>
       <trans-unit id="mssql.provider.displayName">
         <source xml:lang="en">Microsoft SQL Server</source>
-        <target state="new">Microsoft SQL Server</target>
+        <target state="translated">Microsoft SQL Server</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectionName.displayName">
         <source xml:lang="en">Name (optional)</source>
-        <target state="new">Name (optional)</target>
+        <target state="translated">名前 (オプション)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectionName.description">
         <source xml:lang="en">Custom name of the connection</source>
-        <target state="new">Custom name of the connection</target>
+        <target state="translated">接続のカスタム名</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
@@ -236,7 +236,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="new">Name of the SQL Server instance</target>
+        <target state="translated">SQL Server インスタンスの名前</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.databaseName.displayName">
         <source xml:lang="en">Database</source>
@@ -244,7 +244,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.databaseName.description">
         <source xml:lang="en">The name of the initial catalog or database int the data source</source>
-        <target state="new">The name of the initial catalog or database int the data source</target>
+        <target state="translated">データ ソース内の初期カタログまたはデータベースの名前</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
@@ -252,7 +252,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="new">Specifies the method of authenticating with SQL Server</target>
+        <target state="translated">SQL Server での認証方法を指定します</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
@@ -264,7 +264,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="new">Azure Active Directory - Universal with MFA support</target>
+        <target state="translated">Azure Active Directory - MFA サポート付きユニバーサル</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.userName.displayName">
         <source xml:lang="en">User name</source>
@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.userName.description">
         <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="new">Indicates the user ID to be used when connecting to the data source</target>
+        <target state="translated">データ ソースへの接続時に使用するユーザー ID を示します</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.password.displayName">
         <source xml:lang="en">Password</source>
@@ -280,155 +280,155 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.password.description">
         <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="new">Indicates the password to be used when connecting to the data source</target>
+        <target state="translated">データ ソースへの接続時に使用するパスワードを示します。</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationIntent.displayName">
         <source xml:lang="en">Application intent</source>
-        <target state="new">Application intent</target>
+        <target state="translated">アプリケーションの目的</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationIntent.description">
         <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="new">Declares the application workload type when connecting to a server</target>
+        <target state="translated">サーバーに接続するときにアプリケーションのワークロードの種類を宣言します</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
         <source xml:lang="en">Asynchronous processing</source>
-        <target state="new">Asynchronous processing</target>
+        <target state="translated">非同期処理</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
         <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="new">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</target>
+        <target state="translated">True の場合は、.Net Framework データ プロバイダーの非同期機能を使用できるようになります</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
         <source xml:lang="en">Connect timeout</source>
-        <target state="new">Connect timeout</target>
+        <target state="translated">接続タイムアウト</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectTimeout.description">
         <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="new">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</target>
+        <target state="translated">サーバーへの接続が確立されるまでに待機する時間 (秒) です。この時間が経過すると接続要求を終了し、エラーを生成します</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.displayName">
         <source xml:lang="en">Current language</source>
-        <target state="new">Current language</target>
+        <target state="translated">現在の言語</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.description">
         <source xml:lang="en">The SQL Server language record name</source>
-        <target state="new">The SQL Server language record name</target>
+        <target state="translated">SQL Server Language レコード名</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
         <source xml:lang="en">Column encryption</source>
-        <target state="new">Column encryption</target>
+        <target state="translated">列暗号化</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="new">Default column encryption setting for all the commands on the connection</target>
+        <target state="translated">接続上のすべてのコマンドの既定の列暗号化設定</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
-        <target state="new">Encrypt</target>
+        <target state="translated">暗号化</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
         <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="new">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</target>
+        <target state="translated">True の場合、SQL Server は、サーバーに証明書がインストールされている場合は、クライアントとサーバー間で送信されるすべてのデータに SSL 暗号化を使用します</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
         <source xml:lang="en">Persist security info</source>
-        <target state="new">Persist security info</target>
+        <target state="translated">セキュリティ情報を保持する</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
         <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="new">When false, security-sensitive information, such as the password, is not returned as part of the connection</target>
+        <target state="translated">False の場合、パスワードなどのセキュリティによる保護が要求される情報は、接続しても返されません</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
-        <target state="new">Trust server certificate</target>
+        <target state="translated">サーバー証明書を信頼する</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="new">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</target>
+        <target state="translated">True の場合 (および encrypt=true)、SQL Server では、サーバー証明書を検証せずにクライアントとサーバーの間で送信されるすべてのデータに対し、SSL 暗号化が使用されます</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
-        <target state="new">Attached DB file name</target>
+        <target state="translated">接続された DB ファイル名</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="new">The name of the primary file, including the full path name, of an attachable database</target>
+        <target state="translated">完全なパス名を含む、接続可能なデータベースのプライマリ ファイル名</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.contextConnection.displayName">
         <source xml:lang="en">Context connection</source>
-        <target state="new">Context connection</target>
+        <target state="translated">コンテキスト接続</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="new">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</target>
+        <target state="translated">True の場合は、接続元が SQL Server のコンテキストであることを示します。SQL Server のプロセスで実行する場合のみ使用できます</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
-        <target state="new">Port</target>
+        <target state="translated">ポート</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.displayName">
         <source xml:lang="en">Connect retry count</source>
-        <target state="new">Connect retry count</target>
+        <target state="translated">接続の再試行回数</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="new">Number of attempts to restore connection</target>
+        <target state="translated">接続を復元するための試行回数</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
         <source xml:lang="en">Connect retry interval</source>
-        <target state="new">Connect retry interval</target>
+        <target state="translated">接続の再試行間隔</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
         <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="new">Delay between attempts to restore connection</target>
+        <target state="translated">接続を復元するための試行間の遅延</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
-        <target state="new">Application name</target>
+        <target state="translated">アプリケーション名</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationName.description">
         <source xml:lang="en">The name of the application</source>
-        <target state="new">The name of the application</target>
+        <target state="translated">アプリケーションの名前</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
-        <target state="new">Workstation Id</target>
+        <target state="translated">ワークステーション ID</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="new">The name of the workstation connecting to SQL Server</target>
+        <target state="translated">SQL Server に接続しているワークステーションの名前</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.displayName">
         <source xml:lang="en">Pooling</source>
-        <target state="new">Pooling</target>
+        <target state="translated">プーリング</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="new">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</target>
+        <target state="translated">True の場合、接続オブジェクトが適切なプールから取得されるか、または、必要に応じて接続オブジェクトが作成され、適切なプールに追加されます</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
-        <target state="new">Max pool size</target>
+        <target state="translated">最大プール サイズ</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.description">
         <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="new">The maximum number of connections allowed in the pool</target>
+        <target state="translated">プールに保持できる最大接続数</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.minPoolSize.displayName">
         <source xml:lang="en">Min pool size</source>
-        <target state="new">Min pool size</target>
+        <target state="translated">最小プール サイズ</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.minPoolSize.description">
         <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="new">The minimum number of connections allowed in the pool</target>
+        <target state="translated">プール内で行える接続の最小数</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.displayName">
         <source xml:lang="en">Load balance timeout</source>
-        <target state="new">Load balance timeout</target>
+        <target state="translated">負荷分散タイムアウト</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="new">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</target>
+        <target state="translated">この接続が破棄される前にプールに存在する最小時間 (秒)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.replication.displayName">
         <source xml:lang="en">Replication</source>
@@ -436,47 +436,47 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.replication.description">
         <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="new">Used by SQL Server in Replication</target>
+        <target state="translated">レプリケーション時に SQL Server によって使用されます</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
-        <target state="new">Attach DB filename</target>
+        <target state="translated">DB ファイル名の接続</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
-        <target state="new">Failover partner</target>
+        <target state="translated">フェールオーバー パートナー</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="new">The name or network address of the instance of SQL Server that acts as a failover partner</target>
+        <target state="translated">フェールオーバー パートナーとして機能する SQL Server のインスタンスの名前かネットワーク アドレス</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
         <source xml:lang="en">Multi subnet failover</source>
-        <target state="new">Multi subnet failover</target>
+        <target state="translated">マルチ サブネット フェールオーバー</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
         <source xml:lang="en">Multiple active result sets</source>
-        <target state="new">Multiple active result sets</target>
+        <target state="translated">複数のアクティブな結果セット</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
         <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="new">When true, multiple result sets can be returned and read from one connection</target>
+        <target state="translated">True の場合は、1 つの接続から複数の結果セットが返され、これらを読み取ることができます</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.displayName">
         <source xml:lang="en">Packet size</source>
-        <target state="new">Packet size</target>
+        <target state="translated">パケット サイズ</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.description">
         <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="new">Size in bytes of the network packets used to communicate with an instance of SQL Server</target>
+        <target state="translated">SQL Server インスタンスとの通信に使用されるネットワーク パケットのバイト数</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
         <source xml:lang="en">Type system version</source>
-        <target state="new">Type system version</target>
+        <target state="translated">Type system version</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
         <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="new">Indicates which server type system then provider will expose through the DataReader</target>
+        <target state="translated">DataReader を通してプロバイダーが公開するサーバー タイプのシステムを示します</target>
       </trans-unit>
     </body>
   </file>
@@ -484,11 +484,11 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
-        <target state="new">No Spark job batch id is returned from response.{0}[Error] {1}</target>
+        <target state="translated">応答から Spark ジョブ バッチ ID は返されません。{0}[エラー]{1}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
-        <target state="new">No log is returned within response.{0}[Error] {1}</target>
+        <target state="translated">応答で返されたログはありません。{0}[エラー] {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -496,27 +496,27 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
-        <target state="new">Parameters for SparkJobSubmissionModel is illegal</target>
+        <target state="translated">SparkJobSubmissionModel のパラメーターが無効です</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">submissionArgs is invalid. </source>
-        <target state="new">submissionArgs is invalid. </target>
+        <target state="translated">submissionArgs が無効です。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">livyBatchId is invalid. </source>
-        <target state="new">livyBatchId is invalid. </target>
+        <target state="translated">livyBatchId が無効です。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
-        <target state="new">Get Application Id time out. {0}[Log]   {1}</target>
+        <target state="translated">アプリケーション ID タイムアウトを取得します。{0}[ログ]  {1}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
-        <target state="new">Property localFilePath or hdfsFolderPath is not specified. </target>
+        <target state="translated">プロパティ localFilePath または hdfsFolderPath が指定されていません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property Path is not specified. </source>
-        <target state="new">Property Path is not specified. </target>
+        <target state="translated">プロパティ パスが指定されていません。</target>
       </trans-unit>
     </body>
   </file>
@@ -524,7 +524,7 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
-        <target state="new">Parameters for SparkJobSubmissionDialog is illegal</target>
+        <target state="translated">SparkJobSubmissionDialog のパラメーターが無効です</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">New Job</source>
@@ -536,15 +536,15 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Submit</source>
-        <target state="new">Submit</target>
+        <target state="translated">送信</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">{0} Spark Job Submission:</source>
-        <target state="new">{0} Spark Job Submission:</target>
+        <target state="translated">{0} Spark ジョブの送信:</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
-        <target state="new">.......................... Submit Spark Job Start ..........................</target>
+        <target state="translated">.......................... Spark ジョブの送信開始 ..........................</target>
       </trans-unit>
     </body>
   </file>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Enter a name ...</source>
-        <target state="new">Enter a name ...</target>
+        <target state="translated">名前を入力します...</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Job Name</source>
@@ -564,23 +564,23 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Spark Cluster</source>
-        <target state="new">Spark Cluster</target>
+        <target state="translated">Spark クラスター</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Path to a .jar or .py file</source>
-        <target state="new">Path to a .jar or .py file</target>
+        <target state="translated">.jar ファイルまたは .py ファイルへのパス</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
-        <target state="new">The selected local file will be uploaded to HDFS: {0}</target>
+        <target state="translated">選択したローカル ファイルが HDFS にアップロードされます: {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">JAR/py File</source>
-        <target state="new">JAR/py File</target>
+        <target state="translated">JAR/py ファイル</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Main Class</source>
-        <target state="new">Main Class</target>
+        <target state="translated">メイン クラス</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Arguments</source>
@@ -588,27 +588,27 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
-        <target state="new">Command line arguments used in your main class, multiple arguments should be split by space.</target>
+        <target state="translated">メイン クラスで使用されるコマンド ライン引数で複数の引数を使うには、スペースで区切る必要があります。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property Job Name is not specified.</source>
-        <target state="new">Property Job Name is not specified.</target>
+        <target state="translated">プロパティ ジョブ名が指定されていません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property JAR/py File is not specified.</source>
-        <target state="new">Property JAR/py File is not specified.</target>
+        <target state="translated">プロパティ JAR/py ファイルが指定されていません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property Main Class is not specified.</source>
-        <target state="new">Property Main Class is not specified.</target>
+        <target state="translated">プロパティ メイン クラスが指定されていません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
-        <target state="new">{0} does not exist in Cluster or exception thrown. </target>
+        <target state="translated">{0} がクラスターに存在しないか、例外がスローされました。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">The specified HDFS file does not exist. </source>
-        <target state="new">The specified HDFS file does not exist. </target>
+        <target state="translated">指定された HDFS ファイルが存在しません。</target>
       </trans-unit>
       <trans-unit id="sparkSelectLocalFile">
         <source xml:lang="en">Select</source>
@@ -616,7 +616,7 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Error in locating the file due to Error: {0}</source>
-        <target state="new">Error in locating the file due to Error: {0}</target>
+        <target state="translated">エラーが原因でファイルの検索でエラーが発生しました: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -628,27 +628,27 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference Jars</source>
-        <target state="new">Reference Jars</target>
+        <target state="translated">Jar を参照する</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
-        <target state="new">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</target>
+        <target state="translated">実行プログラム作業ディレクトリに配置される Jar。Jar パスは HDFS パスにする必要があります。複数のパスの場合、セミコロン (;) で区切らなければなりません</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference py Files</source>
-        <target state="new">Reference py Files</target>
+        <target state="translated">参照 py ファイル</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-        <target state="new">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</target>
+        <target state="translated">実行プログラム作業ディレクトリに配置される Py ファイル。ファイル パスは HDFS パスにする必要があります。複数のパスの場合、セミコロン (;) で区切らなければなりません</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference Files</source>
-        <target state="new">Reference Files</target>
+        <target state="translated">参照ファイル</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-        <target state="new">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</target>
+        <target state="translated">実行プログラム作業ディレクトリに配置されるファイル。ファイル パスは HDFS パスにする必要があります。複数のパスの場合、セミコロン (;) で区切らなければなりません</target>
       </trans-unit>
     </body>
   </file>
@@ -656,15 +656,15 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
-        <target state="new">Please select SQL Server with Big Data Cluster. </target>
+        <target state="translated">Big Data Cluster が含まれる SQL Server を選択してください。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server is selected.</source>
-        <target state="new">No Sql Server is selected.</target>
+        <target state="translated">SQL Server が選択されていません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Error Get File Path: {0}</source>
-        <target state="new">Error Get File Path: {0}</target>
+        <target state="translated">ファイル パスの取得でエラーが発生しました: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -676,7 +676,7 @@
       </trans-unit>
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with code {0}</source>
-        <target state="new">Process exited with code {0}</target>
+        <target state="translated">プロセスがコード {0} で終了しました</target>
       </trans-unit>
     </body>
   </file>
@@ -696,35 +696,35 @@
     <body>
       <trans-unit id="webhdfs.invalidDataStructure">
         <source xml:lang="en">Invalid Data Structure</source>
-        <target state="new">Invalid Data Structure</target>
+        <target state="translated">無効なデータ構造</target>
       </trans-unit>
       <trans-unit id="webhdfs.missingProperties">
         <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
-        <target state="new">Unable to create WebHDFS client due to missing options: ${0}</target>
+        <target state="translated">オプションが不足しているため、WebHDFS クライアントを作成できません: ${0}</target>
       </trans-unit>
       <trans-unit id="webhdfs.undefinedArgument">
         <source xml:lang="en">'${0}' is undefined.</source>
-        <target state="new">'${0}' is undefined.</target>
+        <target state="translated">'${0}' は未定義です。</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError400">
         <source xml:lang="en">Bad Request</source>
-        <target state="new">Bad Request</target>
+        <target state="translated">無効な要求</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError401">
         <source xml:lang="en">Unauthorized</source>
-        <target state="new">Unauthorized</target>
+        <target state="translated">許可されていません</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError403">
         <source xml:lang="en">Forbidden</source>
-        <target state="new">Forbidden</target>
+        <target state="translated">禁止</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError404">
         <source xml:lang="en">Not Found</source>
-        <target state="new">Not Found</target>
+        <target state="translated">見つかりません</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError500">
         <source xml:lang="en">Internal Server Error</source>
-        <target state="new">Internal Server Error</target>
+        <target state="translated">内部サーバー エラー</target>
       </trans-unit>
       <trans-unit id="webhdfs.unknownError">
         <source xml:lang="en">Unknown Error</source>
@@ -732,7 +732,7 @@
       </trans-unit>
       <trans-unit id="webhdfs.unexpectedRedirect">
         <source xml:lang="en">Unexpected Redirect</source>
-        <target state="new">Unexpected Redirect</target>
+        <target state="translated">予期しないリダイレクト</target>
       </trans-unit>
     </body>
   </file>
@@ -740,27 +740,27 @@
     <body>
       <trans-unit id="prmptPwd">
         <source xml:lang="en">Please provide the password to connect to HDFS:</source>
-        <target state="new">Please provide the password to connect to HDFS:</target>
+        <target state="translated">HDFS に接続するためのパスワードを入力してください:</target>
       </trans-unit>
       <trans-unit id="sessionNotFound">
         <source xml:lang="en">Session for node {0} does not exist</source>
-        <target state="new">Session for node {0} does not exist</target>
+        <target state="translated">ノード {0} のセッションが存在しません</target>
       </trans-unit>
       <trans-unit id="notifyError">
         <source xml:lang="en">Error notifying of node change: {0}</source>
-        <target state="new">Error notifying of node change: {0}</target>
+        <target state="translated">ノード変更の通知でエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="rootLabel">
         <source xml:lang="en">Root</source>
-        <target state="new">Root</target>
+        <target state="translated">ルート</target>
       </trans-unit>
       <trans-unit id="hdfsFolder">
         <source xml:lang="en">HDFS</source>
-        <target state="new">HDFS</target>
+        <target state="translated">Hdfs</target>
       </trans-unit>
       <trans-unit id="dataServicesLabel">
         <source xml:lang="en">Data Services</source>
-        <target state="new">Data Services</target>
+        <target state="translated">Data Services</target>
       </trans-unit>
     </body>
   </file>
@@ -772,7 +772,7 @@
       </trans-unit>
       <trans-unit id="errDeleteConnectionNode">
         <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
-        <target state="new">Cannot delete a connection. Only subfolders and files can be deleted.</target>
+        <target state="translated">接続を削除できません。削除できるのはサブフォルダーとファイルのみです。</target>
       </trans-unit>
     </body>
   </file>
@@ -784,71 +784,71 @@
       </trans-unit>
       <trans-unit id="lblUploadFiles">
         <source xml:lang="en">Upload</source>
-        <target state="new">Upload</target>
+        <target state="translated">アップロード</target>
       </trans-unit>
       <trans-unit id="uploading">
         <source xml:lang="en">Uploading files to HDFS</source>
-        <target state="new">Uploading files to HDFS</target>
+        <target state="translated">HDFS にファイルをアップロードしています</target>
       </trans-unit>
       <trans-unit id="uploadCanceled">
         <source xml:lang="en">Upload operation was canceled</source>
-        <target state="new">Upload operation was canceled</target>
+        <target state="translated">アップロード操作が取り消されました</target>
       </trans-unit>
       <trans-unit id="uploadError">
         <source xml:lang="en">Error uploading files: {0}</source>
-        <target state="new">Error uploading files: {0}</target>
+        <target state="translated">ファイルのアップロードでエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="makingDir">
         <source xml:lang="en">Creating directory</source>
-        <target state="new">Creating directory</target>
+        <target state="translated">ディレクトリを作成しています</target>
       </trans-unit>
       <trans-unit id="mkdirCanceled">
         <source xml:lang="en">Operation was canceled</source>
-        <target state="new">Operation was canceled</target>
+        <target state="translated">操作が取り消されました</target>
       </trans-unit>
       <trans-unit id="mkDirError">
         <source xml:lang="en">Error on making directory: {0}</source>
-        <target state="new">Error on making directory: {0}</target>
+        <target state="translated">ディレクトリの作成でエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="enterDirName">
         <source xml:lang="en">Enter directory name</source>
-        <target state="new">Enter directory name</target>
+        <target state="translated">ディレクトリ名を入力する</target>
       </trans-unit>
       <trans-unit id="deleteError">
         <source xml:lang="en">Error on deleting files: {0}</source>
-        <target state="new">Error on deleting files: {0}</target>
+        <target state="translated">ファイルの削除でエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="msgDeleteFolder">
         <source xml:lang="en">Are you sure you want to delete this folder and its contents?</source>
-        <target state="new">Are you sure you want to delete this folder and its contents?</target>
+        <target state="translated">対象フォルダとその内容を削除してもよろしいですか?</target>
       </trans-unit>
       <trans-unit id="msgDeleteFile">
         <source xml:lang="en">Are you sure you want to delete this file?</source>
-        <target state="new">Are you sure you want to delete this file?</target>
+        <target state="translated">このファイルを削除しますか?</target>
       </trans-unit>
       <trans-unit id="saving">
         <source xml:lang="en">Saving HDFS Files</source>
-        <target state="new">Saving HDFS Files</target>
+        <target state="translated">HDFS ファイルを保存しています</target>
       </trans-unit>
       <trans-unit id="saveCanceled">
         <source xml:lang="en">Save operation was canceled</source>
-        <target state="new">Save operation was canceled</target>
+        <target state="translated">保存操作は取り消されました</target>
       </trans-unit>
       <trans-unit id="saveError">
         <source xml:lang="en">Error on saving file: {0}</source>
-        <target state="new">Error on saving file: {0}</target>
+        <target state="translated">ファイルの保存でエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="previewing">
         <source xml:lang="en">Generating preview</source>
-        <target state="new">Generating preview</target>
+        <target state="translated">プレビューを生成しています</target>
       </trans-unit>
       <trans-unit id="previewError">
         <source xml:lang="en">Error on previewing file: {0}</source>
-        <target state="new">Error on previewing file: {0}</target>
+        <target state="translated">ファイルのプレビューでエラーが発生しました: {0}</target>
       </trans-unit>
       <trans-unit id="copyPathError">
         <source xml:lang="en">Error on copying path: {0}</source>
-        <target state="new">Error on copying path: {0}</target>
+        <target state="translated">パスのコピーでエラーが発生しました: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -856,11 +856,11 @@
     <body>
       <trans-unit id="maxSizeNotice">
         <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
-        <target state="new">NOTICE: This file has been truncated at {0} for preview. </target>
+        <target state="translated">注意: このファイルはプレビュー用に {0} で切り詰められました。</target>
       </trans-unit>
       <trans-unit id="maxSizeReached">
         <source xml:lang="en">The file has been truncated at {0} for preview.</source>
-        <target state="new">The file has been truncated at {0} for preview.</target>
+        <target state="translated">ファイルはプレビューのために {0} で切り捨てられました。</target>
       </trans-unit>
     </body>
   </file>
@@ -868,15 +868,15 @@
     <body>
       <trans-unit id="connectionInfoUndefined">
         <source xml:lang="en">ConnectionInfo is undefined.</source>
-        <target state="new">ConnectionInfo is undefined.</target>
+        <target state="translated">ConnectionInfo が定義されていません。</target>
       </trans-unit>
       <trans-unit id="connectionInfoOptionsUndefined">
         <source xml:lang="en">ConnectionInfo.options is undefined.</source>
-        <target state="new">ConnectionInfo.options is undefined.</target>
+        <target state="translated">ConnectionInfo.options が定義されていません。</target>
       </trans-unit>
       <trans-unit id="connectionInfoOptionsMissingProperties">
         <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
-        <target state="new">Some missing properties in connectionInfo.options: {0}</target>
+        <target state="translated">connectionInfo.options で一部のプロパティが不足しています: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -892,7 +892,7 @@
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel operation?</source>
-        <target state="new">Cancel operation?</target>
+        <target state="translated">操作をキャンセルしますか?</target>
       </trans-unit>
       <trans-unit id="mssql.searchServers">
         <source xml:lang="en">Search Server Names</source>
@@ -904,7 +904,7 @@
     <body>
       <trans-unit id="streamCanceled">
         <source xml:lang="en">Stream operation canceled by the user</source>
-        <target state="new">Stream operation canceled by the user</target>
+        <target state="translated">ユーザーによって取り消されたストリーム操作</target>
       </trans-unit>
     </body>
   </file>
@@ -912,23 +912,23 @@
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="new">This sample code loads the file into a data frame and shows the first 10 results.</target>
+        <target state="translated">このサンプル コードは、ファイルをデータ フレームに読み込み、最初の 10 件の結果を示します。</target>
       </trans-unit>
       <trans-unit id="grafana">
         <source xml:lang="en">Metrics Dashboard</source>
-        <target state="new">Metrics Dashboard</target>
+        <target state="translated">メトリック ダッシュボード</target>
       </trans-unit>
       <trans-unit id="kibana">
         <source xml:lang="en">Log Search Dashboard</source>
-        <target state="new">Log Search Dashboard</target>
+        <target state="translated">ログ検索ダッシュボード</target>
       </trans-unit>
       <trans-unit id="sparkHostory">
         <source xml:lang="en">Spark Job Monitoring</source>
-        <target state="new">Spark Job Monitoring</target>
+        <target state="translated">Spark ジョブの監視</target>
       </trans-unit>
       <trans-unit id="yarnHistory">
         <source xml:lang="en">Spark Resource Management</source>
-        <target state="new">Spark Resource Management</target>
+        <target state="translated">Spark リソース管理</target>
       </trans-unit>
       <trans-unit id="copyText">
         <source xml:lang="en">Copy</source>
@@ -936,35 +936,35 @@
       </trans-unit>
       <trans-unit id="appproxy">
         <source xml:lang="en">Application Proxy</source>
-        <target state="new">Application Proxy</target>
+        <target state="translated">アプリケーション プロキシ</target>
       </trans-unit>
       <trans-unit id="controller">
         <source xml:lang="en">Cluster Management Service</source>
-        <target state="new">Cluster Management Service</target>
+        <target state="translated">クラスター管理サービス</target>
       </trans-unit>
       <trans-unit id="gateway">
         <source xml:lang="en">HDFS and Spark</source>
-        <target state="new">HDFS and Spark</target>
+        <target state="translated">HDFS および Spark</target>
       </trans-unit>
       <trans-unit id="managementproxy">
         <source xml:lang="en">Management Proxy</source>
-        <target state="new">Management Proxy</target>
+        <target state="translated">管理プロキシ</target>
       </trans-unit>
       <trans-unit id="mgmtproxy">
         <source xml:lang="en">Management Proxy</source>
-        <target state="new">Management Proxy</target>
+        <target state="translated">管理プロキシ</target>
       </trans-unit>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
-        <target state="new">Notebooks</target>
+        <target state="translated">ノートブック</target>
       </trans-unit>
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="new">Only .ipynb Notebooks are supported</target>
+        <target state="translated">.ipynb ノートブックのみがサポートされています</target>
       </trans-unit>
       <trans-unit id="fileNotFound">
         <source xml:lang="en">Unable to find the file specified</source>
-        <target state="new">Unable to find the file specified</target>
+        <target state="translated">指定されたファイルが見つかりません</target>
       </trans-unit>
     </body>
   </file>
@@ -972,59 +972,59 @@
     <body>
       <trans-unit id="msgMissingNodeContext">
         <source xml:lang="en">Node Command called without any node passed</source>
-        <target state="new">Node Command called without any node passed</target>
+        <target state="translated">ノードが渡されずに呼び出されたノード コマンド</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Local file will be uploaded to HDFS. </source>
-        <target state="new">Local file will be uploaded to HDFS. </target>
+        <target state="translated">ローカル ファイルは HDFS にアップロードされます。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
-        <target state="new">.......................... Submit Spark Job End ............................</target>
+        <target state="translated">.......................... Spark ジョブの送信終了 ............................</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
-        <target state="new">Uploading file from local {0} to HDFS folder: {1}</target>
+        <target state="translated">ローカル {0} から HDFS フォルダーへファイルをアップロードしています: {1}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Upload file to cluster Succeeded!</source>
-        <target state="new">Upload file to cluster Succeeded!</target>
+        <target state="translated">クラスターにファイルが正常にアップロードされました。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Upload file to cluster Failed. {0}</source>
-        <target state="new">Upload file to cluster Failed. {0}</target>
+        <target state="translated">クラスターにファイルをアップロードできませんでした。{0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Submitting job {0} ... </source>
-        <target state="new">Submitting job {0} ... </target>
+        <target state="translated">ジョブ {0} を送信しています...</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">The Spark Job has been submitted.</source>
-        <target state="new">The Spark Job has been submitted.</target>
+        <target state="translated">Spark ジョブが送信されました。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Spark Job Submission Failed. {0} </source>
-        <target state="new">Spark Job Submission Failed. {0} </target>
+        <target state="translated">Spark ジョブを送信できませんでした。{0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">YarnUI Url: {0} </source>
-        <target state="new">YarnUI Url: {0} </target>
+        <target state="translated">YarnUI URL: {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Spark History Url: {0} </source>
-        <target state="new">Spark History Url: {0} </target>
+        <target state="translated">Spark 履歴 URL: {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Get Application Id Failed. {0}</source>
-        <target state="new">Get Application Id Failed. {0}</target>
+        <target state="translated">アプリケーション ID の取得に失敗しました。{0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Local file {0} does not existed. </source>
-        <target state="new">Local file {0} does not existed. </target>
+        <target state="translated">ローカル ファイル {0} が存在しません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
-        <target state="new">No Sql Server Big Data Cluster found.</target>
+        <target state="translated">SQL Server Big Data Cluster が見つかりません。</target>
       </trans-unit>
     </body>
   </file>

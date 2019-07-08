@@ -396,7 +396,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.servicesPackage">
         <source xml:lang="en">SQL Server Integration Service Package</source>
-        <target state="new">SQL Server Integration Service Package</target>
+        <target state="translated">SQL Server Integration Service 패키지</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
