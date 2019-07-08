@@ -35,6 +35,7 @@ export class ProsePreviewPage extends ImportPage {
 		this.table = this.view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 			data: null,
 			columns: null,
+			fontSize: 32,
 			forceFitColumns: false
 		}).component();
 		this.refresh = this.view.modelBuilder.button().withProperties({

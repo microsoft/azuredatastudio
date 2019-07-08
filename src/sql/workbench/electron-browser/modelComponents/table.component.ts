@@ -119,7 +119,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				syncColumnCellResize: true,
 				enableColumnReorder: false,
 				enableCellNavigation: true,
-				forceFitColumns: this.forceFitColumns
+				forceFitColumns: false// this.forceFitColumns
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
@@ -159,9 +159,17 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private layoutTable(): void {
 		let width: number = this.convertSizeToNumber(this.width);
 		let height: number = this.convertSizeToNumber(this.height);
+
+		// update the slickgrid options
+		let updateOptions = <Slick.GridOptions<any>>{
+			forceFitColumns: this.forceFitColumns
+		};
+		this._table.setOptions(updateOptions);
+
 		this._table.layout(new Dimension(
 			width && width > 0 ? width : getContentWidth(this._inputContainer.nativeElement),
 			height && height > 0 ? height : getContentHeight(this._inputContainer.nativeElement)));
+		this._table.resizeCanvas();
 	}
 
 	public setLayout(): void {
@@ -179,7 +187,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
-		let forceFit: boolean = this.forceFitColumns;
 
 		for (let col in this._checkboxColumns) {
 			this.registerCheckboxPlugin(this._checkboxColumns[col]);
