@@ -33,6 +33,8 @@ export interface IPanelView {
 	layout(dimension: DOM.Dimension): void;
 	focus(): void;
 	remove?(): void;
+	onShow?(): void;
+	onHide?(): void;
 }
 
 export interface IPanelTab {
@@ -48,7 +50,7 @@ interface IInternalPanelTab {
 	disposables: IDisposable[];
 	label: HTMLElement;
 	body?: HTMLElement;
-	destoryTabBody?: boolean;
+	destroyTabBody?: boolean;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -113,10 +115,10 @@ export class TabbedPanel extends Disposable {
 		return this._tabMap.has(tab.identifier);
 	}
 
-	public pushTab(tab: IPanelTab, index?: number, destoryTabBody?: boolean): PanelTabIdentifier {
+	public pushTab(tab: IPanelTab, index?: number, destroyTabBody?: boolean): PanelTabIdentifier {
 		let internalTab = { tab } as IInternalPanelTab;
 		internalTab.disposables = [];
-		internalTab.destoryTabBody = destoryTabBody;
+		internalTab.destroyTabBody = destroyTabBody;
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab, index);
 		if (!this._shownTabId) {
@@ -190,6 +192,9 @@ export class TabbedPanel extends Disposable {
 				shownTab.header.setAttribute('aria-selected', 'false');
 				if (shownTab.body) {
 					shownTab.body.remove();
+					if (shownTab.tab.view.onHide) {
+						shownTab.tab.view.onHide();
+					}
 				}
 			}
 		}
@@ -198,7 +203,7 @@ export class TabbedPanel extends Disposable {
 		this.tabHistory.push(id);
 		const tab = this._tabMap.get(this._shownTabId)!; // @anthonydresser we know this can't be undefined since we check further up if the map contains the id
 
-		if (tab.destoryTabBody && tab.body) {
+		if (tab.destroyTabBody && tab.body) {
 			tab.body.remove();
 			tab.body = undefined;
 		}
@@ -215,6 +220,9 @@ export class TabbedPanel extends Disposable {
 		DOM.addClass(tab.header, 'active');
 		tab.header.setAttribute('aria-selected', 'true');
 		this._onTabChange.fire(id);
+		if (tab.tab.view.onShow) {
+			tab.tab.view.onShow();
+		}
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}

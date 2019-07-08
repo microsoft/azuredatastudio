@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { InsightsDialogController } from 'sql/workbench/services/insights/node/insightsDialogController';
+import { InsightsDialogController } from 'sql/workbench/services/insights/common/insightsDialogController';
 import { InsightsDialogView } from 'sql/workbench/services/insights/browser/insightsDialogView';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';

@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "Serveur source",
 	"dacfx.sourceDatabaseName": "Base de données source ",
 	"dacfx.fileLocation": "Emplacement du fichier",
-	"dacfx.scriptLocation": "Emplacement du script de déploiement",
-	"dacfx.action": "Action",
-	"dacfx.deploy": "Déployer",
-	"dacfx.generateScript": "Générer un script de déploiement",
 	"dacfxExtract.version": "Version",
 	"dacfx.settingColumn": "Paramètre",
 	"dacfx.valueColumn": "Valeur"

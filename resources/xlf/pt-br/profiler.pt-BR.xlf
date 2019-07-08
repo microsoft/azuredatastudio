@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="createSessionDialog.createSessionFailed">
         <source xml:lang="en">Failed to create a session</source>
-        <target state="new">Failed to create a session</target>
+        <target state="translated">Falha ao criar uma sessão</target>
       </trans-unit>
     </body>
   </file>

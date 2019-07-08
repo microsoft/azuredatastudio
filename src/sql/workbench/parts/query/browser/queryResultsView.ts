@@ -65,6 +65,8 @@ class MessagesView extends Disposable implements IPanelView {
 class ResultsView extends Disposable implements IPanelView {
 	private gridPanel: GridPanel;
 	private container = document.createElement('div');
+	private _state: GridPanelState;
+	private _runner: QueryRunner;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -94,7 +96,20 @@ class ResultsView extends Disposable implements IPanelView {
 		this.container.remove();
 	}
 
+	onHide(): void {
+		this._state = this.gridPanel.state;
+		this.gridPanel.clear();
+	}
+
+	onShow(): void {
+		if (this._state) {
+			this.state = this._state;
+			this.queryRunner = this._runner;
+		}
+	}
+
 	public set queryRunner(runner: QueryRunner) {
+		this._runner = runner;
 		this.gridPanel.queryRunner = runner;
 	}
 

@@ -12,5 +12,5 @@
 	"flatFileImport.openFile": "開啟",
 	"flatFileImport.fileTextboxTitle": "要匯入檔案的位置",
 	"flatFileImport.tableTextboxTitle": "新資料表名稱",
-	"flatFileImport.schemaTextboxTitle": "資料表結構描述"
+	"flatFileImport.schemaTextboxTitle": "表格結構描述"
 }

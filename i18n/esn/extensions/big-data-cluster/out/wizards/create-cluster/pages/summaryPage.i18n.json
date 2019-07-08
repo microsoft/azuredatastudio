@@ -19,6 +19,6 @@
 	"bdc-create.StoragePoolScaleText": "Escala del grupo de almacenamiento",
 	"bdc-create.SparkPoolScaleText": "Escala del grupo de Spark",
 	"bdc-create.TargetClusterGroupTitle": "CLÚSTER DE DESTINO",
-	"bdc-create.BigDataClusterGroupTitle": "CLÚSTER DE MACRODATOS DE SQL SERVER",
+	"bdc-create.BigDataClusterGroupTitle": "Clúster de macrodatos de SQL Server",
 	"bdc-create.YesText": "Sí"
 }

@@ -133,6 +133,9 @@
     <trans-unit id="downloadingService">
       <source xml:lang="en">Downloading {0}</source>
     </trans-unit>
+    <trans-unit id="downloadingServiceSize">
+      <source xml:lang="en">({0} KB)</source>
+    </trans-unit>
     <trans-unit id="downloadingServiceStatus">
       <source xml:lang="en">Downloading Service</source>
     </trans-unit>

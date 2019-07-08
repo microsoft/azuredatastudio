@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "Servidor de Origem",
 	"dacfx.sourceDatabaseName": "Banco de Dados de Origem",
 	"dacfx.fileLocation": "Local do arquivo",
-	"dacfx.scriptLocation": "Localização do Script de Implantação",
-	"dacfx.action": "Ação",
-	"dacfx.deploy": "Implantar",
-	"dacfx.generateScript": "Gerar Script de implantação",
 	"dacfxExtract.version": "Versão",
 	"dacfx.settingColumn": "Configuração",
 	"dacfx.valueColumn": "Valor"

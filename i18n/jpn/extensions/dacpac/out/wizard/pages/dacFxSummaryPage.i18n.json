@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "ソース サーバー",
 	"dacfx.sourceDatabaseName": "ソース データベース",
 	"dacfx.fileLocation": "ファイルの場所",
-	"dacfx.scriptLocation": "展開スクリプトの場所",
-	"dacfx.action": "アクション",
-	"dacfx.deploy": "展開",
-	"dacfx.generateScript": "展開スクリプトの生成",
 	"dacfxExtract.version": "バージョン",
 	"dacfx.settingColumn": "設定",
 	"dacfx.valueColumn": "値"
