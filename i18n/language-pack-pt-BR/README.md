@@ -1,4 +1,4 @@
-#  Pacote de Idioma para o Azure Data Studio em Português Brasileiro
+# Pacote de Idioma para o Azure Data Studio em Português Brasileiro
 
 O Pacote de idioma para Português Brasileiro fornece uma experiência de Interface de Usuário (UI) localizada para o Azure Data Studio.
 

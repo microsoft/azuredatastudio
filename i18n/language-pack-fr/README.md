@@ -1,4 +1,4 @@
-﻿#  Module linguistique français pour Azure Data Studio
+﻿# Module linguistique français pour Azure Data Studio
 
 Le module linguistique français fournit une expérience d'interface utilisateur localisée pour Azure Data Studio.
 

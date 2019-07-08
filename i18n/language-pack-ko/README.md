@@ -1,4 +1,4 @@
-﻿#  Azure Data Studio용 한국어 팩
+﻿# Azure Data Studio용 한국어 팩
 
 한국어 팩은 지역화된 Azure Data Studio용 UI 환경을 제공합니다.
 

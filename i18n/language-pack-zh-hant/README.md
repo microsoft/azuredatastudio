@@ -1,4 +1,4 @@
-#  Azure Data Studio 的中文(繁體)語言套件
+# Azure Data Studio 的中文(繁體)語言套件
 
 中文(繁體)語言套件，讓Azure Data Studio提供本地化的使用者界面。
 

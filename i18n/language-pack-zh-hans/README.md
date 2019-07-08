@@ -1,4 +1,4 @@
-#  适用于 Azure Data Studio 的中文（简体）语言包
+# 适用于 Azure Data Studio 的中文（简体）语言包
 
 此中文（简体）语言包为 Azure Data Studio 提供本地化界面。
 
