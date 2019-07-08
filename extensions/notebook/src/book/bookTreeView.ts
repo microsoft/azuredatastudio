@@ -110,22 +110,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return books;
 	}
 
-	private getPreviousUri(sec: any[], index: number, root: string): string {
-		let i = index - 1;
+	private getPreviousUri(sec: any[], i: number, root: string): string {
 		// TODO: check for url
-		if (i === -1) {
-			return null;
-		}
-		return path.join(root, 'content', sec[i].url.concat('.ipynb'));
+		return i - 1 === -1 ? null : path.join(root, 'content', sec[i - 1].url.concat('.ipynb'));
 	}
 
-	private getNextUri(sec: any[], index: number, root: string): string {
-		let i = index + 1;
+	private getNextUri(sec: any[], i: number, root: string): string {
 		// TODO: check for url
-		if (i === sec.length) {
-			return null;
-		}
-		return path.join(root, 'content', sec[i].url.concat('.ipynb'));
+		return i + 1 === sec.length ? null : path.join(root, 'content', sec[i + 1].url.concat('.ipynb'));
 	}
 
 	private getSections(sec: any[], root: string): BookTreeItem[] {
@@ -133,7 +125,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		for (let i = 0; i < sec.length; i++) {
 			if (sec[i].url) {
 				if (sec[i].external) {
-					let externalLink = new BookTreeItem(sec[i].title, root, sec[i].sections, sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, sec[i].url, null, null, { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', 'Open External Link'), arguments: [sec[i].url], });
+					let externalLink = new BookTreeItem(
+						sec[i].title,
+						root,
+						sec[i].sections,
+						sec[i].sections ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None,
+						sec[i].url,
+						null,
+						null,
+						{ command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', 'Open External Link'), arguments: [sec[i].url], }
+					);
 					notebooks.push(externalLink);
 				} else {
 					let pathToNotebook = path.join(root, 'content', sec[i].url.concat('.ipynb'));
@@ -141,17 +142,29 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 					// Following Jupyter Books behavior for now
 					if (fs.existsSync(pathToNotebook)) {
-						let notebook = new BookTreeItem(sec[i].title, root, sec[i].sections || sec[i].subsections,
+						let notebook = new BookTreeItem(
+							sec[i].title,
+							root,
+							sec[i].sections || sec[i].subsections,
 							(sec[i].sections || sec[i].subsections) && sec[i].expand_sections ? vscode.TreeItemCollapsibleState.Expanded : sec[i].sections || sec[i].subsections ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
-							sec[i].url, this.getPreviousUri(sec, i, root), this.getNextUri(sec, i, root),
-							{ command: 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], });
+							sec[i].url,
+							this.getPreviousUri(sec, i, root),
+							this.getNextUri(sec, i, root),
+							{ command: 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], }
+						);
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
 					} else if (fs.existsSync(pathToMarkdown)) {
-						let markdown = new BookTreeItem(sec[i].title, root, sec[i].sections || sec[i].subsections,
+						let markdown = new BookTreeItem(
+							sec[i].title,
+							root,
+							sec[i].sections || sec[i].subsections,
 							(sec[i].sections || sec[i].subsections) && sec[i].expand_sections ? vscode.TreeItemCollapsibleState.Expanded : sec[i].sections || sec[i].subsections ? vscode.TreeItemCollapsibleState.Collapsed : vscode.TreeItemCollapsibleState.None,
-							sec[i].url, this.getPreviousUri(sec, i, root), this.getNextUri(sec, i, root),
-							{ command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', 'Open Markdown'), arguments: [pathToMarkdown], });
+							sec[i].url,
+							this.getPreviousUri(sec, i, root),
+							this.getNextUri(sec, i, root),
+							{ command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', 'Open Markdown'), arguments: [pathToMarkdown], }
+						);
 						notebooks.push(markdown);
 					} else {
 						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sec[i].title));
