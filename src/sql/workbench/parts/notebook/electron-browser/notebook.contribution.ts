@@ -40,7 +40,7 @@ actionRegistry.registerWorkbenchAction(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_N },
+		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_N },
 
 	),
 	NewNotebookAction.LABEL
@@ -127,31 +127,16 @@ registerComponentType({
  * A mime renderer component for grid data.
  * This will be replaced by a dedicated component in the future
  */
-if (product.quality !== 'stable') {
-	registerComponentType({
-		mimeTypes: [
-			'application/vnd.dataresource+json',
-			'application/vnd.dataresource'
-		],
-		rank: 40,
-		safe: true,
-		ctor: GridOutputComponent,
-		selector: GridOutputComponent.SELECTOR
-	});
-} else {
-	// Default to existing grid view until we're sure the new
-	// implementation is fully stable
-	registerComponentType({
-		mimeTypes: [
-			'application/vnd.dataresource+json',
-			'application/vnd.dataresource'
-		],
-		rank: 40,
-		safe: true,
-		ctor: MimeRendererComponent,
-		selector: MimeRendererComponent.SELECTOR
-	});
-}
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.dataresource+json',
+		'application/vnd.dataresource'
+	],
+	rank: 40,
+	safe: true,
+	ctor: GridOutputComponent,
+	selector: GridOutputComponent.SELECTOR
+});
 
 /**
  * A mime renderer component for LaTeX.

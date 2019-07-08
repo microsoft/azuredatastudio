@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="flatFileImport.prosePreviewMessageFail">
         <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
-        <target state="new">This operation was unsuccessful. Please try a different input file.</target>
+        <target state="translated">Cette opération a échoué. Essayez un autre fichier d'entrée.</target>
       </trans-unit>
       <trans-unit id="flatFileImport.refresh">
         <source xml:lang="en">Refresh</source>

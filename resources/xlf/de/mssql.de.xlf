@@ -28,11 +28,11 @@
       </trans-unit>
       <trans-unit id="mssqlCluster.uploadFiles">
         <source xml:lang="en">Upload files</source>
-        <target state="new">Upload files</target>
+        <target state="translated">Dateien hochladen</target>
       </trans-unit>
       <trans-unit id="mssqlCluster.mkdir">
         <source xml:lang="en">New directory</source>
-        <target state="new">New directory</target>
+        <target state="translated">Neues Verzeichnis</target>
       </trans-unit>
       <trans-unit id="mssqlCluster.deleteFiles">
         <source xml:lang="en">Delete</source>
@@ -52,15 +52,15 @@
       </trans-unit>
       <trans-unit id="notebook.command.new">
         <source xml:lang="en">New Notebook</source>
-        <target state="new">New Notebook</target>
+        <target state="translated">Neues Notebook</target>
       </trans-unit>
       <trans-unit id="notebook.command.open">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">Notebook öffnen</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
         <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
-        <target state="new">Tasks and information about your SQL Server Big Data Cluster</target>
+        <target state="translated">Aufgaben und Informationen zu Ihrem SQL Server-Big Data-Cluster</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
         <source xml:lang="en">SQL Server Big Data Cluster</source>
@@ -68,19 +68,19 @@
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
         <source xml:lang="en">Submit Spark Job</source>
-        <target state="new">Submit Spark Job</target>
+        <target state="translated">Spark-Auftrag übermitteln</target>
       </trans-unit>
       <trans-unit id="title.newSparkJob">
         <source xml:lang="en">New Spark Job</source>
-        <target state="new">New Spark Job</target>
+        <target state="translated">Neuer Spark-Auftrag</target>
       </trans-unit>
       <trans-unit id="title.openSparkHistory">
         <source xml:lang="en">View Spark History</source>
-        <target state="new">View Spark History</target>
+        <target state="translated">Spark-Verlauf anzeigen</target>
       </trans-unit>
       <trans-unit id="title.openYarnHistory">
         <source xml:lang="en">View Yarn History</source>
-        <target state="new">View Yarn History</target>
+        <target state="translated">YARN-Verlauf anzeigen</target>
       </trans-unit>
       <trans-unit id="title.tasks">
         <source xml:lang="en">Tasks</source>
@@ -88,31 +88,31 @@
       </trans-unit>
       <trans-unit id="title.installPackages">
         <source xml:lang="en">Install Packages</source>
-        <target state="new">Install Packages</target>
+        <target state="translated">Pakete installieren</target>
       </trans-unit>
       <trans-unit id="title.configurePython">
         <source xml:lang="en">Configure Python for Notebooks</source>
-        <target state="new">Configure Python for Notebooks</target>
+        <target state="translated">Python für Notebooks konfigurieren</target>
       </trans-unit>
       <trans-unit id="title.openClusterStatusNotebook">
         <source xml:lang="en">Cluster Status</source>
-        <target state="new">Cluster Status</target>
+        <target state="translated">Clusterstatus</target>
       </trans-unit>
       <trans-unit id="title.searchServers">
         <source xml:lang="en">Search: Servers</source>
-        <target state="new">Search: Servers</target>
+        <target state="translated">Suche: Server</target>
       </trans-unit>
       <trans-unit id="title.clearSearchServerResult">
         <source xml:lang="en">Search: Clear Search Server Results</source>
-        <target state="new">Search: Clear Search Server Results</target>
+        <target state="translated">Suche: Suchserverergebnisse löschen</target>
       </trans-unit>
       <trans-unit id="title.endpoints">
         <source xml:lang="en">Service Endpoints</source>
-        <target state="new">Service Endpoints</target>
+        <target state="translated">Dienstendpunkte</target>
       </trans-unit>
       <trans-unit id="mssql.configuration.title">
         <source xml:lang="en">MSSQL configuration</source>
-        <target state="new">MSSQL configuration</target>
+        <target state="translated">MSSQL-Konfiguration</target>
       </trans-unit>
       <trans-unit id="mssql.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
@@ -140,23 +140,23 @@
       </trans-unit>
       <trans-unit id="mssql.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="new">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</target>
+        <target state="translated">[Optional] Protokollieren Sie die Debugausgabe in der Konsole (Ansicht &gt; Ausgabe), und wählen Sie dann den entsprechenden Ausgabekanal aus der Dropdownliste aus.</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="new">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</target>
+        <target state="translated">[Optional] Protokollebene für Back-End-Dienste. Azure Data Studio generiert bei jedem Start einen Dateinamen, und wenn die Datei bereits vorhanden ist, werden die Protokolleinträge an diese Datei angehängt. Zur Bereinigung alter Protokolldateien finden Sie die Einstellungen logRetentionMinutes und logFilesRemovalLimit. Beim Standard-tracingLevel wird nicht viel protokolliert. Das Ändern der Ausführlichkeit kann zu umfangreicher Protokollierung und hohen Speicherplatzanforderungen für die Protokolle führen. "Error" beinhaltet "Critical", "Warning" beinhaltet "Error", "Information beinhaltet "Warning", und "Verbose" beinhaltet "Information".</target>
       </trans-unit>
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="new">Number of minutes to retain log files for backend services. Default is 1 week.</target>
+        <target state="translated">Anzahl von Minuten, für die Protokolldateien für Back-End-Dienste aufbewahrt werden sollen. Der Standardwert ist 1 Woche.</target>
       </trans-unit>
       <trans-unit id="mssql.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="new">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</target>
+        <target state="translated">Die maximale Anzahl alter Dateien, die beim Start entfernt werden sollen, bei denen die mssql.logRetentionMinutes abgelaufen sind. Dateien, die aufgrund dieser Einschränkung nicht bereinigt werden, werden beim nächsten Start von Azure Data Studio bereinigt.</target>
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="new">[Optional] Do not show unsupported platform warnings</target>
+        <target state="translated">[Optional] Keine Warnungen zu nicht unterstützten Plattformen anzeigen</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
@@ -200,7 +200,7 @@
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
         <source xml:lang="en">Pricing Tier</source>
-        <target state="new">Pricing Tier</target>
+        <target state="translated">Tarif</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
@@ -224,11 +224,11 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectionName.displayName">
         <source xml:lang="en">Name (optional)</source>
-        <target state="new">Name (optional)</target>
+        <target state="translated">Name (optional)</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectionName.description">
         <source xml:lang="en">Custom name of the connection</source>
-        <target state="new">Custom name of the connection</target>
+        <target state="translated">Benutzerdefinierter Name der Verbindung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
@@ -236,7 +236,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="new">Name of the SQL Server instance</target>
+        <target state="translated">Name der SQL Server-Instanz</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.databaseName.displayName">
         <source xml:lang="en">Database</source>
@@ -244,7 +244,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.databaseName.description">
         <source xml:lang="en">The name of the initial catalog or database int the data source</source>
-        <target state="new">The name of the initial catalog or database int the data source</target>
+        <target state="translated">Der Name des ursprünglichen Katalogs oder der ersten Datenbank in der Datenquelle</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
@@ -252,7 +252,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="new">Specifies the method of authenticating with SQL Server</target>
+        <target state="translated">Gibt die Methode der Authentifizierung bei SQL Server an.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
@@ -264,7 +264,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="new">Azure Active Directory - Universal with MFA support</target>
+        <target state="translated">Azure Active Directory: universell mit MFA-Unterstützung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.userName.displayName">
         <source xml:lang="en">User name</source>
@@ -272,7 +272,7 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.userName.description">
         <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="new">Indicates the user ID to be used when connecting to the data source</target>
+        <target state="translated">Gibt die Benutzer-ID an, die beim Herstellen einer Verbindung mit der Datenquelle verwendet werden soll.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.password.displayName">
         <source xml:lang="en">Password</source>
@@ -280,63 +280,63 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.password.description">
         <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="new">Indicates the password to be used when connecting to the data source</target>
+        <target state="translated">Gibt das Kennwort an, das beim Herstellen einer Verbindung mit der Datenquelle verwendet werden soll.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationIntent.displayName">
         <source xml:lang="en">Application intent</source>
-        <target state="new">Application intent</target>
+        <target state="translated">Anwendungszweck</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationIntent.description">
         <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="new">Declares the application workload type when connecting to a server</target>
+        <target state="translated">Deklariert den Anwendungsworkloadtyp beim Herstellen einer Verbindung mit einem Server.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.displayName">
         <source xml:lang="en">Asynchronous processing</source>
-        <target state="new">Asynchronous processing</target>
+        <target state="translated">Asynchrone Verarbeitung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.asynchronousProcessing.description">
         <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="new">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</target>
+        <target state="translated">Bei TRUE wird die Verwendung der asynchronen Funktionalität im .NET Framework-Datenanbieter ermöglicht.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectTimeout.displayName">
         <source xml:lang="en">Connect timeout</source>
-        <target state="new">Connect timeout</target>
+        <target state="translated">Verbindungstimeout</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectTimeout.description">
         <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="new">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</target>
+        <target state="translated">Die Zeitspanne (in Sekunden), die auf eine Verbindung mit dem Server gewartet werden muss, bevor der Versuch beendet und ein Fehler generiert wird</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.displayName">
         <source xml:lang="en">Current language</source>
-        <target state="new">Current language</target>
+        <target state="translated">Aktuelle Sprache</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.currentLanguage.description">
         <source xml:lang="en">The SQL Server language record name</source>
-        <target state="new">The SQL Server language record name</target>
+        <target state="translated">Der Datensatzname der SQL Server-Sprache</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.displayName">
         <source xml:lang="en">Column encryption</source>
-        <target state="new">Column encryption</target>
+        <target state="translated">Spaltenverschlüsselung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="new">Default column encryption setting for all the commands on the connection</target>
+        <target state="translated">Standardeinstellung für die Spaltenverschlüsselung für alle Befehle in der Verbindung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
-        <target state="new">Encrypt</target>
+        <target state="translated">Verschlüsseln</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.encrypt.description">
         <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="new">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</target>
+        <target state="translated">Bei TRUE verwendet SQL Server die SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, wenn auf dem Server ein Zertifikat installiert ist.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.displayName">
         <source xml:lang="en">Persist security info</source>
-        <target state="new">Persist security info</target>
+        <target state="translated">Sicherheitsinformationen dauerhaft speichern</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.persistSecurityInfo.description">
         <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="new">When false, security-sensitive information, such as the password, is not returned as part of the connection</target>
+        <target state="translated">Bei FALSE werden sicherheitsrelevante Informationen, z. B. das Kennwort, nicht als Teil der Verbindung zurückgegeben.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
@@ -344,43 +344,43 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="new">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</target>
+        <target state="translated">Bei TRUE (und encrypt=true) verwendet SQL Server die SSL-Verschlüsselung für alle Daten, die zwischen Client und Server gesendet werden, ohne das Serverzertifikat zu überprüfen.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
-        <target state="new">Attached DB file name</target>
+        <target state="translated">Angefügter DB-Dateiname</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachedDBFileName.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="new">The name of the primary file, including the full path name, of an attachable database</target>
+        <target state="translated">Der Name der primären Datei einer anfügbaren Datenbank, einschließlich des vollständigen Pfadnamens</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.contextConnection.displayName">
         <source xml:lang="en">Context connection</source>
-        <target state="new">Context connection</target>
+        <target state="translated">Kontextverbindung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="new">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</target>
+        <target state="translated">Bei TRUE wird angegeben, dass die Verbindung aus dem SQL Server-Kontext stammen muss. Nur verfügbar bei Ausführung im SQL Server-Prozess.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
-        <target state="new">Port</target>
+        <target state="translated">Port</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.displayName">
         <source xml:lang="en">Connect retry count</source>
-        <target state="new">Connect retry count</target>
+        <target state="translated">Anzahl von Verbindungswiederholungen</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="new">Number of attempts to restore connection</target>
+        <target state="translated">Anzahl der Versuche zur Verbindungswiederherstellung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.displayName">
         <source xml:lang="en">Connect retry interval</source>
-        <target state="new">Connect retry interval</target>
+        <target state="translated">Intervall für Verbindungswiederholungen</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.connectRetryInterval.description">
         <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="new">Delay between attempts to restore connection</target>
+        <target state="translated">Verzögerung zwischen Versuchen zur Verbindungswiederherstellung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
@@ -388,47 +388,47 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.applicationName.description">
         <source xml:lang="en">The name of the application</source>
-        <target state="new">The name of the application</target>
+        <target state="translated">Der Name der Anwendung</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
-        <target state="new">Workstation Id</target>
+        <target state="translated">Arbeitsstations-ID</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="new">The name of the workstation connecting to SQL Server</target>
+        <target state="translated">Der Name der Arbeitsstation, die eine Verbindung mit SQL Server herstellt</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.displayName">
         <source xml:lang="en">Pooling</source>
-        <target state="new">Pooling</target>
+        <target state="translated">Pooling</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="new">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</target>
+        <target state="translated">Bei TRUE wird das Verbindungsobjekt aus dem entsprechenden Pool abgerufen oder bei Bedarf erstellt und dem entsprechenden Pool hinzugefügt.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
-        <target state="new">Max pool size</target>
+        <target state="translated">Maximale Poolgröße</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.maxPoolSize.description">
         <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="new">The maximum number of connections allowed in the pool</target>
+        <target state="translated">Die maximale Anzahl der im Pool zulässigen Verbindungen</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.minPoolSize.displayName">
         <source xml:lang="en">Min pool size</source>
-        <target state="new">Min pool size</target>
+        <target state="translated">Mindestgröße für Pool</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.minPoolSize.description">
         <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="new">The minimum number of connections allowed in the pool</target>
+        <target state="translated">Die Mindestanzahl der im Pool zulässigen Verbindungen</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.displayName">
         <source xml:lang="en">Load balance timeout</source>
-        <target state="new">Load balance timeout</target>
+        <target state="translated">Timeout beim Lastenausgleich</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="new">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</target>
+        <target state="translated">Die Mindestzeit (in Sekunden), die diese Verbindung im Pool verbleibt, bevor sie zerstört wird</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.replication.displayName">
         <source xml:lang="en">Replication</source>
@@ -436,47 +436,47 @@
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.replication.description">
         <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="new">Used by SQL Server in Replication</target>
+        <target state="translated">Wird von SQL Server bei der Replikation verwendet.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
-        <target state="new">Attach DB filename</target>
+        <target state="translated">DB-Dateinamen anfügen</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
-        <target state="new">Failover partner</target>
+        <target state="translated">Failoverpartner</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="new">The name or network address of the instance of SQL Server that acts as a failover partner</target>
+        <target state="translated">Der Name oder die Netzwerkadresse der Instanz von SQL Server, die als Failoverpartner fungiert</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multiSubnetFailover.displayName">
         <source xml:lang="en">Multi subnet failover</source>
-        <target state="new">Multi subnet failover</target>
+        <target state="translated">Multisubnetzfailover</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.displayName">
         <source xml:lang="en">Multiple active result sets</source>
-        <target state="new">Multiple active result sets</target>
+        <target state="translated">Mehrere aktive Resultsets</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.multipleActiveResultSets.description">
         <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="new">When true, multiple result sets can be returned and read from one connection</target>
+        <target state="translated">Bei TRUE können mehrere Resultsets über eine Verbindung zurückgegeben und gelesen werden.</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.displayName">
         <source xml:lang="en">Packet size</source>
-        <target state="new">Packet size</target>
+        <target state="translated">Paketgröße</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.packetSize.description">
         <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="new">Size in bytes of the network packets used to communicate with an instance of SQL Server</target>
+        <target state="translated">Größe der Netzwerkpakete (in Byte), die für die Kommunikation mit einer Instanz von SQL Server verwendet werden</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.typeSystemVersion.displayName">
         <source xml:lang="en">Type system version</source>
-        <target state="new">Type system version</target>
+        <target state="translated">TypSystemversion</target>
       </trans-unit>
       <trans-unit id="mssql.connectionOptions.typeSystemVersion.description">
         <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="new">Indicates which server type system then provider will expose through the DataReader</target>
+        <target state="translated">Gibt an, welches Servertypsystem vom Anbieter über den DataReader verfügbar gemacht wird.</target>
       </trans-unit>
     </body>
   </file>
@@ -484,11 +484,11 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Spark job batch id is returned from response.{0}[Error] {1}</source>
-        <target state="new">No Spark job batch id is returned from response.{0}[Error] {1}</target>
+        <target state="translated">Von der Antwort wurde keine Batch-ID für Spark-Aufträge zurückgegeben.{0}[Fehler] {1}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No log is returned within response.{0}[Error] {1}</source>
-        <target state="new">No log is returned within response.{0}[Error] {1}</target>
+        <target state="translated">Innerhalb der Antwort wird kein Protokoll zurückgegeben.{0}[Fehler] {1}</target>
       </trans-unit>
     </body>
   </file>
@@ -496,27 +496,27 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Parameters for SparkJobSubmissionModel is illegal</source>
-        <target state="new">Parameters for SparkJobSubmissionModel is illegal</target>
+        <target state="translated">Parameter für SparkJobSubmissionModel sind ungültig.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">submissionArgs is invalid. </source>
-        <target state="new">submissionArgs is invalid. </target>
+        <target state="translated">submissionArgs ist ungültig. </target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">livyBatchId is invalid. </source>
-        <target state="new">livyBatchId is invalid. </target>
+        <target state="translated">livyBatchId ist ungültig. </target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Get Application Id time out. {0}[Log]   {1}</source>
-        <target state="new">Get Application Id time out. {0}[Log]   {1}</target>
+        <target state="translated">Timeout beim Abrufen der Anwendungs-ID. {0}[Protokoll]   {1}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property localFilePath or hdfsFolderPath is not specified. </source>
-        <target state="new">Property localFilePath or hdfsFolderPath is not specified. </target>
+        <target state="translated">Die localFilePath- oder hdfsFolderPath-Eigenschaft wurde nicht angegeben.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property Path is not specified. </source>
-        <target state="new">Property Path is not specified. </target>
+        <target state="translated">Der Eigenschaftspfad wurde nicht angegeben.</target>
       </trans-unit>
     </body>
   </file>
@@ -524,7 +524,7 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Parameters for SparkJobSubmissionDialog is illegal</source>
-        <target state="new">Parameters for SparkJobSubmissionDialog is illegal</target>
+        <target state="translated">Parameter für SparkJobSubmissionDialog sind ungültig.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">New Job</source>
@@ -536,15 +536,15 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Submit</source>
-        <target state="new">Submit</target>
+        <target state="translated">Senden</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">{0} Spark Job Submission:</source>
-        <target state="new">{0} Spark Job Submission:</target>
+        <target state="translated">{0} Spark-Auftragsübermittlung:</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">.......................... Submit Spark Job Start ..........................</source>
-        <target state="new">.......................... Submit Spark Job Start ..........................</target>
+        <target state="translated">.......................... Start der Spark-Auftragsübermittlung ..........................</target>
       </trans-unit>
     </body>
   </file>
@@ -556,7 +556,7 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Enter a name ...</source>
-        <target state="new">Enter a name ...</target>
+        <target state="translated">Namen eingeben...</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Job Name</source>
@@ -564,23 +564,23 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Spark Cluster</source>
-        <target state="new">Spark Cluster</target>
+        <target state="translated">Spark-Cluster</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Path to a .jar or .py file</source>
-        <target state="new">Path to a .jar or .py file</target>
+        <target state="translated">Pfad zu einer JAR- oder PY-Datei</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">The selected local file will be uploaded to HDFS: {0}</source>
-        <target state="new">The selected local file will be uploaded to HDFS: {0}</target>
+        <target state="translated">Die ausgewählte lokale Datei wird in HDFS hochgeladen: {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">JAR/py File</source>
-        <target state="new">JAR/py File</target>
+        <target state="translated">JAR-/PY-Datei</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Main Class</source>
-        <target state="new">Main Class</target>
+        <target state="translated">Hauptklasse</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Arguments</source>
@@ -588,27 +588,27 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Command line arguments used in your main class, multiple arguments should be split by space.</source>
-        <target state="new">Command line arguments used in your main class, multiple arguments should be split by space.</target>
+        <target state="translated">Befehlszeilenargumente, die in Ihrer Hauptklasse verwendet werden. Mehrere Argumente müssen durch Leerzeichen voneinander getrennt werden.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property Job Name is not specified.</source>
-        <target state="new">Property Job Name is not specified.</target>
+        <target state="translated">Der Eigenschaftsauftragsname wurde nicht angegeben.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property JAR/py File is not specified.</source>
-        <target state="new">Property JAR/py File is not specified.</target>
+        <target state="translated">Die JAR-/PY-Datei der Eigenschaft wurde nicht angegeben.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Property Main Class is not specified.</source>
-        <target state="new">Property Main Class is not specified.</target>
+        <target state="translated">Die Hauptklasse der Eigenschaft wurde nicht angegeben.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">{0} does not exist in Cluster or exception thrown. </source>
-        <target state="new">{0} does not exist in Cluster or exception thrown. </target>
+        <target state="translated">"{0}" ist im Cluster nicht vorhanden, oder eine Ausnahme wurde ausgelöst.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">The specified HDFS file does not exist. </source>
-        <target state="new">The specified HDFS file does not exist. </target>
+        <target state="translated">Die angegebene HDFS-Datei ist nicht vorhanden. </target>
       </trans-unit>
       <trans-unit id="sparkSelectLocalFile">
         <source xml:lang="en">Select</source>
@@ -616,7 +616,7 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Error in locating the file due to Error: {0}</source>
-        <target state="new">Error in locating the file due to Error: {0}</target>
+        <target state="translated">Fehler beim Auffinden der Datei aufgrund des folgenden Fehlers: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -628,27 +628,27 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference Jars</source>
-        <target state="new">Reference Jars</target>
+        <target state="translated">Referenz-JARs</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</source>
-        <target state="new">Jars to be placed in executor working directory. The Jar path needs to be an HDFS Path. Multiple paths should be split by semicolon (;)</target>
+        <target state="translated">JARs, die im Executor-Arbeitsverzeichnis platziert werden sollen. Der JAR-Pfad muss ein HDFS-Pfad sein. Mehrere Pfade müssen durch Semikolon (;) getrennt werden.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference py Files</source>
-        <target state="new">Reference py Files</target>
+        <target state="translated">Referenz-Py-Dateien</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-        <target state="new">Py Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</target>
+        <target state="translated">PY-Dateien, die im Arbeitsverzeichnis des Executors abgelegt werden sollen. Der Dateipfad muss ein HDFS-Pfad sein. Mehrere Pfade müssen per Semikolon (;) voneinander getrennt werden.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference Files</source>
-        <target state="new">Reference Files</target>
+        <target state="translated">Referenzdateien</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</source>
-        <target state="new">Files to be placed in executor working directory. The file path needs to be an HDFS Path. Multiple paths should be split by semicolon(;)</target>
+        <target state="translated">Dateien, die im Arbeitsverzeichnis des Executors abgelegt werden sollen. Der Dateipfad muss ein HDFS-Pfad sein. Mehrere Pfade müssen durch Semikolon (;) voneinander getrennt werden.</target>
       </trans-unit>
     </body>
   </file>
@@ -656,15 +656,15 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
-        <target state="new">Please select SQL Server with Big Data Cluster. </target>
+        <target state="translated">Wählen Sie SQL Server mit Big Data-Cluster aus.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server is selected.</source>
-        <target state="new">No Sql Server is selected.</target>
+        <target state="translated">Es ist keine SQL Server-Instanz ausgewählt.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Error Get File Path: {0}</source>
-        <target state="new">Error Get File Path: {0}</target>
+        <target state="translated">Fehler beim Abrufen des Dateipfads: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -676,7 +676,7 @@
       </trans-unit>
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with code {0}</source>
-        <target state="new">Process exited with code {0}</target>
+        <target state="translated">Der Prozess wurde mit Code {0} beendet.</target>
       </trans-unit>
     </body>
   </file>
@@ -696,27 +696,27 @@
     <body>
       <trans-unit id="webhdfs.invalidDataStructure">
         <source xml:lang="en">Invalid Data Structure</source>
-        <target state="new">Invalid Data Structure</target>
+        <target state="translated">Ungültige Datenstruktur</target>
       </trans-unit>
       <trans-unit id="webhdfs.missingProperties">
         <source xml:lang="en">Unable to create WebHDFS client due to missing options: ${0}</source>
-        <target state="new">Unable to create WebHDFS client due to missing options: ${0}</target>
+        <target state="translated">WebHDFS-Client kann aufgrund fehlender Optionen nicht erstellt werden: ${0}</target>
       </trans-unit>
       <trans-unit id="webhdfs.undefinedArgument">
         <source xml:lang="en">'${0}' is undefined.</source>
-        <target state="new">'${0}' is undefined.</target>
+        <target state="translated">"${0}" ist nicht definiert.</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError400">
         <source xml:lang="en">Bad Request</source>
-        <target state="new">Bad Request</target>
+        <target state="translated">Fehlerhafte Anforderung.</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError401">
         <source xml:lang="en">Unauthorized</source>
-        <target state="new">Unauthorized</target>
+        <target state="translated">Nicht autorisiert</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError403">
         <source xml:lang="en">Forbidden</source>
-        <target state="new">Forbidden</target>
+        <target state="translated">Unzulässig</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError404">
         <source xml:lang="en">Not Found</source>
@@ -724,7 +724,7 @@
       </trans-unit>
       <trans-unit id="webhdfs.httpError500">
         <source xml:lang="en">Internal Server Error</source>
-        <target state="new">Internal Server Error</target>
+        <target state="translated">Interner Serverfehler.</target>
       </trans-unit>
       <trans-unit id="webhdfs.unknownError">
         <source xml:lang="en">Unknown Error</source>
@@ -732,7 +732,7 @@
       </trans-unit>
       <trans-unit id="webhdfs.unexpectedRedirect">
         <source xml:lang="en">Unexpected Redirect</source>
-        <target state="new">Unexpected Redirect</target>
+        <target state="translated">Unerwartete Umleitung</target>
       </trans-unit>
     </body>
   </file>
@@ -740,27 +740,27 @@
     <body>
       <trans-unit id="prmptPwd">
         <source xml:lang="en">Please provide the password to connect to HDFS:</source>
-        <target state="new">Please provide the password to connect to HDFS:</target>
+        <target state="translated">Geben Sie das Kennwort für die Verbindung mit HDFS an:</target>
       </trans-unit>
       <trans-unit id="sessionNotFound">
         <source xml:lang="en">Session for node {0} does not exist</source>
-        <target state="new">Session for node {0} does not exist</target>
+        <target state="translated">Die Sitzung für den Knoten "{0}" ist nicht vorhanden.</target>
       </trans-unit>
       <trans-unit id="notifyError">
         <source xml:lang="en">Error notifying of node change: {0}</source>
-        <target state="new">Error notifying of node change: {0}</target>
+        <target state="translated">Fehler bei Benachrichtigung über Knotenänderung: {0}</target>
       </trans-unit>
       <trans-unit id="rootLabel">
         <source xml:lang="en">Root</source>
-        <target state="new">Root</target>
+        <target state="translated">Stamm</target>
       </trans-unit>
       <trans-unit id="hdfsFolder">
         <source xml:lang="en">HDFS</source>
-        <target state="new">HDFS</target>
+        <target state="translated">HDFS</target>
       </trans-unit>
       <trans-unit id="dataServicesLabel">
         <source xml:lang="en">Data Services</source>
-        <target state="new">Data Services</target>
+        <target state="translated">Data Services</target>
       </trans-unit>
     </body>
   </file>
@@ -772,7 +772,7 @@
       </trans-unit>
       <trans-unit id="errDeleteConnectionNode">
         <source xml:lang="en">Cannot delete a connection. Only subfolders and files can be deleted.</source>
-        <target state="new">Cannot delete a connection. Only subfolders and files can be deleted.</target>
+        <target state="translated">Eine Verbindung kann nicht gelöscht werden. Nur Unterordner und Dateien können gelöscht werden.</target>
       </trans-unit>
     </body>
   </file>
@@ -788,67 +788,67 @@
       </trans-unit>
       <trans-unit id="uploading">
         <source xml:lang="en">Uploading files to HDFS</source>
-        <target state="new">Uploading files to HDFS</target>
+        <target state="translated">Dateien werden in HDFS hochgeladen</target>
       </trans-unit>
       <trans-unit id="uploadCanceled">
         <source xml:lang="en">Upload operation was canceled</source>
-        <target state="new">Upload operation was canceled</target>
+        <target state="translated">Der Uploadvorgang wurde abgebrochen.</target>
       </trans-unit>
       <trans-unit id="uploadError">
         <source xml:lang="en">Error uploading files: {0}</source>
-        <target state="new">Error uploading files: {0}</target>
+        <target state="translated">Fehler beim Hochladen von Dateien: {0}</target>
       </trans-unit>
       <trans-unit id="makingDir">
         <source xml:lang="en">Creating directory</source>
-        <target state="new">Creating directory</target>
+        <target state="translated">Das Verzeichnis wird erstellt.</target>
       </trans-unit>
       <trans-unit id="mkdirCanceled">
         <source xml:lang="en">Operation was canceled</source>
-        <target state="new">Operation was canceled</target>
+        <target state="translated">Der Vorgang wurde abgebrochen.</target>
       </trans-unit>
       <trans-unit id="mkDirError">
         <source xml:lang="en">Error on making directory: {0}</source>
-        <target state="new">Error on making directory: {0}</target>
+        <target state="translated">Fehler beim Erstellen des Verzeichnisses: {0}</target>
       </trans-unit>
       <trans-unit id="enterDirName">
         <source xml:lang="en">Enter directory name</source>
-        <target state="new">Enter directory name</target>
+        <target state="translated">Verzeichnisnamen eingeben</target>
       </trans-unit>
       <trans-unit id="deleteError">
         <source xml:lang="en">Error on deleting files: {0}</source>
-        <target state="new">Error on deleting files: {0}</target>
+        <target state="translated">Fehler beim Löschen von Dateien: {0}</target>
       </trans-unit>
       <trans-unit id="msgDeleteFolder">
         <source xml:lang="en">Are you sure you want to delete this folder and its contents?</source>
-        <target state="new">Are you sure you want to delete this folder and its contents?</target>
+        <target state="translated">Möchten Sie diesen Ordner und seinen Inhalt löschen?</target>
       </trans-unit>
       <trans-unit id="msgDeleteFile">
         <source xml:lang="en">Are you sure you want to delete this file?</source>
-        <target state="new">Are you sure you want to delete this file?</target>
+        <target state="translated">Möchten Sie diese Datei löschen?</target>
       </trans-unit>
       <trans-unit id="saving">
         <source xml:lang="en">Saving HDFS Files</source>
-        <target state="new">Saving HDFS Files</target>
+        <target state="translated">HDFS-Dateien werden gespeichert.</target>
       </trans-unit>
       <trans-unit id="saveCanceled">
         <source xml:lang="en">Save operation was canceled</source>
-        <target state="new">Save operation was canceled</target>
+        <target state="translated">Der Speichervorgang wurde abgebrochen.</target>
       </trans-unit>
       <trans-unit id="saveError">
         <source xml:lang="en">Error on saving file: {0}</source>
-        <target state="new">Error on saving file: {0}</target>
+        <target state="translated">Fehler beim Speichern der Datei: {0}</target>
       </trans-unit>
       <trans-unit id="previewing">
         <source xml:lang="en">Generating preview</source>
-        <target state="new">Generating preview</target>
+        <target state="translated">Die Vorschau wird generiert.</target>
       </trans-unit>
       <trans-unit id="previewError">
         <source xml:lang="en">Error on previewing file: {0}</source>
-        <target state="new">Error on previewing file: {0}</target>
+        <target state="translated">Fehler bei der Vorschau der Datei: {0}</target>
       </trans-unit>
       <trans-unit id="copyPathError">
         <source xml:lang="en">Error on copying path: {0}</source>
-        <target state="new">Error on copying path: {0}</target>
+        <target state="translated">Fehler beim Kopieren des Pfads: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -856,11 +856,11 @@
     <body>
       <trans-unit id="maxSizeNotice">
         <source xml:lang="en">NOTICE: This file has been truncated at {0} for preview. </source>
-        <target state="new">NOTICE: This file has been truncated at {0} for preview. </target>
+        <target state="translated">HINWEIS: Diese Datei wurde zur Vorschau bei "{0}" abgeschnitten.</target>
       </trans-unit>
       <trans-unit id="maxSizeReached">
         <source xml:lang="en">The file has been truncated at {0} for preview.</source>
-        <target state="new">The file has been truncated at {0} for preview.</target>
+        <target state="translated">Die Datei wurde zur Vorschau bei "{0}" abgeschnitten.</target>
       </trans-unit>
     </body>
   </file>
@@ -868,15 +868,15 @@
     <body>
       <trans-unit id="connectionInfoUndefined">
         <source xml:lang="en">ConnectionInfo is undefined.</source>
-        <target state="new">ConnectionInfo is undefined.</target>
+        <target state="translated">ConnectionInfo ist nicht definiert.</target>
       </trans-unit>
       <trans-unit id="connectionInfoOptionsUndefined">
         <source xml:lang="en">ConnectionInfo.options is undefined.</source>
-        <target state="new">ConnectionInfo.options is undefined.</target>
+        <target state="translated">"ConnectionInfo.options" ist nicht definiert.</target>
       </trans-unit>
       <trans-unit id="connectionInfoOptionsMissingProperties">
         <source xml:lang="en">Some missing properties in connectionInfo.options: {0}</source>
-        <target state="new">Some missing properties in connectionInfo.options: {0}</target>
+        <target state="translated">Einige Eigenschaften fehlen in connectionInfo.options: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -892,7 +892,7 @@
       </trans-unit>
       <trans-unit id="cancel">
         <source xml:lang="en">Cancel operation?</source>
-        <target state="new">Cancel operation?</target>
+        <target state="translated">Vorgang abbrechen?</target>
       </trans-unit>
       <trans-unit id="mssql.searchServers">
         <source xml:lang="en">Search Server Names</source>
@@ -904,7 +904,7 @@
     <body>
       <trans-unit id="streamCanceled">
         <source xml:lang="en">Stream operation canceled by the user</source>
-        <target state="new">Stream operation canceled by the user</target>
+        <target state="translated">Der Streamvorgang wurde vom Benutzer abgebrochen.</target>
       </trans-unit>
     </body>
   </file>
@@ -912,23 +912,23 @@
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
-        <target state="new">This sample code loads the file into a data frame and shows the first 10 results.</target>
+        <target state="translated">Dieser Beispielcode lädt die Datei in einen Datenrahmen und zeigt die ersten 10 Ergebnisse an.</target>
       </trans-unit>
       <trans-unit id="grafana">
         <source xml:lang="en">Metrics Dashboard</source>
-        <target state="new">Metrics Dashboard</target>
+        <target state="translated">Metrikdashboard</target>
       </trans-unit>
       <trans-unit id="kibana">
         <source xml:lang="en">Log Search Dashboard</source>
-        <target state="new">Log Search Dashboard</target>
+        <target state="translated">Dashboard für Protokollsuche</target>
       </trans-unit>
       <trans-unit id="sparkHostory">
         <source xml:lang="en">Spark Job Monitoring</source>
-        <target state="new">Spark Job Monitoring</target>
+        <target state="translated">Überwachung von Spark-Aufträgen</target>
       </trans-unit>
       <trans-unit id="yarnHistory">
         <source xml:lang="en">Spark Resource Management</source>
-        <target state="new">Spark Resource Management</target>
+        <target state="translated">Spark-Ressourcenverwaltung</target>
       </trans-unit>
       <trans-unit id="copyText">
         <source xml:lang="en">Copy</source>
@@ -936,35 +936,35 @@
       </trans-unit>
       <trans-unit id="appproxy">
         <source xml:lang="en">Application Proxy</source>
-        <target state="new">Application Proxy</target>
+        <target state="translated">Anwendungsproxy</target>
       </trans-unit>
       <trans-unit id="controller">
         <source xml:lang="en">Cluster Management Service</source>
-        <target state="new">Cluster Management Service</target>
+        <target state="translated">Clusterverwaltungsdienst</target>
       </trans-unit>
       <trans-unit id="gateway">
         <source xml:lang="en">HDFS and Spark</source>
-        <target state="new">HDFS and Spark</target>
+        <target state="translated">HDFS und Spark</target>
       </trans-unit>
       <trans-unit id="managementproxy">
         <source xml:lang="en">Management Proxy</source>
-        <target state="new">Management Proxy</target>
+        <target state="translated">Verwaltungsproxy</target>
       </trans-unit>
       <trans-unit id="mgmtproxy">
         <source xml:lang="en">Management Proxy</source>
-        <target state="new">Management Proxy</target>
+        <target state="translated">Verwaltungsproxy</target>
       </trans-unit>
       <trans-unit id="notebookFileType">
         <source xml:lang="en">Notebooks</source>
-        <target state="new">Notebooks</target>
+        <target state="translated">Notebooks</target>
       </trans-unit>
       <trans-unit id="unsupportedFileType">
         <source xml:lang="en">Only .ipynb Notebooks are supported</source>
-        <target state="new">Only .ipynb Notebooks are supported</target>
+        <target state="translated">Es werden nur IPYNB-Notebooks unterstützt.</target>
       </trans-unit>
       <trans-unit id="fileNotFound">
         <source xml:lang="en">Unable to find the file specified</source>
-        <target state="new">Unable to find the file specified</target>
+        <target state="translated">Die angegebene Datei wurde nicht gefunden.</target>
       </trans-unit>
     </body>
   </file>
@@ -972,59 +972,59 @@
     <body>
       <trans-unit id="msgMissingNodeContext">
         <source xml:lang="en">Node Command called without any node passed</source>
-        <target state="new">Node Command called without any node passed</target>
+        <target state="translated">Es wurde ein Knotenbefehl aufgerufen, ohne dass ein Knoten übergeben wurde.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Local file will be uploaded to HDFS. </source>
-        <target state="new">Local file will be uploaded to HDFS. </target>
+        <target state="translated">Lokale Datei wird in HDFS hochgeladen.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">.......................... Submit Spark Job End ............................</source>
-        <target state="new">.......................... Submit Spark Job End ............................</target>
+        <target state="translated">.......................... Ende der Spark-Auftragsübermittlung ............................</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Uploading file from local {0} to HDFS folder: {1}</source>
-        <target state="new">Uploading file from local {0} to HDFS folder: {1}</target>
+        <target state="translated">Die Datei wird aus dem lokalen Ordner "{0}" in den HDFS-Ordner hochgeladen: {1}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Upload file to cluster Succeeded!</source>
-        <target state="new">Upload file to cluster Succeeded!</target>
+        <target state="translated">Die Datei wurde erfolgreich in den Cluster hochgeladen.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Upload file to cluster Failed. {0}</source>
-        <target state="new">Upload file to cluster Failed. {0}</target>
+        <target state="translated">Fehler beim Hochladen der Datei in den Cluster. {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Submitting job {0} ... </source>
-        <target state="new">Submitting job {0} ... </target>
+        <target state="translated">Der Auftrag "{0}" wird übermittelt...</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">The Spark Job has been submitted.</source>
-        <target state="new">The Spark Job has been submitted.</target>
+        <target state="translated">Der Spark-Auftrag wurde übermittelt.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Spark Job Submission Failed. {0} </source>
-        <target state="new">Spark Job Submission Failed. {0} </target>
+        <target state="translated">Fehler bei der Spark-Auftragsübermittlung. {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">YarnUI Url: {0} </source>
-        <target state="new">YarnUI Url: {0} </target>
+        <target state="translated">YarnUI-URL: {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Spark History Url: {0} </source>
-        <target state="new">Spark History Url: {0} </target>
+        <target state="translated">Spark-Verlaufs-URL: {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Get Application Id Failed. {0}</source>
-        <target state="new">Get Application Id Failed. {0}</target>
+        <target state="translated">Fehler beim Abrufen der Anwendungs-ID. {0}</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Local file {0} does not existed. </source>
-        <target state="new">Local file {0} does not existed. </target>
+        <target state="translated">Die lokale Datei "{0}" ist nicht vorhanden.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
-        <target state="new">No Sql Server Big Data Cluster found.</target>
+        <target state="translated">Es wurde kein SQL Server-Big Data-Cluster gefunden.</target>
       </trans-unit>
     </body>
   </file>
