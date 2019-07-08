@@ -17,6 +17,7 @@ export class NotebookModelStub implements INotebookModel {
 	}
 	public trustedMode: boolean;
 	language: string;
+	standardKernels: IStandardKernelWithProvider[];
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._languageInfo;
@@ -96,7 +97,13 @@ export class NotebookModelStub implements INotebookModel {
 	get onValidConnectionSelected(): Event<boolean> {
 		throw new Error('method not implemented.');
 	}
+	get onProviderIdChange(): Event<string> {
+		throw new Error('method not impelemented.');
+	}
 	toJSON(): nb.INotebookContents {
+		throw new Error('Method not implemented.');
+	}
+	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
 }

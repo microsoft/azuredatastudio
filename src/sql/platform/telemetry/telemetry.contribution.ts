@@ -3,21 +3,32 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { TelemetryView } from 'sql/platform/telemetry/telemetryKeys';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { Extensions as WorkbenchExtensions, IWorkbenchContributionsRegistry, IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { ICommandService, ICommandEvent } from 'vs/platform/commands/common/commands';
 
 export class SqlTelemetryContribution extends Disposable implements IWorkbenchContribution {
 
 	constructor(
-		@ITelemetryService private telemetryService: ITelemetryService,
-		@IStorageService storageService: IStorageService
+		@IAdsTelemetryService private telemetryService: IAdsTelemetryService,
+		@IStorageService storageService: IStorageService,
+		@ICommandService commandService: ICommandService
 	) {
 		super();
 
+		this._register(
+			commandService.onWillExecuteCommand(
+				(e: ICommandEvent) => {
+					// Filter out high-frequency events
+					if (!['type', 'cursorUp', 'cursorDown', 'cursorRight', 'cursorLeft', 'deleteLeft', 'deleteRight'].find(id => id === e.commandId)) {
+						telemetryService.sendActionEvent(TelemetryView.Shell, 'adsCommandExecuted', e.commandId);
+					}
+				}));
 		const dailyLastUseDate: number = Date.parse(storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, '0'));
 		const weeklyLastUseDate: number = Date.parse(storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, '0'));
 		const monthlyLastUseDate: number = Date.parse(storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, '0'));
@@ -28,14 +39,14 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		// daily user event
 		if (this.didDayChange(dailyLastUseDate)) {
 			// daily first use
-			telemetryService.publicLog('telemetry.dailyFirstUse', { dailyFirstUse: true });
+			telemetryService.sendTelemetryEvent('telemetry.dailyFirstUse', { dailyFirstUse: 'true' });
 			storageService.store('telemetry.dailyLastUseDate', todayString, StorageScope.GLOBAL);
 		}
 
 		// weekly user event
 		if (this.didWeekChange(weeklyLastUseDate)) {
 			// weekly first use
-			telemetryService.publicLog('telemetry.weeklyFirstUse', { weeklyFirstUse: true });
+			telemetryService.sendTelemetryEvent('telemetry.weeklyFirstUse', { weeklyFirstUse: 'true' });
 			storageService.store('telemetry.weeklyLastUseDate', todayString, StorageScope.GLOBAL);
 		}
 
@@ -44,7 +55,7 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 		after the last time we sent a monthly usage count */
 		const monthlyUseCount: number = storageService.getNumber('telemetry.monthlyUseCount', StorageScope.GLOBAL, 0);
 		if (this.didMonthChange(monthlyLastUseDate)) {
-			telemetryService.publicLog('telemetry.monthlyUse', { monthlyFirstUse: true });
+			telemetryService.sendTelemetryEvent('telemetry.monthlyUse', { monthlyFirstUse: 'true' });
 			// the month changed, so send the user usage type event based on monthly count for last month
 			// and reset the count for this month
 			let lastMonthDate = new Date(monthlyLastUseDate);
@@ -122,15 +133,15 @@ export class SqlTelemetryContribution extends Disposable implements IWorkbenchCo
 			userUsageType = UserUsageType.Dedicated;
 		}
 		if (userUsageType) {
-			this.telemetryService.publicLog('telemetry.userUsage',
-				{ userType: userUsageType, monthlyUseCount: monthlyUseCount, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
+			this.telemetryService.sendTelemetryEvent('telemetry.userUsage',
+				{ userType: userUsageType.toString(), monthlyUseCount: monthlyUseCount.toString(), month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString() });
 		}
 	}
 
 	// Growth Metrics
 	private sendGrowthTypeEvent(growthType: UserGrowthType, lastMonthDate: Date): void {
-		this.telemetryService.publicLog('telemetry.userGrowthType', {
-			userGrowthType: growthType, month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString()
+		this.telemetryService.sendTelemetryEvent('telemetry.userGrowthType', {
+			userGrowthType: growthType.toString(), month: lastMonthDate.getMonth().toString(), year: lastMonthDate.getFullYear().toString()
 		});
 	}
 }

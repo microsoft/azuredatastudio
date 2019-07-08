@@ -60,13 +60,23 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 	private readonly AllFilesLabelString: string = localize('jobStepDialog.allFiles', 'All Files (*)');
 
 	// Dropdown options
-	private readonly TSQLScript: string = localize('jobStepDialog.TSQL', 'Transact-SQL script (T-SQL)');
-	private readonly Powershell: string = localize('jobStepDialog.powershell', 'PowerShell');
-	private readonly CmdExec: string = localize('jobStepDialog.CmdExec', 'Operating system (CmdExec)');
-	private readonly AgentServiceAccount: string = localize('jobStepDialog.agentServiceAccount', 'SQL Server Agent Service Account');
-	private readonly NextStep: string = localize('jobStepDialog.nextStep', 'Go to the next step');
-	private readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', 'Quit the job reporting success');
-	private readonly QuitJobReportingFailure: string = localize('jobStepDialog.quitJobFailure', 'Quit the job reporting failure');
+	public static readonly TSQLScript: string = localize('jobStepDialog.TSQL', 'Transact-SQL script (T-SQL)');
+	public static readonly Powershell: string = localize('jobStepDialog.powershell', 'PowerShell');
+	public static readonly CmdExec: string = localize('jobStepDialog.CmdExec', 'Operating system (CmdExec)');
+	public static readonly ReplicationDistributor: string = localize('jobStepDialog.replicationDistribution', 'Replication Distributor');
+	public static readonly ReplicationMerge: string = localize('jobStepDialog.replicationMerge', 'Replication Merge');
+	public static readonly ReplicationQueueReader: string = localize('jobStepDialog.replicationQueueReader', 'Replication Queue Reader');
+	public static readonly ReplicationSnapshot: string = localize('jobStepDialog.replicationSnapshot', 'Replication Snapshot');
+	public static readonly ReplicationTransactionLogReader: string = localize('jobStepDialog.replicationTransactionLogReader', 'Replication Transaction-Log Reader');
+	public static readonly AnalysisServicesCommand: string = localize('jobStepDialog.analysisCommand', 'SQL Server Analysis Services Command');
+	public static readonly AnalysisServicesQuery: string = localize('jobStepDialog.analysisQuery', 'SQL Server Analysis Services Query');
+	public static readonly ServicesPackage: string = localize('jobStepDialog.servicesPackage', 'SQL Server Integration Service Package');
+
+
+	public static readonly AgentServiceAccount: string = localize('jobStepDialog.agentServiceAccount', 'SQL Server Agent Service Account');
+	public static readonly NextStep: string = localize('jobStepDialog.nextStep', 'Go to the next step');
+	public static readonly QuitJobReportingSuccess: string = localize('jobStepDialog.quitJobSuccess', 'Quit the job reporting success');
+	public static readonly QuitJobReportingFailure: string = localize('jobStepDialog.quitJobFailure', 'Quit the job reporting failure');
 
 	// Event Name strings
 	private readonly NewStepDialog = 'NewStepDialogOpened';
@@ -147,12 +157,14 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.openButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.OpenCommandText,
+				title: this.OpenCommandText,
 				width: '80px',
 				isFile: true
 			}).component();
 		this.parseButton = view.modelBuilder.button()
 			.withProperties({
 				label: this.ParseCommandText,
+				title: this.ParseCommandText,
 				width: '80px',
 				isFile: false
 			}).component();
@@ -176,7 +188,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				height: 300,
 				width: 400,
 				multiline: true,
-				inputType: 'text'
+				inputType: 'text',
+				ariaLabel: this.CommandLabelString,
+				placeHolder: this.CommandLabelString
 			})
 			.component();
 	}
@@ -185,6 +199,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.generalTab.registerContent(async (view) => {
 			this.nameTextBox = view.modelBuilder.inputBox()
 				.withProperties({
+					ariaLabel: this.StepNameLabelString,
+					placeHolder: this.StepNameLabelString
 				}).component();
 			this.nameTextBox.required = true;
 			this.nameTextBox.onTextChanged(() => {
@@ -195,8 +211,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 			this.typeDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: this.TSQLScript,
-					values: [this.TSQLScript, this.CmdExec, this.Powershell]
+					value: JobStepDialog.TSQLScript,
+					values: [JobStepDialog.TSQLScript, JobStepDialog.CmdExec, JobStepDialog.Powershell]
 				})
 				.component();
 			this.runAsDropdown = view.modelBuilder.dropDown()
@@ -214,6 +230,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 
 			this.processExitCodeBox = view.modelBuilder.inputBox()
 				.withProperties({
+					ariaLabel: this.ProcessExitCodeText,
+					placeHolder: this.ProcessExitCodeText
 				}).component();
 			this.processExitCodeBox.enabled = false;
 
@@ -246,7 +264,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					}).component();
 			this.typeDropdown.onValueChanged((type) => {
 				switch (type.selected) {
-					case (this.TSQLScript):
+					case (JobStepDialog.TSQLScript):
 						this.runAsDropdown.value = '';
 						this.runAsDropdown.values = [''];
 						this.runAsDropdown.enabled = false;
@@ -256,8 +274,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 						this.processExitCodeBox.value = '';
 						this.processExitCodeBox.enabled = false;
 						break;
-					case (this.Powershell):
-						this.runAsDropdown.value = this.AgentServiceAccount;
+					case (JobStepDialog.Powershell):
+						this.runAsDropdown.value = JobStepDialog.AgentServiceAccount;
 						this.runAsDropdown.values = [this.runAsDropdown.value];
 						this.runAsDropdown.enabled = true;
 						this.databaseDropdown.enabled = false;
@@ -266,11 +284,11 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 						this.processExitCodeBox.value = '';
 						this.processExitCodeBox.enabled = false;
 						break;
-					case (this.CmdExec):
+					case (JobStepDialog.CmdExec):
 						this.databaseDropdown.enabled = false;
 						this.databaseDropdown.values = [''];
 						this.databaseDropdown.value = '';
-						this.runAsDropdown.value = this.AgentServiceAccount;
+						this.runAsDropdown.value = JobStepDialog.AgentServiceAccount;
 						this.runAsDropdown.values = [this.runAsDropdown.value];
 						this.runAsDropdown.enabled = true;
 						this.processExitCodeBox.enabled = true;
@@ -286,7 +304,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			// Load values for edit scenario
 			if (this.isEdit) {
 				this.nameTextBox.value = this.model.stepName;
-				this.typeDropdown.value = this.model.subSystem;
+				this.typeDropdown.value = JobStepData.convertToSubSystemDisplayName(this.model.subSystem);
 				this.databaseDropdown.value = this.model.databaseName;
 				this.commandTextBox.value = this.model.command;
 			}
@@ -298,16 +316,16 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			this.successActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
 					width: '100%',
-					value: this.NextStep,
-					values: [this.NextStep, this.QuitJobReportingSuccess, this.QuitJobReportingFailure]
+					value: JobStepDialog.NextStep,
+					values: [JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess, JobStepDialog.QuitJobReportingFailure]
 				})
 				.component();
 			let retryFlexContainer = this.createRetryCounters(view);
 
 			this.failureActionDropdown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: this.QuitJobReportingFailure,
-					values: [this.QuitJobReportingFailure, this.NextStep, this.QuitJobReportingSuccess]
+					value: JobStepDialog.QuitJobReportingFailure,
+					values: [JobStepDialog.QuitJobReportingFailure, JobStepDialog.NextStep, JobStepDialog.QuitJobReportingSuccess]
 				})
 				.component();
 			let optionsGroup = this.createTSQLOptions(view);
@@ -343,7 +361,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 						title: this.FailureActionLabel
 					}, {
 						component: optionsGroup,
-						title: this.TSQLScript
+						title: JobStepDialog.TSQLScript
 					}, {
 						component: logToTableContainer,
 						title: ''
@@ -365,10 +383,10 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 			await view.initializeModel(formWrapper);
 
 			if (this.isEdit) {
-				this.successActionDropdown.value = this.model.successAction;
+				this.successActionDropdown.value = JobStepData.convertToCompletionActionDisplayName(this.model.successAction);
 				this.retryAttemptsBox.value = this.model.retryAttempts.toString();
 				this.retryIntervalBox.value = this.model.retryInterval.toString();
-				this.failureActionDropdown.value = this.model.failureAction;
+				this.failureActionDropdown.value = JobStepData.convertToCompletionActionDisplayName(this.model.failureAction);
 				this.outputFileNameBox.value = this.model.outputFileName;
 				this.appendToExistingFileCheckbox.checked = this.model.appendToLogFile;
 				this.logToTableCheckbox.checked = this.model.appendLogToTable;
@@ -527,13 +545,13 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 		this.model.jobName = this.jobName;
 		this.model.id = this.stepId;
 		this.model.server = this.server;
-		this.model.subSystem = this.typeDropdown.value as string;
+		this.model.subSystem = JobStepData.convertToAgentSubSystem(this.typeDropdown.value as string);
 		this.model.databaseName = this.databaseDropdown.value as string;
 		this.model.script = this.commandTextBox.value;
-		this.model.successAction = this.successActionDropdown.value as string;
+		this.model.successAction = JobStepData.convertToStepCompletionAction(this.successActionDropdown.value as string);
 		this.model.retryAttempts = this.retryAttemptsBox.value ? +this.retryAttemptsBox.value : 0;
 		this.model.retryInterval = +this.retryIntervalBox.value ? +this.retryIntervalBox.value : 0;
-		this.model.failureAction = this.failureActionDropdown.value as string;
+		this.model.failureAction = JobStepData.convertToStepCompletionAction(this.failureActionDropdown.value as string);
 		this.model.outputFileName = this.outputFileNameBox.value;
 		this.model.appendToLogFile = this.appendToExistingFileCheckbox.checked;
 		this.model.command = this.commandTextBox.value ? this.commandTextBox.value : '';

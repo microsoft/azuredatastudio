@@ -22,19 +22,20 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { generateUuid } from 'vs/base/common/uuid';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator } from 'sql/workbench/services/profiler/common/interfaces';
+import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 
-const ClearText: string = localize('profilerFilterDialog.clear', "Clear All");
+const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
 const ApplyText: string = localize('profilerFilterDialog.apply', "Apply");
 const OkText: string = localize('profilerFilterDialog.ok', "OK");
 const CancelText: string = localize('profilerFilterDialog.cancel', "Cancel");
 const DialogTitle: string = localize('profilerFilterDialog.title', "Filters");
-const RemoveText: string = localize('profilerFilterDialog.remove', "Remove");
-const AddText: string = localize('profilerFilterDialog.add', "Add");
-const AddClausePromptText: string = localize('profilerFilterDialog.addClauseText', "Click here to add a clause");
+const RemoveText: string = localize('profilerFilterDialog.remove', "Remove this clause");
+const SaveFilterText: string = localize('profilerFilterDialog.saveFilter', "Save Filter");
+const LoadFilterText: string = localize('profilerFilterDialog.loadFilter', "Load Filter");
+const AddClauseText: string = localize('profilerFilterDialog.addClauseText', "Add a clause");
 const TitleIconClass: string = 'icon filterLabel';
 
 const FieldText: string = localize('profilerFilterDialog.fieldColumn', "Field");
@@ -61,9 +62,9 @@ export class ProfilerFilterDialog extends Modal {
 	private _clauseBuilder: HTMLElement;
 	private _okButton: Button;
 	private _cancelButton: Button;
-	private _clearButton: Button;
 	private _applyButton: Button;
-	private _addClauseButton: Button;
+	private _loadFilterButton: Button;
+	private _saveFilterButton: Button;
 	private _input: ProfilerInput;
 	private _clauseRows: ClauseRowUI[] = [];
 
@@ -71,11 +72,12 @@ export class ProfilerFilterDialog extends Modal {
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@IContextViewService private contextViewService: IContextViewService
+		@IContextViewService private contextViewService: IContextViewService,
+		@IProfilerService private profilerService: IProfilerService
 	) {
 		super('', TelemetryKeys.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 	}
@@ -96,21 +98,22 @@ export class ProfilerFilterDialog extends Modal {
 		this.title = DialogTitle;
 		this.titleIconClassName = TitleIconClass;
 		this._register(attachModalDialogStyler(this, this._themeService));
-		this._addClauseButton = this.addFooterButton(AddText, () => this.addClauseRow(false), 'left');
-		this._clearButton = this.addFooterButton(ClearText, () => this.handleClearButtonClick(), 'left');
+		this._saveFilterButton = this.addFooterButton(SaveFilterText, () => this.saveFilter(), 'left');
+		this._loadFilterButton = this.addFooterButton(LoadFilterText, () => this.loadSavedFilter(), 'left');
 		this._applyButton = this.addFooterButton(ApplyText, () => this.filterSession());
 		this._okButton = this.addFooterButton(OkText, () => this.handleOkButtonClick());
 		this._cancelButton = this.addFooterButton(CancelText, () => this.hide());
 		this._register(attachButtonStyler(this._okButton, this._themeService));
 		this._register(attachButtonStyler(this._cancelButton, this._themeService));
-		this._register(attachButtonStyler(this._clearButton, this._themeService));
 		this._register(attachButtonStyler(this._applyButton, this._themeService));
-		this._register(attachButtonStyler(this._addClauseButton, this._themeService));
+		this._register(attachButtonStyler(this._saveFilterButton, this._themeService));
+		this._register(attachButtonStyler(this._loadFilterButton, this._themeService));
 	}
 
 	protected renderBody(container: HTMLElement) {
 		const body = DOM.append(container, DOM.$('.profiler-filter-dialog'));
-		this._clauseBuilder = DOM.append(body, DOM.$('table.profiler-filter-clause-table'));
+		const clauseTableContainer = DOM.append(body, DOM.$('.clause-table-container'));
+		this._clauseBuilder = DOM.append(clauseTableContainer, DOM.$('table.profiler-filter-clause-table'));
 		const headerRow = DOM.append(this._clauseBuilder, DOM.$('tr'));
 		DOM.append(headerRow, DOM.$('td')).innerText = FieldText;
 		DOM.append(headerRow, DOM.$('td')).innerText = OperatorText;
@@ -121,15 +124,8 @@ export class ProfilerFilterDialog extends Modal {
 			this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
 		});
 
-		const prompt = DOM.append(body, DOM.$('.profiler-filter-add-clause-prompt', { tabIndex: '0' }));
-		prompt.innerText = AddClausePromptText;
-		DOM.addDisposableListener(prompt, DOM.EventType.CLICK, () => this.addClauseRow(false));
-		DOM.addStandardDisposableListener(prompt, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
-			if (e.equals(KeyCode.Space) || e.equals(KeyCode.Enter)) {
-				this.addClauseRow(false);
-				e.stopPropagation();
-			}
-		});
+		this.createClauseTableActionLink(AddClauseText, body, () => { this.addClauseRow(false); });
+		this.createClauseTableActionLink(ClearText, body, () => { this.handleClearButtonClick(); });
 	}
 
 	protected layout(height?: number): void {
@@ -158,6 +154,21 @@ export class ProfilerFilterDialog extends Modal {
 		this._clauseRows = [];
 	}
 
+	private createClauseTableActionLink(text: string, parent: HTMLElement, handler: () => void): void {
+		const actionLink = DOM.append(parent, DOM.$('.profiler-filter-clause-table-action', {
+			'tabIndex': '0',
+			'role': 'button'
+		}));
+		actionLink.innerText = text;
+		DOM.addDisposableListener(actionLink, DOM.EventType.CLICK, handler);
+		DOM.addStandardDisposableListener(actionLink, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {
+			if (e.equals(KeyCode.Space) || e.equals(KeyCode.Enter)) {
+				handler();
+				e.stopPropagation();
+			}
+		});
+	}
+
 	private createSelectBox(container: HTMLElement, options: string[], selectedOption: string, ariaLabel: string): SelectBox {
 		const dropdown = new SelectBox(options, selectedOption, this.contextViewService, undefined, { ariaLabel: ariaLabel });
 		dropdown.render(container);
@@ -165,8 +176,27 @@ export class ProfilerFilterDialog extends Modal {
 		return dropdown;
 	}
 
-	private filterSession() {
+	private filterSession(): void {
 		this._input.filterSession(this.getFilter());
+	}
+
+	private saveFilter(): void {
+		this.profilerService.saveFilter(this.getFilter());
+	}
+
+	private loadSavedFilter(): void {
+		// for now we only have one saved filter, this is enough for what user asked for so far.
+		const savedFilters = this.profilerService.getFilters();
+		if (savedFilters && savedFilters.length > 0) {
+			const savedFilter = savedFilters[0];
+			this._clauseRows.forEach(clause => {
+				clause.row.remove();
+			});
+			this._clauseRows = [];
+			savedFilter.clauses.forEach(clause => {
+				this.addClauseRow(true, clause.field, this.convertToOperatorString(clause.operator), clause.value);
+			});
+		}
 	}
 
 	private getFilter(): ProfilerFilter {
@@ -181,15 +211,20 @@ export class ProfilerFilterDialog extends Modal {
 		});
 
 		return {
+			name: 'default',
 			clauses: clauses
 		};
 	}
 
-	private addClauseRow(setInitialValue: boolean, field?: string, operator?: string, value?: string): any {
+	private addClauseRow(setInitialValue: boolean, field?: string, operator?: string, value?: string): void {
+		const columns = this._input.columns.map(column => column.name);
+		if (field && !columns.includes(field)) {
+			return;
+		}
+
 		const row = DOM.append(this._clauseBuilder, DOM.$('tr'));
 		const clauseId = generateUuid();
 
-		const columns = this._input.columns.map(column => column.name);
 		const fieldDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), columns, columns[0], FieldText);
 
 		const operatorDropDown = this.createSelectBox(DOM.append(row, DOM.$('td')), Operators, Operators[0], OperatorText);
@@ -201,7 +236,8 @@ export class ProfilerFilterDialog extends Modal {
 		const removeClauseButton = DOM.append(removeCell, DOM.$('.profiler-filter-remove-condition.icon.remove', {
 			'tabIndex': '0',
 			'aria-label': RemoveText,
-			'title': RemoveText
+			'title': RemoveText,
+			'role': 'button'
 		}));
 
 		DOM.addStandardDisposableListener(removeClauseButton, DOM.EventType.KEY_DOWN, (e: StandardKeyboardEvent) => {

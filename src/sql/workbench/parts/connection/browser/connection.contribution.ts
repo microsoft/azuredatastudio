@@ -7,13 +7,20 @@ import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platf
 import { Registry } from 'vs/platform/registry/common/platform';
 import { AddServerGroupAction, AddServerAction } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { ClearRecentConnectionsAction, GetCurrentConnectionStringAction } from 'sql/workbench/parts/connection/common/connectionActions';
-
+import * as azdata from 'azdata';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
+import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
 
 
 // Register Statusbar item
@@ -54,6 +61,50 @@ actionRegistry.registerWorkbenchAction(
 	),
 	AddServerAction.LABEL
 );
+
+CommandsRegistry.registerCommand('azdata.connect',
+	function (accessor, args: {
+		serverName: string,
+		providerName: string,
+		authenticationType?: AuthenticationType,
+		userName?: string,
+		password?: string,
+		databaseName?: string
+	}) {
+		const capabilitiesServices = accessor.get(ICapabilitiesService);
+		const connectionManagementService = accessor.get(IConnectionManagementService);
+		if (args && args.serverName && args.providerName
+			&& (args.authenticationType === integrated
+				|| args.authenticationType === azureMFA
+				|| (args.userName && args.password))) {
+			const profile: azdata.IConnectionProfile = {
+				serverName: args.serverName,
+				databaseName: args.databaseName,
+				authenticationType: args.authenticationType,
+				providerName: args.providerName,
+				connectionName: '',
+				userName: args.userName,
+				password: args.password,
+				savePassword: true,
+				groupFullName: undefined,
+				saveProfile: true,
+				id: undefined,
+				groupId: undefined,
+				options: {}
+			};
+			const connectionProfile = ConnectionProfile.fromIConnectionProfile(capabilitiesServices, profile);
+
+			connectionManagementService.connect(connectionProfile, undefined, {
+				saveTheConnection: true,
+				showDashboard: true,
+				params: undefined,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			});
+		} else {
+			connectionManagementService.showConnectionDialog();
+		}
+	});
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(

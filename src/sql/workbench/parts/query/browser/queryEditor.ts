@@ -6,32 +6,42 @@
 import 'vs/css!./media/queryEditor';
 
 import * as DOM from 'vs/base/browser/dom';
-import { EditorOptions, IEditorControl } from 'vs/workbench/common/editor';
-import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
+import { EditorOptions, IEditorControl, IEditorMemento, IEditorCloseEvent } from 'vs/workbench/common/editor';
+import { BaseEditor, EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { Orientation } from 'vs/base/browser/ui/sash/sash';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TextResourceEditor } from 'vs/workbench/browser/parts/editor/textResourceEditor';
+import { TextFileEditor } from 'vs/workbench/contrib/files/browser/editors/textFileEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
+import { URI } from 'vs/base/common/uri';
+import { IFileService, FileChangesEvent } from 'vs/platform/files/common/files';
 
 import { QueryInput, IQueryEditorStateChange } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import * as actions from 'sql/workbench/parts/query/browser/queryActions';
-import { IRange } from 'vs/editor/common/core/range';
+
+const QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY = 'queryEditorViewState';
+
+interface IQueryEditorViewState {
+	resultsHeight: number | undefined;
+}
 
 /**
  * Editor that hosts 2 sub-editors: A TextResourceEditor for SQL file editing, and a QueryResultsEditor
@@ -46,11 +56,16 @@ export class QueryEditor extends BaseEditor {
 	private resultsEditor: QueryResultsEditor;
 
 	private resultsEditorContainer: HTMLElement;
-	// could be untitled or resource editor
-	private textEditor: TextResourceEditor;
-	private textEditorContainer: HTMLElement;
+
+	private textResourceEditor: TextResourceEditor;
+	private textFileEditor: TextFileEditor;
+	private currentTextEditor: BaseTextEditor;
+
+	private textResourceEditorContainer: HTMLElement;
+	private textFileEditorContainer: HTMLElement;
 
 	private taskbar: Taskbar;
+	private splitviewContainer: HTMLElement;
 	private splitview: SplitView;
 
 	private inputDisposables: IDisposable[] = [];
@@ -58,6 +73,8 @@ export class QueryEditor extends BaseEditor {
 	private resultsVisible = false;
 
 	private queryEditorVisible: IContextKey<boolean>;
+
+	private editorMemento: IEditorMemento<IQueryEditorViewState>;
 
 	//actions
 	private _runQueryAction: actions.RunQueryAction;
@@ -74,13 +91,31 @@ export class QueryEditor extends BaseEditor {
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService,
 		@IContextKeyService contextKeyService: IContextKeyService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IFileService fileService: IFileService,
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super(QueryEditor.ID, telemetryService, themeService, storageService);
 
+		this.editorMemento = this.getEditorMemento<IQueryEditorViewState>(editorGroupService, QUERY_EDITOR_VIEW_STATE_PREFERENCE_KEY, 100);
+
 		this.queryEditorVisible = queryContext.QueryEditorVisibleContext.bindTo(contextKeyService);
+
+		// Clear view state for deleted files
+		this._register(fileService.onFileChanges(e => this.onFilesChanged(e)));
+	}
+
+	private onFilesChanged(e: FileChangesEvent): void {
+		const deleted = e.getDeleted();
+		if (deleted && deleted.length) {
+			this.clearTextEditorViewState(deleted.map(d => d.resource));
+		}
+	}
+
+	protected getEditorMemento<T>(editorGroupService: IEditorGroupsService, key: string, limit: number = 10): IEditorMemento<T> {
+		return new EditorMemento(this.getId(), key, Object.create(null), limit, editorGroupService); // do not persist in storage as results are never persisted
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
@@ -94,23 +129,31 @@ export class QueryEditor extends BaseEditor {
 	public createEditor(parent: HTMLElement): void {
 		DOM.addClass(parent, 'query-editor');
 
-		let splitviewContainer = DOM.$('.query-editor-view');
+		this.splitviewContainer = DOM.$('.query-editor-view');
 
 		this.createTaskbar(parent);
 
-		parent.appendChild(splitviewContainer);
+		parent.appendChild(this.splitviewContainer);
 
-		this.splitview = this._register(new SplitView(splitviewContainer, { orientation: Orientation.VERTICAL }));
+		this.splitview = this._register(new SplitView(this.splitviewContainer, { orientation: Orientation.VERTICAL }));
 		this._register(this.splitview.onDidSashReset(() => this.splitview.distributeViewSizes()));
 
-		this.textEditorContainer = DOM.$('.text-editor-container');
-		this.textEditor = this._register(this.instantiationService.createInstance(TextResourceEditor));
-		this.textEditor.create(this.textEditorContainer);
+		// We create two separate editors - one for Untitled Documents (ad-hoc queries) and another for queries from
+		// files. This is necessary because TextResourceEditor by default makes all non-Untitled inputs to be
+		// read-only so we need to use a TextFileEditor for files in order to edit them.
+		this.textResourceEditor = this._register(this.instantiationService.createInstance(TextResourceEditor));
+		this.textFileEditor = this._register(this.instantiationService.createInstance(TextFileEditor));
 
+		this.textResourceEditorContainer = DOM.$('.text-resource-editor-container');
+		this.textResourceEditor.create(this.textResourceEditorContainer);
+		this.textFileEditorContainer = DOM.$('.text-file-editor-container');
+		this.textFileEditor.create(this.textFileEditorContainer);
+
+		this.currentTextEditor = this.textResourceEditor;
 		this.splitview.addView({
-			element: this.textEditorContainer,
-			layout: size => this.textEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-			minimumSize: 220,
+			element: this.textResourceEditorContainer,
+			layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+			minimumSize: 0,
 			maximumSize: Number.POSITIVE_INFINITY,
 			onDidChange: Event.None
 		}, Sizing.Distribute);
@@ -228,26 +271,98 @@ export class QueryEditor extends BaseEditor {
 		this.taskbar.setContent(content);
 	}
 
-	public setInput(newInput: QueryInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	public async setInput(newInput: QueryInput, options: EditorOptions, token: CancellationToken): Promise<void> {
 		const oldInput = this.input;
 
 		if (newInput.matches(oldInput)) {
 			return Promise.resolve();
 		}
 
-		return Promise.all([
+		if (oldInput) {
+			// Remember view settings if input changes
+			this.saveQueryEditorViewState(this.input);
+			this.currentTextEditor.clearInput();
+			this.resultsEditor.clearInput();
+		}
+
+		// If we're switching editor types switch out the views
+		const newTextEditor = newInput.sql instanceof FileEditorInput ? this.textFileEditor : this.textResourceEditor;
+		if (newTextEditor !== this.currentTextEditor) {
+			this.currentTextEditor = newTextEditor;
+			this.splitview.removeView(0, Sizing.Distribute);
+
+			this.splitview.addView({
+				element: this.currentTextEditor.getContainer(),
+				layout: size => this.currentTextEditor.layout(new DOM.Dimension(this.dimension.width, size)),
+				minimumSize: 0,
+				maximumSize: Number.POSITIVE_INFINITY,
+				onDidChange: Event.None
+			}, Sizing.Distribute, 0);
+		}
+
+		await Promise.all([
 			super.setInput(newInput, options, token),
-			this.textEditor.setInput(newInput.sql, options, token),
+			this.currentTextEditor.setInput(newInput.sql, options, token),
 			this.resultsEditor.setInput(newInput.results, options)
-		]).then(() => {
-			dispose(this.inputDisposables);
-			this.inputDisposables = [];
-			this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
-			this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
+		]);
+
+		dispose(this.inputDisposables);
+		this.inputDisposables = [];
+		this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
+		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
+
+		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
+
+		if (editorViewState && editorViewState.resultsHeight && this.splitview.length > 1) {
+			this.splitview.resizeView(1, editorViewState.resultsHeight);
+		}
+	}
+
+	private saveQueryEditorViewState(input: QueryInput): void {
+		if (!input) {
+			return; // ensure we have an input to handle view state for
+		}
+
+		// Otherwise we save the view state to restore it later
+		else if (!input.isDisposed()) {
+			this.saveTextEditorViewState(input.getResource());
+		}
+	}
+
+	private clearTextEditorViewState(resources: URI[], group?: IEditorGroup): void {
+		resources.forEach(resource => {
+			this.editorMemento.clearEditorState(resource, group);
 		});
 	}
 
-	public toggleResultsEditorVisibility() {
+	private saveTextEditorViewState(resource: URI): void {
+		const editorViewState = {
+			resultsHeight: this.resultsVisible ? this.splitview.getViewSize(1) : undefined
+		} as IQueryEditorViewState;
+
+		if (!this.group) {
+			return;
+		}
+
+		this.editorMemento.saveEditorState(this.group, resource, editorViewState);
+	}
+
+	/**
+	 * Loads the text editor view state for the given resource and returns it.
+	 */
+	protected loadTextEditorViewState(resource: URI): IQueryEditorViewState | undefined {
+		return this.group ? this.editorMemento.loadEditorState(this.group, resource) : undefined;
+	}
+
+	protected saveState(): void {
+
+		// Update/clear editor view State
+		this.saveQueryEditorViewState(this.input);
+
+		super.saveState();
+	}
+
+	public toggleResultsEditorVisibility(): void {
 		if (this.resultsVisible) {
 			this.removeResultsEditor();
 		} else {
@@ -259,7 +374,8 @@ export class QueryEditor extends BaseEditor {
 	 * Sets this editor and the 2 sub-editors to visible.
 	 */
 	public setEditorVisible(visible: boolean, group: IEditorGroup): void {
-		this.textEditor.setVisible(visible, group);
+		this.textFileEditor.setVisible(visible, group);
+		this.textResourceEditor.setVisible(visible, group);
 		this.resultsEditor.setVisible(visible, group);
 		super.setEditorVisible(visible, group);
 
@@ -286,13 +402,15 @@ export class QueryEditor extends BaseEditor {
 		}
 	}
 
-
 	/**
 	 * Called to indicate to the editor that the input should be cleared and resources associated with the
 	 * input should be freed.
 	 */
 	public clearInput(): void {
-		this.textEditor.clearInput();
+
+		this.saveQueryEditorViewState(this.input);
+
+		this.currentTextEditor.clearInput();
 		this.resultsEditor.clearInput();
 		super.clearInput();
 	}
@@ -301,7 +419,7 @@ export class QueryEditor extends BaseEditor {
 	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
 	 */
 	public focus(): void {
-		this.textEditor.focus();
+		this.currentTextEditor.focus();
 	}
 
 	/**
@@ -310,51 +428,55 @@ export class QueryEditor extends BaseEditor {
 	 */
 	public layout(dimension: DOM.Dimension): void {
 		this.dimension = dimension;
-		this.splitview.layout(dimension.height - 31);
+		const queryEditorHeight = dimension.height - DOM.getTotalHeight(this.taskbar.getContainer());
+		this.splitviewContainer.style.height = queryEditorHeight + 'px';
+		this.splitview.layout(queryEditorHeight);
 	}
 
 	/**
 	 * Returns the editor control for the text editor.
 	 */
 	public getControl(): IEditorControl {
-		return this.textEditor.getControl();
+		return this.currentTextEditor.getControl();
 	}
 
 	public setOptions(options: EditorOptions): void {
-		this.textEditor.setOptions(options);
+		this.currentTextEditor.setOptions(options);
 	}
 
-	private removeResultsEditor() {
+	private removeResultsEditor(): void {
 		if (this.resultsVisible) {
 			this.splitview.removeView(1, Sizing.Distribute);
 			this.resultsVisible = false;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = false;
+			}
 		}
 	}
 
-	private addResultsEditor() {
+	private addResultsEditor(): void {
 		if (!this.resultsVisible) {
+			// size the results section to 65% of available height or at least 100px
+			let initialViewSize = Math.round(Math.max(this.dimension.height * 0.65, 100));
 			this.splitview.addView({
 				element: this.resultsEditorContainer,
 				layout: size => this.resultsEditor && this.resultsEditor.layout(new DOM.Dimension(this.dimension.width, size)),
-				minimumSize: 220,
+				minimumSize: 0,
 				maximumSize: Number.POSITIVE_INFINITY,
 				onDidChange: Event.None
-			}, Sizing.Distribute);
+			}, initialViewSize);
 			this.resultsVisible = true;
+			if (this.input && this.input.state) {
+				this.input.state.resultsVisible = true;
+			}
 		}
-	}
-
-	public close(): void {
-		let queryInput: QueryInput = <QueryInput>this.input;
-		queryInput.sql.close();
-		queryInput.results.close();
 	}
 
 	// helper functions
 
 	public isSelectionEmpty(): boolean {
-		if (this.textEditor && this.textEditor.getControl()) {
-			let control = this.textEditor.getControl();
+		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
+			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
 
 			if (codeEditor) {
@@ -372,8 +494,8 @@ export class QueryEditor extends BaseEditor {
 	 * is no selected text.
 	 */
 	public getSelection(checkIfRange: boolean = true): ISelectionData {
-		if (this.textEditor && this.textEditor.getControl()) {
-			let vscodeSelection = this.textEditor.getControl().getSelection();
+		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
+			let vscodeSelection = this.currentTextEditor.getControl().getSelection();
 
 			// If the selection is a range of characters rather than just a cursor position, return the range
 			let isRange: boolean =
@@ -395,8 +517,8 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	public getAllSelection(): ISelectionData {
-		if (this.textEditor && this.textEditor.getControl()) {
-			let control = this.textEditor.getControl();
+		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
+			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
 			if (codeEditor) {
 				let model = codeEditor.getModel();
@@ -415,8 +537,8 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	public getAllText(): string {
-		if (this.textEditor && this.textEditor.getControl()) {
-			let control = this.textEditor.getControl();
+		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
+			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
 			if (codeEditor) {
 				let value = codeEditor.getValue();
@@ -431,8 +553,8 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	public getSelectionText(): string {
-		if (this.textEditor && this.textEditor.getControl()) {
-			let control = this.textEditor.getControl();
+		if (this.currentTextEditor && this.currentTextEditor.getControl()) {
+			let control = this.currentTextEditor.getControl();
 			let codeEditor: ICodeEditor = <ICodeEditor>control;
 			let vscodeSelection = control.getSelection();
 
@@ -479,7 +601,7 @@ export class QueryEditor extends BaseEditor {
 		this.resultsEditor.registerQueryModelViewTab(title, componentId);
 	}
 
-	public chart(dataId: { batchId: number, resultId: number }) {
+	public chart(dataId: { batchId: number, resultId: number }): void {
 		this.resultsEditor.chart(dataId);
 	}
 }

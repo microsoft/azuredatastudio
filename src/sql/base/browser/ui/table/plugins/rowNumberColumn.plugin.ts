@@ -18,8 +18,8 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
 		this.handler
-			.subscribe(this.grid.onClick, (e, args) => this.handleClick(e, args))
-			.subscribe(this.grid.onHeaderClick, (e, args) => this.handleHeaderClick(e, args));
+			.subscribe(this.grid.onClick, (e: MouseEvent, args: Slick.OnClickEventArgs<T>) => this.handleClick(e, args))
+			.subscribe(this.grid.onHeaderClick, (e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args));
 	}
 
 	public destroy() {
@@ -56,11 +56,11 @@ export class RowNumberColumn<T> implements Slick.Plugin<T> {
 			cssClass: this.options.cssClass,
 			focusable: false,
 			selectable: false,
-			formatter: (r, c, v, cd, dc) => this.formatter(r, c, v, cd, dc)
+			formatter: r => this.formatter(r)
 		};
 	}
 
-	private formatter(row, cell, value, columnDef: Slick.Column<T>, dataContext): string {
+	private formatter(row: number): string {
 		// row is zero-based, we need make it 1 based for display in the result grid
 		return `<span>${row + 1}</span>`;
 	}

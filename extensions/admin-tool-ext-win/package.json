@@ -5,12 +5,12 @@
 	"version": "0.0.1",
 	"publisher": "Microsoft",
 	"preview": true,
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/license/Azure%20Data%20Studio%20Extension%20-%20Standalone%20(free)%20Use%20Terms.txt",
 	"icon": "images/sqlserver.png",
 	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
 	"engines": {
 		"vscode": "^1.30.1",
-		"azdata": "*"
+		"azdata": ">=1.8.0"
 	},
 	"activationEvents": [
 		"*"
@@ -70,10 +70,15 @@
 		]
 	},
 	"dependencies": {
-		"vscode-extension-telemetry": "^0.0.15",
+		"ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
 		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
 		"vscode": "1.0.1"
+	},
+	"__metadata": {
+		"id": "41",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }

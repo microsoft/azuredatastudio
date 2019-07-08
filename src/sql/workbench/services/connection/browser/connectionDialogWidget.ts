@@ -35,11 +35,11 @@ import { ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
-import { ILayoutService } from 'vs/platform/layout/browser/layoutService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 
 export interface OnShowUIResponse {
-	selectedProviderType: string;
+	selectedProviderDisplayName: string;
 	container: HTMLElement;
 }
 
@@ -85,19 +85,19 @@ export class ConnectionDialogWidget extends Modal {
 	private _connecting = false;
 
 	constructor(
-		private providerTypeOptions: string[],
+		private providerDisplayNameOptions: string[],
 		private selectedProviderType: string,
 		private providerNameToDisplayNameMap: { [providerDisplayName: string]: string },
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IThemeService themeService: IThemeService,
-		@ILayoutService layoutService: ILayoutService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILayoutService logService: ILogService
+		@ILogService logService: ILogService
 	) {
 		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
@@ -106,25 +106,30 @@ export class ConnectionDialogWidget extends Modal {
 	 * Update the available connection providers, this is called when new providers are registered
 	 * So that the connection type dropdown always has up to date values
 	 */
-	public updateConnectionProviders(providerTypeOptions: string[],
+	public updateConnectionProviders(
+		providerTypeDisplayNameOptions: string[],
 		providerNameToDisplayNameMap: { [providerDisplayName: string]: string }) {
-		this.providerTypeOptions = providerTypeOptions;
+		this.providerDisplayNameOptions = providerTypeDisplayNameOptions;
 		this.providerNameToDisplayNameMap = providerNameToDisplayNameMap;
 		this.refresh();
 	}
 
 	public refresh(): void {
-		let filteredProviderTypes = this.providerTypeOptions;
+		let filteredProviderDisplayNames = this.providerDisplayNameOptions;
 
 		if (this._newConnectionParams && this._newConnectionParams.providers) {
 			const validProviderNames = Object.keys(this.providerNameToDisplayNameMap).filter(x => this.includeProvider(x, this._newConnectionParams));
 			if (validProviderNames && validProviderNames.length > 0) {
-				filteredProviderTypes = filteredProviderTypes.filter(x => validProviderNames.find(v => this.providerNameToDisplayNameMap[v] === x) !== undefined);
+				filteredProviderDisplayNames = filteredProviderDisplayNames.filter(x => validProviderNames.find(
+					v => this.providerNameToDisplayNameMap[v] === x) !== undefined
+				);
 			}
-		} else {
-			filteredProviderTypes = filteredProviderTypes.filter(x => x !== Constants.cmsProviderDisplayName);
 		}
-		this._providerTypeSelectBox.setOptions(filteredProviderTypes);
+
+		this._providerTypeSelectBox.setOptions(filteredProviderDisplayNames.filter((providerDisplayName, index) =>
+			// Remove duplicate listings (CMS uses the same display name)
+			filteredProviderDisplayNames.indexOf(providerDisplayName) === index)
+		);
 	}
 
 	private includeProvider(providerName: string, params?: INewConnectionParams): Boolean {
@@ -135,7 +140,7 @@ export class ConnectionDialogWidget extends Modal {
 		this._body = DOM.append(container, DOM.$('.connection-dialog'));
 
 		const connectTypeLabel = localize('connectType', "Connection type");
-		this._providerTypeSelectBox = new SelectBox(this.providerTypeOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
+		this._providerTypeSelectBox = new SelectBox(this.providerDisplayNameOptions, this.selectedProviderType, this._contextViewService, undefined, { ariaLabel: connectTypeLabel });
 		// Recent connection tab
 		const recentConnectionTab = DOM.$('.connection-recent-tab');
 		const recentConnectionContainer = DOM.append(recentConnectionTab, DOM.$('.connection-recent', { id: 'recentConnection' }));
@@ -163,7 +168,8 @@ export class ConnectionDialogWidget extends Modal {
 				render: c => {
 					c.append(recentConnectionTab);
 				},
-				layout: () => { }
+				layout: () => { },
+				focus: () => this._recentConnectionTree.domFocus()
 			}
 		});
 
@@ -174,7 +180,8 @@ export class ConnectionDialogWidget extends Modal {
 				layout: () => { },
 				render: c => {
 					c.append(savedConnectionTab);
-				}
+				},
+				focus: () => this._savedConnectionTree.domFocus()
 			}
 		});
 
@@ -252,10 +259,10 @@ export class ConnectionDialogWidget extends Modal {
 		}));
 	}
 
-	private onProviderTypeSelected(selectedProviderType: string) {
+	private onProviderTypeSelected(selectedProviderDisplayName: string) {
 		// Show connection form based on server type
 		DOM.clearNode(this._connectionUIContainer);
-		this._onShowUiComponent.fire({ selectedProviderType: selectedProviderType, container: this._connectionUIContainer });
+		this._onShowUiComponent.fire({ selectedProviderDisplayName: selectedProviderDisplayName, container: this._connectionUIContainer });
 		this.initDialog();
 	}
 
@@ -438,10 +445,10 @@ export class ConnectionDialogWidget extends Modal {
 		this.refresh();
 	}
 
-	public updateProvider(displayName: string) {
-		this._providerTypeSelectBox.selectWithOptionName(displayName);
+	public updateProvider(providerDisplayName: string) {
+		this._providerTypeSelectBox.selectWithOptionName(providerDisplayName);
 
-		this.onProviderTypeSelected(displayName);
+		this.onProviderTypeSelected(providerDisplayName);
 	}
 
 	public dispose(): void {

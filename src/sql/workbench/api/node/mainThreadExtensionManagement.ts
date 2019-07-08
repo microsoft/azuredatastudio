@@ -27,6 +27,6 @@ export class MainThreadExtensionManagement implements MainThreadExtensionManagem
 	}
 
 	public $install(vsixPath: string): Thenable<string> {
-		return this._extensionService.install(URI.parse(vsixPath)).then((value: IExtensionIdentifier) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
+		return this._extensionService.install(URI.file(vsixPath)).then((value: IExtensionIdentifier) => { return undefined; }, (reason: any) => { return reason ? reason.toString() : undefined; });
 	}
 }

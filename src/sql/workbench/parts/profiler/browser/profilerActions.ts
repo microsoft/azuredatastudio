@@ -206,6 +206,10 @@ export class ProfilerCollapsablePanelAction extends Action {
 		return Promise.resolve(true);
 	}
 
+	get collapsed(): boolean {
+		return this._collapsed;
+	}
+
 	set collapsed(val: boolean) {
 		this._collapsed = val === false ? false : true;
 		this._setClass(this._collapsed ? 'maximize-panel-action' : 'minimize-panel-action');

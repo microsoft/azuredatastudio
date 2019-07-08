@@ -7,7 +7,7 @@ import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, Ma
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -18,6 +18,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
+import { deepClone } from 'vs/base/common/objects';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadConnectionManagement)
 export class MainThreadConnectionManagement implements MainThreadConnectionManagementShape {
@@ -43,6 +44,10 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		this._toDispose = dispose(this._toDispose);
 	}
 
+	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile)));
+	}
+
 	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 		return Promise.resolve(this._connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
@@ -60,15 +65,26 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public async $openConnectionDialog(providers: string[], initialConnectionProfile?: IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Promise<azdata.connection.Connection> {
+		// Here we default to ConnectionType.editor which saves the connecton in the connection store by default
+		let connectionType = ConnectionType.editor;
+
+		// If the API call explicitly set saveConnection to false, set it to ConnectionType.extension
+		// which doesn't save the connection by default
+		if (connectionCompletionOptions && !connectionCompletionOptions.saveConnection) {
+			connectionType = ConnectionType.temporary;
+		}
 		let connectionProfile = await this._connectionDialogService.openDialogAndWait(this._connectionManagementService,
-			{ connectionType: 1, providers: providers }, initialConnectionProfile, undefined);
+			{ connectionType: connectionType, providers: providers }, initialConnectionProfile, undefined);
+		if (connectionProfile) {
+			connectionProfile.options.savePassword = connectionProfile.savePassword;
+		}
 		const connection = connectionProfile ? {
 			connectionId: connectionProfile.id,
 			options: connectionProfile.options,
 			providerName: connectionProfile.providerName
 		} : undefined;
 
-		if (connectionCompletionOptions) {
+		if (connectionCompletionOptions && connectionCompletionOptions.saveConnection) {
 			// Somehow, connectionProfile.saveProfile is false even if initialConnectionProfile.saveProfile is true, reset the flag here.
 			connectionProfile.saveProfile = initialConnectionProfile.saveProfile;
 			await this._connectionManagementService.connectAndSaveProfile(connectionProfile, undefined, {
@@ -79,7 +95,6 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 				showFirewallRuleOnError: isUndefinedOrNull(connectionCompletionOptions.showFirewallRuleOnError) ? true : connectionCompletionOptions.showFirewallRuleOnError
 			});
 		}
-
 		return connection;
 	}
 
@@ -106,6 +121,30 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 			providerName: profile.providerName,
 			connectionId: profile.id,
 			options: profile.options
+		};
+		return connection;
+	}
+
+	private convertToConnectionProfile(profile: IConnectionProfile): azdata.connection.ConnectionProfile {
+		if (!profile) {
+			return undefined;
+		}
+
+		profile = this._connectionManagementService.removeConnectionProfileCredentials(profile);
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			options: deepClone(profile.options),
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			saveProfile: profile.saveProfile
 		};
 		return connection;
 	}

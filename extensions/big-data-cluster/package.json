@@ -1,94 +1,111 @@
 {
-  "name": "big-data-cluster",
-  "displayName": "SQL Server big data cluster",
-  "description": "SQL Server big data cluster",
-  "version": "0.0.1",
-  "publisher": "Microsoft",
-  "preview": true,
-  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
-  "icon": "images/sqlserver.png",
-  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
-  "engines": {
-    "vscode": "*",
-    "azdata": "^1.4.0"
-  },
-  "activationEvents": [
-    "*"
-  ],
-  "main": "./out/main",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/Microsoft/azuredatastudio.git"
-  },
-  "extensionDependencies": [
-    "Microsoft.mssql"
-  ],
-  "contributes": {
-    "configuration": {
-      "type": "object",
-      "title": "Kubernetes configuration",
-      "properties": {
-        "mssql-bdc": {
-          "type": "object",
-          "description": "Kubernetes configuration",
-          "properties": {
-            "mssql-bdc.kubectl-path": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "mssql-bdc.kubectl-path.windows": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "mssql-bdc.kubectl-path.mac": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "mssql-bdc.kubectl-path.linux": {
-              "type": "string",
-              "description": "File path to a kubectl binary."
-            },
-            "mssql-bdc.kubeconfig": {
-              "type": "string",
-              "description": "File path to the kubeconfig file."
-            },
-            "mssql-bdc.knownKubeconfigs": {
-              "type": "array",
-              "description": "File paths to kubeconfig files from which you can select."
-            },
-            "mssql-bdc.outputFormat": {
-              "enum": [
-                "json",
-                "yaml"
-              ],
-              "type": "string",
-              "description": "Output format for Kubernetes specs. One of 'json' or 'yaml' (default)."
-            }
-          },
-          "default": {
-            "mssql-bdc.namespace": "",
-            "mssql-bdc.kubectl-path": "",
-            "mssql-bdc.kubeconfig": "",
-            "mssql-bdc.knownKubeconfigs": []
-          }
-        }
-      }
-    },
-    "commands": [
-      {
-        "command": "mssql.cluster.create",
-        "title": "Create SQL Server big data cluster",
-        "category": "SQL Server"
-      }
-    ]
-  },
-  "dependencies": {
-    "vscode-nls": "^3.2.1",
-    "download": "^6.2.5",
-    "shelljs": "^0.8.3"
-  },
-  "devDependencies": {
-    "mocha-junit-reporter": "^1.17.0",
-    "mocha-multi-reporters": "^1.1.7"
-  }
+	"name": "big-data-cluster",
+	"displayName": "%text.sqlServerBigDataClusters%",
+	"description": "%description%",
+	"version": "0.0.1",
+	"publisher": "Microsoft",
+	"preview": true,
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+	"icon": "images/sqlserver.png",
+	"engines": {
+		"vscode": "*",
+		"azdata": "*"
+	},
+	"activationEvents": [
+		"*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"main": "./out/extension",
+	"contributes": {
+		"dataExplorer": {
+			"sqlBigDataCluster": [
+				{
+					"id": "sqlBigDataCluster",
+					"name": "%text.sqlServerBigDataClusters%"
+				}
+			]
+		},
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "bigDataClusters.command.addController",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.deleteController",
+					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.refreshController",
+					"when": "false"
+				}
+			],
+			"view/title": [
+				{
+					"command": "bigDataClusters.command.addController",
+					"when": "view == sqlBigDataCluster",
+					"group": "navigation"
+				}
+			],
+			"view/item/context": [
+				{
+					"command": "bigDataClusters.command.deleteController",
+					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"group": "navigation@1"
+				},
+				{
+					"command": "bigDataClusters.command.refreshController",
+					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"group": "navigation@1"
+				}
+			]
+		},
+		"configuration": {
+			"type": "object",
+			"title": "%text.sqlServerBigDataClusters%",
+			"properties": {
+				"clusterControllers.controllers": {
+					"type": "array"
+				}
+			}
+		},
+		"commands": [
+			{
+				"command": "bigDataClusters.command.addController",
+				"title": "%command.addController.title%",
+				"icon": {
+					"light": "resources/light/add.svg",
+					"dark": "resources/dark/add_inverse.svg"
+				}
+			},
+			{
+				"command": "bigDataClusters.command.deleteController",
+				"title": "%command.deleteController.title%",
+				"when": "viewItem == bigDataClusters.itemType.controllerNode"
+			},
+			{
+				"command": "bigDataClusters.command.refreshController",
+				"title": "%command.refreshController.title%",
+				"icon": {
+					"light": "resources/light/refresh.svg",
+					"dark": "resources/dark/refresh_inverse.svg"
+				}
+			}
+		]
+	},
+	"dependencies": {
+		"request": "^2.88.0",
+		"vscode-nls": "^4.0.0"
+	},
+	"devDependencies": {
+		"@types/mocha": "^5.2.5",
+		"@types/node": "^8.0.24",
+		"mocha": "^5.2.0",
+		"should": "^13.2.1",
+		"typemoq": "^2.1.0",
+		"vscode": "^1.1.26"
+	}
 }

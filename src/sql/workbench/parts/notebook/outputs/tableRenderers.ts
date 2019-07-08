@@ -67,7 +67,7 @@ export function renderDataResource(
 	detailTable.registerPlugin(new AdditionalKeyBindings());
 	let numRows = detailTable.grid.getDataLength();
 	// Need to include column headers and scrollbar, so that's why 1 needs to be added
-	let rowsHeight = (numRows + 1) * RESULTS_GRID_DEFAULTS.rowHeight + BOTTOM_PADDING_AND_SCROLLBAR;
+	let rowsHeight = (numRows + 1) * RESULTS_GRID_DEFAULTS.rowHeight + BOTTOM_PADDING_AND_SCROLLBAR + numRows;
 	// if no rows are in the grid, set height to 100% of the container's height
 	if (numRows === 0) {
 		tableContainer.style.height = '100%';
@@ -85,7 +85,7 @@ export function renderDataResource(
 }
 
 // SlickGrid requires columns and data to be in a very specific format; this code was adapted from tableInsight.component.ts
-function transformData(rows: any[], columns: Slick.Column<any>[]): { [key: string]: string }[] {
+export function transformData(rows: any[], columns: Slick.Column<any>[]): { [key: string]: string }[] {
 	return rows.map(row => {
 		let dataWithSchema = {};
 		Object.keys(row).forEach((val, index) => {
@@ -101,7 +101,7 @@ function transformData(rows: any[], columns: Slick.Column<any>[]): { [key: strin
 	});
 }
 
-function transformColumns(columns: string[]): Slick.Column<any>[] {
+export function transformColumns(columns: string[]): Slick.Column<any>[] {
 	return columns.map((col, index) => {
 		return <Slick.Column<any>>{
 			name: col,

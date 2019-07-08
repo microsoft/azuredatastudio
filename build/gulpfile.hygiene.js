@@ -92,11 +92,12 @@ const indentationFilter = [
 	'!**/*.dockerfile',
 	'!extensions/markdown-language-features/media/*.js',
 	// {{SQL CARBON EDIT}}
-	'!**/*.{xlf,docx,sql,vsix}',
+	'!**/*.{xlf,docx,sql,vsix,bacpac}',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
-	'!extensions/resource-deployment/notebooks/**'
+	'!extensions/resource-deployment/notebooks/**',
+	'!extensions/mssql/notebooks/**'
 ];
 
 const copyrightFilter = [
@@ -156,7 +157,8 @@ const copyrightFilter = [
 	'!extensions/notebook/resources/jupyter_config/**',
 	'!**/*.gif',
 	'!**/*.xlf',
-	'!**/*.dacpac'
+	'!**/*.dacpac',
+	'!**/*.bacpac'
 ];
 
 const eslintFilter = [
@@ -385,7 +387,7 @@ function createGitIndexVinyls(paths) {
 				return e(err);
 			}
 
-			cp.exec(`git show :${relativePath}`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
+			cp.exec(`git show ":${relativePath}"`, { maxBuffer: 2000 * 1024, encoding: 'buffer' }, (err, out) => {
 				if (err) {
 					return e(err);
 				}

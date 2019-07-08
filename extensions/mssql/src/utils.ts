@@ -10,6 +10,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
+import * as fs from 'fs';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -27,6 +28,34 @@ export function getAppDataPath() {
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
 	}
+}
+
+/**
+ * Get a file name that is not already used in the target directory
+ * @param filePath source notebook file name
+ * @param fileExtension file type
+ */
+export function getTargetFileName(filePath: string): string {
+	const targetDirectory = os.homedir();
+	const fileExtension = path.extname(filePath);
+	const baseName = path.basename(filePath, fileExtension);
+	let targetFileName;
+	let idx = 0;
+	do {
+		const suffix = idx === 0 ? '' : `-${idx}`;
+		targetFileName = path.join(targetDirectory, `${baseName}${suffix}${fileExtension}`);
+		idx++;
+	} while (fs.existsSync(targetFileName));
+
+	return targetFileName;
+}
+
+export function fileExists(file: string): boolean {
+	return fs.existsSync(file);
+}
+
+export function copyFile(source: string, target: string): void {
+	fs.copyFileSync(source, target);
 }
 
 export function removeOldLogFiles(prefix: string): JSON {
@@ -213,7 +242,9 @@ export async function getClusterEndpoint(profileId: string, serviceName: string)
 	let clusterEndpoint: IEndpoint = {
 		serviceName: endpoints[index].serviceName,
 		ipAddress: endpoints[index].ipAddress,
-		port: endpoints[index].port
+		port: endpoints[index].port,
+		isHyperlink: false,
+		hyperlink: null
 	};
 	return clusterEndpoint;
 }
@@ -222,6 +253,8 @@ export interface IEndpoint {
 	serviceName: string;
 	ipAddress: string;
 	port: number;
+	isHyperlink: boolean;
+	hyperlink: string;
 }
 
 export function isValidNumber(maybeNumber: any) {

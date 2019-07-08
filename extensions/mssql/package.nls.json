@@ -25,9 +25,12 @@
 	"title.tasks": "Tasks",
 	"title.installPackages": "Install Packages",
 	"title.configurePython": "Configure Python for Notebooks",
+	"title.openClusterStatusNotebook": "Cluster Status",
 
 	"title.searchServers": "Search: Servers",
 	"title.clearSearchServerResult": "Search: Clear Search Server Results",
+
+	"title.endpoints": "Service Endpoints",
 
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
@@ -86,7 +89,7 @@
 	"mssql.connectionOptions.columnEncryptionSetting.displayName": "Column encryption",
 	"mssql.connectionOptions.columnEncryptionSetting.description": "Default column encryption setting for all the commands on the connection",
 	"mssql.connectionOptions.encrypt.displayName": "Encrypt",
-	"mssql.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the servers has a certificate installed",
+	"mssql.connectionOptions.encrypt.description": "When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed",
 	"mssql.connectionOptions.persistSecurityInfo.displayName": "Persist security info",
 	"mssql.connectionOptions.persistSecurityInfo.description": "When false, security-sensitive information, such as the password, is not returned as part of the connection",
 	"mssql.connectionOptions.trustServerCertificate.displayName": "Trust server certificate",

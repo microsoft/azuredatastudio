@@ -26,6 +26,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface BaseActionContext {
 	object?: ObjectMetadata;
@@ -239,16 +240,27 @@ export class BackupAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
-		if (!profile) {
-			let objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
-			let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
-			let workbenchEditorService = accessor.get<IEditorService>(IEditorService);
-			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
-		}
-		let configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
+		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
 			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
+		}
+
+		const connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+		if (!profile) {
+			const objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
+			const workbenchEditorService = accessor.get<IEditorService>(IEditorService);
+			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
+		}
+		if (profile) {
+			const serverInfo = connectionManagementService.getServerInfo(profile.id);
+			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', 'Backup command is not supported for Azure SQL databases.'));
+			}
+
+			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', 'Backup command is not supported in Server Context. Please select a Database and try again.'));
+			}
 		}
 
 		TaskUtilities.showBackup(
@@ -275,10 +287,27 @@ export class RestoreAction extends Task {
 	}
 
 	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
-		let configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		let previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
+		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
+		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
 			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
+		}
+
+		let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
+		if (!profile) {
+			const objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
+			const workbenchEditorService = accessor.get<IEditorService>(IEditorService);
+			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
+		}
+		if (profile) {
+			const serverInfo = connectionManagementService.getServerInfo(profile.id);
+			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', 'Restore command is not supported for Azure SQL databases.'));
+			}
+
+			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', 'Restore command is not supported in Server Context. Please select a Database and try again.'));
+			}
 		}
 
 		TaskUtilities.showRestore(

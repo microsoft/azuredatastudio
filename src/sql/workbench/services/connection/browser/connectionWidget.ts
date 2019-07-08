@@ -463,7 +463,6 @@ export class ConnectionWidget {
 		accountDropdownOptions.push(this._addAzureAccountMessage);
 		this._azureAccountDropdown.setOptions(accountDropdownOptions);
 		this._azureAccountDropdown.selectWithOptionName(oldSelection);
-		await this.onAzureAccountSelected();
 	}
 
 	private async updateRefreshCredentialsLink(): Promise<void> {

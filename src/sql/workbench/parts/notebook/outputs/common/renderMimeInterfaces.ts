@@ -61,151 +61,6 @@ export namespace IRenderMime {
 	}
 
 	/**
-	 * The options used to initialize a document widget factory.
-	 *
-	 * This interface is intended to be used by mime renderer extensions
-	 * to define a document opener that uses its renderer factory.
-	 */
-	export interface IDocumentWidgetFactoryOptions {
-		/**
-		 * The name of the widget to display in dialogs.
-		 */
-		readonly name: string;
-
-		/**
-		 * The name of the document model type.
-		 */
-		readonly modelName?: string;
-
-		/**
-		 * The primary file type of the widget.
-		 */
-		readonly primaryFileType: string;
-
-		/**
-		 * The file types the widget can view.
-		 */
-		readonly fileTypes: ReadonlyArray<string>;
-
-		/**
-		 * The file types for which the factory should be the default.
-		 */
-		readonly defaultFor?: ReadonlyArray<string>;
-
-		/**
-		 * The file types for which the factory should be the default for rendering,
-		 * if that is different than the default factory (which may be for editing)
-		 * If undefined, then it will fall back on the default file type.
-		 */
-		readonly defaultRendered?: ReadonlyArray<string>;
-	}
-
-	/**
-	 * A file type to associate with the renderer.
-	 */
-	export interface IFileType {
-		/**
-		 * The name of the file type.
-		 */
-		readonly name: string;
-
-		/**
-		 * The mime types associated the file type.
-		 */
-		readonly mimeTypes: ReadonlyArray<string>;
-
-		/**
-		 * The extensions of the file type (e.g. `".txt"`).  Can be a compound
-		 * extension (e.g. `".table.json`).
-		 */
-		readonly extensions: ReadonlyArray<string>;
-
-		/**
-		 * An optional display name for the file type.
-		 */
-		readonly displayName?: string;
-
-		/**
-		 * An optional pattern for a file name (e.g. `^Dockerfile$`).
-		 */
-		readonly pattern?: string;
-
-		/**
-		 * The icon class name for the file type.
-		 */
-		readonly iconClass?: string;
-
-		/**
-		 * The icon label for the file type.
-		 */
-		readonly iconLabel?: string;
-
-		/**
-		 * The file format for the file type ('text', 'base64', or 'json').
-		 */
-		readonly fileFormat?: string;
-	}
-
-	/**
-	 * An interface for using a RenderMime.IRenderer for output and read-only documents.
-	 */
-	export interface IExtension {
-		/**
-		 * The ID of the extension.
-		 *
-		 * #### Notes
-		 * The convention for extension IDs in JupyterLab is the full NPM package
-		 * name followed by a colon and a unique string token, e.g.
-		 * `'@jupyterlab/apputils-extension:settings'` or `'foo-extension:bar'`.
-		 */
-		readonly id: string;
-
-		/**
-		 * A renderer factory to be registered to render the MIME type.
-		 */
-		readonly rendererFactory: IRendererFactory;
-
-		/**
-		 * The rank passed to `RenderMime.addFactory`.  If not given,
-		 * defaults to the `defaultRank` of the factory.
-		 */
-		readonly rank?: number;
-
-		/**
-		 * The timeout after user activity to re-render the data.
-		 */
-		readonly renderTimeout?: number;
-
-		/**
-		 * Preferred data type from the model.  Defaults to `string`.
-		 */
-		readonly dataType?: 'string' | 'json';
-
-		/**
-		 * The options used to open a document with the renderer factory.
-		 */
-		readonly documentWidgetFactoryOptions?:
-		| IDocumentWidgetFactoryOptions
-		| ReadonlyArray<IDocumentWidgetFactoryOptions>;
-
-		/**
-		 * The optional file type associated with the extension.
-		 */
-		readonly fileTypes?: ReadonlyArray<IFileType>;
-	}
-
-	/**
-	 * The interface for a module that exports an extension or extensions as
-	 * the default value.
-	 */
-	export interface IExtensionModule {
-		/**
-		 * The default export.
-		 */
-		readonly default: IExtension | ReadonlyArray<IExtension>;
-	}
-
-	/**
 	 * A widget which displays the contents of a mime model.
 	 */
 	export interface IRenderer {
@@ -279,17 +134,17 @@ export namespace IRenderMime {
 		/**
 		 * An optional url resolver.
 		 */
-		resolver: IResolver | null;
+		resolver?: IResolver | null;
 
 		/**
 		 * An optional link handler.
 		 */
-		linkHandler: ILinkHandler | null;
+		linkHandler?: ILinkHandler | null;
 
 		/**
 		 * The LaTeX typesetter.
 		 */
-		latexTypesetter: ILatexTypesetter | null;
+		latexTypesetter?: ILatexTypesetter | null;
 	}
 
 	/**

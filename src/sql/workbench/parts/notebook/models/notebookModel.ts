@@ -10,9 +10,10 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
-import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/models/contracts';
+import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
+import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { INotebookManager, SQL_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { NotebookContexts } from 'sql/workbench/parts/notebook/models/notebookContexts';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -23,6 +24,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -72,13 +74,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _oldKernel: nb.IKernel;
 	private _clientSessionListeners: IDisposable[] = [];
 	private _connectionUrisToDispose: string[] = [];
+	private _textCellsLoading: number = 0;
+	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
+
 	public requestConnectionHandler: () => Promise<boolean>;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
 		public connectionProfile: IConnectionProfile | undefined,
 		@ILogService private readonly logService: ILogService,
-		@INotificationService private readonly notificationService: INotificationService
+		@INotificationService private readonly notificationService: INotificationService,
+		@ITelemetryService private readonly telemetryService: ITelemetryService
 	) {
 		super();
 		if (!_notebookOptions || !_notebookOptions.notebookUri || !_notebookOptions.notebookManagers) {
@@ -87,14 +93,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._trustedMode = false;
 		this._providerId = _notebookOptions.providerId;
 		this._onProviderIdChanged.fire(this._providerId);
-		this._notebookOptions.standardKernels.forEach(kernel => {
-			let displayName = kernel.displayName;
-			if (!displayName) {
-				displayName = kernel.name;
-			}
-			this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
-			this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
-		});
 		if (this._notebookOptions.layoutChanged) {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
@@ -269,6 +267,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._onValidConnectionSelected.event;
 	}
 
+	public get standardKernels(): notebookUtils.IStandardKernelWithProvider[] {
+		return this._standardKernels;
+	}
+
+	public set standardKernels(kernels) {
+		this._standardKernels = kernels;
+		this.setKernelDisplayNameMapsWithStandardKernels();
+	}
+
 	public getApplicableConnectionProviderIds(kernelDisplayName: string): string[] {
 		let ids = [];
 		if (kernelDisplayName) {
@@ -277,7 +284,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return !ids ? [] : ids;
 	}
 
-	public async requestModelLoad(isTrusted: boolean = false): Promise<void> {
+	public async loadContents(isTrusted: boolean = false): Promise<void> {
 		try {
 			this._trustedMode = isTrusted;
 			let contents = null;
@@ -289,12 +296,23 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
 			if (contents) {
-				this._defaultLanguageInfo = this.getDefaultLanguageInfo(contents);
+				this._defaultLanguageInfo = contents && contents.metadata && contents.metadata.language_info;
 				this._savedKernelInfo = this.getSavedKernelInfo(contents);
 				if (contents.cells && contents.cells.length > 0) {
-					this._cells = contents.cells.map(c => factory.createCell(c, { notebook: this, isTrusted: isTrusted }));
+					this._cells = contents.cells.map(c => {
+						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
+						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
+						return cellModel;
+					});
 				}
 			}
+		} catch (error) {
+			this._inErrorState = true;
+			throw error;
+		}
+	}
+	public async requestModelLoad(): Promise<void> {
+		try {
 			this.setDefaultKernelAndProviderId();
 			this.trySetLanguageFromLangInfo();
 		} catch (error) {
@@ -332,7 +350,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.updateActiveCell(cell);
 
 		this._contentChangedEmitter.fire({
-			changeType: NotebookChangeType.CellsAdded,
+			changeType: NotebookChangeType.CellsModified,
 			cells: [cell],
 			cellIndex: index
 		});
@@ -366,9 +384,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		if (index > -1) {
 			this._cells.splice(index, 1);
 			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellDeleted,
+				changeType: NotebookChangeType.CellsModified,
 				cells: [cellModel],
-				cellIndex: index
+				cellIndex: index,
+				isDirty: true
 			});
 		} else {
 			this.notifyError(localize('deleteCellFailed', "Failed to delete cell."));
@@ -392,7 +411,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				this.updateActiveCell(newCells[0]);
 			}
 			this._contentChangedEmitter.fire({
-				changeType: NotebookChangeType.CellsAdded
+				changeType: NotebookChangeType.CellsModified,
+				isDirty: true
 			});
 		}
 	}
@@ -410,8 +430,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public async startSession(manager: INotebookManager, displayName?: string, setErrorStateOnFail?: boolean): Promise<void> {
-		if (displayName) {
-			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName);
+		if (displayName && this._standardKernels) {
+			let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName);
 			this._defaultKernel = displayName ? { name: standardKernel.name, display_name: standardKernel.displayName } : this._defaultKernel;
 		}
 		if (this._defaultKernel) {
@@ -457,10 +477,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				}
 			}
 			this._onClientSessionReady.fire(clientSession);
-			this._kernelChangedEmitter.fire({
-				oldValue: undefined,
-				newValue: clientSession.kernel
-			});
 		}
 	}
 
@@ -499,30 +515,35 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._defaultKernel = notebookConstants.sqlKernelSpec;
 			this._providerId = SQL_NOTEBOOK_PROVIDER;
 		}
-		// update default language
-		this._defaultLanguageInfo = {
-			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
-			version: ''
-		};
+		if (!this._defaultLanguageInfo || this._defaultLanguageInfo.name) {
+			// update default language
+			this._defaultLanguageInfo = {
+				name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
+				version: ''
+			};
+		}
 	}
 
 	private isValidConnection(profile: IConnectionProfile | connection.Connection) {
-		let standardKernels = this._notebookOptions.standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
-		let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
-		return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
+		if (this._standardKernels) {
+			let standardKernels = this._standardKernels.find(kernel => this._defaultKernel && kernel.displayName === this._defaultKernel.display_name);
+			let connectionProviderIds = standardKernels ? standardKernels.connectionProviderIds : undefined;
+			return profile && connectionProviderIds && connectionProviderIds.find(provider => provider === profile.providerName) !== undefined;
+		}
+		return false;
 	}
 
 	public getStandardKernelFromName(name: string): notebookUtils.IStandardKernelWithProvider {
-		if (name) {
-			let kernel = this._notebookOptions.standardKernels.find(kernel => kernel.name.toLowerCase() === name.toLowerCase());
+		if (name && this._standardKernels) {
+			let kernel = this._standardKernels.find(kernel => kernel.name.toLowerCase() === name.toLowerCase());
 			return kernel;
 		}
 		return undefined;
 	}
 
 	public getStandardKernelFromDisplayName(displayName: string): notebookUtils.IStandardKernelWithProvider {
-		if (displayName) {
-			let kernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName.toLowerCase() === displayName.toLowerCase());
+		if (displayName && this._standardKernels) {
+			let kernel = this._standardKernels.find(kernel => kernel.displayName.toLowerCase() === displayName.toLowerCase());
 			return kernel;
 		}
 		return undefined;
@@ -706,15 +727,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	// Get default language if saved in notebook file
-	// Otherwise, default to python
-	private getDefaultLanguageInfo(notebook: nb.INotebookContents): nb.ILanguageInfo {
-		return (notebook && notebook.metadata && notebook.metadata.language_info) ? notebook.metadata.language_info : {
-			name: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'sql' : 'python',
-			version: '',
-			mimetype: this._providerId === SQL_NOTEBOOK_PROVIDER ? 'x-sql' : 'x-python'
-		};
-	}
 
 	// Get default kernel info if saved in notebook file
 	private getSavedKernelInfo(notebook: nb.INotebookContents): nb.IKernelInfo {
@@ -739,11 +751,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._savedKernelInfo.display_name !== displayName) {
 				this._savedKernelInfo.display_name = displayName;
 			}
-
-			let standardKernel = this._notebookOptions.standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
-			if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
-				this._savedKernelInfo.name = standardKernel.name;
-				this._savedKernelInfo.display_name = standardKernel.displayName;
+			if (this._standardKernels) {
+				let standardKernel = this._standardKernels.find(kernel => kernel.displayName === displayName || displayName.startsWith(kernel.displayName));
+				if (standardKernel && this._savedKernelInfo.name && this._savedKernelInfo.name !== standardKernel.name) {
+					this._savedKernelInfo.name = standardKernel.name;
+					this._savedKernelInfo.display_name = standardKernel.displayName;
+				}
 			}
 		}
 	}
@@ -925,6 +938,43 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	/**
+	 * Track time it takes to render all markdown cells
+	 */
+	private trackMarkdownTelemetry(cellContent: nb.ICellContents, cellModel: ICellModel): void {
+		if (cellContent && cellContent.cell_type === CellTypes.Markdown) {
+			this._textCellsLoading++;
+		}
+		this._register(cellModel.onLoaded((cell_type) => {
+			if (cell_type === CellTypes.Markdown) {
+				this._textCellsLoading--;
+				if (this._textCellsLoading <= 0) {
+					if (this._notebookOptions.editorLoadedTimestamp) {
+						let markdownRenderingTime = Date.now() - this._notebookOptions.editorLoadedTimestamp;
+						this.telemetryService.publicLog(TelemetryKeys.NotebookMarkdownRendered, { markdownRenderingElapsedMs: markdownRenderingTime });
+					}
+				}
+			}
+		}));
+	}
+
+	/**
+	 * Set maps with values to have a way to determine the connection
+	 * provider and notebook provider ids from a kernel display name
+	 */
+	private setKernelDisplayNameMapsWithStandardKernels(): void {
+		if (this._standardKernels) {
+			this._standardKernels.forEach(kernel => {
+				let displayName = kernel.displayName;
+				if (!displayName) {
+					displayName = kernel.name;
+				}
+				this._kernelDisplayNameToConnectionProviderIds.set(displayName, kernel.connectionProviderIds);
+				this._kernelDisplayNameToNotebookProviderIds.set(displayName, kernel.notebookProvider);
+			});
+		}
+	}
+
+	/**
 	 * Serialize the model to JSON.
 	 */
 	toJSON(): nb.INotebookContents {
@@ -955,6 +1005,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			default:
 			// Do nothing for now
 		}
+		this._contentChangedEmitter.fire(changeInfo);
+	}
+
+	serializationStateChanged(changeType: NotebookChangeType): void {
+		let changeInfo: NotebookContentChange = {
+			changeType: changeType,
+			cells: undefined
+		};
+
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 

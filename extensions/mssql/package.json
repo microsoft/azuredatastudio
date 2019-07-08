@@ -89,11 +89,11 @@
         }
       },
       {
-        "command": "mssqlCluster.livy.task.openSparkHistory",
-        "title": "%title.openSparkHistory%",
+        "command": "mssqlCluster.task.openClusterStatusNotebook",
+        "title": "%title.openClusterStatusNotebook%",
         "icon": {
-          "dark": "resources/dark/new_spark_job_inverse.svg",
-          "light": "resources/light/new_spark_job.svg"
+          "dark": "resources/dark/cluster_status_inverse.svg",
+          "light": "resources/light/cluster_status.svg"
         }
       },
       {
@@ -247,6 +247,10 @@
         {
           "command": "mssqlCluster.livy.task.submitSparkJob",
           "when": "false"
+        },
+        {
+          "command": "mssqlCluster.task.openClusterStatusNotebook",
+          "when": "false"
         }
       ],
       "objectExplorer/item/context": [
@@ -390,7 +394,7 @@
     "dashboard.tabs": [
       {
         "id": "mssql-big-data-cluster",
-        "description": "tab.bigDataClusterDescription",
+        "description": "%tab.bigDataClusterDescription%",
         "provider": "MSSQL",
         "title": "%title.bigDataCluster%",
         "when": "connectionProvider == 'MSSQL' && mssql:iscluster",
@@ -400,15 +404,26 @@
               "name": "%title.tasks%",
               "row": 0,
               "col": 0,
-              "colspan": 2,
+              "colspan": 1,
               "widget": {
                 "tasks-widget": [
                   "mssqlCluster.task.newNotebook",
                   "mssqlCluster.task.openNotebook",
                   "mssqlCluster.livy.task.submitSparkJob",
-                  "mssqlCluster.livy.task.openSparkHistory",
-                  "mssqlCluster.livy.task.openYarnHistory"
+                  "mssqlCluster.task.openClusterStatusNotebook"
                 ]
+              }
+            },
+            {
+              "name": "%title.endpoints%",
+              "row": 0,
+              "col": 2,
+              "rowspan": 1.5,
+              "colspan": 2,
+              "widget": {
+                "modelview": {
+                  "id": "bdc-endpoints"
+                }
               }
             }
           ]

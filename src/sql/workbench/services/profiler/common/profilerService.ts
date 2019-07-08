@@ -4,23 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import {
-	ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate,
-	PROFILER_SETTINGS, IProfilerSettings
-} from './interfaces';
+import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/workbench/parts/profiler/browser/profilerColumnEditorDialog';
 
 import * as azdata from 'azdata';
 
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { Memento } from 'vs/workbench/common/memento';
 import { ProfilerFilterDialog } from 'sql/workbench/parts/profiler/browser/profilerFilterDialog';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TwoWayMap<T, K> {
 	private forwardMap: Map<T, K>;
@@ -157,13 +155,7 @@ export class ProfilerService implements IProfilerService {
 	}
 
 	private _runAction<T>(id: ProfilerSessionID, action: (handler: azdata.ProfilerProvider) => Thenable<T>): Thenable<T> {
-		// let providerId = this._connectionService.getProviderIdFromUri(this._idMap.get(id));
-		let providerId = 'MSSQL';
-
-		if (!providerId) {
-			return Promise.reject(new Error('Connection is required in order to interact with queries'));
-		}
-		let handler = this._providers.get(providerId);
+		let handler = this._providers.get(mssqlProviderName);
 		if (handler) {
 			return action(handler);
 		} else {
@@ -230,12 +222,31 @@ export class ProfilerService implements IProfilerService {
 		return Promise.resolve(null);
 	}
 
-	public launchCreateSessionDialog(input?: ProfilerInput): Thenable<void> {
-		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, input.providerType, this.getSessionTemplates());
+	public launchCreateSessionDialog(input: ProfilerInput): Thenable<void> {
+		const serverInfo = this._connectionService.getConnectionInfo(input.id).serverInfo;
+		let templates = this.getSessionTemplates();
+		if (serverInfo) {
+			const engineType = serverInfo.isCloud ? EngineType.AzureSQLDB : EngineType.Standalone;
+			// only use the templates that matches the following criteria:
+			// 1. the template doesn't have any engine types specified - for backward compatibility (user with custom templates) or the templates applicable to both AzureSQLDB and standalone server
+			// 2. the template supports the current engine type
+			templates = templates.filter(template => !template.engineTypes || template.engineTypes.length === 0 || template.engineTypes.includes(engineType));
+		}
+		return this._commandService.executeCommand('profiler.openCreateSessionDialog', input.id, input.providerType, templates);
 	}
 
 	public launchFilterSessionDialog(input: ProfilerInput): void {
 		let dialog = this._instantiationService.createInstance(ProfilerFilterDialog);
 		dialog.open(input);
+	}
+
+	public getFilters(): ProfilerFilter[] {
+		const config = <ProfilerFilter[]>this._configurationService.getValue(PROFILER_FILTER_SETTINGS);
+		return config;
+	}
+
+	public saveFilter(filter: ProfilerFilter): void {
+		const config = [filter];
+		this._configurationService.updateValue(PROFILER_FILTER_SETTINGS, config, ConfigurationTarget.USER);
 	}
 }

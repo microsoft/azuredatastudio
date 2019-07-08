@@ -282,6 +282,13 @@ export interface IConnectionManagementService {
 	getProviderProperties(providerName: string): ConnectionProviderProperties;
 
 	getConnectionIconId(connectionId: string): string;
+
+	/**
+	 * Get known connection profiles including active connections, recent connections and saved connections.
+	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
+	 * @returns array of connections
+	 */
+	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[];
 }
 
 export enum RunQueryOnConnectionMode {
@@ -312,7 +319,8 @@ export interface IConnectableInput {
 
 export enum ConnectionType {
 	default = 0,
-	editor = 1
+	editor = 1,
+	temporary = 2
 }
 
 export enum MetadataType {

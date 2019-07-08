@@ -44,11 +44,17 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			this._id = model.id;
 			this.azureTenantId = model.azureTenantId;
 			if (this.capabilitiesService && model.providerName) {
-				const options = this.capabilitiesService.getCapabilities(model.providerName).connection.connectionOptions;
-				let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
-				if (appNameOption) {
-					let appNameKey = appNameOption.name;
-					this.options[appNameKey] = Constants.applicationName;
+				let capabilities = this.capabilitiesService.getCapabilities(model.providerName);
+				if (capabilities && capabilities.connection && capabilities.connection.connectionOptions) {
+					const options = capabilities.connection.connectionOptions;
+					let appNameOption = options.find(option => option.specialValueType === ConnectionOptionSpecialType.appName);
+					if (appNameOption) {
+						let appNameKey = appNameOption.name;
+						this.options[appNameKey] = Constants.applicationName;
+					}
+				}
+				if (model.options.registeredServerDescription) {
+					this.registeredServerDescription = model.options.registeredServerDescription;
 				}
 			}
 		} else {
@@ -106,12 +112,12 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['azureTenantId'] = value;
 	}
 
-	public get registeredCmsServerDescription(): string {
-		return this.options['registeredCmsServerDescription'];
+	public get registeredServerDescription(): string {
+		return this.options['registeredServerDescription'];
 	}
 
-	public set registeredCmsServerDescription(value: string) {
-		this.options['registeredCmsServerDescription'] = value;
+	public set registeredServerDescription(value: string) {
+		this.options['registeredServerDescription'] = value;
 	}
 
 	public get groupFullName(): string {

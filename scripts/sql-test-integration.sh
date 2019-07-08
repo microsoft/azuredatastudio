@@ -13,8 +13,8 @@ else
 fi
 
 cd $ROOT
-echo $VSCODEUSERDATADIR
-echo $VSCODEEXTDIR
+echo VSCODEUSERDATADIR=$VSCODEUSERDATADIR
+echo VSCODEEXTDIR=$VSCODEEXTDIR
 
 if [[ "$SKIP_PYTHON_INSTALL_TEST" == "1" ]]; then
 	echo Skipping Python installation tests.

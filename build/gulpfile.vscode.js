@@ -526,10 +526,14 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
-		gulp.src(`../vscode-localization/${language.id}/build/*/*.xlf`)
-			.pipe(i18n.prepareI18nFiles())
-			.pipe(vfs.dest(`./i18n/${language.folderName}`));
+	return new Promise(function(resolve) {
+		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
+			let languageId = language.translationId ? language.translationId : language.id;
+			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)
+				.pipe(i18n.prepareI18nFiles())
+				.pipe(vfs.dest(`./i18n/${language.folderName}`));
+			resolve();
+		});
 	});
 	// {{SQL CARBON EDIT}} - End
 });
@@ -679,15 +683,16 @@ gulp.task('install-sqltoolsservice', () => {
 });
 
 function installSsmsMin() {
-	let config = require('../extensions/admin-tool-ext-win/src/config.json');
+	const config = require('../extensions/admin-tool-ext-win/src/config.json');
 	return platformInfo.getCurrent().then(p => {
-		let runtime = p.runtimeId;
+		const runtime = p.runtimeId;
 		// fix path since it won't be correct
 		config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
 		var installer = new serviceDownloader(config);
-		let serviceInstallFolder = installer.getInstallDirectory(runtime);
-		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-		return del(serviceInstallFolder + '/*').then(() => {
+		const serviceInstallFolder = installer.getInstallDirectory(runtime);
+		const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
+		console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
+		return del(serviceCleanupFolder + '/*').then(() => {
 			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
 			return installer.installService(runtime);
 		}, delError => {

@@ -26,7 +26,7 @@ import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 @Component({
 	selector: 'modelview-table',
 	template: `
-		<div #table style="width: 100%;height:100%" [style.font-size]="fontSize"></div>
+		<div #table style="height:100%;" [style.font-size]="fontSize" [style.width]="width"></div>
 	`
 })
 export default class TableComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -196,6 +196,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				toolTip: col.toolTip,
 				width: col.width,
 				cssClass: col.cssClass,
+				headerCssClass: col.headerCssClass,
 				actionOnCheck: col.options ? col.options.actionOnCheckbox : null
 			}, index);
 

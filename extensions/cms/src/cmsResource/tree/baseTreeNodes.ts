@@ -8,19 +8,23 @@ import * as azdata from 'azdata';
 import { AppContext } from '../../appContext';
 import { TreeNode } from '../treeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
+import { generateGuid } from '../utils';
 
 export abstract class CmsResourceTreeNodeBase extends TreeNode {
+
+	protected _id: string = undefined;
 
 	public constructor(
 		private _name: string,
 		private _description: string,
-		private _ownerUri: string,
+		protected _ownerUri: string,
 		public readonly appContext: AppContext,
 		public readonly treeChangeHandler: ICmsResourceTreeChangeHandler,
 		parent: TreeNode
 	) {
 		super();
 		this.parent = parent;
+		this._id = generateGuid();
 	}
 
 	public get name(): string {

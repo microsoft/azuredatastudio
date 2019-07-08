@@ -15,9 +15,17 @@ import { NotebookModelStub } from '../common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
 import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
+import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+
+let instantiationService: IInstantiationService;
 
 suite('Cell Model', function (): void {
-	let factory = new ModelFactory();
+	let serviceCollection = new ServiceCollection();
+	instantiationService = new InstantiationService(serviceCollection, true);
+
+	let factory = new ModelFactory(instantiationService);
 	test('Should set default values if none defined', async function (): Promise<void> {
 		let cell = factory.createCell(undefined, undefined);
 		should(cell.cellType).equal(CellTypes.Code);
@@ -88,25 +96,6 @@ suite('Cell Model', function (): void {
 		should(cell.language).equal('python');
 	});
 
-	// Failing test disabled - see https://github.com/Microsoft/azuredatastudio/issues/4113
-	/*
-	test('Should set cell language to scala if defined as scala in languageInfo', async function (): Promise<void> {
-		let cellData: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: 'print(\'1\')',
-			metadata: {},
-			execution_count: 1
-		};
-
-		let notebookModel = new NotebookModelStub({
-			name: 'scala',
-			version: '',
-			mimetype: ''
-		});
-		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('scala');
-	});
-	*/
 	test('Should keep cell language as python if cell has language override', async function (): Promise<void> {
 		let cellData: nb.ICellContents = {
 			cell_type: CellTypes.Code,
@@ -140,46 +129,6 @@ suite('Cell Model', function (): void {
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		should(cell.language).equal('python');
 	});
-
-	// Failing test disabled - see https://github.com/Microsoft/azuredatastudio/issues/4113
-	/*
-	test('Should match cell language to language specified if unknown language defined in languageInfo', async function (): Promise<void> {
-		let cellData: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: 'std::cout << "hello world";',
-			metadata: {},
-			execution_count: 1
-		};
-
-		let notebookModel = new NotebookModelStub({
-			name: 'cplusplus',
-			version: '',
-			mimetype: ''
-		});
-		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('cplusplus');
-	});
-	*/
-
-	// Failing test disabled - see https://github.com/Microsoft/azuredatastudio/issues/4113
-	/*
-	test('Should match cell language to mimetype name is not supplied in languageInfo', async function (): Promise<void> {
-		let cellData: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: 'print(\'1\')',
-			metadata: {},
-			execution_count: 1
-		};
-
-		let notebookModel = new NotebookModelStub({
-			name: '',
-			version: '',
-			mimetype: 'x-scala'
-		});
-		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(cell.language).equal('scala');
-	});
-	*/
 
 	suite('Model Future handling', function (): void {
 		let future: TypeMoq.Mock<EmptyFuture>;
@@ -221,7 +170,7 @@ suite('Cell Model', function (): void {
 			future.setup(f => f.setReplyHandler(TypeMoq.It.isAny())).callback((handler) => onReply = handler);
 			future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 			let outputs: ReadonlyArray<nb.ICellOutput> = undefined;
-			cell.onOutputsChanged((o => outputs = o));
+			cell.onOutputsChanged((o => outputs = o.outputs));
 
 			// When I set it on the cell
 			cell.setFuture(future.object);
@@ -324,7 +273,7 @@ suite('Cell Model', function (): void {
 			let onIopub: nb.MessageHandler<nb.IIOPubMessage>;
 			future.setup(f => f.setIOPubHandler(TypeMoq.It.isAny())).callback((handler) => onIopub = handler);
 			let outputs: ReadonlyArray<nb.ICellOutput> = undefined;
-			cell.onOutputsChanged((o => outputs = o));
+			cell.onOutputsChanged((o => outputs = o.outputs));
 
 			//Set the future
 			cell.setFuture(future.object);

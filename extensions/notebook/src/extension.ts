@@ -13,7 +13,9 @@ import { AppContext } from './common/appContext';
 import { ApiWrapper } from './common/apiWrapper';
 import { IExtensionApi } from './types';
 import { CellType } from './contracts/content';
-import { getErrorMessage } from './common/utils';
+import { getErrorMessage, isEditorTitleFree } from './common/utils';
+import { NotebookUriHandler } from './protocol/notebookUriHandler';
+import { BookTreeViewProvider } from './book/bookTreeView';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,7 +27,14 @@ let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.new', (context?: azdata.ConnectedContext) => {
+
+	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.rootPath || '');
+	vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider);
+	vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource));
+	vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource));
+	vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource));
+
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
 		if (context && context.connectionProfile) {
 			connectionProfile = context.connectionProfile;
@@ -40,6 +49,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runallcells', () => {
 		runAllCells();
+	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.clearactivecellresult', () => {
+		clearActiveCellOutput();
 	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addcell', async () => {
 		let cellType: CellType;
@@ -74,6 +86,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.analyzeNotebook', (explorerContext: azdata.ObjectExplorerContext) => {
 		analyzeNotebook(explorerContext);
 	}));
+	extensionContext.subscriptions.push(vscode.window.registerUriHandler(new NotebookUriHandler()));
+
 
 	let appContext = new AppContext(extensionContext, new ApiWrapper());
 	controller = new JupyterController(appContext);
@@ -112,9 +126,7 @@ function findNextUntitledEditorName(): string {
 	// Note: this will go forever if it's coded wrong, or you have infinite Untitled notebooks!
 	while (true) {
 		let title = `Notebook-${nextVal}`;
-		let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
-		let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
-		if (!hasTextDoc && !hasNotebookDoc) {
+		if (isEditorTitleFree(title)) {
 			return title;
 		}
 		nextVal++;
@@ -151,11 +163,24 @@ async function runActiveCell(): Promise<void> {
 	}
 }
 
-async function runAllCells(): Promise<void> {
+async function clearActiveCellOutput(): Promise<void> {
 	try {
 		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
-			await notebook.runAllCells();
+			await notebook.clearOutput();
+		} else {
+			throw new Error(noNotebookVisible);
+		}
+	} catch (err) {
+		vscode.window.showErrorMessage(getErrorMessage(err));
+	}
+}
+
+async function runAllCells(startCell?: azdata.nb.NotebookCell, endCell?: azdata.nb.NotebookCell): Promise<void> {
+	try {
+		let notebook = azdata.nb.activeNotebookEditor;
+		if (notebook) {
+			await notebook.runAllCells(startCell, endCell);
 		} else {
 			throw new Error(noNotebookVisible);
 		}

@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import * as vscode from 'vscode';
-import { ResourceType, DeploymentProvider, ToolInstallationStatus } from '../interfaces';
+import { ResourceType, DeploymentProvider } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
 import { INotebookService } from '../services/notebookService';
 
@@ -32,15 +32,16 @@ export class ResourceDeploymentDialog {
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
 		this._selectedResourceType = resourceType;
-		this._dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Select a configuration'), 'resourceDeploymentDialog', true);
+		this._dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Select the deployment options'), 'resourceDeploymentDialog', true);
 		this._dialogObject.cancelButton.onClick(() => this.onCancel());
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	private initializeDialog() {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
+			const tableWidth = 1126;
 			this._view = view;
 			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
 			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
@@ -49,27 +50,21 @@ export class ResourceDeploymentDialog {
 
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', 'Tool'),
-				width: 100
+				width: 150
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', 'Description'),
-				width: 500
-			};
-			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', 'Version'),
-				width: 200
-			};
-			const statusColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolStatusColumnHeader', 'Status'),
-				width: 200
+				width: 850
 			};
 
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
-				height: 150,
 				data: [],
-				columns: [toolColumn, descriptionColumn, versionColumn, statusColumn],
-				width: 1000
+				columns: [toolColumn, descriptionColumn],
+				width: tableWidth
 			}).component();
+
+			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
+			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
 
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
@@ -83,7 +78,7 @@ export class ResourceDeploymentDialog {
 						component: this._optionsContainer,
 						title: localize('deploymentDialog.OptionsTitle', 'Options')
 					}, {
-						component: this._toolsTable,
+						component: toolsTableWrapper,
 						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
 					}
 				],
@@ -94,11 +89,11 @@ export class ResourceDeploymentDialog {
 
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 
-			if (this._selectedResourceType) {
-				this.selectResourceType(this._selectedResourceType);
-			}
-
-			return view.initializeModel(form);
+			return view.initializeModel(form).then(() => {
+				if (this._selectedResourceType) {
+					this.selectResourceType(this._selectedResourceType);
+				}
+			});
 		});
 		this._dialogObject.content = [tab];
 	}
@@ -165,27 +160,13 @@ export class ResourceDeploymentDialog {
 	}
 
 	private updateTools(): void {
-		this.toolsService.getToolStatus(this.getCurrentProvider().requiredTools).then(toolStatus => {
-			let tableData = toolStatus.map(tool => {
-				return [tool.name, tool.description, tool.version, this.getToolStatusText(tool.status)];
-			});
-			this._toolsTable.data = tableData;
+		const tools = this.getCurrentProvider().requiredTools;
+		const headerRowHeight = 28;
+		this._toolsTable.height = 25 * tools.length + headerRowHeight;
+		this._toolsTable.data = tools.map(toolRef => {
+			const tool = this.toolsService.getToolByName(toolRef.name)!;
+			return [tool.displayName, tool.description];
 		});
-	}
-
-	private getToolStatusText(status: ToolInstallationStatus): string {
-		switch (status) {
-			case ToolInstallationStatus.Installed:
-				return '✔️ ' + localize('deploymentDialog.InstalledText', 'Installed');
-			case ToolInstallationStatus.NotInstalled:
-				return '❌ ' + localize('deploymentDialog.NotInstalledText', 'Not Installed');
-			case ToolInstallationStatus.Installing:
-				return '⌛ ' + localize('deploymentDialog.InstallingText', 'Installing…');
-			case ToolInstallationStatus.FailedToInstall:
-				return '❌ ' + localize('deploymentDialog.FailedToInstallText', 'Install Failed');
-			default:
-				return 'unknown status';
-		}
 	}
 
 	private getCurrentProvider(): DeploymentProvider {

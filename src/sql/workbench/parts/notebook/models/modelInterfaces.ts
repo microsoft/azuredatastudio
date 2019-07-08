@@ -21,6 +21,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -333,6 +334,11 @@ export interface INotebookModel {
 	readonly contentChanged: Event<NotebookContentChange>;
 
 	/**
+	 * Event fired on notebook provider change
+	 */
+	readonly onProviderIdChange: Event<string>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
@@ -396,6 +402,10 @@ export interface INotebookModel {
 
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
+
+	serializationStateChanged(changeType: NotebookChangeType): void;
+
+	standardKernels: IStandardKernelWithProvider[];
 }
 
 export interface NotebookContentChange {
@@ -430,6 +440,11 @@ export enum CellExecutionState {
 	Error = 3
 }
 
+export interface IOutputChangedEvent {
+	outputs: ReadonlyArray<nb.ICellOutput>;
+	shouldScroll: boolean;
+}
+
 export interface ICellModel {
 	cellUri: URI;
 	id: string;
@@ -442,7 +457,7 @@ export interface ICellModel {
 	executionCount: number | undefined;
 	readonly future: FutureInternal;
 	readonly outputs: ReadonlyArray<nb.ICellOutput>;
-	readonly onOutputsChanged: Event<ReadonlyArray<nb.ICellOutput>>;
+	readonly onOutputsChanged: Event<IOutputChangedEvent>;
 	readonly onExecutionStateChange: Event<CellExecutionState>;
 	readonly executionState: CellExecutionState;
 	readonly notebookModel: NotebookModel;
@@ -452,6 +467,9 @@ export interface ICellModel {
 	setOverrideLanguage(language: string);
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
+	loaded: boolean;
+	stdInVisible: boolean;
+	readonly onLoaded: Event<string>;
 }
 
 export interface FutureInternal extends nb.IFuture {
@@ -485,7 +503,6 @@ export interface INotebookModelOptions {
 	contentManager: IContentManager;
 	notebookManagers: INotebookManager[];
 	providerId: string;
-	standardKernels: IStandardKernelWithProvider[];
 	defaultKernel: nb.IKernelSpec;
 	cellMagicMapper: ICellMagicMapper;
 
@@ -494,6 +511,7 @@ export interface INotebookModelOptions {
 	notificationService: INotificationService;
 	connectionService: IConnectionManagementService;
 	capabilitiesService: ICapabilitiesService;
+	editorLoadedTimestamp?: number;
 }
 
 export interface ILanguageMagic {
@@ -514,7 +532,7 @@ export interface ICellMagicMapper {
 
 export namespace notebookConstants {
 	export const SQL = 'SQL';
-	export const SQL_CONNECTION_PROVIDER = 'MSSQL';
+	export const SQL_CONNECTION_PROVIDER = mssqlProviderName;
 	export const sqlKernel: string = localize('sqlKernel', 'SQL');
 	export const sqlKernelSpec: nb.IKernelSpec = ({
 		name: sqlKernel,

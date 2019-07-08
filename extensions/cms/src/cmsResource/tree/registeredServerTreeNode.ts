@@ -11,11 +11,8 @@ import { CmsResourceItemType } from '../constants';
 import { CmsResourceTreeNodeBase } from './baseTreeNodes';
 import { AppContext } from '../../appContext';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
-import { generateGuid } from '../utils';
 
 export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
-
-	private _id: string = undefined;
 
 	constructor(
 		name: string,
@@ -28,7 +25,6 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 		parent: TreeNode
 	) {
 		super(name, description, ownerUri, appContext, treeChangeHandler, parent);
-		this._id = `cms_registeredServer_${this.name ? this.name : this.serverName}`;
 	}
 
 	public async getChildren(): Promise<TreeNode[]> {
@@ -37,7 +33,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 
 	public getTreeItem(): azdata.TreeItem | Promise<azdata.TreeItem> {
 		let payload = {
-			id: generateGuid(),
+			id: this._id,
 			connectionName: this.name ? this.name : this.serverName,
 			serverName: this.serverName,
 			databaseName: '',
@@ -59,6 +55,7 @@ export class RegisteredServerTreeNode extends CmsResourceTreeNodeBase {
 			collapsibleState: TreeItemCollapsibleState.Collapsed,
 			label: this.name ? this.name : this.serverName,
 			childProvider: 'MSSQL',
+			type: azdata.ExtensionNodeType.Server,
 			iconPath: {
 				dark: this.appContext.extensionContext.asAbsolutePath('resources/light/regserverserver.svg'),
 				light: this.appContext.extensionContext.asAbsolutePath('resources/light/regserverserver.svg')

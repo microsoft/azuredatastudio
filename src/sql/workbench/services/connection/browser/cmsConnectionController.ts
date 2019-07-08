@@ -15,14 +15,13 @@ import { CmsConnectionWidget } from 'sql/workbench/services/connection/browser/c
  */
 export class CmsConnectionController extends ConnectionController {
 
-	constructor(container: HTMLElement,
+	constructor(
 		connectionManagementService: IConnectionManagementService,
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		authTypeChanged: boolean = false,
 		@IInstantiationService _instantiationService: IInstantiationService) {
-		super(container, connectionManagementService, connectionProperties, callback, providerName, _instantiationService);
+		super(connectionManagementService, connectionProperties, callback, providerName, _instantiationService);
 		let specialOptions = this._providerOptions.filter(
 			(property) => (property.specialValueType !== null && property.specialValueType !== undefined));
 		this._connectionWidget = this._instantiationService.createInstance(CmsConnectionWidget, specialOptions, {
@@ -34,7 +33,7 @@ export class CmsConnectionController extends ConnectionController {
 				serverName, authenticationType, userName, password).then(result => {
 					return result;
 				})
-		}, providerName, authTypeChanged);
+		}, providerName);
 	}
 
 	public showUiComponent(container: HTMLElement, authTypeChanged: boolean = false): void {

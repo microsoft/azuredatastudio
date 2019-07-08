@@ -15,6 +15,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel, ILanguageMagic } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -65,6 +66,8 @@ export interface INotebookService {
 
 	listNotebookEditors(): INotebookEditor[];
 
+	findNotebookEditor(notebookUri: URI): INotebookEditor | undefined;
+
 	getMimeRegistry(): RenderMimeRegistry;
 
 	renameNotebookEditor(oldUri: URI, newUri: URI, currentEditor: INotebookEditor): void;
@@ -85,7 +88,7 @@ export interface INotebookService {
 	 * sent to listeners that can act on the point-in-time notebook state
 	 * @param notebookUri the URI identifying a notebook
 	 */
-	serializeNotebookStateChange(notebookUri: URI, changeType: SerializationStateChangeType): void;
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType): void;
 
 }
 
@@ -125,11 +128,7 @@ export interface INotebookEditor {
 	isVisible(): boolean;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
-	runAllCells(): Promise<boolean>;
+	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean>;
+	clearOutput(cell: ICellModel): Promise<boolean>;
 	clearAllOutputs(): Promise<boolean>;
-}
-
-export enum SerializationStateChangeType {
-	Saved,
-	Executed
 }

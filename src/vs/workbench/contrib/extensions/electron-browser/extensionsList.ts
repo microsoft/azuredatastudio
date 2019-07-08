@@ -111,7 +111,8 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 			headerRemoteBadgeWidget,
 			tooltipWidget,
 			this.instantiationService.createInstance(Label, version, (e: IExtension) => e.version),
-			this.instantiationService.createInstance(InstallCountWidget, installCount, true),
+			// {{SQL CARBON EDIT}}
+			// this.instantiationService.createInstance(InstallCountWidget, installCount, true),
 			this.instantiationService.createInstance(RatingsWidget, ratings, true)
 		];
 		const extensionContainers: ExtensionContainers = this.instantiationService.createInstance(ExtensionContainers, [...actions, ...widgets, disabledLabelAction]);

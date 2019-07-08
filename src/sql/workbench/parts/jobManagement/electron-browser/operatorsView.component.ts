@@ -134,7 +134,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 		let rowDetail = new RowDetailView({
 			cssClass: '_detail_selector',
 			useRowClick: false,
-			panelRows: 1
+			panelRows: 1,
+			postTemplate: () => '', // I'm assuming these code paths are just never hit...
+			preTemplate: () => '',
+			process: () => { }
 		});
 		columns.unshift(rowDetail.getColumnDefinition());
 
@@ -194,10 +197,10 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected getTableActions(): IAction[] {
-		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(EditOperatorAction));
-		actions.push(this._instantiationService.createInstance(DeleteOperatorAction));
-		return actions;
+		return [
+			this._instantiationService.createInstance(EditOperatorAction),
+			this._instantiationService.createInstance(DeleteOperatorAction)
+		];
 	}
 
 	protected getCurrentTableObject(rowIndex: number): any {

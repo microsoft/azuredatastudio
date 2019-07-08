@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -36,6 +36,11 @@ import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 export const JOBSVIEW_SELECTOR: string = 'jobsview-component';
 export const ROW_HEIGHT: number = 45;
 export const ACTIONBAR_PADDING: number = 10;
+
+interface IItem extends Slick.SlickData {
+	jobId?: string;
+	id: string;
+}
 
 @Component({
 	selector: JOBSVIEW_SELECTOR,
@@ -71,7 +76,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	];
 
 	private _jobCacheObject: JobCacheObject;
-	private rowDetail: RowDetailView;
+	private rowDetail: RowDetailView<IItem>;
 	private filterPlugin: any;
 	private dataView: any;
 	private _isCloud: boolean;
@@ -161,7 +166,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 		this.dataView = new Slick.Data.DataView({ inlineFilters: false });
 
-		let rowDetail = new RowDetailView({
+		let rowDetail = new RowDetailView<IItem>({
 			cssClass: '_detail_selector',
 			process: (job) => {
 				(<any>rowDetail).onAsyncResponse.notify({
@@ -169,11 +174,13 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				}, undefined, this);
 			},
 			useRowClick: false,
-			panelRows: 1
+			panelRows: 1,
+			postTemplate: () => '', // I'm assuming these code paths are just never hit...
+			preTemplate: () => '',
 		});
 		this.rowDetail = rowDetail;
 		columns.unshift(this.rowDetail.getColumnDefinition());
-		let filterPlugin = new HeaderFilter({});
+		let filterPlugin = new HeaderFilter<{ inlineFilters: false }>();
 		this._register(attachButtonStyler(filterPlugin, this._themeService));
 		this.filterPlugin = filterPlugin;
 		jQuery(this._gridEl.nativeElement).empty();
@@ -337,7 +344,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		this.filterPlugin.onCommand.subscribe((e, args: any) => {
 			this.columnSort(args.column.name, args.command === 'sort-asc');
 		});
-		this._table.registerPlugin(<HeaderFilter>this.filterPlugin);
+		this._table.registerPlugin(this.filterPlugin);
 
 		this.dataView.beginUpdate();
 		this.dataView.setItems(jobViews);
@@ -855,14 +862,16 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
-		let actions: IAction[] = [];
-		let editAction = this._instantiationService.createInstance(EditJobAction);
+		const editAction = this._instantiationService.createInstance(EditJobAction);
+		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		if (!targetObject.canEdit) {
 			editAction.enabled = false;
 		}
-		actions.push(editAction);
-		actions.push(this._instantiationService.createInstance(DeleteJobAction));
-		return actions;
+		return [
+			runJobAction,
+			editAction,
+			this._instantiationService.createInstance(DeleteJobAction)
+		];
 	}
 
 	protected convertStepsToStepInfos(steps: azdata.AgentJobStep[], job: azdata.AgentJobInfo): azdata.AgentJobStepInfo[] {
@@ -900,7 +909,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	}
 
 	protected getCurrentTableObject(rowIndex: number): JobActionContext {
-		let data = this._table.grid.getData();
+		let data = this._table.grid.getData() as Slick.DataProvider<IItem>;
 		if (!data || rowIndex >= data.getLength()) {
 			return undefined;
 		}

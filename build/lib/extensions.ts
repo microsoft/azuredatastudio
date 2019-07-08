@@ -382,7 +382,7 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 	];
 
 	const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
-		.pipe(filter(['**', '!**/package-lock.json']))
+		.pipe(filter(['**', '!**/package-lock.json']));
 
 	// Original code commented out here
 	// const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });

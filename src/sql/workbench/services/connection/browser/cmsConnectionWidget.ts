@@ -35,13 +35,12 @@ export class CmsConnectionWidget extends ConnectionWidget {
 
 	private _serverDescriptionInputBox: InputBox;
 	protected _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.cmsProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated, AuthenticationType.AzureMFA]
+		[Constants.cmsProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated]
 	};
 
 	constructor(options: azdata.ConnectionOption[],
 		callbacks: IConnectionComponentCallbacks,
 		providerName: string,
-		authTypeChanged: boolean = false,
 		@IThemeService _themeService: IThemeService,
 		@IContextViewService _contextViewService: IContextViewService,
 		@ILayoutService _layoutService: ILayoutService,
@@ -55,7 +54,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			_clipboardService, _configurationService, _accountManagementService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		if (authTypeOption) {
-			if (OS === OperatingSystem.Windows || authTypeChanged) {
+			if (OS === OperatingSystem.Windows) {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
 			} else {
 				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
@@ -95,13 +94,24 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		super.addAuthenticationTypeOption(authTypeChanged);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		let newAuthTypes = authTypeOption.categoryValues;
+
 		// True when opening a CMS dialog to add a registered server
 		if (authTypeChanged) {
-			// Need to filter out SQL Login because registered servers don't support it
-			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name !== AuthenticationType.SqlLogin);
-			authTypeOption.defaultValue = AuthenticationType.Integrated;
+			// Registered Servers only support Integrated Auth
+			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name === AuthenticationType.Integrated);
 			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
+			authTypeOption.defaultValue = AuthenticationType.Integrated;
+		} else {
+			// CMS supports all auth types
+			newAuthTypes = authTypeOption.categoryValues;
+			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
+			if (OS === OperatingSystem.Windows) {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
+			} else {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
+			}
 		}
+		this._authTypeSelectBox.selectWithOptionName(authTypeOption.defaultValue);
 	}
 
 	private addServerDescriptionOption(): void {
@@ -154,5 +164,13 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			model.options.registeredServerName = this._connectionNameInputBox.value;
 		}
 		return validInputs;
+	}
+
+	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
+		super.fillInConnectionInputs(connectionInfo);
+		if (connectionInfo) {
+			let description = connectionInfo.options.registeredServerDescription ? connectionInfo.options.registeredServerDescription : '';
+			this._serverDescriptionInputBox.value = description;
+		}
 	}
 }

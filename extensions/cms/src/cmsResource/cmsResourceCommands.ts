@@ -18,40 +18,37 @@ const localize = nls.loadMessageBundle();
 
 export function registerCmsServerCommand(appContext: AppContext, tree: CmsResourceTreeProvider): void {
 	// Create a CMS Server
-	appContext.apiWrapper.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode) => {
+	appContext.apiWrapper.registerCommand('cms.resource.registerCmsServer', async (node?: TreeNode, connectionProfile?: azdata.IConnectionProfile) => {
 		if (node && !(node instanceof CmsResourceEmptyTreeNode)) {
 			return;
 		}
-		await appContext.apiWrapper.connection.then(async (connection) => {
-			if (connection && connection.options) {
-				let registeredCmsServerName = connection.options.registeredServerName ?
-					connection.options.registeredServerName : connection.options.server;
-				// check if a CMS with the same name is registered or not
-				let cachedServers = appContext.apiWrapper.registeredCmsServers;
-				let serverExists: boolean = false;
-				if (cachedServers) {
-					serverExists = cachedServers.some((server) => {
-						return server.name === registeredCmsServerName;
-					});
-				}
-				if (!serverExists) {
-					// remove any group ID if user selects a connection from
-					// recent connection list
-					connection.options.groupId = null;
-					let registeredCmsServerDescription = connection.options.registeredServerDescription;
-					// remove server description from connection uri
-					connection.options.registeredCmsServerDescription = null;
-					let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
-					appContext.apiWrapper.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
-					tree.notifyNodeChanged(undefined);
-				} else {
-					// error out for same server name
-					let errorText = localize('cms.errors.sameCmsServerName', 'Central Management Server Group already has a Registered Server with the name {0}', registeredCmsServerName);
-					appContext.apiWrapper.showErrorMessage(errorText);
-					return;
-				}
+		let connection = await appContext.cmsUtils.makeConnection(connectionProfile);
+		if (connection && connection.options) {
+			let registeredCmsServerName = connection.options.registeredServerName ?
+				connection.options.registeredServerName : connection.options.server;
+			// check if a CMS with the same name is registered or not
+			let cachedServers = appContext.cmsUtils.registeredCmsServers;
+			let serverExists: boolean = false;
+			if (cachedServers) {
+				serverExists = cachedServers.some((server) => {
+					return server.name === registeredCmsServerName;
+				});
 			}
-		});
+			if (!serverExists) {
+				// remove any group ID if user selects a connection from
+				// recent connection list
+				connection.options.groupId = null;
+				let registeredCmsServerDescription = connection.options.registeredServerDescription;
+				let ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+				appContext.cmsUtils.cacheRegisteredCmsServer(registeredCmsServerName, registeredCmsServerDescription, ownerUri, connection);
+				tree.notifyNodeChanged(undefined);
+			} else {
+				// error out for same server name
+				let errorText = localize('cms.errors.sameCmsServerName', 'Central Management Server Group already has a Registered Server with the name {0}', registeredCmsServerName);
+				appContext.apiWrapper.showErrorMessage(errorText);
+				throw new Error(errorText);
+			}
+		}
 	});
 }
 
@@ -61,7 +58,7 @@ export function deleteCmsServerCommand(appContext: AppContext, tree: CmsResource
 		if (!(node instanceof CmsResourceTreeNode)) {
 			return;
 		}
-		await appContext.apiWrapper.deleteCmsServer(node.name);
+		await appContext.cmsUtils.deleteCmsServer(node.name, node.connection);
 		tree.isSystemInitialized = false;
 		tree.notifyNodeChanged(undefined);
 	});
@@ -74,12 +71,10 @@ export function addRegisteredServerCommand(appContext: AppContext, tree: CmsReso
 			return;
 		}
 		let relativePath = node instanceof CmsResourceTreeNode ? '' : node.relativePath;
-		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.server : null;
-		await appContext.apiWrapper.addRegisteredServer(relativePath, node.ownerUri, serverName).then((result) => {
-			if (result) {
-				tree.notifyNodeChanged(undefined);
-			}
-		});
+		let serverName = node instanceof CmsResourceTreeNode ? node.connection.options.registeredServerName === ''
+			? node.connection.options.server : node.connection.options.registeredServerName : null;
+		await appContext.cmsUtils.addRegisteredServer(relativePath, node.ownerUri, serverName);
+		tree.notifyNodeChanged(node);
 	});
 }
 
@@ -89,11 +84,14 @@ export function deleteRegisteredServerCommand(appContext: AppContext, tree: CmsR
 		if (!(node instanceof RegisteredServerTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.removeRegisteredServer(node.name, node.relativePath, node.ownerUri).then((result) => {
-			if (result) {
-				tree.notifyNodeChanged(undefined);
-			}
-		});
+		let result = await appContext.apiWrapper.showWarningMessage(
+			`${localize('cms.confirmDeleteServer', 'Are you sure you want to delete')} ${node.name}?`,
+			localize('cms.yes', 'Yes'),
+			localize('cms.no', 'No'));
+		if (result && result === localize('cms.yes', 'Yes')) {
+			await appContext.cmsUtils.removeRegisteredServer(node.name, node.relativePath, node.ownerUri);
+			tree.notifyNodeChanged(node.parent);
+		}
 	});
 }
 
@@ -138,22 +136,19 @@ export function addServerGroupCommand(appContext: AppContext, tree: CmsResourceT
 		dialog.content = [mainTab];
 		azdata.window.openDialog(dialog);
 		let groupExists = false;
-		dialog.okButton.onClick(() => {
+		dialog.okButton.onClick(async () => {
 			let path = node instanceof ServerGroupTreeNode ? node.relativePath : '';
 			if (node.serverGroupNodes.some(node => node.name === serverGroupName)) {
 				groupExists = true;
 			}
 			if (!groupExists) {
-				appContext.apiWrapper.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri).then((result) => {
-					if (result) {
-						tree.notifyNodeChanged(undefined);
-					}
-				});
+				await appContext.cmsUtils.addServerGroup(serverGroupName, serverDescription, path, node.ownerUri);
+				tree.notifyNodeChanged(node);
 			} else {
 				// error out for same server group
-				let errorText = localize('cms.errors.sameServerGroupName', '{0} already has a Server Group with the name {1}', node.name, serverGroupName);
+				const errorText = localize('cms.errors.sameServerGroupName', '{0} already has a Server Group with the name {1}', node.name, serverGroupName);
 				appContext.apiWrapper.showErrorMessage(errorText);
-				return;
+				throw new Error(errorText);
 			}
 		});
 	});
@@ -165,11 +160,14 @@ export function deleteServerGroupCommand(appContext: AppContext, tree: CmsResour
 		if (!(node instanceof ServerGroupTreeNode)) {
 			return;
 		}
-		appContext.apiWrapper.removeServerGroup(node.name, node.relativePath, node.ownerUri).then((result) => {
-			if (result) {
-				tree.notifyNodeChanged(undefined);
-			}
-		});
+		let result = await appContext.apiWrapper.showWarningMessage(
+			`${localize('cms.confirmDeleteGroup', 'Are you sure you want to delete')} ${node.name}?`,
+			localize('cms.yes', 'Yes'),
+			localize('cms.no', 'No'));
+		if (result && result === localize('cms.yes', 'Yes')) {
+			await appContext.cmsUtils.removeServerGroup(node.name, node.relativePath, node.ownerUri);
+			tree.notifyNodeChanged(node.parent);
+		}
 	});
 }
 
@@ -179,7 +177,7 @@ export function refreshCommand(appContext: AppContext, tree: CmsResourceTreeProv
 		if (!node) {
 			return;
 		}
-		tree.notifyNodeChanged(undefined);
+		tree.notifyNodeChanged(node);
 	});
 }
 

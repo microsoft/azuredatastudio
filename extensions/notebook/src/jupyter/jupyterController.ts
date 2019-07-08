@@ -12,7 +12,7 @@ const localize = nls.loadMessageBundle();
 
 import * as constants from '../common/constants';
 import * as localizedConstants from '../common/localizedConstants';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import { IServerInstance } from './common';
 import * as utils from '../common/utils';
 import { IPrompter, QuestionTypes, IQuestion } from '../prompts/question';
@@ -24,6 +24,7 @@ import { NotebookCompletionItemProvider } from '../intellisense/completionItemPr
 import { JupyterNotebookProvider } from './jupyterNotebookProvider';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
 import CodeAdapter from '../prompts/adapter';
+import { ManagePackagesDialog } from '../dialog/managePackages/managePackagesDialog';
 
 let untitledCounter = 0;
 
@@ -57,6 +58,7 @@ export class JupyterController implements vscode.Disposable {
 			this.extensionContext.extensionPath,
 			this.outputChannel,
 			this.apiWrapper);
+		await this._jupyterInstallation.configurePackagePaths();
 
 		// Add command/task handlers
 		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
@@ -73,7 +75,7 @@ export class JupyterController implements vscode.Disposable {
 		});
 
 		this.apiWrapper.registerCommand(constants.jupyterReinstallDependenciesCommand, () => { return this.handleDependenciesReinstallation(); });
-		this.apiWrapper.registerCommand(constants.jupyterInstallPackages, () => { return this.doManagePackages(); });
+		this.apiWrapper.registerCommand(constants.jupyterManagePackages, () => { return this.doManagePackages(); });
 		this.apiWrapper.registerCommand(constants.jupyterConfigurePython, () => { return this.doConfigurePython(this._jupyterInstallation); });
 
 		let supportedFileFilter: vscode.DocumentFilter[] = [
@@ -194,10 +196,8 @@ export class JupyterController implements vscode.Disposable {
 
 	public doManagePackages(): void {
 		try {
-			let terminal = this.apiWrapper.createTerminalWithOptions({ cwd: this.getPythonBinDir() });
-			terminal.show(true);
-			let shellType = this.apiWrapper.getConfiguration().get('terminal.integrated.shell.windows');
-			terminal.sendText(this.getTextToSendToTerminal(shellType), true);
+			let packagesDialog = new ManagePackagesDialog(this._jupyterInstallation);
+			packagesDialog.showDialog();
 		} catch (error) {
 			let message = utils.getErrorMessage(error);
 			this.apiWrapper.showErrorMessage(message);
@@ -209,24 +209,6 @@ export class JupyterController implements vscode.Disposable {
 		pythonDialog.showDialog().catch((err: any) => {
 			this.apiWrapper.showErrorMessage(utils.getErrorMessage(err));
 		});
-	}
-
-	public getTextToSendToTerminal(shellType: any): string {
-		if (utils.getOSPlatform() === utils.Platform.Windows && typeof shellType === 'string') {
-			if (shellType.endsWith('powershell.exe')) {
-				return localizedConstants.msgManagePackagesPowershell;
-			} else if (shellType.endsWith('cmd.exe')) {
-				return localizedConstants.msgManagePackagesCmd;
-			} else {
-				return localizedConstants.msgManagePackagesBash;
-			}
-		} else {
-			return localizedConstants.msgManagePackagesBash;
-		}
-	}
-
-	private getPythonBinDir(): string {
-		return JupyterServerInstallation.getPythonBinPath(this.apiWrapper);
 	}
 
 	public get jupyterInstallation() {

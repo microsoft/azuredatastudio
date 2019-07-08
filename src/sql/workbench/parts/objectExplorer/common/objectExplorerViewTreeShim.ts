@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Deferred } from 'sql/base/common/promise';
+import * as azdata from 'azdata';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -16,6 +16,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
+import { localize } from 'vs/nls';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -26,6 +28,7 @@ export interface IOEShimService {
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
 	isNodeConnected(viewId: string, node: ITreeItem): boolean;
+	getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo;
 }
 
 export class OEShimService extends Disposable implements IOEShimService {
@@ -33,6 +36,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private sessionMap = new Map<number, string>();
 	private nodeHandleMap = new Map<number, string>();
+	private nodeInfoMap = new Map<ITreeItem, azdata.NodeInfo>();
 
 	constructor(
 		@IObjectExplorerService private oe: IObjectExplorerService,
@@ -44,45 +48,56 @@ export class OEShimService extends Disposable implements IOEShimService {
 	}
 
 	private async createSession(viewId: string, providerId: string, node: ITreeItem): Promise<string> {
-		let deferred = new Deferred<string>();
 		let connProfile = new ConnectionProfile(this.capabilities, node.payload);
 		connProfile.saveProfile = false;
 		if (this.cm.providerRegistered(providerId)) {
-			await new Promise(async (resolve, reject) => {
-				await this.cm.connect(connProfile, undefined,
-					{ showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined },
-					{
-						onConnectSuccess: async (e, profile) => {
-							let existingConnection = this.cm.findExistingConnection(profile);
-							connProfile = new ConnectionProfile(this.capabilities, await this.cm.addSavedPassword(existingConnection));
-							resolve();
-						},
-						onConnectCanceled: () => {
-							reject('User canceled');
-						},
-						onConnectReject: undefined,
-						onConnectStart: undefined,
-						onDisconnect: undefined
-					});
-			});
+			connProfile = await this.connectOrPrompt(connProfile);
+		} else {
+			// Throw and expect upstream handler to notify about the error
+			// TODO: In the future should use extension recommendations to prompt for correct extension
+			throw new Error(localize('noProviderFound', "Cannot expand as the required connection provider '{0}' was not found", providerId));
 		}
 		let sessionResp = await this.oe.createNewSession(providerId, connProfile);
-		let disp = this.oe.onUpdateObjectExplorerNodes(e => {
-			if (e.connection.id === connProfile.id) {
-				if (e.errorMessage) {
-					deferred.reject();
-					return;
+		let sessionId = sessionResp.sessionId;
+		await new Promise((resolve, reject) => {
+			let listener = this.oe.onUpdateObjectExplorerNodes(e => {
+				if (e.connection.id === connProfile.id) {
+					if (e.errorMessage) {
+						listener.dispose();
+						reject(new Error(e.errorMessage));
+						return;
+					}
+					let rootNode = this.oe.getSession(sessionResp.sessionId).rootNode;
+					// this is how we know it was shimmed
+					if (rootNode.nodePath) {
+						this.nodeHandleMap.set(generateNodeMapKey(viewId, node), rootNode.nodePath);
+					}
 				}
-				let rootNode = this.oe.getSession(sessionResp.sessionId).rootNode;
-				// this is how we know it was shimmed
-				if (rootNode.nodePath) {
-					this.nodeHandleMap.set(generateNodeMapKey(viewId, node), rootNode.nodePath);
-				}
-			}
-			disp.dispose();
-			deferred.resolve(sessionResp.sessionId);
+				listener.dispose();
+				resolve(sessionResp.sessionId);
+			});
 		});
-		return deferred.promise;
+		return sessionId;
+	}
+
+	private async connectOrPrompt(connProfile: ConnectionProfile): Promise<ConnectionProfile> {
+		connProfile = await new Promise(async (resolve, reject) => {
+			await this.cm.connect(connProfile, undefined, { showConnectionDialogOnError: true, showFirewallRuleOnError: true, saveTheConnection: false, showDashboard: false, params: undefined }, {
+				onConnectSuccess: async (e, profile) => {
+					let existingConnection = this.cm.findExistingConnection(profile);
+					connProfile = new ConnectionProfile(this.capabilities, existingConnection);
+					connProfile = <ConnectionProfile>await this.cm.addSavedPassword(connProfile);
+					resolve(connProfile);
+				},
+				onConnectCanceled: () => {
+					reject(new Error(localize('loginCanceled', 'User canceled')));
+				},
+				onConnectReject: undefined,
+				onConnectStart: undefined,
+				onDisconnect: undefined
+			});
+		});
+		return connProfile;
 	}
 
 	public async disconnectNode(viewId: string, node: ITreeItem): Promise<boolean> {
@@ -128,8 +143,8 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	private treeNodeToITreeItem(viewId: string, node: TreeNode, parentNode: ITreeItem): ITreeItem {
 		let handle = generateUuid();
-		let nodePath = node.nodePath;
 		let icon: string = '';
+		let nodePath = node.nodePath;
 		if (node.iconType) {
 			icon = (typeof node.iconType === 'string') ? node.iconType : node.iconType.id;
 		} else {
@@ -142,6 +157,31 @@ export class OEShimService extends Disposable implements IOEShimService {
 			}
 		}
 		icon = icon.toLowerCase();
+		// Change the database if the node has a different database
+		// than its parent
+		let databaseChanged = false;
+		let updatedPayload: azdata.IConnectionProfile | any = {};
+		if (node.nodeTypeId === NodeType.Database) {
+			const database = node.getDatabaseName();
+			if (database) {
+				databaseChanged = true;
+				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
+				updatedPayload.databaseName = node.getDatabaseName();
+			}
+		}
+		const nodeInfo: azdata.NodeInfo = {
+			nodePath: nodePath,
+			nodeType: node.nodeTypeId,
+			nodeSubType: node.nodeSubType,
+			nodeStatus: node.nodeStatus,
+			label: node.label,
+			isLeaf: node.isAlwaysLeaf,
+			metadata: node.metadata,
+			errorMessage: node.errorStateMessage,
+			iconType: icon,
+			childProvider: node.childProvider || parentNode.childProvider,
+			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload)
+		};
 		let newTreeItem: ITreeItem = {
 			parentHandle: node.parent.id,
 			handle,
@@ -151,11 +191,12 @@ export class OEShimService extends Disposable implements IOEShimService {
 			},
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
-			payload: node.payload || parentNode.payload,
+			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
 			contextValue: node.nodeTypeId,
 			sqlIcon: icon
 		};
 		this.nodeHandleMap.set(generateNodeMapKey(viewId, newTreeItem), nodePath);
+		this.nodeInfoMap.set(newTreeItem, nodeInfo);
 		return newTreeItem;
 	}
 
@@ -165,6 +206,13 @@ export class OEShimService extends Disposable implements IOEShimService {
 
 	public isNodeConnected(viewId: string, node: ITreeItem): boolean {
 		return this.sessionMap.has(generateSessionMapKey(viewId, node));
+	}
+
+	public getNodeInfoForTreeItem(treeItem: ITreeItem): azdata.NodeInfo {
+		if (this.nodeInfoMap.has(treeItem)) {
+			return this.nodeInfoMap.get(treeItem);
+		}
+		return undefined;
 	}
 }
 

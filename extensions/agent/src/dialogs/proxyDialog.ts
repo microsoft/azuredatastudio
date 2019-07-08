@@ -84,8 +84,11 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 		this.generalTab.registerContent(async view => {
 
 			this.proxyNameTextBox = view.modelBuilder.inputBox()
-				.withProperties({ width: 420 })
-				.component();
+				.withProperties({
+					width: 420,
+					ariaLabel: ProxyDialog.ProxyNameTextBoxLabel,
+					placeHolder: ProxyDialog.ProxyNameTextBoxLabel
+				}).component();
 
 			this.credentialNameDropDown = view.modelBuilder.dropDown()
 				.withProperties({
@@ -100,9 +103,10 @@ export class ProxyDialog extends AgentDialog<ProxyData>  {
 				.withProperties({
 					width: 420,
 					multiline: true,
-					height: 300
-				})
-				.component();
+					height: 300,
+					ariaLabel: ProxyDialog.DescriptionTextBoxLabel,
+					placeHolder: ProxyDialog.DescriptionTextBoxLabel
+				}).component();
 
 			this.subsystemCheckBox = view.modelBuilder.checkBox()
 				.withProperties({

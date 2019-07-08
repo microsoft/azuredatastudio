@@ -15,14 +15,19 @@ import { AzureResourceService } from './resourceService';
 import { IAzureResourceNodeWithProviderId } from './interfaces';
 import { AzureResourceMessageTreeNode } from './messageTreeNode';
 import { AzureResourceErrorMessageUtil } from './utils';
+import { AppContext } from '../appContext';
+import { AzureResourceServiceNames } from './constants';
 
 export class AzureResourceResourceTreeNode extends TreeNode {
+	private _resourceService: AzureResourceService;
+
 	public constructor(
 		public readonly resourceNodeWithProviderId: IAzureResourceNodeWithProviderId,
-		parent: TreeNode
+		parent: TreeNode,
+		private appContext: AppContext
 	) {
 		super();
-
+		this._resourceService = appContext.getService<AzureResourceService>(AzureResourceServiceNames.resourceService);
 		this.parent = parent;
 	}
 
@@ -36,12 +41,12 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 			const children = await this._resourceService.getChildren(this.resourceNodeWithProviderId.resourceProviderId, this.resourceNodeWithProviderId.resourceNode);
 
 			if (children.length === 0) {
-				return [AzureResourceMessageTreeNode.create(AzureResourceResourceTreeNode.noResourcesLabel, this)];
+				return [AzureResourceMessageTreeNode.create(localize('azure.resource.resourceTreeNode.noResourcesLabel', 'No Resources found'), this)];
 			} else {
 				return children.map((child) => {
 					// To make tree node's id unique, otherwise, treeModel.js would complain 'item already registered'
 					child.resourceNode.treeItem.id = `${this.resourceNodeWithProviderId.resourceNode.treeItem.id}.${child.resourceNode.treeItem.id}`;
-					return new AzureResourceResourceTreeNode(child, this);
+					return new AzureResourceResourceTreeNode(child, this, this.appContext);
 				});
 			}
 		} catch (error) {
@@ -73,7 +78,4 @@ export class AzureResourceResourceTreeNode extends TreeNode {
 		return this.resourceNodeWithProviderId.resourceNode.treeItem.id;
 	}
 
-	private _resourceService = AzureResourceService.getInstance();
-
-	private static readonly noResourcesLabel = localize('azure.resource.resourceTreeNode.noResourcesLabel', 'No Resources found.');
 }

@@ -13,6 +13,8 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
+import { isUndefinedOrNull } from 'vs/base/common/types';
+import * as map from 'vs/base/common/map';
 
 export interface ITabbedPanelStyles {
 	titleActiveForeground?: Color;
@@ -29,20 +31,26 @@ export interface IPanelOptions {
 export interface IPanelView {
 	render(container: HTMLElement): void;
 	layout(dimension: DOM.Dimension): void;
+	focus(): void;
 	remove?(): void;
+	onShow?(): void;
+	onHide?(): void;
 }
 
 export interface IPanelTab {
 	title: string;
 	identifier: string;
 	view: IPanelView;
+	tabSelectedHandler?(): void;
 }
 
-interface IInternalPanelTab extends IPanelTab {
+interface IInternalPanelTab {
+	tab: IPanelTab;
 	header: HTMLElement;
 	disposables: IDisposable[];
 	label: HTMLElement;
-	body: HTMLElement;
+	body?: HTMLElement;
+	destroyTabBody?: boolean;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -78,6 +86,7 @@ export class TabbedPanel extends Disposable {
 		this.header = DOM.$('.composite.title');
 		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
+		this.tabList.setAttribute('tabindex', '0');
 		this.tabList.style.height = this.headersize + 'px';
 		this.header.appendChild(this.tabList);
 		let actionbarcontainer = DOM.$('.title-actions');
@@ -91,7 +100,6 @@ export class TabbedPanel extends Disposable {
 		}
 		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
-		this.body.setAttribute('tabindex', '0');
 		this.parent.appendChild(this.body);
 	}
 
@@ -107,11 +115,12 @@ export class TabbedPanel extends Disposable {
 		return this._tabMap.has(tab.identifier);
 	}
 
-	public pushTab(tab: IPanelTab): PanelTabIdentifier {
-		let internalTab = tab as IInternalPanelTab;
+	public pushTab(tab: IPanelTab, index?: number, destroyTabBody?: boolean): PanelTabIdentifier {
+		let internalTab = { tab } as IInternalPanelTab;
 		internalTab.disposables = [];
+		internalTab.destroyTabBody = destroyTabBody;
 		this._tabMap.set(tab.identifier, internalTab);
-		this._createTab(internalTab);
+		this._createTab(internalTab, index);
 		if (!this._shownTabId) {
 			this.showTab(tab.identifier);
 		}
@@ -131,26 +140,41 @@ export class TabbedPanel extends Disposable {
 		this._actionbar.context = context;
 	}
 
-	private _createTab(tab: IInternalPanelTab): void {
+	private _createTab(tab: IInternalPanelTab, index?: number): void {
 		let tabHeaderElement = DOM.$('.tab-header');
 		tabHeaderElement.setAttribute('tabindex', '0');
 		tabHeaderElement.setAttribute('role', 'tab');
 		tabHeaderElement.setAttribute('aria-selected', 'false');
-		tabHeaderElement.setAttribute('aria-controls', tab.identifier);
+		tabHeaderElement.setAttribute('aria-controls', tab.tab.identifier);
 		let tabElement = DOM.$('.tab');
 		tabHeaderElement.appendChild(tabElement);
 		let tabLabel = DOM.$('a.tabLabel');
-		tabLabel.innerText = tab.title;
+		tabLabel.innerText = tab.tab.title;
 		tabElement.appendChild(tabLabel);
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => this.showTab(tab.identifier)));
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		const invokeTabSelectedHandler = () => {
+			if (tab.tab.tabSelectedHandler) {
+				tab.tab.tabSelectedHandler();
+			}
+		};
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => {
+			this.showTab(tab.tab.identifier);
+			invokeTabSelectedHandler();
+		}));
+
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
-				this.showTab(tab.identifier);
+				this.showTab(tab.tab.identifier);
+				invokeTabSelectedHandler();
 				e.stopImmediatePropagation();
 			}
 		}));
-		this.tabList.appendChild(tabHeaderElement);
+		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
+		if (insertBefore) {
+			this.tabList.insertBefore(tabHeaderElement, insertBefore);
+		} else {
+			this.tabList.append(tabHeaderElement);
+		}
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
 	}
@@ -166,25 +190,39 @@ export class TabbedPanel extends Disposable {
 				DOM.removeClass(shownTab.label, 'active');
 				DOM.removeClass(shownTab.header, 'active');
 				shownTab.header.setAttribute('aria-selected', 'false');
-				shownTab.body.remove();
+				if (shownTab.body) {
+					shownTab.body.remove();
+					if (shownTab.tab.view.onHide) {
+						shownTab.tab.view.onHide();
+					}
+				}
 			}
 		}
 
 		this._shownTabId = id;
 		this.tabHistory.push(id);
 		const tab = this._tabMap.get(this._shownTabId)!; // @anthonydresser we know this can't be undefined since we check further up if the map contains the id
+
+		if (tab.destroyTabBody && tab.body) {
+			tab.body.remove();
+			tab.body = undefined;
+		}
+
 		if (!tab.body) {
 			tab.body = DOM.$('.tab-container');
 			tab.body.style.width = '100%';
 			tab.body.style.height = '100%';
-			tab.view.render(tab.body);
+			tab.tab.view.render(tab.body);
 		}
 		this.body.appendChild(tab.body);
-		this.body.setAttribute('aria-labelledby', tab.identifier);
+		this.body.setAttribute('aria-labelledby', tab.tab.identifier);
 		DOM.addClass(tab.label, 'active');
 		DOM.addClass(tab.header, 'active');
 		tab.header.setAttribute('aria-selected', 'true');
 		this._onTabChange.fire(id);
+		if (tab.tab.view.onShow) {
+			tab.tab.view.onShow();
+		}
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
@@ -195,8 +233,8 @@ export class TabbedPanel extends Disposable {
 		if (!actualTab) {
 			return;
 		}
-		if (actualTab.view && actualTab.view.remove) {
-			actualTab.view.remove();
+		if (actualTab.tab.view && actualTab.tab.view.remove) {
+			actualTab.tab.view.remove();
 		}
 		if (actualTab.header && actualTab.header.remove) {
 			actualTab.header.remove();
@@ -215,6 +253,9 @@ export class TabbedPanel extends Disposable {
 						this.showTab(lastTab);
 					}
 				}
+			}
+			if (!this._shownTabId && this._tabMap.size > 0) {
+				this.showTab(map.values(this._tabMap)[0].tab.identifier);
 			}
 		}
 
@@ -285,7 +326,6 @@ export class TabbedPanel extends Disposable {
 		if (dimension) {
 			this._currentDimensions = dimension;
 			this.parent.style.height = dimension.height + 'px';
-			this.parent.style.height = dimension.width + 'px';
 			this.header.style.width = dimension.width + 'px';
 			this.body.style.width = dimension.width + 'px';
 			const bodyHeight = dimension.height - (this._headerVisible ? this.headersize : 0);
@@ -297,16 +337,21 @@ export class TabbedPanel extends Disposable {
 	private _layoutCurrentTab(dimension: DOM.Dimension): void {
 		if (this._shownTabId) {
 			const tab = this._tabMap.get(this._shownTabId);
-			if (tab) {
+			if (tab && tab.body) {
 				tab.body.style.width = dimension.width + 'px';
 				tab.body.style.height = dimension.height + 'px';
-				tab.view.layout(dimension);
+				tab.tab.view.layout(dimension);
 			}
 		}
 	}
 
 	public focus(): void {
-
+		if (this._shownTabId) {
+			const tab = this._tabMap.get(this._shownTabId);
+			if (tab) {
+				tab.tab.view.focus();
+			}
+		}
 	}
 
 	public set collapsed(val: boolean) {

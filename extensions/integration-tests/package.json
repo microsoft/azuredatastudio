@@ -49,12 +49,14 @@
     "postinstall": "node ./node_modules/vscode/bin/install"
   },
   "devDependencies": {
-    "@types/node": "7.0.43",
     "@types/chai": "3.4.34",
+    "@types/node": "7.0.43",
+    "adstest": "github:ranasaria/adstest.git#0.0.2",
+    "chai": "3.5.0",
     "mocha-junit-reporter": "^1.17.0",
     "mocha-multi-reporters": "^1.1.7",
     "vscode": "1.1.5",
-    "chai": "3.5.0"
+    "uuid": "^3.3.2"
   },
   "dependencies": {
     "azure-keyvault": "^3.0.4",

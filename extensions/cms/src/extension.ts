@@ -10,6 +10,7 @@ import CmsResourceController from './controllers/cmsResourceController';
 import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
+import { CmsUtils } from './cmsUtils';
 
 let controllers: ControllerBase[] = [];
 
@@ -17,7 +18,8 @@ let controllers: ControllerBase[] = [];
 // your extension is activated the very first time the command is executed
 export function activate(extensionContext: vscode.ExtensionContext) {
 	const apiWrapper = new ApiWrapper();
-	let appContext = new AppContext(extensionContext, apiWrapper);
+	const cmsUtils = new CmsUtils();
+	let appContext = new AppContext(extensionContext, apiWrapper, cmsUtils);
 	let activations: Thenable<boolean>[] = [];
 
 	const cmsResourceController = new CmsResourceController(appContext);

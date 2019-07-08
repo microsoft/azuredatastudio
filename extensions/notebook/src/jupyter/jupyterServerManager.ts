@@ -13,10 +13,11 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../common/apiWrapper';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerNotebookServerInstance, IInstanceOptions } from './serverInstance';
+import { CommandContext } from '../common/constants';
 
 export interface IServerManagerOptions {
 	documentPath: string;
@@ -101,9 +102,10 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		return this.options.documentPath;
 	}
 
-	private async doStartServer(): Promise<IServerInstance> {        // We can't find or create servers until the installation is complete
+	private async doStartServer(): Promise<IServerInstance> { // We can't find or create servers until the installation is complete
 		let installation = this.options.jupyterInstallation;
 		await installation.promptForPythonInstall();
+		this.apiWrapper.setCommandContext(CommandContext.NotebookPythonInstalled, true);
 
 		// Calculate the path to use as the notebook-dir for Jupyter based on the path of the uri of the
 		// notebook to open. This will be the workspace folder if the notebook uri is inside a workspace
@@ -116,7 +118,18 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		// /path2/nb3.ipynb
 		// ... will result in 2 notebook servers being started, one for /path1/ and one for /path2/
 		let notebookDir = this.apiWrapper.getWorkspacePathFromUri(vscode.Uri.file(this.documentPath));
-		notebookDir = notebookDir || path.dirname(this.documentPath);
+		if (!notebookDir) {
+			let docDir = path.dirname(this.documentPath);
+			if (docDir === '.') {
+				// If the user is using a system version of python, then
+				// '.' will try to create a notebook in a system directory.
+				// Since this will fail due to permissions, use the user's
+				// home folder instead.
+				notebookDir = utils.getUserHome();
+			} else {
+				notebookDir = docDir;
+			}
+		}
 
 		// TODO handle notification of start/stop status
 		// notebookContext.updateLoadingMessage(localizedConstants.msgJupyterStarting);

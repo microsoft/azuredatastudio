@@ -43,9 +43,9 @@ import { dirname } from 'vs/base/common/resources';
 
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { fillInActionBarActions, fillInContextMenuActions, ContextAwareMenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TitleMenus implements IDisposable {
 
@@ -612,7 +612,7 @@ class TreeRenderer implements IRenderer {
 	}
 
 	getTemplateId(tree: ITree, element: ITreeItem): string {
-		return equalsIgnoreCase(element.providerHandle, 'mssql') ? TreeRenderer.MSSQL_TREE_TEMPLATE_ID : TreeRenderer.TREE_TEMPLATE_ID;
+		return element.providerHandle === mssqlProviderName ? TreeRenderer.MSSQL_TREE_TEMPLATE_ID : TreeRenderer.TREE_TEMPLATE_ID;
 	}
 
 	renderTemplate(tree: ITree, templateId: string, container: HTMLElement): ITreeExplorerTemplateData {

@@ -11,7 +11,7 @@ import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/notebookUtils';
-import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo, SerializationStateChangeType } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
@@ -93,6 +93,11 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange): void {
+		if (contentChange && contentChange.changeType === NotebookChangeType.Saved) {
+			// We send the saved events out, so ignore. Otherwise we double-count this as a change
+			// and cause the text to be reapplied
+			return;
+		}
 		if (contentChange && contentChange.changeType === NotebookChangeType.TrustChanged) {
 			// This is a serializable change (in that we permanently cache trusted state, but
 			// ironically isn't cached in the JSON contents since trust doesn't persist across machines.
@@ -115,10 +120,10 @@ export class NotebookEditorModel extends EditorModel {
 		}
 	}
 
-	private sendNotebookSerializationStateChange() {
+	private sendNotebookSerializationStateChange(): void {
 		let notebookModel = this.getNotebookModel();
 		if (notebookModel) {
-			this.notebookService.serializeNotebookStateChange(this.notebookUri, SerializationStateChangeType.Saved);
+			this.notebookService.serializeNotebookStateChange(this.notebookUri, NotebookChangeType.Saved);
 		}
 	}
 
@@ -127,7 +132,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	private getNotebookModel(): INotebookModel {
-		let editor = this.notebookService.listNotebookEditors().find(n => n.id === this.notebookUri.toString());
+		let editor = this.notebookService.findNotebookEditor(this.notebookUri);
 		if (editor) {
 			return editor.model;
 		}
@@ -155,6 +160,7 @@ export class NotebookInput extends EditorInput {
 	private _contentManager: IContentManager;
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
+	private _notebookEditorOpenedTimestamp: number;
 
 	constructor(private _title: string,
 		private resource: URI,
@@ -168,6 +174,7 @@ export class NotebookInput extends EditorInput {
 		this.resource = resource;
 		this._standardKernels = [];
 		this._providersLoaded = this.assignProviders();
+		this._notebookEditorOpenedTimestamp = Date.now();
 		if (this._textInput) {
 			this.hookDirtyListener(this._textInput.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 		}
@@ -249,6 +256,10 @@ export class NotebookInput extends EditorInput {
 
 	get layoutChanged(): Event<void> {
 		return this._layoutChanged.event;
+	}
+
+	public get editorOpenedTimestamp(): number {
+		return this._notebookEditorOpenedTimestamp;
 	}
 
 	doChangeLayout(): any {

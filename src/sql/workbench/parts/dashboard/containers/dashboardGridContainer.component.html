@@ -4,7 +4,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div>
+<div class="fullsize" style="display: flex; flex-direction: column">
+	<div scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Auto">
 	<table class="grid-table">
 		<tr *ngFor="let row of rows" class="grid-table-row">
 			<ng-container *ngFor="let col of cols">
@@ -20,9 +21,13 @@
 						<webview-content *ngIf="isWebview(row,col)" [webviewId]="getWebviewId(row,col)">
 						</webview-content>
 
+						<modelview-content *ngIf="isModelView(row,col)" [modelViewId]="getModelViewId(row,col)">
+						</modelview-content>
+
 					</td>
 				</ng-container>
 			</ng-container>
 		</tr>
 	</table>
+	</div>
 </div>
