@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "Quellserver",
 	"dacfx.sourceDatabaseName": "Quelldatenbank",
 	"dacfx.fileLocation": "Dateispeicherort",
-	"dacfx.scriptLocation": "Speicherort des Bereitstellungsskripts",
-	"dacfx.action": "Aktion",
-	"dacfx.deploy": "Bereitstellen",
-	"dacfx.generateScript": "Bereitstellungsskript generieren",
 	"dacfxExtract.version": "Version",
 	"dacfx.settingColumn": "Einstellung",
 	"dacfx.valueColumn": "Wert"

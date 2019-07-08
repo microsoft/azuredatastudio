@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "Server di origine",
 	"dacfx.sourceDatabaseName": "Database di origine",
 	"dacfx.fileLocation": "Percorso file",
-	"dacfx.scriptLocation": "Percorso dello script di distribuzione",
-	"dacfx.action": "Azione",
-	"dacfx.deploy": "Distribuzione",
-	"dacfx.generateScript": "Genera script di distribuzione",
 	"dacfxExtract.version": "Versione",
 	"dacfx.settingColumn": "Impostazione",
 	"dacfx.valueColumn": "Valore"
