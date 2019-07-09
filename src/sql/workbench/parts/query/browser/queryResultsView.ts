@@ -249,7 +249,7 @@ export class QueryResultsView extends Disposable {
 					tab.view._componentId = parts[2];
 					this.dynamicModelViewTabs.push(tab);
 					if (!this._panelView.contains(tab)) {
-						this._panelView.pushTab(tab);
+						this._panelView.pushTab(tab, undefined, true);
 					}
 				}
 			}
@@ -393,7 +393,7 @@ export class QueryResultsView extends Disposable {
 
 		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
 		if (!this._panelView.contains(tab)) {
-			this._panelView.pushTab(tab);
+			this._panelView.pushTab(tab, undefined, true);
 		}
 	}
 }
