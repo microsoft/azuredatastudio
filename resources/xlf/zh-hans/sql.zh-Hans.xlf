@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/sql/package" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Language Basics</source>
+        <target state="translated">SQL 语言基础功能</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Provides syntax highlighting and bracket matching in SQL files.</source>
+        <target state="translated">在 SQL 文件中提供语法高亮和括号匹配功能。</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

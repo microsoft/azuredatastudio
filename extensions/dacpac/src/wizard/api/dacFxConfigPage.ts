@@ -96,9 +96,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
-		}).component();
+		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -107,7 +105,9 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath = this.fileTextBox.value;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
+			required: true
+		}).component();
 
 		return {
 			component: this.databaseLoader,
@@ -125,9 +125,13 @@ export abstract class DacFxConfigPage extends BasePage {
 		}
 
 		let values = await this.getDatabaseValues();
-		this.model.database = values[0].name;
-		this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
-		this.fileTextBox.value = this.model.filePath;
+
+		// only update values and regenerate filepath if this is the first time and database isn't set yet
+		if (this.model.database !== values[0].name) {
+			this.model.database = values[0].name;
+			this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
+			this.fileTextBox.value = this.model.filePath;
+		}
 
 		this.databaseDropdown.updateProperties({
 			values: values
@@ -163,6 +167,6 @@ export abstract class DacFxConfigPage extends BasePage {
 }
 
 interface ConnectionDropdownValue extends azdata.CategoryValue {
-	connection: azdata.connection.Connection;
+	connection: azdata.connection.ConnectionProfile;
 }
 

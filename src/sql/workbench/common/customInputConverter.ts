@@ -36,22 +36,27 @@ export const notebookModeId = 'notebook';
  * @param instantiationService The instantiation service to use to create the new input types
  */
 export function convertEditorInput(input: EditorInput, options: IQueryEditorOptions, instantiationService: IInstantiationService): EditorInput {
-	let denyQueryEditor = options && options.denyQueryEditor;
+	let denyQueryEditor: boolean = options && options.denyQueryEditor;
+	let untitledEditorInput: UntitledEditorInput = input as UntitledEditorInput;
+	let mode: string = (untitledEditorInput && untitledEditorInput.getMode) ? untitledEditorInput.getMode() : 'sql';
 	if (input && !denyQueryEditor) {
-		//QueryInput
-		let uri: URI = getQueryEditorFileUri(input);
-		if (uri) {
-			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
-			let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
-			return queryInput;
-		}
+		let uri: URI;
+		if (mode === 'sql') {
+			//QueryInput
+			uri = getQueryEditorFileUri(input);
+			if (uri) {
+				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
+				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
+				return queryInput;
+			}
 
-		//QueryPlanInput
-		uri = getQueryPlanEditorUri(input);
-		if (uri) {
-			let queryPlanXml: string = fs.readFileSync(uri.fsPath);
-			let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
-			return queryPlanInput;
+			//QueryPlanInput
+			uri = getQueryPlanEditorUri(input);
+			if (uri) {
+				let queryPlanXml: string = fs.readFileSync(uri.fsPath);
+				let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
+				return queryPlanInput;
+			}
 		}
 
 		//Notebook

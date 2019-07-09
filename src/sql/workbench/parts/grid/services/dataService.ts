@@ -9,7 +9,7 @@ import { Observer } from 'rxjs/Observer';
 
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { ResultSerializer } from 'sql/platform/node/resultSerializer';
+import { ResultSerializer } from 'sql/workbench/parts/query/common/resultSerializer';
 import { ISaveRequest } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -143,16 +143,6 @@ export class DataService {
 	sendSaveRequest(saveRequest: ISaveRequest): void {
 		let serializer = this._instantiationService.createInstance(ResultSerializer);
 		serializer.saveResults(this._uri, saveRequest);
-	}
-
-	/**
-	 * send request to open content in new editor
-	 * @param content The content to be opened
-	 * @param columnName The column name of the content
-	 */
-	openLink(content: string, columnName: string, linkType: string): void {
-		let serializer = this._instantiationService.createInstance(ResultSerializer);
-		serializer.openLink(content, columnName, linkType);
 	}
 
 	/**

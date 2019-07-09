@@ -12,6 +12,9 @@
 	"actualQueryPlan": "Actuel",
 	"disconnectDatabaseLabel": "Déconnecter",
 	"changeConnectionDatabaseLabel": "Changer la connexion",
-	"connectDatabaseLabel": "Se connecter",
-	"selectDatabase": "Sélectionnez la base de données"
+	"connectDatabaseLabel": "Connecter",
+	"selectDatabase": "Sélectionnez la base de données",
+	"listDatabases.toggleDatabaseNameDropdown": "Sélectionnez la liste déroulante de bases de données",
+	"changeDatabase.failed": "Echec lors du changement de base de données",
+	"changeDatabase.failedWithError": "Echec du changement de base de données {0}"
 }

@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { ApiWrapper } from '../common/apiWrapper';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import { IServerInstance } from './common';
 import { PerNotebookServerInstance, IInstanceOptions } from './serverInstance';
@@ -118,7 +118,18 @@ export class LocalJupyterServerManager implements nb.ServerManager, vscode.Dispo
 		// /path2/nb3.ipynb
 		// ... will result in 2 notebook servers being started, one for /path1/ and one for /path2/
 		let notebookDir = this.apiWrapper.getWorkspacePathFromUri(vscode.Uri.file(this.documentPath));
-		notebookDir = notebookDir || path.dirname(this.documentPath);
+		if (!notebookDir) {
+			let docDir = path.dirname(this.documentPath);
+			if (docDir === '.') {
+				// If the user is using a system version of python, then
+				// '.' will try to create a notebook in a system directory.
+				// Since this will fail due to permissions, use the user's
+				// home folder instead.
+				notebookDir = utils.getUserHome();
+			} else {
+				notebookDir = docDir;
+			}
+		}
 
 		// TODO handle notification of start/stop status
 		// notebookContext.updateLoadingMessage(localizedConstants.msgJupyterStarting);

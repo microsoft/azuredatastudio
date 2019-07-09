@@ -8,5 +8,7 @@
 	],
 	"eventSort": "Ordenar por evento",
 	"nameColumn": "Ordenar por columna",
+	"profilerColumnDialog.profiler": "Analizador",
+	"profilerColumnDialog.ok": "Aceptar",
 	"profilerColumnDialog.cancel": "Cancelar"
 }

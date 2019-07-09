@@ -60,11 +60,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 	private _iconProviders = new Map<string, azdata.IconProvider>();
-
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
-
-	private _connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
-
 	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
 	private _onDeleteConnectionProfile = new Emitter<void>();
 	private _onConnect = new Emitter<IConnectionParams>();
@@ -80,6 +76,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	constructor(
 		private _connectionStore: ConnectionStore,
+		private _connectionStatusManager: ConnectionStatusManager,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -101,6 +98,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		if (!this._connectionStore) {
 			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
+		}
+		if (!this._connectionStatusManager) {
+			this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
 		}
 
 		if (this._storageService) {
@@ -237,7 +237,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connectionProfile Connection Profile
 	 */
 	public async addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
-		await this.fillInAzureTokenIfNeeded(connectionProfile);
+		await this.fillInOrClearAzureToken(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -277,7 +277,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 
 				// Fill in the Azure account token if needed and open the connection dialog if it fails
-				let tokenFillSuccess = await self.fillInAzureTokenIfNeeded(newConnection);
+				let tokenFillSuccess = await self.fillInOrClearAzureToken(newConnection);
 
 				// If the password is required and still not loaded show the dialog
 				if ((!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
@@ -446,7 +446,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (callbacks.onConnectStart) {
 				callbacks.onConnectStart();
 			}
-			let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(connection);
+			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
 			if (!tokenFillSuccess) {
 				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
 			}
@@ -778,8 +778,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
 
-	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
+	/**
+	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
+	 * and clears it if it isn't.
+	 * @param connection The connection to fill in or update
+	 */
+	private async fillInOrClearAzureToken(connection: IConnectionProfile): Promise<boolean> {
+		if (connection.authenticationType !== Constants.azureMFA) {
+			connection.options['azureAccountToken'] = undefined;
+			return true;
+		}
+		if (connection.options['azureAccountToken']) {
 			return true;
 		}
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
@@ -1431,5 +1440,55 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getProviderProperties(providerName: string): ConnectionProviderProperties {
 		let connectionProvider = this._providers.get(providerName);
 		return connectionProvider && connectionProvider.properties;
+	}
+
+	/**
+	 * Get known connection profiles including active connections, recent connections and saved connections.
+	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
+	 * @returns array of connections
+	 **/
+	public getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
+
+		// 1. Active Connections
+		const connections = this.getActiveConnections();
+
+		const connectionExists: (conn: ConnectionProfile) => boolean = (conn) => {
+			return connections.find(existingConnection => existingConnection.id === conn.id) !== undefined;
+		};
+
+		if (!activeConnectionsOnly) {
+			// 2. Recent Connections
+			this.getRecentConnections().forEach(connection => {
+				if (!connectionExists(connection)) {
+					connections.push(connection);
+				}
+			});
+
+			// 3. Saved Connections
+			const groups = this.getConnectionGroups();
+			if (groups && groups.length > 0) {
+				groups.forEach(group => {
+					this.getConnectionsInGroup(group).forEach(savedConnection => {
+						if (!connectionExists(savedConnection)) {
+							connections.push(savedConnection);
+						}
+					});
+				});
+			}
+		}
+		return connections;
+	}
+
+	private getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
+		const connections = [];
+		if (group) {
+			if (group.connections && group.connections.length > 0) {
+				connections.push(...group.connections);
+			}
+			if (group.children && group.children.length > 0) {
+				group.children.forEach(child => connections.push(...this.getConnectionsInGroup(child)));
+			}
+		}
+		return connections;
 	}
 }

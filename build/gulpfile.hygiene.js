@@ -96,7 +96,8 @@ const indentationFilter = [
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
-	'!extensions/resource-deployment/notebooks/**'
+	'!extensions/resource-deployment/notebooks/**',
+	'!extensions/mssql/notebooks/**'
 ];
 
 const copyrightFilter = [

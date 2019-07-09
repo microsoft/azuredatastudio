@@ -115,14 +115,14 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/router',
 		'angular2-grid',
 		'ansi_up',
-		'pretty-data',
 		'html-query-plan',
 		'ng2-charts',
 		'rxjs/Observable',
 		'rxjs/Subject',
 		'rxjs/Observer',
 		'htmlparser2',
-		'sanitize'
+		'sanitize',
+		'plotly.js-dist'
 	]);
 	// {{SQL CARBON EDIT}} - End
 

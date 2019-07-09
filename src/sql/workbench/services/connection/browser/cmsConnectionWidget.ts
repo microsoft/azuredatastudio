@@ -35,7 +35,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 
 	private _serverDescriptionInputBox: InputBox;
 	protected _authTypeMap: { [providerName: string]: AuthenticationType[] } = {
-		[Constants.cmsProviderName]: [AuthenticationType.Integrated]
+		[Constants.cmsProviderName]: [AuthenticationType.SqlLogin, AuthenticationType.Integrated]
 	};
 
 	constructor(options: azdata.ConnectionOption[],
@@ -53,8 +53,14 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		super(options, callbacks, providerName, _themeService, _contextViewService, _connectionManagementService, _capabilitiesService,
 			_clipboardService, _configurationService, _accountManagementService);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
-		authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
-		this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
+		if (authTypeOption) {
+			if (OS === OperatingSystem.Windows) {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
+			} else {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
+			}
+			this._authTypeSelectBox = new SelectBox(authTypeOption.categoryValues.map(c => c.displayName), authTypeOption.defaultValue, this._contextViewService, undefined, { ariaLabel: authTypeOption.displayName });
+		}
 	}
 
 	protected registerListeners(): void {
@@ -64,12 +70,12 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		}
 	}
 
-	protected fillInConnectionForm(): void {
+	protected fillInConnectionForm(authTypeChanged: boolean = false): void {
 		// Server Name
 		this.addServerNameOption();
 
 		// Authentication type
-		this.addAuthenticationTypeOption();
+		this.addAuthenticationTypeOption(authTypeChanged);
 
 		// Login Options
 		this.addLoginOptions();
@@ -84,16 +90,28 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		this.addAdvancedOptions();
 	}
 
-	protected addAuthenticationTypeOption(): void {
-		super.addAuthenticationTypeOption();
+	protected addAuthenticationTypeOption(authTypeChanged: boolean = false): void {
+		super.addAuthenticationTypeOption(authTypeChanged);
 		let authTypeOption = this._optionsMaps[ConnectionOptionSpecialType.authType];
 		let newAuthTypes = authTypeOption.categoryValues;
 
-		// CMS only supports Integrated Auth
-		newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name === AuthenticationType.Integrated);
-		this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName), 0);
-		authTypeOption.defaultValue = AuthenticationType.Integrated;
-		this._authTypeSelectBox.setOptions(authTypeOption.categoryValues.map(c => c.displayName), 1);
+		// True when opening a CMS dialog to add a registered server
+		if (authTypeChanged) {
+			// Registered Servers only support Integrated Auth
+			newAuthTypes = authTypeOption.categoryValues.filter((option) => option.name === AuthenticationType.Integrated);
+			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
+			authTypeOption.defaultValue = AuthenticationType.Integrated;
+		} else {
+			// CMS supports all auth types
+			newAuthTypes = authTypeOption.categoryValues;
+			this._authTypeSelectBox.setOptions(newAuthTypes.map(c => c.displayName));
+			if (OS === OperatingSystem.Windows) {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.Integrated);
+			} else {
+				authTypeOption.defaultValue = this.getAuthTypeDisplayName(AuthenticationType.SqlLogin);
+			}
+		}
+		this._authTypeSelectBox.selectWithOptionName(authTypeOption.defaultValue);
 	}
 
 	private addServerDescriptionOption(): void {
@@ -107,10 +125,10 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		}
 	}
 
-	public createConnectionWidget(container: HTMLElement): void {
+	public createConnectionWidget(container: HTMLElement, authTypeChanged: boolean = false): void {
 		this._container = DOM.append(container, DOM.$('div.connection-table'));
 		this._tableContainer = DOM.append(this._container, DOM.$('table.connection-table-content'));
-		this.fillInConnectionForm();
+		this.fillInConnectionForm(authTypeChanged);
 		this.registerListeners();
 		if (this._authTypeSelectBox) {
 			this.onAuthTypeSelected(this._authTypeSelectBox.value);
@@ -146,5 +164,13 @@ export class CmsConnectionWidget extends ConnectionWidget {
 			model.options.registeredServerName = this._connectionNameInputBox.value;
 		}
 		return validInputs;
+	}
+
+	public fillInConnectionInputs(connectionInfo: IConnectionProfile) {
+		super.fillInConnectionInputs(connectionInfo);
+		if (connectionInfo) {
+			let description = connectionInfo.options.registeredServerDescription ? connectionInfo.options.registeredServerDescription : '';
+			this._serverDescriptionInputBox.value = description;
+		}
 	}
 }

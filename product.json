@@ -51,7 +51,8 @@
 		"Microsoft.schema-compare",
 		"Microsoft.sql-vnext",
 		"Redgate.sql-search",
-		"IDERA.sqldm-performance-insights"
+		"IDERA.sqldm-performance-insights",
+		"SentryOne.plan-explorer"
 	],
 	"recommendedExtensionsOnAppLaunch": [
 		"Microsoft.admin-pack",

@@ -13,6 +13,14 @@ import { NotebookEditor } from 'sql/workbench/parts/notebook/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
+import { localize } from 'vs/nls';
+import product from 'vs/platform/product/node/product';
+import { registerComponentType } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
+import { MimeRendererComponent as MimeRendererComponent } from 'sql/workbench/parts/notebook/outputs/mimeRenderer.component';
+import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/outputs/markdownOutput.component';
+import { GridOutputComponent } from 'sql/workbench/parts/notebook/outputs/gridOutput.component';
+import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/outputs/plotlyOutput.component';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -32,8 +40,145 @@ actionRegistry.registerWorkbenchAction(
 		NewNotebookAction,
 		NewNotebookAction.ID,
 		NewNotebookAction.LABEL,
-		{ primary: KeyMod.WinCtrl | KeyMod.Shift | KeyCode.KEY_N },
+		{ primary: KeyMod.WinCtrl | KeyMod.Alt | KeyCode.KEY_N },
 
 	),
 	NewNotebookAction.LABEL
 );
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+configurationRegistry.registerConfiguration({
+	'id': 'notebook',
+	'title': 'Notebook',
+	'type': 'object',
+	'properties': {
+		'notebook.useInProcMarkdown': {
+			'type': 'boolean',
+			'default': product.quality === 'stable' ? false : true,
+			'description': localize('notebook.inProcMarkdown', 'Use in-process markdown viewer to render text cells more quickly (Experimental).')
+		}
+	}
+});
+
+/* *************** Output components *************** */
+// Note: most existing types use the same component to render. In order to
+// preserve correct rank order, we register it once for each different rank of
+// MIME types.
+
+/**
+ * A mime renderer component for raw html.
+ */
+registerComponentType({
+	mimeTypes: ['text/html'],
+	rank: 50,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for images.
+ */
+registerComponentType({
+	mimeTypes: ['image/bmp', 'image/png', 'image/jpeg', 'image/gif'],
+	rank: 90,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for svg.
+ */
+registerComponentType({
+	mimeTypes: ['image/svg+xml'],
+	rank: 80,
+	safe: false,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for plain and jupyter console text data.
+ */
+registerComponentType({
+	mimeTypes: [
+		'text/plain',
+		'application/vnd.jupyter.stdout',
+		'application/vnd.jupyter.stderr'
+	],
+	rank: 120,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A placeholder component for deprecated rendered JavaScript.
+ */
+registerComponentType({
+	mimeTypes: ['text/javascript', 'application/javascript'],
+	rank: 110,
+	safe: false,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for grid data.
+ * This will be replaced by a dedicated component in the future
+ */
+registerComponentType({
+	mimeTypes: [
+		'application/vnd.dataresource+json',
+		'application/vnd.dataresource'
+	],
+	rank: 40,
+	safe: true,
+	ctor: GridOutputComponent,
+	selector: GridOutputComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for LaTeX.
+ */
+registerComponentType({
+	mimeTypes: ['text/latex'],
+	rank: 70,
+	safe: true,
+	ctor: MimeRendererComponent,
+	selector: MimeRendererComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for Markdown.
+ */
+registerComponentType({
+	mimeTypes: ['text/markdown'],
+	rank: 60,
+	safe: true,
+	ctor: MarkdownOutputComponent,
+	selector: MarkdownOutputComponent.SELECTOR
+});
+
+/**
+ * A mime renderer component for Plotly graphs.
+ */
+registerComponentType({
+	mimeTypes: ['application/vnd.plotly.v1+json'],
+	rank: 45,
+	safe: true,
+	ctor: PlotlyOutputComponent,
+	selector: PlotlyOutputComponent.SELECTOR
+});
+/**
+ * A mime renderer component for Plotly HTML output
+ * that will ensure this gets ignored if possible since it's only output
+ * on offline init and adds a <script> tag which does what we've done (add Plotly support into the app)
+ */
+registerComponentType({
+	mimeTypes: ['text/vnd.plotly.v1+html'],
+	rank: 46,
+	safe: true,
+	ctor: PlotlyOutputComponent,
+	selector: PlotlyOutputComponent.SELECTOR
+});

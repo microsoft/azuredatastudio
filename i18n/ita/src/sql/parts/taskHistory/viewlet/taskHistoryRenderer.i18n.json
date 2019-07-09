@@ -8,7 +8,7 @@
 	],
 	"succeeded": "riuscito",
 	"failed": "non riuscito",
-	"inProgress": "in corso",
+	"inProgress": "In corso",
 	"notStarted": "non avviato",
 	"canceled": "annullato",
 	"canceling": "annullamento in corso"

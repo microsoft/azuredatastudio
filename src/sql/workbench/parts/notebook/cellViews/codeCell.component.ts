@@ -81,6 +81,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 		if (msg) {
 			this.stdIn = msg;
 			this.inputDeferred = new Deferred();
+			this.cellModel.stdInVisible = true;
 			this._changeRef.detectChanges();
 			return this.awaitStdIn();
 		}
@@ -97,11 +98,12 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 			// Clean up so no matter what, the stdIn request goes away
 			this.stdIn = undefined;
 			this.inputDeferred = undefined;
+			this.cellModel.stdInVisible = false;
 			this._changeRef.detectChanges();
 		}
 	}
 
 	get isStdInVisible(): boolean {
-		return !!(this.stdIn && this.inputDeferred);
+		return this.cellModel.stdInVisible;
 	}
 }

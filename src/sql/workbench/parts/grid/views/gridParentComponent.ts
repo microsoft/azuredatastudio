@@ -16,7 +16,6 @@ import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/parts/grid/co
 import * as Utils from 'sql/platform/connection/common/utils';
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import * as actions from 'sql/workbench/parts/grid/views/gridActions';
-import * as Services from 'sql/base/browser/ui/table/formatters';
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/parts/query/common/queryContext';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
@@ -491,65 +490,6 @@ export abstract class GridParentComponent {
 		let sel = window.getSelection();
 		sel.removeAllRanges();
 		sel.addRange(range);
-	}
-
-	/**
-	 * Add handler for clicking on xml link
-	 */
-	xmlLinkHandler = (cellRef: string, row: number, dataContext: JSON, colDef: any) => {
-		const self = this;
-
-		let value = self.getCellValueString(dataContext, colDef);
-		if (value.startsWith('<ShowPlanXML') && colDef.name !== 'XML Showplan') {
-			self.handleQueryPlanLink(cellRef, value);
-		} else {
-			self.handleLink(cellRef, row, dataContext, colDef, 'xml');
-		}
-	}
-
-	/**
-	 * Add handler for clicking on json link
-	 */
-	jsonLinkHandler = (cellRef: string, row: number, dataContext: JSON, colDef: any) => {
-		const self = this;
-		self.handleLink(cellRef, row, dataContext, colDef, 'json');
-	}
-
-	private handleQueryPlanLink(cellRef: string, value: string): void {
-		const self = this;
-		jQuery(cellRef).children('.xmlLink').click(function (): void {
-			self.queryEditorService.newQueryPlanEditor(value);
-		});
-	}
-
-	private handleLink(cellRef: string, row: number, dataContext: JSON, colDef: any, linkType: string): void {
-		const self = this;
-		let value = self.getCellValueString(dataContext, colDef);
-		jQuery(cellRef).children('.xmlLink').click(function (): void {
-			self.dataService.openLink(value, colDef.name, linkType);
-		});
-	}
-
-	private getCellValueString(dataContext: JSON, colDef: any): string {
-		let returnVal = '';
-		let value = dataContext[colDef.field];
-		if (Services.DBCellValue.isDBCellValue(value)) {
-			returnVal = value.displayValue;
-		} else if (typeof value === 'string') {
-			returnVal = value;
-		}
-		return returnVal;
-	}
-
-	/**
-	 * Return asyncPostRender handler based on type
-	 */
-	public linkHandler(type: string): Function {
-		if (type === 'xml') {
-			return this.xmlLinkHandler;
-		} else { // default to JSON handler
-			return this.jsonLinkHandler;
-		}
 	}
 
 	keyEvent(e: KeyboardEvent): void {

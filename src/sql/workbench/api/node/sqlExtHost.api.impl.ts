@@ -99,9 +99,13 @@ export function createApiFactory(
 				getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
 					return extHostConnectionManagement.$getCurrentConnection();
 				},
+				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
+					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+				},
 
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
+					console.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
 					return extHostConnectionManagement.$getActiveConnections();
 				},
 				getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
@@ -547,6 +551,9 @@ export function createApiFactory(
 				SchemaObjectType: sqlExtHostTypes.SchemaObjectType,
 				ColumnType: sqlExtHostTypes.ColumnType,
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
+				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
+				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
+				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType
 			};
 		},
 

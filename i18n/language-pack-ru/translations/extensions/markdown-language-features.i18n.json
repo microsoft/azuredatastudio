@@ -47,6 +47,9 @@
 			"previewTitle": "Открыть {0} для предварительного просмотра",
 			"preview.clickOpenFailed": "Не удалось открыть {0}"
 		},
+		"out/features/documentLinkProvider": {
+			"documentLink.tooltip": "follow link"
+		},
 		"out/security": {
 			"strict.title": "Строгий",
 			"strict.description": "Загружать только безопасное содержимое",

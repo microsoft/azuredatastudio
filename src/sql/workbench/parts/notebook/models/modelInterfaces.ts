@@ -405,6 +405,7 @@ export interface INotebookModel {
 
 	serializationStateChanged(changeType: NotebookChangeType): void;
 
+	standardKernels: IStandardKernelWithProvider[];
 }
 
 export interface NotebookContentChange {
@@ -467,6 +468,7 @@ export interface ICellModel {
 	equals(cellModel: ICellModel): boolean;
 	toJSON(): nb.ICellContents;
 	loaded: boolean;
+	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
 }
 
@@ -501,7 +503,6 @@ export interface INotebookModelOptions {
 	contentManager: IContentManager;
 	notebookManagers: INotebookManager[];
 	providerId: string;
-	standardKernels: IStandardKernelWithProvider[];
 	defaultKernel: nb.IKernelSpec;
 	cellMagicMapper: ICellMagicMapper;
 

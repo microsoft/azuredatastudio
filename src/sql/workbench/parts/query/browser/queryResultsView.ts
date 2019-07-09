@@ -65,6 +65,8 @@ class MessagesView extends Disposable implements IPanelView {
 class ResultsView extends Disposable implements IPanelView {
 	private gridPanel: GridPanel;
 	private container = document.createElement('div');
+	private _state: GridPanelState;
+	private _runner: QueryRunner;
 
 	constructor(private instantiationService: IInstantiationService) {
 		super();
@@ -94,7 +96,20 @@ class ResultsView extends Disposable implements IPanelView {
 		this.container.remove();
 	}
 
+	onHide(): void {
+		this._state = this.gridPanel.state;
+		this.gridPanel.clear();
+	}
+
+	onShow(): void {
+		if (this._state) {
+			this.state = this._state;
+			this.queryRunner = this._runner;
+		}
+	}
+
 	public set queryRunner(runner: QueryRunner) {
+		this._runner = runner;
 		this.gridPanel.queryRunner = runner;
 	}
 
@@ -307,16 +322,23 @@ export class QueryResultsView extends Disposable {
 		}
 
 		// restore query model view tabs
+		this.dynamicModelViewTabs.forEach(tab => {
+			if (this._panelView.contains(tab)) {
+				this._panelView.removeTab(tab.identifier);
+			}
+		});
+		this.dynamicModelViewTabs = [];
+
 		this.input.state.visibleTabs.forEach(tabId => {
 			if (tabId.startsWith('querymodelview;')) {
 				// tab id format is 'tab type;title;model view id'
 				let parts = tabId.split(';');
 				if (parts.length === 3) {
 					let tab = this._register(new QueryModelViewTab(parts[1], this.instantiationService));
-					tab.view._componentId = parts[2];
+					tab.view.componentId = parts[2];
 					this.dynamicModelViewTabs.push(tab);
 					if (!this._panelView.contains(tab)) {
-						this._panelView.pushTab(tab);
+						this._panelView.pushTab(tab, undefined, true);
 					}
 				}
 			}
@@ -342,12 +364,16 @@ export class QueryResultsView extends Disposable {
 		this.runnerDisposables = [];
 
 		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
+		this.dynamicModelViewTabs.forEach(t => t.clear());
 
 		this.resultsTab.view.state = this.input.state.gridPanelState;
 		this.messagesTab.view.state = this.input.state.messagePanelState;
 		this.qpTab.view.state = this.input.state.queryPlanState;
 		this.topOperationsTab.view.state = this.input.state.topOperationsState;
 		this.chartTab.view.state = this.input.state.chartState;
+		this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
+			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
+		});
 
 		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab, this.visualizerTab].forEach(t => t.clear());
 
@@ -375,7 +401,11 @@ export class QueryResultsView extends Disposable {
 		this.qpTab.clear();
 		this.topOperationsTab.clear();
 		this.chartTab.clear();
+<<<<<<< HEAD
 		this.visualizerTab.clear();
+=======
+		this.dynamicModelViewTabs.forEach(t => t.clear());
+>>>>>>> origin/master
 	}
 
 	public get input(): QueryResultsInput {
@@ -473,12 +503,14 @@ export class QueryResultsView extends Disposable {
 
 	public registerQueryModelViewTab(title: string, componentId: string): void {
 		let tab = this._register(new QueryModelViewTab(title, this.instantiationService));
-		tab.view._componentId = componentId;
+		tab.view.componentId = componentId;
 		this.dynamicModelViewTabs.push(tab);
 
 		this.input.state.visibleTabs.add('querymodelview;' + title + ';' + componentId);
 		if (!this._panelView.contains(tab)) {
-			this._panelView.pushTab(tab);
+			this._panelView.pushTab(tab, undefined, true);
 		}
+
+		tab.putState(this.input.state.dynamicModelViewTabsState);
 	}
 }

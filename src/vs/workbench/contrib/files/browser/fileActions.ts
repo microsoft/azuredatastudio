@@ -144,6 +144,27 @@ export class NewFolderAction extends Action {
 }
 
 /* Create new file from anywhere: Open untitled */
+// {{SQL CARBON EDIT}}
+export class GlobalNewUntitledPlainFileAction extends Action {
+	// {{SQL CARBON EDIT}} - Use different command name to reserve original name for SQL files
+	public static readonly ID = 'workbench.action.files.newUntitledPlainFile';
+	public static readonly LABEL = nls.localize('newPlainTextFile', "New Plain Text File");
+
+	constructor(
+		id: string,
+		label: string,
+		@IEditorService private readonly editorService: IEditorService
+	) {
+		super(id, label);
+	}
+
+	public run(): Promise<any> {
+		// {{SQL CARBON EDIT}} - set as plain text
+		return this.editorService.openEditor({ options: { pinned: true }, mode: 'txt' }); // untitled are always pinned
+	}
+}
+
+/* Create new file from anywhere: Open untitled */
 export class GlobalNewUntitledFileAction extends Action {
 	public static readonly ID = 'workbench.action.files.newUntitledFile';
 	public static readonly LABEL = nls.localize('newUntitledFile', "New Untitled File");

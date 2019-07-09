@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/sql/package" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="displayName">
+        <source xml:lang="en">SQL Language Basics</source>
+        <target state="translated">SQL の基本言語サポート</target>
+      </trans-unit>
+      <trans-unit id="description">
+        <source xml:lang="en">Provides syntax highlighting and bracket matching in SQL files.</source>
+        <target state="translated">SQL ファイル内で構文ハイライト、かっこ一致を提供します。</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/big-data-cluster/package" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="description">
+      <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
+    </trans-unit>
+    <trans-unit id="text.sqlServerBigDataClusters">
+      <source xml:lang="en">SQL Server Big Data Clusters</source>
+    </trans-unit>
+    <trans-unit id="command.addController.title">
+      <source xml:lang="en">Connect to Controller</source>
+    </trans-unit>
+    <trans-unit id="command.deleteController.title">
+      <source xml:lang="en">Delete</source>
+    </trans-unit>
+    <trans-unit id="command.refreshController.title">
+      <source xml:lang="en">Refresh</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/controllerTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="textSqlServers">
+      <source xml:lang="en">SQL Servers</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="textBigDataClusterControllerWithDots">
+      <source xml:lang="en">Add Big Data Cluster Controller...</source>
+    </trans-unit>
+    <trans-unit id="textConnectToController">
+      <source xml:lang="en">Connect to Controller</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/dialog/addControllerDialog" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="textAddNewController">
+      <source xml:lang="en">Add New Controller</source>
+    </trans-unit>
+    <trans-unit id="textUrlLower">
+      <source xml:lang="en">url</source>
+    </trans-unit>
+    <trans-unit id="textUsernameLower">
+      <source xml:lang="en">username</source>
+    </trans-unit>
+    <trans-unit id="textPasswordLower">
+      <source xml:lang="en">password</source>
+    </trans-unit>
+    <trans-unit id="textRememberPassword">
+      <source xml:lang="en">Remember Password</source>
+    </trans-unit>
+    <trans-unit id="textUrlCapital">
+      <source xml:lang="en">URL</source>
+    </trans-unit>
+    <trans-unit id="textUsernameCapital">
+      <source xml:lang="en">Username</source>
+    </trans-unit>
+    <trans-unit id="textPasswordCapital">
+      <source xml:lang="en">Password</source>
+    </trans-unit>
+    <trans-unit id="textAdd">
+      <source xml:lang="en">Add</source>
+    </trans-unit>
+    <trans-unit id="textCancel">
+      <source xml:lang="en">Cancel</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/big-data-cluster/out/extension" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="textYes">
+      <source xml:lang="en">Yes</source>
+    </trans-unit>
+    <trans-unit id="textNo">
+      <source xml:lang="en">No</source>
+    </trans-unit>
+    <trans-unit id="textConfirmDeleteController">
+      <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
+    </trans-unit>
+  </body></file>
+</xliff>

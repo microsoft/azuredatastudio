@@ -312,9 +312,15 @@ const sqlBuiltInExtensions = [
 	'big-data-cluster',
 	'dacpac',
 	'schema-compare',
-	'resource-deployment',
 	'cms'
 ];
+
+// make resource deployment extension only available in insiders
+if (process.env['VSCODE_QUALITY'] === 'stable') {
+	sqlBuiltInExtensions.push('resource-deployment');
+}
+
+
 // {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {
@@ -376,7 +382,7 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 	];
 
 	const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
-		.pipe(filter(['**', '!**/package-lock.json']))
+		.pipe(filter(['**', '!**/package-lock.json']));
 
 	// Original code commented out here
 	// const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });
