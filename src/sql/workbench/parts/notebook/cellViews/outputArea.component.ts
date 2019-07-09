@@ -44,6 +44,10 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 		}
 	}
 
+	public get isTrusted(): boolean {
+		return this.cellModel.trustedMode;
+	}
+
 	private setFocusAndScroll(node: HTMLElement): void {
 		if (node) {
 			node.focus();
