@@ -225,8 +225,7 @@ export class VisualizerDataAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		this.extensionTipsService.promptVisualizerExtensions();
-		const activeEditor = this.editorService.activeControl as QueryEditor;
-		activeEditor.visualizer({ batchId: context.batchId, resultId: context.resultId });
+		// const activeEditor = this.editorService.activeControl as QueryEditor;
 		return Promise.resolve(true);
 	}
 }

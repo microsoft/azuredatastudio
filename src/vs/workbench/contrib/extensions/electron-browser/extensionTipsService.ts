@@ -172,7 +172,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 		// {{SQL CARBON EDIT}} Extension Recommendation on ADS Launch
 		this.promptADSLaunchRecommendedExtensions();
-	//	this.promptVisualizerRecommendedExtensions();
 	}
 
 	private isEnabled(): boolean {
@@ -1152,7 +1151,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						Severity.Info,
 						localize('visualizer.VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
 						[{
-							label: localize('visualizer.installAll', "Install SandDance"),
+							label: localize('visualizer.installAll', "Install Extension"),
 							run: () => {
 								/* __GDPR__
 								"extensionAppLaunchRecommendations:popup" : {
@@ -1166,7 +1165,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								c(undefined);
 							}
 						}, {
-							label: localize('visualizer.showRecommendations', "Show SandDance"),
+							label: localize('visualizer.showMoreInfo', "More Info"),
 							run: () => {
 								/* __GDPR__
 									"extensionAppLaunchRecommendations:popup" : {
@@ -1232,9 +1231,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizer.VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
+						localize('visualizer2.VisualizerExtensions', "To utilize the Visualizer feature, the SandDance extension is required to be installed." ),
 						[{
-							label: localize('visualizer.installAll', "Install SandDance"),
+							label: localize('visualizer2.installAll', "Install Extension"),
 							run: () => {
 								/* __GDPR__
 								"extensionAppLaunchRecommendations:popup" : {
@@ -1248,7 +1247,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								c(undefined);
 							}
 						}, {
-							label: localize('visualizer.showRecommendations', "Show SandDance"),
+							label: localize('visualizer2.showMoreInfo', "More Info"),
 							run: () => {
 								/* __GDPR__
 									"extensionAppLaunchRecommendations:popup" : {

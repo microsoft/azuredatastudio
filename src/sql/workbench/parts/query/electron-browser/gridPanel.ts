@@ -651,30 +651,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.actionBar.push(actions, { icon: true, label: false });
 	}
 
-<<<<<<< HEAD
-	private getCurrentActions(): IAction[] {
-
-		let actions = [];
-
-		if (this.state.canBeMaximized) {
-			if (this.state.maximized) {
-				actions.splice(1, 0, new RestoreTableAction());
-			} else {
-				actions.splice(1, 0, new MaximizeTableAction());
-			}
-		}
-
-		actions.push(
-			new SaveResultAction(SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			new SaveResultAction(SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			new SaveResultAction(SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			new SaveResultAction(SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction),
-			this.instantiationService.createInstance(VisualizerDataAction)
-		);
-=======
 	protected abstract getCurrentActions(): IAction[];
->>>>>>> origin/master
 
 	protected abstract getContextActions(): IAction[];
 
@@ -836,7 +813,8 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
-			this.instantiationService.createInstance(ChartDataAction)
+			this.instantiationService.createInstance(ChartDataAction),
+			this.instantiationService.createInstance(VisualizerDataAction)
 		);
 
 		return actions;

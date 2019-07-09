@@ -580,17 +580,6 @@ export default class QueryRunner extends Disposable {
 		return this.instantiationService.createInstance(ResultSerializer).saveResults(this.uri, { selection, format, batchIndex: batchId, resultSetNumber: resultSetId });
 	}
 
-<<<<<<< HEAD
-	public notifyVisualizeRequested(batchId: number, resultSetId: number): void {
-		let result: azdata.ResultSetSummary = {
-			batchId: batchId,
-			id: resultSetId,
-			columnInfo: undefined,
-			complete: true,
-			rowCount: undefined
-		};
-		this._onVisualize.fire(result);
-=======
 	public getGridDataProvider(batchId: number, resultSetId: number): IGridDataProvider {
 		return this.instantiationService.createInstance(QueryGridDataProvider, this, batchId, resultSetId);
 	}
@@ -644,7 +633,6 @@ export class QueryGridDataProvider implements IGridDataProvider {
 
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
 		return this.queryRunner.serializeResults(this.batchId, this.resultSetId, format, selection);
->>>>>>> origin/master
 	}
 }
 
