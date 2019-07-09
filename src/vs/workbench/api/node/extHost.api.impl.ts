@@ -145,7 +145,8 @@ export function createApiFactory(
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
-	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => v !== ExtHostContext.ExtHostDebugService);
+	const filtered: ProxyIdentifier<any>[] = [ExtHostContext.ExtHostDebugService, ExtHostContext.ExtHostTask];
+	const expected: ProxyIdentifier<any>[] = values(ExtHostContext).filter(v => !filtered.includes(v));
 	rpcProtocol.assertRegistered(expected);
 
 	// Other instances
