@@ -603,7 +603,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		id = id.toLowerCase();
 		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
 		if (section) {
-			// Scroll this section to the top of the
+			// Scroll this section to the top of the header instead of just bringing header into view.
 			let scrollTop = jQuery(section.headerEl).offset().top;
 			(<HTMLElement>this.container.nativeElement).scrollTo({
 				top: scrollTop,
