@@ -2434,6 +2434,63 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "52",
+					"extensionName": "plan-explorer",
+					"displayName": "SentryOne Plan Explorer",
+					"shortDescription": "Simplify query analysis and tuning",
+					"publisher": {
+						"displayName": "SentryOne",
+						"publisherId": "SentryOne",
+						"publisherName": "SentryOne"
+					},
+					"versions": [
+						{
+							"version": "0.9.5",
+							"lastUpdated": "7/10/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://www.sentryone.com/products/sentryone-plan-explorer-extension-azure-data-studio"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://downloads.sentryone.com/downloads/ads/s1logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://downloads.sentryone.com/downloads/ads/readme.0.9.5.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://sentryone.com/eula"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://extensions.sentryone.com/"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
@@ -2442,7 +2499,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 41
+							"count": 42
 						}
 					]
 				}
