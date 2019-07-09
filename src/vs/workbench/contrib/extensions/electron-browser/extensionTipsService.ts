@@ -1149,7 +1149,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizer.VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data." ),
+						localize('visualizer.VisualizerExtensions', "Visualize your data now. Install SandDance extension to visualize your data."),
 						[{
 							label: localize('visualizer.installAll', "Install Extension"),
 							run: () => {
@@ -1188,8 +1188,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 									}
 								*/
-							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'neverShowAgain' });
-							//	this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+								//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'neverShowAgain' });
+								//	this.storageService.store(storageKey, true, StorageScope.GLOBAL);
 								c(undefined);
 							}
 						}],
@@ -1201,7 +1201,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 									}
 								*/
-							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
+								//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
 								c(undefined);
 							}
 						}
@@ -1231,7 +1231,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizer2.VisualizerExtensions', "To utilize the Visualizer feature, the SandDance extension is required to be installed." ),
+						localize('visualizer2.VisualizerExtensions', "To utilize the Visualizer feature, the SandDance extension is required to be installed."),
 						[{
 							label: localize('visualizer2.installAll', "Install Extension"),
 							run: () => {
@@ -1270,7 +1270,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 									}
 								*/
-							//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
+								//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
 								c(undefined);
 							}
 						}
