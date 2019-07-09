@@ -32,7 +32,10 @@
     "uri-js": "^4.2.2",
     "vscode-extension-telemetry": "0.1.0",
     "vscode-languageclient": "^3.5.1",
-    "vscode-nls": "^4.0.0"
+    "vscode-nls": "^4.0.0",
+    "vsls": "^0.3.1291"
+
+
   },
   "contributes": {
     "commands": [
