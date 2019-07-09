@@ -364,7 +364,7 @@ export class JupyterServerInstallation {
 	}
 
 	public installPipPackage(packageName: string, version: string): Promise<void> {
-		let cmdOptions = this._usingExistingPython ? '--user' : '--ignore-installed';
+		let cmdOptions = this._usingExistingPython ? '--user' : '';
 		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packageName}==${version}`;
 		return this.executeStreamedCommand(cmd);
 	}
