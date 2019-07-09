@@ -59,11 +59,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 	private _iconProviders = new Map<string, azdata.IconProvider>();
-
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
-
-	private _connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
-
 	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
 	private _onDeleteConnectionProfile = new Emitter<void>();
 	private _onConnect = new Emitter<IConnectionParams>();
@@ -79,6 +75,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	constructor(
 		private _connectionStore: ConnectionStore,
+		private _connectionStatusManager: ConnectionStatusManager,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -99,6 +96,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 		if (!this._connectionStore) {
 			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
+		}
+		if (!this._connectionStatusManager) {
+			this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
 		}
 
 		if (this._storageService) {
@@ -1429,5 +1429,55 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getProviderProperties(providerName: string): ConnectionProviderProperties {
 		let connectionProvider = this._providers.get(providerName);
 		return connectionProvider && connectionProvider.properties;
+	}
+
+	/**
+	 * Get known connection profiles including active connections, recent connections and saved connections.
+	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
+	 * @returns array of connections
+	 **/
+	public getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
+
+		// 1. Active Connections
+		const connections = this.getActiveConnections();
+
+		const connectionExists: (conn: ConnectionProfile) => boolean = (conn) => {
+			return connections.find(existingConnection => existingConnection.id === conn.id) !== undefined;
+		};
+
+		if (!activeConnectionsOnly) {
+			// 2. Recent Connections
+			this.getRecentConnections().forEach(connection => {
+				if (!connectionExists(connection)) {
+					connections.push(connection);
+				}
+			});
+
+			// 3. Saved Connections
+			const groups = this.getConnectionGroups();
+			if (groups && groups.length > 0) {
+				groups.forEach(group => {
+					this.getConnectionsInGroup(group).forEach(savedConnection => {
+						if (!connectionExists(savedConnection)) {
+							connections.push(savedConnection);
+						}
+					});
+				});
+			}
+		}
+		return connections;
+	}
+
+	private getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
+		const connections = [];
+		if (group) {
+			if (group.connections && group.connections.length > 0) {
+				connections.push(...group.connections);
+			}
+			if (group.children && group.children.length > 0) {
+				group.children.forEach(child => connections.push(...this.getConnectionsInGroup(child)));
+			}
+		}
+		return connections;
 	}
 }
