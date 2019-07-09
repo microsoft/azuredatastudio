@@ -659,9 +659,9 @@ export class JobDialog extends AgentDialog<JobData>  {
 			let cols = [];
 			cols.push(jobStep.id);
 			cols.push(jobStep.stepName);
-			cols.push(jobStep.subSystem);
-			cols.push(jobStep.successAction);
-			cols.push(jobStep.failureAction);
+			cols.push(JobStepData.convertToSubSystemDisplayName(jobStep.subSystem));
+			cols.push(JobStepData.convertToCompletionActionDisplayName(jobStep.successAction));
+			cols.push(JobStepData.convertToCompletionActionDisplayName(jobStep.failureAction));
 			result.push(cols);
 		});
 		return result;
@@ -708,6 +708,11 @@ export class JobDialog extends AgentDialog<JobData>  {
 			this.model.jobSteps = [];
 		}
 		this.model.jobSteps = this.steps;
+		// Change the last step's success action to quit because the
+		// default is "Go To Next Step"
+		if (this.model.jobSteps.length > 0) {
+			this.model.jobSteps[this.model.jobSteps.length - 1].successAction = azdata.StepCompletionAction.QuitWithSuccess;
+		}
 		if (!this.model.jobSchedules) {
 			this.model.jobSchedules = [];
 		}
