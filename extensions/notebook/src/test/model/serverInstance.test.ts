@@ -37,6 +37,7 @@ describe('Jupyter server instance', function (): void {
 		mockOutputChannel = TypeMoq.Mock.ofType(MockOutputChannel);
 		mockInstall.setup(i => i.outputChannel).returns(() => mockOutputChannel.object);
 		mockInstall.setup(i => i.pythonExecutable).returns(() => 'python3');
+		mockInstall.object.execOptions = { env: Object.assign({}, process.env) };
 		mockUtils = TypeMoq.Mock.ofType(ServerInstanceUtils);
 		mockUtils.setup(u => u.ensureProcessEnded(TypeMoq.It.isAny())).returns(() => undefined);
 		serverInstance = new PerNotebookServerInstance({
