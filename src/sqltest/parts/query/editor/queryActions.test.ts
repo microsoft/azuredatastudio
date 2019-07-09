@@ -30,7 +30,7 @@ import { ConfigurationService } from 'vs/platform/configuration/node/configurati
 
 import * as TypeMoq from 'typemoq';
 import * as assert from 'assert';
-import { TestStorageService, TestContextService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 
 let none: void;
@@ -52,8 +52,8 @@ suite('SQL QueryAction Tests', () => {
 		const contextkeyservice = new MockContextKeyService();
 
 		// Setup a reusable mock QueryEditor
-		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
-			undefined);
+		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		editor.setup(x => x.getSelection()).returns(() => undefined);
@@ -89,8 +89,8 @@ suite('SQL QueryAction Tests', () => {
 		const contextkeyservice = new MockContextKeyService();
 
 		// Setup a reusable mock QueryEditor
-		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
-			undefined);
+		editor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
@@ -180,8 +180,8 @@ suite('SQL QueryAction Tests', () => {
 		const contextkeyservice = new MockContextKeyService();
 
 		// Setup a reusable mock QueryEditor
-		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
-			undefined);
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.getSelection()).returns(() => undefined);
 		queryEditor.setup(x => x.getSelection(false)).returns(() => undefined);
@@ -248,8 +248,8 @@ suite('SQL QueryAction Tests', () => {
 		const contextkeyservice = new MockContextKeyService();
 
 		// Setup a reusable mock QueryEditor
-		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(), new TestStorageService(), contextkeyservice, undefined, undefined,
-			undefined);
+		let queryEditor = TypeMoq.Mock.ofType(QueryEditor, TypeMoq.MockBehavior.Strict, undefined, new TestThemeService(),
+			new TestStorageService(), contextkeyservice, undefined, new TestFileService(), undefined);
 		queryEditor.setup(x => x.input).returns(() => queryInput.object);
 		queryEditor.setup(x => x.isSelectionEmpty()).returns(() => false);
 		queryEditor.setup(x => x.getSelection()).returns(() => {
