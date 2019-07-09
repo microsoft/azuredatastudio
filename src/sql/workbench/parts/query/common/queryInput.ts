@@ -10,6 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
@@ -117,7 +118,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IExtensionTipsService private _extensionTipsService: IExtensionTipsService
 	) {
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
@@ -248,11 +250,13 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
 		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.state.executing = true;
+		this._extensionTipsService.promptVisualizerRecommendedExtensions();
 	}
 
 	public runQueryStatement(selection: ISelectionData): void {
 		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.state.executing = true;
+
 	}
 
 	public runQueryString(text: string): void {
