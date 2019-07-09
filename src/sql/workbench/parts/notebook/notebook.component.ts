@@ -626,7 +626,4 @@ class NotebookSection implements INotebookSection {
 	get header(): string {
 		return this.headerEl.textContent;
 	}
-
-
-
 }
