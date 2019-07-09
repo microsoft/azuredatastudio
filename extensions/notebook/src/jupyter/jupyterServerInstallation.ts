@@ -366,7 +366,8 @@ export class JupyterServerInstallation {
 	}
 
 	public installPipPackage(packageName: string, version: string): Promise<void> {
-		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : ' --force-reinstall';
+		// Force reinstall in case some dependencies are split across multiple locations
+		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
 		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packageName}==${version}`;
 		return this.executeStreamedCommand(cmd);
 	}
@@ -427,7 +428,7 @@ export class JupyterServerInstallation {
 	private async installSparkMagic(doOnlineInstall: boolean): Promise<void> {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
-			// Ignore existing installs of sparkmagic, since we use a custom version
+			// Overwrite existing install of sparkmagic, since we use a custom version
 			let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
 			if (doOnlineInstall) {
