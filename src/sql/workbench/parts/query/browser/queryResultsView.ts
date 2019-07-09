@@ -211,16 +211,16 @@ export class QueryResultsView extends Disposable {
 
 	private setQueryRunner(runner: QueryRunner) {
 		const activeTab = this._input.state.activeTab;
-		if (runner.hasCompleted && !this.hasResults(runner)) {
-			this.hideResults();
-		} else {
+		if (this.hasResults(runner)) {
 			this.showResults();
+		} else {
+			this.hideResults();
 		}
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
 		this.runnerDisposables.push(runner.onQueryStart(e => {
-			this.showResults();
+			this.hideResults();
 			this.hideChart();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
@@ -228,8 +228,8 @@ export class QueryResultsView extends Disposable {
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
-			if (!this.hasResults(runner)) {
-				this.hideResults();
+			if (this.hasResults(runner)) {
+				this.showResults();
 			}
 			if (runner.messages.find(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
