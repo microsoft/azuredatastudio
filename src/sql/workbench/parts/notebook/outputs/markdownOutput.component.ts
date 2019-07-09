@@ -19,6 +19,7 @@ import { convertVscodeResourceToFileInSubDirectories, useInProcMarkdown } from '
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/outputs/notebookMarkdown';
+import { URI } from 'vs/base/common/uri';
 
 @Component({
 	selector: MarkdownOutputComponent.SELECTOR,
@@ -73,6 +74,10 @@ export class MarkdownOutputComponent extends AngularDisposable implements IMimeC
 
 	public get isTrusted(): boolean {
 		return this._bundleOptions && this._bundleOptions.trusted;
+	}
+
+	public get notebookUri(): URI {
+		return this.cellModel.notebookModel.notebookUri;
 	}
 
 	//Gets sanitizer from ISanitizer interface
