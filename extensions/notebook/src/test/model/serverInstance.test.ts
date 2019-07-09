@@ -9,7 +9,7 @@ import * as stream from 'stream';
 import { ChildProcess } from 'child_process';
 import 'mocha';
 
-import JupyterServerInstallation from '../../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation } from '../../jupyter/jupyterServerInstallation';
 import { ApiWrapper } from '../..//common/apiWrapper';
 import { PerNotebookServerInstance, ServerInstanceUtils } from '../../jupyter/serverInstance';
 import { MockOutputChannel } from '../common/stubs';

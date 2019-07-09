@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { IServerInstance } from './common';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import * as notebookUtils from '../common/notebookUtils';
