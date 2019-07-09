@@ -14,7 +14,13 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 	}
 
 	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
-		throw new Error('Method not implemented.');
+		let result: azdata.SchemaCompareOptionsResult = {
+			defaultDeploymentOptions: undefined,
+			success: true,
+			errorMessage: ''
+		};
+
+		return Promise.resolve(result);
 	}
 
 	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
