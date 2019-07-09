@@ -74,8 +74,6 @@ const vscodeResources = [
 	'out-build/bootstrap-amd.js',
 	'out-build/bootstrap-window.js',
 	'out-build/paths.js',
-	'out-build/telemetry-core.json',
-	'out-build/telemetry-extensions.json',
 	'out-build/vs/**/*.{svg,png,cur,html}',
 	'!out-build/vs/code/browser/**/*.html',
 	'out-build/vs/base/common/performance.js',
@@ -329,6 +327,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
 		const sqlopsAPI = gulp.src('src/sql/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
+		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
+
 		const depsSrc = [
 			..._.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
 			// @ts-ignore JSON checking: dependencies is optional
@@ -364,6 +364,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			copiedModules,
 			dataApi,
 			sqlopsAPI,
+			telemetry,
 			sources,
 			deps
 		);
