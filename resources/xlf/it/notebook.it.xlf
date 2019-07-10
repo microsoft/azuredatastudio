@@ -460,6 +460,42 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/notebook/out/book/bookTreeView" source-language="en" target-language="it" datatype="plaintext">
+    <body>
+      <trans-unit id="openNotebookError">
+        <source xml:lang="en">Open file {0} failed: {1}</source>
+        <target state="translated">Apertura del file {0} non riuscita: {1}</target>
+      </trans-unit>
+      <trans-unit id="openMarkdownError">
+        <source xml:lang="en">Open file {0} failed: {1}</source>
+        <target state="translated">Apertura del file {0} non riuscita: {1}</target>
+      </trans-unit>
+      <trans-unit id="openExternalLinkError">
+        <source xml:lang="en">Open link {0} failed: {1}</source>
+        <target state="new">Open link {0} failed: {1}</target>
+      </trans-unit>
+      <trans-unit id="openConfigFileError">
+        <source xml:lang="en">Open file {0} failed: {1}</source>
+        <target state="translated">Apertura del file {0} non riuscita: {1}</target>
+      </trans-unit>
+      <trans-unit id="openExternalLinkCommand">
+        <source xml:lang="en">Open External Link</source>
+        <target state="new">Open External Link</target>
+      </trans-unit>
+      <trans-unit id="openNotebookCommand">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="new">Open Notebook</target>
+      </trans-unit>
+      <trans-unit id="openMarkdownCommand">
+        <source xml:lang="en">Open Markdown</source>
+        <target state="new">Open Markdown</target>
+      </trans-unit>
+      <trans-unit id="missingFileError">
+        <source xml:lang="en">Missing file : {0}</source>
+        <target state="translated">File mancante: {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/notebook/out/common/utils" source-language="en" target-language="it" datatype="plaintext">
     <body>
       <trans-unit id="mkdirOutputMsg">
@@ -485,26 +521,6 @@
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
         <target state="translated">Questo esempio di codice consente di caricare il file in un frame di dati e visualizzare i primi 10 risultati.</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/book/bookTreeView" source-language="en" target-language="it" datatype="plaintext">
-    <body>
-      <trans-unit id="openNotebookError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">Apertura del file {0} non riuscita: {1}</target>
-      </trans-unit>
-      <trans-unit id="openMarkdownError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">Apertura del file {0} non riuscita: {1}</target>
-      </trans-unit>
-      <trans-unit id="openConfigFileError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">Apertura del file {0} non riuscita: {1}</target>
-      </trans-unit>
-      <trans-unit id="missingFileError">
-        <source xml:lang="en">Missing file : {0}</source>
-        <target state="translated">File mancante: {0}</target>
       </trans-unit>
     </body>
   </file>
