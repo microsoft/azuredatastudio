@@ -80,7 +80,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _runAllCellsAction: RunAllCellsAction;
 	private _providerRelatedActions: IAction[] = [];
 	private _scrollTop: number;
-	private _bookOpened: boolean;
 
 
 	constructor(
@@ -130,7 +129,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	ngOnInit() {
-		this.setBookOpenedContextKey();
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
@@ -499,10 +497,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 				this._providerRelatedActions[foundIndex].enabled = true;
 			}
 		}
-	}
-
-	private setBookOpenedContextKey(): void {
-		this._bookOpened = this.contextKeyService.getContextKeyValue(localize("bookOpenedContextKey", "bookOpened"));
 	}
 
 	private setContextKeyServiceWithProviderId(providerId: string) {

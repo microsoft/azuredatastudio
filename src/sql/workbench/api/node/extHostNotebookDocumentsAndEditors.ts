@@ -59,12 +59,6 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		this._disposables = dispose(this._disposables);
 	}
 
-	private _createDisposable(handle: number): Disposable {
-		return new Disposable(() => {
-			this._adapters.delete(handle);
-		});
-	}
-
 	//#region Main Thread accessible methods
 	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void {
 
@@ -186,7 +180,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 			let uri = URI.revive(notebookUri);
 			return navProvider.getNavigation(uri);
 		}
-		throw new Error('No navigation provider found for handle ' + handle);
+		throw new Error('No navigation provider found for handle ${handle}');
 	}
 
 	//#endregion
@@ -256,7 +250,9 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		}
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerNavigationProvider(provider.providerId, handle);
-		return this._createDisposable(handle);
+		return new Disposable(() => {
+			this._adapters.delete(handle);
+		});
 	}
 
 	//#endregion

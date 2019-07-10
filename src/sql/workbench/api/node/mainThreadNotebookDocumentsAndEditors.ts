@@ -677,7 +677,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		});
 	}
 
-	$registerNavigationProvider(providerId: string, handle: number) {
+	$registerNavigationProvider(providerId: string, handle: number): void {
 		this._notebookService.registerNavigationProvider({
 			providerId: providerId,
 			onNext: async (uri) => {
