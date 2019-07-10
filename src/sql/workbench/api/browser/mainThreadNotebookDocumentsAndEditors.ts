@@ -139,6 +139,13 @@ class MainThreadNotebookEditor extends Disposable {
 		return this.editor.runAllCells();
 	}
 
+	public clearOutput(cell: ICellModel): Promise<boolean> {
+		if (!this.editor) {
+			return Promise.resolve(false);
+		}
+		return this.editor.clearOutput(cell);
+	}
+
 	public clearAllOutputs(): Promise<boolean> {
 		if (!this.editor) {
 			return Promise.resolve(false);
@@ -382,6 +389,28 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return Promise.reject(disposed(`TextEditor(${id})`));
 		}
 		return editor.runAllCells();
+	}
+
+	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean> {
+		// Requires an editor and the matching cell in that editor
+		let editor = this.getEditor(id);
+		if (!editor) {
+			return Promise.reject(disposed(`TextEditor(${id})`));
+		}
+		let cell: ICellModel;
+		if (cellUri) {
+			let uriString = URI.revive(cellUri).toString();
+			cell = editor.cells.find(c => c.cellUri.toString() === uriString);
+			// If it's markdown what should we do? Show notification??
+		} else {
+			// Use the active cell in this case, or 1st cell if there's none active
+			cell = editor.model.activeCell;
+		}
+		if (!cell || (cell && cell.cellType !== CellTypes.Code)) {
+			return Promise.reject(localize('clearResultActiveCell', "Clear result requires a code cell to be selected. Please select a code cell to run."));
+		}
+
+		return editor.clearOutput(cell);
 	}
 
 	$clearAllOutputs(id: string): Promise<boolean> {

@@ -42,6 +42,9 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.runallcells', () => {
 		runAllCells();
 	}));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.clearactivecellresult', () => {
+		clearActiveCellOutput();
+	}));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.addcell', async () => {
 		let cellType: CellType;
 		try {
@@ -144,6 +147,19 @@ async function runActiveCell(): Promise<void> {
 		let notebook = azdata.nb.activeNotebookEditor;
 		if (notebook) {
 			await notebook.runCell();
+		} else {
+			throw new Error(noNotebookVisible);
+		}
+	} catch (err) {
+		vscode.window.showErrorMessage(getErrorMessage(err));
+	}
+}
+
+async function clearActiveCellOutput(): Promise<void> {
+	try {
+		let notebook = azdata.nb.activeNotebookEditor;
+		if (notebook) {
+			await notebook.clearOutput();
 		} else {
 			throw new Error(noNotebookVisible);
 		}
