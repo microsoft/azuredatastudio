@@ -15,7 +15,6 @@
 			<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 			</text-cell-component>
 		</div>
-		<button>View in SandDance</button>
 		<div class="notebook-cell" *ngIf="(!cells || !cells.length) && !isLoading">
 			<placeholder-cell-component [cellModel]="cell" [model]="model">
 			</placeholder-cell-component>
