@@ -779,7 +779,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
-		runner: QueryRunner,
+		private runner: QueryRunner,
 		resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
@@ -789,7 +789,7 @@ class GridTable<T> extends GridTableBase<T> {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, runner, resultSet.batchId, resultSet.id);
+		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this.runner, resultSet.batchId, resultSet.id);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -814,7 +814,7 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(ChartDataAction),
-			this.instantiationService.createInstance(VisualizerDataAction)
+			this.instantiationService.createInstance(VisualizerDataAction, this.runner)
 		);
 
 		return actions;

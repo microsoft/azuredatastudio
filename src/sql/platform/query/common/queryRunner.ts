@@ -86,6 +86,9 @@ export default class QueryRunner extends Disposable {
 	private _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
 
+	private _onVisualize = this._register(new Emitter<azdata.ResultSetSummary>());
+	public readonly onVisualize = this._onVisualize.event;
+
 	private _queryStartTime: Date;
 	public get queryStartTime(): Date {
 		return this._queryStartTime;
@@ -579,6 +582,17 @@ export default class QueryRunner extends Disposable {
 
 	public getGridDataProvider(batchId: number, resultSetId: number): IGridDataProvider {
 		return this.instantiationService.createInstance(QueryGridDataProvider, this, batchId, resultSetId);
+	}
+
+	public notifyVisualizeRequested(batchId: number, resultSetId: number): void {
+		let result: azdata.ResultSetSummary = {
+			batchId: batchId,
+			id: resultSetId,
+			columnInfo: undefined,
+			complete: true,
+			rowCount: this.batchSets[batchId].resultSetSummaries[resultSetId].rowCount
+		};
+		this._onVisualize.fire(result);
 	}
 }
 
