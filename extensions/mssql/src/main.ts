@@ -33,7 +33,6 @@ import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExp
 import { CmsService } from './cms/cmsService';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
-import { addLiveShareIntegration } from './liveshare/integration';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -186,8 +185,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 			await view.initializeModel(endpointsContainer);
 		}
-
-		addLiveShareIntegration(context);
 	});
 
 	function getCustomEndpoint(parentEndpoint: Utils.IEndpoint, serviceName: string, serviceUrl?: string): Utils.IEndpoint {
