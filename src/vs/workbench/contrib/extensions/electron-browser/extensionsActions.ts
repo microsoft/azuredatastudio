@@ -1890,6 +1890,7 @@ export class InstallVisualizerExtensionsAction extends Action {
 			});
 	}
 }
+
 export class InstallWorkspaceRecommendedExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.installWorkspaceRecommendedExtensions';
