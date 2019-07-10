@@ -47,7 +47,7 @@ export function getSaveableFileName(filePath: string): string {
 		idx++;
 	} while (fs.existsSync(targetFilePath));
 
-	return path.basename(targetFilePath);
+	return path.basename(targetFilePath, fileExtension);
 }
 
 export function fileExists(file: string): boolean {
