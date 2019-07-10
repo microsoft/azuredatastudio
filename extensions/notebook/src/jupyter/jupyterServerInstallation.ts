@@ -256,8 +256,7 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		let isPythonInstalled = await JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
-		if (isPythonInstalled) {
+		if (fs.existsSync(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
