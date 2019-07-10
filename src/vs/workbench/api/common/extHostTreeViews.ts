@@ -473,7 +473,8 @@ export class ExtHostTreeView<T> extends Disposable {
 			collapsibleState: isUndefinedOrNull(extensionTreeItem.collapsibleState) ? TreeItemCollapsibleState.None : extensionTreeItem.collapsibleState,
 			// {{SQL CARBON EDIT}}
 			payload: extensionTreeItem.payload,
-			childProvider: extensionTreeItem.childProvider
+			childProvider: extensionTreeItem.childProvider,
+			type: extensionTreeItem.type
 		};
 
 		return {

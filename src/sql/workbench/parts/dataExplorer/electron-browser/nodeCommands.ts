@@ -10,7 +10,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { generateUri } from 'sql/platform/connection/common/utils';
 import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -20,6 +20,7 @@ export const MANAGE_COMMAND_ID = 'dataExplorer.manage';
 export const NEW_QUERY_COMMAND_ID = 'dataExplorer.newQuery';
 export const REFRESH_COMMAND_ID = 'dataExplorer.refresh';
 
+// Disconnect
 CommandsRegistry.registerCommand({
 	id: DISCONNECT_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
@@ -35,6 +36,7 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+// New Query
 CommandsRegistry.registerCommand({
 	id: NEW_QUERY_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
@@ -58,6 +60,7 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+// Manage
 CommandsRegistry.registerCommand({
 	id: MANAGE_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
@@ -79,6 +82,7 @@ CommandsRegistry.registerCommand({
 	}
 });
 
+// Refresh
 CommandsRegistry.registerCommand({
 	id: REFRESH_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {

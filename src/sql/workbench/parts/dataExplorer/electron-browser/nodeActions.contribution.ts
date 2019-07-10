@@ -4,10 +4,26 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
-import { DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID } from './nodeCommands';
-import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
+import {
+	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID
+} from './nodeCommands';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+
+
+// Disconnect
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 4,
+	command: {
+		id: DISCONNECT_COMMAND_ID,
+		title: localize('disconnect', 'Disconnect')
+	},
+	when: NodeContextKey.IsConnected //add for folders
+});
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
@@ -16,13 +32,12 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: NodeContextKey.IsConnected
+	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+		MssqlNodeContext.IsDatabaseOrServer)
 });
 
-// The weird regex is because we want this to generically apply to Database and Server nodes but right now
-// there isn't a consistent standard for the values there. We can't just search for database or server being
-// in the string at all because there's lots of node types which have those values (such as ServerLevelLogin)
-// that we don't want these menu items showing up on.
+// New Query
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
 	order: 2,
@@ -30,13 +45,10 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', 'New Query')
 	},
-	when: ContextKeyExpr.and(
-		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*|^database$/i))
+	when: MssqlNodeContext.IsDatabaseOrServer
 });
 
-// Note that we don't show this for Databases under Server nodes (viewItem == Database) because
-// of an issue there where the connection always being master instead of the actual DB
+// Manage
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
 	order: 1,
@@ -44,17 +56,17 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: MANAGE_COMMAND_ID,
 		title: localize('manage', 'Manage')
 	},
-	when: ContextKeyExpr.and(
-		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*/i))
+	when: MssqlNodeContext.IsDatabaseOrServer
 });
 
+
+// Refresh
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
-	order: 4,
+	order: 6,
 	command: {
 		id: REFRESH_COMMAND_ID,
 		title: localize('refresh', 'Refresh')
 	},
-	when: NodeContextKey.IsConnected
+	when: NodeContextKey.IsConnectable
 });
