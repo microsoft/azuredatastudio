@@ -346,6 +346,14 @@
         <source xml:lang="en">All Files (*)</source>
         <target state="translated">Alle Dateien (*)</target>
       </trans-unit>
+      <trans-unit id="jobStepDialog.newJobStep">
+        <source xml:lang="en">New Job Step</source>
+        <target state="translated">Neuer Auftragsschritt</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.editJobStep">
+        <source xml:lang="en">Edit Job Step</source>
+        <target state="translated">Auftragsschritt bearbeiten</target>
+      </trans-unit>
       <trans-unit id="jobStepDialog.TSQL">
         <source xml:lang="en">Transact-SQL script (T-SQL)</source>
         <target state="translated">Transact-SQL-Skript (T-SQL)</target>
@@ -357,6 +365,38 @@
       <trans-unit id="jobStepDialog.CmdExec">
         <source xml:lang="en">Operating system (CmdExec)</source>
         <target state="translated">Betriebssystem (CmdExec)</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationDistribution">
+        <source xml:lang="en">Replication Distributor</source>
+        <target state="translated">Replikationsverteiler</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationMerge">
+        <source xml:lang="en">Replication Merge</source>
+        <target state="translated">Replikationsmerge</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationQueueReader">
+        <source xml:lang="en">Replication Queue Reader</source>
+        <target state="translated">Replikation-Warteschlangenleser</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationSnapshot">
+        <source xml:lang="en">Replication Snapshot</source>
+        <target state="translated">Replikationsmomentaufnahme</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.replicationTransactionLogReader">
+        <source xml:lang="en">Replication Transaction-Log Reader</source>
+        <target state="translated">Replikationstransaktionsprotokoll-Leser</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisCommand">
+        <source xml:lang="en">SQL Server Analysis Services Command</source>
+        <target state="translated">SQL Server Analysis Services-Befehl</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.analysisQuery">
+        <source xml:lang="en">SQL Server Analysis Services Query</source>
+        <target state="translated">SQL Server Analysis Services-Abfrage</target>
+      </trans-unit>
+      <trans-unit id="jobStepDialog.servicesPackage">
+        <source xml:lang="en">SQL Server Integration Service Package</source>
+        <target state="new">SQL Server Integration Service Package</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>
@@ -373,14 +413,6 @@
       <trans-unit id="jobStepDialog.quitJobFailure">
         <source xml:lang="en">Quit the job reporting failure</source>
         <target state="translated">Beenden des Auftrags mit Fehlermeldung</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.newJobStep">
-        <source xml:lang="en">New Job Step</source>
-        <target state="translated">Neuer Auftragsschritt</target>
-      </trans-unit>
-      <trans-unit id="jobStepDialog.editJobStep">
-        <source xml:lang="en">Edit Job Step</source>
-        <target state="translated">Auftragsschritt bearbeiten</target>
       </trans-unit>
     </body>
   </file>
@@ -796,7 +828,7 @@
       </trans-unit>
       <trans-unit id="stepData.jobNameRequired">
         <source xml:lang="en">Job name must be provided</source>
-        <target state="translated">Der Auftragsname muss angegeben werden.</target>
+        <target state="translated">Ein Auftragsname muss angegeben werden.</target>
       </trans-unit>
       <trans-unit id="stepData.stepNameRequired">
         <source xml:lang="en">Step name must be provided</source>

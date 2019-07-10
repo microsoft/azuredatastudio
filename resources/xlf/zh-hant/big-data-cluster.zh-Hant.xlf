@@ -56,7 +56,7 @@
       </trans-unit>
       <trans-unit id="bdc-create.BigDataClusterGroupTitle">
         <source xml:lang="en">SQL SERVER BIG DATA CLUSTER</source>
-        <target state="translated">SQL SERVER 巨量資料叢集</target>
+        <target state="translated">SQL Server 巨量資料叢集</target>
       </trans-unit>
       <trans-unit id="bdc-create.YesText">
         <source xml:lang="en">Yes</source>
@@ -349,7 +349,7 @@
       </trans-unit>
       <trans-unit id="bdc-create.SQLServerMasterDisplayName">
         <source xml:lang="en">SQL Server master</source>
-        <target state="translated">SQL Server 主機</target>
+        <target state="translated">SQL 伺服器主機</target>
       </trans-unit>
       <trans-unit id="bdc-create.ComputePoolDisplayName">
         <source xml:lang="en">Compute pool</source>

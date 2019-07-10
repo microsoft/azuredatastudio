@@ -27,16 +27,16 @@
         <target state="translated">Azure</target>
       </trans-unit>
       <trans-unit id="azure.resource.refreshall.title">
-        <source xml:lang="en">Refresh All</source>
-        <target state="translated">すべて更新</target>
+        <source xml:lang="en">Azure: Refresh All Accounts</source>
+        <target state="new">Azure: Refresh All Accounts</target>
       </trans-unit>
       <trans-unit id="azure.resource.refresh.title">
         <source xml:lang="en">Refresh</source>
         <target state="translated">最新の情報に更新</target>
       </trans-unit>
       <trans-unit id="azure.resource.signin.title">
-        <source xml:lang="en">Sign In</source>
-        <target state="translated">サインイン</target>
+        <source xml:lang="en">Azure: Sign In</source>
+        <target state="new">Azure: Sign In</target>
       </trans-unit>
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
@@ -47,8 +47,8 @@
         <target state="translated">接続</target>
       </trans-unit>
       <trans-unit id="azure.resource.connectsqldb.title">
-        <source xml:lang="en">Connect</source>
-        <target state="translated">接続</target>
+        <source xml:lang="en">Add to Servers</source>
+        <target state="new">Add to Servers</target>
       </trans-unit>
       <trans-unit id="accounts.clearTokenCache">
         <source xml:lang="en">Clear Azure Account Token Cache</source>
@@ -72,19 +72,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="ja" datatype="plaintext">
-    <body>
-      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
-        <source xml:lang="en">SQL Servers</source>
-        <target state="translated">SQL Server</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
         <source xml:lang="en">SQL Databases</source>
         <target state="translated">SQL データベース</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
+        <source xml:lang="en">SQL Servers</source>
+        <target state="translated">SQL Server</target>
       </trans-unit>
     </body>
   </file>
@@ -100,7 +100,7 @@
     <body>
       <trans-unit id="azure.resource.tree.subscriptionTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found.</source>
-        <target state="translated">リソースが見つかりませんでした。</target>
+        <target state="translated">リソースは見つかりませんでした。</target>
       </trans-unit>
     </body>
   </file>
@@ -135,8 +135,8 @@
   <file original="extensions/azurecore/out/azureResource/resourceTreeNode" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
-        <source xml:lang="en">No Resources found.</source>
-        <target state="translated">リソースは見つかりませんでした。</target>
+        <source xml:lang="en">No Resources found</source>
+        <target state="new">No Resources found</target>
       </trans-unit>
     </body>
   </file>
