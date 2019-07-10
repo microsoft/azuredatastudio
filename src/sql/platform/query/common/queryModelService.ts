@@ -343,16 +343,6 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 		});
 
-		queryRunner.onVisualize(resultSetInfo => {
-			// fire extensibility API event
-			let event: IQueryEvent = {
-				type: 'visualize',
-				uri: uri,
-				params: resultSetInfo
-			};
-			this._onQueryEvent.fire(event);
-		});
-
 		info.queryRunner = queryRunner;
 		info.dataService = this._instantiationService.createInstance(DataService, uri);
 		this._queryInfoMap.set(uri, info);

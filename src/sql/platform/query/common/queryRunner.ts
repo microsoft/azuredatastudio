@@ -86,9 +86,6 @@ export default class QueryRunner extends Disposable {
 	private _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
 
-	private _onVisualize = this._register(new Emitter<azdata.ResultSetSummary>());
-	public readonly onVisualize = this._onVisualize.event;
-
 	private _queryStartTime: Date;
 	public get queryStartTime(): Date {
 		return this._queryStartTime;

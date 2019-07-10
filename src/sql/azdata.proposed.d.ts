@@ -3967,8 +3967,7 @@ declare module 'azdata' {
 		export type QueryEvent =
 			| 'queryStart'
 			| 'queryStop'
-			| 'executionPlan'
-			| 'visualize';
+			| 'executionPlan';
 
 		export interface QueryEventListener {
 			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any): void;
