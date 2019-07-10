@@ -75,5 +75,10 @@
 	},
 	"devDependencies": {
 		"vscode": "1.0.1"
+	},
+	"__metadata": {
+		"id": "41",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }
