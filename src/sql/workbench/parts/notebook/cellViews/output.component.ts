@@ -54,6 +54,7 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 
 	ngOnInit() {
 		this._register(this._themeService.onThemeChange(event => this.updateTheme(event)));
+		this.loadComponent();
 		this.layout();
 		this._initialized = true;
 		this._register(Event.debounce(this.cellModel.notebookModel.layoutChanged, (l, e) => e, 50, /*leading=*/false)
@@ -62,10 +63,6 @@ export class OutputComponent extends AngularDisposable implements OnInit, AfterV
 
 	ngAfterViewInit() {
 		this.updateTheme(this._themeService.getTheme());
-		if (this.componentHost) {
-			this.loadComponent();
-		}
-		this._changeref.detectChanges();
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
