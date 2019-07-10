@@ -741,7 +741,7 @@ export function createApiFactory(
 				return undefined;
 			},
 			get breakpoints() {
-				return undefined;
+				return [];
 			},
 			onDidStartDebugSession(listener, thisArg?, disposables?) {
 				return undefined;
