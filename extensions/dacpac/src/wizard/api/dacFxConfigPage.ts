@@ -125,9 +125,13 @@ export abstract class DacFxConfigPage extends BasePage {
 		}
 
 		let values = await this.getDatabaseValues();
-		this.model.database = values[0].name;
-		this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
-		this.fileTextBox.value = this.model.filePath;
+
+		// only update values and regenerate filepath if this is the first time and database isn't set yet
+		if (this.model.database !== values[0].name) {
+			this.model.database = values[0].name;
+			this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
+			this.fileTextBox.value = this.model.filePath;
+		}
 
 		this.databaseDropdown.updateProperties({
 			values: values
