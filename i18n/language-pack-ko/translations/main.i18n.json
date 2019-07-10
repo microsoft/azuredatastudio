@@ -63,13 +63,13 @@
     "vs/base/browser/ui/toolbar/toolbar": {
       "moreActions": "기타 작업..."
     },
-    "vs/base/browser/ui/menu/menu": {
-      "titleLabel": "{0}({1})"
-    },
     "vs/base/parts/quickopen/browser/quickOpenWidget": {
       "quickOpenAriaLabel": "빠른 선택기입니다. 결과의 범위를 축소하려면 입력합니다.",
       "treeAriaLabel": "빠른 선택기",
       "quickInput.visibleCount": "{0}개 결과"
+    },
+    "vs/base/browser/ui/menu/menu": {
+      "titleLabel": "{0}({1})"
     },
     "vs/base/browser/ui/inputbox/inputBox": {
       "alertErrorMessage": "오류: {0}",
@@ -185,14 +185,6 @@
       "editorBracketMatchBorder": "일치하는 브래킷 박스의 색상",
       "editorOverviewRulerBorder": "개요 눈금 경계의 색상입니다.",
       "editorGutter": "편집기 거터의 배경색입니다. 거터에는 글리프 여백과 행 수가 있습니다.",
-      "errorForeground": "편집기 내 오류 표시선의 전경색입니다.",
-      "errorBorder": "편집기 내 오류 표시선의 테두리 색입니다.",
-      "warningForeground": "편집기 내 경고 표시선의 전경색입니다.",
-      "warningBorder": "편집기 내 경고 표시선의 테두리 색입니다.",
-      "infoForeground": "편집기 내 정보 표시선의 전경색입니다.",
-      "infoBorder": "편집기 내 정보 표시선의 테두리 색입니다.",
-      "hintForeground": "편집기에서 힌트 표시선의 전경색입니다.",
-      "hintBorder": "편집기에서 힌트 표시선의 테두리 색입니다.",
       "unnecessaryCodeBorder": "편집기의 불필요한(사용하지 않는) 소스 코드 테두리 색입니다.",
       "unnecessaryCodeOpacity": "편집기의 불필요한(사용하지 않는) 소스 코드 불투명도입니다. 예를 들어 \"#000000c0\"은 75% 불투명도로 코드를 렌더링합니다. 고대비 테마의 경우 페이드 아웃하지 않고 'editorUnnecessaryCode.border' 테마 색을 사용하여 불필요한 코드에 밑줄을 그으세요.",
       "overviewRulerRangeHighlight": "범위의 개요 눈금자 표식 색이 강조 표시됩니다. 기본 장식을 숨기지 않도록 색은 불투명하지 않아야 합니다.",
@@ -340,7 +332,7 @@
       "editor.gotoLocation.multiple": "여러 대상 위치가 존재할 때 정의로 이동과 같은 '이동' 명령의 동작을 제어합니다.",
       "editor.gotoLocation.multiple.peek": "결과 Peek 뷰 표시(기본)",
       "editor.gotoLocation.multiple.gotoAndPeek": "기본 결과로 이동하여 Peek 보기를 표시합니다.",
-      "editor.gotoLocation.multiple.goto": "기본 결과로 이동하고 다른 결과 무시",
+      "editor.gotoLocation.multiple.goto": "Go to the primary result and enable peek-less navigation to others",
       "selectionHighlight": "편집기가 선택 항목과 유사한 일치 항목을 강조 표시해야하는지 여부를 제어합니다.",
       "occurrencesHighlight": "편집기에서 의미 체계 기호 항목을 강조 표시할지 여부를 제어합니다.",
       "overviewRulerLanes": "개요 눈금자에서 동일한 위치에 표시될 수 있는 장식 수를 제어합니다.",
@@ -461,9 +453,6 @@
       "formatDocument.label": "문서 서식",
       "formatSelection.label": "선택 영역 서식"
     },
-    "vs/editor/contrib/goToDefinition/goToDefinitionMouse": {
-      "multipleResults": "{0}개 정의를 표시하려면 클릭하세요."
-    },
     "vs/editor/contrib/hover/hover": {
       "showHover": "가리키기 표시"
     },
@@ -487,6 +476,9 @@
       "miSmartSelectGrow": "선택 영역 확장(&&E)",
       "smartSelect.shrink": "선택 영역 축소",
       "miSmartSelectShrink": "선택 영역 축소(&&S)"
+    },
+    "vs/editor/contrib/goToDefinition/goToDefinitionMouse": {
+      "multipleResults": "{0}개 정의를 표시하려면 클릭하세요."
     },
     "vs/editor/contrib/goToDefinition/goToDefinitionCommands": {
       "noResultWord": "'{0}'에 대한 정의를 찾을 수 없습니다.",
@@ -514,14 +506,6 @@
       "miGotoTypeDefinition": "형식 정의로 이동(&&T)",
       "miGotoImplementation": "구현으로 이동(&&I)"
     },
-    "vs/editor/contrib/gotoError/gotoError": {
-      "markerAction.next.label": "다음 문제로 이동 (오류, 경고, 정보)",
-      "markerAction.previous.label": "이전 문제로 이동 (오류, 경고, 정보)",
-      "markerAction.nextInFiles.label": "파일의 다음 문제로 이동 (오류, 경고, 정보)",
-      "markerAction.previousInFiles.label": "파일의 이전 문제로 이동 (오류, 경고, 정보)",
-      "miGotoNextProblem": "다음 문제(&&P)",
-      "miGotoPreviousProblem": "이전 문제(&&P)"
-    },
     "vs/editor/contrib/links/links": {
       "links.navigate.mac": "Cmd 키를 누르고 클릭하여 링크로 이동",
       "links.navigate": "Ctrl + click to follow link",
@@ -531,9 +515,21 @@
       "links.navigate.al": "Alt 키를 누르고 클릭하여 링크로 이동",
       "links.command.al.mac": "<Option> 키를 누르고 클릭하여 명령 실행",
       "links.command.al": "명령을 실행하려면 Alt+클릭",
+      "links.custom.mac": "Cmd + click to {0}",
+      "links.custom.mac.al": "Option + click to {0}",
+      "links.custom": "Ctrl + click to {0}",
+      "links.custom.al": "Alt + click to {0}",
       "invalid.url": "{0} 형식이 올바르지 않으므로 이 링크를 열지 못했습니다",
       "missing.url": "대상이 없으므로 이 링크를 열지 못했습니다.",
       "label": "링크 열기"
+    },
+    "vs/editor/contrib/gotoError/gotoError": {
+      "markerAction.next.label": "다음 문제로 이동 (오류, 경고, 정보)",
+      "markerAction.previous.label": "이전 문제로 이동 (오류, 경고, 정보)",
+      "markerAction.nextInFiles.label": "파일의 다음 문제로 이동 (오류, 경고, 정보)",
+      "markerAction.previousInFiles.label": "파일의 이전 문제로 이동 (오류, 경고, 정보)",
+      "miGotoNextProblem": "다음 문제(&&P)",
+      "miGotoPreviousProblem": "이전 문제(&&P)"
     },
     "vs/editor/contrib/referenceSearch/peekViewWidget": {
       "label.close": "닫기"
@@ -620,11 +616,11 @@
       "miSelectHighlights": "모든 항목 선택(&&O)",
       "changeAll.label": "모든 항목 변경"
     },
-    "vs/editor/contrib/rename/renameInputField": {
-      "renameAriaLabel": "입력 이름을 바꾸세요. 새 이름을 입력한 다음 [Enter] 키를 눌러 커밋하세요."
-    },
     "vs/editor/contrib/parameterHints/parameterHintsWidget": {
       "hint": "{0}, 힌트"
+    },
+    "vs/editor/contrib/rename/renameInputField": {
+      "renameAriaLabel": "입력 이름을 바꾸세요. 새 이름을 입력한 다음 [Enter] 키를 눌러 커밋하세요."
     },
     "vs/editor/contrib/referenceSearch/referencesController": {
       "labelLoading": "로드 중..."
@@ -656,20 +652,6 @@
     },
     "vs/editor/contrib/message/messageController": {
       "editor.readonly": "읽기 전용 편집기에서는 편집할 수 없습니다."
-    },
-    "vs/editor/contrib/format/format": {
-      "hint11": "줄 {0}에서 1개 서식 편집을 수행했습니다.",
-      "hintn1": "줄 {1}에서 {0}개 서식 편집을 수행했습니다.",
-      "hint1n": "줄 {0}과(와) {1} 사이에서 1개 서식 편집을 수행했습니다.",
-      "hintnn": "줄 {1}과(와) {2} 사이에서 {0}개 서식 편집을 수행했습니다."
-    },
-    "vs/editor/contrib/gotoError/gotoErrorWidget": {
-      "problems": "문제 {1}개 중 {0}개",
-      "change": "문제 {1}개 중 {0}개",
-      "editorMarkerNavigationError": "편집기 표식 탐색 위젯 오류 색입니다.",
-      "editorMarkerNavigationWarning": "편집기 표식 탐색 위젯 경고 색입니다.",
-      "editorMarkerNavigationInfo": "편집기 표식 탐색 위젯 정보 색입니다.",
-      "editorMarkerNavigationBackground": "편집기 표식 탐색 위젯 배경입니다."
     },
     "vs/editor/contrib/snippet/snippetVariables": {
       "Sunday": "일요일",
@@ -710,6 +692,24 @@
       "OctoberShort": "10월",
       "NovemberShort": "11월",
       "DecemberShort": "12월"
+    },
+    "vs/editor/contrib/format/format": {
+      "hint11": "줄 {0}에서 1개 서식 편집을 수행했습니다.",
+      "hintn1": "줄 {1}에서 {0}개 서식 편집을 수행했습니다.",
+      "hint1n": "줄 {0}과(와) {1} 사이에서 1개 서식 편집을 수행했습니다.",
+      "hintnn": "줄 {1}과(와) {2} 사이에서 {0}개 서식 편집을 수행했습니다."
+    },
+    "vs/editor/contrib/goToDefinition/goToDefinitionResultsNavigation": {
+      "location.kb": "Symbol {0} of {1}, {2} for next",
+      "location": "Symbol {0} of {1}"
+    },
+    "vs/editor/contrib/gotoError/gotoErrorWidget": {
+      "problems": "문제 {1}개 중 {0}개",
+      "change": "문제 {1}개 중 {0}개",
+      "editorMarkerNavigationError": "편집기 표식 탐색 위젯 오류 색입니다.",
+      "editorMarkerNavigationWarning": "편집기 표식 탐색 위젯 경고 색입니다.",
+      "editorMarkerNavigationInfo": "편집기 표식 탐색 위젯 정보 색입니다.",
+      "editorMarkerNavigationBackground": "편집기 표식 탐색 위젯 배경입니다."
     },
     "vs/editor/contrib/find/simpleFindWidget": {
       "label.find": "찾기",
@@ -851,6 +851,16 @@
     "vs/platform/environment/node/argvHelper": {
       "gotoValidation": "`--goto` 모드에서 인수는 `FILE(:LINE(:CHARACTER))` 형식이어야 합니다."
     },
+    "vs/platform/update/node/update.config.contribution": {
+      "updateConfigurationTitle": "업데이트",
+      "updateMode": "자동 업데이트를 받을지 여부를 구성합니다. 변경 후 다시 시작해야 합니다. 업데이트는 Microsoft 온라인 서비스에서 가져옵니다.",
+      "none": "업데이트를 사용하지 않도록 설정합니다.",
+      "manual": "자동 백그라운드 업데이트 확인을 사용하지 않도록 설정합니다. 업데이트를 수동으로 확인하여 진행할 수 있습니다.",
+      "default": "자동 업데이트 확인을 사용하도록 설정합니다. Code에서 정기적으로 업데이트를 자동 확인합니다.",
+      "deprecated": "이 설정은 사용되지 않습니다. 대신 '{0}'을(를) 사용하세요.",
+      "enableWindowsBackgroundUpdates": "Windows 배경을 업데이트를 사용하도록 설정합니다. 업데이트는 Microsoft 온라인 서비스에서 가져옵니다.",
+      "showReleaseNotes": "업데이트 후 릴리스 노트를 표시합니다. 릴리스 노트는 Microsoft 온라인 서비스에서 가져옵니다."
+    },
     "vs/platform/extensionManagement/node/extensionManagementUtil": {
       "invalidManifest": "VSIX가 올바르지 않습니다. package.json이 JSON 파일이 아닙니다."
     },
@@ -883,7 +893,6 @@
       "verbose": "자세한 정보 표시를 출력합니다(--wait를 의미).",
       "log": "사용할 로그 수준이며 기본값은 'info'입니다. 허용되는 값은 'critical', 'error', 'warn', 'info', 'debug', 'trace', 'off'입니다.",
       "status": "프로세스 사용 및 진단 정보를 인쇄합니다.",
-      "prof-modules": "JS 모듈을 로드하는 동안 성능 마커를 캡처하고 'F1 > 개발자: 시작 성능을 사용하여 인쇄하세요.",
       "prof-startup": "시작하는 동안 CPU 프로파일러 실행",
       "disableExtensions": "설치된 모든 확장을 사용하지 않도록 설정합니다.",
       "disableExtension": "확장을 사용하지 않도록 설정합니다.",
@@ -903,16 +912,6 @@
     "vs/platform/label/common/label": {
       "untitledWorkspace": "제목 없음(작업 영역)",
       "workspaceName": "{0}(작업 영역)"
-    },
-    "vs/platform/update/node/update.config.contribution": {
-      "updateConfigurationTitle": "업데이트",
-      "updateMode": "자동 업데이트를 받을지 여부를 구성합니다. 변경 후 다시 시작해야 합니다. 업데이트는 Microsoft 온라인 서비스에서 가져옵니다.",
-      "none": "업데이트를 사용하지 않도록 설정합니다.",
-      "manual": "자동 백그라운드 업데이트 확인을 사용하지 않도록 설정합니다. 업데이트를 수동으로 확인하여 진행할 수 있습니다.",
-      "default": "자동 업데이트 확인을 사용하도록 설정합니다. Code에서 정기적으로 업데이트를 자동 확인합니다.",
-      "deprecated": "이 설정은 사용되지 않습니다. 대신 '{0}'을(를) 사용하세요.",
-      "enableWindowsBackgroundUpdates": "Windows 배경을 업데이트를 사용하도록 설정합니다. 업데이트는 Microsoft 온라인 서비스에서 가져옵니다.",
-      "showReleaseNotes": "업데이트 후 릴리스 노트를 표시합니다. 릴리스 노트는 Microsoft 온라인 서비스에서 가져옵니다."
     },
     "vs/platform/list/browser/listService": {
       "workbenchConfigurationTitle": "워크벤치",
@@ -941,7 +940,7 @@
       "config.property.languageDefault": "'{0}'을(를) 등록할 수 없습니다. 이는 언어별 편집기 설정을 설명하는 속성 패턴인 '\\\\[.*\\\\]$'과(와) 일치합니다. 'configurationDefaults' 기여를 사용하세요.",
       "config.property.duplicate": "'{0}'을(를) 등록할 수 없습니다. 이 속성은 이미 등록되어 있습니다."
     },
-    "vs/platform/actions/browser/menuItemActionItem": {
+    "vs/platform/actions/browser/menuEntryActionViewItem": {
       "titleAndKb": "{0}({1})"
     },
     "vs/platform/extensionManagement/node/extensionManagementService": {
@@ -949,7 +948,7 @@
       "incompatible": "'{0}' 확장은 VS Code '{1}'과(와) 호환되지 않으므로 설치할 수 없습니다.",
       "restartCode": "{0}을(를) 다시 설치하기 전에 VS Code를 다시 시작하세요.",
       "malicious extension": "문제가 있다고 보고되었으므로 확장을 설치할 수 없습니다.",
-      "notFoundCompatibleDependency": "VS Code의 현재 버전 '{1}'과(와) 호환되는 '{0}' 확장을 찾을 수 없으므로 설치할 수 없습니다.",
+      "notFoundCompatibleDependency": "Unable to install '{0}' extension because it is not compatible with the current version of VS Code (version {1}).",
       "MarketPlaceDisabled": "Marketplace를 사용할 수 없습니다.",
       "removeError": "확장을 제거하는 동안 오류가 발생했습니다. {0}. 다시 시도하기 전에 VS Code를 종료하고 다시 시작하세요.",
       "Not a Marketplace extension": "마켓플레이스 확장만 다시 설치할 수 있습니다.",
@@ -1047,6 +1046,14 @@
       "menuSelectionBackground": "메뉴의 선택된 메뉴 항목 배경색입니다.",
       "menuSelectionBorder": "메뉴의 선택된 메뉴 항목 테두리 색입니다.",
       "menuSeparatorBackground": "메뉴에서 구분 기호 메뉴 항목의 색입니다.",
+      "editorError.foreground": "편집기 내 오류 표시선의 전경색입니다.",
+      "errorBorder": "Border color of error boxes in the editor.",
+      "editorWarning.foreground": "편집기 내 경고 표시선의 전경색입니다.",
+      "warningBorder": "Border color of warning boxes in the editor.",
+      "editorInfo.foreground": "편집기 내 정보 표시선의 전경색입니다.",
+      "infoBorder": "Border color of info boxes in the editor.",
+      "editorHint.foreground": "편집기에서 힌트 표시선의 전경색입니다.",
+      "hintBorder": "Border color of hint boxes in the editor.",
       "editorBackground": "편집기 배경색입니다.",
       "editorForeground": "편집기 기본 전경색입니다.",
       "editorWidgetBackground": "찾기/바꾸기 같은 편집기 위젯의 배경색입니다.",
@@ -1096,9 +1103,10 @@
     },
     "vs/platform/issue/electron-main/issueService": {
       "local": "LOCAL",
-      "confirmCloseIssueReporter": "입력이 저장되지 않습니다. 이 창을 닫으시겠습니까?",
+      "issueReporterWriteToClipboard": "There is too much data to send to GitHub. Would you like to write the information to the clipboard so that it can be pasted?",
       "yes": "예",
       "cancel": "취소",
+      "confirmCloseIssueReporter": "입력이 저장되지 않습니다. 이 창을 닫으시겠습니까?",
       "issueReporter": "문제 보고자",
       "processExplorer": "프로세스 탐색기"
     },
@@ -1107,7 +1115,7 @@
       "newWindowDesc": "새 창을 엽니다.",
       "recentFolders": "최근 작업 영역",
       "folderDesc": "{0} {1}",
-      "codeWorkspace": "코드 작업 영역"
+      "workspaceDesc": "{0} {1}"
     },
     "vs/platform/windows/electron-main/windowsService": {
       "aboutDetail": "버전: {0}\n커밋: {1}\n날짜: {2}\nElectron: {3}\nChrome: {4}\nNode.js: {5}\nV8: {6}\nOS: {7}",
@@ -1385,7 +1393,7 @@
       "AddContextMenuFiles": "\"%1(으)로 열기\" 작업을 Windows 탐색기 파일의 상황에 맞는 메뉴에 추가",
       "AddContextMenuFolders": "\"%1(으)로 열기\" 작업을 Windows 탐색기 디렉터리의 상황에 맞는 메뉴에 추가",
       "AssociateWithFiles": "%1을(를) 지원되는 파일 형식에 대한 편집기로 등록합니다.",
-      "AddToPath": "PATH에 추가(다시 시작한 후 사용 가능)",
+      "AddToPath": "Add to PATH (requires shell restart)",
       "RunAfter": "설치 후 %1 실행",
       "Other": "기타:",
       "SourceFile": "%1 원본 파일"
@@ -1401,32 +1409,31 @@
       "copyAll": "모두 복사",
       "debug": "디버그"
     },
+    "vs/code/electron-main/main": {
+      "secondInstanceAdmin": "{0}의 두 번째 인스턴스가 이미 관리자 권한으로 실행되고 있습니다.",
+      "secondInstanceAdminDetail": "다른 인스턴스를 닫고 다시 시도하세요.",
+      "secondInstanceNoResponse": "{0}의 다른 인스턴스가 실행 중이지만 응답하지 않음",
+      "secondInstanceNoResponseDetail": "다른 인스턴스를 모두 닫고 다시 시도하세요.",
+      "startupDataDirError": "프로그램 사용자 데이터를 쓸 수 없습니다.",
+      "startupDataDirErrorDetail": "디렉터리 {0} 및 {1}이(가) 쓸 수 있는지 확인하세요.",
+      "close": "닫기(&&C)"
+    },
     "vs/code/node/cliProcessMain": {
       "notFound": "'{0}' 확장을 찾을 수 없습니다.",
       "notInstalled": "'{0}' 확장이 설치되어 있지 않습니다.",
-      "useId": "게시자를 포함한 전체 확장 ID(예: {0})를 사용하세요.",
+      "useId": "Make sure you use the full extension ID, including the publisher, e.g.: {0}",
+      "installingExtensions": "Installing extensions...",
       "installation failed": "확장 설치 실패: {0}",
-      "notSupportedUIExtension": "UI 확장이 지원되지 않으므로 {0} 확장을 설치할 수 없음",
-      "successVsixInstall": "확장 '{0}'이(가) 설치되었습니다!",
+      "successVsixInstall": "Extension '{0}' was successfully installed.",
       "cancelVsixInstall": "'{0}' 확장 설치를 취소했습니다.",
       "alreadyInstalled": "'{0}' 확장이 이미 설치되어 있습니다.",
       "forceUpdate": "확장 '{0}' v{1}이(가) 이미 설치되어 있지만, 최신 버전 {2}을(를) 마켓플레이스에서 사용할 수 있습니다. '--force' 옵션을 사용하여 최신 버전으로 업데이트하세요.",
       "updateMessage": "'{0}' 확장을 버전 {1}(으)로 업데이트하는 중",
-      "foundExtension": "마켓플레이스에서 '{0}'을(를) 찾았습니다.",
-      "forceDowngrade": "이 확장의 최신 버전 '{0}' v{1}이(가) 이미 설치되어 있습니다. '--force' 옵션을 사용하여 이전 버전으로 다운그레이드하세요.",
-      "installing": "설치 중...",
-      "successInstall": "확장 '{0}' v{1}이(가) 성공적으로 설치되었습니다!",
+      "forceDowngrade": "A newer version of extension '{0}' v{1} is already installed. Use '--force' option to downgrade to older version.",
+      "installing": "Installing extension '{0}' v{1}...",
+      "successInstall": "Extension '{0}' v{1} was successfully installed.",
       "uninstalling": "{0} 제거 중...",
       "successUninstall": "'{0}' 확장이 성공적으로 제거되었습니다!"
-    },
-    "vs/code/electron-main/main": {
-      "secondInstanceNoResponse": "{0}의 다른 인스턴스가 실행 중이지만 응답하지 않음",
-      "secondInstanceNoResponseDetail": "다른 인스턴스를 모두 닫고 다시 시도하세요.",
-      "secondInstanceAdmin": "{0}의 두 번째 인스턴스가 이미 관리자 권한으로 실행되고 있습니다.",
-      "secondInstanceAdminDetail": "다른 인스턴스를 닫고 다시 시도하세요.",
-      "close": "닫기(&&C)",
-      "startupDataDirError": "프로그램 사용자 데이터를 쓸 수 없습니다.",
-      "startupDataDirErrorDetail": "디렉터리 {0} 및 {1}이(가) 쓸 수 있는지 확인하세요."
     },
     "vs/code/electron-main/logUploader": {
       "invalidEndpoint": "잘못된 로그 업로더 끝점",
@@ -1469,6 +1476,11 @@
       "pasteData": "너무 커서 보낼 수 없었기 때문에 필요한 데이터를 클립보드에 썼습니다. 붙여 넣으세요.",
       "disabledExtensions": "확장을 사용할 수 없음"
     },
+    "vs/code/electron-main/app": {
+      "trace.message": "추적을 만들었습니다.",
+      "trace.detail": "문제를 발생시키고 다음 파일을 수동으로 첨부하세요.\n{0}",
+      "trace.ok": "확인"
+    },
     "vs/code/electron-browser/issue/issueReporterPage": {
       "completeInEnglish": "양식을 영어로 작성해 주세요.",
       "issueTypeLabel": "이것은",
@@ -1487,11 +1499,6 @@
       "sendExtensions": "사용하도록 설정된 확장 포함({0})",
       "sendSearchedExtensions": "검색된 확장 보내기({0})",
       "sendSettingsSearchDetails": "설정 검색 세부 정보 보내기({0})"
-    },
-    "vs/code/electron-main/app": {
-      "trace.message": "추적을 만들었습니다.",
-      "trace.detail": "문제를 발생시키고 다음 파일을 수동으로 첨부하세요.\n{0}",
-      "trace.ok": "확인"
     },
     "vs/code/electron-main/auth": {
       "authRequire": "프록시 인증 필요",
@@ -1520,6 +1527,13 @@
     },
     "vs/code/electron-main/window": {
       "hiddenMenuBar": "<Alt> 키를 눌러 메뉴 모음에 계속 액세스할 수 있습니다."
+    },
+    "vs/workbench/browser/actions/navigationActions": {
+      "navigateLeft": "뷰 왼쪽으로 이동",
+      "navigateRight": "뷰 오른쪽으로 이동",
+      "navigateUp": "뷰 위로 이동",
+      "navigateDown": "뷰 아래로 이동",
+      "view": "보기"
     },
     "vs/workbench/browser/workbench.contribution": {
       "workbenchConfigurationTitle": "워크벤치",
@@ -1557,6 +1571,7 @@
       "panelDefaultLocation": "패널(터미널, 디버그 콘솔, 출력, 문제)의 기본 위치를 제어합니다. 워크벤치의 아래 또는 오른쪽에 표시될 수 있습니다.",
       "statusBarVisibility": "워크벤치 아래쪽에서 상태 표시줄의 표시 유형을 제어합니다.",
       "activityBarVisibility": "워크벤치에서 작업 막대의 표시 유형을 제어합니다.",
+      "iconExplorationEnabled": "Controls the visibility of the icon exploration in the workbench.",
       "viewVisibility": "보기 머리글 작업의 표시 여부를 제어합니다. 보기 머리글 작업은 항상 표시할 수도 있고 보기에 포커스가 있거나 보기를 마우스로 가리킬 때만 표시할 수도 있습니다.",
       "fontAliasing": "워크벤치에서 글꼴 앨리어싱 메서드를 제어합니다.",
       "workbench.fontAliasing.default": "서브 픽셀 글꼴 다듬기. 대부분의 일반 디스플레이에서 가장 선명한 텍스트를 제공합니다. ",
@@ -1596,12 +1611,63 @@
       "zenMode.hideLineNumbers": "Zen 모드를 설정하면 편집기 줄 번호도 숨길 것인지 여부를 제어합니다.",
       "zenMode.restore": "창이 Zen 모드에서 종료된 경우 Zen 모드로 복원할지 여부를 제어합니다."
     },
-    "vs/workbench/browser/actions/navigationActions": {
-      "navigateLeft": "뷰 왼쪽으로 이동",
-      "navigateRight": "뷰 오른쪽으로 이동",
-      "navigateUp": "뷰 위로 이동",
-      "navigateDown": "뷰 아래로 이동",
-      "view": "보기"
+    "vs/workbench/api/common/configurationExtensionPoint": {
+      "vscode.extension.contributes.configuration.title": "설정을 요약합니다. 이 레이블은 설정 파일에서 구분 주석으로 사용됩니다.",
+      "vscode.extension.contributes.configuration.properties": "구성 속성에 대한 설명입니다.",
+      "scope.application.description": "Application specific configuration, which can be configured only in the user settings.",
+      "scope.machine.description": "Machine specific configuration, which can be configured only in the user settings when the extension is running locally, or only in the remote settings when the extension is running remotely.",
+      "scope.window.description": "Window specific configuration, which can be configured in the user, remote or workspace settings.",
+      "scope.resource.description": "Resource specific configuration, which can be configured in the user, remote, workspace or folder settings.",
+      "scope.description": "Scope in which the configuration is applicable. Available scopes are `application`, `machine`, `window` and `resource`.",
+      "scope.enumDescriptions": "열거형 값에 대한 설명",
+      "scope.markdownEnumDescription": "Markdown 형식의 열거형 값에 대한 설명입니다.",
+      "scope.markdownDescription": "Markdown 형식의 설명입니다.",
+      "scope.deprecationMessage": "설정하면 속성이 사용되지 않음으로 표시되고 지정된 메시지가 설명으로 표시됩니다.",
+      "vscode.extension.contributes.defaultConfiguration": "언어별로 기본 편집기 구성 설정을 적용합니다.",
+      "vscode.extension.contributes.configuration": "구성 설정을 적용합니다.",
+      "invalid.title": "'configuration.title'은 문자열이어야 합니다.",
+      "invalid.properties": "'configuration.properties'는 개체여야 합니다.",
+      "invalid.property": "'configuration.properties'는 개체여야 합니다.",
+      "invalid.allOf": "'configuration.allOf'는 사용되지 않으며 더 이상 사용해서는 안됩니다. 대신 여러 구성 섹션을 배열로 'configuration' 기여 지점에 전달하세요.",
+      "workspaceConfig.folders.description": "작업 영역에 로드되는 폴더 목록입니다.",
+      "workspaceConfig.path.description": "파일 경로입니다. 예: `/root/folderA` 또는 `./folderA`(작업 영역 파일의 위치를 기준으로 확인할 상대 경로인 경우)",
+      "workspaceConfig.name.description": "폴더에 대한 선택적 이름입니다.",
+      "workspaceConfig.uri.description": "폴더 URI",
+      "workspaceConfig.settings.description": "작업 영역 설정",
+      "workspaceConfig.launch.description": "작업 영역 시작 구성",
+      "workspaceConfig.extensions.description": "작업 영역 확장",
+      "unknownWorkspaceProperty": "알 수 없는 작업 영역 구성 속성"
+    },
+    "vs/workbench/browser/parts/sidebar/sidebarPart": {
+      "focusSideBar": "사이드바에 포커스",
+      "viewCategory": "보기"
+    },
+    "vs/workbench/browser/actions/layoutActions": {
+      "view": "보기",
+      "toggleActivityBar": "작업 막대 표시 유형 전환",
+      "miShowActivityBar": "작업 막대 표시(&&A)",
+      "toggleCenteredLayout": "가운데 맞춤된 레이아웃 설정/해제",
+      "miToggleCenteredLayout": "Centered Layout",
+      "flipLayout": "세로/가로 편집기 레이아웃 설정/해제",
+      "miToggleEditorLayout": "레이아웃 대칭 이동(&&L)",
+      "toggleSidebarPosition": "사이드바 위치 설정/해제",
+      "moveSidebarRight": "사이드바를 오른쪽으로 이동",
+      "moveSidebarLeft": "사이드바를 왼쪽으로 이동",
+      "miMoveSidebarRight": "사이드바를 오른쪽으로 이동(&&M)",
+      "miMoveSidebarLeft": "사이드바를 왼쪽으로 이동(&&M)",
+      "toggleEditor": "편집기 영역 토글",
+      "toggleSidebar": "사이드바 표시 유형 설정/해제",
+      "miAppearance": "모양(&&A)",
+      "miShowSidebar": "Show &&Side Bar",
+      "toggleStatusbar": "상태 표시줄 표시 설정/해제",
+      "miShowStatusbar": "Show S&&tatus Bar",
+      "toggleTabs": "탭 표시 설정/해제",
+      "toggleZenMode": "Zen 모드 설정/해제",
+      "miToggleZenMode": "Zen 모드",
+      "toggleMenuBar": "메뉴 모음 설정/해제",
+      "miShowMenuBar": "Show Menu &&Bar",
+      "increaseViewSize": "현재 뷰 크기 늘리기",
+      "decreaseViewSize": "현재 뷰 크기 줄이기"
     },
     "vs/workbench/api/common/menusExtensionPoint": {
       "requirearray": "메뉴 항목은 배열이어야 합니다.",
@@ -1625,6 +1691,10 @@
       "menus.resourceStateContext": "소스 제어 리소스 상태 상황에 맞는 메뉴",
       "view.viewTitle": "기여 조회 제목 메뉴",
       "view.itemContext": "기여 조회 항목 상황에 맞는 메뉴",
+      "commentThread.title": "The contributed comment thread title menu",
+      "commentThread.actions": "The contributed comment thread context menu, rendered as buttons below the comment editor",
+      "comment.title": "The contributed comment title menu",
+      "comment.actions": "The contributed comment context menu, rendered as buttons below the comment editor",
       "nonempty": "비어 있지 않은 값이 필요합니다.",
       "opticon": "`icon` 속성은 생략할 수 있거나 문자열 또는 리터럴(예: `{dark, light}`)이어야 합니다.",
       "requireStringOrObject": "`{0}` 속성은 필수이며 `string` 또는 `object` 형식이어야 합니다.",
@@ -1632,6 +1702,7 @@
       "vscode.extension.contributes.commandType.command": "실행할 명령의 식별자",
       "vscode.extension.contributes.commandType.title": "명령이 UI에 표시되는 제목입니다.",
       "vscode.extension.contributes.commandType.category": "(선택 사항) UI에서 명령별 범주 문자열을 그룹화합니다.",
+      "vscode.extension.contributes.commandType.precondition": "(Optional) Condition which must be true to enable the command",
       "vscode.extension.contributes.commandType.icon": "(선택 사항) UI에서 명령을 나타내는 데 사용되는 아이콘입니다. 파일 경로 또는 테마 지정 가능 구성입니다.",
       "vscode.extension.contributes.commandType.icon.light": "밝은 테마를 사용하는 경우의 아이콘 경로",
       "vscode.extension.contributes.commandType.icon.dark": "어두운 테마를 사용할 때 아이콘 경로",
@@ -1642,37 +1713,6 @@
       "missing.command": "메뉴 항목이 '명령' 섹션에 정의되지 않은 `{0}` 명령을 참조합니다.",
       "missing.altCommand": "메뉴 항목이 '명령' 섹션에 정의되지 않은 alt 명령 `{0}`을(를) 참조합니다.",
       "dupe.command": "메뉴 항목이 동일한 명령을 기본값과 alt 명령으로 참조합니다."
-    },
-    "vs/workbench/api/common/configurationExtensionPoint": {
-      "vscode.extension.contributes.configuration.title": "설정을 요약합니다. 이 레이블은 설정 파일에서 구분 주석으로 사용됩니다.",
-      "vscode.extension.contributes.configuration.properties": "구성 속성에 대한 설명입니다.",
-      "scope.application.description": "로컬 사용자 설정에서만 구성할 수 있는 애플리케이션 관련 구성입니다.",
-      "scope.machine.description": "로컬 및 원격 사용자 설정에서만 구성할 수 있는 머신 관련 구성입니다.",
-      "scope.window.description": "[사용자] 설정 또는 [작업 영역] 설정에서 구성할 수 있는 창 특정 구성입니다.",
-      "scope.resource.description": "사용자, 작업 영역 또는 폴더 설정에서 구성할 수 있는 리소스 특정 구성",
-      "scope.description": "구성이 적용되는 범위입니다. 사용 가능 범위는 '창'과 '리소스'입니다.",
-      "scope.enumDescriptions": "열거형 값에 대한 설명",
-      "scope.markdownEnumDescription": "Markdown 형식의 열거형 값에 대한 설명입니다.",
-      "scope.markdownDescription": "Markdown 형식의 설명입니다.",
-      "scope.deprecationMessage": "설정하면 속성이 사용되지 않음으로 표시되고 지정된 메시지가 설명으로 표시됩니다.",
-      "vscode.extension.contributes.defaultConfiguration": "언어별로 기본 편집기 구성 설정을 적용합니다.",
-      "vscode.extension.contributes.configuration": "구성 설정을 적용합니다.",
-      "invalid.title": "'configuration.title'은 문자열이어야 합니다.",
-      "invalid.properties": "'configuration.properties'는 개체여야 합니다.",
-      "invalid.property": "'configuration.properties'는 개체여야 합니다.",
-      "invalid.allOf": "'configuration.allOf'는 사용되지 않으며 더 이상 사용해서는 안됩니다. 대신 여러 구성 섹션을 배열로 'configuration' 기여 지점에 전달하세요.",
-      "workspaceConfig.folders.description": "작업 영역에 로드되는 폴더 목록입니다.",
-      "workspaceConfig.path.description": "파일 경로입니다. 예: `/root/folderA` 또는 `./folderA`(작업 영역 파일의 위치를 기준으로 확인할 상대 경로인 경우)",
-      "workspaceConfig.name.description": "폴더에 대한 선택적 이름입니다.",
-      "workspaceConfig.uri.description": "폴더 URI",
-      "workspaceConfig.settings.description": "작업 영역 설정",
-      "workspaceConfig.launch.description": "작업 영역 시작 구성",
-      "workspaceConfig.extensions.description": "작업 영역 확장",
-      "unknownWorkspaceProperty": "알 수 없는 작업 영역 구성 속성"
-    },
-    "vs/workbench/browser/parts/sidebar/sidebarPart": {
-      "focusSideBar": "사이드바에 포커스",
-      "viewCategory": "보기"
     },
     "vs/workbench/api/browser/viewsExtensionPoint": {
       "vscode.extension.contributes.views.containers.id": "'뷰' 기여 지점을 사용하여 뷰가 기여될 수 있는 컨테이너를 식별하는 데 사용되는 고유한 ID",
@@ -1701,40 +1741,20 @@
       "requirearray": "뷰는 배열이어야 합니다.",
       "optstring": "속성 `{0}`은(는) 생략할 수 있으며 `string` 형식이어야 합니다."
     },
-    "vs/workbench/browser/actions/layoutActions": {
-      "view": "보기",
-      "toggleActivityBar": "작업 막대 표시 유형 전환",
-      "miToggleActivityBar": "작업 막대 토글(&&A)",
-      "toggleCenteredLayout": "가운데 맞춤된 레이아웃 설정/해제",
-      "miToggleCenteredLayout": "가운데 맞춤된 레이아웃 설정/해제",
-      "flipLayout": "세로/가로 편집기 레이아웃 설정/해제",
-      "miToggleEditorLayout": "레이아웃 대칭 이동(&&L)",
-      "toggleSidebarPosition": "사이드바 위치 설정/해제",
-      "moveSidebarRight": "사이드바를 오른쪽으로 이동",
-      "moveSidebarLeft": "사이드바를 왼쪽으로 이동",
-      "miMoveSidebarLeftRight": "사이드바를 왼쪽/오른쪽으로 이동(&&M)",
-      "toggleEditor": "편집기 영역 토글",
-      "toggleSidebar": "사이드바 표시 유형 설정/해제",
-      "miToggleSidebar": "사이드바 설정/해제(&&T)",
-      "toggleStatusbar": "상태 표시줄 표시 설정/해제",
-      "miToggleStatusbar": "상태 표시줄 토글(&&T)",
-      "toggleTabs": "탭 표시 설정/해제",
-      "toggleZenMode": "Zen 모드 설정/해제",
-      "miToggleZenMode": "Zen 모드 설정/해제",
-      "toggleMenuBar": "메뉴 모음 설정/해제",
-      "miToggleMenuBar": "메뉴 모음 설정/해제(&&B)",
-      "increaseViewSize": "현재 뷰 크기 늘리기",
-      "decreaseViewSize": "현재 뷰 크기 줄이기"
-    },
     "vs/workbench/browser/parts/panel/panelPart": {
       "hidePanel": "패널 숨기기"
-    },
-    "vs/workbench/browser/parts/statusbar/statusbarPart": {
-      "manageExtension": "확장 관리"
     },
     "vs/workbench/browser/parts/views/views": {
       "focus view": "{0} 뷰에 포커스 설정",
       "view category": "보기"
+    },
+    "vs/workbench/browser/parts/activitybar/activitybarPart": {
+      "hideActivitBar": "작업 막대 숨기기",
+      "manage": "Manage"
+    },
+    "vs/workbench/browser/parts/statusbar/statusbarPart": {
+      "hide": "숨기기",
+      "hideStatusBar": "Hide Status Bar"
     },
     "vs/workbench/browser/parts/titlebar/titlebarPart": {
       "patchedWindowTitle": "[지원되지 않음]",
@@ -1742,9 +1762,26 @@
       "userIsSudo": "[슈퍼유저]",
       "devExtensionWindowTitlePrefix": "[확장 개발 호스트]"
     },
-    "vs/workbench/browser/parts/activitybar/activitybarPart": {
-      "hideActivitBar": "작업 막대 숨기기",
-      "globalActions": "전역 작업"
+    "vs/workbench/api/common/jsonValidationExtensionPoint": {
+      "contributes.jsonValidation": "json 스키마 구성을 적용합니다.",
+      "contributes.jsonValidation.fileMatch": "일치할 파일 패턴(예: \"package.json\" 또는 \"*.launch\")입니다.",
+      "contributes.jsonValidation.url": "스키마 URL('http:', 'https:') 또는 확장 폴더에 대한 상대 경로('./')입니다.",
+      "invalid.jsonValidation": "'configuration.jsonValidation'은 배열이어야 합니다.",
+      "invalid.fileMatch": "'configuration.jsonValidation.fileMatch'를 정의해야 합니다.",
+      "invalid.url": "'configuration.jsonValidation.url'은 URL 또는 상대 경로여야 합니다.",
+      "invalid.path.1": "확장 폴더({2})에 포함할 'contributes.{0}.url'({1})이 필요합니다. 확장이 이식 불가능해질 수 있습니다.",
+      "invalid.url.fileschema": "'configuration.jsonValidation.url'이 잘못된 상대 URL입니다. {0}",
+      "invalid.url.schema": "확장에 있는 스키마를 참조하려면 'configuration.jsonValidation.url'이 'http:', 'https:' 또는 './'로 시작해야 합니다."
+    },
+    "vs/workbench/api/browser/mainThreadMessageService": {
+      "extensionSource": "{0}(확장)",
+      "defaultSource": "확장",
+      "manageExtension": "확장 관리",
+      "cancel": "취소",
+      "ok": "확인"
+    },
+    "vs/workbench/api/browser/mainThreadProgress": {
+      "manageExtension": "확장 관리"
     },
     "vs/workbench/electron-browser/main.contribution": {
       "file": "파일",
@@ -1767,13 +1804,11 @@
       "miMore": "자세히(&&M)...",
       "miAddFolderToWorkspace": "작업 영역에 폴더 추가(&&D)...",
       "miSaveWorkspaceAs": "작업 영역을 다른 이름으로 저장",
-      "miPreferences": "기본 설정(&&P)",
       "miCloseFolder": "폴더 닫기(&&F)",
       "miCloseWorkspace": "작업 영역 닫기(&&W)",
       "miCloseWindow": "창 닫기(&&E)",
       "miExit": "끝내기(&&X)",
-      "miAppearance": "모양(&&A)",
-      "miToggleFullScreen": "전체 화면 설정/해제(&&F)",
+      "miToggleFullScreen": "&&Full Screen",
       "miZoomIn": "확대(&&Z)",
       "miZoomOut": "축소(&&Z)",
       "miZoomReset": "확대/축소 다시 설정(&&R)",
@@ -1823,6 +1858,7 @@
       "window.menuBarVisibility.hidden": "메뉴가 항상 숨겨집니다.",
       "menuBarVisibility": "메뉴 모음의 표시 여부를 제어합니다. '설정/해제'를 설정함으로써 메뉴 모음이 숨겨지고 <Alt> 키를 누를 때마다 메뉴 모음이 표시됩니다. 기본값으로, 창이 전체 화면인 경우를 제외하고 메뉴 모음이 표시됩니다.",
       "enableMenuBarMnemonics": "사용하도록 설정하는 경우 Alt 키 바로 가기를 통해 주 메뉴를 열 수 있습니다. 니모닉을 사용하지 않도록 설정하면 대신 이러한 Alt 키 바로 가기를 편집기 명령에 바인딩할 수 있습니다.",
+      "disableCustomMenuBarAltFocus": "If enabled, disables the ability to focus the menu bar with the Alt-key when not set to toggle.",
       "autoDetectHighContrast": "사용하도록 설정한 경우 Windows에서 고대비 테마를 사용 중이면 고대비 테마로 자동으로 변경되고 Windows 고대비 테마를 해제하면 어두운 테마로 변경됩니다.",
       "window.doubleClickIconToClose": "사용하도록 설정하는 경우 제목 표시줄에서 애플리케이션 아이콘을 두 번 클릭하면 창을 닫으며 해당 창은 아이콘을 사용하여 끌어올 수 없습니다. 이 설정은 `#window.titleBarStyle#`이 `custom`으로 설정된 경우에만 영향을 줍니다.",
       "titleBarStyle": "창 제목 표시줄의 모양을 조정합니다. Linux와 Windows에서 이 설정은 애플리케이션 및 상황에 맞는 메뉴 모양에도 영향을 미칩니다. 변경 내용을 적용하려면 전체 다시 시작해야 합니다.",
@@ -1831,30 +1867,6 @@
       "window.clickThroughInactive": "사용하도록 설정한 경우 비활성 창을 클릭하면 창도 활성화되고 클릭 가능한 경우 마우스 아래의 요소도 트리거됩니다. 사용하지 않도록 설정한 경우 비활성 창에서 아무곳이나 클릭하면 창만 활성화되며 요소는 또 한번 클릭해야 합니다.",
       "telemetryConfigurationTitle": "원격 분석",
       "telemetry.enableCrashReporting": "충돌 보고서를 Microsoft 온라인 서비스에 전송할 수 있도록 설정합니다.\n이 옵션을 적용하려면 다시 시작해야 합니다."
-    },
-    "vs/workbench/api/common/jsonValidationExtensionPoint": {
-      "contributes.jsonValidation": "json 스키마 구성을 적용합니다.",
-      "contributes.jsonValidation.fileMatch": "일치할 파일 패턴(예: \"package.json\" 또는 \"*.launch\")입니다.",
-      "contributes.jsonValidation.url": "스키마 URL('http:', 'https:') 또는 확장 폴더에 대한 상대 경로('./')입니다.",
-      "invalid.jsonValidation": "'configuration.jsonValidation'은 배열이어야 합니다.",
-      "invalid.fileMatch": "'configuration.jsonValidation.fileMatch'를 정의해야 합니다.",
-      "invalid.url": "'configuration.jsonValidation.url'은 URL 또는 상대 경로여야 합니다.",
-      "invalid.path.1": "확장 폴더({2})에 포함할 'contributes.{0}.url'({1})이 필요합니다. 확장이 이식 불가능해질 수 있습니다.",
-      "invalid.url.fileschema": "'configuration.jsonValidation.url'이 잘못된 상대 URL입니다. {0}",
-      "invalid.url.schema": "확장에 있는 스키마를 참조하려면 'configuration.jsonValidation.url'이 'http:', 'https:' 또는 './'로 시작해야 합니다."
-    },
-    "vs/workbench/api/browser/mainThreadProgress": {
-      "manageExtension": "확장 관리"
-    },
-    "vs/workbench/api/browser/mainThreadMessageService": {
-      "extensionSource": "{0}(확장)",
-      "defaultSource": "확장",
-      "manageExtension": "확장 관리",
-      "cancel": "취소",
-      "ok": "확인"
-    },
-    "vs/workbench/browser/parts/editor/editorPart": {
-      "groupLabel": "{0} 그룹"
     },
     "vs/workbench/browser/parts/quickopen/quickOpenController": {
       "quickOpenInput": "'?'를 입력하면 여기에서 수행할 수 있는 작업에 대한 도움말을 확인할 수 있습니다.",
@@ -1865,12 +1877,24 @@
       "removeFromEditorHistory": "기록에서 제거",
       "pickHistory": "기록에서 제거할 편집기 항목 선택"
     },
+    "vs/workbench/browser/parts/editor/editorPart": {
+      "groupLabel": "{0} 그룹"
+    },
     "vs/workbench/browser/viewlet": {
       "compositePart.hideSideBarLabel": "사이드 막대 숨기기",
       "collapse": "모두 축소"
     },
     "vs/workbench/common/views": {
       "duplicateId": "ID가 `{0}`인 뷰가 컨테이너 `{1}`에 이미 등록되어 있습니다."
+    },
+    "vs/workbench/api/browser/mainThreadExtensionService": {
+      "reload window": "로드되지 않은 '{1}' 확장 프로그램에 의존하기 때문에 '{0}' 확장 프로그램을 활성화 할 수 없습니다. 확장 프로그램을 로드하기 위해 창을 다시 로드하시겠습니까?",
+      "reload": "창 다시 로드",
+      "disabledDep": "'{0}' 확장은 사용하지 않도록 설정된 '{1}' 확장에 따라 달라지기 때문에 활성화할 수 없습니다. 확장을 사용하도록 설정하고 창을 다시 로드하시겠습니까?",
+      "enable dep": "활성화하고 다시 로드",
+      "uninstalledDep": "설치되지 않은 '{1}' 확장에 따라 달라지기 때문에 '{0}' 확장을 활성화할 수 없습니다. 확장을 설치하고 창을 다시 로드하시겠습니까?",
+      "install missing dep": "설치 및 다시 로드",
+      "unknownDep": "알 수 없는 '{1}'에 의존하기 때문에 '{0}'을(를) 활성화할 수 없습니다."
     },
     "vs/workbench/api/browser/mainThreadEditors": {
       "diffLeftRightLabel": "{0} ⟷ {1}"
@@ -1881,15 +1905,6 @@
       "folderStatusMessageRemoveSingleFolder": "'{0}' 확장이 작업 영역에서 1개 폴더를 제거함",
       "folderStatusMessageRemoveMultipleFolders": "'{0}' 확장이 작업 영역에서 {1}개 폴더를 제거함",
       "folderStatusChangeFolder": "'{0}' 확장이 작업 영역의 폴더를 변경함"
-    },
-    "vs/workbench/api/browser/mainThreadExtensionService": {
-      "reload window": "로드되지 않은 '{1}' 확장 프로그램에 의존하기 때문에 '{0}' 확장 프로그램을 활성화 할 수 없습니다. 확장 프로그램을 로드하기 위해 창을 다시 로드하시겠습니까?",
-      "reload": "창 다시 로드",
-      "disabledDep": "'{0}' 확장은 사용하지 않도록 설정된 '{1}' 확장에 따라 달라지기 때문에 활성화할 수 없습니다. 확장을 사용하도록 설정하고 창을 다시 로드하시겠습니까?",
-      "enable dep": "활성화하고 다시 로드",
-      "uninstalledDep": "설치되지 않은 '{1}' 확장에 따라 달라지기 때문에 '{0}' 확장을 활성화할 수 없습니다. 확장을 설치하고 창을 다시 로드하시겠습니까?",
-      "install missing dep": "설치 및 다시 로드",
-      "unknownDep": "알 수 없는 '{1}'에 의존하기 때문에 '{0}'을(를) 활성화할 수 없습니다."
     },
     "vs/workbench/browser/parts/quickopen/quickopen": {
       "quickOpen": "파일로 이동...",
@@ -1906,9 +1921,9 @@
       "timeout.formatOnSave": "저장 시 {0}ms 후에 서식 지정이 중단됨",
       "codeActionsOnSave.didTimeout": "{0}밀리초 후 codeActionsOnSave 중단됨",
       "timeout.onWillSave": "1750ms 후에 onWillSaveTextDocument-event가 중단됨",
-      "saveParticipants": "참가자 저장 실행 중..."
+      "saveParticipants": "저장 관계자 실행 중..."
     },
-    "vs/workbench/api/electron-browser/mainThreadWebview": {
+    "vs/workbench/api/browser/mainThreadWebview": {
       "errorMessage": "뷰를 복원하는 중 오류 발생:{0}"
     },
     "vs/workbench/common/notifications": {
@@ -1968,7 +1983,7 @@
       "previousPanelView": "이전 패널 보기",
       "nextPanelView": "다음 패널 보기",
       "view": "보기",
-      "miTogglePanel": "패널 설정/해제(&&P)"
+      "miShowPanel": "Show &&Panel"
     },
     "vs/workbench/browser/parts/compositePart": {
       "ariaCompositeToolbarLabel": "{0} 작업",
@@ -1985,6 +2000,7 @@
     },
     "vs/workbench/common/theme": {
       "tabActiveBackground": "활성 탭 배경색입니다. 탭은 편집기 영역에서 편집기의 컨테이너입니다. 한 편집기 그룹에서 여러 탭을 열 수 있습니다. 여러 편집기 그룹이 있을 수 있습니다.",
+      "tabUnfocusedActiveBackground": "Active tab background color in an unfocused group. Tabs are the containers for editors in the editor area. Multiple tabs can be opened in one editor group. There can be multiple editor groups.",
       "tabInactiveBackground": "비활성 탭 배경색입니다. 탭은 편집기 영역에서 편집기의 컨테이너입니다. 한 편집기 그룹에서 여러 탭을 열 수 있습니다. 여러 편집기 그룹이 있을 수 있습니다.",
       "tabHoverBackground": "마우스 커서를 올려놓았을 때의 탭 배경색. 탭은 편집 영역에서 편집기를 감싸고 있습니다. 한 편집기 그룹에서 여러 탭을 열 수 있습니다. 편집기 그룹이 여러 개일 수 있습니다.",
       "tabUnfocusedHoverBackground": "마우스 커서를 올려놓았을 때 포커스를 받지 못한 탭 배경색. 탭은 편집 영역에서 편집기를 감싸고 있습니다. 한 편집기 그룹에서 여러 탭을 열 수 있습니다. 편집기 그룹이 여러 개일 수 있습니다.",
@@ -2067,23 +2083,8 @@
       "notificationCenterHeaderBackground": "알림 센터 머리글 배경색입니다. 알림은 창 오른쪽 맨 아래에 표시됩니다.",
       "notificationsBorder": "알림 센터에서 다른 알림과 구분하는 알림 테두리 색입니다. 알림은 창 오른쪽 맨 아래에 표시됩니다."
     },
-    "vs/workbench/electron-browser/actions/helpActions": {
-      "keybindingsReference": "바로 가기 키 참조",
-      "openDocumentationUrl": "문서",
-      "openIntroductoryVideosUrl": "소개 비디오",
-      "openTipsAndTricksUrl": "팁과 요령",
-      "openTwitterUrl": "Twitter에서 참여",
-      "openUserVoiceUrl": "기능 요청 검색",
-      "openLicenseUrl": "라이센스 보기",
-      "openPrivacyStatement": "개인정보취급방침"
-    },
     "vs/workbench/browser/workbench": {
       "loaderErrorNative": "필요한 파일을 로드하지 못했습니다. 애플리케이션을 다시 시작하여 다시 시도하세요. 세부 정보: {0}"
-    },
-    "vs/workbench/browser/parts/activitybar/activitybarActions": {
-      "previousSideBarView": "이전 사이드바 보기",
-      "nextSideBarView": "다음 사이드바 보기",
-      "view": "보기"
     },
     "vs/workbench/browser/parts/compositeBarActions": {
       "badgeTitle": "{0} - {1}",
@@ -2095,24 +2096,6 @@
       "keep": "유지",
       "compositeActive": "활성 {0}개",
       "toggle": "뷰 고정 전환"
-    },
-    "vs/workbench/electron-browser/actions/developerActions": {
-      "toggleDevTools": "개발자 도구 설정/해제",
-      "toggleSharedProcess": "공유 프로세스 설정/해제",
-      "inspect context keys": "컨텍스트 키 검사",
-      "toggle screencast mode": "스크린캐스트 모드 토글"
-    },
-    "vs/workbench/electron-browser/window": {
-      "undo": "실행 취소",
-      "redo": "다시 실행",
-      "cut": "잘라내기",
-      "copy": "복사",
-      "paste": "붙여넣기",
-      "selectAll": "모두 선택",
-      "runningAsRoot": "{0}을(를) 루트 사용자로 실행하지 않는 것이 좋습니다."
-    },
-    "vs/workbench/browser/parts/compositeBar": {
-      "activityBarAriaLabel": "활성 뷰 전환기"
     },
     "vs/workbench/electron-browser/actions/windowActions": {
       "closeWindow": "창 닫기",
@@ -2137,9 +2120,39 @@
       "quickOpenRecent": "빠른 최근 항목 열기...",
       "about": "{0} 정보"
     },
-    "vs/workbench/browser/parts/views/customView": {
-      "no-dataprovider": "등록된 데이터 공급자가 없이 보기 데이터를 제공할 수 없습니다.",
-      "collapseAll": "모두 축소"
+    "vs/workbench/electron-browser/window": {
+      "undo": "실행 취소",
+      "redo": "다시 실행",
+      "cut": "잘라내기",
+      "copy": "복사",
+      "paste": "붙여넣기",
+      "selectAll": "모두 선택",
+      "runningAsRoot": "{0}을(를) 루트 사용자로 실행하지 않는 것이 좋습니다."
+    },
+    "vs/workbench/electron-browser/actions/helpActions": {
+      "keybindingsReference": "바로 가기 키 참조",
+      "openDocumentationUrl": "문서",
+      "openIntroductoryVideosUrl": "소개 비디오",
+      "openTipsAndTricksUrl": "팁과 요령",
+      "newsletterSignup": "Signup for the VS Code Newsletter",
+      "openTwitterUrl": "Twitter에서 참여",
+      "openUserVoiceUrl": "기능 요청 검색",
+      "openLicenseUrl": "라이센스 보기",
+      "openPrivacyStatement": "개인정보취급방침"
+    },
+    "vs/workbench/electron-browser/actions/developerActions": {
+      "toggleDevTools": "개발자 도구 설정/해제",
+      "toggleSharedProcess": "공유 프로세스 설정/해제",
+      "inspect context keys": "컨텍스트 키 검사",
+      "toggle screencast mode": "스크린캐스트 모드 토글"
+    },
+    "vs/workbench/browser/parts/compositeBar": {
+      "activityBarAriaLabel": "활성 뷰 전환기"
+    },
+    "vs/workbench/browser/parts/activitybar/activitybarActions": {
+      "previousSideBarView": "이전 사이드바 보기",
+      "nextSideBarView": "다음 사이드바 보기",
+      "view": "보기"
     },
     "vs/workbench/browser/parts/views/panelViewlet": {
       "viewToolbarAriaLabel": "{0} 작업"
@@ -2153,6 +2166,17 @@
     "vs/workbench/browser/parts/editor/textEditor": {
       "editorLabelWithGroup": "{0}, {1}."
     },
+    "vs/workbench/browser/parts/views/customView": {
+      "no-dataprovider": "등록된 데이터 공급자가 없이 보기 데이터를 제공할 수 없습니다.",
+      "collapseAll": "모두 축소"
+    },
+    "vs/workbench/browser/parts/editor/editorCommands": {
+      "editorCommand.activeEditorMove.description": "활성 편집기를 탭 또는 그룹 단위로 이동",
+      "editorCommand.activeEditorMove.arg.name": "활성 편집기 이동 인수",
+      "editorCommand.activeEditorMove.arg.description": "인수 속성:\n* 'to': 이동할 위치를 지정하는 문자열 값입니다.\n* 'by': 이동할 단위를 지정하는 문자열 값입니다.(탭 단위 또는 그룹 단위).\n* 'value': 이동할 위치 수 또는 절대 위치를 지정하는 숫자 값입니다.",
+      "toggleInlineView": "인라인 뷰 설정/해제",
+      "compare": "비교"
+    },
     "vs/workbench/browser/parts/titlebar/menubarControl": {
       "mFile": "파일(&&F)",
       "mEdit": "편집(&&E)",
@@ -2162,15 +2186,9 @@
       "mDebug": "디버그(&&D)",
       "mTerminal": "터미널(&&T)",
       "mHelp": "도움말(&&H)",
-      "menubar.linuxTitlebarRevertNotification": "Linux의 기본 제목 표시줄이 기본 설정을 사용하도록 업데이트되었습니다. 원하는 경우 사용자 지정 설정으로 돌아갈 수 있습니다. [온라인 설명서](https://go.microsoft.com/fwlink/?linkid=2074137)에서 자세한 내용을 확인할 수 있습니다.",
-      "goToSetting": "설정 열기",
       "menubar.customTitlebarAccessibilityNotification": "접근성 지원을 사용할 수 있습니다. 접근성이 가장 좋은 환경을 위해 사용자 지정 제목 표시줄 스타일을 사용하는 것이 좋습니다.",
-      "miMoveSidebarRight": "사이드바를 오른쪽으로 이동(&&M)",
-      "miMoveSidebarLeft": "사이드바를 왼쪽으로 이동(&&M)",
-      "miHideStatusbar": "상태 표시줄 숨기기(&&H)",
-      "miShowStatusbar": "상태 표시줄 표시(&&S)",
-      "miHideActivityBar": "작업 막대 숨기기(&&A)",
-      "miShowActivityBar": "작업 막대 표시(&&A)",
+      "goToSetting": "설정 열기",
+      "mPreferences": "기본 설정",
       "checkForUpdates": "업데이트 확인(&&U)...",
       "checkingForUpdates": "업데이트를 확인하는 중...",
       "download now": "지금 다운로드(&&O)",
@@ -2179,33 +2197,22 @@
       "installingUpdate": "업데이트를 설치하는 중...",
       "restartToUpdate": "다시 시작 및 업데이트"
     },
-    "vs/workbench/browser/parts/editor/editorCommands": {
-      "editorCommand.activeEditorMove.description": "활성 편집기를 탭 또는 그룹 단위로 이동",
-      "editorCommand.activeEditorMove.arg.name": "활성 편집기 이동 인수",
-      "editorCommand.activeEditorMove.arg.description": "인수 속성:\n* 'to': 이동할 위치를 지정하는 문자열 값입니다.\n* 'by': 이동할 단위를 지정하는 문자열 값입니다.(탭 단위 또는 그룹 단위).\n* 'value': 이동할 위치 수 또는 절대 위치를 지정하는 숫자 값입니다.",
-      "toggleInlineView": "인라인 뷰 설정/해제",
-      "compare": "비교"
-    },
     "vs/workbench/browser/parts/notifications/notificationsAlerts": {
       "alertErrorMessage": "오류: {0}",
       "alertWarningMessage": "경고: {0}",
       "alertInfoMessage": "정보: {0}"
     },
     "vs/workbench/browser/parts/notifications/notificationsStatus": {
+      "status.notifications": "알림",
       "hideNotifications": "알림 숨기기",
       "zeroNotifications": "알림 없음",
       "noNotifications": "새 알림 없음",
       "oneNotification": "1개의 새 알림",
-      "notifications": "{0}개의 새 알림"
+      "notifications": "{0}개의 새 알림",
+      "status.message": "Status Message"
     },
     "vs/workbench/api/node/extHostExtensionService": {
       "extensionTestError": "경로 {0}이(가) 유효한 확장 Test Runner를 가리키지 않습니다."
-    },
-    "vs/workbench/browser/parts/notifications/notificationsCommands": {
-      "notifications": "알림",
-      "showNotifications": "알림 표시",
-      "hideNotifications": "알림 숨기기",
-      "clearAllNotifications": "모든 알림 지우기"
     },
     "vs/workbench/browser/parts/notifications/notificationsCenter": {
       "notificationsEmpty": "새 알림 없음",
@@ -2213,14 +2220,27 @@
       "notificationsToolbar": "알림 센터 작업",
       "notificationsList": "알림 목록"
     },
+    "vs/workbench/browser/parts/notifications/notificationsCommands": {
+      "notifications": "알림",
+      "showNotifications": "알림 표시",
+      "hideNotifications": "알림 숨기기",
+      "clearAllNotifications": "모든 알림 지우기"
+    },
     "vs/workbench/browser/parts/notifications/notificationsToasts": {
       "notificationsToast": "알림"
+    },
+    "vs/workbench/browser/parts/editor/editorGroupView": {
+      "araLabelGroupActions": "편집기 그룹 작업",
+      "closeGroupAction": "닫기",
+      "emptyEditorGroup": "{0}(비어 있음)",
+      "editorOpenError": "'{0}'을(를) 열 수 없습니다. {1}."
     },
     "vs/workbench/browser/parts/editor/editor.contribution": {
       "textEditor": "텍스트 편집기",
       "textDiffEditor": "텍스트 Diff 편집기",
       "binaryDiffEditor": "이진 Diff 편집기",
       "sideBySideEditor": "병렬 편집기",
+      "status.imageZoom": "Image Zoom",
       "groupOnePicker": "활성 그룹의 편집기 표시",
       "allEditorsPicker": "열려 있는 모든 편집기 표시",
       "view": "보기",
@@ -2283,12 +2303,6 @@
       "miFocusAboveGroup": "위 그룹(&&A)",
       "miFocusBelowGroup": "아래 그룹(&&B)",
       "miSwitchGroup": "그룹 전환(&&G)"
-    },
-    "vs/workbench/browser/parts/editor/editorGroupView": {
-      "araLabelGroupActions": "편집기 그룹 작업",
-      "closeGroupAction": "닫기",
-      "emptyEditorGroup": "{0}(비어 있음)",
-      "editorOpenError": "'{0}'을(를) 열 수 없습니다. {1}."
     },
     "vs/workbench/browser/parts/editor/textDiffEditor": {
       "textDiffEditor": "텍스트 Diff 편집기",
@@ -2413,6 +2427,11 @@
       "newEditorAbove": "위쪽의 새 편집기 그룹",
       "newEditorBelow": "아래쪽의 새 편집기 그룹"
     },
+    "vs/workbench/api/node/extHost.api.impl": {
+      "remote extension host Log": "Remote Extension Host",
+      "extension host Log": "확장 호스트",
+      "extensionLabel": "{0}(확장)"
+    },
     "vs/workbench/browser/parts/notifications/notificationsViewer": {
       "notificationActions": "알림 작업",
       "notificationSource": "소스: {0}"
@@ -2424,24 +2443,36 @@
       "multiSelection": "{0} 선택 항목",
       "endOfLineLineFeed": "LF",
       "endOfLineCarriageReturnLineFeed": "CRLF",
-      "tabFocusModeEnabled": "Tab으로 포커스 이동",
-      "screenReaderDetected": "화면 읽기 프로그램이 최적화됨",
-      "screenReaderDetectedExtra": "화면 읽기 프로그램을 사용하지 않는 경우 `editor.accessibilitySupport` 설정을 \"off\"로 변경하세요.",
-      "disableTabMode": "접근성 모드 사용 안 함",
-      "gotoLine": "줄 이동",
-      "selectIndentation": "들여쓰기 선택",
-      "selectEncoding": "인코딩 선택",
-      "selectEOL": "줄 시퀀스의 끝 선택",
-      "selectLanguageMode": "언어 모드 선택",
-      "fileInfo": "파일 정보",
       "screenReaderDetectedExplanation.question": "VS Code를 작동하기 위해 화면 읽기 프로그램을 사용하시나요? (화면 읽기 프로그램을 사용하면 접기, 미니맵 또는 자동 줄 바꿈 같은 특정 기능을 사용할 수 없습니다.)",
       "screenReaderDetectedExplanation.answerYes": "예",
       "screenReaderDetectedExplanation.answerNo": "아니요",
+      "noEditor": "현재 활성 텍스트 편집기 없음",
+      "noWritableCodeEditor": "활성 코드 편집기는 읽기 전용입니다.",
+      "indentConvert": "파일 변환",
+      "indentView": "보기 변경",
+      "pickAction": "작업 선택",
+      "tabFocusModeEnabled": "Tab으로 포커스 이동",
+      "disableTabMode": "접근성 모드 사용 안 함",
+      "status.editor.tabFocusMode": "Accessibility Mode",
+      "screenReaderDetected": "화면 읽기 프로그램이 최적화됨",
+      "screenReaderDetectedExtra": "화면 읽기 프로그램을 사용하지 않는 경우 `editor.accessibilitySupport` 설정을 \"off\"로 변경하세요.",
+      "status.editor.screenReaderMode": "Screen Reader Mode",
+      "gotoLine": "줄 이동",
+      "status.editor.selection": "Editor Selection",
+      "selectIndentation": "들여쓰기 선택",
+      "status.editor.indentation": "Editor Indentation",
+      "selectEncoding": "인코딩 선택",
+      "status.editor.encoding": "Editor Encoding",
+      "selectEOL": "줄 시퀀스의 끝 선택",
+      "status.editor.eol": "Editor End of Line",
+      "selectLanguageMode": "언어 모드 선택",
+      "status.editor.mode": "Editor Language",
+      "fileInfo": "파일 정보",
+      "status.editor.info": "파일 정보",
       "spacesSize": "공백: {0}",
       "tabSize": "Tab 크기: {0}",
       "showLanguageExtensions": "'{0}'의 마켓플레이스 확장 검색...",
       "changeMode": "언어 모드 변경",
-      "noEditor": "현재 활성 텍스트 편집기 없음",
       "languageDescription": "({0}) - 구성된 언어",
       "languageDescriptionConfigured": "({0})",
       "languagesPicks": "언어(식별자)",
@@ -2451,11 +2482,6 @@
       "pickLanguage": "언어 모드 선택",
       "currentAssociation": "현재 연결",
       "pickLanguageToConfigure": "'{0}'과(와) 연결할 언어 모드 선택",
-      "changeIndentation": "ID 변경",
-      "noWritableCodeEditor": "활성 코드 편집기는 읽기 전용입니다.",
-      "indentConvert": "파일 변환",
-      "indentView": "보기 변경",
-      "pickAction": "작업 선택",
       "changeEndOfLine": "줄 시퀀스의 끝 변경",
       "pickEndOfLine": "줄 시퀀스의 끝 선택",
       "changeEncoding": "파일 인코딩 변경",
@@ -2472,6 +2498,9 @@
     "vs/workbench/browser/parts/editor/titleControl": {
       "araLabelEditorActions": "편집기 작업",
       "draggedEditorGroup": "{0}(+{1})"
+    },
+    "vs/workbench/api/common/extHostStatusBar": {
+      "status.extensionMessage": "Extension Status"
     },
     "vs/workbench/api/common/extHostProgress": {
       "extensionSource": "{0}(확장)"
@@ -2505,7 +2534,7 @@
     "vs/workbench/browser/parts/editor/breadcrumbsControl": {
       "cmd.toggle": "이동 경로 설정/해제",
       "cmd.category": "보기",
-      "miToggleBreadcrumbs": "이동 경로 토글(&&B)",
+      "miShowBreadcrumbs": "Show &&Breadcrumbs",
       "cmd.focus": "이동 경로에 포커스"
     },
     "vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution": {
@@ -2536,14 +2565,19 @@
       "cantUninstall": "셸 명령 '{0}'을(를) 제거할 수 없습니다.",
       "shellCommand": "셸 명령"
     },
+    "vs/workbench/contrib/codeEditor/browser/inspectKeybindings": {
+      "workbench.action.inspectKeyMap": "개발자: 키 매핑 검사"
+    },
     "vs/workbench/contrib/codeEditor/browser/largeFileOptimizations": {
       "largeFile": "{0}: 메모리 사용을 줄이고 멈춤 또는 작동 중단을 방지하기 위해 이 큰 파일에 대해 토큰화, 줄 바꿈 및 접기를 해제했습니다.",
       "dontShowAgain": "다시 표시 안 함",
       "removeOptimizations": "강제로 기능을 사용하도록 설정",
       "reopenFilePrompt": "이 설정을 적용하려면 파일을 다시 여세요."
     },
-    "vs/workbench/contrib/codeEditor/browser/inspectKeybindings": {
-      "workbench.action.inspectKeyMap": "개발자: 키 매핑 검사"
+    "vs/workbench/contrib/codeEditor/browser/toggleMinimap": {
+      "toggleMinimap": "Toggle Minimap",
+      "view": "보기",
+      "miShowMinimap": "Show &&Minimap"
     },
     "vs/workbench/contrib/codeEditor/browser/toggleMultiCursorModifier": {
       "toggleLocation": "다중 커서 한정자 설정/해제",
@@ -2551,17 +2585,15 @@
       "miMultiCursorCmd": "다중 커서에 Cmd+Click 사용 ",
       "miMultiCursorCtrl": "다중 커서에 Ctrl+클릭 사용"
     },
-    "vs/workbench/contrib/codeEditor/browser/toggleMinimap": {
-      "toggleMinimap": "보기: 미니맵 토글",
-      "miToggleMinimap": "미니맵 토글(&&M)"
-    },
     "vs/workbench/contrib/codeEditor/browser/toggleRenderControlCharacter": {
-      "toggleRenderControlCharacters": "보기: 제어 문자 토글",
-      "miToggleRenderControlCharacters": "제어 문자 설정/해제(&&C)"
+      "toggleRenderControlCharacters": "제어 문자 설정/해제",
+      "view": "보기",
+      "miToggleRenderControlCharacters": "Render &&Control Characters"
     },
     "vs/workbench/contrib/codeEditor/browser/toggleRenderWhitespace": {
-      "toggleRenderWhitespace": "보기: 렌더링 공백 토글",
-      "miToggleRenderWhitespace": "공백 설정/해제 및 렌더링(&&R)"
+      "toggleRenderWhitespace": "공백 렌더링 설정/해제",
+      "view": "보기",
+      "miToggleRenderWhitespace": "&&Render Whitespace"
     },
     "vs/workbench/contrib/codeEditor/browser/toggleWordWrap": {
       "toggle.wordwrap": "보기: 자동 줄 바꿈 설정/해제",
@@ -2795,6 +2827,9 @@
       "cancel": "취소",
       "addConfiguration": "구성 추가..."
     },
+    "vs/workbench/contrib/debug/common/debug": {
+      "internalConsoleOptions": "내부 디버그 콘솔을 열어야 할 경우를 제어합니다."
+    },
     "vs/workbench/contrib/debug/browser/repl": {
       "replAriaLabel": "읽기 평가 인쇄 루프 패널",
       "copy": "복사",
@@ -2807,13 +2842,11 @@
       "replValueOutputAriaLabel": "{0}, 읽기 평가 인쇄 루프, 디버그",
       "replRawObjectAriaLabel": "REPL 변수 {0}에 {1} 값이 있습니다. 읽기 평가 인쇄 루프, 디버그",
       "actions.repl.acceptInput": "REPL 입력 적용",
+      "repl.action.filter": "REPL Focus Content to Filter",
       "actions.repl.copyAll": "디버그: 모두 콘솔 복사",
       "selectRepl": "디버그 콘솔 선택",
       "clearRepl": "콘솔 지우기",
       "debugConsoleCleared": "디버그 콘솔을 지웠습니다."
-    },
-    "vs/workbench/contrib/debug/common/debug": {
-      "internalConsoleOptions": "내부 디버그 콘솔을 열어야 할 경우를 제어합니다."
     },
     "vs/workbench/contrib/debug/browser/debugActions": {
       "openLaunchJson": "{0} 열기",
@@ -2835,7 +2868,7 @@
       "focusSession": "세션에 포커스 설정",
       "copyValue": "값 복사"
     },
-    "vs/workbench/contrib/debug/browser/debugActionItems": {
+    "vs/workbench/contrib/debug/browser/debugActionViewItems": {
       "debugLaunchConfigurations": "디버그 시작 구성",
       "noConfigurations": "구성 없음",
       "addConfigTo": "구성 추가 ({0})...",
@@ -2852,12 +2885,29 @@
       "statusBarDebuggingBorder": "프로그램 디버깅 중 사이드바 및 편집기와 구분하는 상태 표시줄 테두리 색입니다. 상태 표시줄은 창의 맨 아래에 표시됩니다."
     },
     "vs/workbench/contrib/debug/browser/debugStatus": {
+      "status.debug": "디버그",
       "selectAndStartDebug": "디버그 구성 선택 및 시작"
     },
     "vs/workbench/contrib/debug/common/debugContentProvider": {
       "unable": "디버그 세션이 없는 리소스를 확인할 수 없음",
       "canNotResolveSourceWithError": "'{0}' 소스를 로드할 수 없습니다. {1}.",
       "canNotResolveSource": "'{0}' 소스를 로드할 수 없습니다."
+    },
+    "vs/workbench/contrib/debug/browser/exceptionWidget": {
+      "debugExceptionWidgetBorder": "예외 위젯 테두리 색입니다.",
+      "debugExceptionWidgetBackground": "예외 위젯 배경색입니다.",
+      "exceptionThrownWithId": "예외가 발생했습니다. {0}",
+      "exceptionThrown": "예외가 발생했습니다."
+    },
+    "vs/workbench/contrib/debug/browser/watchExpressionsView": {
+      "watchExpressionsSection": "조사식 섹션",
+      "watchAriaTreeLabel": "조사식 디버그",
+      "editWatchExpression": "식 편집",
+      "removeWatchExpression": "식 제거",
+      "watchExpressionInputAriaLabel": "조사식 입력",
+      "watchExpressionPlaceholder": "조사할 식",
+      "watchExpressionAriaLabel": "{0} 값 {1}, 조사식, 디버그",
+      "watchVariableAriaLabel": "{0} 값 {1}, 조사식, 디버그"
     },
     "vs/workbench/contrib/debug/browser/debugEditorActions": {
       "toggleBreakpointAction": "디버그: 중단점 설정/해제",
@@ -2871,16 +2921,6 @@
       "goToPreviousBreakpoint": "디버그 : 이전 중단점으로 이동",
       "debug": "디버그"
     },
-    "vs/workbench/contrib/debug/browser/watchExpressionsView": {
-      "watchExpressionsSection": "조사식 섹션",
-      "watchAriaTreeLabel": "조사식 디버그",
-      "editWatchExpression": "식 편집",
-      "removeWatchExpression": "식 제거",
-      "watchExpressionInputAriaLabel": "조사식 입력",
-      "watchExpressionPlaceholder": "조사할 식",
-      "watchExpressionAriaLabel": "{0} 값 {1}, 조사식, 디버그",
-      "watchVariableAriaLabel": "{0} 값 {1}, 조사식, 디버그"
-    },
     "vs/workbench/contrib/debug/browser/variablesView": {
       "variablesSection": "변수 섹션",
       "variablesAriaTreeLabel": "변수 디버그",
@@ -2891,11 +2931,15 @@
       "variableScopeAriaLabel": "{0} 범위, 변수, 디버그",
       "variableAriaLabel": "{0} 값 {1}, 변수, 디버그"
     },
-    "vs/workbench/contrib/debug/browser/exceptionWidget": {
-      "debugExceptionWidgetBorder": "예외 위젯 테두리 색입니다.",
-      "debugExceptionWidgetBackground": "예외 위젯 배경색입니다.",
-      "exceptionThrownWithId": "예외가 발생했습니다. {0}",
-      "exceptionThrown": "예외가 발생했습니다."
+    "vs/workbench/contrib/debug/browser/debugHover": {
+      "treeAriaLabel": "가리키기 디버그",
+      "variableAriaLabel": "{0} 값 {1}, 변수, 디버그"
+    },
+    "vs/workbench/contrib/debug/browser/debugCommands": {
+      "noFolderDebugConfig": "고급 디버그 구성을 수행하려면 먼저 폴더를 여세요.",
+      "inlineBreakpoint": "인라인 중단점",
+      "debug": "디버그",
+      "addInlineBreakpoint": "인라인 중단점 추가"
     },
     "vs/workbench/contrib/debug/browser/debugEditorModelManager": {
       "topStackFrameLineHighlight": "상위 스택 프레임 위치에 있는 줄 강조 표시의 배경색입니다.",
@@ -2910,19 +2954,14 @@
       "loadedScriptsFolderAriaLabel": "폴더 {0}, 로드된 스크립트, 디버그",
       "loadedScriptsSourceAriaLabel": "{0}, 로드된 스크립트, 디버그"
     },
-    "vs/workbench/contrib/debug/browser/debugCommands": {
-      "noFolderDebugConfig": "고급 디버그 구성을 수행하려면 먼저 폴더를 여세요.",
-      "inlineBreakpoint": "인라인 중단점",
-      "debug": "디버그",
-      "addInlineBreakpoint": "인라인 중단점 추가"
-    },
-    "vs/workbench/contrib/debug/browser/debugHover": {
-      "treeAriaLabel": "가리키기 디버그",
-      "variableAriaLabel": "{0} 값 {1}, 변수, 디버그"
-    },
-    "vs/workbench/contrib/debug/browser/linkDetector": {
-      "fileLinkMac": "클릭하여 이동(측면에서 열려면 Cmd 키를 누르고 클릭)",
-      "fileLink": "클릭하여 이동(측면에서 열려면 Ctrl 키를 누르고 클릭)"
+    "vs/workbench/contrib/debug/browser/breakpointWidget": {
+      "breakpointWidgetLogMessagePlaceholder": "중단점이 적중될 때 기록할 메시지입니다. {} 내의 식은 보간됩니다. 수락하려면 'Enter' 키를 누르고  취소하려면 'esc' 키를 누르세요.",
+      "breakpointWidgetHitCountPlaceholder": "적중 횟수 조건이 충족될 경우 중단합니다. 적용하려면 'Enter' 키를 누르고 취소하려면 'Esc' 키를 누릅니다.",
+      "breakpointWidgetExpressionPlaceholder": "식이 true로 계산될 경우 중단합니다. 적용하려면 'Enter' 키를 누르고 취소하려면 'Esc' 키를 누릅니다.",
+      "expression": "EXPRESSION",
+      "hitCount": "적중 횟수",
+      "logMessage": "로그 메시지",
+      "breakpointType": "중단점 형식"
     },
     "vs/workbench/contrib/debug/browser/breakpointsView": {
       "breakpointsSection": "중단점 섹션",
@@ -2961,14 +3000,9 @@
       "stackFrameAriaLabel": "스택 프레임 {0} 줄 {1} {2}, 호출 스택, 디버그",
       "sessionLabel": "디버그 세션 {0}"
     },
-    "vs/workbench/contrib/debug/browser/breakpointWidget": {
-      "breakpointWidgetLogMessagePlaceholder": "중단점이 적중될 때 기록할 메시지입니다. {} 내의 식은 보간됩니다. 수락하려면 'Enter' 키를 누르고  취소하려면 'esc' 키를 누르세요.",
-      "breakpointWidgetHitCountPlaceholder": "적중 횟수 조건이 충족될 경우 중단합니다. 적용하려면 'Enter' 키를 누르고 취소하려면 'Esc' 키를 누릅니다.",
-      "breakpointWidgetExpressionPlaceholder": "식이 true로 계산될 경우 중단합니다. 적용하려면 'Enter' 키를 누르고 취소하려면 'Esc' 키를 누릅니다.",
-      "expression": "EXPRESSION",
-      "hitCount": "적중 횟수",
-      "logMessage": "로그 메시지",
-      "breakpointType": "중단점 형식"
+    "vs/workbench/contrib/debug/browser/linkDetector": {
+      "fileLinkMac": "클릭하여 이동(측면에서 열려면 Cmd 키를 누르고 클릭)",
+      "fileLink": "클릭하여 이동(측면에서 열려면 Ctrl 키를 누르고 클릭)"
     },
     "vs/workbench/contrib/debug/common/debugSource": {
       "unknownSource": "알 수 없는 소스"
@@ -2985,7 +3019,7 @@
       "debugRequesMissing": "선택한 디버그 구성에 특성 '{0}'이(가) 없습니다.",
       "debugTypeNotSupported": "구성된 디버그 형식 '{0}'은(는) 지원되지 않습니다.",
       "debugTypeMissing": "선택한 시작 구성에 대한 'type' 속성이 없습니다.",
-      "noFolderWorkspaceDebugError": "활성 파일은 디버그할 수 없습니다. 이 파일이 디스크에 저장되어 있고 해당 파일 형식에 대한 디버그 확장이 설치되어 있는지 확인하세요.",
+      "noFolderWorkspaceDebugError": "The active file can not be debugged. Make sure it is saved and that you have a debug extension installed for that file type.",
       "debugAdapterCrash": "디버그 어댑터 프로세스가 예기치 않게 종료되었습니다({0}).",
       "cancel": "취소",
       "debugAnyway": "디버그",
@@ -2998,7 +3032,7 @@
       "DebugTaskNotFound": "지정된 작업을 찾을 수 없습니다.",
       "taskNotTrackedWithTaskId": "지정된 작업을 추적할 수 없습니다.",
       "taskNotTracked": "작업 '{0}' 을(를) 추적할 수 없습니다.",
-      "debuggingPaused": "디버그가 일시 중지됨 {0}, {1} {2}",
+      "debuggingPaused": "Debugging paused {0}, {1} {2} {3}",
       "breakpointAdded": "파일 {1}, 줄 {0}에 중단점이 추가되었습니다.",
       "breakpointRemoved": "파일 {1}, 줄 {0}에서 중단점이 제거되었습니다."
     },
@@ -3024,6 +3058,23 @@
     "vs/workbench/contrib/debug/electron-browser/terminalSupport": {
       "debug.terminal.title": "디버기"
     },
+    "vs/workbench/contrib/debug/node/debugger": {
+      "cannot.find.da": "'{0}' 형식의 디버그 어댑터를 찾을 수 없습니다.",
+      "launch.config.comment1": "IntelliSense를 사용하여 가능한 특성에 대해 알아보세요.",
+      "launch.config.comment2": "기존 특성에 대한 설명을 보려면 가리킵니다.",
+      "launch.config.comment3": "자세한 내용을 보려면 {0}을(를) 방문하세요.",
+      "debugType": "구성의 형식입니다.",
+      "debugTypeNotRecognised": "디버그 형식이 인식되지 않습니다. 해당하는 디버그 확장을 설치하고 사용하도록 설정했는지 확인하세요.",
+      "node2NotSupported": "\"node2\"는 더 이상 지원되지 않습니다. 대신 \"node\"를 사용하고 \"protocol\" 특성을 \"inspector\"로 설정하세요.",
+      "debugName": "구성 이름이며, 구성 시작 드롭다운 메뉴에 표시됩니다.",
+      "debugRequest": "구성 형식을 요청합니다. \"시작\" 또는 \"연결\"일 수 있습니다.",
+      "debugServer": "디버그 확장 배포 전용입니다. 포트가 지정된 경우 VS Code에서는 서버 모드로 실행하는 디버그 어댑터에 연결을 시도합니다.",
+      "debugPrelaunchTask": "디버그 세션이 시작되기 이전에 실행할 작업입니다.",
+      "debugPostDebugTask": "디버그 세션 종료 후 실행할 작업입니다.",
+      "debugWindowsConfiguration": "Windows 특정 시작 구성 특성입니다.",
+      "debugOSXConfiguration": "OS X 특정 시작 구성 특성입니다.",
+      "debugLinuxConfiguration": "Linux 특정 시작 구성 특성입니다."
+    },
     "vs/workbench/contrib/debug/common/replModel": {
       "consoleCleared": "콘솔을 지웠습니다.",
       "snapshotObj": "이 개체에 대한 기본 값만 표시됩니다."
@@ -3036,7 +3087,7 @@
       "vscode.extension.contributes.debuggers.args": "어댑터에 전달할 선택적 인수입니다.",
       "vscode.extension.contributes.debuggers.runtime": "프로그램 특성이 실행 파일이 아니지만 런타임이 필요한 경우의 선택적 런타임입니다.",
       "vscode.extension.contributes.debuggers.runtimeArgs": "선택적 런타임 인수입니다.",
-      "vscode.extension.contributes.debuggers.variables": "`launch.json`의 대화형 변수(예: ${action.pickProcess})에서 명령으로의 매핑입니다.",
+      "vscode.extension.contributes.debuggers.variables": "Mapping from interactive variables (e.g. ${action.pickProcess}) in `launch.json` to a command.",
       "vscode.extension.contributes.debuggers.initialConfigurations": "초기 'launch.json'을 생성하기 위한 구성입니다.",
       "vscode.extension.contributes.debuggers.languages": "디버그 확장이 \"기본 디버거\"로 간주될 수 있는 언어 목록입니다.",
       "vscode.extension.contributes.debuggers.adapterExecutableCommand": "지정하는 경우 VS Code에서 이 명령을 호출하여 디버그 어댑터의 실행 파일 경로 및 전달할 인수를 확인합니다.",
@@ -3058,25 +3109,6 @@
       "useUniqueNames": "고유한 구성 이름을 사용하세요.",
       "app.launch.json.compound.folder": "복합형 항목이 있는 폴더의 이름입니다.",
       "app.launch.json.compounds.configurations": "이 복합의 일부로 시작되는 구성의 이름입니다."
-    },
-    "vs/workbench/contrib/debug/node/debugger": {
-      "cannot.find.da": "'{0}' 형식의 디버그 어댑터를 찾을 수 없습니다.",
-      "cannot.create.da.with.err": "디버그 어댑터({0})를 만들 수 없습니다.",
-      "cannot.create.da": "디버그 어댑터를 만들 수 없습니다.",
-      "launch.config.comment1": "IntelliSense를 사용하여 가능한 특성에 대해 알아보세요.",
-      "launch.config.comment2": "기존 특성에 대한 설명을 보려면 가리킵니다.",
-      "launch.config.comment3": "자세한 내용을 보려면 {0}을(를) 방문하세요.",
-      "debugType": "구성의 형식입니다.",
-      "debugTypeNotRecognised": "디버그 형식이 인식되지 않습니다. 해당하는 디버그 확장을 설치하고 사용하도록 설정했는지 확인하세요.",
-      "node2NotSupported": "\"node2\"는 더 이상 지원되지 않습니다. 대신 \"node\"를 사용하고 \"protocol\" 특성을 \"inspector\"로 설정하세요.",
-      "debugName": "구성 이름이며, 구성 시작 드롭다운 메뉴에 표시됩니다.",
-      "debugRequest": "구성 형식을 요청합니다. \"시작\" 또는 \"연결\"일 수 있습니다.",
-      "debugServer": "디버그 확장 배포 전용입니다. 포트가 지정된 경우 VS Code에서는 서버 모드로 실행하는 디버그 어댑터에 연결을 시도합니다.",
-      "debugPrelaunchTask": "디버그 세션이 시작되기 이전에 실행할 작업입니다.",
-      "debugPostDebugTask": "디버그 세션 종료 후 실행할 작업입니다.",
-      "debugWindowsConfiguration": "Windows 특정 시작 구성 특성입니다.",
-      "debugOSXConfiguration": "OS X 특정 시작 구성 특성입니다.",
-      "debugLinuxConfiguration": "Linux 특정 시작 구성 특성입니다."
     },
     "vs/workbench/contrib/debug/electron-browser/rawDebugSession": {
       "moreInfo": "추가 정보"
@@ -3125,7 +3157,12 @@
       "extensionsCloseExtensionDetailsOnViewChange": "사용하도록 설정하는 경우 확장 뷰에서 나가면 확장 정보가 포함된 편집기가 자동으로 닫힙니다.",
       "miOpenKeymapExtensions": "키맵(&&K)",
       "miPreferencesExtensions": "확장(&&E)",
-      "miViewExtensions": "확장(&&X)"
+      "miViewExtensions": "확장(&&X)",
+      "workbench.extensions.uninstallExtension.description": "Uninstall the given extension",
+      "workbench.extensions.uninstallExtension.arg.name": "Id of the extension to uninstall",
+      "id required": "Extension id required.",
+      "notInstalled": "Extension '{0}' is not installed. Make sure you use the full extension ID, including the publisher, e.g.: ms-vscode.csharp.",
+      "showExtensions": "확장"
     },
     "vs/workbench/contrib/extensions/electron-browser/extensionsViewlet": {
       "marketPlace": "마켓플레이스",
@@ -3152,24 +3189,27 @@
       "malicious warning": "문제가 있다고 보고된 '{0}'을(를) 제거했습니다.",
       "reloadNow": "지금 다시 로드"
     },
+    "vs/workbench/contrib/extensions/electron-browser/extensionsActivationProgress": {
+      "activation": "확장을 활성화하는 중..."
+    },
+    "vs/workbench/contrib/extensions/electron-browser/runtimeExtensionsInput": {},
     "vs/workbench/contrib/extensions/common/extensionsInput": {},
+    "vs/workbench/contrib/extensions/electron-browser/extensionsDependencyChecker": {},
     "vs/workbench/contrib/extensions/common/extensionsFileTemplate": {
       "app.extensions.json.title": "확장",
       "app.extensions.json.recommendations": "이 작업 영역의 사용자에게 추천해야 하는 확장의 목록입니다. 확장의 식별자는 항상 '${publisher}.${name}'입니다. 예: 'vscode.csharp'",
       "app.extension.identifier.errorMessage": "필요한 형식은 '${publisher}.${name}'입니다. 예: 'vscode.csharp'",
       "app.extensions.json.unwantedRecommendations": "이 작업 영역의 사용자에게 추천하지 않아야 하는 VS Code에서 권장되는 확장 목록입니다. 확장의 식별자는 항상 '${publisher}.${name}'입니다. 예: 'vscode.csharp'"
     },
-    "vs/workbench/contrib/extensions/electron-browser/runtimeExtensionsInput": {},
-    "vs/workbench/contrib/extensions/electron-browser/extensionsDependencyChecker": {},
-    "vs/workbench/contrib/extensions/electron-browser/extensionsActivationProgress": {
-      "activation": "확장을 활성화하는 중..."
-    },
     "vs/workbench/contrib/extensions/electron-browser/extensionProfileService": {
+      "profilingExtensionHost": "$(sync~spin) Profiling Extension Host",
+      "selectAndStartDebug": "프로파일링을 중지하려면 클릭하세요.",
+      "profilingExtensionHostTime": "$(sync~spin) Profiling Extension Host ({0} sec)",
+      "status.profiler": "Extension Profiler",
       "restart1": "확장 프로파일링",
       "restart2": "확장을 프로파일링하려면 다시 시작해야 합니다. 지금 '{0}'을(를) 다시 시작하시겠습니까?",
       "restart3": "다시 시작",
-      "cancel": "취소",
-      "selectAndStartDebug": "프로파일링을 중지하려면 클릭하세요."
+      "cancel": "취소"
     },
     "vs/workbench/contrib/extensions/common/extensionsUtils": {
       "disableOtherKeymapsConfirmation": "키 바인딩 간 충돌을 피하기 위해 다른 키 맵({0})을 사용하지 않도록 설정할까요?",
@@ -3312,6 +3352,7 @@
     "vs/workbench/contrib/extensions/electron-browser/extensionsViews": {
       "extensions": "확장",
       "galleryError": "지금은 확장 Marketplace에 연결할 수 없습니다. 나중에 다시 시도하세요.",
+      "error": "Error while loading extensions. {0}",
       "no extensions found": "확장을 찾을 수 없습니다.",
       "suggestProxyError": "마켓플레이스에서 'ECONNREFUSED'를 반환했습니다. 'http.proxy' 설정을 확인하세요."
     },
@@ -3376,7 +3417,6 @@
       "enableAction": "사용",
       "disableAction": "사용 안 함",
       "checkForUpdates": "확장 업데이트 확인",
-      "noUpdatesAvailable": "모든 확장이 최신입니다.",
       "singleUpdateAvailable": "확장 업데이트를 사용할 수 있습니다.",
       "updatesAvailable": "{0}개의 확장 업데이트를 사용할 수 있습니다.",
       "singleDisabledUpdateAvailable": "사용하지 않도록 설정한 확장에 대한 업데이트를 사용할 수 있습니다.",
@@ -3389,6 +3429,7 @@
       "reloadAction": "다시 로드",
       "reloadRequired": "다시 로드 필요",
       "postUninstallTooltip": "Visual Studio Code를 다시 로드하여 이 확장의 제거를 완료하세요.",
+      "postUpdateTooltip": "업데이트된 확장을 사용하도록 설정하려면 Visual Studio Code를 다시 로드하세요.",
       "postEnableTooltip": "Visual Studio Code를 다시 로드하여 이 확장의 설정을 완료하세요.",
       "postDisableTooltip": "Visual Studio Code를 다시 로드하여 이 확장의 해제를 완료하세요.",
       "color theme": "색 테마 설정",
@@ -3481,14 +3522,10 @@
       "press.any.key": "계속하려면 아무 키나 누르세요.",
       "linux.term.failed": "'{0}'에서 실패했습니다(종료 코드: {1})."
     },
-    "vs/workbench/contrib/feedback/electron-browser/feedback.contribution": {
-      "workbenchConfigurationTitle": "워크벤치",
-      "feedbackVisibility": "워크벤치의 아래쪽에 있는 상태 표시줄에 Twitter 피드백(스마일 기호)의 표시 여부를 제어합니다."
+    "vs/workbench/contrib/feedback/browser/feedback.contribution": {
+      "status.feedback": "Tweet 피드백"
     },
-    "vs/workbench/contrib/feedback/electron-browser/feedbackStatusbarItem": {
-      "hide": "숨기기"
-    },
-    "vs/workbench/contrib/feedback/electron-browser/feedback": {
+    "vs/workbench/contrib/feedback/browser/feedback": {
       "sendFeedback": "Tweet 피드백",
       "label.sendASmile": "피드백을 트윗하세요.",
       "close": "닫기",
@@ -3545,6 +3582,7 @@
       "hotExit": "저장하지 않은 파일을 세션 간에 기억하여, 편집기를 종료할 때 저장할지 묻는 메시지를 건너뛸지 여부를 제어합니다.",
       "defaultLanguage": "새 파일에 할당되는 기본 언어 모드입니다.",
       "maxMemoryForLargeFilesMB": "큰 파일을 열려고 할 때 다시 시작한 후 VS Code에 사용 가능한 메모리를 제어합니다. 명령줄에 '--max-memory=NEWSIZE'를 지정하는 것과 결과가 같습니다. ",
+      "files.simpleDialog.enable": "Enables the simple file dialog. The simple file dialog replaces the system file dialog when enabled.",
       "editorConfigurationTitle": "편집기",
       "formatOnSave": "파일 저장 시 서식을 지정합니다. 포맷터를 사용할 수 있어야 하며, 파일이 지연 후에 자동으로 저장되지 않아야 하고, 편집기가 종료되지 않아야 합니다.",
       "formatOnSaveTimeout": "파일 저장 시 실행되는 서식 지정이 취소되기 전까의 제한 시간(밀리초)입니다.",
@@ -3569,8 +3607,8 @@
       "copyPath": "경로 복사",
       "copyRelativePath": "상대 경로 복사",
       "revealInSideBar": "세로 막대에 표시",
-      "acceptLocalChanges": "변경을 적용하고 디스크 콘텐츠 덮어쓰기",
-      "revertLocalChanges": "변경 내용을 취소하고 디스크의 콘텐츠로 되돌리기",
+      "acceptLocalChanges": "Use your changes and overwrite file contents",
+      "revertLocalChanges": "Discard your changes and revert to file contents",
       "copyPathOfActive": "활성 파일의 경로 복사",
       "copyRelativePathOfActive": "활성 파일의 상대 경로 복사",
       "saveAllInGroup": "그룹의 모든 항목 저장",
@@ -3630,12 +3668,12 @@
       "fileEditorAriaLabel": "텍스트 파일 편집기입니다."
     },
     "vs/workbench/contrib/files/common/editors/fileEditorInput": {
-      "orphanedFile": "{0}(디스크에서 삭제됨)",
+      "orphanedFile": "{0} (deleted)",
       "readonlyFile": "{0}(읽기 전용)"
     },
     "vs/workbench/contrib/files/browser/saveErrorHandler": {
-      "userGuide": "편집기 도구 모음의 작업을 사용하여 변경 내용을 실행 취소하거나 디스크의 콘텐츠를 변경 내용으로 덮어쓰세요.",
-      "staleSaveError": "'{0}'을(를) 저장하지 못했습니다. 디스크의 내용이 최신 버전입니다. 버전을 디스크에 있는 버전과 비교하하세요.",
+      "userGuide": "Use the actions in the editor tool bar to either undo your changes or overwrite the content of the file with your changes.",
+      "staleSaveError": "Failed to save '{0}': The content of the file is newer. Please compare your version with the file contents.",
       "retry": "재시도",
       "discard": "폐기",
       "readonlySaveErrorAdmin": "'{0}'을(를) 저장하지 못함: 파일이 읽기 전용입니다. '관리자로 덮어쓰기'를 선택하여 관리자로 다시 시도하세요.",
@@ -3647,7 +3685,7 @@
       "learnMore": "자세한 정보",
       "dontShowAgain": "다시 표시 안 함",
       "compareChanges": "비교",
-      "saveConflictDiffLabel": "{0}(디스크에 있음) ↔ {1}({2}에 있음) - 저장 충돌 해결",
+      "saveConflictDiffLabel": "{0} (in file) ↔ {1} (in {2}) - Resolve save conflict",
       "overwriteElevated": "관리자로 덮어쓰기...",
       "overwriteElevatedSudo": "Sudo로 덮어쓰기...",
       "saveElevated": "관리자로 다시 시도...",
@@ -3716,7 +3754,6 @@
       "fileNameStartsWithSlashError": "파일 또는 폴더 이름은 슬래시로 시작할 수 없습니다.",
       "fileNameExistsError": "파일 또는 폴더 **{0}**이(가) 이 위치에 이미 있습니다. 다른 이름을 선택하세요.",
       "invalidFileNameError": "**{0}**(이)라는 이름은 파일 또는 폴더 이름으로 올바르지 않습니다. 다른 이름을 선택하세요.",
-      "filePathTooLongError": "**{0}**(이)라는 이름을 사용하면 경로가 너무 길어집니다. 짧은 이름을 선택하세요.",
       "compareWithClipboard": "활성 파일을 클립보드와 비교",
       "clipboardComparisonLabel": "클립보드 ↔ {0}",
       "retry": "재시도",
@@ -3733,7 +3770,7 @@
       "saveAll": "모두 저장",
       "removeFolderFromWorkspace": "작업 영역에서 폴더 삭제",
       "genericRevertError": "'{0}' 되돌리기 실패: {1}",
-      "modifiedLabel": "{0}(디스크) ↔ {1}",
+      "modifiedLabel": "{0} (in file) ↔ {1}",
       "openFileToReveal": "Open a file first to reveal",
       "openFileToCopy": "Open a file first to copy its path"
     },
@@ -3744,10 +3781,15 @@
     },
     "vs/workbench/contrib/files/browser/views/explorerViewer": {
       "fileInputAriaLabel": "파일 이름을 입력합니다. 확인하려면 Enter 키를 누르고, 취소하려면 Esc 키를 누릅니다.",
-      "dropFolders": "작업 영역에 폴더를 추가하시겠습니까?",
-      "dropFolder": "작업 영역에 폴더를 추가하시겠습니까?",
-      "addFolders": "폴더 추가(&&A)",
-      "addFolder": "폴더 추가(&&A)",
+      "copyFolders": "&&Copy Folders",
+      "copyFolder": "&&Copy Folder",
+      "cancel": "취소",
+      "copyfolders": "Are you sure to want to copy folders?",
+      "copyfolder": "Are you sure to want to copy '{0}'?",
+      "addFolders": "&&Add Folders to Workspace",
+      "addFolder": "&&Add Folder to Workspace",
+      "dropFolders": "Do you want to copy the folders or add the folders to the workspace?",
+      "dropFolder": "Do you want to copy '{0}' or add '{0}' as a folder to the workspace?",
       "confirmOverwrite": "이름이 같은 파일 또는 폴더가 대상 폴더에 이미 있습니다. 덮어쓸까요?",
       "irreversible": "이 작업은 취소할 수 없습니다.",
       "replaceButtonLabel": "바꾸기(&&R)",
@@ -3803,6 +3845,12 @@
       "vscode.extension.contributes.localizations.translations.id.pattern": "ID는 VS Code를 변환하거나 확장을 변환하는 경우 각각 `vscode` 또는 `publisherId.extensionName` 형식이어야 합니다.",
       "vscode.extension.contributes.localizations.translations.path": "언어에 대한 변환을 포함하는 파일의 상대 경로입니다."
     },
+    "vs/workbench/contrib/localizations/browser/minimalTranslations": {
+      "showLanguagePackExtensions": "Marketplace에서 언어 팩을 검색하여 표시 언어를 {0}(으)로 변경합니다.",
+      "searchMarketplace": "Marketplace 검색",
+      "installAndRestartMessage": "언어 팩을 설치하여 표시 언어를 {0}(으)로 변경합니다.",
+      "installAndRestart": "설치 및 다시 시작"
+    },
     "vs/workbench/contrib/localizations/browser/localizationsActions": {
       "configureLocale": "표시 언어 구성",
       "installAdditionalLanguages": "추가 언어 설치...",
@@ -3810,12 +3858,6 @@
       "relaunchDisplayLanguageMessage": "표시 언어의 변경 사항을 적용하려면 다시 시작해야 합니다.",
       "relaunchDisplayLanguageDetail": "{0}을(를) 다시 시작하고 표시 언어를 변경하려면 다시 시작 버튼을 누르세요.",
       "restart": "다시 시작(&&R)"
-    },
-    "vs/workbench/contrib/localizations/browser/minimalTranslations": {
-      "showLanguagePackExtensions": "Marketplace에서 언어 팩을 검색하여 표시 언어를 {0}(으)로 변경합니다.",
-      "searchMarketplace": "Marketplace 검색",
-      "installAndRestartMessage": "언어 팩을 설치하여 표시 언어를 {0}(으)로 변경합니다.",
-      "installAndRestart": "설치 및 다시 시작"
     },
     "vs/workbench/contrib/logs/common/logs.contribution": {
       "mainLog": "기본",
@@ -3845,7 +3887,13 @@
       "show multiline": "메시지를 여러 줄로 표시",
       "problems": "문제",
       "show singleline": "메시지를 한 줄로 표시",
-      "miMarker": "문제(&&P)"
+      "miMarker": "문제(&&P)",
+      "status.problems": "문제",
+      "totalErrors": "오류 {0}개",
+      "totalWarnings": "경고 {0}개",
+      "totalInfos": "정보 {0}개",
+      "noProblems": "No Problems",
+      "manyProblems": "10K+"
     },
     "vs/workbench/contrib/markers/browser/messages": {
       "viewCategory": "보기",
@@ -3862,7 +3910,7 @@
       "markers.panel.action.filter": "문제 필터링",
       "markers.panel.action.quickfix": "수정 사항 표시",
       "markers.panel.filter.ariaLabel": "문제 필터링",
-      "markers.panel.filter.placeholder": "필터입니다. 예: text, **/*.ts, !**/node_modules/**",
+      "markers.panel.filter.placeholder": "Filter. E.g.: text, **/*.ts, !**/node_modules/**",
       "markers.panel.filter.errors": "오류",
       "markers.panel.filter.warnings": "경고",
       "markers.panel.filter.infos": "정보",
@@ -3944,10 +3992,6 @@
       "outputPanelWithInputAriaLabel": "{0}, 출력 패널",
       "outputPanelAriaLabel": "출력 패널"
     },
-    "vs/workbench/contrib/output/browser/outputServices": {
-      "output": "{0} - 출력",
-      "channel": "'{0}'에 대한 출력 채널"
-    },
     "vs/workbench/contrib/output/browser/outputActions": {
       "toggleOutput": "출력 설정/해제",
       "clearOutput": "출력 내용 지우기",
@@ -3961,6 +4005,10 @@
       "selectlog": "로그 선택",
       "openLogFile": "로그 파일 열기...",
       "selectlogFile": "로그 파일 선택"
+    },
+    "vs/workbench/contrib/output/browser/outputServices": {
+      "output": "{0} - 출력",
+      "channel": "'{0}'에 대한 출력 채널"
     },
     "vs/workbench/contrib/performance/electron-browser/performance.contribution": {
       "show.cat": "개발자",
@@ -3983,7 +4031,7 @@
       "defineKeybinding.kbLayoutLocalAndUSMessage": "현재 자판 배열의 경우 **{0}**입니다(**{1}**: 미국 표준).",
       "defineKeybinding.kbLayoutLocalMessage": "현재 자판 배열의 경우 **{0}**입니다."
     },
-    "vs/workbench/contrib/preferences/electron-browser/preferences.contribution": {
+    "vs/workbench/contrib/preferences/browser/preferences.contribution": {
       "defaultPreferencesEditor": "기본 설정 편집기",
       "settingsEditor2": "설정 편집기 2",
       "keybindingsEditor": "키 바인딩 편집기",
@@ -3993,7 +4041,11 @@
       "showDefaultKeybindings": "기본 키 바인딩 표시",
       "showUserKeybindings": "사용자 키 바인딩 표시",
       "miOpenSettings": "설정(&&S)",
+      "settings": "설정",
+      "miOpenOnlineSettings": "&&Online Services Settings",
+      "onlineServices": "Online Services Settings",
       "miOpenKeymap": "바로 가기 키(&&K)",
+      "keyboardShortcuts": "바로 가기 키(&&K)",
       "openSettingsJson": "설정 열기(JSON)",
       "filterModifiedLabel": "수정된 설정 표시",
       "filterOnlineServicesLabel": "온라인 서비스에 대한 설정 표시"
@@ -4065,6 +4117,16 @@
       "workspaceSettings": "작업 영역",
       "folderSettings": "폴더"
     },
+    "vs/workbench/contrib/preferences/browser/settingsEditor2": {
+      "settingsContextMenuAriaShortcut": "더 많은 작업을 보려면 {0}을(를) 누르세요.",
+      "SearchSettings.AriaLabel": "설정 검색",
+      "noResults": "설정을 찾을 수 없음",
+      "clearSearchFilters": "필터 지우기",
+      "clearSearch": "검색 지우기",
+      "settingsNoSaveNeeded": "편집하는 변경 내용이 자동으로 저장됩니다.",
+      "oneResult": "1개 설정 찾음",
+      "moreThanOneResult": "{0}개 설정 찾음"
+    },
     "vs/workbench/contrib/preferences/browser/preferencesEditor": {
       "SearchSettingsWidget.AriaLabel": "설정 검색",
       "SearchSettingsWidget.Placeholder": "설정 검색",
@@ -4080,16 +4142,6 @@
       "defaultFolderSettings": "기본 폴더 설정",
       "defaultEditorReadonly": "기본값을 재정의하려면 오른쪽 편집기를 편집하세요.",
       "preferencesAriaLabel": "기본 설정. 읽기 전용 텍스트 편집기입니다."
-    },
-    "vs/workbench/contrib/preferences/electron-browser/settingsEditor2": {
-      "settingsContextMenuAriaShortcut": "더 많은 작업을 보려면 {0}을(를) 누르세요.",
-      "SearchSettings.AriaLabel": "설정 검색",
-      "noResults": "설정을 찾을 수 없음",
-      "clearSearchFilters": "필터 지우기",
-      "clearSearch": "검색 지우기",
-      "settingsNoSaveNeeded": "편집하는 변경 내용이 자동으로 저장됩니다.",
-      "oneResult": "1개 설정 찾음",
-      "moreThanOneResult": "{0}개 설정 찾음"
     },
     "vs/workbench/contrib/preferences/browser/settingsLayout": {
       "commonlyUsed": "일반적으로 사용되는 설정",
@@ -4196,7 +4248,8 @@
       "miCommandPalette": "명령 팔레트(&&C)...",
       "miOpenView": "뷰 열기(&&O)...",
       "miGotoSymbolInFile": "파일의 기호로 이동(&&S)...",
-      "miGotoLine": "줄/열로 이동(&&L)..."
+      "miGotoLine": "줄/열로 이동(&&L)...",
+      "commandPalette": "명령 팔레트..."
     },
     "vs/workbench/contrib/quickopen/browser/helpHandler": {
       "entryAriaLabel": "{0}, 선택기 도움말",
@@ -4275,6 +4328,29 @@
       "relaunchSettingDetail": "[다시 시작] 단추를 눌러 {0}을(를) 다시 시작하고 설정을 사용하도록 설정하세요.",
       "restart": "다시 시작(&&R)"
     },
+    "vs/workbench/contrib/remote/electron-browser/remote.contribution": {
+      "host.open": "$(sync~spin) Opening Remote...",
+      "miCloseRemote": "C&&lose Remote Connection",
+      "host.tooltip": "Editing on {0}",
+      "disconnectedFrom": "Disconnected from",
+      "host.tooltipDisconnected": "Disconnected from {0}",
+      "noHost.tooltip": "Open a remote window",
+      "status.host": "Remote Host",
+      "cat.title": "{0}: {1}",
+      "closeRemote.title": "Close Remote Connection",
+      "remoteExtensionLog": "Remote Server",
+      "connectionLost": "Connection Lost",
+      "reconnectionRunning": "Attempting to reconnect...",
+      "reconnectionPermanentFailure": "Cannot reconnect. Please reload the window.",
+      "reloadWindow": "창 다시 로드",
+      "cancel": "취소",
+      "reconnectionWaitOne": "Attempting to reconnect in {0} second...",
+      "reconnectionWaitMany": "Attempting to reconnect in {0} seconds...",
+      "remote": "원격",
+      "remote.extensionKind": "Override the kind of an extension. `ui` extensions are installed and run on the local machine while `workspace` extensions are run on the remote. By overriding an extension's default kind using this setting, you specify if that extension should be installed and enabled locally or remotely.",
+      "ui": "UI extension kind. In a remote window, such extensions are enabled only when available on the local machine.",
+      "workspace": "Workspace extension kind. In a remote window, such extensions are enabled only when available on the remote."
+    },
     "vs/workbench/contrib/scm/browser/scm.contribution": {
       "toggleGitViewlet": "Git 표시",
       "source control": "소스 제어",
@@ -4290,7 +4366,8 @@
       "scm accept": "SCM: 입력 적용"
     },
     "vs/workbench/contrib/scm/browser/scmActivity": {
-      "scmPendingChangesBadge": "{0}개의 보류 중인 변경 내용"
+      "scmPendingChangesBadge": "{0}개의 보류 중인 변경 내용",
+      "status.scm": "소스 제어"
     },
     "vs/workbench/contrib/scm/browser/scmViewlet": {
       "scm providers": "소스 제어 공급자",
@@ -4422,7 +4499,7 @@
       "search.files.result": "{1}개 파일에서 {0}개 결과",
       "search.file.results": "{1}개 파일에서 {0}개 결과",
       "search.files.results": "{1}개 파일에서 {0}개 결과",
-      "searchWithoutFolder": "아직 폴더를 열지 않았습니다. 현재 열린 파일만 검색됩니다. ",
+      "searchWithoutFolder": "You have not opened or specified a folder. Only open files are currently searched - ",
       "openFolder": "폴더 열기"
     },
     "vs/workbench/contrib/search/browser/searchWidget": {
@@ -4451,12 +4528,12 @@
       "file.replaceAll.label": "모두 바꾸기",
       "match.replace.label": "바꾸기"
     },
-    "vs/workbench/contrib/search/browser/replaceService": {
-      "fileReplaceChanges": "{0} ↔ {1}(미리 보기 바꾸기)"
-    },
     "vs/workbench/contrib/search/browser/patternInputWidget": {
       "defaultLabel": "입력",
       "useExcludesAndIgnoreFilesDescription": "제외 설정 및 파일 무시 사용"
+    },
+    "vs/workbench/contrib/search/browser/replaceService": {
+      "fileReplaceChanges": "{0} ↔ {1}(미리 보기 바꾸기)"
     },
     "vs/workbench/contrib/search/browser/searchResultsView": {
       "searchFolderMatch.other.label": "기타 파일",
@@ -4476,15 +4553,31 @@
       "snippetSchema.json.default": "빈 코드 조각",
       "snippetSchema.json": "사용자 코드 조각 구성",
       "snippetSchema.json.prefix": "IntelliSense에서 코드 조각을 선택할 때 사용할 접두사입니다.",
-      "snippetSchema.json.body": "코드 조각 콘텐츠입니다. '$1', '${1:defaultText}'를 사용하여 커서 위치를 정의하고, '$0'을 최종 커서 위치에 사용하세요. '${varName}' 및 '${varName:defaultText}'에 변수 값을 삽입하세요(예: '$TM_FILENAME 파일입니다').",
+      "snippetSchema.json.body": "The snippet content. Use '$1', '${1:defaultText}' to define cursor positions, use '$0' for the final cursor position. Insert variable values with '${varName}' and '${varName:defaultText}', e.g. 'This is file: $TM_FILENAME'.",
       "snippetSchema.json.description": "코드 조각 설명입니다.",
-      "snippetSchema.json.scope": "예를 들어, 'typescript,javascript' 와 같이 해당 코드 조각이 적용되는 언어 이름의 목록입니다."
+      "snippetSchema.json.scope": "A list of language names to which this snippet applies, e.g. 'typescript,javascript'."
     },
     "vs/workbench/contrib/snippets/browser/insertSnippet": {
       "snippet.suggestions.label": "조각 삽입",
       "sep.userSnippet": "사용자 코드 조각",
       "sep.extSnippet": "확장 코드 조각",
       "sep.workspaceSnippet": "작업 영역 코드 조각"
+    },
+    "vs/workbench/contrib/snippets/browser/configureSnippets": {
+      "global.scope": "(전역)",
+      "global.1": "({0})",
+      "name": "Type snippet file name",
+      "bad": "'{0}' already exists",
+      "new.global": "새 전역 코드 조각 파일...",
+      "new.workspace": "{0} 작업 영역",
+      "new.folder": "'{0}'에 대한 새 코드 조각 파일...",
+      "group.global": "기존 코드 조각",
+      "new.global.sep": "새 코드 조각",
+      "openSnippet.pickLanguage": "코드 조각 파일 선택 또는 코드 조각 만들기",
+      "openSnippet.label": "사용자 코드 조각 구성",
+      "preferences": "기본 설정",
+      "miOpenSnippets": "사용자 코드 조각(&&S)",
+      "userSnippets": "사용자 코드 조각"
     },
     "vs/workbench/contrib/snippets/browser/snippetsService": {
       "invalid.path.0": "`contributes.{0}.path`에 문자열이 필요합니다. 제공된 값: {1}",
@@ -4497,28 +4590,14 @@
       "badVariableUse": "'{0}' 확장의 1개 이상의 코드 조각은 snippet-variables 및 snippet-placeholders와 혼동하기 쉽습니다(자세한 내용은 https://code.visualstudio.com/docs/editor/userdefinedsnippets#_snippet-syntax를 참조하세요).",
       "badFile": "코드 조각 파일 \"{0}\"을(를) 읽을 수 없습니다."
     },
-    "vs/workbench/contrib/snippets/browser/configureSnippets": {
-      "global.scope": "(전역)",
-      "global.1": "({0})",
-      "badPath": "코드 조각이 '{0}' 폴더 안에 있어야 합니다. ",
-      "new.global": "새 전역 코드 조각 파일...",
-      "new.workspace": "{0} 작업 영역",
-      "new.folder": "'{0}'에 대한 새 코드 조각 파일...",
-      "group.global": "기존 코드 조각",
-      "new.global.sep": "새 코드 조각",
-      "openSnippet.pickLanguage": "코드 조각 파일 선택 또는 코드 조각 만들기",
-      "openSnippet.label": "사용자 코드 조각 구성",
-      "preferences": "기본 설정",
-      "miOpenSnippets": "사용자 코드 조각(&&S)"
+    "vs/workbench/contrib/snippets/browser/snippetCompletionProvider": {
+      "detail.snippet": "{0}({1})",
+      "snippetSuggest.longLabel": "{0}, {1}"
     },
     "vs/workbench/contrib/snippets/browser/snippetsFile": {
       "source.workspaceSnippetGlobal": "작업 영역 코드 조각",
       "source.userSnippetGlobal": "전역 사용자 코드 조각",
       "source.userSnippet": "사용자 코드 조각"
-    },
-    "vs/workbench/contrib/snippets/browser/snippetCompletionProvider": {
-      "detail.snippet": "{0}({1})",
-      "snippetSuggest.longLabel": "{0}, {1}"
     },
     "vs/workbench/contrib/stats/node/workspaceStats": {
       "never again": "다시 표시 안 함",
@@ -4546,13 +4625,9 @@
     "vs/workbench/contrib/tasks/electron-browser/task.contribution": {
       "tasksCategory": "작업",
       "ConfigureTaskRunnerAction.label": "작업 구성",
-      "totalErrors": "오류 {0}개",
-      "totalWarnings": "경고 {0}개",
-      "totalInfos": "정보 {0}개",
-      "problems": "문제",
       "building": "빌드하고 있습니다...",
-      "manyProblems": "10K+",
       "runningTasks": "실행 중인 작업 표시",
+      "status.runningTasks": "실행중인 작업",
       "tasks": "작업",
       "TaskSystem.noHotSwap": "실행 중인 활성 작업이 있는 작업 실행 엔진을 변경하면 Window를 다시 로드해야 합니다.",
       "reloadWindow": "창 다시 로드",
@@ -4604,7 +4679,7 @@
       "TaskService.fetchingTestTasks": "테스트 작업을 페치하는 중...",
       "TaskService.pickTestTask": "실행할 테스트 작업 선택",
       "TaskService.noTestTaskTerminal": "실행할 테스트 작업이 없습니다. 작업 구성...",
-      "TaskService.taskToTerminate": "종료할 작업 선택",
+      "TaskService.taskToTerminate": "Select a task to terminate",
       "TaskService.noTaskRunning": "현재 실행 중인 작업이 없습니다.",
       "TaskService.terminateAllRunningTasks": "실행 중인 모든 작업",
       "TerminateAction.noProcess": "시작된 프로세스가 더 이상 존재하지 않습니다. 작업에서 생성된, VS Code를 끝내는 백그라운드 작업이 분리된 프로세스가 될 수 있습니다.",
@@ -4691,20 +4766,15 @@
       "workbench.action.tasks.allowAutomaticRunning": "폴더에서 자동 작업 허용",
       "workbench.action.tasks.disallowAutomaticRunning": "폴더에서 자동 작업 허용 안 함"
     },
-    "vs/workbench/contrib/tasks/node/processTaskSystem": {
-      "version1": "작업 시스템이 버전 0.1.0용으로 구성되어 있어서(tasks.json 파일 참조), 사용자 지정 작업만 실행할 수 있습니다. 작업을 실행하려면 버전 2.0.0으로 업그레이드하세요. {0}",
-      "TaskRunnerSystem.unknownError": "작업을 실행하는 동안 알 수 없는 오류가 발생했습니다. 자세한 내용은 작업 출력 로그를 참조하세요.",
-      "TaskRunnerSystem.watchingBuildTaskFinished": "\n빌드 감시 작업이 완료되었습니다.",
-      "TaskRunnerSystem.childProcessError": "Failed to launch external program {0} {1}.",
-      "TaskRunnerSystem.cancelRequested": "\n사용자 요청에 따라 '{0}' 작업이 종료되었습니다.",
-      "unkownProblemMatcher": "문제 선택기 {0}을(를) 확인할 수 없습니다. 이 선택기는 무시됩니다."
-    },
     "vs/workbench/contrib/tasks/common/jsonSchema_v2": {
       "JsonSchema.shell": "명령이 셸 명령인지 외부 프로그램인지 여부를 지정합니다. 생략하면 기본값 false가 사용됩니다.",
       "JsonSchema.tasks.isShellCommand.deprecated": "isShellCommand 속성은 사용 중단되었습니다. 작업의 유형 속성과 셸 속성을 대신 사용하세요. 1.14 릴리스 노트를 참고하세요.",
-      "JsonSchema.tasks.dependsOn.identifier": "작업 식별자입니다.",
+      "JsonSchema.tasks.dependsOn.identifier": "The task identifier.",
       "JsonSchema.tasks.dependsOn.string": "이 작업이 종속된 또 다른 작업입니다.",
       "JsonSchema.tasks.dependsOn.array": "이 작업이 종속된 다른 여러 작업입니다.",
+      "JsonSchema.tasks.dependsOrder.parallel": "Run all dependsOn tasks in parallel.",
+      "JsonSchema.tasks.dependsOrder.sequence": "Run all dependsOn tasks in sequence.",
+      "JsonSchema.tasks.dependsOrder": "Determines the order of the dependsOn tasks for this task. Note that this property is not recursive.",
       "JsonSchema.tasks.presentation": "작업의 출력을 제시하고 입력을 읽는 데 사용하는 패널을 구성합니다.",
       "JsonSchema.tasks.presentation.echo": "실행된 명령을 패널에 에코할지 결정합니다. 기본값은 true입니다.",
       "JsonSchema.tasks.presentation.focus": "패널이 포커스를 잡는지 결정합니다. 기본값은 false입니다. true로 설정하면 패널도 드러납니다.",
@@ -4755,7 +4825,7 @@
       "JsonSchema.tasks.matchers": "사용할 문제 선택기입니다. 문자열, 문제 선택기 정의 또는 문자열 및 문제 선택기 배열일 수 있습니다.",
       "JsonSchema.customizations.customizes.type": "사용자 지정할 작업 유형",
       "JsonSchema.tasks.customize.deprecated": "사용자 지정 속성은 사용되지 않습니다. 새로운 작업 사용자 지정 방식으로 마이그레이션을 위해 1.14 릴리스 노트를 참고하세요.",
-      "JsonSchema.tasks.showOputput.deprecated": "showOutput 속성은 사용되지 않습니다. 대신 presentation 속성 내 reveal 속성을 사용하세요. 1.14 릴리스 노트도 참고하세요.",
+      "JsonSchema.tasks.showOutput.deprecated": "showOutput 속성은 사용되지 않습니다. 대신 presentation 속성 내 reveal 속성을 사용하세요. 1.14 릴리스 노트도 참고하세요.",
       "JsonSchema.tasks.echoCommand.deprecated": "echoCommand 속성은 사용되지 않습니다. 대신 presentation 속성 내 echo 속성을 사용하세요. 1.14 릴리스 노트도 참고하세요.",
       "JsonSchema.tasks.suppressTaskName.deprecated": "suppressTaskName 속성은 사용되지 않습니다. 대신 명령을 인수와 함께 작업에 인라인으로 삽입하세요. 1.14 릴리스 노트를 참고하세요.",
       "JsonSchema.tasks.isBuildCommand.deprecated": "isBuildCommand 속성은 사용되지 않습니다. 대신 group 속성을 사용하세요. 1.14 릴리스 노트도 참고하세요.",
@@ -4764,6 +4834,14 @@
       "JsonSchema.windows": "Windows 특정 명령 구성",
       "JsonSchema.mac": "Mac 특정 명령 구성",
       "JsonSchema.linux": "Linux 특정 명령 구성"
+    },
+    "vs/workbench/contrib/tasks/node/processTaskSystem": {
+      "version1": "작업 시스템이 버전 0.1.0용으로 구성되어 있어서(tasks.json 파일 참조), 사용자 지정 작업만 실행할 수 있습니다. 작업을 실행하려면 버전 2.0.0으로 업그레이드하세요. {0}",
+      "TaskRunnerSystem.unknownError": "작업을 실행하는 동안 알 수 없는 오류가 발생했습니다. 자세한 내용은 작업 출력 로그를 참조하세요.",
+      "TaskRunnerSystem.watchingBuildTaskFinished": "\n빌드 감시 작업이 완료되었습니다.",
+      "TaskRunnerSystem.childProcessError": "Failed to launch external program {0} {1}.",
+      "TaskRunnerSystem.cancelRequested": "\n사용자 요청에 따라 '{0}' 작업이 종료되었습니다.",
+      "unkownProblemMatcher": "문제 선택기 {0}을(를) 확인할 수 없습니다. 이 선택기는 무시됩니다."
     },
     "vs/workbench/contrib/tasks/common/jsonSchemaCommon": {
       "JsonSchema.options": "추가 명령 옵션",
@@ -4892,7 +4970,7 @@
       "closeTerminal": "터미널을 종료하려면 아무 키나 누르세요.",
       "reuseTerminal": "터미널이 작업에서 다시 사용됩니다. 닫으려면 아무 키나 누르세요.",
       "TerminalTaskSystem": "Cmd.exe를 사용하여 UNC 드라이브에 셸 명령을 실행할 수 없습니다.",
-      "unkownProblemMatcher": "문제 선택기 {0}을(를) 확인할 수 없습니다. 이 선택기는 무시됩니다."
+      "unknownProblemMatcher": "문제 선택기 {0}을(를) 확인할 수 없습니다. 이 선택기는 무시됩니다."
     },
     "vs/workbench/contrib/terminal/electron-browser/terminal.contribution": {
       "terminalIntegratedConfigurationTitle": "통합 터미널",
@@ -5097,7 +5175,8 @@
       "preferences": "기본 설정",
       "developer": "개발자",
       "miSelectColorTheme": "색 테마(&&C)",
-      "miSelectIconTheme": "파일 아이콘 테마(&&I)"
+      "miSelectIconTheme": "파일 아이콘 테마(&&I)",
+      "themes.selectIconTheme.label": "File Icon Theme"
     },
     "vs/workbench/contrib/update/electron-browser/update": {
       "releaseNotes": "릴리스 정보",
@@ -5106,28 +5185,18 @@
       "licenseChanged": "사용 조건이 변경되었습니다. [여기]({0})를 클릭하여 자세히 읽어보세요.",
       "neveragain": "다시 표시 안 함",
       "64bitisavailable": "64비트 Windows용 {0}을(를) 사용할 수 있습니다. 자세히 알아보려면 [여기]({1})를 클릭하세요.",
-      "linux64bits": "32비트 Linux용 {0}이(가) 곧 중단됩니다. 64비트 버전으로 업데이트하세요.",
-      "learnmore": "자세한 정보",
-      "manage": "관리",
       "updateIsReady": "새 {0} 업데이트를 사용할 수 있습니다.",
       "update service": "서비스 업데이트",
       "noUpdatesAvailable": "현재 사용할 수 있는 업데이트가 없습니다.",
       "ok": "확인",
       "thereIsUpdateAvailable": "사용 가능한 업데이트가 있습니다.",
-      "download now": "지금 다운로드",
+      "download update": "Download Update",
       "later": "나중에",
       "updateAvailable": "사용 가능한 업데이트가 있습니다. {0} {1}",
       "installUpdate": "업데이트 설치",
       "updateInstalling": "{0} {1}이(가) 백그라운드에서 설치되고 있습니다. 설치가 끝나면 알려드리겠습니다.",
       "updateNow": "지금 업데이트",
       "updateAvailableAfterRestart": "최신 업데이트를 적용하려면 {0}을(를) 다시 시작하세요.",
-      "commandPalette": "명령 팔레트...",
-      "settings": "설정",
-      "showExtensions": "확장",
-      "keyboardShortcuts": "바로 가기 키(&&K)",
-      "userSnippets": "사용자 코드 조각",
-      "selectTheme.label": "색 테마",
-      "themes.selectIconTheme.label": "파일 아이콘 테마",
       "checkForUpdates": "업데이트 확인...",
       "checkingForUpdates": "업데이트를 확인하는 중...",
       "DownloadingUpdate": "업데이트를 다운로드하는 중...",
@@ -5165,6 +5234,11 @@
       "openToolsLabel": "Webview 개발자 도구 열기",
       "refreshWebviewLabel": "Webview 다시 로드"
     },
+    "vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution": {
+      "walkThrough.editor.label": "대화형 플레이그라운드",
+      "help": "도움말",
+      "miInteractivePlayground": "대화형 플레이그라운드(&&N)"
+    },
     "vs/workbench/contrib/welcome/page/browser/welcomePage.contribution": {
       "workbenchConfigurationTitle": "워크벤치",
       "workbench.startupEditor.none": "편집기를 사용하지 않고 시작합니다.",
@@ -5175,11 +5249,6 @@
       "workbench.startupEditor": "이전 세션에서 복원된 편집기가 없는 경우 시작 시 편집기의 표시 여부를 제어합니다.",
       "help": "도움말",
       "miWelcome": "시작(&&W)"
-    },
-    "vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution": {
-      "walkThrough.editor.label": "대화형 플레이그라운드",
-      "help": "도움말",
-      "miInteractivePlayground": "대화형 플레이그라운드(&&N)"
     },
     "vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay": {
       "welcomeOverlay.explorer": "파일 탐색기",
@@ -5262,6 +5331,7 @@
       "welcomePage.productDocumentation": "제품 설명서",
       "welcomePage.gitHubRepository": "GitHub 리포지토리",
       "welcomePage.stackOverflow": "Stack Overflow",
+      "welcomePage.newsletterSignup": "Join our Newsletter",
       "welcomePage.showOnStartup": "시작 시 시작 페이지 표시",
       "welcomePage.customize": "사용자 지정",
       "welcomePage.installExtensionPacks": "도구 및 언어",
@@ -5295,6 +5365,7 @@
     "vs/workbench/services/configuration/browser/configurationService": {
       "unsupportedApplicationSetting": "이 설정은 애플리케이션 사용자 설정에서만 적용할 수 있습니다.",
       "unsupportedMachineSetting": "이 설정은 [사용자] 설정에서만 적용할 수 있습니다.",
+      "unsupportedRemoteMachineSetting": "This setting can be applied only in remote machine settings",
       "unsupportedWindowSetting": "이 설정은 지금 적용할 수 없으며 이 폴더를 직접 열 경우에 적용됩니다."
     },
     "vs/workbench/services/configuration/common/configurationEditingService": {
@@ -5398,9 +5469,6 @@
     "vs/workbench/services/extensionManagement/node/extensionEnablementService": {
       "noWorkspace": "작업 영역이 없습니다."
     },
-    "vs/workbench/services/extensions/node/extensionHostProcess": {
-      "extension host Log": "확장 호스트"
-    },
     "vs/workbench/services/extensions/electron-browser/extensionManagementServerService": {
       "local": "LOCAL",
       "remote": "원격"
@@ -5431,10 +5499,9 @@
       "extensionService.versionMismatchCrash": "확장 호스트를 시작할 수 없습니다. 버전이 일치하지 않습니다.",
       "relaunch": "VS Code 다시 시작",
       "extensionService.crash": "확장 호스트가 예기치 않게 종료되었습니다.",
-      "extensionService.unresponsiveCrash": "확장 호스트가 응답하지 않아서 종료되었습니다.",
       "devTools": "개발자 도구 열기",
       "restart": "확장 호스트 다시 시작",
-      "notFound": "`{0}` 확장에서 PROPOSED API를 찾을 수 없어 이를 사용할 수 없습니다."
+      "resolveAuthorityFailure": "Resolving the authority `{0}` failed"
     },
     "vs/workbench/services/extensions/common/extensionsRegistry": {
       "vscode.extension.engines": "엔진 호환성입니다.",
@@ -5469,19 +5536,22 @@
       "vscode.extension.qna": "Marketplace에서 질문 및 답변 링크를 제어합니다. 기본 Marketplace 질문 및 답변 사이트를 사용하도록 설정하려면 Marketplace로 설정합니다. 사용자 지정 질문 및 답변 사이트의 URL을 제공하려면 문자열로 설정합니다. 질문 및 답변을 모두 사용하지 않도록 설정하려면 false로 설정합니다.",
       "vscode.extension.extensionDependencies": "다른 확장에 대한 종속성입니다. 확장 식별자는 항상 ${publisher}.${name}입니다(예: vscode.csharp).",
       "vscode.extension.contributes.extensionPack": "함께 설치할 수 있는 확장 집합니다. 확장의 식별자는 항상 ${publisher}.${name}입니다. 예: vscode.csharp",
+      "extensionKind": "Define the kind of an extension. `ui` extensions are installed and run on the local machine while `workspace` extensions are run on the remote.",
+      "ui": "UI extension kind. In a remote window, such extensions are enabled only when available on the local machine.",
+      "workspace": "Workspace extension kind. In a remote window, such extensions are enabled only when available on the remote.",
       "vscode.extension.scripts.prepublish": "패키지가 VS Code 확장 형태로 게시되기 전에 스크립트가 실행되었습니다.",
       "vscode.extension.scripts.uninstall": "VS Code 확장에 대한 후크를 제거합니다. 확장이 VS Code에서 완전히 제거될 때 즉, 확장이 제거된 후 VS Code가 다시 시작할 때(종료하고 시작) 실행되는 스크립트입니다. 노드 스크립트만 지원됩니다.",
       "vscode.extension.icon": "128x128 픽셀 아이콘의 경로입니다."
-    },
-    "vs/workbench/services/extensions/common/extensionHostProcessManager": {
-      "measureExtHostLatency": "확장 호스트 대기 시간 측정",
-      "developer": "개발자"
     },
     "vs/workbench/services/extensions/electron-browser/cachedExtensionScanner": {
       "overwritingExtension": "확장 {0}을(를) {1}(으)로 덮어쓰는 중입니다.",
       "extensionUnderDevelopment": "{0}에서 개발 확장 로드 중",
       "extensionCache.invalid": "확장이 디스크에서 수정되었습니다. 창을 다시 로드하세요.",
       "reloadWindow": "창 다시 로드"
+    },
+    "vs/workbench/services/extensions/common/extensionHostProcessManager": {
+      "measureExtHostLatency": "확장 호스트 대기 시간 측정",
+      "developer": "개발자"
     },
     "vs/workbench/services/extensions/electron-browser/extensionHost": {
       "extensionHost.startupFailDebug": "확장 호스트가 10초 내에 시작되지 않았습니다. 첫 번째 줄에서 중지되었을 수 있습니다. 계속하려면 디버거가 필요합니다.",
@@ -5595,7 +5665,7 @@
       "optstring": "속성 `{0}`은(는) 생략할 수 있으며 `string` 형식이어야 합니다.",
       "vscode.extension.contributes.keybindings.command": "키 바인딩이 트리거될 때 실행할 명령의 식별자입니다.",
       "vscode.extension.contributes.keybindings.args": "실행될 명령에 전달할 인수입니다.",
-      "vscode.extension.contributes.keybindings.key": "키 또는 키 시퀀스(더하기 기호가 있는 개별 키, 공백이 있는 시퀀스, 예: Ctrl+O 및 Ctrl+L L을 동시에 누름)",
+      "vscode.extension.contributes.keybindings.key": "Key or key sequence (separate keys with plus-sign and sequences with space, e.g. Ctrl+O and Ctrl+L L for a chord).",
       "vscode.extension.contributes.keybindings.mac": "Mac 특정 키 또는 키 시퀀스입니다.",
       "vscode.extension.contributes.keybindings.linux": "Linux 특정 키 또는 키 시퀀스",
       "vscode.extension.contributes.keybindings.win": "Windows 특정 키 또는 키 시퀀스",
@@ -5683,10 +5753,11 @@
       "meta": "메타",
       "option": "옵션"
     },
-    "vs/workbench/services/progress/browser/progressService2": {
+    "vs/workbench/services/progress/browser/progressService": {
       "progress.text2": "{0}: {1}",
       "progress.title3": "[{0}] {1}: {2}",
       "progress.title2": "[{0}]: {1}",
+      "status.progress": "Progress Message",
       "cancel": "취소",
       "dismiss": "해제"
     },
@@ -5717,7 +5788,7 @@
       "allFiles": "모든 파일",
       "noExt": "확장 없음"
     },
-    "vs/workbench/services/textMate/electron-browser/textMateService": {
+    "vs/workbench/services/textMate/browser/abstractTextMateService": {
       "invalid.language": "`contributes.{0}.language`에 알 수 없는 언어가 있습니다. 제공된 값: {1}",
       "invalid.scopeName": "`contributes.{0}.scopeName`에 문자열이 필요합니다. 제공된 값: {1}",
       "invalid.path.0": "`contributes.{0}.path`에 문자열이 필요합니다. 제공된 값: {1}",
@@ -5783,16 +5854,6 @@
       "schema.tokenColors.path": "tmTheme 파일의 경로(현재 파일의 상대 경로)입니다.",
       "schema.colors": "구문 강조 표시를 위한 색"
     },
-    "vs/workbench/services/themes/common/colorThemeStore": {
-      "vscode.extension.contributes.themes": "Contributes textmate color themes.",
-      "vscode.extension.contributes.themes.id": "사용자 설정에 사용된 아이콘 테마의 ID입니다.",
-      "vscode.extension.contributes.themes.label": "UI에 표시되는 색 테마의 레이블입니다.",
-      "vscode.extension.contributes.themes.uiTheme": "편집기 주변의 색을 정의하는 기본 테마입니다. 'vs'는 밝은색 테마이고, 'vs-dark'는 어두운색 테마입니다. 'hc-black'은 어두운 고대비 테마입니다.",
-      "vscode.extension.contributes.themes.path": "tmTheme 파일의 경로입니다. 확장 폴더의 상대 경로이며 일반적으로 './themes/themeFile.tmTheme'입니다.",
-      "reqarray": "확장점 '{0}'은(는) 배열이어야 합니다.",
-      "reqpath": "`contributes.{0}.path`에 문자열이 필요합니다. 제공된 값: {1}",
-      "invalid.path.1": "확장 폴더({2})에 포함할 `contributes.{0}.path`({1})가 필요합니다. 확장이 이식 불가능해질 수 있습니다."
-    },
     "vs/workbench/services/themes/common/fileIconThemeStore": {
       "vscode.extension.contributes.iconThemes": "Contributes file icon themes.",
       "vscode.extension.contributes.iconThemes.id": "사용자 설정에 사용된 아이콘 테마의 ID입니다.",
@@ -5801,6 +5862,16 @@
       "reqarray": "확장점 '{0}'은(는) 배열이어야 합니다.",
       "reqpath": "`contributes.{0}.path`에 문자열이 필요합니다. 제공된 값: {1}",
       "reqid": "`contributes.{0}.id`에 문자열이 필요합니다. 제공된 값: {1}",
+      "invalid.path.1": "확장 폴더({2})에 포함할 `contributes.{0}.path`({1})가 필요합니다. 확장이 이식 불가능해질 수 있습니다."
+    },
+    "vs/workbench/services/themes/common/colorThemeStore": {
+      "vscode.extension.contributes.themes": "Contributes textmate color themes.",
+      "vscode.extension.contributes.themes.id": "사용자 설정에 사용된 아이콘 테마의 ID입니다.",
+      "vscode.extension.contributes.themes.label": "UI에 표시되는 색 테마의 레이블입니다.",
+      "vscode.extension.contributes.themes.uiTheme": "편집기 주변의 색을 정의하는 기본 테마입니다. 'vs'는 밝은색 테마이고, 'vs-dark'는 어두운색 테마입니다. 'hc-black'은 어두운 고대비 테마입니다.",
+      "vscode.extension.contributes.themes.path": "tmTheme 파일의 경로입니다. 확장 폴더의 상대 경로이며 일반적으로 './themes/themeFile.tmTheme'입니다.",
+      "reqarray": "확장점 '{0}'은(는) 배열이어야 합니다.",
+      "reqpath": "`contributes.{0}.path`에 문자열이 필요합니다. 제공된 값: {1}",
       "invalid.path.1": "확장 폴더({2})에 포함할 `contributes.{0}.path`({1})가 필요합니다. 확장이 이식 불가능해질 수 있습니다."
     },
     "vs/workbench/services/themes/common/fileIconThemeSchema": {
@@ -5836,6 +5907,9 @@
       "schema.highContrast": "고대비 색 테마에서 파일 아이콘에 대한 선택적 연결입니다.",
       "schema.hidesExplorerArrows": "이 테마가 활성 상태일 때 파일 탐색기의 화살표 숨김 여부를 구성합니다."
     },
+    "vs/workbench/services/themes/common/fileIconThemeData": {
+      "error.cannotparseicontheme": "Problems parsing file icons file: {0}"
+    },
     "vs/workbench/services/themes/common/colorThemeData": {
       "error.cannotparsejson": "JSON 테마 파일을 구문 분석하는 중 문제 발생: {0}",
       "error.invalidformat.colors": "색 테마 파일 {0}을(를) 구문 분석하는 중 문제가 발생했습니다. 'colors' 속성이 'object' 형식이 아닙니다.",
@@ -5844,9 +5918,6 @@
       "error.cannotparse": "tmTheme 파일 {0}을(를) 구문 분석하는 중 문제가 발생했습니다.",
       "error.cannotload": "tmTheme 파일 {0}을(를) 로드하는 중 문제가 발생했습니다. {1}"
     },
-    "vs/workbench/services/themes/common/fileIconThemeData": {
-      "error.cannotparseicontheme": "Problems parsing file icons file: {0}"
-    },
     "vs/workbench/services/workspace/electron-browser/workspaceEditingService": {
       "save": "저장",
       "doNotSave": "저장하지 않음",
@@ -5854,6 +5925,7 @@
       "saveWorkspaceMessage": "작업 영역 구성을 파일로 저장하시겠습니까?",
       "saveWorkspaceDetail": "작업 영역을 다시 열려면 작업 영역을 저장하세요.",
       "saveWorkspace": "작업 영역 저장",
+      "differentSchemeRoots": "Workspace folders from different providers are not allowed in the same workspace.",
       "ok": "확인",
       "workspaceOpenedMessage": "'{0}' 작업 영역을 저장할 수 없음",
       "workspaceOpenedDetail": "작업 영역이 이미 다른 창에 열렸습니다. 먼저 해당 창을 닫은 후 다시 시도하세요.",
@@ -5861,105 +5933,468 @@
       "errorWorkspaceConfigurationFileDirty": "파일이 변경되어 작업 영역 구성 파일에 쓸 수 없습니다. 저장하고 다시 시도하세요.",
       "openWorkspaceConfigurationFile": "작업 영역 구성 열기"
     },
-    "sql/workbench/parts/webview/electron-browser/webViewDialog": {
+    "nsions/azurecore/package": {
+      "azure.displayName": "Azure(Core)",
+      "azure.description": "Azure 리소스 찾아보기 및 작업",
+      "azure.title": "Azure",
+      "azure.resource.config.title": "Azure 리소스 구성",
+      "azure.resource.config.filter.description": "리소스 필터, 각 요소는 계정 ID임, 구독 ID와 이름은 슬래시로 구분됨",
+      "azure.resource.explorer.title": "Azure",
+      "azure.resource.refreshall.title": "모두 새로 고침",
+      "azure.resource.refresh.title": "새로 고침",
+      "azure.resource.signin.title": "로그인",
+      "azure.resource.selectsubscriptions.title": "구독 선택",
+      "azure.resource.connectsqlserver.title": "연결",
+      "azure.resource.connectsqldb.title": "연결",
+      "accounts.clearTokenCache": "Azure 계정 토큰 캐시 지우기",
+      "config.enablePublicCloudDescription": "Azure 공용 클라우드 통합을 사용하도록 설정된 경우",
+      "config.enableUsGovCloudDescription": "US Government Azure 클라우드(Fairfax) 통합을 사용하도록 설정된 경우",
+      "config.enableChinaCloudDescription": "Azure 중국 통합을 사용하도록 설정된 경우",
+      "config.enableGermanyCloudDescription": "Azure 독일 통합을 사용하도록 설정된 경우"
+    },
+    "sql/base/browser/ui/editableDropdown/dropdown": {
+      "editableDropdown.errorValidate": "목록에 있는 옵션이어야 합니다.",
+      "dropdownAction.toggle": "토글 메뉴"
+    },
+    "sql/base/browser/ui/modal/webViewDialog": {
       "webViewDialog.ok": "확인"
+    },
+    "sql/base/browser/ui/panel/tabActions": {
+      "closeTab": "닫기"
     },
     "sql/base/browser/ui/selectBox/media/selectBox": {
       "alertErrorMessage": "오류: {0}",
-      "alertWarningMessage": "경고: {0}"
+      "alertWarningMessage": "경고: {0}",
+      "alertInfoMessage": "정보: {0}"
+    },
+    "sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin": {
+      "selectDeselectAll": "모두 선택/해제"
+    },
+    "sql/base/browser/ui/table/plugins/rowdetailview": {
+      "rowDetailView.loadError": "불러오기 오류..."
+    },
+    "sql/platform/accounts/browser/accountDialog": {
+      "linkedAccounts": "연결 된 계정",
+      "accountDialog.close": "닫기",
+      "accountDialog.noAccountLabel": "연결된 계정이 없습니다. 계정을 추가하세요.",
+      "accountDialog.addConnection": "계정 추가"
     },
     "sql/platform/accounts/browser/accountDialogController": {
-      "accountDialog.addAccountErrorTitle": "계정을 추가하는 도중 오류가 생겼습니다"
+      "accountDialog.addAccountErrorTitle": "계정 추가 오류"
     },
     "sql/platform/accounts/browser/accountListStatusbarItem": {
       "manageLinedAccounts": "연결 된 계정 관리"
     },
     "sql/platform/accounts/browser/autoOAuthDialog": {
-      "cancel": "취소",
+      "copyAndOpen": "복사 및 열기",
+      "oauthDialog.cancel": "취소",
+      "userCode": "사용자 코드",
       "website": "웹사이트"
     },
+    "sql/platform/accounts/browser/autoOAuthDialogController": {
+      "oauthFlyoutIsAlreadyOpen": "자동 OAuth를 시작할 수 없습니다. 자동 OAuth가 이미 진행 중입니다."
+    },
     "sql/platform/accounts/browser/media/accountActions": {
+      "addAccount": "계정 추가",
+      "removeAccount": "계정 제거",
+      "confirmRemoveUserAccountMessage": "'{0}'을 제거하시겠습니까?",
+      "accountActions.yes": "예",
+      "accountActions.no": "아니요",
+      "removeAccountFailed": "계정을 제거하지 못했습니다.",
+      "applyFilters": "필터 적용",
+      "refreshAccount": "자격 증명 다시 입력",
       "NoAccountToRefresh": "갱신할 계정이 없습니다."
     },
+    "sql/platform/accounts/browser/accountListRenderer": {
+      "refreshCredentials": "이 계정의 자격 증명을 새로 고쳐야합니다."
+    },
+    "sql/platform/accounts/browser/accountManagement.contribution": {
+      "carbon.extension.contributes.account.id": "계정유형 식별자",
+      "carbon.extension.contributes.account.icon": "(옵션) UI에서 계정을 나타내는 데 사용되는 아이콘. 파일 경로 또는 변경할 수 있는 구성",
+      "carbon.extension.contributes.account.icon.light": "밝은 테마를 사용하는 경우의 아이콘 경로",
+      "carbon.extension.contributes.account.icon.dark": "어두운 테마를 사용할 때 아이콘 경로",
+      "carbon.extension.contributes.account": "계정 공급자에게 아이콘을 제공합니다."
+    },
     "sql/platform/accounts/browser/firewallRuleDialog": {
-      "firewall.ok": "확인",
+      "from": "보낸 사람",
       "to": "받는 사람",
+      "createNewFirewallRule": "새 방화벽 규칙 만들기",
+      "firewall.ok": "확인",
+      "firewall.cancel": "취소",
+      "firewallRuleDialogDescription": "클라이언트 IP 주소에는 해당 서버에 액세스할 권한이 없습니다. 액세스하려면 Azure 계정에 로그인하고 새 방화벽 규칙을 만드세요.",
+      "firewallRuleHelpDescription": "방화벽 설정에 대한 자세한 정보",
+      "azureAccount": "Azure 계정",
+      "filewallRule": "방화벽 규칙",
+      "addIPAddressLabel": "내 클라이언트 IP를 추가 ",
       "addIpRangeLabel": "내 서브넷 IP 범위를 추가"
     },
-    "sql/workbench/parts/connection/common/connectionActions": {
-      "connectionAction.yes": "예"
+    "sql/platform/accounts/browser/firewallRuleDialogController": {
+      "firewallDialog.addAccountErrorTitle": "계정 추가 오류",
+      "firewallRuleError": "방화벽 규칙 오류"
     },
-    "sql/platform/connection/common/connectionManagementService": {
+    "sql/parts/admin/database/create/createDatabase.component": {
+      "createDatabase.databaseFiles": "데이터베이스 파일:",
+      "createDatabase.noRecordsFound": "레코드가 없습니다."
+    },
+    "sql/workbench/parts/connection/browser/connection.contribution": {
+      "sql.maxRecentConnectionsDescription": "최근에 사용한 연결을 연결 목록에 저장할 최대 수입니다.",
+      "sql.defaultEngineDescription": "사용할 기본 SQL 엔진. 이는 .sql 파일의 기본 언어 공급자를 구동하고 새 연결을 만들 때 기본값으로  사용합니다. 유효한 옵션은 현재 MSSQL입니다.",
+      "connection.parseClipboardForConnectionStringDescription": "연결 대화 상자가 열리거나 붙여넣기가 수행되면 클립보드의 내용 구문 분석을 시도합니다."
+    },
+    "sql/workbench/parts/connection/common/connectionActions": {
+      "ClearRecentlyUsedLabel": "목록 지우기",
+      "ClearedRecentConnections": "최근 연결 목록을 삭제했습니다.",
+      "connectionAction.yes": "예",
+      "connectionAction.no": "아니요",
+      "clearRecentConnectionMessage": "목록에서 모든 연결을 삭제하시겠습니까?",
+      "connectionDialog.yes": "예",
+      "connectionDialog.no": "아니요",
+      "delete": "삭제",
+      "connectionAction.GetCurrentConnectionString": "현재 연결 문자열 얻기",
+      "connectionAction.connectionString": "연결 문자열을 사용할 수 없습니다",
+      "connectionAction.noConnection": "사용 가능한 활성 연결이 없습니다"
+    },
+    "sql/parts/connection/common/connectionManagementService": {
       "connectionNotAcceptedError": "연결이 허용되지 않습니다",
       "connectionService.no": "아니요"
     },
+    "sql/workbench/parts/connection/common/localizedConstants": {
+      "onDidConnectMessage": "에 연결",
+      "onDidDisconnectMessage": "연결 끊김",
+      "unsavedGroupLabel": "저장 되지 않은 연결"
+    },
     "sql/workbench/parts/connection/browser/advancedPropertiesController": {
+      "connectionAdvancedProperties": "고급 속성",
       "advancedProperties.discard": "폐기"
     },
-    "sql/workbench/services/connection/browser/connectionDialogWidget": {
+    "sql/parts/connection/connectionDialog/connectionDialogWidget": {
       "recentConnectionTitle": "최근 연결",
       "savedConnectionTitle": "저장된 연결",
       "connectionDialog.yes": "예",
       "noSavedConnections": "저장된 연결 없음"
     },
-    "sql/workbench/services/connection/browser/connectionWidget": {
+    "sql/parts/connection/connectionDialog/connectionWidget": {
       "defaultServerGroup": "<기본>"
     },
     "sql/workbench/parts/dashboard/common/actions": {
       "editDashboard": "편집",
+      "editDashboardExit": "끝내기",
+      "refreshWidget": "새로 고침",
       "toggleMore": "추가 설정",
-      "clickToUnpin": "클릭하여 고정 해제"
+      "deleteWidget": "위젯 삭제",
+      "clickToUnpin": "클릭하여 고정 해제",
+      "clickToPin": "고정하려면 클릭",
+      "addFeatureAction.openInstalledFeatures": "설치된 기능들 열기",
+      "collapseWidget": "Collapse",
+      "expandWidget": "확장"
+    },
+    "sql/workbench/parts/dashboard/common/dashboardHelper": {
+      "unknownDashboardContainerError": "{0}는 알 수 없는 컨테이너입니다."
+    },
+    "sql/workbench/parts/dashboard/common/dashboardPage.component": {
+      "home": "홈",
+      "missingConnectionInfo": "이 대시보드에 대한 연결 정보를 찾을 수 없습니다."
     },
     "sql/workbench/parts/dashboard/common/dashboardTab.contribution": {
-      "sqlops.extension.contributes.dashboard.tab.description": "탭의 기능 설명입니다. 이 탭은 사용자에게 표시됩니다."
+      "azdata.extension.contributes.dashboard.tab.id": "이 탭에 대 한 고유 식별자입니다. 확장에 모든 요청에 대해 전달 됩니다.",
+      "azdata.extension.contributes.dashboard.tab.title": "사용자를 표시할 탭의 제목입니다.",
+      "azdata.extension.contributes.dashboard.tab.description": "탭의 기능 설명입니다. 이 탭은 사용자에게 표시됩니다.",
+      "azdata.extension.contributes.tab.when": "이 항목이 표시 되기 위해 true여야 하는 조건",
+      "azdata.extension.contributes.tab.provider": "이 탭은 호환 가능한 연결 유형을 정의합니다. 설정하지 않으면 기본값은 \"MSSQL\"입니다.",
+      "azdata.extension.contributes.dashboard.tab.container": "이 탭에 표시될 컨테이너.",
+      "azdata.extension.contributes.dashboard.tab.alwaysShow": "이 탭을 항상 표시할지, 사용자가 추가할 때만 표시할지 여부입니다.",
+      "azdata.extension.contributes.dashboard.tab.isHomeTab": "연결 형식에 대해 이 탭이 홈 탭으로 사용되는지 여부입니다.",
+      "azdata.extension.contributes.tabs": "사용자용 탭을 하나 또는 여러 개 제공하여 대시보드에 추가합니다.",
+      "dashboardTab.contribution.noTitleError": "확장을 위해 지정된 제목이 없습니다.",
+      "dashboardTab.contribution.noDescriptionWarning": "표시 할 설명이 없습니다.",
+      "dashboardTab.contribution.noContainerError": "확장을 위해 지정된 컨테이너가 없습니다.",
+      "dashboardTab.contribution.moreThanOneDashboardContainersError": "공간마다 정확하게 1개의 대시보드 컨테이너를 정의해야 합니다."
     },
     "sql/workbench/parts/dashboard/containers/dashboardContainer.contribution": {
-      "sqlops.extension.contributes.dashboard.container.id": "이 컨테이너의 고유 식별자입니다."
+      "azdata.extension.contributes.dashboard.container.id": "이 컨테이너의 고유 식별자입니다.",
+      "azdata.extension.contributes.dashboard.container.container": "컨테이너는 탭에 표시 됩니다.",
+      "azdata.extension.contributes.containers": "사용자용 대시보드 추가를 위한 단일 또는 다중 대시보드 기고",
+      "dashboardContainer.contribution.noIdError": "확장에 대해 지정된 대시보드 컨테이너에 ID가 없습니다.",
+      "dashboardContainer.contribution.noContainerError": "대시보드 컨테이너에 확장에 대해 지정된 컨테이너가 없습니다.",
+      "dashboardContainer.contribution.moreThanOneDashboardContainersError": "공간당 정확하게 1개의 대시보드 컨테이너가 정의되어야 합니다.",
+      "dashboardTab.contribution.unKnownContainerType": "확장용 대시보드 컨테이너에 정의된 알 수 없는 컨테이너 형식입니다."
+    },
+    "sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.contribution": {
+      "dashboard.container.controlhost": "이 탭에 표시될 controlhost입니다."
+    },
+    "sql/workbench/parts/dashboard/containers/dashboardErrorContainer.component": {
+      "dashboardNavSection": "\"{0}\" 섹션에 유효하지 않은 내용이 있습니다. 확장 소유자에게 문의 하시기 바랍니다."
+    },
+    "sql/workbench/parts/dashboard/containers/dashboardGridContainer.contribution": {
+      "dashboard.container.gridtab.items": "이 탭에 표시되는 위젯 또는 웹 보기 목록입니다.",
+      "gridContainer.invalidInputs": "위젯이나 웹뷰는 확장을 위해 위젯-컨테이너 내부에 있어야 합니다."
+    },
+    "sql/workbench/parts/dashboard/containers/dashboardModelViewContainer.contribution": {
+      "dashboard.container.modelview": "이 탭에 표시될 모델 지원 보기입니다."
     },
     "sql/workbench/parts/dashboard/containers/dashboardNavSection.contribution": {
       "dashboard.container.left-nav-bar.id": "이 탐색 영역에 대한 고유 식별자 입니다. 모든 확장 요청에 대해  전달됩니다.",
       "dashboard.container.left-nav-bar.icon": "(선택 사항) UI에서 탐색 섹션을 나타내는 아이콘입니다. 파일 경로를 지정하거나 테마 구성을 이용할 수 있습니다.",
-      "dashboard.container.left-nav-bar.icon.light": "밝은 테마를 사용하는 경우의 아이콘 경로"
+      "dashboard.container.left-nav-bar.icon.light": "밝은 테마를 사용하는 경우의 아이콘 경로",
+      "dashboard.container.left-nav-bar.icon.dark": "어두운 테마가 사용될 때 아이콘 경로",
+      "dashboard.container.left-nav-bar.title": "사용자에게 표시 할 탐색 섹션의 제목.",
+      "dashboard.container.left-nav-bar.container": "이 탐색 섹션에 표시될 컨테이너입니다.",
+      "dashboard.container.left-nav-bar": "이 탐색 섹션에 표시될 대시 보드 컨테이너 목록입니다.",
+      "opticon": "'icon' 속성은 생략될 수 있거나, '{dark, light}' 같은 문자열 또는 리터럴이어야 합니다.",
+      "navSection.missingTitle": "확장을 위해 지정된 탐색 섹션의 제목이 없습니다.",
+      "navSection.missingContainer": "탐색 섹션에 확장에 대해 지정된 컨테이너가 없습니다.",
+      "navSection.moreThanOneDashboardContainersError": "공간당 정확하게 1개의 대시보드 컨테이너가 정의되어야 합니다.",
+      "navSection.invalidContainer": "NAV_SECTION 내의 NAV_SECTION은 확장용으로 유효하지 않은 컨테이너입니다."
     },
-    "sql/workbench/services/dashboard/browser/newDashboardTabDialog": {
+    "sql/workbench/parts/dashboard/containers/dashboardWebviewContainer.contribution": {
+      "dashboard.container.webview": "이 탭에 표시할 webview."
+    },
+    "sql/workbench/parts/dashboard/containers/dashboardWidgetContainer.contribution": {
+      "dashboard.container.widgets": "이 탭에 표시되는 위젯 목록입니다.",
+      "widgetContainer.invalidInputs": "위젯 목록은 확장을 위한 위젯 컨테이너 안에 있을 것입니다."
+    },
+    "sql/parts/dashboard/newDashboardTabDialog/newDashboardTabDialog": {
       "newDashboardTab.cancel": "취소",
       "allFeatures": "모든 기능"
     },
+    "sql/workbench/parts/dashboard/pages/dashboardPageContribution": {
+      "azdata.extension.contributes.widget.when": "이 항목이 표시 되기 위해 true여야 하는 조건",
+      "dashboardpage.tabName": "컨테이너의 제목",
+      "dashboardpage.rowNumber": "표 안의 구성 행",
+      "dashboardpage.rowSpan": "표에 있는 구성 요소의 rowspan입니다. 기본값은 1입니다. '*'을 사용하여 표의 행 수를 설정합니다.",
+      "dashboardpage.colNumber": "그리드의 컴퍼넌트 열입니다.",
+      "dashboardpage.colspan": "표 구성 요소인 colspan입니다. 기본값은 1입니다. 표의 열 갯수를 설정 하려면 '*'을 이용하십시오.",
+      "azdata.extension.contributes.dashboardPage.tab.id": "이 탭에 대 한 고유 식별자입니다. 확장에 모든 요청에 대해 전달 됩니다.",
+      "dashboardTabError": "확장 탭은 알 수 없거나 설치 되지 않았습니다."
+    },
+    "sql/workbench/parts/dashboard/pages/databaseDashboardPage.component": {
+      "databasePageName": "데이터베이스 대시보드"
+    },
     "sql/workbench/parts/dashboard/pages/databaseDashboardPage.contribution": {
-      "dashboardDatabaseProperties": "속성 위젯을 활성화 또는 비활성화합니다",
-      "dashboard.databaseproperties.displayName": "속성 표시 이름",
+      "dashboardDatabaseProperties": "속성 위젯을 활성화 또는 비활성화합니다.",
+      "dashboard.databaseproperties": "표시할 속성 값",
+      "dashboard.databaseproperties.displayName": "속성의 표시 이름",
+      "dashboard.databaseproperties.value": "데이터베이스 정보 개체의 값",
+      "dashboard.databaseproperties.ignore": "무시할 특정 값 지정",
+      "recoveryModel": "복구 모델",
+      "lastDatabaseBackup": "마지막 데이터베이스 백업",
+      "lastLogBackup": "마지막 로그 백업",
+      "compatibilityLevel": "호환성 수준",
       "owner": "소유자",
-      "dashboardDatabase": "데이터베이스 대시보드 페이지를 수정합니다"
+      "dashboardDatabase": "데이터베이스 대시보드 페이지를 수정합니다",
+      "dashboardDatabaseTabs": "데이터베이스 대시 보드 탭을 사용자 정의합니다."
+    },
+    "sql/workbench/parts/dashboard/pages/serverDashboardPage.component": {
+      "serverPageName": "서버 대시보드"
     },
     "sql/workbench/parts/dashboard/pages/serverDashboardPage.contribution": {
       "dashboardServerProperties": "속성 위젯을 활성화 또는 비활성화합니다.",
+      "dashboard.serverproperties": "표시할 속성 값",
       "dashboard.serverproperties.displayName": "속성의 표시 이름",
-      "edition": "에디션"
+      "dashboard.serverproperties.value": "서버 정보 개체의 값",
+      "version": "버전",
+      "edition": "에디션",
+      "computerName": "컴퓨터 이름",
+      "osVersion": "OS 버전",
+      "dashboardServer": "서버 대시보드 페이지 사용자 정의",
+      "dashboardServerTabs": "서버 대시보드 탭 사용자 지정하기"
+    },
+    "sql/workbench/parts/dashboard/services/breadcrumb.service": {
+      "homeCrumb": "홈"
+    },
+    "sql/workbench/parts/dashboard/services/dashboardServiceInterface.service": {
+      "dashboard.changeDatabaseFailure": "데이터베이스를 변경하지 못했습니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/explorer/explorerWidget.component": {
+      "seachObjects": "형식의 이름으로 검색 (a:, t:, v:, f: 또는 sp:)",
+      "searchDatabases": "데이터베이스 검색",
+      "dashboard.explorer.objectError": "개체를 로드할 수 없습니다.",
+      "dashboard.explorer.databaseError": "데이터베이스를 로드할 수 없습니다"
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/actions": {
+      "insights.runQuery": "쿼리 실행"
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/insightsWidget.component": {
+      "insights.lastUpdated": "최종 업데이트: {0} {1}",
+      "noResults": "표시할 결과가 없습니다"
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/insightsWidgetSchemas": {
+      "insightWidgetDescription": "서버 또는 데이터베이스를 쿼리하고 여러 가지 방법(차트, 요약 개수 등)으로 결과를 표시할 수 있는 위젯을 추가합니다.",
+      "insightIdDescription": "인사이트 결과를 캐싱하기 위한 고유 식별자.",
+      "insightQueryDescription": "실행할 SQL 쿼리입니다. 정확하게 1개의 결과 집합을 반환해야 합니다.",
+      "insightQueryFileDescription": "[옵션] 쿼리를 포함 하는 파일입니다. \"쿼리\" 설정 되지 않은 경우 사용",
+      "insightAutoRefreshIntervalDescription": "[옵션] 자동 새로 고침 간격 (분), 설정 되지 않은 경우 자동 새로 고침 없음.",
+      "actionTypes": "사용할 작업",
+      "actionDatabaseDescription": "작업 대상 데이터베이스입니다. \"${columnName}\" 형식을 사용하여 데이터 기반 열 이름을 사용할 수 있습니다.",
+      "actionServerDescription": "작업 대상 서버입니다. \"${columnName}\" 형식을 사용하여 데이터 기반 열 이름을 사용할 수 있습니다.",
+      "actionUserDescription": "작업 대상 사용자입니다. \"${columnName}\" 형식을 사용하여 데이터 기반 열 이름을 사용할 수 있습니다.",
+      "carbon.extension.contributes.insightType.id": "인사이트의 식별자",
+      "carbon.extension.contributes.insights": "대시보드 팔레트에 인사이트를 제공합니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/countInsight.contribution": {
+      "countInsightDescription": "결과 집합의 각 열에 대해 행 0의 값을 개수 및 열 이름으로 표시합니다. 예를 들어 \"1 Healthy\", \"3 Unhealthy\"를 지원합니다. 여기서 \"Healthy\"는 열 이름이고 1은 행 1 셀 1의 값입니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/imageInsight.contribution": {
+      "imageInsightDescription": "이미지를 표시합니다. 예: ggplot2를 사용하여 R 쿼리에서 반환한 이미지",
+      "imageFormatDescription": "어떤 포맷이 예상되나요? - JPEG, PNG 혹은 다른 포맷인가요?",
+      "encodingDescription": "16 진수, base64 또는 다른 형식으로 인코딩되어 있습니까?"
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/tableInsight.contribution": {
+      "tableInsightDescription": "테이블에 결과를 표시합니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/charts/chartInsight.component": {
+      "chartErrorMessage": "제공한 데이터를 사용하여 차트를 표시할 수 없습니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/charts/chartInsight.contribution": {
+      "chartInsightDescription": "대시보드의 차트로 쿼리 결과를 표시 합니다.",
+      "colorMapDescription": "\"열 이름\" -> 색을 매핑합니다. 예를 들어 이 열에서 빨간색을 사용하려면 \"column1\": red를 추가합니다.",
+      "legendDescription": "차트 범례의 기본 위치 및 표시 여부를 나타냅니다. 쿼리의 열 이름이며, 각 차트 항목의 레이블에 매핑됩니다.",
+      "labelFirstColumnDescription": "dataDirection이 가로인 경우, 이 값을 true로 설정하면 범례의 첫 번째 열 값을 사용합니다.",
+      "columnsAsLabels": "dataDirection 값이 vertical 인 경우, 이것을 true로 설정하면 범례에 열 이름을 사용합니다.",
+      "dataDirectionDescription": "데이터를 열(수직)에서 읽어올지 행(수평)에서 읽어올지 정의합니다. 시계열에서는 수직이어야 하므로 방향 값은 무시됩니다.",
+      "showTopNData": "showTopNData가 설정된 경우 차트에 상위 N개의 데이터만 표시합니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/charts/types/barChart.contribution": {
+      "yAxisMin": "y축 최소값",
+      "yAxisMax": "y축의 최댓값",
+      "barchart.yAxisLabel": "y 축 레이블",
+      "xAxisMin": "X 축의 최소값",
+      "xAxisMax": "x축 최댓값",
+      "barchart.xAxisLabel": "x축 레이블"
+    },
+    "sql/workbench/parts/dashboard/widgets/insights/views/charts/types/lineChart.contribution": {
+      "dataTypeDescription": "차트에 대한 데이터 집합 데이터 속성을 나타냅니다."
+    },
+    "sql/workbench/parts/dashboard/widgets/properties/propertiesWidget.component": {
+      "dashboard.properties.error": "대시보드 속성을 로드할 수 없습니다."
     },
     "sql/workbench/parts/backup/electron-browser/backup.component": {
+      "backup.backupName": "백업 이름",
+      "backup.recoveryModel": "복구 모델",
+      "backup.backupType": "백업 유형",
       "backup.backupDevice": "백업 파일",
       "backup.algorithm": "알고리즘",
+      "backup.certificateOrAsymmetricKey": "인증서 또는 비대칭 키",
+      "backup.media": "미디어",
+      "backup.mediaOption": "기존 미디어 세트에 백업",
       "backup.mediaOptionFormat": "새 미디어 세트에 백업",
+      "backup.existingMediaAppend": "기존 백업 세트에 추가",
       "backup.existingMediaOverwrite": "모든 기존 백업 세트 덮어쓰기",
+      "backup.newMediaSetName": "새 미디어 세트 이름",
+      "backup.newMediaSetDescription": "새 미디어 세트 설명",
+      "backup.checksumContainer": "미디어에 쓰기 전에 체크섬 수행",
+      "backup.verifyContainer": "완료되면 백업 확인",
+      "backup.continueOnErrorContainer": "오류 발생 시 계속",
+      "backup.expiration": "만료",
+      "backup.setBackupRetainDays": "백업 유지 일수 설정",
+      "backup.copyOnly": "복사 전용 백업",
       "backup.advancedConfiguration": "고급 구성",
+      "backup.compression": "압축",
       "backup.setBackupCompression": "백업 압축 설정",
-      "backup.noEncryptorWarning": "사용 가능한 인증서 또는 비대칭 키가 없습니다"
+      "backup.encryption": "암호화",
+      "backup.transactionLog": "트랜잭션 로그",
+      "backup.truncateTransactionLog": "트랜잭션 로그 잘라내기",
+      "backup.backupTail": "비상 로그 백업",
+      "backup.reliability": "안정성",
+      "backup.mediaNameRequired": "미디어 이름이 필요합니다.",
+      "backup.noEncryptorWarning": "사용 가능한 인증서 또는 비대칭 키가 없습니다",
+      "addFile": "파일 추가",
+      "removeFile": "파일 제거",
+      "backupComponent.invalidInput": "잘못된 입력입니다. 값은 0과 같거나 더 커야 합니다.",
+      "backupComponent.script": "스크립트",
+      "backupComponent.backup": "백업",
+      "backupComponent.cancel": "취소",
+      "backup.containsBackupToUrlError": "파일 백업만 지원",
+      "backup.backupFileRequired": "백업 파일 경로가 필요합니다."
     },
     "sql/platform/connection/common/constants": {
+      "backup.labelDatabase": "데이터베이스",
+      "backup.labelFilegroup": "파일 및 파일 그룹",
+      "backup.labelFull": "전체",
+      "backup.labelDifferential": "차등",
+      "backup.labelLog": "트랜잭션 로그",
+      "backup.labelDisk": "디스크",
+      "backup.labelUrl": "URL",
+      "backup.defaultCompression": "기본 서버 설정 사용",
+      "backup.compressBackup": "백업 압축",
+      "backup.doNotCompress": "백업 압축 안 함",
+      "backup.serverCertificate": "서버 인증서",
+      "backup.asymmetricKey": "비대칭 키",
+      "backup.filterBackupFiles": "백업 파일",
       "backup.allFiles": "모든 파일"
     },
     "sql/workbench/parts/restore/browser/restoreDialog": {
-      "restoreDialog.database": "데이터베이스",
-      "restoreDialog.cancel": "취소",
       "backupFilePath": "백업 파일 경로",
+      "targetDatabase": "대상 데이터베이스",
+      "RestoreDialogTitle": "데이터베이스 복원",
+      "restoreDialog.restoreTitle": "데이터베이스 복원",
+      "restoreDialog.database": "데이터베이스",
+      "restoreDialog.backupFile": "백업 파일",
+      "restoreDialog.restore": "복원",
+      "restoreDialog.cancel": "취소",
+      "restoreDialog.script": "스크립트",
+      "source": "소스",
+      "restoreFrom": "복원하기",
+      "missingBackupFilePathError": "백업 파일의 경로가 필요합니다.",
+      "multipleBackupFilePath": "하나 이상의 파일 경로를 쉼표로 구분하여 입력하세요.",
+      "database": "데이터베이스",
       "destination": "대상",
-      "restoreOptions": "복원 옵션"
+      "restoreDialog.toggleDatabaseNameDropdown": "데이터베이스 토글 드롭다운을 선택하십시오",
+      "restoreTo": "복원 위치",
+      "restorePlan": "복원 계획",
+      "backupSetsToRestore": "복원할 백업 세트",
+      "restoreDatabaseFileAs": "으로 데이터베이스 파일을 복원",
+      "restoreDatabaseFileDetails": "복원 데이터베이스 파일 세부 사항",
+      "logicalFileName": "논리적 파일 이름",
+      "fileType": "파일 형식",
+      "originalFileName": "원래 파일 이름",
+      "restoreAs": "으로 복원",
+      "restoreOptions": "복원 옵션",
+      "taillogBackup": "비상 로그 백업",
+      "serverConnection": "서버 연결",
+      "generalTitle": "일반",
+      "filesTitle": "파일",
+      "optionsTitle": "옵션"
     },
-    "sql/platform/fileBrowser/common/fileBrowserService": {
+    "sql/workbench/parts/editData/common/editDataInput": {
+      "connectionFailure": "연결실패한 데이타 세션 편집"
+    },
+    "sql/workbench/parts/editData/browser/editDataEditor": {
+      "maxRowTaskbar": "최대 행:"
+    },
+    "sql/workbench/parts/editData/browser/editDataActions": {
+      "editData.run": "실행",
+      "disposeEditFailure": "오류와 함께 실패한 편집 내용을 삭제합니다.",
+      "editData.stop": "중지",
+      "editData.showSql": "SQL 창 표시",
+      "editData.closeSql": "SQL 창 닫기"
+    },
+    "sql/parts/extensions/sqlExtensionsHelper": {
+      "tabs": "대시보드 탭 ({0})",
+      "tabId": "ID",
+      "tabTitle": "제목",
+      "tabDescription": "설명",
+      "insights": "대시보드 인사이트({0})",
+      "insightId": "ID",
+      "name": "이름",
+      "insight condition": "언제"
+    },
+    "sql/parts/fileBrowser/common/fileBrowserService": {
       "fileBrowserErrorMessage": "파일 브라우저를 로드 하는 동안 오류가 발생 했습니다."
     },
     "sql/workbench/parts/grid/views/gridActions": {
-      "saveAsJson": "JSON으로 저장"
+      "saveAsCsv": "CSV로 저장",
+      "saveAsJson": "JSON으로 저장",
+      "saveAsExcel": "Excel로 저장",
+      "saveAsXml": "XML로 저장",
+      "copySelection": "복사",
+      "copyWithHeaders": "복사(머리글 포함)",
+      "selectAll": "모두 선택",
+      "copyMessages": "복사"
+    },
+    "sql/workbench/parts/grid/views/editData/editDataGridActions": {
+      "deleteRow": "행 삭제",
+      "revertRow": "현재 행 되돌리기"
     },
     "sql/parts/grid/views/query/chartViewer.component": {
       "dataDirectionLabel": "데이터 방향",
@@ -5967,91 +6402,964 @@
       "legendLabel": "범례 위치",
       "createInsightNoEditor": "활성 편집기가 SQL 편집기가 아니기 때문에 인사이트를 만들 수 없습니다"
     },
-    "sql/workbench/services/insights/browser/insightsDialogView": {
+    "sql/parts/insights/browser/insightsDialogView": {
       "value": "값",
       "insights.dialog.items": "항목",
       "insights.dialog.itemDetails": "항목 세부 정보"
     },
-    "sql/workbench/services/insights/common/insightDialogActions": {
+    "sql/parts/insights/common/insightDialogActions": {
       "workbench.action.insights.copySelection": "셀 복사"
     },
+    "sql/workbench/parts/jobManagement/electron-browser/agentView.component": {
+      "jobview.Jobs": "작업",
+      "jobview.Alerts": "경고",
+      "jobview.Proxies": "프록시",
+      "jobview.Operators": "운영자"
+    },
+    "sql/workbench/parts/jobManagement/electron-browser/alertsView.component": {
+      "jobAlertColumns.name": "이름",
+      "jobAlertColumns.lastOccurrenceDate": "마지막 발생",
+      "jobAlertColumns.enabled": "사용",
+      "jobAlertColumns.delayBetweenResponses": "응답 간 지연(초)",
+      "jobAlertColumns.categoryName": "범주 이름"
+    },
+    "sql/workbench/parts/jobManagement/electron-browser/jobHistory.component": {
+      "stepRow.stepID": "단계 ID",
+      "stepRow.stepName": "단계 이름",
+      "stepRow.message": "메시지"
+    },
+    "sql/workbench/parts/jobManagement/electron-browser/jobsView.component": {
+      "jobColumns.name": "이름",
+      "jobColumns.lastRun": "마지막 실행",
+      "jobColumns.nextRun": "다음 실행",
+      "jobColumns.enabled": "사용",
+      "jobColumns.status": "상태",
+      "jobColumns.category": "범주",
+      "jobColumns.runnable": "실행 가능",
+      "jobColumns.schedule": "일정",
+      "jobColumns.lastRunOutcome": "마지막 실행 결과",
+      "jobColumns.previousRuns": "이전 실행",
+      "jobsView.noSteps": "이 작업에 사용할 수 있는 단계가 없습니다.",
+      "jobsView.error": "오류:"
+    },
+    "sql/workbench/parts/jobManagement/electron-browser/operatorsView.component": {
+      "jobOperatorsView.name": "이름",
+      "jobOperatorsView.emailAddress": "전자 메일 주소",
+      "jobOperatorsView.enabled": "사용"
+    },
+    "sql/workbench/parts/jobManagement/electron-browser/proxiesView.component": {
+      "jobProxyToolbar-NewItem": "새 프록시",
+      "jobProxyToolbar-Refresh": "새로 고침",
+      "jobProxiesView.accountName": "계정 이름",
+      "jobProxiesView.credentialName": "자격 증명 이름",
+      "jobProxiesView.description": "설명",
+      "jobProxiesView.isEnabled": "사용"
+    },
+    "sql/workbench/electron-browser/modelComponents/componentBase": {
+      "invalidIndex": "인덱스가 잘못되었습니다."
+    },
+    "sql/base/electron-browser/ui/inputBox/inputBox.component": {
+      "invalidValueError": "잘못된 값"
+    },
+    "sql/workbench/electron-browser/modelComponents/loadingComponent.component": {
+      "loadingMessage": "로드"
+    },
+    "sql/workbench/electron-browser/modelComponents/loadingSpinner.component": {
+      "loadingMessage": "로드"
+    },
+    "sql/workbench/electron-browser/modelComponents/queryTextEditor": {
+      "queryTextEditorAriaLabel": "view model 용 modelview 코드 편집기."
+    },
+    "sql/workbench/electron-browser/modelComponents/viewBase": {
+      "componentTypeNotRegistered": "{0} 형식의 구성 요소를 찾을 수 없습니다."
+    },
+    "sql/workbench/parts/notebook/cellToggleMoreActions": {
+      "delete": "삭제",
+      "codeBefore": "앞에 코드 삽입",
+      "codeAfter": "다음에 코드 삽입",
+      "markdownBefore": "앞에 Markdown 삽입",
+      "markdownAfter": "뒤에 Markdown 삽입",
+      "clear": "출력 내용 지우기"
+    },
+    "sql/workbench/parts/notebook/notebook.component": {
+      "displayFailed": "내용을 표시할 수 없습니다. {0}",
+      "noKernelInstalled": "셀을 실행하려면 SQL Server 2019 확장을 설치하세요.",
+      "installSql2019Extension": "확장 설치",
+      "code": "코드",
+      "text": "텍스트",
+      "clearResults": "결과 지우기",
+      "cellNotFound": "이 모델에서 URI {0}이(가) 포함된 셀을 찾을 수 없습니다."
+    },
+    "sql/workbench/parts/notebook/notebookActions": {
+      "loading": "커널을 로드하는 중...",
+      "changing": "커널을 변경하는 중...",
+      "Kernel": "커널: ",
+      "AttachTo": "연결 대상:",
+      "loadingContexts": "컨텍스트를 로드하는 중...",
+      "addNewConnection": "새 연결 추가",
+      "selectConnection": "연결 선택",
+      "localhost": "localhost",
+      "trustLabel": "높은 신뢰성",
+      "untrustLabel": "신뢰할 수 없음",
+      "alreadyTrustedMsg": "노트북을 이미 신뢰할 수 있습니다.",
+      "noKernel": "커널 아님",
+      "noContextAvailable": "None"
+    },
+    "sql/workbench/parts/notebook/notebookUtils": {
+      "mkdirOutputMsg": "... {0}을(를) 만드는 중"
+    },
+    "sql/workbench/parts/notebook/cellViews/codeActions": {
+      "notebook.failed": "활성 셀을 선택하고 다시 시도하세요.",
+      "runCell": "셀 실행",
+      "stopCell": "실행 취소",
+      "errorRunCell": "마지막 실행 시 오류가 발생했습니다. 다시 실행하려면 클릭하세요."
+    },
+    "sql/workbench/parts/notebook/cellViews/placeholderCell.component": {
+      "clickOn": "클릭",
+      "plusCode": "+ 코드",
+      "or": "또는",
+      "plusText": "+ 텍스트",
+      "toAddCell": "코드 또는 텍스트 셀 추가"
+    },
+    "sql/workbench/parts/notebook/cellViews/textCell.component": {
+      "doubleClickEdit": "편집하려면 두 번 클릭하세요."
+    },
+    "sql/workbench/parts/notebook/models/cell": {
+      "executionCanceled": "쿼리 실행이 취소되었습니다.",
+      "notebookNotReady": "이 노트북의 세션이 아직 준비되지 않았습니다.",
+      "sessionNotReady": "이 노트북의 세션이 곧 시작됩니다.",
+      "noDefaultKernel": "이 노트북에 사용할 수 있는 커널이 없습니다."
+    },
+    "sql/workbench/parts/notebook/models/clientSession": {
+      "clientSession.unknownError": "노트북 세션을 시작하는 동안 오류가 발생했습니다.",
+      "ServerNotStarted": "알 수 없는 이유로 서버가 시작하지 않았습니다.",
+      "kernelRequiresConnection": "{0} 커널을 찾을 수 없습니다. 대신 기본 커널이 사용됩니다."
+    },
+    "sql/workbench/parts/notebook/models/modelInterfaces": {
+      "sqlKernel": "SQL"
+    },
+    "sql/workbench/parts/notebook/models/notebookContexts": {
+      "selectConnection": "연결 선택",
+      "localhost": "localhost",
+      "addConnection": "새 연결 추가"
+    },
+    "sql/workbench/parts/notebook/models/notebookModel": {
+      "deleteCellFailed": "셀을 삭제하지 못했습니다.",
+      "changeKernelFailedRetry": "커널을 변경하지 못했습니다. {0} 커널이 사용됩니다. 오류: {1}",
+      "changeKernelFailed": "오류로 인해 커널을 변경하지 못했습니다. {0}",
+      "changeContextFailed": "컨텍스트 변경 실패: {0}",
+      "startSessionFailed": "세션을 시작하지 못했습니다. {0}",
+      "shutdownError": "노트북을 닫을 때 오류가 발생했습니다. {0}",
+      "shutdownClientSessionError": "노트북을 닫는 동안 클라이언트 세션 오류가 발생했습니다. {0}",
+      "ProviderNoManager": "{0} 공급자의 노트북 관리자를 찾을 수 없습니다."
+    },
+    "sql/workbench/parts/objectExplorer/common/serverGroup.contribution": {
+      "serverGroup.colors": "개체 탐색기 보기에서 사용되는 서버 그룹 색상 표.",
+      "serverGroup.autoExpand": "개체 탐색기 뷰렛에서 서버 그룹을 자동 확장합니다."
+    },
+    "sql/workbench/parts/objectExplorer/browser/serverGroupDialog": {
+      "ServerGroupsDialogTitle": "서버 그룹",
+      "serverGroup.ok": "확인",
+      "serverGroup.cancel": "취소",
+      "connectionGroupName": "서버 그룹명",
+      "MissingGroupNameError": "그룹 이름이 필요합니다.",
+      "groupDescription": "그룹 설명",
+      "groupColor": "그룹 색상"
+    },
+    "sql/workbench/parts/objectExplorer/common/serverGroupViewModel": {
+      "serverGroup.addServerGroup": "서버 그룹 추가",
+      "serverGroup.editServerGroup": "서버 그룹 편집"
+    },
+    "sql/workbench/parts/objectExplorer/browser/connectionTreeAction": {
+      "connectionTree.refresh": "새로 고침",
+      "DisconnectAction": "연결 끊기",
+      "connectionTree.addConnection": "새 연결",
+      "connectionTree.addServerGroup": "새 서버 그룹",
+      "connectionTree.editServerGroup": "서버 그룹 편집",
+      "activeConnections": "활성 연결 표시",
+      "showAllConnections": "모든 연결 표시",
+      "recentConnections": "최근 연결",
+      "registeredServers.newQuery": "새 쿼리",
+      "deleteConnection": "연결 삭제",
+      "deleteConnectionGroup": "그룹 삭제",
+      "clearSearch": "검색 지우기"
+    },
+    "sql/workbench/parts/objectExplorer/browser/objectExplorerActions": {
+      "ManageAction": "관리"
+    },
+    "sql/workbench/parts/objectExplorer/browser/serverTreeRenderer": {
+      "loading": "로드 중..."
+    },
+    "sql/workbench/parts/objectExplorer/browser/serverTreeView": {
+      "serverTree.addConnection": "연결 추가"
+    },
+    "sql/workbench/parts/objectExplorer/browser/treeCreationUtils": {
+      "treeAriaLabel": "최근 연결",
+      "treeCreation.regTreeAriaLabel": "서버"
+    },
     "sql/workbench/parts/profiler/browser/profiler.contribution": {
+      "profiler.settings.viewTemplates": "뷰 템플릿 지정",
       "profiler.settings.sessionTemplates": "세션 템플릿 지정"
     },
     "sql/workbench/parts/profiler/browser/profilerActions.contribution": {
       "profilerCategory": "프로파일러"
     },
     "sql/workbench/parts/profiler/browser/profilerActions": {
-      "profiler.toggleAutoscroll": "자동 스크롤 토글",
+      "profilerAction.connect": "연결",
+      "profilerAction.disconnect": "연결 끊기",
+      "start": "시작",
+      "create": "새 세션",
+      "profilerAction.pauseCapture": "일시 중지",
+      "profilerAction.resumeCapture": "재개",
+      "profilerStop.stop": "중지",
+      "profiler.clear": "데이터 초기화",
+      "profilerAction.autoscrollOn": "자동 스크롤 : 사용",
+      "profilerAction.autoscrollOff": "자동 스크롤 : 끄기",
+      "profiler.toggleCollapsePanel": "축소된 패널로 전환",
       "profiler.editColumns": "열 편집",
       "profiler.findNext": "다음 문자열 찾기",
-      "profiler.findPrevious": "이전 문자열 찾기"
+      "profiler.findPrevious": "이전 문자열 찾기",
+      "profilerAction.newProfiler": "프로파일러 시작",
+      "profiler.filter": "필터...",
+      "profiler.clearFilter": "필터 지우기"
     },
     "sql/workbench/parts/profiler/browser/profilerColumnEditorDialog": {
-      "nameColumn": "열 정렬"
+      "eventSort": "이벤트로 정렬",
+      "nameColumn": "열 정렬",
+      "profilerColumnDialog.profiler": "프로파일러",
+      "profilerColumnDialog.ok": "확인",
+      "profilerColumnDialog.cancel": "취소"
+    },
+    "sql/workbench/parts/profiler/browser/profilerFilterDialog": {
+      "profilerFilterDialog.clear": "모두 지우기",
+      "profilerFilterDialog.apply": "적용",
+      "profilerFilterDialog.ok": "확인",
+      "profilerFilterDialog.cancel": "취소",
+      "profilerFilterDialog.title": "필터",
+      "profilerFilterDialog.remove": "제거",
+      "profilerFilterDialog.add": "추가",
+      "profilerFilterDialog.addClauseText": "절을 추가하려면 여기를 클릭하십시오.",
+      "profilerFilterDialog.fieldColumn": "필드",
+      "profilerFilterDialog.operatorColumn": "운영자",
+      "profilerFilterDialog.valueColumn": "값",
+      "profilerFilterDialog.isNullOperator": "Null임",
+      "profilerFilterDialog.isNotNullOperator": "Null 아님",
+      "profilerFilterDialog.containsOperator": "포함",
+      "profilerFilterDialog.notContainsOperator": "포함하지 않음",
+      "profilerFilterDialog.startsWithOperator": "다음으로 시작함",
+      "profilerFilterDialog.notStartsWithOperator": "다음으로 시작하지 않음"
+    },
+    "sql/workbench/parts/profiler/browser/profilerEditor": {
+      "profiler.viewSelectAccessibleName": "보기 선택",
+      "profiler.sessionSelectAccessibleName": "세션 선택",
+      "profiler.sessionSelectLabel": "세션 선택:",
+      "profiler.viewSelectLabel": "보기 선택:",
+      "text": "텍스트",
+      "label": "레이블",
+      "profilerEditor.value": "값",
+      "details": "세부 정보"
+    },
+    "sql/workbench/parts/profiler/browser/profilerInput": {
+      "profilerInput.profiler": "프로파일러",
+      "profilerInput.notConnected": "연결되지 않음",
+      "profiler.sessionStopped": "{0} 서버에서 XEvent 프로파일러 세션이 예기치 않게 중지되었습니다.",
+      "profiler.sessionCreationError": "새로운 세션을 시작 하는 동안 오류가 발생 했습니다",
+      "profiler.eventsLost": "{0}의 XEvent 프로파일러 세션에서 이벤트가 손실되었습니다.",
+      "confirmStopProfilerSession": "실행 중인 XEvent 세션을 중지하시겠습니까?",
+      "profilerClosingActions.yes": "예",
+      "profilerClosingActions.no": "아니요",
+      "profilerClosingActions.cancel": "취소"
+    },
+    "sql/workbench/parts/profiler/browser/profilerResourceEditor": {
+      "profilerTextEditorAriaLabel": "이벤트 텍스트의 프로파일러 편집기. 읽기 전용"
+    },
+    "sql/workbench/parts/profiler/browser/profilerFindWidget": {
+      "label.find": "찾기",
+      "placeholder.find": "찾기",
+      "label.previousMatchButton": "이전 일치",
+      "label.nextMatchButton": "다음 일치 항목",
+      "label.closeButton": "닫기",
+      "title.matchesCountLimit": "많은 수의 검색 결과가 반환되었습니다. 처음 999개의 일치 항목만 강조 표시됩니다.",
+      "label.matchesLocation": "{1}의 {0}",
+      "label.noResults": "결과 없음"
+    },
+    "sql/workbench/parts/profiler/browser/profilerTableEditor": {
+      "ProfilerTableEditor.eventCountFiltered": "이벤트(필터링됨): {0}/{1}",
+      "ProfilerTableEditor.eventCount": "이벤트: {0}"
     },
     "sql/workbench/parts/query/browser/flavorStatus": {
+      "chooseSqlLang": "SQL 언어 선택",
+      "changeProvider": "SQL 언어 공급자 변경",
+      "changeSqlProvider": "SQL 엔진 공급자 변경",
+      "alreadyConnected": "{0} 엔진을 사용한 연결이 존재합니다. 변경을 위해서 연결을 변경하거나 취소하십시오.",
+      "noEditor": "현재 활성화된 텍스트 편집기 없음",
       "pickSqlProvider": "SQL 공급자를 선택하세요"
     },
     "sql/workbench/parts/query/common/localizedConstants": {
+      "runQueryBatchStartMessage": "쿼리 실행 시작: ",
+      "runQueryBatchStartLine": "줄 {0}",
+      "msgCancelQueryFailed": "쿼리 취소 실패: {0}",
+      "msgSaveStarted": "결과 저장 시작: ",
+      "msgSaveFailed": "결과 저장에 실패하였습니다.",
+      "msgSaveSucceeded": "결과 저장 완료: ",
+      "msgStatusRunQueryInProgress": "쿼리를 실행하는 중...",
       "maximizeLabel": "최대화",
+      "resultsPane.restoreLabel": "복원",
+      "saveCSVLabel": "CSV로 저장",
+      "saveJSONLabel": "JSON으로 저장",
+      "saveExcelLabel": "Excel로 저장",
+      "saveXMLLabel": "XML로 저장",
+      "viewChartLabel": "차트 보기",
       "resultPaneLabel": "결과",
-      "executeQueryLabel": "쿼리 실행 "
+      "executeQueryLabel": "쿼리 실행 ",
+      "messagePaneLabel": "메시지",
+      "elapsedTimeLabel": "총 실행 시간: {0}",
+      "msgCannotSaveMultipleSelections": "결과 저장 명령은 다중 선택을 사용할 수 없습니다."
     },
     "sql/workbench/parts/query/browser/query.contribution": {
-      "sql.messagesDefaultOpen": "메세지 창을 띄우려면 True를 선택하십시오(기본값). 닫으려면 false를 선택하십시오.",
-      "tabColorMode.off": "탭 색칠 비활성화"
+      "sql.messagesDefaultOpen": "메시지 창이 기본적으로 펼쳐지게 하려면 true로 설정; 닫힌 상태는 false로 설정",
+      "sql.saveAsCsv.includeHeaders": "[옵션] true로 설정하면, 결과를 CSV로 저장할 때 열의 머리글이 포함됨",
+      "sql.saveAsCsv.delimiter": "[선택 사항] CSV로 저장할 때 값 사이에 사용하는 사용자 지정 구분 기호",
+      "sql.saveAsCsv.lineSeperator": "[옵션] 결과를 CSV로 저장할 때 행 분리에 이용할 문자",
+      "sql.saveAsCsv.textIdentifier": "[옵션] 결과를 CSV로 저장할 때 텍스트 필드를 감싸기 위해 사용하는 문자",
+      "sql.saveAsCsv.encoding": "[옵션] 결과를 CSV로 저장할 때 사용할 파일 인코딩",
+      "sql.results.streaming": "결과 스트리밍을 사용합니다. 몇 가지 사소한 시각적 문제가 있습니다.",
+      "sql.saveAsXml.formatted": "[선택 사항] true이면 결과를 XML로 저장할 때 XML 출력에 형식이 지정됩니다.",
+      "sql.saveAsXml.encoding": "[선택 사항] XML로 결과를 저장할 때 사용되는 파일 인코딩",
+      "sql.copyIncludeHeaders": "[옵션] 결과 뷰에서 결과를 복사에 대한 구성 옵션",
+      "sql.copyRemoveNewLine": "[옵션] 결과 뷰에서 여러 줄을 포함한 결과를 복사할지에 대한 구성 옵션",
+      "sql.showBatchTime": "[옵션] 개별 일괄 처리에 대한 실행시간 표시 여부",
+      "defaultChartType": "[선택 사항] 쿼리 결과에서 차트 뷰어를 열 때 사용할 기본 차트 유형",
+      "tabColorMode.off": "탭 색칠 비활성화",
+      "tabColorMode.border": "각 편집기 탭의 상단 테두리는 관련 서버 그룹과 일치하도록 칠해집니다.",
+      "tabColorMode.fill": "각 편집기 탭의 배경색이 관련 서버 그룹과 일치합니다.",
+      "tabColorMode": "활성 연결의 서버 그룹을 기반으로 탭 색상 지정 방법 제어",
+      "showConnectionInfoInTitle": "제목에 있는 탭에 연결 정보를 표시할지 여부를 제어합니다.",
+      "sql.promptToSaveGeneratedFiles": "생성된 SQL 파일 저장 여부 묻기",
+      "mssql.intelliSense.enableIntelliSense": "IntelliSense의 사용 여부",
+      "mssql.intelliSense.enableErrorChecking": "IntelliSense 오류 검사의 사용 여부",
+      "mssql.intelliSense.enableSuggestions": "IntelliSense 제안의 사용 여부",
+      "mssql.intelliSense.enableQuickInfo": "IntelliSense 요약정보의 사용 여부",
+      "mssql.intelliSense.lowerCaseSuggestions": "IntelliSense 제안을 소문자로 표시 여부",
+      "queryShortcutDescription": "바로 가기 텍스트를 프로 시저 호출로 실행하려면 키 바인딩 workbench.action.query.shortcut{0}을 설정 하십시오. 쿼리 편집기에서 선택한 텍스트가 매개 변수로 전달됩니다."
     },
-    "sql/platform/node/resultSerializer": {
+    "sql/workbench/parts/query/common/queryInput": {
+      "disconnected": "연결 끊김"
+    },
+    "sql/workbench/parts/query/common/queryResultsInput": {
+      "extensionsInputName": "확장"
+    },
+    "sql/parts/query/common/resultSerializer": {
       "resultsSerializer.saveAsFileTitle": "결과 파일 선택"
     },
-    "sql/workbench/parts/query/browser/queryActions": {
-      "changeConnectionDatabaseLabel": "연결 변경"
+    "sql/workbench/parts/query/browser/rowCountStatus": {
+      "rowStatus": "행 개수",
+      "rowCount": "{0}개의 행"
     },
-    "sql/platform/query/common/queryRunner": {
+    "sql/workbench/parts/query/browser/timeElapsedStatus": {
+      "timeElapsed": "경과 시간"
+    },
+    "sql/workbench/parts/query/browser/actions": {
+      "saveAsCsv": "CSV로 저장",
+      "saveAsJson": "JSON으로 저장",
+      "saveAsExcel": "Excel로 저장",
+      "saveAsXml": "XML로 저장",
+      "copySelection": "복사",
+      "copyWithHeaders": "복사(머리글 포함)",
+      "selectAll": "모두 선택",
+      "copyMessages": "복사",
+      "copyAll": "모두 복사",
+      "maximize": "최대화",
+      "restore": "복원",
+      "chart": "차트",
+      "showQueryPlan": "쿼리 계획 표시"
+    },
+    "sql/workbench/parts/query/browser/queryResultsView": {
+      "gridPanel": "결과",
+      "messagePanel": "메시지",
+      "resultsTabTitle": "결과"
+    },
+    "sql/workbench/parts/query/common/resultsGridContribution": {
+      "resultsGridConfigurationTitle": "결과 표",
+      "fontFamily": "글꼴 패밀리를 제어합니다.",
+      "fontWeight": "글꼴 두께를 조정합니다.",
+      "fontSize": "픽셀 단위로 글꼴 크기를 제어합니다.",
+      "letterSpacing": "픽셀 단위로 문자 간격을 제어 합니다.",
+      "rowHeight": "픽셀단위로 행 높이 제어",
+      "cellPadding": "셀 안쪽 여백을 픽셀 단위로 제어합니다.",
+      "autoSizeColumns": "초기 결과의 열 너비를 자동으로 조정합니다. 열 개수가 많거나 셀이 크면 성능 문제가 발생할 수 있습니다.",
+      "maxColumnWidth": "자동으로 크기가 조정되는 열의 최대 너비(픽셀)"
+    },
+    "sql/workbench/parts/charts/browser/actions": {
+      "createInsightLabel": "인사이트 만들기",
+      "createInsightNoEditor": "활성 편집기가 SQL 편집기가 아니기 때문에 인사이트를 만들 수 없습니다",
+      "myWidgetName": "내 위젯",
+      "copyChartLabel": "이미지로 복사",
+      "chartNotFound": "저장할 차트를 찾을 수 없습니다.",
+      "saveImageLabel": "이미지로 저장",
+      "chartSaved": "다음 경로에 차트가 저장됨: {0}",
+      "chartViewer.saveAsFileTitle": "결과 파일 선택"
+    },
+    "sql/workbench/parts/charts/browser/chartOptions": {
+      "dataDirectionLabel": "데이터 방향",
+      "verticalLabel": "수직",
+      "horizontalLabel": "가로",
+      "columnsAsLabelsLabel": "열 이름을 레이블로 사용",
+      "labelFirstColumnLabel": "행 레이블로 첫 번째 열 사용",
+      "legendLabel": "범례 위치",
+      "yAxisLabel": "Y 축 레이블",
+      "yAxisMinVal": "Y 축 최소 값",
+      "yAxisMaxVal": "Y 축 최댓값",
+      "xAxisLabel": "X 축 레이블",
+      "xAxisMinVal": "X 축 최소 값",
+      "xAxisMaxVal": "x 축 최댓값",
+      "xAxisMinDate": "X축 최소 날짜",
+      "xAxisMaxDate": "X축 최대 날짜",
+      "dataTypeLabel": "데이터 타입",
+      "numberLabel": "번호",
+      "pointLabel": "포인트",
+      "chartTypeLabel": "차트 종류",
+      "encodingOption": "인코딩",
+      "imageFormatOption": "이미지 형식"
+    },
+    "sql/workbench/parts/charts/browser/chartTab": {
+      "chartTabTitle": "차트"
+    },
+    "sql/workbench/parts/charts/browser/graphInsight": {
+      "series": "시리즈 {0}"
+    },
+    "sql/workbench/parts/query/browser/keyboardQueryActions": {
+      "focusOnCurrentQueryKeyboardAction": "현재 쿼리에 포커스",
+      "runQueryKeyboardAction": "쿼리 실행",
+      "runCurrentQueryKeyboardAction": "현재 쿼리 실행",
+      "runCurrentQueryWithActualPlanKeyboardAction": "실제 실행 계획과 함께 현재 쿼리 실행",
+      "cancelQueryKeyboardAction": "쿼리 취소",
+      "refreshIntellisenseKeyboardAction": "IntelliSense 캐시를 새로 고침",
+      "toggleQueryResultsKeyboardAction": "쿼리 결과 전환",
+      "queryShortcutNoEditor": "단축키를 실행하려면 편집기 매개변수가 필요합니다",
+      "parseSyntaxLabel": "쿼리 구문 분석",
+      "queryActions.parseSyntaxSuccess": "명령이 성공적으로 완료되었습니다.",
+      "queryActions.parseSyntaxFailure": "명령 실패: ",
+      "queryActions.notConnected": "서버에 연결하세요."
+    },
+    "sql/workbench/parts/query/browser/queryActions": {
+      "runQueryLabel": "실행",
+      "cancelQueryLabel": "취소",
+      "estimatedQueryPlan": "설명",
+      "actualQueryPlan": "실제",
+      "disconnectDatabaseLabel": "연결 끊기",
+      "changeConnectionDatabaseLabel": "연결 변경",
+      "connectDatabaseLabel": "연결",
+      "selectDatabase": "데이터베이스 선택",
+      "listDatabases.toggleDatabaseNameDropdown": "데이터베이스 토글 드롭다운을 선택하십시오",
+      "changeDatabase.failed": "데이터베이스를 변경 하지 못했습니다.",
+      "changeDatabase.failedWithError": "데이터베이스 {0}를 변경 하지 못했습니다."
+    },
+    "sql/parts/query/execution/queryRunner": {
       "query.moreRowsFailedError": "더 많은 행을 가져오는 중에 문제가 발생했습니다:"
     },
     "sql/parts/query/views/queryOutput.component": {
       "queryPlan": "쿼리 실행 계획"
     },
+    "sql/workbench/parts/queryPlan/electron-browser/queryPlan": {
+      "queryPlanTitle": "쿼리 실행 계획"
+    },
     "sql/parts/queryPlan/topOperations.component": {
       "topOperations.parallel": "병렬",
       "topOperations.actualRebinds": "실제 리바인딩"
     },
+    "sql/workbench/parts/queryPlan/browser/topOperations": {
+      "topOperations.operation": "작업",
+      "topOperations.object": "개체",
+      "topOperations.estCost": "예상 비용",
+      "topOperations.estSubtreeCost": "예상 하위 트리 비용",
+      "topOperations.actualRows": "실제 행",
+      "topOperations.estRows": "Est 행",
+      "topOperations.actualExecutions": "실제 실행",
+      "topOperations.estCPUCost": "예측 CPU 비용",
+      "topOperations.estIOCost": "예상 입출력 비용",
+      "topOperations.parallel": "병렬",
+      "topOperations.actualRebinds": "실제 리바인딩",
+      "topOperations.estRebinds": "Est 다시 바인딩",
+      "topOperations.actualRewinds": "실제 되감기",
+      "topOperations.estRewinds": "예상 되감기 수",
+      "topOperations.partitioned": "분할",
+      "topOperationsTitle": "상위 작업"
+    },
     "sql/parts/registeredServer/common/registeredServer.contribution": {
       "startupConfig": "시작 구성"
     },
-    "sql/workbench/parts/objectExplorer/browser/serverGroupDialog": {
+    "sql/parts/registeredServer/serverGroupDialog/serverGroupDialog": {
       "MissingGroupNameError": "그룹 이름이 필요합니다."
     },
-    "sql/workbench/parts/objectExplorer/common/serverGroupViewModel": {
+    "sql/parts/registeredServer/serverGroupDialog/serverGroupViewModel": {
       "serverGroup.editServerGroup": "서버 그룹 편집"
     },
-    "sql/workbench/parts/objectExplorer/browser/connectionTreeAction": {
+    "sql/parts/registeredServer/viewlet/connectionTreeAction": {
       "connectionTree.addServerGroup": "새 서버 그룹"
     },
-    "sql/workbench/parts/objectExplorer/browser/serverTreeView": {
+    "sql/parts/registeredServer/viewlet/serverTreeView": {
       "serverTree.addConnection": "연결 추가"
     },
     "sql/parts/taskHistory/common/taskHistory.contribution": {
-      "taskHistory": "작업 기록"
+      "inProgressTasksChangesBadge": "진행 중인 작업 {0} 개",
+      "showTaskHistory": "작업 이력 보기",
+      "taskHistory.view": "보기",
+      "taskHistory": "작업 기록",
+      "datasource.task": "운영 작업 상태",
+      "miViewTasks": "작업(&&T)"
     },
     "sql/parts/taskHistory/common/taskService": {
       "InProgressWarning": "1개 이상의 작업이 진행 중입니다. 그래도 작업을 종료하시겠습니까?",
       "yes": "예",
       "no": "아니오"
     },
+    "sql/parts/taskHistory/viewlet/taskAction": {
+      "cancelTask.cancel": "취소",
+      "errorMsgFromCancelTask": "작업을 취소하지 못했습니다.",
+      "taskAction.script": "스크립트"
+    },
+    "sql/parts/taskHistory/viewlet/taskHistoryRenderer": {
+      "succeeded": "성공",
+      "failed": "실패",
+      "inProgress": "진행 중",
+      "notStarted": "시작 되지 않음",
+      "canceled": "취소됨",
+      "canceling": "취소하는 중"
+    },
+    "sql/parts/taskHistory/viewlet/taskHistoryView": {
+      "noTaskMessage": "표시할 작업 기록이 없습니다.  실행 상태를 보기 위해 작업 백업 또는 복원을 시도하십시오.",
+      "taskHistory.regTreeAriaLabel": "작업 기록",
+      "taskError": "작업 오류"
+    },
+    "sql/platform/connection/common/connectionConfig": {
+      "invalidServerName": "같은 이름의 서버 그룹이 이미 있습니다."
+    },
+    "sql/platform/connection/common/connectionManagementService": {
+      "connection.noAzureAccount": "연결을 위해 Azure 계정 토큰을 가져오지 못했습니다.",
+      "connectionNotAcceptedError": "연결이 허용되지 않습니다",
+      "connectionService.yes": "예",
+      "connectionService.no": "아니요",
+      "cancelConnectionConfirmation": "이 연결을 취소하시겠습니까?"
+    },
+    "sql/platform/dacfx/common/dacFxService": {
+      "providerIdNotValidError": "DacFxService와 상호 작용하려면 연결이 필요합니다.",
+      "noHandlerRegistered": "등록된 처리기 없음"
+    },
+    "sql/platform/dashboard/common/dashboardRegistry": {
+      "dashboard.properties.property": "대시보드에 표시 속성을 정의 합니다.",
+      "dashboard.properties.property.displayName": "속성에 대한 레이블로 사용할 값",
+      "dashboard.properties.property.value": "값에 대해 액세스하는 개체의 값",
+      "dashboard.properties.property.ignore": "무시 할 값 지정",
+      "dashboard.properties.property.default": "무시되거나 값이 없는 경우 표시할 기본값",
+      "dashboard.properties.flavor": "대시보드 속성을 정의하기 위한 특성",
+      "dashboard.properties.flavor.id": "특성의 ID",
+      "dashboard.properties.flavor.condition": "이 선택을 사용하는 조건",
+      "dashboard.properties.flavor.condition.field": "비교할 필드",
+      "dashboard.properties.flavor.condition.operator": "비교를 위해 사용할 연산자",
+      "dashboard.properties.flavor.condition.value": "필드를 비교할 대상 값",
+      "dashboard.properties.databaseProperties": "데이터베이스 페이지 표시 속성",
+      "dashboard.properties.serverProperties": "서버 페이지에 표시할 속성",
+      "carbon.extension.dashboard": "이 공급자가 대시보드를 지원함을 정의합니다.",
+      "dashboard.id": "공급자 id (예: MSSQL)",
+      "dashboard.properties": "대시보드에 표시할 속성 값"
+    },
+    "sql/platform/dashboard/common/insightRegistry": {
+      "schema.dashboardWidgets.InsightsRegistry": "대시보드에 사용되는 위젯"
+    },
+    "sql/platform/dashboard/common/widgetRegistry": {
+      "schema.dashboardWidgets.all": "대시보드에 사용되는 위젯",
+      "schema.dashboardWidgets.database": "대시보드에 사용되는 위젯",
+      "schema.dashboardWidgets.server": "대시보드에 사용되는 위젯"
+    },
+    "sql/platform/dialog/dialogTypes": {
+      "dialogModalDoneButtonLabel": "완료",
+      "dialogModalCancelButtonLabel": "취소"
+    },
+    "sql/platform/fileBrowser/common/fileBrowserService": {
+      "fileBrowserErrorMessage": "파일 브라우저를 로드 하는 동안 오류가 발생 했습니다.",
+      "fileBrowserErrorDialogTitle": "파일 브라우저 오류"
+    },
+    "sql/platform/jobManagement/common/jobActions": {
+      "jobaction.successLabel": "성공",
+      "jobaction.faillabel": "오류",
+      "jobaction.refresh": "새로 고침",
+      "jobaction.newJob": "새 작업",
+      "jobaction.run": "실행",
+      "jobSuccessfullyStarted": "작업이 시작되었습니다.",
+      "jobaction.stop": "중지",
+      "jobSuccessfullyStopped": ": 작업이 성공적으로 중지 되었습니다.",
+      "jobaction.editJob": "작업 편집",
+      "jobaction.deleteJob": "작업 삭제",
+      "jobaction.deleteJobConfirm": "작업 '{0}'을 정말 삭제하겠습니까?",
+      "jobaction.failedToDeleteJob": "작업 '{0}' 을 삭제할 수 없습니다.\r\n오류: {1}",
+      "jobaction.deletedJob": "작업이 삭제되었습니다.",
+      "jobaction.newStep": "새로운 단계",
+      "jobaction.deleteStep": "단계 삭제",
+      "jobaction.deleteStepConfirm": "'{0}' 단계를 삭제하시겠습니까?",
+      "jobaction.failedToDeleteStep": "'{0}' 단계를 삭제할 수 없습니다.\r\n오류: {1}",
+      "jobaction.deletedStep": "작업 단계가 삭제되었습니다.",
+      "jobaction.newAlert": "새 경고",
+      "jobaction.editAlert": "경고 편집",
+      "jobaction.deleteAlert": "삭제 경고",
+      "jobaction.Cancel": "취소",
+      "jobaction.deleteAlertConfirm": "'{0}' 경고를 삭제하시겠습니까?",
+      "jobaction.failedToDeleteAlert": "'{0}' 경고를 삭제할 수 없습니다.\r\n오류: {1}",
+      "jobaction.deletedAlert": "경고가 삭제되었습니다.",
+      "jobaction.newOperator": "새 운영자",
+      "jobaction.editOperator": "연산자 편집",
+      "jobaction.deleteOperator": "연산자 삭제",
+      "jobaction.deleteOperatorConfirm": "연산자 '{0}'을 (를) 삭제 하시겠습니까?",
+      "jobaction.failedToDeleteOperator": "연산자 '{0}'를 삭제할 수 없습니다.\r\n오류: {1}",
+      "joaction.deletedOperator": "연산자가 삭제되었습니다.",
+      "jobaction.newProxy": "새 프록시",
+      "jobaction.editProxy": "프록시 편집",
+      "jobaction.deleteProxy": "프록시 삭제",
+      "jobaction.deleteProxyConfirm": "당신은 정말로 프록시 '{0}'를 삭제하시겠습니까?",
+      "jobaction.failedToDeleteProxy": "프록시 '{0}'를 삭제할 수 없습니다.\r\n오류: {1}",
+      "jobaction.deletedProxy": "프록시가 삭제되었습니다."
+    },
+    "sql/platform/jobManagement/common/jobManagementService": {
+      "providerIdNotValidError": "JobManagementService와 상호 작용하려면 연결이 필요합니다.",
+      "noHandlerRegistered": "등록된 처리기 없음"
+    },
+    "sql/platform/jobManagement/common/jobManagementUtilities": {
+      "agentUtilities.failed": "실패",
+      "agentUtilities.succeeded": "성공",
+      "agentUtilities.retry": "재시도",
+      "agentUtilities.canceled": "취소",
+      "agentUtilities.inProgress": "진행 중",
+      "agentUtilities.statusUnknown": "상태 알 수 없음",
+      "agentUtilities.executing": "실행 중",
+      "agentUtilities.waitingForThread": "스레드 대기 중",
+      "agentUtilities.betweenRetries": "다시 시도 대기 중",
+      "agentUtilities.idle": "유휴 상태",
+      "agentUtilities.suspended": "일시 중지됨",
+      "agentUtilities.obsolete": "[이전 방식]",
+      "agentUtilities.yes": "예",
+      "agentUtilities.no": "아니요",
+      "agentUtilities.notScheduled": "예약되지 않음",
+      "agentUtilities.neverRun": "실행 안 함"
+    },
+    "sql/platform/node/resultSerializer": {
+      "resultsSerializer.saveAsFileTitle": "결과 파일 선택",
+      "resultsSerializer.saveAsFileExtensionCSVTitle": "CSV (쉼표로 구분)",
+      "resultsSerializer.saveAsFileExtensionJSONTitle": "JSON",
+      "resultsSerializer.saveAsFileExtensionExcelTitle": "Excel 통합 문서",
+      "resultsSerializer.saveAsFileExtensionXMLTitle": "XML",
+      "resultsSerializer.saveAsFileExtensionTXTTitle": "일반 텍스트",
+      "openLocation": "파일 위치 열기",
+      "openFile": "파일 열기"
+    },
+    "sql/platform/query/common/queryModelService": {
+      "commitEditFailed": "row 커밋 실패",
+      "runQueryStringBatchStartMessage": "쿼리 \"{0}\" 실행 시작",
+      "updateCellFailed": "셀 업데이트 실패:"
+    },
+    "sql/platform/query/common/queryRunner": {
+      "query.ExecutionFailedError": "예기치 않은 오류로 인해 실행하지 못했습니다. {0}\t{1}",
+      "query.message.executionTime": "총 실행 시간: {0}",
+      "query.message.startQuery": "{0}번째 줄에서 쿼리 실행이 시작됨",
+      "query.initEditExecutionFailed": "초기화 편집 실행 실패: ",
+      "elapsedBatchTime": "일괄 처리 실행 시간: {0}"
+    },
+    "sql/platform/taskHistory/common/taskService": {
+      "InProgressWarning": "1개 이상의 작업이 진행 중입니다. 그래도 작업을 종료하시겠습니까?",
+      "taskService.yes": "예",
+      "taskService.no": "아니요"
+    },
+    "sql/platform/theme/common/colors": {
+      "tableHeaderBackground": "테이블 헤더 배경색",
+      "tableHeaderForeground": "테이블 헤더 전경색",
+      "disabledInputBoxBackground": "입력상자 배경 사용안함.",
+      "disabledInputBoxForeground": "사용할 수 없는 전면 입력 상자입니다.",
+      "buttonFocusOutline": "선택한 버튼의 윤곽선 색.",
+      "disabledCheckboxforeground": "비활성화된 확인란 전경입니다.",
+      "listFocusAndSelectionBackground": "목록/표가 활성화되었을 때 선택하고 포커싱된 항목에 대한 목록/표 배경색",
+      "agentTableBackground": "SQL 에이전트 테이블 배경색입니다.",
+      "agentCellBackground": "SQL 에이전트 테이블 셀 배경색입니다.",
+      "agentTableHoverBackground": "SQL 에이전트 테이블 호버 배경색.",
+      "agentJobsHeadingColor": "SQL 에이전트 머리글 배경색입니다.",
+      "agentCellBorderColor": "SQL 에이전트 테이블 셀 테두리 색입니다."
+    },
     "sql/workbench/services/accountManagement/browser/accountManagementService": {
       "accountManagementNoProvider": "계정 공급자가 존재하지 않습니다"
     },
+    "sql/workbench/api/node/extHostModelView": {
+      "unknownComponentType": "알 수 없는 구성 요소 형식입니다. ModelBuilder를 사용하여 개체를 만들어야 합니다.",
+      "invalidIndex": "인덱스가 잘못되었습니다.",
+      "unknownConfig": "알 수 없는 구성 요소 구성입니다. ModelBuilder를 사용하여 구성 개체를 만들어야 합니다."
+    },
+    "sql/workbench/api/node/extHostModelViewDialog": {
+      "dialogDoneLabel": "완료",
+      "dialogCancelLabel": "취소",
+      "generateScriptLabel": "스크립트 생성",
+      "dialogNextLabel": "다음",
+      "dialogPreviousLabel": "이전"
+    },
+    "sql/workbench/api/node/extHostModelViewTree": {
+      "treeView.notRegistered": "ID가 '{0}'인 트리 뷰가 등록되지 않았습니다."
+    },
+    "sql/workbench/api/node/extHostNotebook": {
+      "providerRequired": "유효한 providerId가 있는 NotebookProvider를 이 메서드에 전달해야 합니다.",
+      "errNoProvider": "노트북 공급자가 없습니다.",
+      "errNoManager": "관리자를 찾을 수 없습니다.",
+      "noServerManager": "{0} 노트북의 노트북 관리자에 서버 관리자가 없습니다. 작업을 수행할 수 없습니다.",
+      "noContentManager": "{0} 노트북의 노트북 관리자에 콘텐츠 관리자가 없습니다. 작업을 수행할 수 없습니다.",
+      "noSessionManager": "{0} 노트북의 노트북 관리자에 세션 관리자가 없습니다. 작업을 수행할 수 없습니다."
+    },
+    "sql/workbench/browser/modal/media/modal": {
+      "infoAltText": "정보",
+      "warningAltText": "경고",
+      "errorAltText": "오류",
+      "showMessageDetails": "세부 정보 표시",
+      "hideMessageDetails": "세부 정보 숨기기",
+      "copyMessage": "복사",
+      "closeMessage": "닫기",
+      "modalBack": "뒤로"
+    },
+    "sql/workbench/browser/modal/optionsDialog": {
+      "optionsDialog.ok": "확인",
+      "optionsDialog.cancel": "취소"
+    },
+    "sql/workbench/browser/modal/optionsDialogHelper": {
+      "optionsDialog.missingRequireField": "가 필요 합니다.",
+      "optionsDialog.invalidInput": "입력이 잘못되었습니다. 숫자 값이 필요합니다."
+    },
+    "sql/workbench/browser/parts/views/customView": {
+      "no-dataprovider": "등록된 데이터 공급자가 없이 보기 데이터를 제공할 수 없습니다.",
+      "collapse": "Collapse"
+    },
+    "sql/workbench/common/actions.contribution": {
+      "previewFeatures.configTitle": "미리 보기 기능",
+      "previewFeatures.configEnable": "릴리스되지 않은 미리 보기 기능 사용",
+      "showConnectDialogOnStartup": "시작 시 연결 대화 상자 표시"
+    },
     "sql/workbench/common/actions": {
-      "backupAction.backup": "백업"
+      "newQueryAction.newQuery": "새 쿼리",
+      "scriptSelect": "Select Top 1000",
+      "scriptExecute": "실행 스크립트",
+      "scriptAlter": "Alter로 스크립트",
+      "editData": "데이터 편집",
+      "scriptCreate": "Create로 스크립트",
+      "scriptDelete": "Drop 스크립트",
+      "backupAction.backup": "백업",
+      "backup.isPreviewFeature": "백업을 사용하려면 미리 보기 기능을 사용하도록 설정해야 합니다.",
+      "restoreAction.restore": "복원",
+      "restore.isPreviewFeature": "복원을 사용하려면 미리 보기 기능을 사용하도록 설정해야 합니다.",
+      "manage": "관리",
+      "showDetails": "세부 정보 표시",
+      "newDatabase": "새 데이터베이스",
+      "configureDashboard": "대시보드를 구성하는 방법 알아보기"
+    },
+    "sql/workbench/common/taskUtilities": {
+      "selectOperationName": "선택",
+      "createOperationName": "만들기",
+      "insertOperationName": "삽입",
+      "updateOperationName": "업데이트",
+      "deleteOperationName": "삭제",
+      "scriptSelectNotFound": "객체에서 select 스크립트를 호출 할 때 스크립트가 반환되지 않았습니다",
+      "scriptNotFoundForObject": "개체 {1}를 {0} (으)로 스크립팅 했지만, 스크립트가 반환되지 않았습니다.",
+      "scriptingFailed": "스크립트 실패",
+      "scriptNotFound": "{0}의 결과로 반환된 스크립트가 없습니다."
+    },
+    "sql/workbench/electron-browser/enablePreviewFeatures": {
+      "enablePreviewFeatures.notice": "확장을 완전히 지원하고 일부 작업을 사용할 수 있도록 하려면 미리 보기 기능이 필요합니다. 미리 보기 기능을 사용하도록 설정하시겠습니까?",
+      "enablePreviewFeatures.yes": "예",
+      "enablePreviewFeatures.no": "아니요",
+      "enablePreviewFeatures.never": "아니요, 다시 표시하지 않습니다."
     },
     "sql/workbench/services/errorMessage/browser/errorMessageDialog": {
       "copyDetails": "세부 내용 복사"
     },
     "sql/platform/errorMessage/common/errorMessageService": {
       "warning": "경고"
+    },
+    "sql/workbench/parts/connection/common/connectionProviderExtension": {
+      "schema.providerId": "공급자용 일반 ID",
+      "schema.displayName": "공급자의 표시 이름",
+      "schema.connectionOptions": "연결 옵션"
+    },
+    "sql/workbench/parts/connection/browser/media/connectionViewlet": {
+      "Search server names": "서버 이름 검색"
+    },
+    "sql/workbench/parts/dataExplorer/browser/media/connectionViewletPanel": {
+      "Search server names": "서버 이름 검색"
+    },
+    "sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution": {
+      "showDataExplorer": "Data Explorer 표시",
+      "workbench.dataExplorer": "Data Explorer",
+      "dataExplorer.view": "보기",
+      "databaseConnections": "데이터베이스 연결",
+      "datasource.connections": "데이터 원본 연결",
+      "datasource.connectionGroups": "데이터 소스 그룹",
+      "startupConfig": "시작 구성",
+      "startup.alwaysShowServersView": "Azure Data Studio 시작 시 서버 보기를 표시하려면 True(기본값), 마지막으로 연 보기를 표시하려면 False"
+    },
+    "sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint": {
+      "vscode.extension.contributes.view.id": "뷰의 식별자입니다. 'vscode.window.registerTreeDataProviderForView` API를 통해 데이터 공급자를 등록하는 데 사용합니다. `onView:${id}` 이벤트를 `activationEvents`에 등록하여 확장 활성화를 트리거하는 데에도 사용합니다.",
+      "vscode.extension.contributes.view.name": "사용자가 읽을 수 있는 뷰 이름입니다. 표시됩니다.",
+      "vscode.extension.contributes.view.when": "이 보기를 표시하기 위해 true여야 하는 조건입니다.",
+      "extension.contributes.dataExplorer": "뷰를 에디터에 적용합니다.",
+      "extension.dataExplorer": "작업 막대의 Data Explorer 컨테이너에 보기 제공",
+      "dataExplorer.contributed": "뷰를 기여된 뷰 컨테이너에 기여합니다.",
+      "ViewsContainerDoesnotExist": "뷰 컨테이너 '{0}'이(가) 없으며 해당 뷰 컨테이너에 등록된 모든 뷰가 'Data Explorer'에 추가됩니다.",
+      "duplicateView1": "뷰 컨테이너 '{1}'에 동일한 ID '{0}'(으)로 여러 개의 뷰를 등록할 수 없습니다.",
+      "duplicateView2": "ID가 '{0}'인 뷰가 뷰 컨테이너 '{1}'에 이미 등록되어 있습니다.",
+      "requirearray": "뷰는 배열이어야 합니다.",
+      "requirestring": "속성 `{0}`은(는) 필수이며 `string` 형식이어야 합니다.",
+      "optstring": "속성 `{0}`은(는) 생략할 수 있으며 `string` 형식이어야 합니다."
+    },
+    "sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet": {
+      "dataExplorer.servers": "서버"
+    },
+    "sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution": {
+      "disconnect": "연결 끊기",
+      "newQuery": "새 쿼리",
+      "manage": "관리",
+      "refresh": "새로 고침"
+    },
+    "sql/workbench/services/admin/common/adminService": {
+      "adminService.providerIdNotValidError": "adminservice와 상호 작용하려면 연결이 필요합니다.",
+      "adminService.noHandlerRegistered": "등록된 처리기 없음"
+    },
+    "sql/workbench/services/commandLine/common/commandLineService": {
+      "connectingLabel": "연결:",
+      "runningCommandLabel": "명령 실행 중:",
+      "openingNewQueryLabel": "새 쿼리를 여는 중:"
+    },
+    "sql/workbench/services/connection/browser/connectionDialogService": {
+      "connectionError": "연결 오류",
+      "kerberosErrorStart": "Kerberos 오류로 인해 연결이 실패했습니다.",
+      "kerberosHelpLink": "Kerberos 구성 도움말은 {0}에 있습니다.",
+      "kerberosKinit": "이전에 연결된 경우 다시 kinit를 실행해야 할 수 있습니다."
+    },
+    "sql/workbench/services/connection/browser/connectionDialogWidget": {
+      "connection": "연결",
+      "connectType": "연결 유형",
+      "recentConnectionTitle": "최근 연결",
+      "savedConnectionTitle": "저장된 연결",
+      "connectionDetailsTitle": "연결 정보",
+      "connectionDialog.connect": "연결",
+      "connectionDialog.cancel": "취소",
+      "noRecentConnections": "최근 연결 없음",
+      "noSavedConnections": "저장된 연결 없음"
+    },
+    "sql/workbench/services/connection/browser/connectionWidget": {
+      "connectionWidget.AddAzureAccount": "계정 추가...",
+      "defaultDatabaseOption": "< 기본 >",
+      "loadingDatabaseOption": "로드 중...",
+      "serverGroup": "서버 그룹",
+      "defaultServerGroup": "< 기본 >",
+      "addNewServerGroup": "새 그룹 추가...",
+      "noneServerGroup": "<저장 안 함>",
+      "connectionWidget.missingRequireField": "{0}이(가) 필요합니다.",
+      "connectionWidget.fieldWillBeTrimmed": "{0}가 잘립니다.",
+      "rememberPassword": "암호 기억",
+      "connection.azureAccountDropdownLabel": "계정",
+      "connectionWidget.refreshAzureCredentials": "계정 자격 증명 새로 고침",
+      "connection.azureTenantDropdownLabel": "Azure AD 테넌트",
+      "connectionWidget.toggleDatabaseNameDropdown": "데이터베이스 토글 드롭다운을 선택하십시오",
+      "advanced": "고급...",
+      "connectionWidget.invalidAzureAccount": "계정을 선택해야 합니다."
+    },
+    "sql/workbench/services/dashboard/common/newDashboardTabDialog": {
+      "newDashboardTab.openDashboardExtensions": "대시보드 확장 열기",
+      "newDashboardTab.ok": "확인",
+      "newDashboardTab.cancel": "취소",
+      "newdashboardTabDialog.noExtensionLabel": "현재 설치된 대시보드 확장이 없습니다. 확장 관리자로 가서 추천 확장을 탐색하세요."
+    },
+    "sql/workbench/services/errorMessage/browser/media/errorMessageDialog": {
+      "errorMessageDialog.ok": "확인",
+      "errorMessageDialog.close": "닫기",
+      "copyDetails": "세부 내용 복사"
+    },
+    "sql/workbench/services/errorMessage/browser/errorMessageService": {
+      "error": "오류",
+      "warning": "경고",
+      "info": "정보"
+    },
+    "sql/workbench/services/fileBrowser/browser/media/fileBrowserDialog": {
+      "filebrowser.filepath": "선택한 경로",
+      "fileFilter": "파일 형식",
+      "fileBrowser.ok": "확인",
+      "fileBrowser.discard": "폐기"
+    },
+    "sql/workbench/services/fileBrowser/common/fileBrowserDialogController": {
+      "filebrowser.selectFile": "파일 선택"
+    },
+    "sql/workbench/services/fileBrowser/browser/fileBrowserTreeView": {
+      "fileBrowser.regTreeAriaLabel": "파일 브라우저 트리"
+    },
+    "sql/workbench/services/fileBrowser/common/fileBrowserViewModel": {
+      "allFiles": "모든 파일"
+    },
+    "sql/workbench/services/insights/browser/insightsDialogView": {
+      "insights.item": "항목",
+      "insights.value": "값",
+      "property": "속성",
+      "value": "값",
+      "InsightsDialogTitle": "인사이트",
+      "insights.dialog.items": "항목",
+      "insights.dialog.itemDetails": "항목 세부 정보"
+    },
+    "sql/workbench/services/insights/common/insightDialogActions": {
+      "workbench.action.insights.copySelection": "셀 복사"
+    },
+    "sql/workbench/services/insights/common/insightsUtils": {
+      "insightsDidNotFindResolvedFile": "다음 경로에서 쿼리 파일을 찾을 수 없습니다. {0}"
+    },
+    "sql/workbench/services/insights/node/insightsDialogController": {
+      "insightsInputError": "인사이트 플라이아웃에 연결 프로필이 전달되지 않았습니다.",
+      "insightsError": "인사이트 오류",
+      "insightsFileError": "쿼리 파일을 읽는 중 오류가 발생했습니다.",
+      "insightsConfigError": "인사이트 구성 분석에 오류가 발생 했습니다; 쿼리 배열/문자열이나 쿼리파일을 찾을 수 없습니다."
+    },
+    "sql/workbench/services/notebook/common/notebookRegistry": {
+      "carbon.extension.contributes.notebook.provider": "노트북 공급자의 식별자입니다.",
+      "carbon.extension.contributes.notebook.fileExtensions": "이 노트북 공급자에 등록해야 하는 파일 확장명",
+      "carbon.extension.contributes.notebook.standardKernels": "이 노트북 공급자에서 표준이어야 하는 커널",
+      "vscode.extension.contributes.notebook.providers": "노트북 공급자를 제공합니다.",
+      "carbon.extension.contributes.notebook.magic": "\"%%sql\" 같은 셀 매직의 이름입니다.",
+      "carbon.extension.contributes.notebook.language": "이 셀 매직이 셀에 포함되는 경우 사용되는 셀 언어",
+      "carbon.extension.contributes.notebook.executionTarget": "이 매직이 나타내는 선택적 실행 대상(예: Spark와 SQL)",
+      "carbon.extension.contributes.notebook.kernels": "유효한 선택적 커널 세트(예: python3, pyspark3, sql)",
+      "vscode.extension.contributes.notebook.languagemagics": "노트북 언어를 제공합니다."
+    },
+    "sql/workbench/services/notebook/common/notebookServiceImpl": {
+      "notebookUriNotDefined": "노트북 관리자를 만들 때 URI가 전달되지 않았습니다.",
+      "notebookServiceNoProvider": "노트북 공급자가 존재하지 않습니다."
+    },
+    "sql/workbench/services/notebook/common/sessionManager": {
+      "noKernel": "커널 아님",
+      "runNotebookDisabled": "커널이 구성되지 않았기 때문에 셀을 실행할 수 없습니다.",
+      "errorName": "오류"
+    },
+    "sql/workbench/services/notebook/node/localContentManager": {
+      "nbformatNotRecognized": "nbformat v{0}.{1}이(가) 인식되지 않습니다.",
+      "nbNotSupported": "이 파일에 유효한 노트북 형식이 없습니다.",
+      "unknownCellType": "알 수 없는 셀 형식 {0}",
+      "unrecognizedOutput": "{0} 출력 형식을 인식할 수 없습니다.",
+      "invalidMimeData": "{0}의 데이터는 문자열 또는 문자열의 배열이어야 합니다.",
+      "unrecognizedOutputType": "{0} 출력 형식을 인식할 수 없습니다."
+    },
+    "sql/workbench/services/notebook/sql/sqlSessionManager": {
+      "sqlKernelError": "SQL 커널 오류",
+      "connectionRequired": "노트북 셀을 실행하려면 연결을 선택해야 합니다.",
+      "sqlMaxRowsDisplayed": "상위 {0}개 행을 표시합니다."
+    },
+    "sql/workbench/services/objectExplorer/common/objectExplorerService": {
+      "OeSessionFailedError": "개체 탐색기 세션을 만들지 못했습니다.",
+      "nodeExpansionError": "여러 오류:"
+    },
+    "sql/workbench/services/queryEditor/common/queryEditorService": {
+      "queryEditorServiceChangeUnsupportedError": "저장되지 않은 쿼리에는 언어 모드 변경이 지원되지 않습니다.",
+      "queryEditorServiceChangeError": "SQL 언어 모드에서/로 전환하기 전에 변경 내용을 저장하십시오. 그렇지 않으면 변경 내용이 사라집니다."
+    },
+    "sql/workbench/update/releaseNotes": {
+      "gettingStarted": "시작하기",
+      "showReleaseNotes": "시작 보기",
+      "miGettingStarted": "시작(&&S)"
     }
   }
 }
