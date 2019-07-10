@@ -267,10 +267,6 @@ export class SchemaCompareResult {
 	}
 
 	public async execute(): Promise<void> {
-		if (this.schemaCompareOptionDialog && this.schemaCompareOptionDialog.deploymentOptions) {
-			// take updates if any
-			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
-		}
 		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
 		const service = await SchemaCompareResult.getService(msSqlProvider);
 		if (!this.operationId) {
