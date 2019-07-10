@@ -186,6 +186,10 @@
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">{0}를 다운로드합니다.</target>
       </trans-unit>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="new">({0} KB)</target>
+      </trans-unit>
       <trans-unit id="downloadingServiceStatus">
         <source xml:lang="en">Downloading Service</source>
         <target state="translated">서비스 다운로드중...</target>
