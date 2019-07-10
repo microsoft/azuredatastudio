@@ -47,6 +47,8 @@ import { InstantiationService } from 'vs/platform/instantiation/common/instantia
 import { Layout } from 'vs/workbench/browser/layout';
 import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
 import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
+import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
 
 export class Workbench extends Layout {
 

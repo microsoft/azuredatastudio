@@ -233,6 +233,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
+import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -273,6 +275,7 @@ registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
 registerSingleton(IDacFxService, DacFxService);
 registerSingleton(ISchemaCompareService, SchemaCompareService);
+registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 // {{SQL CARBON EDIT}} - End
 
 //#region --- workbench parts
