@@ -423,12 +423,8 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 		return Promise.resolve([]);
 	}
 
-	getVisualizerRecommendations(): Promise<IExtensionRecommendation[]> {
+	getVisualizerExtensions(): Promise<IExtensionRecommendation[]> {
 		return Promise.resolve([]);
-	}
-
-	promptVisualizerRecommendedExtensions(): void {
-		return;
 	}
 
 	promptVisualizerExtensions(): void {

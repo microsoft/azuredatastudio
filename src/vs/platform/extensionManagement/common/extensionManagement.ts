@@ -307,9 +307,8 @@ export interface IExtensionTipsService {
 
 	// {{SQL CARBON EDIT}}
 	getAppLaunchRecommendations(): Promise<IExtensionRecommendation[]>;
-	getVisualizerRecommendations(): Promise<IExtensionRecommendation[]>;
-	promptVisualizerRecommendedExtensions(): void;
-	promptVisualizerExtensions():void;
+	getVisualizerExtensions(): Promise<IExtensionRecommendation[]>;
+	promptVisualizerExtensions(): void;
 }
 
 export const enum ExtensionRecommendationReason {
