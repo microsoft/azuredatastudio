@@ -256,7 +256,8 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		if (this._usingExistingPython) {
+		let isPythonInstalled = await JupyterServerInstallation.isPythonInstalled(this.apiWrapper);
+		if (isPythonInstalled) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -309,6 +310,7 @@ export class JupyterServerInstallation {
 			let notebookConfig = this.apiWrapper.getConfiguration(constants.notebookConfigKey);
 			await notebookConfig.update(constants.pythonPathConfigKey, this._pythonInstallationPath, ConfigurationTarget.Global);
 			await notebookConfig.update(constants.existingPythonConfigKey, this._usingExistingPython, ConfigurationTarget.Global);
+			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
 		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
@@ -364,7 +366,9 @@ export class JupyterServerInstallation {
 	}
 
 	public installPipPackage(packageName: string, version: string): Promise<void> {
-		let cmd = `"${this.pythonExecutable}" -m pip install --user ${packageName}==${version}`;
+		// Force reinstall in case some dependencies are split across multiple locations
+		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
+		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packageName}==${version}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
@@ -406,8 +410,9 @@ export class JupyterServerInstallation {
 	private async installOfflinePipDependencies(): Promise<void> {
 		let installJupyterCommand: string;
 		if (process.platform === constants.winPlatform) {
+			let cmdOptions = this._usingExistingPython ? '--user' : '';
 			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --user --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			installJupyterCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 		}
 
 		if (installJupyterCommand) {
@@ -423,11 +428,13 @@ export class JupyterServerInstallation {
 	private async installSparkMagic(doOnlineInstall: boolean): Promise<void> {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
+			// Overwrite existing install of sparkmagic, since we use a custom version
+			let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
 			if (doOnlineInstall) {
-				installSparkMagic = `"${this._pythonExecutable}" -m pip install --user "${sparkWheel}" --no-warn-script-location`;
+				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} "${sparkWheel}" --no-warn-script-location`;
 			} else {
-				installSparkMagic = `"${this._pythonExecutable}" -m pip install --user --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			}
 		}
 
@@ -442,10 +449,11 @@ export class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this._pythonExecutable}" -m pip install --user jupyter==1.0.0 pandas==0.24.2`;
+		let cmdOptions = this._usingExistingPython ? '--user' : '';
+		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter==1.0.0 pandas==0.24.2`;
 		await this.executeStreamedCommand(installCommand);
 
-		installCommand = `"${this._pythonExecutable}" -m pip install --user prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
@@ -461,7 +469,8 @@ export class JupyterServerInstallation {
 		}
 		await this.executeStreamedCommand(installCommand);
 
-		installCommand = `"${this._pythonExecutable}" -m pip install --user prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		let cmdOptions = this._usingExistingPython ? '--user' : '';
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
