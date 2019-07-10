@@ -35,19 +35,19 @@ export function getAppDataPath() {
  * @param filePath source notebook file name
  * @param fileExtension file type
  */
-export function getTargetFileName(filePath: string): string {
+export function getSaveableFileName(filePath: string): string {
 	const targetDirectory = os.homedir();
 	const fileExtension = path.extname(filePath);
 	const baseName = path.basename(filePath, fileExtension);
-	let targetFileName;
+	let targetFilePath;
 	let idx = 0;
 	do {
 		const suffix = idx === 0 ? '' : `-${idx}`;
-		targetFileName = path.join(targetDirectory, `${baseName}${suffix}${fileExtension}`);
+		targetFilePath = path.join(targetDirectory, `${baseName}${suffix}${fileExtension}`);
 		idx++;
-	} while (fs.existsSync(targetFileName));
+	} while (fs.existsSync(targetFilePath));
 
-	return targetFileName;
+	return path.basename(targetFilePath);
 }
 
 export function fileExists(file: string): boolean {
