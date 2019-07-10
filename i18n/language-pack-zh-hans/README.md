@@ -1,4 +1,4 @@
-#  适用于 Azure Data Studio 的中文（简体）语言包
+# 适用于 Azure Data Studio 的中文（简体）语言包
 
 此中文（简体）语言包为 Azure Data Studio 提供本地化界面。
 
@@ -61,9 +61,9 @@
 
 **尽情享用吧！**
 
-#  Chinese (Simplified) Language Pack for VS Code
+#  Chinese (Simplified) Language Pack for Azure Data Studio
 
-Chinese (Simplified) Language Pack provides localized UI experience for VS Code.
+Chinese (Simplified) Language Pack provides localized UI experience for Azure Data Studio.
 
 ## Usage
 
@@ -71,7 +71,7 @@ Once installed, set `"locale": "zh-cn"` in `locale.json` to load Chinese (Simpli
 
 ## Contributing
 
-The translation strings are maintained in "DevTools - VS Code" project in Microsoft Localization Community Platform (MLCP).
+The translation strings are maintained in "DevTools - Azure Data Studio" project in Microsoft Localization Community Platform (MLCP).
 
 If you'd like to participate in the effort either to contribue translation or improve translation, see [community localization page](https://aka.ms/vscodeloc) for more information.
 

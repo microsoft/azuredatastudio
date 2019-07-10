@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "원본 서버",
 	"dacfx.sourceDatabaseName": "원본 데이터베이스",
 	"dacfx.fileLocation": "파일 위치",
-	"dacfx.scriptLocation": "배포 스크립트 위치",
-	"dacfx.action": "작업",
-	"dacfx.deploy": "배포",
-	"dacfx.generateScript": "배포 스크립트 생성",
 	"dacfxExtract.version": "버전",
 	"dacfx.settingColumn": "설정",
 	"dacfx.valueColumn": "값"

@@ -1,4 +1,4 @@
-#  Japanese Language Pack for Azure Data Studio
+# Japanese Language Pack for Azure Data Studio
 
 Japanese Language Pack は Azure Data Studio にローカライズされた UI を提供します。
 

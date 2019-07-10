@@ -13,5 +13,6 @@
 	"createSessionDialog.dialogOwnerInvalid": "對話方塊擁有者無效，無法開啟對話方塊",
 	"createSessionDialog.invalidProviderType": "提供者類型無效，無法開啟對話方塊",
 	"createSessionDialog.selectTemplates": "選取工作階段範本:",
-	"createSessionDialog.enterSessionName": "輸入工作階段名稱:"
+	"createSessionDialog.enterSessionName": "輸入工作階段名稱:",
+	"createSessionDialog.createSessionFailed": "無法建立工作階段"
 }
