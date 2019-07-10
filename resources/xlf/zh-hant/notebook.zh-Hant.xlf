@@ -460,6 +460,42 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/notebook/out/book/bookTreeView" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="openNotebookError">
+        <source xml:lang="en">Open file {0} failed: {1}</source>
+        <target state="translated">無法開啟檔案 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="openMarkdownError">
+        <source xml:lang="en">Open file {0} failed: {1}</source>
+        <target state="translated">無法開啟檔案 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="openExternalLinkError">
+        <source xml:lang="en">Open link {0} failed: {1}</source>
+        <target state="new">Open link {0} failed: {1}</target>
+      </trans-unit>
+      <trans-unit id="openConfigFileError">
+        <source xml:lang="en">Open file {0} failed: {1}</source>
+        <target state="translated">無法開啟檔案 {0}: {1}</target>
+      </trans-unit>
+      <trans-unit id="openExternalLinkCommand">
+        <source xml:lang="en">Open External Link</source>
+        <target state="new">Open External Link</target>
+      </trans-unit>
+      <trans-unit id="openNotebookCommand">
+        <source xml:lang="en">Open Notebook</source>
+        <target state="new">Open Notebook</target>
+      </trans-unit>
+      <trans-unit id="openMarkdownCommand">
+        <source xml:lang="en">Open Markdown</source>
+        <target state="new">Open Markdown</target>
+      </trans-unit>
+      <trans-unit id="missingFileError">
+        <source xml:lang="en">Missing file : {0}</source>
+        <target state="translated">缺少檔案 : {0}</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/notebook/out/common/utils" source-language="en" target-language="zh-Hant" datatype="plaintext">
     <body>
       <trans-unit id="mkdirOutputMsg">
@@ -485,26 +521,6 @@
       <trans-unit id="msgSampleCodeDataFrame">
         <source xml:lang="en">This sample code loads the file into a data frame and shows the first 10 results.</source>
         <target state="translated">這個範例指令碼會將檔案載入資料框架，並顯示前 10 個結果。</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/notebook/out/book/bookTreeView" source-language="en" target-language="zh-Hant" datatype="plaintext">
-    <body>
-      <trans-unit id="openNotebookError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">無法開啟檔案 {0}: {1}</target>
-      </trans-unit>
-      <trans-unit id="openMarkdownError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">無法開啟檔案 {0}: {1}</target>
-      </trans-unit>
-      <trans-unit id="openConfigFileError">
-        <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">無法開啟檔案 {0}: {1}</target>
-      </trans-unit>
-      <trans-unit id="missingFileError">
-        <source xml:lang="en">Missing file : {0}</source>
-        <target state="translated">缺少檔案 : {0}</target>
       </trans-unit>
     </body>
   </file>

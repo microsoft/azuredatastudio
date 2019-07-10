@@ -418,6 +418,7 @@ export class ExtensionsListView extends ViewletPanel {
 		if (/@recommendedOnAppLaunch/i.test(query.value)) {
 			return this.getAppLaunchRecommendations(token);
 		}
+
 		if (/@visualizerExtensions/i.test(query.value)) {
 			return this.getVisualizerRecommendations(token);
 		}
@@ -687,6 +688,7 @@ export class ExtensionsListView extends ViewletPanel {
 				});
 			});
 	}
+
 	private getVisualizerRecommendations(token: CancellationToken): Promise<IPagedModel<IExtension>> {
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))
