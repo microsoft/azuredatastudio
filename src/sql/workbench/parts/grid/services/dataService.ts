@@ -9,7 +9,7 @@ import { Observer } from 'rxjs/Observer';
 
 import { EditUpdateCellResult, EditSubsetResult, EditCreateRowResult } from 'azdata';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { ResultSerializer } from 'sql/platform/node/resultSerializer';
+import { ResultSerializer } from 'sql/workbench/parts/query/common/resultSerializer';
 import { ISaveRequest } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
