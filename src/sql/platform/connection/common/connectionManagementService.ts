@@ -235,7 +235,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connectionProfile Connection Profile
 	 */
 	public async addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
-		await this.fillInAzureTokenIfNeeded(connectionProfile);
+		await this.fillInOrClearAzureToken(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -275,7 +275,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 
 				// Fill in the Azure account token if needed and open the connection dialog if it fails
-				let tokenFillSuccess = await self.fillInAzureTokenIfNeeded(newConnection);
+				let tokenFillSuccess = await self.fillInOrClearAzureToken(newConnection);
 
 				// If the password is required and still not loaded show the dialog
 				if ((!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
@@ -444,7 +444,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (callbacks.onConnectStart) {
 				callbacks.onConnectStart();
 			}
-			let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(connection);
+			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
 			if (!tokenFillSuccess) {
 				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
 			}
@@ -776,8 +776,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
 
-	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
+	/**
+	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
+	 * and clears it if it isn't.
+	 * @param connection The connection to fill in or update
+	 */
+	private async fillInOrClearAzureToken(connection: IConnectionProfile): Promise<boolean> {
+		if (connection.authenticationType !== Constants.azureMFA) {
+			connection.options['azureAccountToken'] = undefined;
+			return true;
+		}
+		if (connection.options['azureAccountToken']) {
 			return true;
 		}
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
