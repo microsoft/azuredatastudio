@@ -24,17 +24,16 @@ import { SimpleExecuteResult } from 'azdata';
 
 import { Action } from 'vs/base/common/actions';
 import * as types from 'vs/base/common/types';
-import * as pfs from 'vs/base/node/pfs';
 import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IntervalTimer, createCancelablePromise } from 'vs/base/common/async';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
+import { IFileService } from 'vs/platform/files/common/files';
+import { URI } from 'vs/base/common/uri';
 
 const insightRegistry = Registry.as<IInsightRegistry>(Extensions.InsightContribution);
 
@@ -75,9 +74,8 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(forwardRef(() => Injector)) private _injector: Injector,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IStorageService) private storageService: IStorageService,
-		@Inject(IWorkspaceContextService) private readonly _workspaceContextService: IWorkspaceContextService,
 		@Inject(IConfigurationService) private readonly _configurationService: IConfigurationService,
-		@Inject(IConfigurationResolverService) private readonly _configurationResolverService: IConfigurationResolverService
+		@Inject(IFileService) private readonly fileService: IFileService
 	) {
 		super();
 		this.insightConfig = <IInsightsConfig>this._config.widget['insights-widget'];
@@ -298,11 +296,9 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (types.isStringArray(this.insightConfig.query)) {
 			this.insightConfig.query = this.insightConfig.query.join(' ');
 		} else if (this.insightConfig.queryFile) {
-			const filePath = await resolveQueryFilePath(this.insightConfig.queryFile,
-				this._workspaceContextService,
-				this._configurationResolverService);
+			const filePath = await this.instantiationService.invokeFunction(resolveQueryFilePath, this.insightConfig.queryFile);
 
-			this.insightConfig.query = (await pfs.readFile(filePath)).toString();
+			this.insightConfig.query = (await this.fileService.readFile(URI.file(filePath))).value.toString();
 		}
 	}
 }

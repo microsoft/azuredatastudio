@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { InsightsDialogController } from 'sql/workbench/services/insights/node/insightsDialogController';
+import { InsightsDialogController } from 'sql/workbench/services/insights/common/insightsDialogController';
 import { InsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
@@ -49,7 +49,6 @@ suite('Insights Dialog Controller Tests', () => {
 			undefined,
 			instMoq.object,
 			connMoq.object,
-			undefined,
 			undefined,
 			undefined
 		);
