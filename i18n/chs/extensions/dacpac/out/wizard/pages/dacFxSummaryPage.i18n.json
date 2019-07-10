@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "源服务器",
 	"dacfx.sourceDatabaseName": "源数据库",
 	"dacfx.fileLocation": "文件位置",
-	"dacfx.scriptLocation": "部署脚本位置",
-	"dacfx.action": "操作",
-	"dacfx.deploy": "部署",
-	"dacfx.generateScript": "生成部署脚本",
 	"dacfxExtract.version": "版本",
 	"dacfx.settingColumn": "设置",
 	"dacfx.valueColumn": "值"

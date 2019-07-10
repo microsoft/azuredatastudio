@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.refreshall.title">
         <source xml:lang="en">Azure: Refresh All Accounts</source>
-        <target state="new">Azure: Refresh All Accounts</target>
+        <target state="translated">Azure: Alle Konten aktualisieren</target>
       </trans-unit>
       <trans-unit id="azure.resource.refresh.title">
         <source xml:lang="en">Refresh</source>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.signin.title">
         <source xml:lang="en">Azure: Sign In</source>
-        <target state="new">Azure: Sign In</target>
+        <target state="translated">Azure: Anmelden</target>
       </trans-unit>
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.connectsqldb.title">
         <source xml:lang="en">Add to Servers</source>
-        <target state="new">Add to Servers</target>
+        <target state="translated">Zu Servern hinzufügen</target>
       </trans-unit>
       <trans-unit id="accounts.clearTokenCache">
         <source xml:lang="en">Clear Azure Account Token Cache</source>
@@ -136,7 +136,7 @@
     <body>
       <trans-unit id="azure.resource.resourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No Resources found</source>
-        <target state="new">No Resources found</target>
+        <target state="translated">Keine Ressourcen gefunden.</target>
       </trans-unit>
     </body>
   </file>

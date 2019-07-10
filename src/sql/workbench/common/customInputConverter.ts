@@ -39,21 +39,24 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 	let denyQueryEditor: boolean = options && options.denyQueryEditor;
 	let untitledEditorInput: UntitledEditorInput = input as UntitledEditorInput;
 	let mode: string = (untitledEditorInput && untitledEditorInput.getMode) ? untitledEditorInput.getMode() : 'sql';
-	if (input && !denyQueryEditor && mode === 'sql') {
-		//QueryInput
-		let uri: URI = getQueryEditorFileUri(input);
-		if (uri) {
-			const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
-			let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
-			return queryInput;
-		}
+	if (input && !denyQueryEditor) {
+		let uri: URI;
+		if (mode === 'sql') {
+			//QueryInput
+			uri = getQueryEditorFileUri(input);
+			if (uri) {
+				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
+				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
+				return queryInput;
+			}
 
-		//QueryPlanInput
-		uri = getQueryPlanEditorUri(input);
-		if (uri) {
-			let queryPlanXml: string = fs.readFileSync(uri.fsPath);
-			let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
-			return queryPlanInput;
+			//QueryPlanInput
+			uri = getQueryPlanEditorUri(input);
+			if (uri) {
+				let queryPlanXml: string = fs.readFileSync(uri.fsPath);
+				let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
+				return queryPlanInput;
+			}
 		}
 
 		//Notebook

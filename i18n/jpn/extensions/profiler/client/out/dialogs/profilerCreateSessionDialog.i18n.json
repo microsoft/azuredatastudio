@@ -13,5 +13,6 @@
 	"createSessionDialog.dialogOwnerInvalid": "ダイアログ所有者が無効です。ダイアログを開くことができません",
 	"createSessionDialog.invalidProviderType": "無効なプロバイダーの種類です。ダイアログを開くことができません",
 	"createSessionDialog.selectTemplates": "セッション テンプレートの選択:",
-	"createSessionDialog.enterSessionName": "セッション名を入力する:"
+	"createSessionDialog.enterSessionName": "セッション名を入力する:",
+	"createSessionDialog.createSessionFailed": "セッションを作成できませんでした"
 }

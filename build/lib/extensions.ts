@@ -312,9 +312,15 @@ const sqlBuiltInExtensions = [
 	'big-data-cluster',
 	'dacpac',
 	'schema-compare',
-	'resource-deployment',
 	'cms'
 ];
+
+// make resource deployment extension only available in insiders
+if (process.env['VSCODE_QUALITY'] === 'stable') {
+	sqlBuiltInExtensions.push('resource-deployment');
+}
+
+
 // {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {

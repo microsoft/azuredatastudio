@@ -266,9 +266,12 @@ const sqlBuiltInExtensions = [
     'big-data-cluster',
     'dacpac',
     'schema-compare',
-    'resource-deployment',
     'cms'
 ];
+// make resource deployment extension only available in insiders
+if (process.env['VSCODE_QUALITY'] === 'stable') {
+    sqlBuiltInExtensions.push('resource-deployment');
+}
 const builtInExtensions = require('../builtInExtensions.json');
 /**
  * We're doing way too much stuff at once, with webpack et al. So much stuff

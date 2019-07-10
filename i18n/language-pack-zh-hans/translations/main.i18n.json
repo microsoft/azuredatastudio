@@ -22,9 +22,6 @@
     "vs/base/browser/ui/keybindingLabel/keybindingLabel": {
       "unbound": "未绑定"
     },
-    "vs/base/browser/ui/dialog/dialog": {
-      "dialogClose": "关闭对话框"
-    },
     "vs/base/parts/quickopen/browser/quickOpenModel": {
       "quickOpenAriaLabelEntry": "{0}，选取器",
       "quickOpenAriaLabel": "选取器"
@@ -36,6 +33,9 @@
       "invalid file": "提取 {0} 时出错。文件无效。",
       "incompleteExtract": "解压不完整。找到了 {0} / {1} 个项目",
       "notFound": "在 Zip 中找不到 {0}。"
+    },
+    "vs/base/browser/ui/dialog/dialog": {
+      "dialogClose": "关闭对话框"
     },
     "vs/base/browser/ui/aria/aria": {
       "repeated": "{0} (再次发生)",
@@ -63,13 +63,13 @@
     "vs/base/browser/ui/toolbar/toolbar": {
       "moreActions": "更多操作..."
     },
+    "vs/base/browser/ui/menu/menu": {
+      "titleLabel": "{0} ({1})"
+    },
     "vs/base/parts/quickopen/browser/quickOpenWidget": {
       "quickOpenAriaLabel": "快速选取器。键入以缩小结果范围。",
       "treeAriaLabel": "快速选取器",
       "quickInput.visibleCount": "{0} 个结果"
-    },
-    "vs/base/browser/ui/menu/menu": {
-      "titleLabel": "{0} ({1})"
     },
     "vs/base/browser/ui/inputbox/inputBox": {
       "alertErrorMessage": "错误: {0}",
@@ -332,7 +332,7 @@
       "editor.gotoLocation.multiple": "当存在多个目标位置时, 控制 \"Go To\" 命令 (如 \"Go To Definition\") 的行为。",
       "editor.gotoLocation.multiple.peek": "显示结果的预览视图 (默认值)",
       "editor.gotoLocation.multiple.gotoAndPeek": "转到主结果并显示预览视图",
-      "editor.gotoLocation.multiple.goto": "Go to the primary result and enable peek-less navigation to others",
+      "editor.gotoLocation.multiple.goto": "转到主结果，并对其他人启用防偷窥导航",
       "selectionHighlight": "控制编辑器是否应突出显示与所选内容类似的匹配项。",
       "occurrencesHighlight": "控制编辑器是否突出显示语义符号的匹配项。",
       "overviewRulerLanes": "控制概览标尺中同一位置可显示的提示数量。",
@@ -397,10 +397,6 @@
       "editor.action.diffReview.next": "转至下一个差异",
       "editor.action.diffReview.prev": "转至上一个差异"
     },
-    "vs/editor/contrib/caretOperations/caretOperations": {
-      "caret.moveLeft": "将插入点左移",
-      "caret.moveRight": "将插入点右移"
-    },
     "vs/editor/contrib/caretOperations/transpose": {
       "transposeLetters.label": "转置字母"
     },
@@ -411,6 +407,10 @@
       "comment.line.remove": "删除行注释",
       "comment.block": "切换块注释",
       "miToggleBlockComment": "切换块注释(&&B)"
+    },
+    "vs/editor/contrib/caretOperations/caretOperations": {
+      "caret.moveLeft": "将插入点左移",
+      "caret.moveRight": "将插入点右移"
     },
     "vs/editor/contrib/cursorUndo/cursorUndo": {
       "cursor.undo": "软撤消"
@@ -456,13 +456,12 @@
     "vs/editor/contrib/hover/hover": {
       "showHover": "显示悬停"
     },
+    "vs/editor/contrib/goToDefinition/goToDefinitionMouse": {
+      "multipleResults": "单击显示 {0} 个定义。"
+    },
     "vs/editor/contrib/inPlaceReplace/inPlaceReplace": {
       "InPlaceReplaceAction.previous.label": "替换为上一个值",
       "InPlaceReplaceAction.next.label": "替换为下一个值"
-    },
-    "vs/editor/contrib/referenceSearch/referenceSearch": {
-      "meta.titleReference": " – {0} 个引用",
-      "references.action.label": "查看引用"
     },
     "vs/editor/contrib/rename/rename": {
       "no result": "无结果。",
@@ -477,8 +476,9 @@
       "smartSelect.shrink": "收起选择",
       "miSmartSelectShrink": "缩小选定范围(&&S)"
     },
-    "vs/editor/contrib/goToDefinition/goToDefinitionMouse": {
-      "multipleResults": "单击显示 {0} 个定义。"
+    "vs/editor/contrib/referenceSearch/referenceSearch": {
+      "meta.titleReference": " – {0} 个引用",
+      "references.action.label": "查看引用"
     },
     "vs/editor/contrib/goToDefinition/goToDefinitionCommands": {
       "noResultWord": "未找到“{0}”的任何定义",
@@ -506,23 +506,6 @@
       "miGotoTypeDefinition": "转到类型定义(&&T)",
       "miGotoImplementation": "转到实现(&&I)"
     },
-    "vs/editor/contrib/links/links": {
-      "links.navigate.mac": "按住 Cmd 并单击可访问链接",
-      "links.navigate": "按住 Ctrl 并单击可访问链接",
-      "links.command.mac": "按住 Cmd 并单击可执行命令",
-      "links.command": "按住 Ctrl 并单击可执行命令",
-      "links.navigate.al.mac": "按住 Option 并单击可访问链接",
-      "links.navigate.al": "按住 Alt 并单击可访问链接",
-      "links.command.al.mac": "按住 Option 并单击可执行命令",
-      "links.command.al": "按住 Alt 并单击可执行命令",
-      "links.custom.mac": "Cmd + click to {0}",
-      "links.custom.mac.al": "Option + click to {0}",
-      "links.custom": "Ctrl + click to {0}",
-      "links.custom.al": "Alt + click to {0}",
-      "invalid.url": "此链接格式不正确，无法打开: {0}",
-      "missing.url": "此链接目标已丢失，无法打开。",
-      "label": "打开链接"
-    },
     "vs/editor/contrib/gotoError/gotoError": {
       "markerAction.next.label": "转到下一个问题 (错误、警告、信息)",
       "markerAction.previous.label": "转到上一个问题 (错误、警告、信息)",
@@ -530,6 +513,23 @@
       "markerAction.previousInFiles.label": "转到文件中的上一个问题 (错误、警告、信息)",
       "miGotoNextProblem": "下一个问题(&&P)",
       "miGotoPreviousProblem": "上一个问题(&&P)"
+    },
+    "vs/editor/contrib/links/links": {
+      "links.navigate.mac": "关注链接(cmd + 单击)",
+      "links.navigate": "关注链接(ctrl + 单击)",
+      "links.command.mac": "执行命令(cmd + 单击)",
+      "links.command": "执行命令(ctrl + 单击)",
+      "links.navigate.al.mac": "关注链接(option + 单击)",
+      "links.navigate.al": "关注链接(alt + 单击)",
+      "links.command.al.mac": "执行命令(option + 单击)",
+      "links.command.al": "执行命令(alt + 单击)",
+      "links.custom.mac": "{0} (cmd + 单击)",
+      "links.custom.mac.al": "{0}(option + 单击)",
+      "links.custom": "{0}(ctrl + 单击)",
+      "links.custom.al": "{0}(alt + 单击)",
+      "invalid.url": "此链接格式不正确，无法打开: {0}",
+      "missing.url": "此链接目标已丢失，无法打开。",
+      "label": "打开链接"
     },
     "vs/editor/contrib/referenceSearch/peekViewWidget": {
       "label.close": "关闭"
@@ -545,10 +545,6 @@
       "startReplace": "替换",
       "miReplace": "替换(&&R)"
     },
-    "vs/editor/contrib/suggest/suggestController": {
-      "arai.alert.snippet": "选择“{0}”后进行了其他 {1} 次编辑",
-      "suggest.trigger.label": "触发建议"
-    },
     "vs/editor/contrib/wordHighlighter/wordHighlighter": {
       "wordHighlight": "读取访问期间符号的背景色，例如读取变量时。颜色必须透明，以免隐藏下面的修饰效果。",
       "wordHighlightStrong": "写入访问过程中符号的背景色，例如写入变量时。颜色必须透明，以免隐藏下面的修饰效果。",
@@ -559,6 +555,10 @@
       "wordHighlight.next.label": "转到下一个突出显示的符号",
       "wordHighlight.previous.label": "转到上一个突出显示的符号",
       "wordHighlight.trigger.label": "触发符号高亮"
+    },
+    "vs/editor/contrib/suggest/suggestController": {
+      "arai.alert.snippet": "选择“{0}”后进行了其他 {1} 次编辑",
+      "suggest.trigger.label": "触发建议"
     },
     "vs/editor/contrib/folding/folding": {
       "unfoldAction.label": "展开",
@@ -616,11 +616,11 @@
       "miSelectHighlights": "选择所有匹配项(&&O)",
       "changeAll.label": "更改所有匹配项"
     },
-    "vs/editor/contrib/parameterHints/parameterHintsWidget": {
-      "hint": "{0}，提示"
-    },
     "vs/editor/contrib/rename/renameInputField": {
       "renameAriaLabel": "重命名输入。键入新名称并按 \"Enter\" 提交。"
+    },
+    "vs/editor/contrib/parameterHints/parameterHintsWidget": {
+      "hint": "{0}，提示"
     },
     "vs/editor/contrib/referenceSearch/referencesController": {
       "labelLoading": "正在加载..."
@@ -641,6 +641,9 @@
       "autoFix.label": "自动修复...",
       "editor.action.autoFix.noneMessage": "没有可用的自动修复程序"
     },
+    "vs/editor/contrib/message/messageController": {
+      "editor.readonly": "无法在只读编辑器中编辑"
+    },
     "vs/editor/contrib/referenceSearch/referencesModel": {
       "aria.oneReference": "在文件 {0} 的 {1} 行 {2} 列的符号",
       "aria.fileReferences.1": "{0} 中有 1 个符号，完整路径: {1}",
@@ -649,9 +652,6 @@
       "aria.result.1": "在 {0} 中找到 1 个符号",
       "aria.result.n1": "在 {1} 中找到 {0} 个符号",
       "aria.result.nm": "在 {1} 个文件中找到 {0} 个符号"
-    },
-    "vs/editor/contrib/message/messageController": {
-      "editor.readonly": "无法在只读编辑器中编辑"
     },
     "vs/editor/contrib/snippet/snippetVariables": {
       "Sunday": "星期天",
@@ -700,8 +700,8 @@
       "hintnn": "第 {1} 行到第 {2} 行间进行了 {0} 次格式编辑"
     },
     "vs/editor/contrib/goToDefinition/goToDefinitionResultsNavigation": {
-      "location.kb": "Symbol {0} of {1}, {2} for next",
-      "location": "Symbol {0} of {1}"
+      "location.kb": "{1} 的符号 {0}，下一个使用 {2}",
+      "location": "{1} 的符号 {0}"
     },
     "vs/editor/contrib/gotoError/gotoErrorWidget": {
       "problems": "{0} 个问题(共 {1} 个)",
@@ -801,6 +801,7 @@
       "editorSuggestWidgetHighlightForeground": "建议小组件中匹配内容的高亮颜色。",
       "readMore": "阅读更多...{0}",
       "readLess": "阅读简略信息...{0}",
+      "loading": "正在加载...",
       "suggestWidget.loading": "正在加载...",
       "suggestWidget.noSuggestions": "无建议。",
       "ariaCurrenttSuggestionReadDetails": "项目 {0}，文档: {1}"
@@ -858,7 +859,8 @@
       "manual": "禁用自动后台更新检查。如果手动检查更新，更新将可用。",
       "default": "启用自动更新检查。代码将定期自动检查更新。",
       "deprecated": "此设置已弃用，请改用“{0}”。",
-      "enableWindowsBackgroundUpdates": "启用 Windows 后台更新。更新将从 Microsoft 联机服务中获取。",
+      "enableWindowsBackgroundUpdatesTitle": "在 Windows 上启用后台更新",
+      "enableWindowsBackgroundUpdates": "启用在 Windows 上后台下载和安装新的 VS Code 版本",
       "showReleaseNotes": "在更新后显示发行说明。发行说明将从 Microsoft 联机服务中获取。"
     },
     "vs/platform/extensionManagement/node/extensionManagementUtil": {
@@ -882,6 +884,7 @@
       "userDataDir": "指定保存用户数据的目录。可用于打开多个不同的 Code 实例。",
       "version": "打印版本。",
       "help": "打印使用情况。",
+      "telemetry": "显示 VS Code 收集的所有遥测事件。",
       "folderUri": "在新窗口中打开一个或多个给定 URI 的文件夹",
       "fileUri": "使用给定的文件 URI 打开窗口",
       "extensionHomePath": "设置扩展的根路径。",
@@ -899,7 +902,6 @@
       "inspect-extensions": "允许调试和分析扩展。您可以在开发人员工具中找到连接 URI。",
       "inspect-brk-extensions": "允许扩展宿主在启动后暂停时进行扩展的调试和分析。您可以在开发人员工具中找到连接 URI。",
       "disableGPU": "禁用 GPU 硬件加速。",
-      "uploadLogs": "将当前会话的日志上传到安全端点。",
       "maxMemory": "单个窗口最大内存大小 (单位为 MB)。",
       "usage": "使用情况",
       "options": "选项",
@@ -923,6 +925,7 @@
       "tree horizontalScrolling setting": "控制工作台中的树控件是否支持水平滚动。",
       "deprecated": "此设置已弃用, 请改用 \"{0}\"。",
       "tree indent setting": "控制树缩进(以像素为单位)。",
+      "render tree indent guides": "控制树是否应呈现缩进参考线。",
       "keyboardNavigationSettingKey.simple": "简单键盘导航聚焦与键盘输入相匹配的元素。仅对前缀进行匹配。",
       "keyboardNavigationSettingKey.highlight": "高亮键盘导航会突出显示与键盘输入相匹配的元素。进一步向上和向下导航将仅遍历突出显示的元素。",
       "keyboardNavigationSettingKey.filter": "筛选器键盘导航将筛选出并隐藏与键盘输入不匹配的所有元素。",
@@ -947,9 +950,9 @@
       "invalidManifest": "扩展无效: package.json 不是 JSON 文件。",
       "incompatible": "无法安装扩展名'{0}'，因为它不兼容 VS Code '{1}'。",
       "restartCode": "请在重新安装{0}之前重新启动 VS Code。",
-      "malicious extension": "无法安装此扩展，它被报告存在问题。",
-      "notFoundCompatibleDependency": "Unable to install '{0}' extension because it is not compatible with the current version of VS Code (version {1}).",
       "MarketPlaceDisabled": "市场未启用",
+      "malicious extension": "无法安装此扩展，它被报告存在问题。",
+      "notFoundCompatibleDependency": "无法安装“{0}”扩展，因为它与 VS Code 的当前版本(版本 {1})不兼容。",
       "removeError": "删除扩展时出错: {0}。请重启 VS Code，然后重试。",
       "Not a Marketplace extension": "只能重新安装商店中的扩展",
       "quitCode": "无法安装扩展。请在重启 VS Code 后重新安装。",
@@ -1027,6 +1030,7 @@
       "listFilterWidgetBackground": "列表和树中类型筛选器小组件的背景色。",
       "listFilterWidgetOutline": "列表和树中类型筛选器小组件的轮廓颜色。",
       "listFilterWidgetNoMatchesOutline": "当没有匹配项时，列表和树中类型筛选器小组件的轮廓颜色。",
+      "treeIndentGuidesStroke": "缩进参考线的树描边颜色。",
       "pickerGroupForeground": "快速选取器分组标签的颜色。",
       "pickerGroupBorder": "快速选取器分组边框的颜色。",
       "buttonForeground": "按钮前景色。",
@@ -1047,13 +1051,13 @@
       "menuSelectionBorder": "菜单中所选菜单项的边框颜色。",
       "menuSeparatorBackground": "菜单中分隔线的颜色。",
       "editorError.foreground": "编辑器中错误波浪线的前景色。",
-      "errorBorder": "Border color of error boxes in the editor.",
+      "errorBorder": "编辑器中错误框的边框颜色。",
       "editorWarning.foreground": "编辑器中警告波浪线的前景色。",
-      "warningBorder": "Border color of warning boxes in the editor.",
+      "warningBorder": "编辑器中警告框的边框颜色。",
       "editorInfo.foreground": "编辑器中信息波浪线的前景色。",
-      "infoBorder": "Border color of info boxes in the editor.",
+      "infoBorder": "编辑器中信息框的边框颜色。",
       "editorHint.foreground": "编辑器中提示波浪线的前景色。",
-      "hintBorder": "Border color of hint boxes in the editor.",
+      "hintBorder": "编辑器中提示框的边框颜色。",
       "editorBackground": "编辑器背景色。",
       "editorForeground": "编辑器默认前景色。",
       "editorWidgetBackground": "编辑器组件(如查找/替换)背景颜色。",
@@ -1103,7 +1107,7 @@
     },
     "vs/platform/issue/electron-main/issueService": {
       "local": "ju",
-      "issueReporterWriteToClipboard": "There is too much data to send to GitHub. Would you like to write the information to the clipboard so that it can be pasted?",
+      "issueReporterWriteToClipboard": "发送到 GitHub 的数据太多。是否要将信息写入剪贴板，以便对其进行粘贴?",
       "yes": "是",
       "cancel": "取消",
       "confirmCloseIssueReporter": "您的输入将不会保存。确实要关闭此窗口吗？",
@@ -1393,7 +1397,7 @@
       "AddContextMenuFiles": "将“通过 %1 打开”操作添加到 Windows 资源管理器文件上下文菜单",
       "AddContextMenuFolders": "将“通过 %1 打开”操作添加到 Windows 资源管理器目录上下文菜单",
       "AssociateWithFiles": "将 %1 注册为受支持的文件类型的编辑器",
-      "AddToPath": "Add to PATH (requires shell restart)",
+      "AddToPath": "添加到 PATH (需要重启 shell)",
       "RunAfter": "安装后运行 %1",
       "Other": "其他:",
       "SourceFile": "%1 源文件"
@@ -1421,32 +1425,19 @@
     "vs/code/node/cliProcessMain": {
       "notFound": "找不到扩展“{0}”。",
       "notInstalled": "未安装扩展“{0}”。",
-      "useId": "Make sure you use the full extension ID, including the publisher, e.g.: {0}",
-      "installingExtensions": "Installing extensions...",
+      "useId": "确认使用了包括发布者在内的完整扩展 ID，例如: {0}",
+      "installingExtensions": "正在安装扩展...",
       "installation failed": "未能安装扩展: {0}",
-      "successVsixInstall": "Extension '{0}' was successfully installed.",
+      "successVsixInstall": "已成功安装扩展“{0}”。",
       "cancelVsixInstall": "已取消安装扩展“{0}”。",
       "alreadyInstalled": "已安装扩展“{0}”。",
       "forceUpdate": "扩展“{0}”和“{1}”已经安装，但是市场上有一个更新版本的{2}。使用“--force”选项更新到新版本。",
       "updateMessage": "将扩展 \"{0}\" 更新到版本 {1}",
-      "forceDowngrade": "A newer version of extension '{0}' v{1} is already installed. Use '--force' option to downgrade to older version.",
-      "installing": "Installing extension '{0}' v{1}...",
-      "successInstall": "Extension '{0}' v{1} was successfully installed.",
+      "forceDowngrade": "已安装扩展“{0}”v{1} 的较新版本。请使用 \"--force\" 选项降级到旧版本。",
+      "installing": "正在安装扩展“{0}”v{1}...",
+      "successInstall": "已成功安装扩展“{0}”v{1}。",
       "uninstalling": "正在卸载 {0}...",
       "successUninstall": "已成功卸载扩展“{0}”!"
-    },
-    "vs/code/electron-main/logUploader": {
-      "invalidEndpoint": "日志上传端点无效",
-      "beginUploading": "正在上传...",
-      "didUploadLogs": "上传成功! 日志文件 ID: {0}",
-      "logUploadPromptHeader": "即将上传您的会话日志到安全的 Microsoft 端点，其仅能被 Microsoft 的 VS Code 团队成员访问。",
-      "logUploadPromptBody": "会话日志可能包含个人信息，如完整路径或者文件内容。请检查并编辑您的会话日志文件: “{0}”",
-      "logUploadPromptBodyDetails": "如果继续，表示您确认您已经检查与编辑了会话日志文件并同意 Microsoft 使用这些文件来调试 VS Code。",
-      "logUploadPromptAcceptInstructions": "为继续上传，请使用 \"--upload-logs={0}\" 运行 code",
-      "postError": "上传日志时出错: {0}",
-      "responseError": "上传日志时出错。收到 {0} — {1}",
-      "parseError": "分析响应时出错",
-      "zipError": "压缩日志时出错: {0}"
     },
     "vs/code/electron-browser/issue/issueReporterMain": {
       "hide": "隐藏",
@@ -1528,12 +1519,55 @@
     "vs/code/electron-main/window": {
       "hiddenMenuBar": "你仍可以通过 Alt 键访问菜单栏。"
     },
+    "vs/workbench/browser/actions/windowActions": {
+      "toggleFullScreen": "切换全屏",
+      "reloadWindow": "重新加载窗口",
+      "view": "视图",
+      "developer": "开发者",
+      "miToggleFullScreen": "全屏(&&F)"
+    },
+    "vs/workbench/browser/actions/developerActions": {
+      "inspect context keys": "检查上下文键值",
+      "toggle screencast mode": "切换屏幕模式",
+      "developer": "开发者"
+    },
     "vs/workbench/browser/actions/navigationActions": {
       "navigateLeft": "导航到左侧视图",
       "navigateRight": "导航到右侧视图",
       "navigateUp": "导航到上方视图",
       "navigateDown": "导航到下方视图",
       "view": "视图"
+    },
+    "vs/workbench/api/common/configurationExtensionPoint": {
+      "vscode.extension.contributes.configuration.title": "设置摘要。此标签将在设置文件中用作分隔注释。",
+      "vscode.extension.contributes.configuration.properties": "配置属性的描述。",
+      "scope.application.description": "应用程序特定配置，只能在用户设置中配置。",
+      "scope.machine.description": "计算机特定配置，只能在本地运行扩展时在用户设置中配置，或者仅在远程运行扩展时在远程设置中配置。",
+      "scope.window.description": "窗口特定配置,可在用户、远程或工作区设置中配置。",
+      "scope.resource.description": "资源特定配置，可在用户、远程、工作区或文件夹设置中配置。",
+      "scope.description": "配置适用的范围。可用范围包括“应用程序”、“计算机”、“窗口”和“资源”。",
+      "scope.enumDescriptions": "枚举值的说明",
+      "scope.markdownEnumDescription": "Markdown 格式的枚举值说明。",
+      "scope.markdownDescription": "Markdown 格式的说明。",
+      "scope.deprecationMessage": "设置后，该属性将被标记为已弃用，并将给定的消息显示为解释。",
+      "vscode.extension.contributes.defaultConfiguration": "按语言提供默认编辑器配置设置。",
+      "vscode.extension.contributes.configuration": "用于配置字符串。",
+      "invalid.title": "configuration.title 必须是字符串",
+      "invalid.properties": "configuration.properties 必须是对象",
+      "invalid.property": "\"configuration.property\" 必须是对象",
+      "invalid.allOf": "\"configuration.allOf\" 已被弃用且不应被使用。你可以将多个配置单元作为数组传递给 \"configuration\" 参与点。",
+      "workspaceConfig.folders.description": "将载入到工作区的文件夹列表。",
+      "workspaceConfig.path.description": "文件路径。例如 \"/root/folderA\" 或 \"./folderA\"。后者表示根据工作区文件位置进行解析的相对路径。",
+      "workspaceConfig.name.description": "文件夹的可选名称。",
+      "workspaceConfig.uri.description": "文件夹的 URI",
+      "workspaceConfig.settings.description": "工作区设置",
+      "workspaceConfig.launch.description": "工作区启动配置",
+      "workspaceConfig.extensions.description": "工作区扩展",
+      "unknownWorkspaceProperty": "未知的工作区配置属性"
+    },
+    "vs/workbench/browser/parts/sidebar/sidebarPart": {
+      "focusSideBar": "聚焦到侧边栏",
+      "viewCategory": "视图"
     },
     "vs/workbench/browser/workbench.contribution": {
       "workbenchConfigurationTitle": "工作台",
@@ -1571,7 +1605,6 @@
       "panelDefaultLocation": "控制面板 (终端、调试控制台、输出、问题) 的默认位置。可显示在工作台的底部或右侧。",
       "statusBarVisibility": "控制工作台底部状态栏的可见性。",
       "activityBarVisibility": "控制工作台中活动栏的可见性。",
-      "iconExplorationEnabled": "Controls the visibility of the icon exploration in the workbench.",
       "viewVisibility": "控制是否显示视图头部的操作项。视图头部操作项可以一直，或是仅当聚焦到和悬停在视图上时显示。",
       "fontAliasing": "控制在工作台中字体的渲染方式。",
       "workbench.fontAliasing.default": "次像素平滑字体。将在大多数非 retina 显示器上显示最清晰的文字。",
@@ -1602,6 +1635,17 @@
       "dirty": "\"${dirty}\": 表示活动编辑器为脏的脏指示器。",
       "separator": "\"${separator}\": 一种条件分隔符 (\"-\"), 仅在被包含值或静态文本的变量包围时显示。",
       "windowConfigurationTitle": "窗口",
+      "window.menuBarVisibility.default": "菜单仅在全屏模式下隐藏。",
+      "window.menuBarVisibility.visible": "菜单始终可见，即使处于全屏模式下。",
+      "window.menuBarVisibility.toggle": "菜单隐藏，但可以通过 Alt 键显示。",
+      "window.menuBarVisibility.hidden": "菜单始终隐藏。",
+      "menuBarVisibility": "控制菜单栏的可见性。“切换”设置表示隐藏菜单栏，按一次 Alt 键则将显示此菜单栏。默认情况下，除非窗口为全屏，否则菜单栏可见。",
+      "enableMenuBarMnemonics": "控制是否可通过 Alt 键快捷键打开主菜单。如果禁用助记符，则可将这些 Alt 键快捷键绑定到编辑器命令。",
+      "customMenuBarAltFocus": "控制是否通过按 Alt 键聚焦菜单栏。此设置对使用 Alt 键切换菜单栏没有任何影响。",
+      "window.openFoldersInNewWindow.on": "在新窗口中打开文件夹。",
+      "window.openFoldersInNewWindow.off": "文件夹将替换上一个活动窗口。",
+      "window.openFoldersInNewWindow.default": "在新窗口中打开文件夹，除非文件夹从应用程序内进行选取 (例如，通过“文件”菜单)。",
+      "openFoldersInNewWindow": "控制打开文件夹时是在新窗口打开还是替换上一个活动窗口。\n注意，此设置可能会被忽略 (例如，在使用 `--new-window` 或 `--reuse-window` 命令行选项时)。",
       "zenModeConfigurationTitle": "禅模式",
       "zenMode.fullScreen": "控制在打开禅模式时是否将工作台切换到全屏。",
       "zenMode.centerLayout": "控制在打开禅模式时是否启用居中布局。",
@@ -1611,43 +1655,12 @@
       "zenMode.hideLineNumbers": "控制在打开禅模式时是否隐藏编辑器行号。",
       "zenMode.restore": "若窗口在处于禅模式时退出，控制其在恢复时是否还原到禅模式。"
     },
-    "vs/workbench/api/common/configurationExtensionPoint": {
-      "vscode.extension.contributes.configuration.title": "设置摘要。此标签将在设置文件中用作分隔注释。",
-      "vscode.extension.contributes.configuration.properties": "配置属性的描述。",
-      "scope.application.description": "Application specific configuration, which can be configured only in the user settings.",
-      "scope.machine.description": "Machine specific configuration, which can be configured only in the user settings when the extension is running locally, or only in the remote settings when the extension is running remotely.",
-      "scope.window.description": "Window specific configuration, which can be configured in the user, remote or workspace settings.",
-      "scope.resource.description": "Resource specific configuration, which can be configured in the user, remote, workspace or folder settings.",
-      "scope.description": "Scope in which the configuration is applicable. Available scopes are `application`, `machine`, `window` and `resource`.",
-      "scope.enumDescriptions": "枚举值的说明",
-      "scope.markdownEnumDescription": "Markdown 格式的枚举值说明。",
-      "scope.markdownDescription": "Markdown 格式的说明。",
-      "scope.deprecationMessage": "设置后，该属性将被标记为已弃用，并将给定的消息显示为解释。",
-      "vscode.extension.contributes.defaultConfiguration": "按语言提供默认编辑器配置设置。",
-      "vscode.extension.contributes.configuration": "用于配置字符串。",
-      "invalid.title": "configuration.title 必须是字符串",
-      "invalid.properties": "configuration.properties 必须是对象",
-      "invalid.property": "\"configuration.property\" 必须是对象",
-      "invalid.allOf": "\"configuration.allOf\" 已被弃用且不应被使用。你可以将多个配置单元作为数组传递给 \"configuration\" 参与点。",
-      "workspaceConfig.folders.description": "将载入到工作区的文件夹列表。",
-      "workspaceConfig.path.description": "文件路径。例如 \"/root/folderA\" 或 \"./folderA\"。后者表示根据工作区文件位置进行解析的相对路径。",
-      "workspaceConfig.name.description": "文件夹的可选名称。",
-      "workspaceConfig.uri.description": "文件夹的 URI",
-      "workspaceConfig.settings.description": "工作区设置",
-      "workspaceConfig.launch.description": "工作区启动配置",
-      "workspaceConfig.extensions.description": "工作区扩展",
-      "unknownWorkspaceProperty": "未知的工作区配置属性"
-    },
-    "vs/workbench/browser/parts/sidebar/sidebarPart": {
-      "focusSideBar": "聚焦到侧边栏",
-      "viewCategory": "视图"
-    },
     "vs/workbench/browser/actions/layoutActions": {
       "view": "视图",
       "toggleActivityBar": "切换活动栏可见性",
       "miShowActivityBar": "显示活动栏(&&A)",
       "toggleCenteredLayout": "切换居中布局",
-      "miToggleCenteredLayout": "Centered Layout",
+      "miToggleCenteredLayout": "居中布局",
       "flipLayout": "切换垂直/水平编辑器布局",
       "miToggleEditorLayout": "翻转布局(&&L)",
       "toggleSidebarPosition": "切换边栏位置",
@@ -1658,61 +1671,16 @@
       "toggleEditor": "切换编辑器区域",
       "toggleSidebar": "切换侧边栏可见性",
       "miAppearance": "外观(&&A)",
-      "miShowSidebar": "Show &&Side Bar",
+      "miShowSidebar": "显示侧栏(&&S)",
       "toggleStatusbar": "切换状态栏可见性",
-      "miShowStatusbar": "Show S&&tatus Bar",
+      "miShowStatusbar": "显示状态栏(&&T)",
       "toggleTabs": "切换标签页可见性",
       "toggleZenMode": "切换禅模式",
       "miToggleZenMode": "禅模式",
       "toggleMenuBar": "切换菜单栏",
-      "miShowMenuBar": "Show Menu &&Bar",
+      "miShowMenuBar": "显示菜单栏(&&B)",
       "increaseViewSize": "增加当前视图大小",
       "decreaseViewSize": "减小当前视图大小"
-    },
-    "vs/workbench/api/common/menusExtensionPoint": {
-      "requirearray": "菜单项必须为一个数组",
-      "requirestring": "属性“{0}”是必需的，其类型必须是“字符串”",
-      "optstring": "属性“{0}”可以省略，否则其类型必须是 \"string\"",
-      "vscode.extension.contributes.menuItem.command": "要执行的命令的标识符。该命令必须在“命令”部分中声明",
-      "vscode.extension.contributes.menuItem.alt": "要执行的替代命令的标识符。该命令必须在 ”commands\" 部分中声明",
-      "vscode.extension.contributes.menuItem.when": "显示此项目时条件必须为 true",
-      "vscode.extension.contributes.menuItem.group": "此命令所属的组",
-      "vscode.extension.contributes.menus": "向编辑器提供菜单项",
-      "menus.commandPalette": "命令面板",
-      "menus.touchBar": "触控栏 (仅 macOS)",
-      "menus.editorTitle": "编辑器标题菜单",
-      "menus.editorContext": "编辑器上下文菜单",
-      "menus.explorerContext": "文件资源管理器上下文菜单",
-      "menus.editorTabContext": "编辑器选项卡上下文菜单",
-      "menus.debugCallstackContext": "调试调用堆栈上下文菜单",
-      "menus.scmTitle": "源代码管理标题菜单",
-      "menus.scmSourceControl": "源代码管理菜单",
-      "menus.resourceGroupContext": "源代码管理资源组上下文菜单",
-      "menus.resourceStateContext": "源代码管理资源状态上下文菜单",
-      "view.viewTitle": "提供的视图的标题菜单",
-      "view.itemContext": "提供的视图中的项目的上下文菜单",
-      "commentThread.title": "The contributed comment thread title menu",
-      "commentThread.actions": "The contributed comment thread context menu, rendered as buttons below the comment editor",
-      "comment.title": "The contributed comment title menu",
-      "comment.actions": "The contributed comment context menu, rendered as buttons below the comment editor",
-      "nonempty": "应为非空值。",
-      "opticon": "属性 \"icon\" 可以省略, 或者必须是字符串或文字, 如 \"{dark, light}\"",
-      "requireStringOrObject": "属性“{0}”是必要属性，其类型必须是 \"string\" 或 \"object\"",
-      "requirestrings": "属性“{0}”和“{1}”是必要属性，其类型必须是 \"string\"",
-      "vscode.extension.contributes.commandType.command": "要执行的命令的标识符",
-      "vscode.extension.contributes.commandType.title": "在 UI 中依据其表示命令的标题",
-      "vscode.extension.contributes.commandType.category": "(可选) 类别字符串，命令在界面中根据此项分组",
-      "vscode.extension.contributes.commandType.precondition": "(Optional) Condition which must be true to enable the command",
-      "vscode.extension.contributes.commandType.icon": "(可选) 在界面中显示的命令图标。可为文件路径或主题配置",
-      "vscode.extension.contributes.commandType.icon.light": "使用浅色主题时的图标路径",
-      "vscode.extension.contributes.commandType.icon.dark": "使用暗主题时的图标路径",
-      "vscode.extension.contributes.commands": "对命令面板提供命令。",
-      "dup": "命令“{0}”在 \"commands\" 部分重复出现。",
-      "menuId.invalid": "“{0}”为无效菜单标识符",
-      "proposedAPI.invalid": "{0} 是建议的菜单标识符, 仅在开发用完或使用以下命令行开关时可用:--enable-proposed-api {1}",
-      "missing.command": "菜单项引用未在“命令”部分进行定义的命令“{0}”。",
-      "missing.altCommand": "菜单项引用了未在 \"commands\" 部分定义的替代命令“{0}”。",
-      "dupe.command": "菜单项引用的命令中默认和替代命令相同"
     },
     "vs/workbench/api/browser/viewsExtensionPoint": {
       "vscode.extension.contributes.views.containers.id": "用于标识容器的唯一 ID，视图能在容器内通过 \"view\" 参与点提供。",
@@ -1741,47 +1709,53 @@
       "requirearray": "视图必须为数组",
       "optstring": "属性“{0}”可以省略，否则其类型必须是 \"string\""
     },
+    "vs/workbench/api/common/menusExtensionPoint": {
+      "requirearray": "菜单项必须为一个数组",
+      "requirestring": "属性“{0}”是必需的，其类型必须是“字符串”",
+      "optstring": "属性“{0}”可以省略，否则其类型必须是 \"string\"",
+      "vscode.extension.contributes.menuItem.command": "要执行的命令的标识符。该命令必须在“命令”部分中声明",
+      "vscode.extension.contributes.menuItem.alt": "要执行的替代命令的标识符。该命令必须在 ”commands\" 部分中声明",
+      "vscode.extension.contributes.menuItem.when": "显示此项目时条件必须为 true",
+      "vscode.extension.contributes.menuItem.group": "此命令所属的组",
+      "vscode.extension.contributes.menus": "向编辑器提供菜单项",
+      "menus.commandPalette": "命令面板",
+      "menus.touchBar": "触控栏 (仅 macOS)",
+      "menus.editorTitle": "编辑器标题菜单",
+      "menus.editorContext": "编辑器上下文菜单",
+      "menus.explorerContext": "文件资源管理器上下文菜单",
+      "menus.editorTabContext": "编辑器选项卡上下文菜单",
+      "menus.debugCallstackContext": "调试调用堆栈上下文菜单",
+      "menus.scmTitle": "源代码管理标题菜单",
+      "menus.scmSourceControl": "源代码管理菜单",
+      "menus.resourceGroupContext": "源代码管理资源组上下文菜单",
+      "menus.resourceStateContext": "源代码管理资源状态上下文菜单",
+      "view.viewTitle": "提供的视图的标题菜单",
+      "view.itemContext": "提供的视图中的项目的上下文菜单",
+      "commentThread.title": "贡献的注释线程标题菜单",
+      "commentThread.actions": "贡献的注释线程上下文菜单，呈现为注释编辑器下方的按钮",
+      "comment.title": "贡献的注释标题菜单",
+      "comment.actions": "贡献的注释上下文菜单，呈现为注释编辑器下方的按钮",
+      "nonempty": "应为非空值。",
+      "opticon": "属性 \"icon\" 可以省略, 或者必须是字符串或文字, 如 \"{dark, light}\"",
+      "requireStringOrObject": "属性“{0}”是必要属性，其类型必须是 \"string\" 或 \"object\"",
+      "requirestrings": "属性“{0}”和“{1}”是必要属性，其类型必须是 \"string\"",
+      "vscode.extension.contributes.commandType.command": "要执行的命令的标识符",
+      "vscode.extension.contributes.commandType.title": "在 UI 中依据其表示命令的标题",
+      "vscode.extension.contributes.commandType.category": "(可选) 类别字符串，命令在界面中根据此项分组",
+      "vscode.extension.contributes.commandType.precondition": "(可选)启用命令时必须为 true 的条件",
+      "vscode.extension.contributes.commandType.icon": "(可选) 在界面中显示的命令图标。可为文件路径或主题配置",
+      "vscode.extension.contributes.commandType.icon.light": "使用浅色主题时的图标路径",
+      "vscode.extension.contributes.commandType.icon.dark": "使用暗主题时的图标路径",
+      "vscode.extension.contributes.commands": "对命令面板提供命令。",
+      "dup": "命令“{0}”在 \"commands\" 部分重复出现。",
+      "menuId.invalid": "“{0}”为无效菜单标识符",
+      "proposedAPI.invalid": "{0} 是建议的菜单标识符, 仅在开发用完或使用以下命令行开关时可用:--enable-proposed-api {1}",
+      "missing.command": "菜单项引用未在“命令”部分进行定义的命令“{0}”。",
+      "missing.altCommand": "菜单项引用了未在 \"commands\" 部分定义的替代命令“{0}”。",
+      "dupe.command": "菜单项引用的命令中默认和替代命令相同"
+    },
     "vs/workbench/browser/parts/panel/panelPart": {
       "hidePanel": "\"隐藏\" 面板"
-    },
-    "vs/workbench/browser/parts/views/views": {
-      "focus view": "聚焦到“{0}”视图",
-      "view category": "视图"
-    },
-    "vs/workbench/browser/parts/activitybar/activitybarPart": {
-      "hideActivitBar": "隐藏活动栏",
-      "manage": "Manage"
-    },
-    "vs/workbench/browser/parts/statusbar/statusbarPart": {
-      "hide": "隐藏",
-      "hideStatusBar": "Hide Status Bar"
-    },
-    "vs/workbench/browser/parts/titlebar/titlebarPart": {
-      "patchedWindowTitle": "[不受支持]",
-      "userIsAdmin": "[管理员]",
-      "userIsSudo": "[超级用户]",
-      "devExtensionWindowTitlePrefix": "[扩展开发宿主]"
-    },
-    "vs/workbench/api/common/jsonValidationExtensionPoint": {
-      "contributes.jsonValidation": "用于 json 架构配置。",
-      "contributes.jsonValidation.fileMatch": "要匹配的文件模式，例如 \"package.json\" 或 \"*.launch\"。",
-      "contributes.jsonValidation.url": "到扩展文件夹('./')的架构 URL (\"http:\"、\"https:\")或相对路径。",
-      "invalid.jsonValidation": "configuration.jsonValidation 必须是数组",
-      "invalid.fileMatch": "必须定义 \"configuration.jsonValidation.fileMatch\" ",
-      "invalid.url": "configuration.jsonValidation.url 必须是 URL 或相对路径",
-      "invalid.path.1": "\"contributes.{0}.url\" ({1})应包含在扩展的文件夹({2})内。这可能会使扩展不可移植。",
-      "invalid.url.fileschema": "configuration.jsonValidation.url 是无效的相对 URL: {0}",
-      "invalid.url.schema": "configuration.jsonValidation.url 必须以 \"http:\"、\"https:\" 或 \"./\" 开头以引用位于扩展中的架构。"
-    },
-    "vs/workbench/api/browser/mainThreadMessageService": {
-      "extensionSource": "{0} (扩展)",
-      "defaultSource": "扩展",
-      "manageExtension": "管理扩展",
-      "cancel": "取消",
-      "ok": "确定"
-    },
-    "vs/workbench/api/browser/mainThreadProgress": {
-      "manageExtension": "管理扩展"
     },
     "vs/workbench/electron-browser/main.contribution": {
       "file": "文件",
@@ -1796,10 +1770,6 @@
       "developer": "开发者",
       "help": "帮助",
       "miNewWindow": "新建窗口(&&W)",
-      "miOpen": "打开(&&O)...",
-      "miOpenFile": "打开文件(&&O)...",
-      "miOpenFolder": "打开文件夹(&&F)...",
-      "miOpenWorkspace": "打开工作区(&&K)...",
       "miOpenRecent": "打开最近的文件(&&R)",
       "miMore": "更多(&&M)...",
       "miAddFolderToWorkspace": "将文件夹添加到工作区(&&D)...",
@@ -1808,7 +1778,6 @@
       "miCloseWorkspace": "关闭工作区(&&W)",
       "miCloseWindow": "关闭窗口(&&W)",
       "miExit": "退出(&&X)",
-      "miToggleFullScreen": "&&Full Screen",
       "miZoomIn": "放大(&&Z)",
       "miZoomOut": "缩小(&&Z)",
       "miZoomReset": "重置缩放(&&R)",
@@ -1832,10 +1801,6 @@
       "window.openFilesInNewWindow.default": "在新窗口中打开文件，除非文件从应用程序内进行选取 (例如，通过“文件”菜单)。",
       "openFilesInNewWindowMac": "控制是否在新窗口中打开文件。\n注意，此设置可能会被忽略 (例如，在使用 `-new-window` 或 `-reuse-window` 命令行选项时)。",
       "openFilesInNewWindow": "控制是否在新窗口中打开文件。\n注意，此设置可能会被忽略 (例如，在使用 `--new-window` 或 `--reuse-window` 命令行选项时)。",
-      "window.openFoldersInNewWindow.on": "在新窗口中打开文件夹。",
-      "window.openFoldersInNewWindow.off": "文件夹将替换上一个活动窗口。",
-      "window.openFoldersInNewWindow.default": "在新窗口中打开文件夹，除非文件夹从应用程序内进行选取 (例如，通过“文件”菜单)。",
-      "openFoldersInNewWindow": "控制打开文件夹时是在新窗口打开还是替换上一个活动窗口。\n注意，此设置可能会被忽略 (例如，在使用 `--new-window` 或 `--reuse-window` 命令行选项时)。",
       "window.openWithoutArgumentsInNewWindow.on": "打开一个新的空窗口。",
       "window.openWithoutArgumentsInNewWindow.off": "聚焦到上一活动的运行实例。",
       "openWithoutArgumentsInNewWindow": "在另一实例无参启动时，控制是打开新的空窗口或是聚焦到最后运行的实例。\n注意，此设置可能会被忽略 (例如，在使用 `--new-window` 或 `--reuse-window` 命令行选项时)。",
@@ -1852,13 +1817,6 @@
       "window.newWindowDimensions.fullscreen": "在全屏模式下打开新窗口。",
       "newWindowDimensions": "控制在已有窗口时新开窗口的尺寸。请注意，此设置对第一个打开的窗口无效。第一个窗口将始终恢复关闭前的大小和位置。",
       "closeWhenEmpty": "控制在关闭最后一个编辑器时是否关闭整个窗口。此设置仅适用于没有显示文件夹的窗口。",
-      "window.menuBarVisibility.default": "菜单仅在全屏模式下隐藏。",
-      "window.menuBarVisibility.visible": "菜单始终可见，即使处于全屏模式下。",
-      "window.menuBarVisibility.toggle": "菜单隐藏，但可以通过 Alt 键显示。",
-      "window.menuBarVisibility.hidden": "菜单始终隐藏。",
-      "menuBarVisibility": "控制菜单栏的可见性。“切换”设置表示隐藏菜单栏，按一次 Alt 键则将显示此菜单栏。默认情况下，除非窗口为全屏，否则菜单栏可见。",
-      "enableMenuBarMnemonics": "启用后，即可使用 Alt 快捷键打开主菜单。若禁用助记键，这些 Alt 快捷键将能绑定到编辑器命令。",
-      "disableCustomMenuBarAltFocus": "If enabled, disables the ability to focus the menu bar with the Alt-key when not set to toggle.",
       "autoDetectHighContrast": "如果已启用，将自动更改为高对比度主题；如果 Windows 正在使用高对比度主题，则当离开 Windows 高对比度主题时会更改为深色主题。",
       "window.doubleClickIconToClose": "如果启用, 双击标题栏中的应用程序图标将关闭窗口, 并且该窗口无法通过图标拖动。此设置仅在 \"#window.titleBarStyle#\" 设置为 \"custom\" 时生效。",
       "titleBarStyle": "调整窗口标题栏的外观。在 Linux 和 Windows 上，此设置也会影响应用程序和上下文菜单的外观。更改需要完全重新启动才能应用。",
@@ -1867,6 +1825,41 @@
       "window.clickThroughInactive": "启用后，点击非活动窗口后将在激活窗口的同时触发光标之下的元素 (若可点击)。禁用后，点击非活动窗口仅能激活窗口，再次点击才能触发元素。",
       "telemetryConfigurationTitle": "遥测",
       "telemetry.enableCrashReporting": "将崩溃报告发送到 Microsoft 联机服务。\n此选项在重新启动后才能生效。"
+    },
+    "vs/workbench/browser/parts/views/views": {
+      "focus view": "聚焦到“{0}”视图",
+      "view category": "视图"
+    },
+    "vs/workbench/browser/parts/titlebar/titlebarPart": {
+      "patchedWindowTitle": "[不受支持]",
+      "userIsAdmin": "[管理员]",
+      "userIsSudo": "[超级用户]",
+      "devExtensionWindowTitlePrefix": "[扩展开发宿主]"
+    },
+    "vs/workbench/browser/parts/activitybar/activitybarPart": {
+      "hideActivitBar": "隐藏活动栏",
+      "manage": "管理"
+    },
+    "vs/workbench/api/common/jsonValidationExtensionPoint": {
+      "contributes.jsonValidation": "用于 json 架构配置。",
+      "contributes.jsonValidation.fileMatch": "要匹配的文件模式，例如 \"package.json\" 或 \"*.launch\"。",
+      "contributes.jsonValidation.url": "到扩展文件夹('./')的架构 URL (\"http:\"、\"https:\")或相对路径。",
+      "invalid.jsonValidation": "configuration.jsonValidation 必须是数组",
+      "invalid.fileMatch": "必须定义 \"configuration.jsonValidation.fileMatch\" ",
+      "invalid.url": "configuration.jsonValidation.url 必须是 URL 或相对路径",
+      "invalid.path.1": "\"contributes.{0}.url\" ({1})应包含在扩展的文件夹({2})内。这可能会使扩展不可移植。",
+      "invalid.url.fileschema": "configuration.jsonValidation.url 是无效的相对 URL: {0}",
+      "invalid.url.schema": "configuration.jsonValidation.url 必须以 \"http:\"、\"https:\" 或 \"./\" 开头以引用位于扩展中的架构。"
+    },
+    "vs/workbench/api/browser/mainThreadProgress": {
+      "manageExtension": "管理扩展"
+    },
+    "vs/workbench/api/browser/mainThreadMessageService": {
+      "extensionSource": "{0} (扩展)",
+      "defaultSource": "扩展",
+      "manageExtension": "管理扩展",
+      "cancel": "取消",
+      "ok": "确定"
     },
     "vs/workbench/browser/parts/quickopen/quickOpenController": {
       "quickOpenInput": "键入 \"?\" 从此处获取有关可进行的操作的帮助",
@@ -1880,12 +1873,19 @@
     "vs/workbench/browser/parts/editor/editorPart": {
       "groupLabel": "第 {0} 组"
     },
+    "vs/workbench/browser/parts/statusbar/statusbarPart": {
+      "hide": "隐藏",
+      "hideStatusBar": "隐藏状态栏"
+    },
     "vs/workbench/browser/viewlet": {
       "compositePart.hideSideBarLabel": "隐藏侧边栏",
       "collapse": "全部折叠"
     },
     "vs/workbench/common/views": {
       "duplicateId": "容器“{1}”中已注册有 ID 为“{0}”的视图"
+    },
+    "vs/workbench/api/browser/mainThreadEditors": {
+      "diffLeftRightLabel": "{0} ⟷ {1}"
     },
     "vs/workbench/api/browser/mainThreadExtensionService": {
       "reload window": "无法激活 \"{0}\" 扩展, 因为它依赖于未加载的 \"{1}\" 扩展。是否要重新加载窗口以加载扩展名？",
@@ -1895,9 +1895,6 @@
       "uninstalledDep": "无法激活 \"{0}\" 扩展, 因为它依赖于未安装的 \"{1}\" 扩展。是否要安装扩展并重新加载窗口？",
       "install missing dep": "安装并重新加载",
       "unknownDep": "无法激活 \"{0}\" 扩展, 因为它依赖于未知的 \"{1}\" 扩展。"
-    },
-    "vs/workbench/api/browser/mainThreadEditors": {
-      "diffLeftRightLabel": "{0} ⟷ {1}"
     },
     "vs/workbench/api/browser/mainThreadWorkspace": {
       "folderStatusMessageAddSingleFolder": "扩展“{0}”添加了 1 个文件夹到工作区",
@@ -1942,6 +1939,7 @@
     "vs/workbench/browser/actions/workspaceActions": {
       "openFile": "打开文件...",
       "openLocalFile": "打开本地文件...",
+      "saveLocalFile": "保存本地文件...",
       "openFolder": "打开文件夹...",
       "openLocalFolder": "打开本地文件夹...",
       "openFileFolder": "打开...",
@@ -1954,8 +1952,18 @@
       "openWorkspaceConfigFile": "打开工作区配置文件",
       "duplicateWorkspaceInNewWindow": "复制此工作区并在新窗口打开"
     },
+    "vs/workbench/electron-browser/actions/developerActions": {
+      "toggleDevTools": "切换开发人员工具",
+      "toggleSharedProcess": "切换共享进程"
+    },
     "vs/workbench/api/browser/mainThreadTask": {
       "task.label": "{0}: {1}"
+    },
+    "vs/workbench/browser/actions/workspaceCommands": {
+      "addFolderToWorkspace": "将文件夹添加到工作区...",
+      "add": "添加(&&A)",
+      "addFolderToWorkspaceTitle": "将文件夹添加到工作区",
+      "workspaceFolderPickerPlaceholder": "选择工作区文件夹"
     },
     "vs/workbench/browser/parts/quickinput/quickInput": {
       "quickInput.back": "上一步",
@@ -1983,7 +1991,7 @@
       "previousPanelView": "上一个面板视图",
       "nextPanelView": "下一个面板视图",
       "view": "视图",
-      "miShowPanel": "Show &&Panel"
+      "miShowPanel": "显示面板(&&P)"
     },
     "vs/workbench/browser/parts/compositePart": {
       "ariaCompositeToolbarLabel": "{0}操作",
@@ -1992,15 +2000,9 @@
     "vs/workbench/browser/parts/editor/editorWidgets": {
       "openWorkspace": "打开工作区"
     },
-    "vs/workbench/browser/actions/workspaceCommands": {
-      "addFolderToWorkspace": "将文件夹添加到工作区...",
-      "add": "添加(&&A)",
-      "addFolderToWorkspaceTitle": "将文件夹添加到工作区",
-      "workspaceFolderPickerPlaceholder": "选择工作区文件夹"
-    },
     "vs/workbench/common/theme": {
       "tabActiveBackground": "活动选项卡的背景色。在编辑器区域，选项卡是编辑器的容器。可在一个编辑器组中打开多个选项卡。可以有多个编辑器组。",
-      "tabUnfocusedActiveBackground": "Active tab background color in an unfocused group. Tabs are the containers for editors in the editor area. Multiple tabs can be opened in one editor group. There can be multiple editor groups.",
+      "tabUnfocusedActiveBackground": "非焦点组中的活动选项卡背景色。选项卡是编辑器区域中编辑器的容器。可以在一个编辑器组中打开多个选项卡。可以有多个编辑器组。",
       "tabInactiveBackground": "非活动选项卡的背景色。在编辑器区域，选项卡是编辑器的容器。可在一个编辑器组中打开多个选项卡。可以有多个编辑器组。",
       "tabHoverBackground": "选项卡被悬停时的背景色。选项卡是编辑器区域中编辑器的容器。可在一个编辑器组中打开多个选项卡。可以有多个编辑器组。",
       "tabUnfocusedHoverBackground": "非焦点组选项卡被悬停时的背景色。选项卡是编辑器区域中编辑器的容器。可在一个编辑器组中打开多个选项卡。可以有多个编辑器组。",
@@ -2066,6 +2068,8 @@
       "sideBarSectionHeaderBackground": "侧边栏节标题的背景颜色。侧边栏是资源管理器和搜索等视图的容器。",
       "sideBarSectionHeaderForeground": "侧边栏节标题的前景色。侧边栏包括资源管理器、搜索等视图。",
       "sideBarSectionHeaderBorder": "侧边栏节标题的边框颜色。侧边栏包括资源管理器、搜索等视图。",
+      "quickInputBackground": "快速输入背景颜色。快速输入小部件是视图的容器，如颜色主题选取器",
+      "quickInputForeground": "快速输入前景颜色。快速输入小部件是视图的容器，如颜色主题选取器",
       "titleBarActiveForeground": "窗口处于活动状态时的标题栏前景色。请注意，该颜色当前仅在 macOS 上受支持。",
       "titleBarInactiveForeground": "窗口处于非活动状态时的标题栏前景色。请注意，该颜色当前仅在 macOS 上受支持。",
       "titleBarActiveBackground": "窗口处于活动状态时的标题栏背景色。请注意，该颜色当前仅在 macOS 上受支持。",
@@ -2082,6 +2086,17 @@
       "notificationCenterHeaderForeground": "通知中心头部的前景色。通知从窗口右下角滑入。",
       "notificationCenterHeaderBackground": "通知中心头部的背景色。通知从窗口右下角滑入。",
       "notificationsBorder": "通知中心中分隔通知的边框的颜色。通知从窗口右下角滑入。"
+    },
+    "vs/workbench/electron-browser/actions/helpActions": {
+      "keybindingsReference": "键盘快捷方式参考",
+      "openDocumentationUrl": "Documentation",
+      "openIntroductoryVideosUrl": "入门视频",
+      "openTipsAndTricksUrl": "提示与技巧",
+      "newsletterSignup": "订阅 VS Code 新闻邮件",
+      "openTwitterUrl": "在 Twitter 上和我们互动",
+      "openUserVoiceUrl": "搜索功能请求",
+      "openLicenseUrl": "查看许可证",
+      "openPrivacyStatement": "隐私声明"
     },
     "vs/workbench/browser/workbench": {
       "loaderErrorNative": "未能加载所需文件。请重启应用程序重试。详细信息: {0}"
@@ -2100,11 +2115,9 @@
     "vs/workbench/electron-browser/actions/windowActions": {
       "closeWindow": "关闭窗口",
       "newWindow": "新建窗口",
-      "toggleFullScreen": "切换全屏",
       "zoomIn": "放大",
       "zoomOut": "缩小",
       "zoomReset": "重置缩放",
-      "reloadWindow": "重新加载窗口",
       "reloadWindowWithExntesionsDisabled": "禁用扩展后重新加载窗口",
       "close": "关闭窗口",
       "switchWindowPlaceHolder": "选择切换的窗口",
@@ -2129,33 +2142,17 @@
       "selectAll": "选择全部",
       "runningAsRoot": "不建议以 root 用户身份运行 {0}。"
     },
-    "vs/workbench/electron-browser/actions/helpActions": {
-      "keybindingsReference": "键盘快捷方式参考",
-      "openDocumentationUrl": "Documentation",
-      "openIntroductoryVideosUrl": "入门视频",
-      "openTipsAndTricksUrl": "提示与技巧",
-      "newsletterSignup": "Signup for the VS Code Newsletter",
-      "openTwitterUrl": "在 Twitter 上和我们互动",
-      "openUserVoiceUrl": "搜索功能请求",
-      "openLicenseUrl": "查看许可证",
-      "openPrivacyStatement": "隐私声明"
-    },
-    "vs/workbench/electron-browser/actions/developerActions": {
-      "toggleDevTools": "切换开发人员工具",
-      "toggleSharedProcess": "切换共享进程",
-      "inspect context keys": "检查上下文键值",
-      "toggle screencast mode": "切换屏幕模式"
-    },
-    "vs/workbench/browser/parts/compositeBar": {
-      "activityBarAriaLabel": "活动视图切换器"
-    },
     "vs/workbench/browser/parts/activitybar/activitybarActions": {
       "previousSideBarView": "前侧栏视图",
       "nextSideBarView": "侧边条形图",
       "view": "视图"
     },
-    "vs/workbench/browser/parts/views/panelViewlet": {
-      "viewToolbarAriaLabel": "{0}操作"
+    "vs/workbench/browser/parts/compositeBar": {
+      "activityBarAriaLabel": "活动视图切换器"
+    },
+    "vs/workbench/browser/parts/views/customView": {
+      "no-dataprovider": "当前没有可提供视图数据的提供来源进行注册。",
+      "collapseAll": "全部折叠"
     },
     "vs/workbench/browser/parts/editor/binaryEditor": {
       "binaryEditor": "二进制查看器"
@@ -2165,17 +2162,6 @@
     },
     "vs/workbench/browser/parts/editor/textEditor": {
       "editorLabelWithGroup": "{0}，{1}。"
-    },
-    "vs/workbench/browser/parts/views/customView": {
-      "no-dataprovider": "当前没有可提供视图数据的提供来源进行注册。",
-      "collapseAll": "全部折叠"
-    },
-    "vs/workbench/browser/parts/editor/editorCommands": {
-      "editorCommand.activeEditorMove.description": "按标签或按组移动活动编辑器",
-      "editorCommand.activeEditorMove.arg.name": "活动编辑器移动参数",
-      "editorCommand.activeEditorMove.arg.description": "参数属性:\n\t* \"to\": 表示向何处移动的字符串值。\n\t* \"by\": 表示移动单位的字符串值 (按选项卡或按组)。\n\t* \"value\": 表示移动的位置数量或移动到的绝对位置的数字型值。",
-      "toggleInlineView": "切换内联视图",
-      "compare": "比较"
     },
     "vs/workbench/browser/parts/titlebar/menubarControl": {
       "mFile": "文件(&&F)",
@@ -2197,6 +2183,9 @@
       "installingUpdate": "正在安装更新...",
       "restartToUpdate": "重新启动以更新(&&U)"
     },
+    "vs/workbench/browser/parts/views/panelViewlet": {
+      "viewToolbarAriaLabel": "{0}操作"
+    },
     "vs/workbench/browser/parts/notifications/notificationsAlerts": {
       "alertErrorMessage": "错误: {0}",
       "alertWarningMessage": "警告: {0}",
@@ -2209,22 +2198,29 @@
       "noNotifications": "无新通知",
       "oneNotification": "1 条新通知",
       "notifications": "{0} 条新通知",
-      "status.message": "Status Message"
+      "status.message": "状态消息"
+    },
+    "vs/workbench/browser/parts/editor/editorCommands": {
+      "editorCommand.activeEditorMove.description": "按标签或按组移动活动编辑器",
+      "editorCommand.activeEditorMove.arg.name": "活动编辑器移动参数",
+      "editorCommand.activeEditorMove.arg.description": "参数属性:\n\t* \"to\": 表示向何处移动的字符串值。\n\t* \"by\": 表示移动单位的字符串值 (按选项卡或按组)。\n\t* \"value\": 表示移动的位置数量或移动到的绝对位置的数字型值。",
+      "toggleInlineView": "切换内联视图",
+      "compare": "比较"
     },
     "vs/workbench/api/node/extHostExtensionService": {
       "extensionTestError": "路径 {0} 未指向有效的扩展测试运行程序。"
-    },
-    "vs/workbench/browser/parts/notifications/notificationsCenter": {
-      "notificationsEmpty": "无新通知",
-      "notifications": "通知",
-      "notificationsToolbar": "通知中心操作",
-      "notificationsList": "通知列表"
     },
     "vs/workbench/browser/parts/notifications/notificationsCommands": {
       "notifications": "通知",
       "showNotifications": "显示通知",
       "hideNotifications": "隐藏通知",
       "clearAllNotifications": "清除所有通知"
+    },
+    "vs/workbench/browser/parts/notifications/notificationsCenter": {
+      "notificationsEmpty": "无新通知",
+      "notifications": "通知",
+      "notificationsToolbar": "通知中心操作",
+      "notificationsList": "通知列表"
     },
     "vs/workbench/browser/parts/notifications/notificationsToasts": {
       "notificationsToast": "通知横幅"
@@ -2240,7 +2236,6 @@
       "textDiffEditor": "文本差异编辑器",
       "binaryDiffEditor": "二进制差异编辑器",
       "sideBySideEditor": "并排编辑器",
-      "status.imageZoom": "Image Zoom",
       "groupOnePicker": "显示活动组中的编辑器",
       "allEditorsPicker": "显示所有已打开的编辑器",
       "view": "视图",
@@ -2304,13 +2299,6 @@
       "miFocusBelowGroup": "下方组(&&B)",
       "miSwitchGroup": "切换组(&&G)"
     },
-    "vs/workbench/browser/parts/editor/textDiffEditor": {
-      "textDiffEditor": "文本差异编辑器",
-      "readonlyEditorWithInputAriaLabel": "{0}。只读文本比较编辑器。",
-      "readonlyEditorAriaLabel": "只读文本比较编辑器。",
-      "editableEditorWithInputAriaLabel": "{0}。文本文件比较编辑器。",
-      "editableEditorAriaLabel": "文本文件比较编辑器。"
-    },
     "vs/workbench/browser/parts/editor/resourceViewer": {
       "sizeB": "{0} B",
       "sizeKB": "{0} KB",
@@ -2322,9 +2310,17 @@
       "nativeFileTooLargeError": "文件太大，无法在编辑器中显示 ({0})。",
       "nativeBinaryError": "此文件是二进制文件或使用了不支持的文本编码，无法在编辑器中显示。",
       "openAsText": "是否仍要打开?",
+      "status.imageZoom": "图像缩放",
       "zoom.action.fit.label": "整张图片",
       "imgMeta": "{0}x{1} {2}",
       "imgMetaNoSize": "{0}x{1}"
+    },
+    "vs/workbench/browser/parts/editor/textDiffEditor": {
+      "textDiffEditor": "文本差异编辑器",
+      "readonlyEditorWithInputAriaLabel": "{0}。只读文本比较编辑器。",
+      "readonlyEditorAriaLabel": "只读文本比较编辑器。",
+      "editableEditorWithInputAriaLabel": "{0}。文本文件比较编辑器。",
+      "editableEditorAriaLabel": "文本文件比较编辑器。"
     },
     "vs/workbench/api/common/extHostExtensionActivator": {
       "failedDep1": "无法激活扩展“{0}”，因为它依赖于未能激活的扩展“{1}”。",
@@ -2428,7 +2424,7 @@
       "newEditorBelow": "在下方新建编辑器组"
     },
     "vs/workbench/api/node/extHost.api.impl": {
-      "remote extension host Log": "Remote Extension Host",
+      "remote extension host Log": "远程扩展主机",
       "extension host Log": "扩展宿主",
       "extensionLabel": "{0} (扩展)"
     },
@@ -2453,20 +2449,20 @@
       "pickAction": "选择操作",
       "tabFocusModeEnabled": "按 Tab 移动焦点",
       "disableTabMode": "禁用辅助功能模式",
-      "status.editor.tabFocusMode": "Accessibility Mode",
+      "status.editor.tabFocusMode": "辅助功能模式",
       "screenReaderDetected": "已为屏幕阅读器优化",
       "screenReaderDetectedExtra": "如果你没有使用屏幕阅读器，请将设置中的“editor.accessibilitySupport”改为“off”。",
-      "status.editor.screenReaderMode": "Screen Reader Mode",
+      "status.editor.screenReaderMode": "屏幕阅读器模式",
       "gotoLine": "转到行",
-      "status.editor.selection": "Editor Selection",
+      "status.editor.selection": "编辑器选择",
       "selectIndentation": "选择缩进",
-      "status.editor.indentation": "Editor Indentation",
+      "status.editor.indentation": "编辑器缩进",
       "selectEncoding": "选择编码",
-      "status.editor.encoding": "Editor Encoding",
+      "status.editor.encoding": "编辑器编码",
       "selectEOL": "选择行尾序列",
-      "status.editor.eol": "Editor End of Line",
+      "status.editor.eol": "编辑器结束行",
       "selectLanguageMode": "选择语言模式",
-      "status.editor.mode": "Editor Language",
+      "status.editor.mode": "编辑器语言",
       "fileInfo": "文件信息",
       "status.editor.info": "文件信息",
       "spacesSize": "空格: {0}",
@@ -2499,11 +2495,11 @@
       "araLabelEditorActions": "编辑器操作",
       "draggedEditorGroup": "{0} (+{1})"
     },
-    "vs/workbench/api/common/extHostStatusBar": {
-      "status.extensionMessage": "Extension Status"
-    },
     "vs/workbench/api/common/extHostProgress": {
       "extensionSource": "{0} (扩展)"
+    },
+    "vs/workbench/api/common/extHostStatusBar": {
+      "status.extensionMessage": "扩展状态"
     },
     "vs/workbench/api/common/extHostDiagnostics": {
       "limitHit": "未显示 {0} 个进一步的错误和警告。"
@@ -2534,7 +2530,7 @@
     "vs/workbench/browser/parts/editor/breadcrumbsControl": {
       "cmd.toggle": "切换导航路径",
       "cmd.category": "视图",
-      "miShowBreadcrumbs": "Show &&Breadcrumbs",
+      "miShowBreadcrumbs": "显示面包屑(&&B)",
       "cmd.focus": "聚焦到“导航路径”视图"
     },
     "vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution": {
@@ -2566,7 +2562,9 @@
       "shellCommand": "Shell 命令"
     },
     "vs/workbench/contrib/codeEditor/browser/inspectKeybindings": {
-      "workbench.action.inspectKeyMap": "开发者: 检查按键映射"
+      "workbench.action.inspectKeyMap": "开发者: 检查按键映射",
+      "workbench.action.inspectKeyMapJSON": "检查密钥映射(JSON)",
+      "developer": "开发者"
     },
     "vs/workbench/contrib/codeEditor/browser/largeFileOptimizations": {
       "largeFile": "{0}: 为减少内存使用并避免卡顿或崩溃，我们已关闭对此大型文件内容的标记、折行和折叠。",
@@ -2575,9 +2573,14 @@
       "reopenFilePrompt": "请重新打开文件以使此设置生效。"
     },
     "vs/workbench/contrib/codeEditor/browser/toggleMinimap": {
-      "toggleMinimap": "Toggle Minimap",
+      "toggleMinimap": "切换到迷你地图",
       "view": "视图",
-      "miShowMinimap": "Show &&Minimap"
+      "miShowMinimap": "显示迷你地图(&&M)"
+    },
+    "vs/workbench/contrib/codeEditor/browser/toggleRenderControlCharacter": {
+      "toggleRenderControlCharacters": "切换控制字符",
+      "view": "视图",
+      "miToggleRenderControlCharacters": "呈现控制字符(&&C)"
     },
     "vs/workbench/contrib/codeEditor/browser/toggleMultiCursorModifier": {
       "toggleLocation": "切换多行修改键",
@@ -2585,26 +2588,10 @@
       "miMultiCursorCmd": "切换为“Cmd+单击”进行多光标功能",
       "miMultiCursorCtrl": "切换为“Ctrl+单击”进行多光标功能"
     },
-    "vs/workbench/contrib/codeEditor/browser/toggleRenderControlCharacter": {
-      "toggleRenderControlCharacters": "切换控制字符",
-      "view": "视图",
-      "miToggleRenderControlCharacters": "Render &&Control Characters"
-    },
     "vs/workbench/contrib/codeEditor/browser/toggleRenderWhitespace": {
       "toggleRenderWhitespace": "切换呈现空格",
       "view": "视图",
-      "miToggleRenderWhitespace": "&&Render Whitespace"
-    },
-    "vs/workbench/contrib/codeEditor/browser/toggleWordWrap": {
-      "toggle.wordwrap": "查看: 切换自动换行",
-      "wordWrap.notInDiffEditor": "不能在差异编辑器中切换自动换行。",
-      "unwrapMinified": "在此文件禁用折行",
-      "wrapMinified": "在此文件启用折行",
-      "miToggleWordWrap": "切换自动换行(&&W)"
-    },
-    "vs/workbench/contrib/codeEditor/browser/inspectTMScopes/inspectTMScopes": {
-      "inspectTMScopes": "开发者: 检查 TM 作用域",
-      "inspectTMScopesWidget.loading": "正在加载..."
+      "miToggleRenderWhitespace": "渲染空格(&&R)"
     },
     "vs/workbench/contrib/codeEditor/browser/accessibility/accessibility": {
       "emergencyConfOn": "现在将设置 \"editor.accessibilitySupport\" 更改为 \"on\"。",
@@ -2624,6 +2611,17 @@
       "openDocWinLinux": "按 Ctrl+H 以打开浏览器窗口，其中包含更多有关 VS Code 辅助功能的信息。",
       "outroMsg": "你可以按 Esc 或 Shift+Esc 消除此工具提示并返回到编辑器。",
       "ShowAccessibilityHelpAction": "显示辅助功能帮助"
+    },
+    "vs/workbench/contrib/codeEditor/browser/inspectTMScopes/inspectTMScopes": {
+      "inspectTMScopes": "开发者: 检查 TM 作用域",
+      "inspectTMScopesWidget.loading": "正在加载..."
+    },
+    "vs/workbench/contrib/codeEditor/browser/toggleWordWrap": {
+      "toggle.wordwrap": "查看: 切换自动换行",
+      "wordWrap.notInDiffEditor": "不能在差异编辑器中切换自动换行。",
+      "unwrapMinified": "在此文件禁用折行",
+      "wrapMinified": "在此文件启用折行",
+      "miToggleWordWrap": "切换自动换行(&&W)"
     },
     "vs/workbench/contrib/codeEditor/browser/languageConfigurationExtensionPoint": {
       "parseErrors": "错误分析 {0}: {1}",
@@ -2678,12 +2676,12 @@
     "vs/workbench/contrib/comments/browser/commentGlyphWidget": {
       "editorGutterCommentRangeForeground": "编辑器导航线中表示评论范围的颜色。"
     },
-    "vs/workbench/contrib/comments/common/commentModel": {
-      "noComments": "此次审查中没有评论。"
-    },
     "vs/workbench/contrib/comments/browser/commentsTreeViewer": {
       "imageWithLabel": "图片: {0}",
       "image": "图片"
+    },
+    "vs/workbench/contrib/comments/common/commentModel": {
+      "noComments": "此次审查中没有评论。"
     },
     "vs/workbench/contrib/comments/browser/commentThreadWidget": {
       "label.collapse": "折叠",
@@ -2729,7 +2727,7 @@
       "startAdditionalSession": "启动其他会话",
       "debugConsoleAction": "调试控制台"
     },
-    "vs/workbench/contrib/debug/electron-browser/debug.contribution": {
+    "vs/workbench/contrib/debug/browser/debug.contribution": {
       "toggleDebugViewlet": "显示调试",
       "toggleDebugPanel": "调试控制台",
       "debug": "调试",
@@ -2751,6 +2749,8 @@
       "continueDebug": "继续",
       "terminateThread": "终止线程",
       "debugFocusConsole": "聚焦到“调试控制台”视图",
+      "jumpToCursor": "跳转到光标位置",
+      "inlineBreakpoint": "内联断点",
       "debugCommands": "调试配置",
       "debugConfigurationTitle": "调试",
       "allowBreakpointsEverywhere": "允许在任何文件中设置断点。",
@@ -2767,6 +2767,7 @@
       "debug.console.fontSize": "控制调试控制台中的字体大小(以像素为单位)。",
       "debug.console.fontFamily": "控制调试控制台中的字体系列。",
       "debug.console.lineHeight": "设置调试控制台中的行高(以像素为单位)。使用 0 来计算从字体大小开始的行高。",
+      "debug.console.wordWrap": "控制是否应在调试控制台中换行。",
       "launch": "全局调试启动配置。应当作为跨工作区共享的 \\\"launch.json\\\" 的替代方法。",
       "stepBackDebug": "后退",
       "reverseContinue": "反向",
@@ -2794,6 +2795,9 @@
       "miDisableAllBreakpoints": "禁用所有断点(&&L)",
       "miRemoveAllBreakpoints": "删除所有断点(&&A)",
       "miInstallAdditionalDebuggers": "安装附加调试器(&&I)..."
+    },
+    "vs/workbench/contrib/debug/common/debug": {
+      "internalConsoleOptions": "控制何时打开内部调试控制台。"
     },
     "vs/workbench/contrib/debug/browser/debugEditorContribution": {
       "logPoint": "记录点",
@@ -2827,8 +2831,8 @@
       "cancel": "取消",
       "addConfiguration": "添加配置..."
     },
-    "vs/workbench/contrib/debug/common/debug": {
-      "internalConsoleOptions": "控制何时打开内部调试控制台。"
+    "vs/workbench/contrib/debug/node/terminalSupport": {
+      "debug.terminal.title": "调试对象"
     },
     "vs/workbench/contrib/debug/browser/repl": {
       "replAriaLabel": "读取 Eval 打印循环面板",
@@ -2842,7 +2846,7 @@
       "replValueOutputAriaLabel": "{0}，读取 Eval 打印循环，调试",
       "replRawObjectAriaLabel": "Repl（交互式解释器）变量 {0} 具有值 {1}，读取 求值 输出 循环，调试",
       "actions.repl.acceptInput": "接受 REPL 的输入",
-      "repl.action.filter": "REPL Focus Content to Filter",
+      "repl.action.filter": "REPL 将内容聚焦到筛选器",
       "actions.repl.copyAll": "调试: 复制控制台所有内容",
       "selectRepl": "选择调试控制台",
       "clearRepl": "清除控制台",
@@ -2893,11 +2897,16 @@
       "canNotResolveSourceWithError": "无法加载源“{0}”: {1}。",
       "canNotResolveSource": "无法加载源“{0}”。"
     },
-    "vs/workbench/contrib/debug/browser/exceptionWidget": {
-      "debugExceptionWidgetBorder": "异常小组件边框颜色。",
-      "debugExceptionWidgetBackground": "异常小组件背景颜色。",
-      "exceptionThrownWithId": "发生异常: {0}",
-      "exceptionThrown": "出现异常。"
+    "vs/workbench/contrib/debug/browser/debugEditorActions": {
+      "toggleBreakpointAction": "调试: 切换断点",
+      "conditionalBreakpointEditorAction": "调试: 添加条件断点...",
+      "logPointEditorAction": "调试: 添加记录点...",
+      "runToCursor": "运行到光标处",
+      "debugEvaluate": "调试: 求值",
+      "debugAddToWatch": "调试: 添加到监视",
+      "showDebugHover": "调试: 显示悬停",
+      "goToNextBreakpoint": "调试: 转到下一个断点",
+      "goToPreviousBreakpoint": "调试:到前面的断点"
     },
     "vs/workbench/contrib/debug/browser/watchExpressionsView": {
       "watchExpressionsSection": "“监视表达式”部分",
@@ -2909,18 +2918,6 @@
       "watchExpressionAriaLabel": "{0} 值 {1}，监视，调试",
       "watchVariableAriaLabel": "{0} 值 {1}，监视，调试"
     },
-    "vs/workbench/contrib/debug/browser/debugEditorActions": {
-      "toggleBreakpointAction": "调试: 切换断点",
-      "conditionalBreakpointEditorAction": "调试: 添加条件断点...",
-      "logPointEditorAction": "调试: 添加记录点...",
-      "runToCursor": "运行到光标处",
-      "debugEvaluate": "调试: 求值",
-      "debugAddToWatch": "调试: 添加到监视",
-      "showDebugHover": "调试: 显示悬停",
-      "goToNextBreakpoint": "调试: 转到下一个断点",
-      "goToPreviousBreakpoint": "调试:到前面的断点",
-      "debug": "调试"
-    },
     "vs/workbench/contrib/debug/browser/variablesView": {
       "variablesSection": "变量部分",
       "variablesAriaTreeLabel": "调试变量",
@@ -2931,15 +2928,11 @@
       "variableScopeAriaLabel": "范围 {0}，变量，调试",
       "variableAriaLabel": "{0} 值 {1}，变量，调试"
     },
-    "vs/workbench/contrib/debug/browser/debugHover": {
-      "treeAriaLabel": "调试悬停",
-      "variableAriaLabel": "{0} 值 {1}，变量，调试"
-    },
-    "vs/workbench/contrib/debug/browser/debugCommands": {
-      "noFolderDebugConfig": "请先打开一个文件夹以进行高级调试配置。",
-      "inlineBreakpoint": "内联断点",
-      "debug": "调试",
-      "addInlineBreakpoint": "添加内联断点"
+    "vs/workbench/contrib/debug/browser/exceptionWidget": {
+      "debugExceptionWidgetBorder": "异常小组件边框颜色。",
+      "debugExceptionWidgetBackground": "异常小组件背景颜色。",
+      "exceptionThrownWithId": "发生异常: {0}",
+      "exceptionThrown": "出现异常。"
     },
     "vs/workbench/contrib/debug/browser/debugEditorModelManager": {
       "topStackFrameLineHighlight": "堆栈帧中顶部一行的高亮背景色。",
@@ -2954,14 +2947,9 @@
       "loadedScriptsFolderAriaLabel": "文件夹 {0}，已加载的脚本，调试",
       "loadedScriptsSourceAriaLabel": "{0}，已加载的脚本，调试"
     },
-    "vs/workbench/contrib/debug/browser/breakpointWidget": {
-      "breakpointWidgetLogMessagePlaceholder": "断点命中时记录的消息。{} 内的表达式将被替换。按 \"Enter\" 键确认，\"Esc\" 键取消。",
-      "breakpointWidgetHitCountPlaceholder": "在命中次数条件满足时中断。按 \"Enter\" 键确认，\"Esc\" 键取消。",
-      "breakpointWidgetExpressionPlaceholder": "在表达式结果为真时中断。按 \"Enter\" 键确认，\"Esc\" 键取消。",
-      "expression": "表达式",
-      "hitCount": "命中次数",
-      "logMessage": "记录消息",
-      "breakpointType": "断点类型"
+    "vs/workbench/contrib/debug/browser/debugHover": {
+      "treeAriaLabel": "调试悬停",
+      "variableAriaLabel": "{0} 值 {1}，变量，调试"
     },
     "vs/workbench/contrib/debug/browser/breakpointsView": {
       "breakpointsSection": "断点部分",
@@ -3000,14 +2988,39 @@
       "stackFrameAriaLabel": "堆栈帧 {0} 行 {1} {2}，调用堆栈，调试",
       "sessionLabel": "调试会话 {0}"
     },
+    "vs/workbench/contrib/debug/browser/debugCommands": {
+      "chooseLocation": "选择特定位置",
+      "noExecutableCode": "当前光标位置没有关联的可执行代码。",
+      "jumpToCursor": "跳转到光标处",
+      "debug": "调试",
+      "noFolderDebugConfig": "请先打开一个文件夹以进行高级调试配置。",
+      "addInlineBreakpoint": "添加内联断点"
+    },
+    "vs/workbench/contrib/debug/browser/breakpointWidget": {
+      "breakpointWidgetLogMessagePlaceholder": "断点命中时记录的消息。{} 内的表达式将被替换。按 \"Enter\" 键确认，\"Esc\" 键取消。",
+      "breakpointWidgetHitCountPlaceholder": "在命中次数条件满足时中断。按 \"Enter\" 键确认，\"Esc\" 键取消。",
+      "breakpointWidgetExpressionPlaceholder": "在表达式结果为真时中断。按 \"Enter\" 键确认，\"Esc\" 键取消。",
+      "expression": "表达式",
+      "hitCount": "命中次数",
+      "logMessage": "记录消息",
+      "breakpointType": "断点类型"
+    },
     "vs/workbench/contrib/debug/browser/linkDetector": {
       "fileLinkMac": "单击打开(按住 Cmd 并单击在侧边打开)",
       "fileLink": "单击打开(按住 Ctrl 键并单击在侧边打开)"
     },
+    "vs/workbench/contrib/debug/node/terminals": {
+      "console.title": "VS Code 控制台",
+      "mac.terminal.script.failed": "脚本“{0}”失败，退出代码为 {1}",
+      "mac.terminal.type.not.supported": "不支持“{0}”",
+      "press.any.key": "按任意键继续...",
+      "linux.term.failed": "“{0}”失败，退出代码为 {1}",
+      "ext.term.app.not.found": "找不到终端应用程序 \"{0}\""
+    },
     "vs/workbench/contrib/debug/common/debugSource": {
       "unknownSource": "未知源"
     },
-    "vs/workbench/contrib/debug/electron-browser/debugService": {
+    "vs/workbench/contrib/debug/browser/debugService": {
       "configurationAlreadyRunning": "调试配置“{0}”已在运行。",
       "compoundMustHaveConfigurations": "复合项必须拥有 \"configurations\" 属性集，才能启动多个配置。",
       "noConfigurationNameInWorkspace": "在工作区中找不到启动配置“{0}”。",
@@ -3019,7 +3032,7 @@
       "debugRequesMissing": "所选的调试配置缺少属性“{0}”。",
       "debugTypeNotSupported": "配置的类型“{0}”不受支持。",
       "debugTypeMissing": "所选的启动配置缺少属性 \"type\"。",
-      "noFolderWorkspaceDebugError": "The active file can not be debugged. Make sure it is saved and that you have a debug extension installed for that file type.",
+      "noFolderWorkspaceDebugError": "无法调试活动文件。请确保它已保存且你已为该文件类型安装了调试扩展。",
       "debugAdapterCrash": "调试适配器进程意外终止 ({0})",
       "cancel": "取消",
       "debugAnyway": "仍进行调试",
@@ -3032,7 +3045,7 @@
       "DebugTaskNotFound": "找不到指定的任务。",
       "taskNotTrackedWithTaskId": "无法跟踪指定的任务。",
       "taskNotTracked": "无法跟踪任务“{0}”。",
-      "debuggingPaused": "Debugging paused {0}, {1} {2} {3}",
+      "debuggingPaused": "调试已暂停 {0}，{1} {2} {3}",
       "breakpointAdded": "已添加断点，行 {0}, 文件 {1}",
       "breakpointRemoved": "已删除断点，行 {0}，文件 {1}"
     },
@@ -3044,36 +3057,16 @@
       "running": "正在运行",
       "breakpointDirtydHover": "未验证的断点。对文件进行了修改，请重启调试会话。"
     },
-    "vs/workbench/contrib/debug/electron-browser/debugConfigurationManager": {
+    "vs/workbench/contrib/debug/browser/debugConfigurationManager": {
       "debugNoType": "不可省略调试器的 \"type\" 属性，且其类型必须是 \"string\" 。",
       "selectDebug": "选择环境",
       "DebugConfig.failed": "无法在 \".vscode\" 文件夹({0})内创建 \"launch.json\" 文件。",
       "workspace": "工作区",
       "user settings": "用户设置"
     },
-    "vs/workbench/contrib/debug/electron-browser/debugSession": {
+    "vs/workbench/contrib/debug/browser/debugSession": {
       "debuggingStarted": "已开始调试。",
       "debuggingStopped": "已停止调试。"
-    },
-    "vs/workbench/contrib/debug/electron-browser/terminalSupport": {
-      "debug.terminal.title": "调试对象"
-    },
-    "vs/workbench/contrib/debug/node/debugger": {
-      "cannot.find.da": "找不到类型为 \"{0}\" 的调试适配器。",
-      "launch.config.comment1": "使用 IntelliSense 了解相关属性。 ",
-      "launch.config.comment2": "悬停以查看现有属性的描述。",
-      "launch.config.comment3": "欲了解更多信息，请访问: {0}",
-      "debugType": "配置类型。",
-      "debugTypeNotRecognised": "无法识别此调试类型。确保已经安装并启用相应的调试扩展。",
-      "node2NotSupported": "不再支持 \"node2\"，改用 \"node\"，并将 \"protocol\" 属性设为 \"inspector\"。",
-      "debugName": "配置名称；在启动配置下拉菜单中显示。",
-      "debugRequest": "请求配置类型。可以是“启动”或“附加”。",
-      "debugServer": "仅用于调试扩展开发: 如果已指定端口，VS 代码会尝试连接到在服务器模式中运行的调试适配器",
-      "debugPrelaunchTask": "调试会话开始前要运行的任务。",
-      "debugPostDebugTask": "调试会话结束后运行的任务。",
-      "debugWindowsConfiguration": "特定于 Windows 的启动配置属性。",
-      "debugOSXConfiguration": "特定于 OS X 的启动配置属性。",
-      "debugLinuxConfiguration": "特定于 Linux 的启动配置属性。"
     },
     "vs/workbench/contrib/debug/common/replModel": {
       "consoleCleared": "控制台已清除",
@@ -3087,7 +3080,7 @@
       "vscode.extension.contributes.debuggers.args": "要传递给适配器的可选参数。",
       "vscode.extension.contributes.debuggers.runtime": "可选运行时，以防程序属性不可执行，但需要运行时。",
       "vscode.extension.contributes.debuggers.runtimeArgs": "可选运行时参数。",
-      "vscode.extension.contributes.debuggers.variables": "Mapping from interactive variables (e.g. ${action.pickProcess}) in `launch.json` to a command.",
+      "vscode.extension.contributes.debuggers.variables": "正在将 \"launch. json\" 中的交互式变量(例如 ${action.pickProcess})映射到命令。",
       "vscode.extension.contributes.debuggers.initialConfigurations": "用于生成初始 \"launch.json\" 的配置。",
       "vscode.extension.contributes.debuggers.languages": "可能被视为“默认调试程序”的调试扩展的语言列表。",
       "vscode.extension.contributes.debuggers.adapterExecutableCommand": "如果指定的 VS Code 将调用此命令以确定调试适配器的可执行路径和要传递的参数。",
@@ -3110,16 +3103,25 @@
       "app.launch.json.compound.folder": "复合项所在的文件夹的名称。",
       "app.launch.json.compounds.configurations": "将作为此复合的一部分启动的配置名称。"
     },
-    "vs/workbench/contrib/debug/electron-browser/rawDebugSession": {
-      "moreInfo": "详细信息"
+    "vs/workbench/contrib/debug/common/debugger": {
+      "cannot.find.da": "找不到类型为 \"{0}\" 的调试适配器。",
+      "launch.config.comment1": "使用 IntelliSense 了解相关属性。 ",
+      "launch.config.comment2": "悬停以查看现有属性的描述。",
+      "launch.config.comment3": "欲了解更多信息，请访问: {0}",
+      "debugType": "配置类型。",
+      "debugTypeNotRecognised": "无法识别此调试类型。确保已经安装并启用相应的调试扩展。",
+      "node2NotSupported": "不再支持 \"node2\"，改用 \"node\"，并将 \"protocol\" 属性设为 \"inspector\"。",
+      "debugName": "配置名称；在启动配置下拉菜单中显示。",
+      "debugRequest": "请求配置类型。可以是“启动”或“附加”。",
+      "debugServer": "仅用于调试扩展开发: 如果已指定端口，VS 代码会尝试连接到在服务器模式中运行的调试适配器",
+      "debugPrelaunchTask": "调试会话开始前要运行的任务。",
+      "debugPostDebugTask": "调试会话结束后运行的任务。",
+      "debugWindowsConfiguration": "特定于 Windows 的启动配置属性。",
+      "debugOSXConfiguration": "特定于 OS X 的启动配置属性。",
+      "debugLinuxConfiguration": "特定于 Linux 的启动配置属性。"
     },
-    "vs/workbench/contrib/debug/node/terminals": {
-      "console.title": "VS Code 控制台",
-      "mac.terminal.script.failed": "脚本“{0}”失败，退出代码为 {1}",
-      "mac.terminal.type.not.supported": "不支持“{0}”",
-      "press.any.key": "按任意键继续...",
-      "linux.term.failed": "“{0}”失败，退出代码为 {1}",
-      "ext.term.app.not.found": "找不到终端应用程序 \"{0}\""
+    "vs/workbench/contrib/debug/browser/rawDebugSession": {
+      "moreInfo": "详细信息"
     },
     "vs/workbench/contrib/debug/node/debugAdapter": {
       "debugAdapterBinNotFound": "调试适配器可执行的“{0}”不存在。",
@@ -3158,10 +3160,10 @@
       "miOpenKeymapExtensions": "按键映射(&&K)",
       "miPreferencesExtensions": "扩展(&&E)",
       "miViewExtensions": "扩展(&&X)",
-      "workbench.extensions.uninstallExtension.description": "Uninstall the given extension",
-      "workbench.extensions.uninstallExtension.arg.name": "Id of the extension to uninstall",
-      "id required": "Extension id required.",
-      "notInstalled": "Extension '{0}' is not installed. Make sure you use the full extension ID, including the publisher, e.g.: ms-vscode.csharp.",
+      "workbench.extensions.uninstallExtension.description": "卸载给定的扩展",
+      "workbench.extensions.uninstallExtension.arg.name": "要卸载的扩展的 id",
+      "id required": "扩展 ID 是必需的。",
+      "notInstalled": "未安装扩展“{0}”。请确保你使用包括发布者的完整的扩展 ID，例如 ms-vscode.csharp。",
       "showExtensions": "扩展"
     },
     "vs/workbench/contrib/extensions/electron-browser/extensionsViewlet": {
@@ -3189,32 +3191,32 @@
       "malicious warning": "我们卸载了“{0}”，它被报告存在问题。",
       "reloadNow": "立即重新加载"
     },
-    "vs/workbench/contrib/extensions/electron-browser/extensionsActivationProgress": {
-      "activation": "正在激活扩展..."
-    },
-    "vs/workbench/contrib/extensions/electron-browser/runtimeExtensionsInput": {},
-    "vs/workbench/contrib/extensions/common/extensionsInput": {},
-    "vs/workbench/contrib/extensions/electron-browser/extensionsDependencyChecker": {},
     "vs/workbench/contrib/extensions/common/extensionsFileTemplate": {
       "app.extensions.json.title": "扩展",
       "app.extensions.json.recommendations": "向此工作区的用户推荐的扩展列表。扩展的标识符始终为 \"${publisher}.${name}\"。例如: \"vscode.csharp\"。",
       "app.extension.identifier.errorMessage": "预期的格式 \"${publisher}.${name}\"。例如: \"vscode.csharp\"。",
       "app.extensions.json.unwantedRecommendations": "不应向此工作区的用户推荐的扩展列表。扩展的标识符始终为 \"${publisher}.${name}\"。例如: \"vscode.csharp\"。"
     },
-    "vs/workbench/contrib/extensions/electron-browser/extensionProfileService": {
-      "profilingExtensionHost": "$(sync~spin) Profiling Extension Host",
-      "selectAndStartDebug": "单击可停止分析。",
-      "profilingExtensionHostTime": "$(sync~spin) Profiling Extension Host ({0} sec)",
-      "status.profiler": "Extension Profiler",
-      "restart1": "分析扩展",
-      "restart2": "必须重新启动才能分析扩展。是否现在就重启“{0}”?",
-      "restart3": "重启",
-      "cancel": "取消"
+    "vs/workbench/contrib/extensions/common/extensionsInput": {},
+    "vs/workbench/contrib/extensions/electron-browser/runtimeExtensionsInput": {},
+    "vs/workbench/contrib/extensions/browser/extensionsActivationProgress": {
+      "activation": "正在激活扩展..."
     },
+    "vs/workbench/contrib/extensions/electron-browser/extensionsDependencyChecker": {},
     "vs/workbench/contrib/extensions/common/extensionsUtils": {
       "disableOtherKeymapsConfirmation": "是否禁用其他按键映射扩展 ({0})，从而避免按键绑定之间的冲突?",
       "yes": "是",
       "no": "否"
+    },
+    "vs/workbench/contrib/extensions/electron-browser/extensionProfileService": {
+      "profilingExtensionHost": "$(sync~spin)分析扩展主机",
+      "selectAndStartDebug": "单击可停止分析。",
+      "profilingExtensionHostTime": "$(sync~spin)正在分析扩展主机 ({0} 秒)",
+      "status.profiler": "扩展探查器",
+      "restart1": "分析扩展",
+      "restart2": "必须重新启动才能分析扩展。是否现在就重启“{0}”?",
+      "restart3": "重启",
+      "cancel": "取消"
     },
     "vs/workbench/contrib/extensions/electron-browser/extensionsAutoProfiler": {
       "unresponsive-exthost": "扩展“{0}”的上一次操作花费时间较长，阻碍了其他扩展的运行。",
@@ -3243,19 +3245,6 @@
       "stopExtensionHostProfileStart": "停止分析扩展宿主",
       "saveExtensionHostProfile": "保存扩展宿主分析文件"
     },
-    "vs/workbench/contrib/extensions/node/extensionsWorkbenchService": {
-      "Manifest is not found": "未找到清单文件",
-      "malicious": "此扩展被报告存在问题。",
-      "uninstallingExtension": "正在卸载扩展...",
-      "incompatible": "无法安装版本为“{1}”的扩展“{0}”，因为它与 VS Code 不兼容。",
-      "installing named extension": "正在安装 \"{0}\" 扩展..。",
-      "installing extension": "正在安装扩展..。",
-      "singleDependentError": "无法禁用扩展“{0}”。扩展“{1}”取决于此。",
-      "twoDependentsError": "无法禁用扩展“{0}”。扩展“{1}”和扩展“{2}”取决于此。",
-      "multipleDependentsError": "无法禁用扩展“{0}”。扩展“{1}”、“{2}”和其他扩展取决于此。",
-      "installConfirmation": "是否要安装“{0}”扩展？",
-      "install": "安装"
-    },
     "vs/workbench/contrib/extensions/electron-browser/extensionTipsService": {
       "neverShowAgain": "不再显示",
       "searchMarketplace": "搜索商店",
@@ -3274,6 +3263,18 @@
       "no": "否",
       "showLanguageExtensions": "商店中有可以对 \".{0}\" 文件提供帮助的扩展。",
       "dontShowAgainExtension": "不再对 \".{0}\" 文件显示"
+    },
+    "vs/workbench/contrib/extensions/node/extensionsWorkbenchService": {
+      "Manifest is not found": "未找到清单文件",
+      "malicious": "此扩展被报告存在问题。",
+      "uninstallingExtension": "正在卸载扩展...",
+      "installing named extension": "正在安装 \"{0}\" 扩展..。",
+      "installing extension": "正在安装扩展..。",
+      "singleDependentError": "无法禁用扩展“{0}”。扩展“{1}”取决于此。",
+      "twoDependentsError": "无法禁用扩展“{0}”。扩展“{1}”和扩展“{2}”取决于此。",
+      "multipleDependentsError": "无法禁用扩展“{0}”。扩展“{1}”、“{2}”和其他扩展取决于此。",
+      "installConfirmation": "是否要安装“{0}”扩展？",
+      "install": "安装"
     },
     "vs/workbench/contrib/extensions/electron-browser/extensionEditor": {
       "name": "扩展名",
@@ -3352,7 +3353,7 @@
     "vs/workbench/contrib/extensions/electron-browser/extensionsViews": {
       "extensions": "扩展",
       "galleryError": "现在无法连接到扩展商店，请稍后再试。",
-      "error": "Error while loading extensions. {0}",
+      "error": "加载扩展时出错。{0}",
       "no extensions found": "找不到扩展。",
       "suggestProxyError": "商店返回了 \"ECONNREFUSED\"。请检查 \"http.proxy\" 设置。"
     },
@@ -3581,7 +3582,7 @@
       "hotExit": "控制是否在会话间记住未保存的文件，以允许在退出编辑器时跳过保存提示。",
       "defaultLanguage": "分配给新文件的默认语言模式。",
       "maxMemoryForLargeFilesMB": "在打开大型文件时，控制 VS Code 可在重启后使用的内存。在命令行中指定 `--max-memory=新的大小` 参数可达到相同效果。",
-      "files.simpleDialog.enable": "Enables the simple file dialog. The simple file dialog replaces the system file dialog when enabled.",
+      "files.simpleDialog.enable": "启用简单文件对话框。启用时，简单文件对话框将替换系统文件对话框。",
       "editorConfigurationTitle": "编辑器",
       "formatOnSave": "在保存时格式化文件。格式化程序必须可用，延迟后文件不能保存，并且编辑器不能关闭。",
       "formatOnSaveTimeout": "控制在保存文件时进行格式化的超时时间 (毫秒)。",
@@ -3603,11 +3604,14 @@
     },
     "vs/workbench/contrib/files/browser/fileActions.contribution": {
       "filesCategory": "文件",
+      "file": "文件",
+      "workspaces": "工作区",
       "copyPath": "复制路径",
       "copyRelativePath": "复制相对路径",
       "revealInSideBar": "在侧边栏中显示",
-      "acceptLocalChanges": "Use your changes and overwrite file contents",
-      "revertLocalChanges": "Discard your changes and revert to file contents",
+      "acceptLocalChanges": "使用所做的更改并覆盖文件内容",
+      "revertLocalChanges": "放弃所做的更改并恢复到文件内容",
+      "download": "下载",
       "copyPathOfActive": "复制活动文件的路径",
       "copyRelativePathOfActive": "复制活动文件的相对路径",
       "saveAllInGroup": "保存组中的全部内容",
@@ -3637,6 +3641,10 @@
       "miSave": "保存(&&S)",
       "miSaveAs": "另存为(&&A)...",
       "miSaveAll": "全部保存(&&L)",
+      "miOpen": "打开(&&O)...",
+      "miOpenFile": "打开文件(&&O)...",
+      "miOpenFolder": "打开文件夹(&&F)...",
+      "miOpenWorkspace": "打开工作区(&&K)...",
       "miAutoSave": "自动保存(&&U)",
       "miRevert": "还原文件(&&V)",
       "miCloseEditor": "关闭编辑器(&&C)",
@@ -3647,15 +3655,21 @@
       "explorerSection": "文件资源管理器部分",
       "noWorkspaceHelp": "你还没有在工作区中添加文件夹。",
       "addFolder": "添加文件夹",
+      "remoteNoFolderHelp": "已连接到 {0}",
+      "connecting": "正在连接...",
       "noFolderHelp": "尚未打开文件夹。",
       "openFolder": "打开文件夹"
+    },
+    "vs/workbench/contrib/files/browser/editors/binaryFileEditor": {
+      "binaryFileEditor": "二进制文件查看器"
     },
     "vs/workbench/contrib/files/common/dirtyFilesTracker": {
       "dirtyFile": "1 个未保存的文件",
       "dirtyFiles": "{0} 个未保存的文件"
     },
-    "vs/workbench/contrib/files/browser/editors/binaryFileEditor": {
-      "binaryFileEditor": "二进制文件查看器"
+    "vs/workbench/contrib/files/common/editors/fileEditorInput": {
+      "orphanedFile": "{0} (已删除)",
+      "readonlyFile": "{0} (只读)"
     },
     "vs/workbench/contrib/files/browser/editors/textFileEditor": {
       "textFileEditor": "文本文件编辑器",
@@ -3666,13 +3680,18 @@
       "fileEditorWithInputAriaLabel": "{0}。文本文件编辑器。",
       "fileEditorAriaLabel": "文本文件编辑器。"
     },
-    "vs/workbench/contrib/files/common/editors/fileEditorInput": {
-      "orphanedFile": "{0} (deleted)",
-      "readonlyFile": "{0} (只读)"
+    "vs/workbench/contrib/files/browser/views/explorerView": {
+      "explorerSection": "文件资源管理器部分",
+      "treeAriaLabel": "文件资源管理器"
+    },
+    "vs/workbench/contrib/files/browser/views/openEditorsView": {
+      "openEditors": "打开的编辑器",
+      "openEditosrSection": "打开的编辑器部分",
+      "dirtyCounter": "{0} 个未保存"
     },
     "vs/workbench/contrib/files/browser/saveErrorHandler": {
-      "userGuide": "Use the actions in the editor tool bar to either undo your changes or overwrite the content of the file with your changes.",
-      "staleSaveError": "Failed to save '{0}': The content of the file is newer. Please compare your version with the file contents.",
+      "userGuide": "通过编辑器工具栏中的操作，可撤消所做的更改，也可使用所做的更改覆盖文件的内容。",
+      "staleSaveError": "未能保存“{0}”: 文件的内容较新。请将你的版本与此文件内容进行比较。",
       "retry": "重试",
       "discard": "放弃",
       "readonlySaveErrorAdmin": "未能保存 \"{0}\": 文件是只读的。以管理员身份选择 \"以管理员身份覆盖\" 重试。",
@@ -3684,21 +3703,12 @@
       "learnMore": "了解详细信息",
       "dontShowAgain": "不再显示",
       "compareChanges": "比较",
-      "saveConflictDiffLabel": "{0} (in file) ↔ {1} (in {2}) - Resolve save conflict",
+      "saveConflictDiffLabel": "{0} (在文件中) ↔ {1} (在 {2} 中) - 解决保存冲突",
       "overwriteElevated": "以管理员身份覆盖...",
       "overwriteElevatedSudo": "以超级用户身份覆盖...",
       "saveElevated": "以管理员身份重试...",
       "saveElevatedSudo": "以用户…重试。",
       "overwrite": "覆盖"
-    },
-    "vs/workbench/contrib/files/browser/views/openEditorsView": {
-      "openEditors": "打开的编辑器",
-      "openEditosrSection": "打开的编辑器部分",
-      "dirtyCounter": "{0} 个未保存"
-    },
-    "vs/workbench/contrib/files/browser/views/explorerView": {
-      "explorerSection": "文件资源管理器部分",
-      "treeAriaLabel": "文件资源管理器"
     },
     "vs/workbench/contrib/files/browser/fileActions": {
       "newFile": "新建文件",
@@ -3759,6 +3769,11 @@
       "fileIsAncestor": "粘贴的项目是目标文件夹的上级",
       "fileDeleted": "粘贴的文件已被删除或移动"
     },
+    "vs/workbench/contrib/files/browser/views/explorerDecorationsProvider": {
+      "label": "资源管理器",
+      "canNotResolve": "无法解析工作区文件夹",
+      "symbolicLlink": "符号链接"
+    },
     "vs/workbench/contrib/files/browser/fileCommands": {
       "revealInWindows": "在资源管理器中显示",
       "revealInMac": "在 Finder 中显示",
@@ -3769,26 +3784,21 @@
       "saveAll": "全部保存",
       "removeFolderFromWorkspace": "将文件夹从工作区删除",
       "genericRevertError": "未能还原“{0}”: {1}",
-      "modifiedLabel": "{0} (in file) ↔ {1}",
+      "modifiedLabel": "{0} (在文件中) ↔ {1}",
       "openFileToReveal": "首先打开文件以展现",
       "openFileToCopy": "首先打开文件以复制其路径"
     },
-    "vs/workbench/contrib/files/browser/views/explorerDecorationsProvider": {
-      "label": "资源管理器",
-      "canNotResolve": "无法解析工作区文件夹",
-      "symbolicLlink": "符号链接"
-    },
     "vs/workbench/contrib/files/browser/views/explorerViewer": {
       "fileInputAriaLabel": "输入文件名。按 \"Enter\" 键确认或按 \"Esc\" 键取消。",
-      "copyFolders": "&&Copy Folders",
-      "copyFolder": "&&Copy Folder",
+      "copyFolders": "复制文件夹(&&C)",
+      "copyFolder": "复制文件夹(&&C)",
       "cancel": "取消",
-      "copyfolders": "Are you sure to want to copy folders?",
-      "copyfolder": "Are you sure to want to copy '{0}'?",
-      "addFolders": "&&Add Folders to Workspace",
-      "addFolder": "&&Add Folder to Workspace",
-      "dropFolders": "Do you want to copy the folders or add the folders to the workspace?",
-      "dropFolder": "Do you want to copy '{0}' or add '{0}' as a folder to the workspace?",
+      "copyfolders": "是否确实要复制文件夹?",
+      "copyfolder": "是否确定要复制“{0}”?",
+      "addFolders": "将文件夹添加到工作区(&&A)",
+      "addFolder": "将文件夹添加到工作区(&&A)",
+      "dropFolders": "是否要复制文件夹或将其添加到工作区?",
+      "dropFolder": "是否要复制“{0}”或将“{0}”作为文件夹添加工作区?",
       "confirmOverwrite": "目标文件夹中已存在具有相同名称的文件或文件夹。是否要替换它?",
       "irreversible": "此操作不可逆!",
       "replaceButtonLabel": "替换(&&R)",
@@ -3859,11 +3869,13 @@
       "restart": "重启(&&R)"
     },
     "vs/workbench/contrib/logs/common/logs.contribution": {
+      "developer": "开发者"
+    },
+    "vs/workbench/contrib/logs/electron-browser/logs.contribution": {
       "mainLog": "主进程",
       "sharedLog": "共享进程",
       "rendererLog": "窗口",
-      "telemetryLog": "遥测",
-      "developer": "开发者"
+      "telemetryLog": "遥测"
     },
     "vs/workbench/contrib/logs/common/logsActions": {
       "openLogsFolder": "打开日志文件夹",
@@ -3891,7 +3903,7 @@
       "totalErrors": "{0} 个错误",
       "totalWarnings": "{0} 条警告",
       "totalInfos": "{0} 条信息",
-      "noProblems": "No Problems",
+      "noProblems": "没有问题",
       "manyProblems": "1万+"
     },
     "vs/workbench/contrib/markers/browser/messages": {
@@ -3909,7 +3921,7 @@
       "markers.panel.action.filter": "筛选器问题",
       "markers.panel.action.quickfix": "显示修复方案",
       "markers.panel.filter.ariaLabel": "筛选器问题",
-      "markers.panel.filter.placeholder": "Filter. E.g.: text, **/*.ts, !**/node_modules/**",
+      "markers.panel.filter.placeholder": "筛选器，例如: text、**/*.ts、!**/node_modules/**",
       "markers.panel.filter.errors": "错误",
       "markers.panel.filter.warnings": "警告",
       "markers.panel.filter.infos": "信息",
@@ -3991,6 +4003,10 @@
       "outputPanelWithInputAriaLabel": "{0}，输出面板",
       "outputPanelAriaLabel": "输出面板"
     },
+    "vs/workbench/contrib/output/browser/outputServices": {
+      "output": "{0} - 输出",
+      "channel": "“{0}”的输出通道"
+    },
     "vs/workbench/contrib/output/browser/outputActions": {
       "toggleOutput": "切换输出",
       "clearOutput": "清除输出",
@@ -4004,10 +4020,6 @@
       "selectlog": "选择日志",
       "openLogFile": "打开日志文件...",
       "selectlogFile": "选择日志文件"
-    },
-    "vs/workbench/contrib/output/browser/outputServices": {
-      "output": "{0} - 输出",
-      "channel": "“{0}”的输出通道"
     },
     "vs/workbench/contrib/performance/electron-browser/performance.contribution": {
       "show.cat": "开发者",
@@ -4039,10 +4051,11 @@
       "preferencesCategory": "首选项",
       "showDefaultKeybindings": "显示默认按键绑定",
       "showUserKeybindings": "显示用户按键绑定",
+      "miPreferences": "首选项(&&P)",
       "miOpenSettings": "设置(&&S)",
       "settings": "设置",
-      "miOpenOnlineSettings": "&&Online Services Settings",
-      "onlineServices": "Online Services Settings",
+      "miOpenOnlineSettings": "联机服务设置(&&O)",
+      "onlineServices": "在线服务设置",
       "miOpenKeymap": "键盘快捷方式(&&K)",
       "keyboardShortcuts": "键盘快捷方式",
       "openSettingsJson": "打开设置 (json)",
@@ -4116,16 +4129,6 @@
       "workspaceSettings": "工作区",
       "folderSettings": "文件夹"
     },
-    "vs/workbench/contrib/preferences/browser/settingsEditor2": {
-      "settingsContextMenuAriaShortcut": "更多操作，请按 {0}。",
-      "SearchSettings.AriaLabel": "搜索设置",
-      "noResults": "未找到设置",
-      "clearSearchFilters": "清除筛选",
-      "clearSearch": "清除搜索",
-      "settingsNoSaveNeeded": "将在您编辑时自动保存所作的更改。",
-      "oneResult": "找到 1 个设置",
-      "moreThanOneResult": "找到 {0} 个设置"
-    },
     "vs/workbench/contrib/preferences/browser/preferencesEditor": {
       "SearchSettingsWidget.AriaLabel": "搜索设置",
       "SearchSettingsWidget.Placeholder": "搜索设置",
@@ -4141,6 +4144,16 @@
       "defaultFolderSettings": "默认文件夹设置",
       "defaultEditorReadonly": "在右侧编辑器中编辑以覆盖默认值。",
       "preferencesAriaLabel": "默认首选项。只读文本编辑器。"
+    },
+    "vs/workbench/contrib/preferences/browser/settingsEditor2": {
+      "settingsContextMenuAriaShortcut": "更多操作，请按 {0}。",
+      "SearchSettings.AriaLabel": "搜索设置",
+      "noResults": "未找到设置",
+      "clearSearchFilters": "清除筛选",
+      "clearSearch": "清除搜索",
+      "settingsNoSaveNeeded": "将在您编辑时自动保存所作的更改。",
+      "oneResult": "找到 1 个设置",
+      "moreThanOneResult": "找到 {0} 个设置"
     },
     "vs/workbench/contrib/preferences/browser/settingsLayout": {
       "commonlyUsed": "常用设置",
@@ -4327,28 +4340,30 @@
       "relaunchSettingDetail": "按下“重启”按钮以重新启动 {0} 并启用该设置。",
       "restart": "重启(&&R)"
     },
+    "vs/workbench/contrib/remote/common/remote.contribution": {
+      "remoteExtensionLog": "远程服务器"
+    },
     "vs/workbench/contrib/remote/electron-browser/remote.contribution": {
-      "host.open": "$(sync~spin) Opening Remote...",
-      "miCloseRemote": "C&&lose Remote Connection",
-      "host.tooltip": "Editing on {0}",
-      "disconnectedFrom": "Disconnected from",
-      "host.tooltipDisconnected": "Disconnected from {0}",
-      "noHost.tooltip": "Open a remote window",
-      "status.host": "Remote Host",
+      "host.open": "$(sync~spin)远程打开中...",
+      "miCloseRemote": "关闭远程连接(&&L)",
+      "host.tooltip": "正在 {0} 上编辑",
+      "disconnectedFrom": "断开连接自",
+      "host.tooltipDisconnected": "已与 {0} 断开连接",
+      "noHost.tooltip": "打开远程窗口",
+      "status.host": "远程主机",
       "cat.title": "{0}: {1}",
-      "closeRemote.title": "Close Remote Connection",
-      "remoteExtensionLog": "Remote Server",
-      "connectionLost": "Connection Lost",
-      "reconnectionRunning": "Attempting to reconnect...",
-      "reconnectionPermanentFailure": "Cannot reconnect. Please reload the window.",
+      "closeRemote.title": "关闭远程连接",
+      "connectionLost": "连接中断",
+      "reconnectionRunning": "正在尝试重新连接...",
+      "reconnectionPermanentFailure": "无法重新连接。请重新加载窗口。",
       "reloadWindow": "重新加载窗口",
       "cancel": "取消",
-      "reconnectionWaitOne": "Attempting to reconnect in {0} second...",
-      "reconnectionWaitMany": "Attempting to reconnect in {0} seconds...",
+      "reconnectionWaitOne": "正在尝试在 {0} 秒内重新连接...",
+      "reconnectionWaitMany": "正在尝试在 {0} 秒内重新连接...",
       "remote": "远程",
-      "remote.extensionKind": "Override the kind of an extension. `ui` extensions are installed and run on the local machine while `workspace` extensions are run on the remote. By overriding an extension's default kind using this setting, you specify if that extension should be installed and enabled locally or remotely.",
-      "ui": "UI extension kind. In a remote window, such extensions are enabled only when available on the local machine.",
-      "workspace": "Workspace extension kind. In a remote window, such extensions are enabled only when available on the remote."
+      "remote.extensionKind": "覆盖扩展的类型。\"ui\" 扩展在本地计算机上安装和运行，而 \"workspace\" 扩展则在远程计算机上运行。通过使用此设置重写扩展的默认类型，可指定是否应在本地或远程安装和启用该扩展。",
+      "ui": "UI 扩展类型。在远程窗口中，只有在本地计算机上可用时，才会启用此类扩展。",
+      "workspace": "工作区扩展类型。在远程窗口中，仅在远程上可用时启用此类扩展。"
     },
     "vs/workbench/contrib/scm/browser/scm.contribution": {
       "toggleGitViewlet": "显示 GIT",
@@ -4498,7 +4513,7 @@
       "search.files.result": "{1} 文件中有 {0} 个结果",
       "search.file.results": "{1} 文件中有 {0} 个结果",
       "search.files.results": "{1} 文件中有 {0} 个结果",
-      "searchWithoutFolder": "You have not opened or specified a folder. Only open files are currently searched - ",
+      "searchWithoutFolder": "你尚未打开或指定文件夹。当前仅搜索打开的文件 -",
       "openFolder": "打开文件夹"
     },
     "vs/workbench/contrib/search/browser/searchWidget": {
@@ -4527,12 +4542,12 @@
       "file.replaceAll.label": "全部替换",
       "match.replace.label": "替换"
     },
+    "vs/workbench/contrib/search/browser/replaceService": {
+      "fileReplaceChanges": "{0} ↔ {1} (Replace Preview)"
+    },
     "vs/workbench/contrib/search/browser/patternInputWidget": {
       "defaultLabel": "输入",
       "useExcludesAndIgnoreFilesDescription": "使用“排除设置”与“忽略文件”"
-    },
-    "vs/workbench/contrib/search/browser/replaceService": {
-      "fileReplaceChanges": "{0} ↔ {1} (Replace Preview)"
     },
     "vs/workbench/contrib/search/browser/searchResultsView": {
       "searchFolderMatch.other.label": "其他文件",
@@ -4548,25 +4563,25 @@
       "replacePreviewResultAria": "在第 {2} 列替换词组 {0} 为 {1}，同行文本为 {3}",
       "searchResultAria": "在第 {1} 列找到词组 {0}，同行文本为 {2}"
     },
-    "vs/workbench/contrib/snippets/browser/snippets.contribution": {
-      "snippetSchema.json.default": "空代码片段",
-      "snippetSchema.json": "用户代码片段配置",
-      "snippetSchema.json.prefix": "在 Intellisense 中选择代码片段时将使用的前缀",
-      "snippetSchema.json.body": "The snippet content. Use '$1', '${1:defaultText}' to define cursor positions, use '$0' for the final cursor position. Insert variable values with '${varName}' and '${varName:defaultText}', e.g. 'This is file: $TM_FILENAME'.",
-      "snippetSchema.json.description": "代码片段描述。",
-      "snippetSchema.json.scope": "A list of language names to which this snippet applies, e.g. 'typescript,javascript'."
-    },
     "vs/workbench/contrib/snippets/browser/insertSnippet": {
       "snippet.suggestions.label": "插入片段",
       "sep.userSnippet": "用户代码片段",
       "sep.extSnippet": "扩展代码片段",
       "sep.workspaceSnippet": "工作区代码片段"
     },
+    "vs/workbench/contrib/snippets/browser/snippets.contribution": {
+      "snippetSchema.json.default": "空代码片段",
+      "snippetSchema.json": "用户代码片段配置",
+      "snippetSchema.json.prefix": "在 Intellisense 中选择代码片段时将使用的前缀",
+      "snippetSchema.json.body": "片段内容。请使用 '$1', '${1:defaultText}' 来定义光标位置，使用“$0”表示最终光标位置。请插入带有“${varName}”和“${varName:defaultText}”的变量值，例如 \"这是文件: $TM_FILENAME\"。",
+      "snippetSchema.json.description": "代码片段描述。",
+      "snippetSchema.json.scope": "此代码段使用的语言名称列表，例如 \"typescript,javascript\"。"
+    },
     "vs/workbench/contrib/snippets/browser/configureSnippets": {
       "global.scope": "(全局)",
       "global.1": "({0})",
-      "name": "Type snippet file name",
-      "bad": "'{0}' already exists",
+      "name": "键入代码段文件名",
+      "bad": "“{0}”已存在",
       "new.global": "新建全局代码片段文件...",
       "new.workspace": "{0} 工作区",
       "new.folder": "新建“{0}”文件夹的代码片段文件...",
@@ -4589,16 +4604,16 @@
       "badVariableUse": "扩展“{0}”中的一个或多个代码片段很可能混淆了片段变量和片段占位符 (有关详细信息，请访问 https://code.visualstudio.com/docs/editor/userdefinedsnippets#_snippet-syntax )",
       "badFile": "无法读取代码片段文件“{0}”。"
     },
-    "vs/workbench/contrib/snippets/browser/snippetCompletionProvider": {
-      "detail.snippet": "{0} ({1})",
-      "snippetSuggest.longLabel": "{0}, {1}"
-    },
     "vs/workbench/contrib/snippets/browser/snippetsFile": {
       "source.workspaceSnippetGlobal": "工作区代码片段",
       "source.userSnippetGlobal": "全局用户代码片段",
       "source.userSnippet": "用户代码片段"
     },
-    "vs/workbench/contrib/stats/node/workspaceStats": {
+    "vs/workbench/contrib/snippets/browser/snippetCompletionProvider": {
+      "detail.snippet": "{0} ({1})",
+      "snippetSuggest.longLabel": "{0}, {1}"
+    },
+    "vs/workbench/contrib/stats/electron-browser/workspaceStats": {
       "never again": "不再显示",
       "workspaceFound": "此文件夹包含工作区文件“{0}”，是否打开? [了解更多]({1})有关工作区文件的详细信息。",
       "openWorkspace": "打开工作区",
@@ -4618,83 +4633,11 @@
       "remindLater": "稍后提醒",
       "neverAgain": "不再显示"
     },
-    "vs/workbench/contrib/tasks/common/tasks": {
-      "TaskDefinition.missingRequiredProperty": "错误: 任务标识符“{0}”缺失必要属性“{1}”。将忽略该标识符。"
-    },
-    "vs/workbench/contrib/tasks/electron-browser/task.contribution": {
+    "vs/workbench/contrib/tasks/browser/task.contribution": {
       "tasksCategory": "任务",
-      "ConfigureTaskRunnerAction.label": "配置任务",
       "building": "正在生成...",
       "runningTasks": "显示运行中的任务",
       "status.runningTasks": "运行任务",
-      "tasks": "任务",
-      "TaskSystem.noHotSwap": "在有活动任务运行时更换任务执行引擎需要重新加载窗口",
-      "reloadWindow": "重新加载窗口",
-      "taskServiceOutputPrompt": "任务出现错误。请查看输出结果，了解更多详细信息",
-      "showOutput": "显示输出",
-      "TaskServer.folderIgnored": "由于使用任务版本 0.1.0，文件夹 {0} 将被忽略",
-      "TaskService.noBuildTask1": "未定义任何生成任务。使用 \"isBuildCommand\" 在 tasks.json 文件中标记任务。",
-      "TaskService.noBuildTask2": "未定义任何生成任务。在 tasks.json 文件中将任务标记为 \"build\" 组。",
-      "TaskService.noTestTask1": "未定义任何测试任务。使用 \"isTestCommand\" 在 tasks.json 文件中标记任务。",
-      "TaskService.noTestTask2": "未定义任何测试任务。在 tasks.json 文件中将任务标记为 \"test\" 组。",
-      "TaskServer.noTask": "未定义要执行的任务",
-      "TaskService.associate": "关联",
-      "TaskService.attachProblemMatcher.continueWithout": "继续而不扫描任务输出",
-      "TaskService.attachProblemMatcher.never": "永不扫描任务输出",
-      "TaskService.attachProblemMatcher.learnMoreAbout": "了解有关扫描任务输出的详细信息",
-      "selectProblemMatcher": "选择针对何种错误和警告扫描任务输出",
-      "customizeParseErrors": "当前任务配置存在错误。请先更正错误，再自定义任务。",
-      "tasksJsonComment": "// 有关 tasks.json 格式的文档，请参见\n\t// https://go.microsoft.com/fwlink/?LinkId=733558",
-      "moreThanOneBuildTask": "当前 tasks.json 中定义了多个生成任务。正在执行第一个。\n",
-      "TaskSystem.activeSame.background": "任务“{0}”已激活，并且处于后台模式。",
-      "TaskSystem.activeSame.noBackground": "任务“{0}”已处于活动状态。",
-      "terminateTask": "终止任务",
-      "restartTask": "重启任务",
-      "TaskSystem.active": "当前已有任务正在运行。请先终止它，然后再执行另一项任务。",
-      "TaskSystem.restartFailed": "未能终止并重启任务 {0}",
-      "TaskService.noConfiguration": "错误: {0} 任务检测没有提供拥有下列配置的任务:\n{1}\n将忽略此任务。\n",
-      "TaskSystem.configurationErrors": "错误: 提供的任务配置具有验证错误，无法使用。请首先改正错误。",
-      "taskService.ignoreingFolder": "将忽略工作区文件夹 {0} 的任务配置。多文件夹工作区任务支持要求所有文件夹使用任务版本 2.0.0\n",
-      "TaskSystem.invalidTaskJson": "错误: tasks.json 文件的内容具有语法错误。请先更正错误然后再执行任务。\n",
-      "TaskSystem.runningTask": "存在运行中的任务。要终止它吗?",
-      "TaskSystem.terminateTask": "终止任务(&&T)",
-      "TaskSystem.noProcess": "启动的任务不再存在。如果任务已生成出后台进程，则退出 VS Code 可能会导致出现孤立的进程。若要避免此情况，请使用等待标记启动最后一个后台进程。",
-      "TaskSystem.exitAnyways": "仍然退出(&&E)",
-      "TerminateAction.label": "终止任务",
-      "TaskSystem.unknownError": "运行任务时发生了错误。请参见任务日志了解详细信息。",
-      "TaskService.noWorkspace": "任务仅在工作区文件夹上可用。",
-      "TaskService.learnMore": "了解详细信息",
-      "configureTask": "配置任务",
-      "recentlyUsed": "最近使用的任务",
-      "configured": "已配置的任务",
-      "detected": "检测到的任务",
-      "TaskService.ignoredFolder": "由于使用任务版本 0.1.0，以下工作区文件夹将被忽略: {0}",
-      "TaskService.notAgain": "不再显示",
-      "TaskService.pickRunTask": "选择要运行的任务",
-      "TaskService.noEntryToRun": "没有找到要运行的任务。配置任务...",
-      "TaskService.fetchingBuildTasks": "正在获取生成任务...",
-      "TaskService.pickBuildTask": "选择要运行的生成任务",
-      "TaskService.noBuildTask": "没有找到要运行的生成任务。配置生成任务...",
-      "TaskService.fetchingTestTasks": "正在获取测试任务...",
-      "TaskService.pickTestTask": "选择要运行的测试任务",
-      "TaskService.noTestTaskTerminal": "没有找到要运行的测试任务。配置任务...",
-      "TaskService.taskToTerminate": "Select a task to terminate",
-      "TaskService.noTaskRunning": "当前没有运行中的任务",
-      "TaskService.terminateAllRunningTasks": "所有正在运行的任务",
-      "TerminateAction.noProcess": "启动的进程不再存在。如果任务生成的后台任务退出 VS Code，则可能会导致出现孤立的进程。",
-      "TerminateAction.failed": "未能终止运行中的任务",
-      "TaskService.taskToRestart": "选择要重启的任务",
-      "TaskService.noTaskToRestart": "没有要重启的任务",
-      "TaskService.template": "选择任务模板",
-      "TaskService.createJsonFile": "使用模板创建 tasks.json 文件",
-      "TaskService.openJsonFile": "打开 tasks.json 文件",
-      "TaskService.pickTask": "选择要配置的任务",
-      "TaskService.defaultBuildTaskExists": "{0} 已被标记为默认生成任务",
-      "TaskService.pickDefaultBuildTask": "选择要用作默认生成任务的任务",
-      "TaskService.defaultTestTaskExists": "{0} 已被标记为默认测试任务。",
-      "TaskService.pickDefaultTestTask": "选择要用作默认测试任务的任务",
-      "TaskService.pickShowTask": "选择要显示输出的任务",
-      "TaskService.noTaskIsRunning": "没有运行中的任务",
       "miRunTask": "运行任务(&&R)...",
       "miBuildTask": "运行生成任务(&&B)...",
       "miRunningTask": "显示正在运行的任务(&&G)...",
@@ -4707,17 +4650,22 @@
       "ReRunTaskAction.label": "重新运行上一个任务",
       "RestartTaskAction.label": "重启正在运行的任务",
       "ShowTasksAction.label": "显示运行中的任务",
+      "TerminateAction.label": "终止任务",
       "BuildAction.label": "运行生成任务",
       "TestAction.label": "运行测试任务",
       "ConfigureDefaultBuildTask.label": "配置默认生成任务",
       "ConfigureDefaultTestTask.label": "配置默认测试任务",
       "quickOpen.task": "运行任务"
     },
-    "vs/workbench/contrib/tasks/common/taskDefinitionRegistry": {
-      "TaskDefinition.description": "实际任务类型。请注意，以 \"$\" 开头的类型仅保留内部使用。",
-      "TaskDefinition.properties": "任务类型的其他属性",
-      "TaskTypeConfiguration.noType": "任务类型配置缺少必需的 \"taskType\" 属性",
-      "TaskDefinitionExtPoint": "配置任务种类"
+    "vs/workbench/contrib/tasks/node/processRunnerDetector": {
+      "TaskSystemDetector.noGulpTasks": "正在运行的 gulp --tasks-simple 没有列出任何任务。你运行 npm 安装了吗?",
+      "TaskSystemDetector.noJakeTasks": "正在运行的 jake --tasks 没有列出任何任务。你运行 npm 安装了吗?",
+      "TaskSystemDetector.noGulpProgram": "你的系统上没有安装 Gulp。运行 npm install -g gulp 以安装它。",
+      "TaskSystemDetector.noJakeProgram": "你的系统上没有安装 Jake。运行 npm install -g jake 以安装它。",
+      "TaskSystemDetector.noGruntProgram": "你的系统上没有安装 Grunt。运行 npm install -g grunt 以安装它。",
+      "TaskSystemDetector.noProgram": "找不到程序 {0}。消息是 {1}",
+      "TaskSystemDetector.buildTaskDetected": "检测到名为“{0}”的生成任务。",
+      "TaskSystemDetector.testTaskDetected": "测试检测到的名为“{0}”的测试任务。"
     },
     "vs/workbench/contrib/tasks/browser/taskQuickOpen": {
       "tasksAriaLabel": "键入要运行的任务的名称",
@@ -4734,11 +4682,13 @@
       "JsonSchema.linux": "Linux 特定的命令配置",
       "JsonSchema.shell": "指定命令是 shell 命令还是外部程序。如果省略，默认值是 false。"
     },
-    "vs/workbench/contrib/tasks/common/taskTemplates": {
-      "dotnetCore": "执行 .NET Core 生成命令",
-      "msbuild": "执行生成目标",
-      "externalCommand": "运行任意外部命令的示例",
-      "Maven": "执行常见的 maven 命令"
+    "vs/workbench/contrib/tasks/node/processTaskSystem": {
+      "version1": "任务系统配置的版本为 0.1.0 (可参见 tasks.json 文件)，只能执行自定义任务。请升级到版本 2.0.0 以运行任务: {0}",
+      "TaskRunnerSystem.unknownError": "在执行任务时发生未知错误。请参见任务输出日志了解详细信息。",
+      "TaskRunnerSystem.watchingBuildTaskFinished": "\n监视生成任务已完成",
+      "TaskRunnerSystem.childProcessError": "启动外部程序{0} {1}失败。",
+      "TaskRunnerSystem.cancelRequested": "\n已根据用户请求终止了任务'{0}' ",
+      "unkownProblemMatcher": "无法解析问题匹配程序 {0}。此匹配程序将被忽略"
     },
     "vs/workbench/contrib/tasks/browser/quickOpen": {
       "entryAriaLabel": "{0}，任务",
@@ -4747,17 +4697,7 @@
       "detected": "检测到的任务",
       "customizeTask": "配置任务"
     },
-    "vs/workbench/contrib/tasks/node/processRunnerDetector": {
-      "TaskSystemDetector.noGulpTasks": "正在运行的 gulp --tasks-simple 没有列出任何任务。你运行 npm 安装了吗?",
-      "TaskSystemDetector.noJakeTasks": "正在运行的 jake --tasks 没有列出任何任务。你运行 npm 安装了吗?",
-      "TaskSystemDetector.noGulpProgram": "你的系统上没有安装 Gulp。运行 npm install -g gulp 以安装它。",
-      "TaskSystemDetector.noJakeProgram": "你的系统上没有安装 Jake。运行 npm install -g jake 以安装它。",
-      "TaskSystemDetector.noGruntProgram": "你的系统上没有安装 Grunt。运行 npm install -g grunt 以安装它。",
-      "TaskSystemDetector.noProgram": "找不到程序 {0}。消息是 {1}",
-      "TaskSystemDetector.buildTaskDetected": "检测到名为“{0}”的生成任务。",
-      "TaskSystemDetector.testTaskDetected": "测试检测到的名为“{0}”的测试任务。"
-    },
-    "vs/workbench/contrib/tasks/electron-browser/runAutomaticTasks": {
+    "vs/workbench/contrib/tasks/browser/runAutomaticTasks": {
       "tasks.run.allowAutomatic": "此文件夹已在 \"tasks.json\" 中定义任务({0})；打开此文件夹时，这些任务将自动运行。是否自动任务在你打开此文件夹时运行?",
       "allow": "允许并运行",
       "disallow": "Disallow",
@@ -4765,15 +4705,18 @@
       "workbench.action.tasks.allowAutomaticRunning": "允许文件夹中的自动任务",
       "workbench.action.tasks.disallowAutomaticRunning": "禁止文件夹中的自动任务"
     },
+    "vs/workbench/contrib/tasks/common/tasks": {
+      "TaskDefinition.missingRequiredProperty": "错误: 任务标识符“{0}”缺失必要属性“{1}”。将忽略该标识符。"
+    },
     "vs/workbench/contrib/tasks/common/jsonSchema_v2": {
       "JsonSchema.shell": "指定命令是 shell 命令还是外部程序。如果省略，默认值是 false。",
       "JsonSchema.tasks.isShellCommand.deprecated": "isShellCommand 属性已被弃用。请改为使用任务的 type 属性和选项中的 shell 属性。另请参阅 1.14 发行说明。",
-      "JsonSchema.tasks.dependsOn.identifier": "The task identifier.",
+      "JsonSchema.tasks.dependsOn.identifier": "任务标识符。",
       "JsonSchema.tasks.dependsOn.string": "此任务依赖的另一任务。",
       "JsonSchema.tasks.dependsOn.array": "此任务依赖的其他任务。",
-      "JsonSchema.tasks.dependsOrder.parallel": "Run all dependsOn tasks in parallel.",
-      "JsonSchema.tasks.dependsOrder.sequence": "Run all dependsOn tasks in sequence.",
-      "JsonSchema.tasks.dependsOrder": "Determines the order of the dependsOn tasks for this task. Note that this property is not recursive.",
+      "JsonSchema.tasks.dependsOrder.parallel": "并行运行所有 dependsOn 任务。",
+      "JsonSchema.tasks.dependsOrder.sequence": "按顺序运行所有 dependsOn 任务。",
+      "JsonSchema.tasks.dependsOrder": "确定此任务的依赖任务的顺序。请注意，此属性不是递归的。",
       "JsonSchema.tasks.presentation": "配置用于显示任务输出和读取输入的面板。",
       "JsonSchema.tasks.presentation.echo": "控制是否将执行的命令显示到面板中。默认值为“true”。",
       "JsonSchema.tasks.presentation.focus": "控制面板是否获取焦点。默认值为“false”。如果设置为“true”，面板也会显示。",
@@ -4834,14 +4777,6 @@
       "JsonSchema.mac": "Mac 特定的命令配置",
       "JsonSchema.linux": "Linux 特定的命令配置"
     },
-    "vs/workbench/contrib/tasks/node/processTaskSystem": {
-      "version1": "任务系统配置的版本为 0.1.0 (可参见 tasks.json 文件)，只能执行自定义任务。请升级到版本 2.0.0 以运行任务: {0}",
-      "TaskRunnerSystem.unknownError": "在执行任务时发生未知错误。请参见任务输出日志了解详细信息。",
-      "TaskRunnerSystem.watchingBuildTaskFinished": "\n监视生成任务已完成",
-      "TaskRunnerSystem.childProcessError": "启动外部程序{0} {1}失败。",
-      "TaskRunnerSystem.cancelRequested": "\n已根据用户请求终止了任务'{0}' ",
-      "unkownProblemMatcher": "无法解析问题匹配程序 {0}。此匹配程序将被忽略"
-    },
     "vs/workbench/contrib/tasks/common/jsonSchemaCommon": {
       "JsonSchema.options": "其他命令选项",
       "JsonSchema.options.cwd": "已执行程序或脚本的当前工作目录。如果省略，则使用代码的当前工作区根。",
@@ -4875,6 +4810,29 @@
       "JsonSchema.taskSelector": "指示参数是任务的前缀。",
       "JsonSchema.matchers": "要使用的问题匹配程序。可以是字符串或问题匹配程序定义，或字符串和问题匹配程序数组。",
       "JsonSchema.tasks": "任务配置。通常是外部任务运行程序中已定义任务的扩充。"
+    },
+    "vs/workbench/contrib/tasks/common/taskDefinitionRegistry": {
+      "TaskDefinition.description": "实际任务类型。请注意，以 \"$\" 开头的类型仅保留内部使用。",
+      "TaskDefinition.properties": "任务类型的其他属性",
+      "TaskTypeConfiguration.noType": "任务类型配置缺少必需的 \"taskType\" 属性",
+      "TaskDefinitionExtPoint": "配置任务种类"
+    },
+    "vs/workbench/contrib/tasks/common/taskConfiguration": {
+      "ConfigurationParser.invalidCWD": "警告: options.cwd 必须为 \"string\" 类型。将忽略值 {0}\n",
+      "ConfigurationParser.inValidArg": "错误: 命令参数必须是字符串或有效引用的字符串。提供的值为: {0}",
+      "ConfigurationParser.noShell": "警告: 仅当在终端中执行任务时支持 shell 配置。",
+      "ConfigurationParser.noName": "错误: 声明范围内的问题匹配程序必须具有名称:\n{0}\n",
+      "ConfigurationParser.unknownMatcherKind": "警告: 定义的问题匹配程序未知。支持的类型为 string | ProblemMatcher | Array<string | ProblemMatcher>.\n{0}",
+      "ConfigurationParser.invalidVaraibleReference": "错误: 无效的 problemMatcher 引用: {0}\n",
+      "ConfigurationParser.noTaskType": "错误: 任务必须提供 type 属性。将忽略该任务。\n{0}\n",
+      "ConfigurationParser.noTypeDefinition": "错误: 没有注册任务类型“{0}”。你是不是忘记安装含有相应任务提供器的扩展?",
+      "ConfigurationParser.missingType": "错误: 任务配置“{0}”缺失必要属性 \"type\"。将忽略该配置。",
+      "ConfigurationParser.incorrectType": "错误: 任务配置“{0}”使用了未知类型。将忽略该配置。",
+      "ConfigurationParser.notCustom": "错误: 任务未声明为自定义任务。将忽略配置。\n{0}\n",
+      "ConfigurationParser.noTaskName": "错误: 任务必须提供 label 属性。将忽略该任务。\n{0}\n",
+      "taskConfiguration.noCommandOrDependsOn": "错误：任务“{0}”既不指定命令，也不指定 dependsOn 属性。将忽略该任务。其定义为:\n{1}",
+      "taskConfiguration.noCommand": "错误: 任务“{0}”未定义命令。将忽略该任务。其定义为:\n{1}",
+      "TaskParse.noOsSpecificGlobalTasks": "任务版本 2.0.0 不支持全局操作系统特定任务。请将他们转换为含有操作系统特定命令的任务。受影响的任务有:\n{0}"
     },
     "vs/workbench/contrib/tasks/common/problemMatcher": {
       "ProblemPatternParser.problemPattern.missingRegExp": "问题模式缺少正则表达式。",
@@ -4945,24 +4903,84 @@
       "eslint-stylish": "ESLint stylish 问题",
       "go": "Go 问题"
     },
-    "vs/workbench/contrib/tasks/common/taskConfiguration": {
-      "ConfigurationParser.invalidCWD": "警告: options.cwd 必须为 \"string\" 类型。将忽略值 {0}\n",
-      "ConfigurationParser.inValidArg": "错误: 命令参数必须是字符串或有效引用的字符串。提供的值为: {0}",
-      "ConfigurationParser.noShell": "警告: 仅当在终端中执行任务时支持 shell 配置。",
-      "ConfigurationParser.noName": "错误: 声明范围内的问题匹配程序必须具有名称:\n{0}\n",
-      "ConfigurationParser.unknownMatcherKind": "警告: 定义的问题匹配程序未知。支持的类型为 string | ProblemMatcher | Array<string | ProblemMatcher>.\n{0}",
-      "ConfigurationParser.invalidVaraibleReference": "错误: 无效的 problemMatcher 引用: {0}\n",
-      "ConfigurationParser.noTaskType": "错误: 任务必须提供 type 属性。将忽略该任务。\n{0}\n",
-      "ConfigurationParser.noTypeDefinition": "错误: 没有注册任务类型“{0}”。你是不是忘记安装含有相应任务提供器的扩展?",
-      "ConfigurationParser.missingType": "错误: 任务配置“{0}”缺失必要属性 \"type\"。将忽略该配置。",
-      "ConfigurationParser.incorrectType": "错误: 任务配置“{0}”使用了未知类型。将忽略该配置。",
-      "ConfigurationParser.notCustom": "错误: 任务未声明为自定义任务。将忽略配置。\n{0}\n",
-      "ConfigurationParser.noTaskName": "错误: 任务必须提供 label 属性。将忽略该任务。\n{0}\n",
-      "taskConfiguration.noCommandOrDependsOn": "错误：任务“{0}”既不指定命令，也不指定 dependsOn 属性。将忽略该任务。其定义为:\n{1}",
-      "taskConfiguration.noCommand": "错误: 任务“{0}”未定义命令。将忽略该任务。其定义为:\n{1}",
-      "TaskParse.noOsSpecificGlobalTasks": "任务版本 2.0.0 不支持全局操作系统特定任务。请将他们转换为含有操作系统特定命令的任务。受影响的任务有:\n{0}"
+    "vs/workbench/contrib/tasks/browser/abstractTaskService": {
+      "ConfigureTaskRunnerAction.label": "配置任务",
+      "tasks": "任务",
+      "TaskSystem.noHotSwap": "在有活动任务运行时更换任务执行引擎需要重新加载窗口",
+      "reloadWindow": "重新加载窗口",
+      "taskServiceOutputPrompt": "任务出现错误。请查看输出结果，了解更多详细信息",
+      "showOutput": "显示输出",
+      "TaskServer.folderIgnored": "由于使用任务版本 0.1.0，文件夹 {0} 将被忽略",
+      "TaskService.noBuildTask1": "未定义任何生成任务。使用 \"isBuildCommand\" 在 tasks.json 文件中标记任务。",
+      "TaskService.noBuildTask2": "未定义任何生成任务。在 tasks.json 文件中将任务标记为 \"build\" 组。",
+      "TaskService.noTestTask1": "未定义任何测试任务。使用 \"isTestCommand\" 在 tasks.json 文件中标记任务。",
+      "TaskService.noTestTask2": "未定义任何测试任务。在 tasks.json 文件中将任务标记为 \"test\" 组。",
+      "TaskServer.noTask": "未定义要执行的任务",
+      "TaskService.associate": "关联",
+      "TaskService.attachProblemMatcher.continueWithout": "继续而不扫描任务输出",
+      "TaskService.attachProblemMatcher.never": "永不扫描任务输出",
+      "TaskService.attachProblemMatcher.learnMoreAbout": "了解有关扫描任务输出的详细信息",
+      "selectProblemMatcher": "选择针对何种错误和警告扫描任务输出",
+      "customizeParseErrors": "当前任务配置存在错误。请先更正错误，再自定义任务。",
+      "tasksJsonComment": "// 有关 tasks.json 格式的文档，请参见\n\t// https://go.microsoft.com/fwlink/?LinkId=733558",
+      "moreThanOneBuildTask": "当前 tasks.json 中定义了多个生成任务。正在执行第一个。\n",
+      "TaskSystem.activeSame.background": "任务“{0}”已激活，并且处于后台模式。",
+      "TaskSystem.activeSame.noBackground": "任务“{0}”已处于活动状态。",
+      "terminateTask": "终止任务",
+      "restartTask": "重启任务",
+      "TaskSystem.active": "当前已有任务正在运行。请先终止它，然后再执行另一项任务。",
+      "TaskSystem.restartFailed": "未能终止并重启任务 {0}",
+      "TaskService.noConfiguration": "错误: {0} 任务检测没有提供拥有下列配置的任务:\n{1}\n将忽略此任务。\n",
+      "TaskSystem.configurationErrors": "错误: 提供的任务配置具有验证错误，无法使用。请首先改正错误。",
+      "taskService.ignoreingFolder": "将忽略工作区文件夹 {0} 的任务配置。多文件夹工作区任务支持要求所有文件夹使用任务版本 2.0.0\n",
+      "TaskSystem.invalidTaskJson": "错误: tasks.json 文件的内容具有语法错误。请先更正错误然后再执行任务。\n",
+      "TaskSystem.runningTask": "存在运行中的任务。要终止它吗?",
+      "TaskSystem.terminateTask": "终止任务(&&T)",
+      "TaskSystem.noProcess": "启动的任务不再存在。如果任务已生成出后台进程，则退出 VS Code 可能会导致出现孤立的进程。若要避免此情况，请使用等待标记启动最后一个后台进程。",
+      "TaskSystem.exitAnyways": "仍然退出(&&E)",
+      "TerminateAction.label": "终止任务",
+      "TaskSystem.unknownError": "运行任务时发生了错误。请参见任务日志了解详细信息。",
+      "TaskService.noWorkspace": "任务仅在工作区文件夹上可用。",
+      "TaskService.learnMore": "了解详细信息",
+      "configureTask": "配置任务",
+      "recentlyUsed": "最近使用的任务",
+      "configured": "已配置的任务",
+      "detected": "检测到的任务",
+      "TaskService.ignoredFolder": "由于使用任务版本 0.1.0，以下工作区文件夹将被忽略: {0}",
+      "TaskService.notAgain": "不再显示",
+      "TaskService.pickRunTask": "选择要运行的任务",
+      "TaskService.noEntryToRun": "没有找到要运行的任务。配置任务...",
+      "TaskService.fetchingBuildTasks": "正在获取生成任务...",
+      "TaskService.pickBuildTask": "选择要运行的生成任务",
+      "TaskService.noBuildTask": "没有找到要运行的生成任务。配置生成任务...",
+      "TaskService.fetchingTestTasks": "正在获取测试任务...",
+      "TaskService.pickTestTask": "选择要运行的测试任务",
+      "TaskService.noTestTaskTerminal": "没有找到要运行的测试任务。配置任务...",
+      "TaskService.taskToTerminate": "选择要终止的任务",
+      "TaskService.noTaskRunning": "当前没有运行中的任务",
+      "TaskService.terminateAllRunningTasks": "所有正在运行的任务",
+      "TerminateAction.noProcess": "启动的进程不再存在。如果任务生成的后台任务退出 VS Code，则可能会导致出现孤立的进程。",
+      "TerminateAction.failed": "未能终止运行中的任务",
+      "TaskService.taskToRestart": "选择要重启的任务",
+      "TaskService.noTaskToRestart": "没有要重启的任务",
+      "TaskService.template": "选择任务模板",
+      "TaskService.createJsonFile": "使用模板创建 tasks.json 文件",
+      "TaskService.openJsonFile": "打开 tasks.json 文件",
+      "TaskService.pickTask": "选择要配置的任务",
+      "TaskService.defaultBuildTaskExists": "{0} 已被标记为默认生成任务",
+      "TaskService.pickDefaultBuildTask": "选择要用作默认生成任务的任务",
+      "TaskService.defaultTestTaskExists": "{0} 已被标记为默认测试任务。",
+      "TaskService.pickDefaultTestTask": "选择要用作默认测试任务的任务",
+      "TaskService.pickShowTask": "选择要显示输出的任务",
+      "TaskService.noTaskIsRunning": "没有运行中的任务"
     },
-    "vs/workbench/contrib/tasks/electron-browser/terminalTaskSystem": {
+    "vs/workbench/contrib/tasks/common/taskTemplates": {
+      "dotnetCore": "执行 .NET Core 生成命令",
+      "msbuild": "执行生成目标",
+      "externalCommand": "运行任意外部命令的示例",
+      "Maven": "执行常见的 maven 命令"
+    },
+    "vs/workbench/contrib/tasks/browser/terminalTaskSystem": {
       "TerminalTaskSystem.unknownError": "在执行任务时发生未知错误。请参见任务输出日志了解详细信息。",
       "dependencyFailed": "无法解析在工作区文件夹“{1}”中的依赖任务“{0}”",
       "TerminalTaskSystem.terminalName": "任务 - {0}",
@@ -5071,7 +5089,7 @@
       "workbench.action.terminal.resizePaneDown": "向下调整窗格大小",
       "workbench.action.terminal.focus": "聚焦到终端",
       "workbench.action.terminal.focusNext": "聚焦到下一终端",
-      "workbench.action.terminal.focusPrevious": "聚焦到下一终端",
+      "workbench.action.terminal.focusPrevious": "聚焦到上一终端",
       "workbench.action.terminal.paste": "粘贴到活动终端中",
       "workbench.action.terminal.paste.short": "粘贴",
       "workbench.action.terminal.selectDefaultShell": "选择默认 Shell",
@@ -5175,7 +5193,7 @@
       "developer": "开发者",
       "miSelectColorTheme": "颜色主题(&&C)",
       "miSelectIconTheme": "文件图标主题(&&I)",
-      "themes.selectIconTheme.label": "File Icon Theme"
+      "themes.selectIconTheme.label": "文件图标主题"
     },
     "vs/workbench/contrib/update/electron-browser/update": {
       "releaseNotes": "发行说明",
@@ -5189,7 +5207,7 @@
       "noUpdatesAvailable": "当前没有可用的更新。",
       "ok": "确定",
       "thereIsUpdateAvailable": "存在可用更新。",
-      "download update": "Download Update",
+      "download update": "下载更新",
       "later": "稍后",
       "updateAvailable": "现有更新可用: {0} {1}",
       "installUpdate": "安装更新",
@@ -5226,12 +5244,16 @@
       "tips.enabled": "启用后，当没有打开编辑器时将显示水印提示。"
     },
     "vs/workbench/contrib/webview/browser/webview.contribution": {
-      "webview.editor.label": "webview 编辑器",
+      "webview.editor.label": "webview 编辑器"
+    },
+    "vs/workbench/contrib/webview/common/webview": {
       "developer": "开发者"
     },
     "vs/workbench/contrib/webview/browser/webviewCommands": {
-      "openToolsLabel": "打开 Webview 开发工具",
       "refreshWebviewLabel": "重新加载 Webview"
+    },
+    "vs/workbench/contrib/webview/electron-browser/webviewCommands": {
+      "openToolsLabel": "打开 Webview 开发工具"
     },
     "vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution": {
       "walkThrough.editor.label": "交互式操场",
@@ -5330,7 +5352,7 @@
       "welcomePage.productDocumentation": "产品文档",
       "welcomePage.gitHubRepository": "GitHub 存储库",
       "welcomePage.stackOverflow": "Stack Overflow",
-      "welcomePage.newsletterSignup": "Join our Newsletter",
+      "welcomePage.newsletterSignup": "接收我们的新闻稿",
       "welcomePage.showOnStartup": "启动时显示欢迎页",
       "welcomePage.customize": "自定义",
       "welcomePage.installExtensionPacks": "工具和语言",
@@ -5364,7 +5386,7 @@
     "vs/workbench/services/configuration/browser/configurationService": {
       "unsupportedApplicationSetting": "此设置只能应用于应用程序的用户设置",
       "unsupportedMachineSetting": "此设置仅可应用于“用户设置”",
-      "unsupportedRemoteMachineSetting": "This setting can be applied only in remote machine settings",
+      "unsupportedRemoteMachineSetting": "此设置只能应用于远程计算机设置",
       "unsupportedWindowSetting": "当前无法应用此设置。将在直接打开此文件夹时应用。"
     },
     "vs/workbench/services/configuration/common/configurationEditingService": {
@@ -5442,7 +5464,8 @@
       "openFile.title": "打开文件",
       "openFolder.title": "打开文件夹",
       "openWorkspace.title": "打开工作区",
-      "filterName.workspace": "工作区"
+      "filterName.workspace": "工作区",
+      "saveFileAs.title": "另存为"
     },
     "vs/workbench/services/dialogs/electron-browser/dialogService": {
       "yesButton": "是(&&Y)",
@@ -5500,7 +5523,10 @@
       "extensionService.crash": "扩展宿主意外终止。",
       "devTools": "打开开发人员工具",
       "restart": "重启扩展宿主",
-      "resolveAuthorityFailure": "Resolving the authority `{0}` failed"
+      "resolveAuthorityFailure": "未能解析权限“{0}”"
+    },
+    "vs/workbench/services/extensions/electron-browser/remoteExtensionManagementIpc": {
+      "incompatible": "无法安装扩展名'{0}'，因为它不兼容 VS Code '{1}'。"
     },
     "vs/workbench/services/extensions/common/extensionsRegistry": {
       "vscode.extension.engines": "引擎兼容性。",
@@ -5535,9 +5561,9 @@
       "vscode.extension.qna": "控制市场中的“问与答”(Q&A)链接。设置为 \"marketplace\" 可启用市场的默认“问与答”页面。设置为其他字符串可指向自定义的“问与答”页面。设置为 \"false\" 可完全禁用“问与答”。",
       "vscode.extension.extensionDependencies": "其他扩展的依赖关系。扩展的标识符始终是 ${publisher}.${name}。例如: vscode.csharp。",
       "vscode.extension.contributes.extensionPack": "可一起安装的一组扩展。扩展的标识符始终为 ${publisher}.${name}。例如: vscode.csharp。",
-      "extensionKind": "Define the kind of an extension. `ui` extensions are installed and run on the local machine while `workspace` extensions are run on the remote.",
-      "ui": "UI extension kind. In a remote window, such extensions are enabled only when available on the local machine.",
-      "workspace": "Workspace extension kind. In a remote window, such extensions are enabled only when available on the remote.",
+      "extensionKind": "定义扩展的类型。\"ui\" 扩展在本地计算机上安装和运行，而 \"workspace\" 扩展则在远程计算机上运行。",
+      "ui": "UI 扩展类型。在远程窗口中, 仅本地计算机可用时启用此类扩展。",
+      "workspace": "工作区扩展类型。在远程窗口中，仅远程可用时启用此类扩展。",
       "vscode.extension.scripts.prepublish": "包作为 VS Code 扩展发布前执行的脚本。",
       "vscode.extension.scripts.uninstall": "VS Code 扩展的卸载钩子。在扩展从 VS Code 卸载且 VS Code 重启 (关闭后开启) 后执行的脚本。仅支持 Node 脚本。",
       "vscode.extension.icon": "128 x 128 像素图标的路径。"
@@ -5588,6 +5614,12 @@
       "binFailed": "未能将“{0}”移动到回收站",
       "trashFailed": "未能将“{0}”移动到废纸篓"
     },
+    "vs/workbench/services/files/node/diskFileSystemProvider": {
+      "fileExists": "文件已存在",
+      "fileNotExists": "文件不存在",
+      "moveError": "无法将 \"{0}\" 移动到 \"{1}\" ({2}) 中。",
+      "copyError": "无法将 \"{0}\" 复制到 \"{1}\" ({2}) 中。"
+    },
     "vs/workbench/services/files/common/fileService": {
       "invalidPath": "资源“{0}”的路径必须是绝对路径",
       "noProviderFound": "找不到 {0} 的文件系统提供程序",
@@ -5608,12 +5640,6 @@
       "deleteFailed": "无法删除非空文件夹“{0}”。",
       "err.readonly": "无法修改资源。",
       "unknownError": "未知错误"
-    },
-    "vs/workbench/services/files/node/diskFileSystemProvider": {
-      "fileExists": "文件已存在",
-      "fileNotExists": "文件不存在",
-      "moveError": "无法将 \"{0}\" 移动到 \"{1}\" ({2}) 中。",
-      "copyError": "无法将 \"{0}\" 复制到 \"{1}\" ({2}) 中。"
     },
     "vs/workbench/services/files2/common/workspaceWatcher": {
       "netVersionError": "需要 Microsoft .NET Framework 4.5。请访问链接安装它。",
@@ -5652,19 +5678,23 @@
       "integrity.moreInformation": "更多信息",
       "integrity.dontShowAgain": "不再显示"
     },
+    "vs/workbench/services/keybinding/electron-browser/keybinding.contribution": {
+      "keyboardConfigurationTitle": "键盘",
+      "touchbar.enabled": "启用键盘上的 macOS 触控栏按钮 (若可用)。"
+    },
     "vs/workbench/services/keybinding/common/keybindingEditing": {
       "errorKeybindingsFileDirty": "按键绑定配置文件已变更，现在无法写入。请先保存此文件，然后重试。",
       "parseErrors": "无法写入按键绑定配置文件。请打开文件并更正错误或警告，然后重试。",
       "errorInvalidConfiguration": "无法写入按键绑定配置文件。文件内含有非数组类型对象。请打开文件进行清理，然后重试。",
       "emptyKeybindingsHeader": "将键绑定放在此文件中以覆盖默认值"
     },
-    "vs/workbench/services/keybinding/electron-browser/keybindingService": {
+    "vs/workbench/services/keybinding/browser/keybindingService": {
       "nonempty": "应为非空值。",
       "requirestring": "属性“{0}”是必需的，其类型必须是“字符串”",
       "optstring": "属性“{0}”可以省略，否则其类型必须是 \"string\"",
       "vscode.extension.contributes.keybindings.command": "要在触发键绑定时运行的命令的标识符。",
       "vscode.extension.contributes.keybindings.args": "要传递给命令以执行的参数。",
-      "vscode.extension.contributes.keybindings.key": "Key or key sequence (separate keys with plus-sign and sequences with space, e.g. Ctrl+O and Ctrl+L L for a chord).",
+      "vscode.extension.contributes.keybindings.key": "键或键序列(用加号连接的键和后面再接空格的键序列都算组合键，如 Ctrl+O 和 Ctrl+L L)。",
       "vscode.extension.contributes.keybindings.mac": "Mac 特定的键或键序列。",
       "vscode.extension.contributes.keybindings.linux": "Linux 特定的键或键序列。",
       "vscode.extension.contributes.keybindings.win": "Windows 特定的键或键序列。",
@@ -5678,8 +5708,7 @@
       "keybindings.json.when": "键处于活动状态时的条件。",
       "keybindings.json.args": "要传递给命令以执行的参数。",
       "keyboardConfigurationTitle": "键盘",
-      "dispatch": "控制按键的分派逻辑以使用 \"code\" (推荐) 或 \"keyCode\"。",
-      "touchbar.enabled": "启用键盘上的 macOS 触控栏按钮 (若可用)。"
+      "dispatch": "控制按键的分派逻辑以使用 \"code\" (推荐) 或 \"keyCode\"。"
     },
     "vs/workbench/services/label/common/labelService": {
       "vscode.extension.contributes.resourceLabelFormatters": "提供资源标签格式化规则。",
@@ -5722,14 +5751,14 @@
       "folderSettingsName": "{0} (文件夹设置)",
       "fail.createSettings": "无法创建“{0}”({1})。"
     },
+    "vs/workbench/services/preferences/common/preferences": {
+      "userSettingsTarget": "用户设置",
+      "workspaceSettingsTarget": "工作区设置"
+    },
     "vs/workbench/services/preferences/common/preferencesEditorInput": {
       "settingsEditorName": "默认设置",
       "keybindingsInputName": "键盘快捷方式",
       "settingsEditor2InputName": "设置"
-    },
-    "vs/workbench/services/preferences/common/preferences": {
-      "userSettingsTarget": "用户设置",
-      "workspaceSettingsTarget": "工作区设置"
     },
     "vs/workbench/services/preferences/common/preferencesModels": {
       "commonlyUsed": "常用设置",
@@ -5756,7 +5785,7 @@
       "progress.text2": "{0}: {1}",
       "progress.title3": "[{0}] {1}: {2}",
       "progress.title2": "[{0}]: {1}",
-      "status.progress": "Progress Message",
+      "status.progress": "进度消息",
       "cancel": "取消",
       "dismiss": "消除"
     },
@@ -5766,10 +5795,6 @@
     "vs/workbench/services/textfile/node/textFileService": {
       "fileBinaryError": "文件似乎是二进制文件，无法作为文档打开",
       "fileReadOnlyError": "文件为只读文件"
-    },
-    "vs/workbench/services/textfile/common/textFileEditorModel": {
-      "saveFileFirst": "文件已更新。请首先保存它，然后再通过另一个编码重新打开它。",
-      "genericSaveError": "未能保存“{0}”: {1}"
     },
     "vs/workbench/services/textfile/common/textFileService": {
       "files.backup.failSave": "无法将更改的文件写入备份位置 (错误: {0})。请先保存你的文件，然后退出。",
@@ -5786,6 +5811,10 @@
       "saveAsTitle": "另存为",
       "allFiles": "所有文件",
       "noExt": "无扩展"
+    },
+    "vs/workbench/services/textfile/common/textFileEditorModel": {
+      "saveFileFirst": "文件已更新。请首先保存它，然后再通过另一个编码重新打开它。",
+      "genericSaveError": "未能保存“{0}”: {1}"
     },
     "vs/workbench/services/textMate/browser/abstractTextMateService": {
       "invalid.language": "\"contributes.{0}.language\" 中包含未知语言。提供的值: {1}",
@@ -5853,6 +5882,16 @@
       "schema.tokenColors.path": "tmTheme 文件路径(相对于当前文件)。",
       "schema.colors": "语法突出显示颜色"
     },
+    "vs/workbench/services/themes/common/colorThemeStore": {
+      "vscode.extension.contributes.themes": "Contributes textmate color themes.",
+      "vscode.extension.contributes.themes.id": "用户设置中使用的图标主题的 ID。",
+      "vscode.extension.contributes.themes.label": "显示在 UI 中的颜色主题标签。",
+      "vscode.extension.contributes.themes.uiTheme": "用于定义编辑器周围颜色的基本主题: \"vs\" 是浅色主题，\"vs-dark\" 是深色主题。\"hc-black\" 是深色高对比度主题。",
+      "vscode.extension.contributes.themes.path": "tmTheme 文件的路径。该路径相对于扩展文件夹，通常为 \"./themes/themeFile.tmTheme\"。",
+      "reqarray": "扩展点“{0}”必须是数组。 ",
+      "reqpath": "“contributes.{0}.path”中应为字符串。提供的值: {1}",
+      "invalid.path.1": "“contributes.{0}.path”({1})应包含在扩展的文件夹({2})内。这可能会使扩展不可移植。"
+    },
     "vs/workbench/services/themes/common/fileIconThemeStore": {
       "vscode.extension.contributes.iconThemes": "Contributes file icon themes.",
       "vscode.extension.contributes.iconThemes.id": "用户设置中使用的图标主题的 ID。",
@@ -5863,15 +5902,16 @@
       "reqid": "contributes.{0}.id\" 中的预期字符串。提供的值: {1}",
       "invalid.path.1": "“contributes.{0}.path”({1})应包含在扩展的文件夹({2})内。这可能会使扩展不可移植。"
     },
-    "vs/workbench/services/themes/common/colorThemeStore": {
-      "vscode.extension.contributes.themes": "Contributes textmate color themes.",
-      "vscode.extension.contributes.themes.id": "用户设置中使用的图标主题的 ID。",
-      "vscode.extension.contributes.themes.label": "显示在 UI 中的颜色主题标签。",
-      "vscode.extension.contributes.themes.uiTheme": "用于定义编辑器周围颜色的基本主题: \"vs\" 是浅色主题，\"vs-dark\" 是深色主题。\"hc-black\" 是深色高对比度主题。",
-      "vscode.extension.contributes.themes.path": "tmTheme 文件的路径。该路径相对于扩展文件夹，通常为 \"./themes/themeFile.tmTheme\"。",
-      "reqarray": "扩展点“{0}”必须是数组。 ",
-      "reqpath": "“contributes.{0}.path”中应为字符串。提供的值: {1}",
-      "invalid.path.1": "“contributes.{0}.path”({1})应包含在扩展的文件夹({2})内。这可能会使扩展不可移植。"
+    "vs/workbench/services/themes/common/colorThemeData": {
+      "error.cannotparsejson": "分析 JSON 主题文件 {0} 时出现问题",
+      "error.invalidformat.colors": "分析颜色主题文件时出现问题：{0}。属性“colors”不是“object”类型。",
+      "error.invalidformat.tokenColors": "分析颜色主题文件时出现问题：{0}。属性 \"tokenColors\" 应为指定颜色的数组或是指向 TextMate 主题文件的路径",
+      "error.plist.invalidformat": "分析 tmTheme 文件时出现问题: {0}。\"settings\" 不是数组。",
+      "error.cannotparse": "分析 tmTheme 文件时出现问题：{0}",
+      "error.cannotload": "分析 tmTheme 文件 {0} 时出现问题：{1}"
+    },
+    "vs/workbench/services/themes/common/fileIconThemeData": {
+      "error.cannotparseicontheme": "Problems parsing file icons file: {0}"
     },
     "vs/workbench/services/themes/common/fileIconThemeSchema": {
       "schema.folderExpanded": "展开文件夹的文件夹图标。展开文件夹图标是可选的。如果未设置，将显示为文件夹定义的图标。",
@@ -5906,17 +5946,6 @@
       "schema.highContrast": "高对比度颜色主题中文件图标的可选关联。",
       "schema.hidesExplorerArrows": "配置文件资源管理器的箭头是否应在此主题启用时隐藏。"
     },
-    "vs/workbench/services/themes/common/fileIconThemeData": {
-      "error.cannotparseicontheme": "Problems parsing file icons file: {0}"
-    },
-    "vs/workbench/services/themes/common/colorThemeData": {
-      "error.cannotparsejson": "分析 JSON 主题文件 {0} 时出现问题",
-      "error.invalidformat.colors": "分析颜色主题文件时出现问题：{0}。属性“colors”不是“object”类型。",
-      "error.invalidformat.tokenColors": "分析颜色主题文件时出现问题：{0}。属性 \"tokenColors\" 应为指定颜色的数组或是指向 TextMate 主题文件的路径",
-      "error.plist.invalidformat": "分析 tmTheme 文件时出现问题: {0}。\"settings\" 不是数组。",
-      "error.cannotparse": "分析 tmTheme 文件时出现问题：{0}",
-      "error.cannotload": "分析 tmTheme 文件 {0} 时出现问题：{1}"
-    },
     "vs/workbench/services/workspace/electron-browser/workspaceEditingService": {
       "save": "保存",
       "doNotSave": "不保存",
@@ -5924,13 +5953,243 @@
       "saveWorkspaceMessage": "你是否要将你的工作区配置保存为文件？",
       "saveWorkspaceDetail": "若要再次打开此工作区，请先保存。",
       "saveWorkspace": "保存工作区",
-      "differentSchemeRoots": "Workspace folders from different providers are not allowed in the same workspace.",
+      "differentSchemeRoots": "同一工作区中不允许来自不同提供程序的工作区文件夹。",
       "ok": "确定",
       "workspaceOpenedMessage": "无法保存工作区“{0}”",
       "workspaceOpenedDetail": "已在另一个窗口打开工作区。请先关闭该窗口，然后重试。",
       "errorInvalidTaskConfiguration": "无法写入工作区配置文件。请打开文件以更正错误或警告，然后重试。",
       "errorWorkspaceConfigurationFileDirty": "文件已变更，因此无法写入工作区配置文件。请先保存此文件，然后重试。",
       "openWorkspaceConfigurationFile": "打开工作区配置"
+    },
+    "nsions/agent/out/mainController": {
+      "mainController.notImplemented": "此功能正在开发中。如果你想尝试最新的更新，请查看最新的预览体验计划内部版本。"
+    },
+    "nsions/agent/out/data/alertData": {
+      "alertData.saveErrorMessage": "警报更新失败“{0}”",
+      "alertData.DefaultAlertTypString": "sql server 事件警报",
+      "alertDialog.PerformanceCondition": "SQL Server 性能状况警报",
+      "alertDialog.WmiEvent": "WMI 事件警报"
+    },
+    "nsions/agent/out/data/jobData": {
+      "jobData.whenJobCompletes": "当作业完成时",
+      "jobData.whenJobFails": "当作业失败时",
+      "jobData.whenJobSucceeds": "当作业成功时",
+      "jobData.jobNameRequired": "必须提供作业名称",
+      "jobData.saveErrorMessage": "作业更新失败“{0}”",
+      "jobData.newJobErrorMessage": "作业创建失败“{0}”",
+      "jobData.saveSucessMessage": "作业“{0}”已成功更新",
+      "jobData.newJobSuccessMessage": "已成功创建作业“{0}”"
+    },
+    "nsions/agent/out/data/jobStepData": {
+      "jobStepData.saveErrorMessage": "步骤更新失败“{0}”",
+      "stepData.jobNameRequired": "必须提供作业名称",
+      "stepData.stepNameRequired": "必须提供步骤名称"
+    },
+    "nsions/agent/out/data/proxyData": {
+      "proxyData.saveErrorMessage": "代理更新失败“{0}”",
+      "proxyData.saveSucessMessage": "代理“{0}”已成功更新",
+      "proxyData.newJobSuccessMessage": "成功创建代理“{0}”"
+    },
+    "nsions/agent/out/dialogs/agentDialog": {
+      "agentDialog.OK": "确定",
+      "agentDialog.Cancel": "取消"
+    },
+    "nsions/agent/out/dialogs/alertDialog": {
+      "alertDialog.createAlert": "创建警报",
+      "alertDialog.editAlert": "编辑警报",
+      "alertDialog.General": "常规",
+      "alertDialog.Response": "响应",
+      "alertDialog.Options": "选项",
+      "alertDialog.eventAlert": "事件警报定义",
+      "alertDialog.Name": "名称",
+      "alertDialog.Type": "类型",
+      "alertDialog.Enabled": "已启用",
+      "alertDialog.DatabaseName": "数据库名称",
+      "alertDialog.ErrorNumber": "错误号",
+      "alertDialog.Severity": "严重性",
+      "alertDialog.RaiseAlertContains": "消息包含时引发警报",
+      "alertDialog.MessageText": "消息文本",
+      "alertDialog.Severity001": "001 - 其他系统信息",
+      "alertDialog.Severity002": "002 - 预留",
+      "alertDialog.Severity003": "003 - 预留",
+      "alertDialog.Severity004": "004 - 预留",
+      "alertDialog.Severity005": "005 - 预留",
+      "alertDialog.Severity006": "006 - 预留",
+      "alertDialog.Severity007": "007 - 通知: 状态信息",
+      "alertDialog.Severity008": "008 - 通知: 需要用户干预",
+      "alertDialog.Severity009": "009 - 用户定义的",
+      "alertDialog.Severity010": "010 - 信息",
+      "alertDialog.Severity011": "011 - 未找到指定的数据库对象",
+      "alertDialog.Severity012": "012 - 未使用",
+      "alertDialog.Severity013": "013 - 用户事务语法错误",
+      "alertDialog.Severity014": "014 - 权限不足",
+      "alertDialog.Severity015": "015 - SQL 语句中的语法错误",
+      "alertDialog.Severity016": "016-其他用户错误",
+      "alertDialog.Severity017": "017 - 资源不足",
+      "alertDialog.Severity018": "018 - 非严重内部错误",
+      "alertDialog.Severity019": "019-资源中的致命错误",
+      "alertDialog.Severity020": "020 - 当前进程中出现严重错误",
+      "alertDialog.Severity021": "021 - 数据库进程中出现严重错误",
+      "alertDialog.Severity022": "022 - 严重错误: 表完整性可疑",
+      "alertDialog.Severity023": "023 - 严重错误: 数据库完整性可疑",
+      "alertDialog.Severity024": "024 - 严重错误: 硬件错误",
+      "alertDialog.Severity025": "025 - 严重错误",
+      "alertDialog.AllDatabases": "<所有数据库>",
+      "alertDialog.ExecuteJob": "执行作业",
+      "alertDialog.ExecuteJobName": "作业名称",
+      "alertDialog.NotifyOperators": "通知运算符",
+      "alertDialog.NewJob": "新建作业",
+      "alertDialog.OperatorList": "运算符列表",
+      "alertDialog.OperatorName": "运算符",
+      "alertDialog.OperatorEmail": "电子邮件",
+      "alertDialog.OperatorPager": "寻呼机",
+      "alertDialog.NewOperator": "新建运算符",
+      "alertDialog.IncludeErrorInEmail": "在电子邮件中包含警报错误文本",
+      "alertDialog.IncludeErrorInPager": "在页导航中包含警报错误文本",
+      "alertDialog.AdditionalNotification": "要发送的其他通知消息",
+      "alertDialog.DelayBetweenResponse": "响应之间的延迟",
+      "alertDialog.DelayMinutes": "延迟分钟数",
+      "alertDialog.DelaySeconds": "延迟秒数"
+    },
+    "nsions/agent/out/dialogs/jobDialog": {
+      "jobDialog.general": "常规",
+      "jobDialog.steps": "步骤",
+      "jobDialog.schedules": "计划",
+      "jobDialog.alerts": "警报",
+      "jobDialog.notifications": "通知",
+      "jobDialog.blankJobNameError": "作业名称不能为空。",
+      "jobDialog.name": "名称",
+      "jobDialog.owner": "所有者",
+      "jobDialog.category": "类别",
+      "jobDialog.description": "说明",
+      "jobDialog.enabled": "已启用",
+      "jobDialog.jobStepList": "作业步骤列表",
+      "jobDialog.step": "步骤",
+      "jobDialog.type": "类型",
+      "jobDialog.onSuccess": "成功时",
+      "jobDialog.onFailure": "失败时",
+      "jobDialog.new": "新步骤",
+      "jobDialog.edit": "编辑步骤",
+      "jobDialog.delete": "删除步骤",
+      "jobDialog.moveUp": "将步骤向上移动",
+      "jobDialog.moveDown": "逐步向下移动",
+      "jobDialog.startStepAt": "开始步骤",
+      "jobDialog.notificationsTabTop": "作业完成时要执行的操作",
+      "jobDialog.email": "电子邮件",
+      "jobDialog.page": "页面",
+      "jobDialog.eventLogCheckBoxLabel": "写入 Windows 应用程序事件日志",
+      "jobDialog.deleteJobLabel": "自动删除作业",
+      "jobDialog.schedulesaLabel": "计划列表",
+      "jobDialog.pickSchedule": "选择时间表",
+      "jobDialog.scheduleNameLabel": "计划名称",
+      "jobDialog.alertsList": "警报列表",
+      "jobDialog.newAlert": "新建警报",
+      "jobDialog.alertNameLabel": "警报名称",
+      "jobDialog.alertEnabledLabel": "已启用",
+      "jobDialog.alertTypeLabel": "类型",
+      "jobDialog.newJob": "新建作业",
+      "jobDialog.editJob": "编辑作业"
+    },
+    "nsions/agent/out/dialogs/jobStepDialog": {
+      "jobStepDialog.fileBrowserTitle": "定位数据库文件 -",
+      "jobStepDialog.ok": "确定",
+      "jobStepDialog.cancel": "取消",
+      "jobStepDialog.general": "常规",
+      "jobStepDialog.advanced": "高级",
+      "jobStepDialog.open": "打开...",
+      "jobStepDialog.parse": "分析",
+      "jobStepDialog.successParse": "已成功解析该命令。",
+      "jobStepDialog.failParse": "命令失败。",
+      "jobStepDialog.blankStepName": "步骤名称不能留空",
+      "jobStepDialog.processExitCode": "处理成功命令的退出代码:",
+      "jobStepDialog.stepNameLabel": "步骤名称",
+      "jobStepDialog.typeLabel": "类型",
+      "jobStepDialog.runAsLabel": "运行为",
+      "jobStepDialog.databaseLabel": "数据库",
+      "jobStepDialog.commandLabel": "命令",
+      "jobStepDialog.successAction": "成功操作时",
+      "jobStepDialog.failureAction": "失败操作时",
+      "jobStepDialog.runAsUser": "以用户身份运行",
+      "jobStepDialog.retryAttempts": "重试尝试",
+      "jobStepDialog.retryInterval": "重试间隔(分钟)",
+      "jobStepDialog.logToTable": "记录到表中",
+      "jobStepDialog.appendExistingTableEntry": "将输出追加到表中的现有条目",
+      "jobStepDialog.includeStepOutputHistory": "在历史记录中包括步骤输出",
+      "jobStepDialog.outputFile": "输出文件",
+      "jobStepDialog.appendOutputToFile": "将输出追加到现有文件中",
+      "jobStepDialog.selectedPath": "选定的路径",
+      "jobStepDialog.filesOfType": "类型文件",
+      "jobStepDialog.fileName": "文件名",
+      "jobStepDialog.allFiles": "所有文件(*)",
+      "jobStepDialog.TSQL": "Transact-SQL 脚本(T-SQL)",
+      "jobStepDialog.powershell": "PowerShell",
+      "jobStepDialog.CmdExec": "操作系统(CmdExec)",
+      "jobStepDialog.agentServiceAccount": "SQL Server 代理服务帐户",
+      "jobStepDialog.nextStep": "转到下一步骤",
+      "jobStepDialog.quitJobSuccess": "成功退出作业报告",
+      "jobStepDialog.quitJobFailure": "未能退出作业报告",
+      "jobStepDialog.newJobStep": "新建作业步骤",
+      "jobStepDialog.editJobStep": "编辑作业步骤"
+    },
+    "nsions/agent/out/dialogs/operatorDialog": {
+      "createOperator.createOperator": "创建运算符",
+      "createOperator.editOperator": "编辑运算符",
+      "createOperator.General": "常规",
+      "createOperator.Notifications": "通知",
+      "createOperator.Name": "名称",
+      "createOperator.Enabled": "已启用",
+      "createOperator.EmailName": "电子邮件名称",
+      "createOperator.PagerEmailName": "寻呼机电子邮件名称",
+      "createOperator.PagerMondayCheckBox": "星期一",
+      "createOperator.PagerTuesdayCheckBox": "星期二",
+      "createOperator.PagerWednesdayCheckBox": "星期三",
+      "createOperator.PagerThursdayCheckBox": "星期四",
+      "createOperator.PagerFridayCheckBox": "星期五",
+      "createOperator.PagerSaturdayCheckBox": "星期六",
+      "createOperator.PagerSundayCheckBox": "星期日",
+      "createOperator.workdayBegin": "工作日开始",
+      "createOperator.workdayEnd": "工作日结束",
+      "createOperator.PagerDutySchedule": "值班安排表上的寻呼机",
+      "createOperator.AlertListHeading": "警报列表",
+      "createOperator.AlertNameColumnLabel": "警报名称",
+      "createOperator.AlertEmailColumnLabel": "电子邮件",
+      "createOperator.AlertPagerColumnLabel": "寻呼机"
+    },
+    "nsions/agent/out/dialogs/pickScheduleDialog": {
+      "pickSchedule.jobSchedules": "作业计划",
+      "pickSchedule.ok": "确定",
+      "pickSchedule.cancel": "取消",
+      "pickSchedule.availableSchedules": "可用日程安排:",
+      "pickSchedule.scheduleName": "名称",
+      "pickSchedule.scheduleID": "ID",
+      "pickSchedule.description": "说明"
+    },
+    "nsions/agent/out/dialogs/proxyDialog": {
+      "createProxy.createProxy": "创建代理",
+      "createProxy.editProxy": "编辑代理",
+      "createProxy.General": "常规",
+      "createProxy.ProxyName": "代理名称",
+      "createProxy.CredentialName": "凭据名称",
+      "createProxy.Description": "说明",
+      "createProxy.SubsystemName": "子系统",
+      "createProxy.OperatingSystem": "操作系统(CmdExec)",
+      "createProxy.ReplicationSnapshot": "复制快照",
+      "createProxy.ReplicationTransactionLog": "复制事务日志读取器",
+      "createProxy.ReplicationDistributor": "复制分发器",
+      "createProxy.ReplicationMerge": "复制合并",
+      "createProxy.ReplicationQueueReader": "复制队列读取器",
+      "createProxy.SSASQueryLabel": "Sql Server 分析服务查询",
+      "createProxy.SSASCommandLabel": "SQL Server 分析服务命令",
+      "createProxy.SSISPackage": "SQL Server 集成服务包",
+      "createProxy.PowerShell": "PowerShell",
+      "createProxy.subSystemHeading": "对以下子系统有效"
+    },
+    "nsions/agent/out/dialogs/scheduleDialog": {
+      "scheduleDialog.newSchedule": "新建计划",
+      "scheduleDialog.ok": "确定",
+      "scheduleDialog.cancel": "取消",
+      "scheduleDialog.scheduleName": "计划名称",
+      "scheduleDialog.schedules": "计划"
     },
     "nsions/azurecore/package": {
       "azure.displayName": "Azure (核心)",
@@ -5951,17 +6210,365 @@
       "config.enableChinaCloudDescription": "是否应启用 Azure 中国集成",
       "config.enableGermanyCloudDescription": "是否应启用 Azure 德国集成"
     },
-    "sql/base/browser/ui/editableDropdown/actions": {
+    "nsions/azurecore/out/constants": {
+      "extensionName": "Azure 帐户"
+    },
+    "nsions/azurecore/out/account-provider/azureAccountProvider": {
+      "accountProviderNotInitialized": "帐户提供程序未初始化，无法执行操作",
+      "addAccount": "添加 {0} 帐户",
+      "refreshAccount": "刷新 {0} 帐户",
+      "azureWorkAccountDisplayName": "工作或学校帐户",
+      "microsoftAccountDisplayName": "Microsoft 帐户"
+    },
+    "nsions/azurecore/out/account-provider/azureAccountProviderService": {
+      "clearTokenCacheSuccess": "令牌缓存已成功清除",
+      "clearTokenCacheFailure": "未能清除令牌缓存"
+    },
+    "nsions/azurecore/out/account-provider/providerSettings": {
+      "publicCloudDisplayName": "Azure"
+    },
+    "nsions/azurecore/out/azureResource/commands": {
+      "azure.resource.selectsubscriptions.credentialError": "未能获取帐户 {0} 的凭据。请刷新帐户。"
+    },
+    "nsions/azurecore/out/azureResource/resourceTreeNode": {
+      "azure.resource.resourceTreeNode.noResourcesLabel": "找不到资源。"
+    },
+    "sql/base/browser/ui/table/utils": {
+      "azure.resource.error": "错误: {0}"
+    },
+    "nsions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider": {
+      "azure.resource.providers.database.treeDataProvider.databaseContainerLabel": "SQL 数据库"
+    },
+    "nsions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider": {
+      "azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel": "SQL Server"
+    },
+    "nsions/azurecore/out/azureResource/tree/accountNotSignedInTreeNode": {
+      "azure.resource.tree.accountNotSignedInTreeNode.signInLabel": "登录到 Azure..."
+    },
+    "nsions/azurecore/out/azureResource/tree/accountTreeNode": {
+      "azure.resource.tree.accountTreeNode.credentialError": "未能获取帐户 {0} 的凭据。请刷新帐户。",
+      "azure.resource.tree.accountTreeNode.noSubscriptionsLabel": "找不到订阅。"
+    },
+    "nsions/azurecore/out/azureResource/tree/subscriptionTreeNode": {
+      "azure.resource.tree.subscriptionTreeNode.noResourcesLabel": "找不到资源。"
+    },
+    "nsions/azurecore/out/azureResource/tree/treeProvider": {
+      "azure.resource.tree.treeProvider.loadingLabel": "正在加载..."
+    },
+    "nsions/big-data-cluster/out/main": {
+      "done": "已完成",
+      "dependencyInstalled": "{0} 已安装...",
+      "installingDependency": "正在安装 {0}...",
+      "installingDependencyFailed": "无法安装 {0}: {1}"
+    },
+    "nsions/big-data-cluster/out/installer/installer": {
+      "downloadKubectlFailed": "未能下载 kubectl: {0}",
+      "kubectlVersionCheckFailed": "未能创建 kubectl 稳定版本: {0}"
+    },
+    "nsions/big-data-cluster/out/kubectl/binutil": {
+      "installDependenciesAction": "安装依赖项",
+      "learnMoreAction": "了解详细信息",
+      "moreInfoMsg": "将 {0} 目录添加到路径，或者将 \"mssql-bdc.{0}-path\" 配置设为 {0} 二进制文件。"
+    },
+    "nsions/big-data-cluster/out/kubectl/kubectl": {
+      "binaryNotFound": "找不到 {0} 二进制文件。{1}",
+      "binaryNotInstalled": "未安装 {0}。{1}",
+      "kubernetesRequired": "SQL Server 大数据群集需使用 kubernetes。",
+      "cannotExecuteCmd": "无法执行命令。",
+      "kubectlVersionIncompatible": "kubectl 版本 ${0} 可能与群集 Kubectl 版本 {1} 不兼容",
+      "cannotRunCommand": "无法运行命令({0})"
+    },
+    "nsions/big-data-cluster/out/kubectl/kubectlUtils": {
+      "runKubectlFailed": "无法运行 kubectl",
+      "setClusterFailed": "未能将“{0}”设置为当前群集: {1}"
+    },
+    "nsions/big-data-cluster/out/kubectl/sqlServerBigDataClusterChannel": {
+      "bigDataClusterOutputChannel": "SQL Server 大数据群集"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/createClusterModel": {
+      "bdc-create.AKSClusterCardText": "新的 AKS 集群",
+      "bdc-create.AKSClusterFullName": "新的 Azure Kubernetes 服务群集",
+      "bdc-create.AKSClusterDescription": "此选项为 SQL Server 大数据群集部署配置新的 Azure Kubernetes 服务(AKS)。借助 AKS，可轻松创建、配置和管理一组虚拟机，它们预配置有 Kubernetes 群集来运行容器化的应用程序。",
+      "bdc-create.ExistingClusterCardText": "现有群集",
+      "bdc-create.ExistingClusterFullName": "现有的 Kubernetes 群集",
+      "bdc-create.ExistingClusterDescription": "此选项假定你已安装 Kubernetes 群集。完成先决条件检查后，请确保选择了正确的群集上下文。"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/createClusterWizard": {
+      "bdc-create.wizardTitle": "创建大数据群集",
+      "bdc-create.generateScriptsButtonText": "生成脚本",
+      "bdc-create.createClusterButtonText": "创建"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/pages/clusterProfilePage": {
+      "bdc-create.clusterProfilePageTitle": "选择群集配置文件",
+      "bdc-create.clusterProfilePageDescription": "请选择你的要求，我们将为你提供预定义的默认缩放。你稍后可转到群集配置进行自定义。",
+      "bdc-create.TargetClusterOverview": "目标群集规模概述",
+      "bdc-create.clusterProfileLabel": "部署配置文件",
+      "bdc-create.HardwareProfileText": "硬件配置文件",
+      "bdc-create.HardwareLabelColumnName": "标签",
+      "bdc-create.TotalNodesColumnName": "节点",
+      "bdc-create.TotalCoresColumnName": "核心",
+      "bdc-create.TotalMemoryColumnName": "内存",
+      "bdc-create.TotalDisksColumnName": "磁盘",
+      "bdc-create.ScaleLabel": "缩放",
+      "bdc-create.HardwareProfileLabel": "硬件配置文件标签",
+      "bdc-create.FeatureSetLabel": "功能集",
+      "bdc-create.EngineOnlyText": "仅限引擎",
+      "bdc-create.EngineWithFeaturesText": "具有可选特性的引擎",
+      "bdc-create.SQLServerMasterDisplayName": "SQL Server 主服务器",
+      "bdc-create.ComputePoolDisplayName": "计算池",
+      "bdc-create.DataPoolDisplayName": "数据池",
+      "bdc-create.StoragePoolDisplayName": "存储池",
+      "bdc-create.SparkPoolDisplayName": "Spark 池",
+      "bdc-create.SQLServerMasterDescription": "SQL Server 实例为群集提供了一个外部可访问的 TDS 终结点",
+      "bdc-create.ComputePoolDescription": "TODO: 添加说明",
+      "bdc-create.DataPoolDescription": "TODO: 添加说明",
+      "bdc-create.StoragePoolDescription": "TODO: 添加说明",
+      "bdc-create.SparkPoolDescription": "TODO: 添加说明",
+      "bdc-create.poolLabelTemplate": "{0} ({1})"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/pages/selectExistingClusterPage": {
+      "bdc-create.selectTargetClusterPageTitle": "要在何处部署此 SQL Server 大数据群集?",
+      "bdc-create.selectTargetClusterPageDescription": "选择 kubeconfig 文件，然后从列表中选择群集上下文",
+      "bdc-create.ClusterContextNotSelectedMessage": "请选择群集上下文。",
+      "bdc-create.kubeConfigFileLabelText": "Kube 配置文件路径",
+      "bdc-browseText": "浏览",
+      "bdc-clusterContextsLabelText": "群集上下文",
+      "bdc-errorLoadingClustersText": "配置文件中找不到群集信息，或者加载配置文件时出错",
+      "bdc-selectKubeConfigFileText": "选择"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/pages/selectTargetClusterTypePage": {
+      "bdc-create.InstallToolsText": "安装工具",
+      "bdc-create.InstallingButtonText": "正在安装...",
+      "bdc-create.selectTargetClusterTypePageTitle": "你的目标集群环境是什么?",
+      "bdc-create.selectTargetClusterTypePageDescription": "选择目标环境，然后为其安装所需的工具。",
+      "bdc-create.RefreshToolsButtonText": "刷新状态",
+      "bdc-create.toolNameColumnHeader": "工具",
+      "bdc-create.toolDescriptionColumnHeader": "说明",
+      "bdc-create.toolVersionColumnHeader": "版本",
+      "bdc-create.toolStatusColumnHeader": "状态",
+      "bdc-create.PickTargetEnvironmentText": "选择目标环境",
+      "bdc-create.ToolsRefreshingText": "正在刷新所需工具的状态，请稍候。",
+      "bdc-create.TargetClusterTypeNotSelectedText": "请选择目标群集类型。",
+      "bdc-create.MissingToolsText": "请安装所需的工具。",
+      "bdc-create.ComingSoonText": "(即将推出)",
+      "bdc-create.RequiredToolsText": "所需工具",
+      "bdc-create.InstalledText": "已安装",
+      "bdc-create.NotInstalledText": "未安装",
+      "bdc-create.InstallingText": "正在安装...",
+      "bdc-create.FailedToInstallText": "安装失败"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/pages/settingsPage": {
+      "bdc-create.RestoreDefaultValuesText": "恢复默认值",
+      "bdc-create.settingsPageTitle": "设置",
+      "bdc-create.settingsPageDescription": "配置部署 SQL Server 大数据群集所需的设置",
+      "bdc-create.EulaNotAccepted": "你需要接受服务条款和隐私政策才能继续",
+      "bdc-create.ClusterName": "群集名称",
+      "bdc-create.AdminUsernameText": "管理员用户名",
+      "bdc-create.AdminUserPasswordText": "密码",
+      "bdc-create.SQLPortText": "SQL Server 主服务器",
+      "bdc-create.KnoxPortText": "Knox",
+      "bdc-create.ControllerPortText": "控制器",
+      "bdc-create.ProxyPortText": "代理",
+      "bdc-create.GrafanaPortText": "Grafana 仪表板",
+      "bdc-create.KibanaPortText": "Kibana 仪表板",
+      "bdc-create.RegistryUserNamePasswordHintText": "仅限专用注册表",
+      "bdc-create.RegistryText": "注册表",
+      "bdc-create.RepositoryText": "存储库",
+      "bdc-create.ImageTagText": "图像标签",
+      "bdc-create.RegistryUserNameText": "用户名",
+      "bdc-create.RegistryPasswordText": "密码",
+      "bdc-create.BasicSettingsText": "基本设置",
+      "bdc-create.ContainerRegistrySettings": "容器注册表设置",
+      "bdc-create.PortSettings": "端口设置(可选)",
+      "bdc-create.LicenseTerms": "许可条款",
+      "bdc-create.PrivacyPolicyText": "隐私策略",
+      "bdc-create.AcceptTermsText": "我接受{0}和{1}。"
+    },
+    "nsions/big-data-cluster/out/wizards/create-cluster/pages/summaryPage": {
+      "bdc-create.summaryPageTitle": "摘要",
+      "bdc-create.TargetClusterTypeText": "群集类型",
+      "bdc-create.ClusterContextText": "群集上下文",
+      "bdc-create.ClusterNameText": "群集名称",
+      "bdc-create.ClusterAdminUsernameText": "群集管理员用户名",
+      "bdc-create.AcceptEulaText": "接受许可协议",
+      "bdc-create.DeploymentProfileText": "部署配置文件",
+      "bdc-create.SqlServerMasterScaleText": "SQL Server 主服务器规模",
+      "bdc-create.ComputePoolScaleText": "计算池规模",
+      "bdc-create.DataPoolScaleText": "数据池规模",
+      "bdc-create.StoragePoolScaleText": "存储池规模",
+      "bdc-create.SparkPoolScaleText": "Spark 池规模",
+      "bdc-create.TargetClusterGroupTitle": "目标集群",
+      "bdc-create.BigDataClusterGroupTitle": "SQL SERVER 大数据群集",
+      "bdc-create.YesText": "是"
+    },
+    "nsions/dacpac/out/wizard/dataTierApplicationWizard": {
+      "dacfx.needConnection": "请在使用此向导之前连接到服务器。",
+      "dacFx.selectOperationPageName": "选择操作",
+      "dacFx.deployConfigPageName": "选择“部署 Dacpac 设置”",
+      "dacFx.deployPlanPage": "查看部署计划",
+      "dacFx.deployActionPageName": "选择操作",
+      "dacFx.summaryPageName": "摘要",
+      "dacFx.extractConfigPageName": "选择“提取 Dacpac 设置”",
+      "dacFx.importConfigPageName": "选择“导入 Bacpac 设置”",
+      "dacFx.exportConfigPageName": "选择“导出 Bacpac 设置”",
+      "dacFx.deployButton": "部署",
+      "dacFx.extractButton": "提取",
+      "dacFx.importButton": "导入",
+      "dacFx.exportButton": "导出",
+      "dacFx.generateScriptButton": "生成脚本",
+      "alertData.deployErrorMessage": "部署失败的“{0}”",
+      "alertData.extractErrorMessage": "提取失败的“{0}”",
+      "alertData.exportErrorMessage": "导出失败的“{0}”",
+      "alertData.importErrorMessage": "导入失败的“{0}”",
+      "dacfx.scriptGeneratingMessage": "向导关闭后，可在“任务历史记录”中查看脚本生成的状态",
+      "alertData.deployPlanErrorMessage": "部署计划生成失败“{0}”"
+    },
+    "nsions/dacpac/out/wizard/api/dacFxConfigPage": {
+      "dacFx.targetServerDropdownTitle": "目标服务器",
+      "dacFx.sourceServerDropdownTitle": "源服务器",
+      "dacFx.databaseNameTextBox": "目标数据库",
+      "dacFx.sourceDatabaseDropdownTitle": "源数据库"
+    },
+    "nsions/dacpac/out/wizard/pages/dacFxSummaryPage": {
+      "dacfx.targetServerName": "目标服务器",
+      "dacfx.targetDatabaseName": "目标数据库",
+      "dacfx.sourceServerName": "源服务器",
+      "dacfx.sourceDatabaseName": "源数据库",
+      "dacfx.fileLocation": "文件位置",
+      "dacfx.scriptLocation": "部署脚本位置",
+      "dacfx.action": "操作",
+      "dacfx.deploy": "部署",
+      "dacfx.generateScript": "生成部署脚本",
+      "dacfxExtract.version": "版本",
+      "dacfx.settingColumn": "设置",
+      "dacfx.valueColumn": "值"
+    },
+    "nsions/dacpac/out/wizard/pages/deployActionPage": {
+      "dacFx.deployRadioButtonLabel": "部署",
+      "dacFx.deployScriptRadioButtonLabel": "生成部署脚本并进行部署",
+      "dacFx.scriptRadioButtonLabel": "生成部署脚本",
+      "dacfxDeployScript.saveFile": "保存",
+      "dacfx.generatedScriptLocation": "部署脚本位置"
+    },
+    "nsions/dacpac/out/wizard/pages/deployConfigPage": {
+      "dacFx.databaseNameTextBox": "数据库名称",
+      "dacFx.databaseNameDropdown": "数据库名称",
+      "dacFxDeploy.openFile": "打开",
+      "dacFxDeploy.fileTextboxTitle": "文件位置",
+      "dacFx.upgradeRadioButtonLabel": "升级现有数据库",
+      "dacFx.newRadioButtonLabel": "新数据库",
+      "dacFx.targetDatabaseRadioButtonsTitle": "目标数据库",
+      "dacFx.targetDatabaseDropdownTitle": "数据库名称"
+    },
+    "nsions/dacpac/out/wizard/pages/deployPlanPage": {
+      "dacfx.dataLossTextWithCount": "列出的部署操作的 {0} 可能会导致数据丢失。请确保在部署出现问题的情况下，你有备份或快照可用。",
+      "dacFx.dataLossCheckbox": "尽管可能会丢失数据，仍要继续",
+      "dacfx.noDataLossText": "列出的部署操作不会导致数据丢失。",
+      "dacfx.dataLossText": "部署操作可能会导致数据丢失。请确保在部署出现问题的情况下，你有备份或快照可用。",
+      "dacfx.operationColumn": "操作",
+      "dacfx.operationTooltip": "部署过程中将发生的操作(创建、更改、删除)",
+      "dacfx.typeColumn": "类型",
+      "dacfx.typeTooltip": "将受部署影响的对象类型",
+      "dacfx.objectColumn": "对象",
+      "dacfx.objecTooltip": "将受部署影响的对象的名称",
+      "dacfx.dataLossColumn": "数据丢失",
+      "dacfx.dataLossTooltip": "将对可能导致数据丢失的操作标记警告符号"
+    },
+    "nsions/dacpac/out/wizard/pages/exportConfigPage": {
+      "dacfxExport.saveFile": "保存",
+      "dacFxExport.fileTextboxTitle": "文件位置"
+    },
+    "nsions/dacpac/out/wizard/pages/extractConfigPage": {
+      "dacfxExtract.saveFile": "保存",
+      "dacFxExtract.fileTextboxTitle": "文件位置",
+      "dacFxExtract.versionTextboxTitle": "版本(采用 x.x.x.x 格式，x 表示数字)"
+    },
+    "nsions/dacpac/out/wizard/pages/importConfigPage": {
+      "dacFxImport.openFile": "打开",
+      "dacFxImport.fileTextboxTitle": "文件位置"
+    },
+    "nsions/dacpac/out/wizard/pages/selectOperationpage": {
+      "dacFx.deployRadioButtonLabel": "将数据层应用程序 .dacpac 文件部署到 SQL Server 的实例 [部署 Dacpac]",
+      "dacFx.extractRadioButtonLabel": "将数据层应用程序从 SQL Server 实例提取到 .dacpac 文件 [提取 Dacpac]",
+      "dacFx.importRadioButtonLabel": "基于 .bacpac 文件创建数据库 [导入 Bacpac]",
+      "dacFx.exportRadioButtonLabel": "将架构和数据从数据库导出到逻辑 .bacpac 文件格式 [导出 Bacpac]"
+    },
+    "nsions/import/out/services/serviceClient": {
+      "serviceStarted": "服务已启动",
+      "serviceStarting": "正在启动服务",
+      "flatFileImport.serviceStartFailed": "未能启动导入服务{0}",
+      "installingServiceDetailed": "正在将 {0} 服务安装到 {1}",
+      "installingService": "正在安装服务",
+      "serviceInstalled": "已安装",
+      "downloadingService": "正在下载 {0}",
+      "downloadingServiceStatus": "正在下载服务",
+      "downloadingServiceComplete": "完成！"
+    },
+    "sql/platform/telemetry/telemetry": {
+      "import.serviceCrashButton": "提供反馈",
+      "serviceCrashMessage": "服务组件无法启动"
+    },
+    "nsions/import/out/wizard/flatFileWizard": {
+      "import.needConnection": "请在使用此向导之前连接到服务器。",
+      "flatFileImport.wizardName": "导入平面文件向导",
+      "flatFileImport.page1Name": "指定输入文件",
+      "flatFileImport.page2Name": "预览数据",
+      "flatFileImport.page3Name": "修改列",
+      "flatFileImport.page4Name": "摘要",
+      "flatFileImport.importNewFile": "导入新文件"
+    },
+    "nsions/import/out/wizard/pages/fileConfigPage": {
+      "flatFileImport.serverDropdownTitle": "数据库所在的服务器",
+      "flatFileImport.databaseDropdownTitle": "创建表的数据库",
+      "flatFileImport.browseFiles": "浏览",
+      "flatFileImport.openFile": "打开",
+      "flatFileImport.fileTextboxTitle": "要导入的文件的位置",
+      "flatFileImport.tableTextboxTitle": "新建表名",
+      "flatFileImport.schemaTextboxTitle": "表架构"
+    },
+    "nsions/import/out/wizard/pages/modifyColumnsPage": {
+      "flatFileImport.importData": "导入数据",
+      "flatFileImport.next": "下一个",
+      "flatFileImport.columnName": "列名",
+      "flatFileImport.dataType": "数据类型",
+      "flatFileImport.primaryKey": "主键",
+      "flatFileImport.allowNulls": "允许 Null"
+    },
+    "nsions/import/out/wizard/pages/prosePreviewPage": {
+      "flatFileImport.refresh": "刷新",
+      "flatFileImport.prosePreviewMessage": "此操作已分析输入文件的结构以在下方生成前 50 行的预览。"
+    },
+    "nsions/import/out/wizard/pages/summaryPage": {
+      "flatFileImport.importInformation": "导入信息",
+      "flatFileImport.importStatus": "导入状态",
+      "flatFileImport.serverName": "服务器名称",
+      "flatFileImport.databaseName": "数据库名称",
+      "flatFileImport.tableName": "表名称",
+      "flatFileImport.tableSchema": "表架构",
+      "flatFileImport.fileImport": "要导入的文件",
+      "flatFileImport.success.norows": "✔已成功将数据插入表中。"
+    },
+    "nsions/profiler/client/out/dialogs/profilerCreateSessionDialog": {
+      "createSessionDialog.cancel": "取消",
+      "createSessionDialog.create": "启动",
+      "createSessionDialog.title": "启动新的探查器会话",
+      "createSessionDialog.templatesInvalid": "模板列表无效，无法打开对话框",
+      "createSessionDialog.dialogOwnerInvalid": "对话框所有者无效，无法打开对话框",
+      "createSessionDialog.invalidProviderType": "提供程序类型无效，无法打开对话框",
+      "createSessionDialog.selectTemplates": "选择会话模板:",
+      "createSessionDialog.enterSessionName": "输入会话名称:"
+    },
+    "sql/base/parts/editableDropdown/browser/actions": {
       "dropdownAction.toggle": "切换下拉列表"
     },
-    "sql/base/browser/ui/editableDropdown/dropdown": {
+    "sql/base/parts/editableDropdown/browser/dropdown": {
       "editableDropdown.errorValidate": "必须是列表中的选项",
       "dropdownAction.toggle": "切换下拉列表"
     },
-    "sql/workbench/browser/modal/media/optionsDialog": {
+    "sql/workbench/browser/modal/optionsDialog": {
       "optionsDialog.ok": "确定"
     },
-    "sql/base/browser/ui/modal/webViewDialog": {
+    "sql/workbench/parts/webview/electron-browser/webViewDialog": {
       "webViewDialog.ok": "确定"
     },
     "sql/base/browser/ui/panel/tabActions": {
@@ -6037,7 +6644,7 @@
       "firewallDialog.addAccountErrorTitle": "添加帐户时出错",
       "firewallRuleError": "防火墙规则错误"
     },
-    "sql/parts/admin/common/adminService": {
+    "sql/workbench/services/admin/common/adminService": {
       "adminService.providerIdNotValidError": "为了与 adminservice 交互, 需要连接"
     },
     "sql/parts/admin/database/create/createDatabase.component": {
@@ -6062,10 +6669,10 @@
       "connectionAction.connectionString": "连接字符串不可用",
       "connectionAction.noConnection": "没有可用的活动连接"
     },
-    "sql/parts/connection/common/connectionConfig": {
+    "sql/platform/connection/common/connectionConfig": {
       "invalidServerName": "已存在同名的服务器组。"
     },
-    "sql/parts/connection/common/connectionManagementService": {
+    "sql/platform/connection/common/connectionManagementService": {
       "connectionService.no": "否"
     },
     "sql/workbench/parts/connection/common/localizedConstants": {
@@ -6077,17 +6684,17 @@
       "connectionAdvancedProperties": "高级属性",
       "advancedProperties.discard": "放弃"
     },
-    "sql/workbench/services/connection/common/connectionDialogService": {
+    "sql/workbench/services/connection/browser/connectionDialogService": {
       "connectionError": "连接错误",
       "kerberosKinit": "&nbsp; 如果你之前已连接过, 可能需要重新运行 kinit。"
     },
-    "sql/parts/connection/connectionDialog/connectionDialogWidget": {
+    "sql/workbench/services/connection/browser/connectionDialogWidget": {
       "connection": "连接",
       "connectionDialog.connect": "连接",
       "clearRecentConnectionMessage": "确定要删除列表中的所有连接吗?",
       "connectionDialog.no": "否"
     },
-    "sql/parts/connection/connectionDialog/connectionWidget": {
+    "sql/workbench/services/connection/browser/connectionWidget": {
       "serverGroup": "服务器组",
       "advanced": "高级选项..."
     },
@@ -6318,7 +6925,7 @@
       "backup.containsBackupToUrlError": "只支持备份到文件",
       "backup.backupFileRequired": "备份文件路径是必需的"
     },
-    "sql/platform/connection/common/constants": {
+    "sql/workbench/parts/backup/common/constants": {
       "backup.labelDatabase": "数据库",
       "backup.labelFilegroup": "文件和文件组",
       "backup.labelFull": "完全",
@@ -6415,7 +7022,7 @@
       "copyChartLabel": "复制为图像",
       "saveImageLabel": "另存为图像"
     },
-    "sql/parts/insights/browser/insightsDialogView": {
+    "sql/workbench/services/insights/browser/insightsDialogView": {
       "property": "属性"
     },
     "sql/workbench/parts/jobManagement/electron-browser/agentView.component": {
@@ -6857,7 +7464,7 @@
       "changeDatabase.failed": "未能更改数据库",
       "changeDatabase.failedWithError": "未能更改数据库 {0}"
     },
-    "sql/parts/query/services/queryEditorService": {
+    "sql/workbench/services/queryEditor/browser/queryEditorService": {
       "queryEditorServiceChangeUnsupportedError": "未保存的查询不支持更改语言模式"
     },
     "sql/parts/query/views/queryOutput.component": {
@@ -6889,7 +7496,7 @@
       "topOperations.partitioned": "已分区",
       "topOperationsTitle": "顶部操作"
     },
-    "sql/parts/registeredServer/common/objectExplorerService": {
+    "sql/workbench/services/objectExplorer/common/objectExplorerService": {
       "OeSessionFailedError": "未能创建对象资源管理器会话"
     },
     "sql/parts/registeredServer/common/registeredServer.contribution": {
@@ -6931,16 +7538,6 @@
       "taskHistory.regTreeAriaLabel": "任务历史记录",
       "taskError": "任务错误"
     },
-    "sql/platform/connection/common/connectionConfig": {
-      "invalidServerName": "已存在同名的服务器组。"
-    },
-    "sql/platform/connection/common/connectionManagementService": {
-      "connection.noAzureAccount": "未能获取 Azure 帐户令牌用于连接",
-      "connectionNotAcceptedError": "连接未被接受",
-      "connectionService.yes": "是",
-      "connectionService.no": "否",
-      "cancelConnectionConfirmation": "确定要取消此连接吗？"
-    },
     "sql/platform/dacfx/common/dacFxService": {
       "providerIdNotValidError": "必须连接才能与 DacFxService 进行交互",
       "noHandlerRegistered": "未注册处理程序"
@@ -6974,10 +7571,6 @@
     "sql/platform/dialog/dialogTypes": {
       "dialogModalDoneButtonLabel": "已完成",
       "dialogModalCancelButtonLabel": "取消"
-    },
-    "sql/platform/fileBrowser/common/fileBrowserService": {
-      "fileBrowserErrorMessage": "加载文件浏览器时出错。",
-      "fileBrowserErrorDialogTitle": "文件浏览器错误"
     },
     "sql/platform/jobManagement/common/jobActions": {
       "jobaction.successLabel": "成功",
@@ -7050,36 +7643,10 @@
       "openLocation": "打开文件位置",
       "openFile": "打开文件"
     },
-    "sql/platform/query/common/queryModelService": {
-      "commitEditFailed": "未能提交行:",
-      "runQueryStringBatchStartMessage": "已开始执行查询“{0}”",
-      "updateCellFailed": "单元格更新失败:"
-    },
-    "sql/platform/query/common/queryRunner": {
-      "query.ExecutionFailedError": "由于意外错误，执行失败: {0} {1}",
-      "query.message.executionTime": "执行时间总计: {0}",
-      "query.message.startQuery": "已开始在第 {0} 行执行查询",
-      "query.initEditExecutionFailed": "初始化编辑失败：",
-      "elapsedBatchTime": "批处理执行时间: {0}"
-    },
     "sql/platform/taskHistory/common/taskService": {
       "InProgressWarning": "一个或多个任务正在运行中。确定要退出吗?",
       "taskService.yes": "是",
       "taskService.no": "否"
-    },
-    "sql/platform/theme/common/colors": {
-      "tableHeaderBackground": "表标题背景色",
-      "tableHeaderForeground": "表标题前景色",
-      "disabledInputBoxBackground": "已禁用输入框背景。",
-      "disabledInputBoxForeground": "已禁用输入框前景。",
-      "buttonFocusOutline": "按钮对焦时轮廓颜色。",
-      "disabledCheckboxforeground": "已禁用复选框前景。",
-      "listFocusAndSelectionBackground": "当列表/表处于活动状态时所选和焦点项的列表/表背景色",
-      "agentTableBackground": "sql 代理表背景色。",
-      "agentCellBackground": "SQL 代理表单元格的背景色。",
-      "agentTableHoverBackground": "SQL 代理表悬停背景颜色。",
-      "agentJobsHeadingColor": "sql 代理标题背景色。",
-      "agentCellBorderColor": "SQL 代理表单元格边框颜色。"
     },
     "sql/workbench/api/node/extHostModelView": {
       "unknownComponentType": "组件类型未知。必须使用 ModelBuilder 来创建对象",
@@ -7114,17 +7681,9 @@
       "closeMessage": "关闭",
       "modalBack": "上一步"
     },
-    "sql/workbench/browser/modal/optionsDialog": {
+    "sql/workbench/browser/modal/media/optionsDialog": {
       "optionsDialog.ok": "确定",
       "optionsDialog.cancel": "取消"
-    },
-    "sql/workbench/browser/modal/optionsDialogHelper": {
-      "optionsDialog.missingRequireField": "是必需的。",
-      "optionsDialog.invalidInput": "输入无效。应为数值。"
-    },
-    "sql/workbench/browser/parts/views/customView": {
-      "no-dataprovider": "当前没有可提供视图数据的提供来源进行注册。",
-      "collapse": "折叠"
     },
     "sql/workbench/common/actions.contribution": {
       "previewFeatures.configTitle": "预览功能",
@@ -7165,10 +7724,10 @@
       "enablePreviewFeatures.no": "否",
       "enablePreviewFeatures.never": "否，不再显示"
     },
-    "sql/workbench/services/errorMessage/browser/errorMessageDialog": {
+    "sql/workbench/services/errorMessage/browser/media/errorMessageDialog": {
       "errorMessageDialog.ok": "确定"
     },
-    "sql/platform/errorMessage/common/errorMessageService": {
+    "sql/workbench/services/errorMessage/browser/errorMessageService": {
       "error": "错误",
       "info": "信息"
     },
@@ -7216,62 +7775,29 @@
       "manage": "管理",
       "refresh": "刷新"
     },
-    "sql/workbench/services/admin/common/adminService": {
-      "adminService.providerIdNotValidError": "需要连接才能与 adminservice 交互",
-      "adminService.noHandlerRegistered": "未注册处理程序"
-    },
     "sql/workbench/services/commandLine/common/commandLineService": {
       "connectingLabel": "正在连接:",
       "runningCommandLabel": "正在运行命令:",
       "openingNewQueryLabel": "正在打开新查询:"
     },
-    "sql/workbench/services/connection/browser/connectionDialogService": {
+    "sql/workbench/services/connection/common/connectionDialogService": {
       "connectionError": "连接错误",
       "kerberosErrorStart": "由于 Kerberos 错误，连接失败。",
       "kerberosHelpLink": "可在 {0} 处获取有关配置 Kerberos 的帮助",
       "kerberosKinit": "如果之前已连接过，则可能需要重新运行 kinit。"
     },
-    "sql/workbench/services/connection/browser/connectionDialogWidget": {
-      "connection": "连接",
-      "connectType": "连接类型",
-      "recentConnectionTitle": "最新连接",
-      "savedConnectionTitle": "已保存连接",
-      "connectionDetailsTitle": "连接详细信息",
-      "connectionDialog.connect": "连接",
-      "connectionDialog.cancel": "取消",
-      "noRecentConnections": "没有最新连接",
-      "noSavedConnections": "没有保存的连接"
-    },
-    "sql/workbench/services/connection/browser/connectionWidget": {
-      "connectionWidget.AddAzureAccount": "添加帐户...",
-      "defaultDatabaseOption": "<默认值>",
-      "loadingDatabaseOption": "正在加载...",
-      "serverGroup": "服务器组",
-      "defaultServerGroup": "<默认值>",
-      "addNewServerGroup": "添加新组…",
-      "noneServerGroup": "<不保存>",
-      "connectionWidget.missingRequireField": "{0} 是必需的。",
-      "connectionWidget.fieldWillBeTrimmed": "将修剪 {0}。",
-      "rememberPassword": "记住密码",
-      "connection.azureAccountDropdownLabel": "帐户",
-      "connectionWidget.refreshAzureCredentials": "刷新帐户凭据",
-      "connection.azureTenantDropdownLabel": "Azure AD 租户",
-      "connectionWidget.toggleDatabaseNameDropdown": "“选择数据库”切换下拉列表",
-      "advanced": "高级...",
-      "connectionWidget.invalidAzureAccount": "必须选择一个帐户"
-    },
-    "sql/workbench/services/dashboard/common/newDashboardTabDialog": {
+    "sql/workbench/services/dashboard/browser/media/newDashboardTabDialog": {
       "newDashboardTab.openDashboardExtensions": "打开仪表板扩展",
       "newDashboardTab.ok": "确定",
       "newDashboardTab.cancel": "取消",
       "newdashboardTabDialog.noExtensionLabel": "当前未安装仪表板扩展。转到扩展管理器以查看推荐的扩展。"
     },
-    "sql/workbench/services/errorMessage/browser/media/errorMessageDialog": {
+    "sql/workbench/services/errorMessage/browser/errorMessageDialog": {
       "errorMessageDialog.ok": "确定",
       "errorMessageDialog.close": "关闭",
       "copyDetails": "复制详细信息"
     },
-    "sql/workbench/services/errorMessage/browser/errorMessageService": {
+    "sql/platform/errorMessage/common/errorMessageService": {
       "error": "错误",
       "warning": "警告",
       "info": "信息"
@@ -7284,33 +7810,6 @@
     },
     "sql/workbench/services/fileBrowser/common/fileBrowserDialogController": {
       "filebrowser.selectFile": "选择文件"
-    },
-    "sql/workbench/services/fileBrowser/browser/fileBrowserTreeView": {
-      "fileBrowser.regTreeAriaLabel": "文件浏览器树"
-    },
-    "sql/workbench/services/fileBrowser/common/fileBrowserViewModel": {
-      "allFiles": "所有文件"
-    },
-    "sql/workbench/services/insights/browser/insightsDialogView": {
-      "insights.item": "项目",
-      "insights.value": "值",
-      "property": "属性",
-      "value": "值",
-      "InsightsDialogTitle": "见解",
-      "insights.dialog.items": "项目",
-      "insights.dialog.itemDetails": "项目详细信息"
-    },
-    "sql/workbench/services/insights/common/insightDialogActions": {
-      "workbench.action.insights.copySelection": "复制单元格"
-    },
-    "sql/workbench/services/insights/common/insightsUtils": {
-      "insightsDidNotFindResolvedFile": "在下述所有路径中都找不到查询文件:\r\n {0}"
-    },
-    "sql/workbench/services/insights/node/insightsDialogController": {
-      "insightsInputError": "未将连接配置文件传递给见解弹出窗口",
-      "insightsError": "见解错误",
-      "insightsFileError": "读取查询文件时出错:",
-      "insightsConfigError": "分析见解配置时出错；找不到查询数组/字符串或查询文件"
     },
     "sql/workbench/services/notebook/common/notebookRegistry": {
       "carbon.extension.contributes.notebook.provider": "笔记本提供程序的标识符。",
@@ -7344,10 +7843,6 @@
       "sqlKernelError": "SQL 内核错误",
       "connectionRequired": "必须选择连接才能运行笔记本单元",
       "sqlMaxRowsDisplayed": "正在显示前 {0} 行。"
-    },
-    "sql/workbench/services/objectExplorer/common/objectExplorerService": {
-      "OeSessionFailedError": "未能创建对象资源管理器会话",
-      "nodeExpansionError": "多个错误:"
     },
     "sql/workbench/services/queryEditor/common/queryEditorService": {
       "queryEditorServiceChangeUnsupportedError": "未保存的查询不支持更改语言模式",

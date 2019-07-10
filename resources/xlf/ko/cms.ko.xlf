@@ -4,11 +4,11 @@
     <body>
       <trans-unit id="cms.displayName">
         <source xml:lang="en">SQL Server Central Management Servers</source>
-        <target state="new">SQL Server Central Management Servers</target>
+        <target state="translated">SQL Server 중앙 관리 서버</target>
       </trans-unit>
       <trans-unit id="cms.description">
         <source xml:lang="en">Support for managing SQL Server Central Management Servers</source>
-        <target state="new">Support for managing SQL Server Central Management Servers</target>
+        <target state="translated">SQL Server 중앙 관리 서버 관리 지원</target>
       </trans-unit>
       <trans-unit id="cms.title">
         <source xml:lang="en">Central Management Servers</source>
@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="cms.resource.refreshServerGroup.title">
         <source xml:lang="en">Refresh Server Group</source>
-        <target state="new">Refresh Server Group</target>
+        <target state="translated">서버 그룹 새로 고침</target>
       </trans-unit>
       <trans-unit id="cms.resource.deleteRegisteredServer.title">
         <source xml:lang="en">Delete</source>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="cms.resource.addRegisteredServer.title">
         <source xml:lang="en">New Server Registration...</source>
-        <target state="new">New Server Registration...</target>
+        <target state="translated">새 서버 등록...</target>
       </trans-unit>
       <trans-unit id="cms.resource.deleteServerGroup.title">
         <source xml:lang="en">Delete</source>
@@ -44,11 +44,11 @@
       </trans-unit>
       <trans-unit id="cms.resource.addServerGroup.title">
         <source xml:lang="en">New Server Group...</source>
-        <target state="new">New Server Group...</target>
+        <target state="translated">새 서버 그룹...</target>
       </trans-unit>
       <trans-unit id="cms.resource.registerCmsServer.title">
         <source xml:lang="en">Add Central Management Server</source>
-        <target state="new">Add Central Management Server</target>
+        <target state="translated">중앙 관리 서버 추가</target>
       </trans-unit>
       <trans-unit id="cms.resource.deleteCmsServer.title">
         <source xml:lang="en">Delete</source>
@@ -56,7 +56,7 @@
       </trans-unit>
       <trans-unit id="cms.configuration.title">
         <source xml:lang="en">MSSQL configuration</source>
-        <target state="new">MSSQL configuration</target>
+        <target state="translated">MSSQL 구성</target>
       </trans-unit>
       <trans-unit id="cms.query.displayBitAsNumber">
         <source xml:lang="en">Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'</source>
@@ -84,23 +84,23 @@
       </trans-unit>
       <trans-unit id="cms.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="new">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</target>
+        <target state="translated">[선택 사항] 디버그 출력을 콘솔에 로그한 다음([보기] -&gt; [출력]) 드롭다운에서 적절한 출력 채널을 선택합니다.</target>
       </trans-unit>
       <trans-unit id="cms.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="new">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</target>
+        <target state="translated">[선택 사항] 백 엔드 서비스의 로그 수준입니다. Azure Data Studio는 시작할 때마다 파일 이름을 생성하며 파일이 이미 있으면 로그 항목이 해당 파일에 추가됩니다. 이전 로그 파일을 정리하려면 logRetentionMinutes 및 logFilesRemovalLimit 설정을 참조하세요. 기본 tracingLevel에서는 많이 기록되지 않습니다. 세부 정보 표시를 변경하면 로깅이 광범위해지고 로그의 디스크 공간 요구 사항이 커질 수 있습니다. 오류이면 중요가 포함되고 경고이면 오류가 포함되고 정보이면 경고가 포함되고 자세한 정보 표시이면 정보가 포함됩니다.</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="new">Number of minutes to retain log files for backend services. Default is 1 week.</target>
+        <target state="translated">백 엔드 서비스의 로그 파일을 유지하는 시간(분)입니다. 기본값은 1주일입니다.</target>
       </trans-unit>
       <trans-unit id="cms.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
-        <target state="new">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</target>
+        <target state="translated">시작 시 제거할 mssql.logRetentionMinutes가 만료된 이전 파일의 최대 수입니다. 이 제한으로 인해 정리되지 않은 파일은 다음에 Azure Data Studio를 시작할 때 정리됩니다.</target>
       </trans-unit>
       <trans-unit id="ignorePlatformWarning">
         <source xml:lang="en">[Optional] Do not show unsupported platform warnings</source>
-        <target state="new">[Optional] Do not show unsupported platform warnings</target>
+        <target state="translated">[선택 사항] 지원되지 않는 플랫폼 경고 표시 안 함</target>
       </trans-unit>
       <trans-unit id="onprem.databaseProperties.recoveryModel">
         <source xml:lang="en">Recovery Model</source>
@@ -144,7 +144,7 @@
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.serviceLevelObjective">
         <source xml:lang="en">Pricing Tier</source>
-        <target state="new">Pricing Tier</target>
+        <target state="translated">가격 책정 계층</target>
       </trans-unit>
       <trans-unit id="cloud.databaseProperties.compatibilityLevel">
         <source xml:lang="en">Compatibility Level</source>
@@ -168,11 +168,11 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectionName.displayName">
         <source xml:lang="en">Name (optional)</source>
-        <target state="new">Name (optional)</target>
+        <target state="translated">이름(선택 사항)</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectionName.description">
         <source xml:lang="en">Custom name of the connection</source>
-        <target state="new">Custom name of the connection</target>
+        <target state="translated">연결의 사용자 지정 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.serverName.displayName">
         <source xml:lang="en">Server</source>
@@ -180,15 +180,15 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.serverName.description">
         <source xml:lang="en">Name of the SQL Server instance</source>
-        <target state="new">Name of the SQL Server instance</target>
+        <target state="translated">SQL Server 인스턴스의 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.displayName">
         <source xml:lang="en">Server Description</source>
-        <target state="new">Server Description</target>
+        <target state="translated">서버 설명</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.serverDescription.description">
         <source xml:lang="en">Description of the SQL Server instance</source>
-        <target state="new">Description of the SQL Server instance</target>
+        <target state="translated">SQL Server 인스턴스에 대한 설명</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.displayName">
         <source xml:lang="en">Authentication type</source>
@@ -196,7 +196,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.description">
         <source xml:lang="en">Specifies the method of authenticating with SQL Server</source>
-        <target state="new">Specifies the method of authenticating with SQL Server</target>
+        <target state="translated">SQL Server로 인증하는 방법을 지정합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.sqlLogin">
         <source xml:lang="en">SQL Login</source>
@@ -208,7 +208,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.authType.categoryValues.azureMFA">
         <source xml:lang="en">Azure Active Directory - Universal with MFA support</source>
-        <target state="new">Azure Active Directory - Universal with MFA support</target>
+        <target state="translated">Azure Active Directory - MFA 지원을 포함한 유니버설</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.userName.displayName">
         <source xml:lang="en">User name</source>
@@ -216,7 +216,7 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.userName.description">
         <source xml:lang="en">Indicates the user ID to be used when connecting to the data source</source>
-        <target state="new">Indicates the user ID to be used when connecting to the data source</target>
+        <target state="translated">데이터 소스에 연결할 때 사용할 사용자 ID를 나타냅니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.password.displayName">
         <source xml:lang="en">Password</source>
@@ -224,107 +224,107 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.password.description">
         <source xml:lang="en">Indicates the password to be used when connecting to the data source</source>
-        <target state="new">Indicates the password to be used when connecting to the data source</target>
+        <target state="translated">데이터 소스에 연결할 때 사용할 암호를 나타냅니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationIntent.displayName">
         <source xml:lang="en">Application intent</source>
-        <target state="new">Application intent</target>
+        <target state="translated">애플리케이션 의도</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationIntent.description">
         <source xml:lang="en">Declares the application workload type when connecting to a server</source>
-        <target state="new">Declares the application workload type when connecting to a server</target>
+        <target state="translated">서버에 연결할 때 애플리케이션 워크로드 유형을 선언합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.asynchronousProcessing.displayName">
         <source xml:lang="en">Asynchronous processing</source>
-        <target state="new">Asynchronous processing</target>
+        <target state="translated">비동기 처리</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.asynchronousProcessing.description">
         <source xml:lang="en">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</source>
-        <target state="new">When true, enables usage of the Asynchronous functionality in the .Net Framework Data Provider</target>
+        <target state="translated">true이면 .Net Framework 데이터 공급자에서 비동기 기능을 사용하도록 설정합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectTimeout.displayName">
         <source xml:lang="en">Connect timeout</source>
-        <target state="new">Connect timeout</target>
+        <target state="translated">연결 시간 제한</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectTimeout.description">
         <source xml:lang="en">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</source>
-        <target state="new">The length of time (in seconds) to wait for a connection to the server before terminating the attempt and generating an error</target>
+        <target state="translated">시도를 종료하고 오류를 생성하기 전에 서버의 연결을 기다리는 시간(초)입니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.currentLanguage.displayName">
         <source xml:lang="en">Current language</source>
-        <target state="new">Current language</target>
+        <target state="translated">현재 언어</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.currentLanguage.description">
         <source xml:lang="en">The SQL Server language record name</source>
-        <target state="new">The SQL Server language record name</target>
+        <target state="translated">SQL Server 언어 레코드 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.displayName">
         <source xml:lang="en">Column encryption</source>
-        <target state="new">Column encryption</target>
+        <target state="translated">열 암호화</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.columnEncryptionSetting.description">
         <source xml:lang="en">Default column encryption setting for all the commands on the connection</source>
-        <target state="new">Default column encryption setting for all the commands on the connection</target>
+        <target state="translated">연결의 모든 명령에 대한 기본 열 암호화 설정</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.displayName">
         <source xml:lang="en">Encrypt</source>
-        <target state="new">Encrypt</target>
+        <target state="translated">암호화</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.encrypt.description">
         <source xml:lang="en">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</source>
-        <target state="new">When true, SQL Server uses SSL encryption for all data sent between the client and server if the server has a certificate installed</target>
+        <target state="translated">true이면 SQL Server는 서버에 인증서가 설치된 경우 클라이언트와 서버 간에 전송되는 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.persistSecurityInfo.displayName">
         <source xml:lang="en">Persist security info</source>
-        <target state="new">Persist security info</target>
+        <target state="translated">보안 정보 유지</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.persistSecurityInfo.description">
         <source xml:lang="en">When false, security-sensitive information, such as the password, is not returned as part of the connection</source>
-        <target state="new">When false, security-sensitive information, such as the password, is not returned as part of the connection</target>
+        <target state="translated">false이면 암호와 같이 보안에 민감한 정보는 연결의 일부로 반환되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.displayName">
         <source xml:lang="en">Trust server certificate</source>
-        <target state="new">Trust server certificate</target>
+        <target state="translated">서버 인증서 신뢰</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.trustServerCertificate.description">
         <source xml:lang="en">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</source>
-        <target state="new">When true (and encrypt=true), SQL Server uses SSL encryption for all data sent between the client and server without validating the server certificate</target>
+        <target state="translated">true(및 encrypt=true)이면 SQL Server는 서버 인증서의 유효성을 검사하지 않고 클라이언트와 서버 간에 전송되는 모든 데이터에 대해 SSL 암호화를 사용합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachedDBFileName.displayName">
         <source xml:lang="en">Attached DB file name</source>
-        <target state="new">Attached DB file name</target>
+        <target state="translated">연결된 DB 파일 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachedDBFileName.description">
         <source xml:lang="en">The name of the primary file, including the full path name, of an attachable database</source>
-        <target state="new">The name of the primary file, including the full path name, of an attachable database</target>
+        <target state="translated">연결 가능한 데이터베이스의 전체 경로 이름을 포함한 기본 파일의 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.contextConnection.displayName">
         <source xml:lang="en">Context connection</source>
-        <target state="new">Context connection</target>
+        <target state="translated">컨텍스트 연결</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.contextConnection.description">
         <source xml:lang="en">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</source>
-        <target state="new">When true, indicates the connection should be from the SQL server context. Available only when running in the SQL Server process</target>
+        <target state="translated">true이면 SQL 서버 컨텍스트에서 연결해야 한다는 것을 나타냅니다. SQL Server 프로세스에서 실행 중인 경우에만 사용 가능</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.port.displayName">
         <source xml:lang="en">Port</source>
-        <target state="new">Port</target>
+        <target state="translated">포트</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryCount.displayName">
         <source xml:lang="en">Connect retry count</source>
-        <target state="new">Connect retry count</target>
+        <target state="translated">연결 다시 시도 횟수</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryCount.description">
         <source xml:lang="en">Number of attempts to restore connection</source>
-        <target state="new">Number of attempts to restore connection</target>
+        <target state="translated">연결을 복원하려는 시도 횟수</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryInterval.displayName">
         <source xml:lang="en">Connect retry interval</source>
-        <target state="new">Connect retry interval</target>
+        <target state="translated">연결 다시 시도 간격</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.connectRetryInterval.description">
         <source xml:lang="en">Delay between attempts to restore connection</source>
-        <target state="new">Delay between attempts to restore connection</target>
+        <target state="translated">연결을 복원하려는 시도 간 지연</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationName.displayName">
         <source xml:lang="en">Application name</source>
@@ -332,47 +332,47 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.applicationName.description">
         <source xml:lang="en">The name of the application</source>
-        <target state="new">The name of the application</target>
+        <target state="translated">애플리케이션의 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.workstationId.displayName">
         <source xml:lang="en">Workstation Id</source>
-        <target state="new">Workstation Id</target>
+        <target state="translated">워크스테이션 ID</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.workstationId.description">
         <source xml:lang="en">The name of the workstation connecting to SQL Server</source>
-        <target state="new">The name of the workstation connecting to SQL Server</target>
+        <target state="translated">SQL Server에 연결하는 워크스테이션의 이름</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.pooling.displayName">
         <source xml:lang="en">Pooling</source>
-        <target state="new">Pooling</target>
+        <target state="translated">풀링</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.pooling.description">
         <source xml:lang="en">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</source>
-        <target state="new">When true, the connection object is drawn from the appropriate pool, or if necessary, is created and added to the appropriate pool</target>
+        <target state="translated">true이면 연결 개체를 적절한 풀에서 가져오거나 필요한 경우 만들어서 적당한 풀에 추가합니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.maxPoolSize.displayName">
         <source xml:lang="en">Max pool size</source>
-        <target state="new">Max pool size</target>
+        <target state="translated">최대 풀 크기</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.maxPoolSize.description">
         <source xml:lang="en">The maximum number of connections allowed in the pool</source>
-        <target state="new">The maximum number of connections allowed in the pool</target>
+        <target state="translated">풀에서 허용되는 최대 연결 수</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.minPoolSize.displayName">
         <source xml:lang="en">Min pool size</source>
-        <target state="new">Min pool size</target>
+        <target state="translated">최소 풀 크기</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.minPoolSize.description">
         <source xml:lang="en">The minimum number of connections allowed in the pool</source>
-        <target state="new">The minimum number of connections allowed in the pool</target>
+        <target state="translated">풀에서 허용되는 최소 연결 수</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.loadBalanceTimeout.displayName">
         <source xml:lang="en">Load balance timeout</source>
-        <target state="new">Load balance timeout</target>
+        <target state="translated">부하 분산 시간 제한</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.loadBalanceTimeout.description">
         <source xml:lang="en">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</source>
-        <target state="new">The minimum amount of time (in seconds) for this connection to live in the pool before being destroyed</target>
+        <target state="translated">이 연결이 삭제되기 전에 풀에 유지되는 최소 시간(초)입니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.replication.displayName">
         <source xml:lang="en">Replication</source>
@@ -380,47 +380,47 @@
       </trans-unit>
       <trans-unit id="cms.connectionOptions.replication.description">
         <source xml:lang="en">Used by SQL Server in Replication</source>
-        <target state="new">Used by SQL Server in Replication</target>
+        <target state="translated">복제에서 SQL Server가 사용</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.attachDbFilename.displayName">
         <source xml:lang="en">Attach DB filename</source>
-        <target state="new">Attach DB filename</target>
+        <target state="translated">DB 파일 이름 연결</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.failoverPartner.displayName">
         <source xml:lang="en">Failover partner</source>
-        <target state="new">Failover partner</target>
+        <target state="translated">장애 조치(Failover) 파트너</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.failoverPartner.description">
         <source xml:lang="en">The name or network address of the instance of SQL Server that acts as a failover partner</source>
-        <target state="new">The name or network address of the instance of SQL Server that acts as a failover partner</target>
+        <target state="translated">장애 조치(failover) 파트너역할을 하는 SQL Server 인스턴스의 이름 또는 네트워크 주소</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.multiSubnetFailover.displayName">
         <source xml:lang="en">Multi subnet failover</source>
-        <target state="new">Multi subnet failover</target>
+        <target state="translated">다중 서브넷 장애 조치(failover)</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.multipleActiveResultSets.displayName">
         <source xml:lang="en">Multiple active result sets</source>
-        <target state="new">Multiple active result sets</target>
+        <target state="translated">여러 개의 활성 결과 집합</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.multipleActiveResultSets.description">
         <source xml:lang="en">When true, multiple result sets can be returned and read from one connection</source>
-        <target state="new">When true, multiple result sets can be returned and read from one connection</target>
+        <target state="translated">true이면 하나의 연결에서 여러 결과 집합을 반환하고 읽을 수 있습니다.</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.packetSize.displayName">
         <source xml:lang="en">Packet size</source>
-        <target state="new">Packet size</target>
+        <target state="translated">패킷 크기</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.packetSize.description">
         <source xml:lang="en">Size in bytes of the network packets used to communicate with an instance of SQL Server</source>
-        <target state="new">Size in bytes of the network packets used to communicate with an instance of SQL Server</target>
+        <target state="translated">SQL Server 인스턴스와 통신하는 데 사용되는 네트워크 패킷의 크기(바이트)</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.typeSystemVersion.displayName">
         <source xml:lang="en">Type system version</source>
-        <target state="new">Type system version</target>
+        <target state="translated">형식 시스템 버전</target>
       </trans-unit>
       <trans-unit id="cms.connectionOptions.typeSystemVersion.description">
         <source xml:lang="en">Indicates which server type system then provider will expose through the DataReader</source>
-        <target state="new">Indicates which server type system then provider will expose through the DataReader</target>
+        <target state="translated">공급자가 DataReader를 통해 노출할 서버 유형 시스템을 나타냅니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -436,11 +436,11 @@
     <body>
       <trans-unit id="cms.errors.expandCmsFail">
         <source xml:lang="en">The Central Management Server {0} could not be found or is offline</source>
-        <target state="new">The Central Management Server {0} could not be found or is offline</target>
+        <target state="translated">중앙 관리 서버 {0}이(가) 찾을 수 없거나 오프라인 상태입니다.</target>
       </trans-unit>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
-        <target state="new">No resources found</target>
+        <target state="translated">리소스를 찾을 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -448,7 +448,7 @@
     <body>
       <trans-unit id="cms.resource.tree.CmsTreeNode.addCmsServerLabel">
         <source xml:lang="en">Add Central Management Server...</source>
-        <target state="new">Add Central Management Server...</target>
+        <target state="translated">중앙 관리 서버 추가...</target>
       </trans-unit>
     </body>
   </file>
@@ -456,15 +456,15 @@
     <body>
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
-        <target state="new">Central Management Server Group already has a Registered Server with the name {0}</target>
+        <target state="translated">중앙 관리 서버 그룹에 이름이 {0}인 등록된 서버가 이미 있습니다.</target>
       </trans-unit>
       <trans-unit id="cms.errors.addRegisterServerFail">
         <source xml:lang="en">Could not add the Registered Server {0}</source>
-        <target state="new">Could not add the Registered Server {0}</target>
+        <target state="translated">등록된 서버 {0}을(를) 추가할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="new">Are you sure you want to delete</target>
+        <target state="translated">삭제하시겠습니까?</target>
       </trans-unit>
       <trans-unit id="cms.yes">
         <source xml:lang="en">Yes</source>
@@ -492,15 +492,15 @@
       </trans-unit>
       <trans-unit id="cms.ServerGroupDescription">
         <source xml:lang="en">Server Group Description</source>
-        <target state="new">Server Group Description</target>
+        <target state="translated">서버 그룹 설명</target>
       </trans-unit>
       <trans-unit id="cms.errors.sameServerGroupName">
         <source xml:lang="en">{0} already has a Server Group with the name {1}</source>
-        <target state="new">{0} already has a Server Group with the name {1}</target>
+        <target state="translated">{0}에 이름이 {1}인 서버 그룹이 이미 있습니다.</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteGroup">
         <source xml:lang="en">Are you sure you want to delete</source>
-        <target state="new">Are you sure you want to delete</target>
+        <target state="translated">삭제하시겠습니까?</target>
       </trans-unit>
     </body>
   </file>
@@ -508,7 +508,7 @@
     <body>
       <trans-unit id="cms.errors.sameServerUnderCms">
         <source xml:lang="en">You cannot add a shared registered server with the same name as the Configuration Server</source>
-        <target state="new">You cannot add a shared registered server with the same name as the Configuration Server</target>
+        <target state="translated">구성 서버와 이름이 같은 등록된 공유 서버를 추가할 수 없습니다.</target>
       </trans-unit>
     </body>
   </file>
