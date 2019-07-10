@@ -5,19 +5,27 @@
 
 import { Directive, Inject, HostListener, Input } from '@angular/core';
 
+import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import product from 'vs/platform/product/node/product';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 
 const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', `${product.urlProtocol}`, 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
 @Directive({
 	selector: '[link-handler]',
 })
 export class LinkHandlerDirective {
-
+	private workbenchFilePath: URI;
 	@Input() isTrusted: boolean;
-	constructor(@Inject(IOpenerService) private readonly openerService: IOpenerService) {
+	@Input() notebookUri: URI;
+
+	constructor(
+		@Inject(IOpenerService) private readonly openerService: IOpenerService,
+		@Inject(INotebookService) private readonly notebookService: INotebookService
+	) {
+		this.workbenchFilePath = URI.parse(require.toUrl('vs/code/electron-browser/workbench/workbench.html'));
 	}
 
 	@HostListener('click', ['$event'])
@@ -52,7 +60,11 @@ export class LinkHandlerDirective {
 			// ignore
 		}
 		if (uri && this.openerService && this.isSupportedLink(uri)) {
-			this.openerService.open(uri).catch(onUnexpectedError);
+			if (uri.fragment && uri.fragment.length > 0 && uri.path === this.workbenchFilePath.path) {
+				this.notebookService.navigateTo(this.notebookUri, uri.fragment);
+			} else {
+				this.openerService.open(uri).catch(onUnexpectedError);
+			}
 		}
 	}
 

@@ -21,7 +21,7 @@
 	"bdc-create.FeatureSetLabel": "功能集",
 	"bdc-create.EngineOnlyText": "僅限引擎",
 	"bdc-create.EngineWithFeaturesText": "具有選用功能的引擎",
-	"bdc-create.SQLServerMasterDisplayName": "SQL Server 主機",
+	"bdc-create.SQLServerMasterDisplayName": "SQL 伺服器主機",
 	"bdc-create.ComputePoolDisplayName": "計算集區",
 	"bdc-create.DataPoolDisplayName": "資料集區",
 	"bdc-create.StoragePoolDisplayName": "儲存體集區",

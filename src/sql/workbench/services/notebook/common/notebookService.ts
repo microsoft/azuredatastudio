@@ -97,6 +97,12 @@ export interface INotebookService {
 	 */
 	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType): void;
 
+	/**
+	 *
+	 * @param notebookUri URI of the notebook to navigate to
+	 * @param sectionId ID of the section to navigate to
+	 */
+	navigateTo(notebookUri: URI, sectionId: string): void;
 }
 
 export interface INotebookProvider {
@@ -124,6 +130,15 @@ export interface INotebookParams extends IBootstrapParams {
 	modelFactory?: ModelFactory;
 }
 
+/**
+ * Defines a section in a notebook as the header text for that section,
+ * the relative URI that can be used to link to it inside Notebook documents
+ */
+export interface INotebookSection {
+	header: string;
+	relativeUri: string;
+}
+
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
@@ -138,4 +153,6 @@ export interface INotebookEditor {
 	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean>;
 	clearOutput(cell: ICellModel): Promise<boolean>;
 	clearAllOutputs(): Promise<boolean>;
+	getSections(): INotebookSection[];
+	navigateToSection(sectionId: string): void;
 }

@@ -619,4 +619,11 @@ export class NotebookService extends Disposable implements INotebookService {
 			}
 		}
 	}
+
+	navigateTo(notebookUri: URI, sectionId: string): void {
+		let editor = this._editors.get(notebookUri.toString());
+		if (editor) {
+			editor.navigateToSection(sectionId);
+		}
+	}
 }

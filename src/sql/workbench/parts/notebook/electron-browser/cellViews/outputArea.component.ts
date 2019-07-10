@@ -9,6 +9,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { URI } from 'vs/base/common/uri';
 
 export const OUTPUT_AREA_SELECTOR: string = 'output-area-component';
 
@@ -46,6 +47,10 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 
 	public get isTrusted(): boolean {
 		return this.cellModel.trustedMode;
+	}
+
+	public get notebookUri(): URI {
+		return this.cellModel.notebookModel.notebookUri;
 	}
 
 	private setFocusAndScroll(node: HTMLElement): void {

@@ -19,6 +19,6 @@
 	"bdc-create.StoragePoolScaleText": "儲存體集區調整",
 	"bdc-create.SparkPoolScaleText": "Spark 集區調整",
 	"bdc-create.TargetClusterGroupTitle": "目標叢集",
-	"bdc-create.BigDataClusterGroupTitle": "SQL SERVER 巨量資料叢集",
+	"bdc-create.BigDataClusterGroupTitle": "SQL Server 巨量資料叢集",
 	"bdc-create.YesText": "是"
 }

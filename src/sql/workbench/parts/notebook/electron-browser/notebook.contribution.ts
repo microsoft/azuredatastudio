@@ -53,7 +53,7 @@ configurationRegistry.registerConfiguration({
 	'properties': {
 		'notebook.useInProcMarkdown': {
 			'type': 'boolean',
-			'default': product.quality === 'stable' ? false : true,
+			'default': true,
 			'description': localize('notebook.inProcMarkdown', 'Use in-process markdown viewer to render text cells more quickly (Experimental).')
 		}
 	}

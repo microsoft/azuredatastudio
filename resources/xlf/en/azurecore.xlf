@@ -53,14 +53,14 @@
       <source xml:lang="en">Should Azure Germany integration be enabled</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext"><body>
-    <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-      <source xml:lang="en">SQL Databases</source>
-    </trans-unit>
-  </body></file>
   <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
       <source xml:lang="en">SQL Servers</source>
+    </trans-unit>
+  </body></file>
+  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" datatype="plaintext"><body>
+    <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
+      <source xml:lang="en">SQL Databases</source>
     </trans-unit>
   </body></file>
   <file original="extensions/azurecore/out/azureResource/tree/treeProvider" source-language="en" datatype="plaintext"><body>

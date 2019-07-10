@@ -13,5 +13,6 @@
 	"createSessionDialog.dialogOwnerInvalid": "Caixa de diálogo não pode ser aberta, proprietário inválido.",
 	"createSessionDialog.invalidProviderType": "Tipo inválido de provedor, não é possível abrir a caixa de diálogo",
 	"createSessionDialog.selectTemplates": "Selecione o modelo de sessão:",
-	"createSessionDialog.enterSessionName": "Digite o nome da sessão:"
+	"createSessionDialog.enterSessionName": "Digite o nome da sessão:",
+	"createSessionDialog.createSessionFailed": "Falha ao criar uma sessão"
 }

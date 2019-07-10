@@ -154,6 +154,10 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		return this.model.trustedMode;
 	}
 
+	public get notebookUri(): URI {
+		return this.model.notebookUri;
+	}
+
 	/**
 	 * Updates the preview of markdown component with latest changes
 	 * If content is empty and in non-edit mode, default it to 'Double-click to edit'
