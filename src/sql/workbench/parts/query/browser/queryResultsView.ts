@@ -117,41 +117,6 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.state = val;
 	}
 }
-
-class VisualizerView extends Disposable implements IPanelView {
-	private container = document.createElement('div');
-
-	constructor(private instantiationService: IInstantiationService) {
-		super();
-	}
-
-	render(container: HTMLElement): void {
-		container.appendChild(this.container);
-		//this.container.innerText += "Hello World!";
-	}
-
-	layout(dimension: DOM.Dimension): void {
-		this.container.style.width = `${dimension.width}px`;
-		this.container.style.height = `${dimension.height}px`;
-	}
-
-	focus(): void {
-	}
-
-	public clear() {
-	}
-
-	remove(): void {
-		this.container.remove();
-	}
-
-	public set queryRunner(runner: QueryRunner) {
-	}
-
-	public set state(val: GridPanelState) {
-	}
-}
-
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', 'Results');
 	public readonly identifier = 'resultsTab';
