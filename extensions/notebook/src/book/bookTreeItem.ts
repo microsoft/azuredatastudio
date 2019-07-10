@@ -5,15 +5,16 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 export class BookTreeItem extends vscode.TreeItem {
 	public sections: any[];
-	public uri?: string;
-	public previousUri?: string;
-	public nextUri?: string;
-	public command?: vscode.Command;
+	public uri: string;
+	public previousUri: string;
+	public nextUri: string;
+	public command: vscode.Command;
 
 	constructor(
 		public title: string,
@@ -44,8 +45,8 @@ export class BookTreeItem extends vscode.TreeItem {
 		this.uri = this.page.url;
 
 		let index = (this.tableOfContents.indexOf(this.page));
-		this.previousUri = index > 0 && index <= this.tableOfContents.length ? path.join(this.root, 'content', this.tableOfContents[index - 1].url.concat('.ipynb')) : undefined;
-		this.nextUri = index >= 0 && index < this.tableOfContents.length - 1 ? path.join(this.root, 'content', this.tableOfContents[index + 1].url.concat('.ipynb')) : undefined;
+		this.setPreviousUri(index);
+		this.setNextUri(index);
 	}
 
 	private setCommand() {
@@ -58,5 +59,37 @@ export class BookTreeItem extends vscode.TreeItem {
 		} else if (this.pageType === 'externalLink') {
 			this.command = { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', 'Open External Link'), arguments: [this.uri], };
 		}
+	}
+
+	private setPreviousUri(index: number): void {
+		let i = --index;
+		while (i > -1) {
+			if (this.tableOfContents[i].url) {
+				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
+				let pathToNotebook = path.join(this.root, 'content', this.tableOfContents[i].url.concat('.ipynb'));
+				if (fs.existsSync(pathToNotebook)) {
+					this.previousUri = pathToNotebook;
+					return;
+				}
+			}
+			i--;
+		}
+		return null;
+	}
+
+	private setNextUri(index: number): void {
+		let i = ++index;
+		while (i < this.tableOfContents.length) {
+			if (this.tableOfContents[i].url) {
+				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
+				let pathToNotebook = path.join(this.root, 'content', this.tableOfContents[i].url.concat('.ipynb'));
+				if (fs.existsSync(pathToNotebook)) {
+					this.nextUri = pathToNotebook;
+					return;
+				}
+			}
+			i++;
+		}
+		return null;
 	}
 }
