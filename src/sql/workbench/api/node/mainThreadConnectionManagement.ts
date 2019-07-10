@@ -56,6 +56,10 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		return Promise.resolve(this.convertConnection(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
 	}
 
+	public $getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile> {
+		return Promise.resolve(this.convertToConnectionProfile(TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._workbenchEditorService, true)));
+	}
+
 	public $getCredentials(connectionId: string): Thenable<{ [name: string]: string }> {
 		return Promise.resolve(this._connectionManagementService.getActiveConnectionCredentials(connectionId));
 	}
@@ -120,7 +124,7 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 		let connection: azdata.connection.Connection = {
 			providerName: profile.providerName,
 			connectionId: profile.id,
-			options: profile.options
+			options: deepClone(profile.options)
 		};
 		return connection;
 	}
