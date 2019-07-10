@@ -64,7 +64,7 @@ If you'd like to participate in the effort either to contribute translation or i
 
 ## License
 
-The source code and strings are licensed under the [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md) license.
+The source code and strings are licensed under the [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt).
 
 ## Credits
 
