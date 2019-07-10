@@ -1781,6 +1781,11 @@ declare module 'azdata' {
 		ownerUri: string;
 	}
 
+	export interface SchemaCompareObjectId {
+		nameParts: string[];
+		sqlObjectType: string;
+	}
+
 	export interface SchemaCompareOptionsResult extends ResultStatus {
 		defaultDeploymentOptions: DeploymentOptions;
 	}
@@ -1941,6 +1946,7 @@ declare module 'azdata' {
 		schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
 		schemaCompareGetDefaultOptions(): Thenable<SchemaCompareOptionsResult>;
 		schemaCompareIncludeExcludeNode(operationId: string, diffEntry: DiffEntry, IncludeRequest: boolean, taskExecutionMode: TaskExecutionMode): Thenable<ResultStatus>;
+		schemaCompareSaveScmp(sourceEndpointInfo: SchemaCompareEndpointInfo, targetEndpointInfo: SchemaCompareEndpointInfo, taskExecutionMode: TaskExecutionMode, deploymentOptions: DeploymentOptions, scmpFilePath: string, excludedSourceObjects: SchemaCompareObjectId[], excludedTargetObjects: SchemaCompareObjectId[]): Thenable<ResultStatus>;
 		schemaCompareCancel(operationId: string): Thenable<ResultStatus>;
 	}
 
