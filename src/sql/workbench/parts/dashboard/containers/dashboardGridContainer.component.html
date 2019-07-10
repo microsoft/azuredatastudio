@@ -4,7 +4,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div>
+<div class="fullsize" style="display: flex; flex-direction: column">
+	<div scrollable [horizontalScroll]="ScrollbarVisibility.Auto" [verticalScroll]="ScrollbarVisibility.Auto">
 	<table class="grid-table">
 		<tr *ngFor="let row of rows" class="grid-table-row">
 			<ng-container *ngFor="let col of cols">
@@ -28,4 +29,5 @@
 			</ng-container>
 		</tr>
 	</table>
+	</div>
 </div>
