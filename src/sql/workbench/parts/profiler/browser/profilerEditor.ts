@@ -336,6 +336,13 @@ export class ProfilerEditor extends BaseEditor {
 		tabbedPanelContainer.className = 'profiler-tabbedPane';
 		this._tabbedPanel = new TabbedPanel(tabbedPanelContainer);
 		attachTabbedPanelStyler(this._tabbedPanel, this.themeService);
+
+		const expandPanel = () => {
+			if (this._collapsedPanelAction.collapsed) {
+				this._collapsedPanelAction.run(this.input);
+			}
+		};
+
 		this._tabbedPanel.pushTab({
 			identifier: 'editor',
 			title: nls.localize('text', "Text"),
@@ -343,7 +350,8 @@ export class ProfilerEditor extends BaseEditor {
 				layout: dim => this._editor.layout(dim),
 				render: parent => parent.appendChild(editorContainer),
 				focus: () => this._editor.focus()
-			}
+			},
+			tabSelectedHandler: expandPanel
 		});
 
 		let detailTableContainer = document.createElement('div');
@@ -382,7 +390,8 @@ export class ProfilerEditor extends BaseEditor {
 				layout: dim => this._detailTable.layout(dim),
 				render: parent => parent.appendChild(detailTableContainer),
 				focus: () => this._detailTable.focus()
-			}
+			},
+			tabSelectedHandler: expandPanel
 		});
 
 		this._collapsedPanelAction = this._instantiationService.createInstance(Actions.ProfilerCollapsablePanelAction, Actions.ProfilerCollapsablePanelAction.ID, Actions.ProfilerCollapsablePanelAction.LABEL);
