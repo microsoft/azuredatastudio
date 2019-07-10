@@ -12,6 +12,7 @@ import { MessagePanelState } from 'sql/workbench/parts/query/browser/messagePane
 import { QueryPlanState } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
 import { ChartState } from 'sql/workbench/parts/charts/browser/chartView';
 import { TopOperationsState } from 'sql/workbench/parts/queryPlan/browser/topOperations';
+import { QueryModelViewState, QueryModelViewTab } from 'sql/workbench/parts/query/modelViewTab/queryModelViewTab';
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();
@@ -19,6 +20,8 @@ export class ResultsViewState {
 	public chartState: ChartState = new ChartState();
 	public queryPlanState: QueryPlanState = new QueryPlanState();
 	public topOperationsState = new TopOperationsState();
+	public dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
+
 	public activeTab: string;
 	public visibleTabs: Set<string> = new Set<string>();
 
@@ -27,6 +30,10 @@ export class ResultsViewState {
 		this.messagePanelState.dispose();
 		this.chartState.dispose();
 		this.queryPlanState.dispose();
+		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
+			state.dispose();
+		});
+		this.dynamicModelViewTabsState.clear();
 	}
 }
 
