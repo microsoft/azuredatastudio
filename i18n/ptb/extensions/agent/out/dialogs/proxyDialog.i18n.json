@@ -9,7 +9,7 @@
 	"createProxy.createProxy": "Criar proxy",
 	"createProxy.editProxy": "Editar proxy",
 	"createProxy.General": "Geral",
-	"createProxy.ProxyName": "Nome de proxy",
+	"createProxy.ProxyName": "Nome do proxy",
 	"createProxy.CredentialName": "Nome da credencial",
 	"createProxy.Description": "Descrição",
 	"createProxy.SubsystemName": "Subsistema",

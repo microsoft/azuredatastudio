@@ -19,6 +19,6 @@
 	"bdc-create.StoragePoolScaleText": "Mise à l'échelle du pool de stockage",
 	"bdc-create.SparkPoolScaleText": "Mise à l'échelle du pool Spark",
 	"bdc-create.TargetClusterGroupTitle": "CLUSTER CIBLE",
-	"bdc-create.BigDataClusterGroupTitle": "CLUSTER SQL SERVER BIG DATA",
+	"bdc-create.BigDataClusterGroupTitle": "Cluster SQL Server Big Data",
 	"bdc-create.YesText": "Oui"
 }
