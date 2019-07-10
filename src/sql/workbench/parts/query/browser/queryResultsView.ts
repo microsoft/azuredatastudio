@@ -219,7 +219,15 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
+		let showResults = true;
+		this.runnerDisposables.push(runner.onResultSet(() => {
+			if (showResults) {
+				this.showResults(true);
+				showResults = false;
+			}
+		}));
 		this.runnerDisposables.push(runner.onQueryStart(e => {
+			showResults = true;
 			this.hideResults();
 			this.hideChart();
 			this.hidePlan();
@@ -228,9 +236,6 @@ export class QueryResultsView extends Disposable {
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
 		this.runnerDisposables.push(runner.onQueryEnd(() => {
-			if (this.hasResults(runner)) {
-				this.showResults();
-			}
 			if (runner.messages.find(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
 			}
@@ -365,11 +370,13 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
-	public showResults() {
+	public showResults(show: boolean = true) {
 		if (!this._panelView.contains(this.resultsTab)) {
 			this._panelView.pushTab(this.resultsTab, 0);
 		}
-		this._panelView.showTab(this.resultsTab.identifier);
+		if (show) {
+			this._panelView.showTab(this.resultsTab.identifier);
+		}
 	}
 
 	public showPlan(xml: string) {
