@@ -313,7 +313,7 @@ export class QueryEditor extends BaseEditor {
 
 		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
 
-		if (editorViewState && editorViewState.resultsHeight) {
+		if (editorViewState && editorViewState.resultsHeight && this.splitview.length > 1) {
 			this.splitview.resizeView(1, editorViewState.resultsHeight);
 		}
 	}
