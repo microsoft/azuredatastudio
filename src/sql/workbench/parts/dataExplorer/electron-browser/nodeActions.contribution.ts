@@ -16,7 +16,7 @@ import {
 	SCRIPT_AS_CREATE_COMMAND_ID, SCRIPT_AS_DELETE_COMMAND_ID, SCRIPT_AS_SELECT_COMMAND_ID,
 	SCRIPT_AS_EXECUTE_COMMAND_ID, SCRIPT_AS_ALTER_COMMAND_ID, EDIT_DATA_COMMAND_ID
 } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShimActions';
-import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
+import { ContextKeyExpr, ContextKeyRegexExpr, ContextKeyNotEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
@@ -30,7 +30,8 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DISCONNECT_COMMAND_ID,
 		title: localize('disconnect', 'Disconnect')
 	},
-	when: NodeContextKey.IsConnected //add for folders
+	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
+		new ContextKeyNotEqualsExpr('nodeType', NodeType.Folder))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
