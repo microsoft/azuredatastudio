@@ -58,6 +58,7 @@ export class JupyterController implements vscode.Disposable {
 			this.extensionContext.extensionPath,
 			this.outputChannel,
 			this.apiWrapper);
+		await this._jupyterInstallation.configurePackagePaths();
 
 		// Add command/task handlers
 		this.apiWrapper.registerTaskHandler(constants.jupyterOpenNotebookTask, (profile: azdata.IConnectionProfile) => {
