@@ -1753,6 +1753,75 @@ export class ShowRecommendedExtensionsAction extends Action {
 	}
 }
 
+export class ShowAppLaunchRecommendedExtensionsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.showAppLaunchRecommendedExtensions';
+	static LABEL = localize('showAppLaunchRecommendedExtensions', "Show App Recommended Extensions");
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewletService private readonly viewletService: IViewletService
+	) {
+		super(id, label, undefined, true);
+	}
+
+	run(): Promise<void> {
+		return this.viewletService.openViewlet(VIEWLET_ID, true)
+			.then(viewlet => viewlet as IExtensionsViewlet)
+			.then(viewlet => {
+				viewlet.search('@recommendedOnAppLaunch ');
+				viewlet.focus();
+			});
+	}
+}
+
+export class InstallAppLaunchRecommendedExtensionsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.installAppLaunchRecommendedExtensions';
+	static LABEL = localize('installAppLaunchRecommendedExtensions', "Install App Launch Recommended Extensions");
+
+	private _recommendations: IExtensionRecommendation[] = [];
+	get recommendations(): IExtensionRecommendation[] { return this._recommendations; }
+	set recommendations(recommendations: IExtensionRecommendation[]) { this._recommendations = recommendations; this.enabled = this._recommendations.length > 0; }
+
+	constructor(
+		id: string = InstallWorkspaceRecommendedExtensionsAction.ID,
+		label: string = InstallWorkspaceRecommendedExtensionsAction.LABEL,
+		recommendations: IExtensionRecommendation[],
+		@IViewletService private readonly viewletService: IViewletService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IOpenerService private readonly openerService: IOpenerService,
+		@IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService,
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
+	) {
+		super(id, label, 'extension-action');
+		this.recommendations = recommendations;
+	}
+
+	run(): Promise<any> {
+		return this.viewletService.openViewlet(VIEWLET_ID, true)
+			.then(viewlet => viewlet as IExtensionsViewlet)
+			.then(viewlet => {
+				viewlet.search('@recommendedOnAppLaunch ');
+				viewlet.focus();
+				const names = this.recommendations.map(({ extensionId }) => extensionId);
+				return this.extensionWorkbenchService.queryGallery({ names, source: 'install-app-launch-recommendations' }, CancellationToken.None).then(pager => {
+					let installPromises: Promise<any>[] = [];
+					let model = new PagedModel(pager);
+					for (let i = 0; i < pager.total; i++) {
+						installPromises.push(model.resolve(i, CancellationToken.None).then(e =>
+							this.extensionWorkbenchService.install(e)
+						));
+					}
+					return Promise.all(installPromises);
+				});
+			});
+	}
+}
+
 export class InstallWorkspaceRecommendedExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.installWorkspaceRecommendedExtensions';
