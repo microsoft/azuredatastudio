@@ -26,7 +26,8 @@
     "tslint": "node node_modules/tslint/bin/tslint -c tslint-gci.json -p src/tsconfig.json",
     "strict-null-check": "tsc -p src/tsconfig.strictNullChecks.json",
     "strict-null-check-watch": "tsc -p src/tsconfig.strictNullChecks.json --watch",
-    "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization"
+    "strict-initialization-watch": "tsc --watch -p src/tsconfig.json --noEmit --strictPropertyInitialization",
+    "update-distro": "node build/npm/update-distro.js"
   },
   "dependencies": {
     "@angular/animations": "~4.1.3",
