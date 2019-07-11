@@ -4,6 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { NotebookInfo } from '../interfaces';
 import { isString } from 'util';
 import * as os from 'os';
@@ -28,9 +30,7 @@ export class NotebookService implements INotebookService {
 		const notebookRelativePath = this.getNotebook(notebook);
 		const notebookFullPath = path.join(__dirname, '../../', notebookRelativePath);
 		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
-			const targetFileName = this.getTargetNotebookFileName(notebookFullPath, os.homedir());
-			this.platformService.copyFile(notebookFullPath, targetFileName);
-			this.platformService.openFile(targetFileName);
+			this.showNotebook(notebookFullPath);
 		}
 		else {
 			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookFullPath));
@@ -58,22 +58,33 @@ export class NotebookService implements INotebookService {
 		return notebookPath;
 	}
 
-	/**
-	 * Get a file name that is not already used in the target directory
-	 * @param notebook source notebook file name
-	 * @param targetDirectory target directory
-	 */
-	getTargetNotebookFileName(notebook: string, targetDirectory: string): string {
-		const notebookFileExtension = '.ipynb';
-		const baseName = path.basename(notebook, notebookFileExtension);
-		let targetFileName;
+
+	getSaveableFileName(filePath: string): string {
+		const targetDirectory = os.homedir();
+		const fileExtension = path.extname(filePath);
+		const baseName = path.basename(filePath, fileExtension);
+		let targetFilePath;
 		let idx = 0;
 		do {
 			const suffix = idx === 0 ? '' : `-${idx}`;
-			targetFileName = path.join(targetDirectory, `${baseName}${suffix}${notebookFileExtension}`);
+			targetFilePath = path.join(targetDirectory, `${baseName}${suffix}${fileExtension}`);
 			idx++;
-		} while (this.platformService.fileExists(targetFileName));
+		} while (this.platformService.fileExists(targetFilePath));
 
-		return targetFileName;
+		return path.basename(targetFilePath);
+	}
+
+	showNotebook(notebookPath: string): void {
+		let targetFileName: string = this.getSaveableFileName(notebookPath);
+		targetFileName = path.basename(targetFileName, '.ipynb');
+		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${targetFileName}`);
+		vscode.workspace.openTextDocument(notebookPath).then((document) => {
+			let initialContent = document.getText();
+			azdata.nb.showNotebookDocument(untitledFileName, {
+				connectionProfile: undefined,
+				preview: true,
+				initialContent: initialContent
+			});
+		});
 	}
 }

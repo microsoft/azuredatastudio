@@ -90,7 +90,7 @@ suite('Notebook Service Tests', function (): void {
 		assert.equal(actualTargetFile, expectedTargetFile, 'target file is not correct');
 	});
 
-	test('getTargetNotebookFileName with no name conflict', () => {
+	test('getSaveableFileName with no name conflict', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object);
 		const notebookFileName = 'mynotebook.ipynb';
@@ -99,12 +99,12 @@ suite('Notebook Service Tests', function (): void {
 		const expectedTargetFile = path.join(os.homedir(), notebookFileName);
 		mockPlatformService.setup((service) => service.fileExists(TypeMoq.It.isAnyString()))
 			.returns((path) => { return false; });
-		const actualFileName = notebookService.getTargetNotebookFileName(sourceNotebookPath, os.homedir());
+		const actualFileName = notebookService.getSaveableFileName(sourceNotebookPath);
 		mockPlatformService.verify((service) => service.fileExists(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
 	});
 
-	test('getTargetNotebookFileName with name conflicts', () => {
+	test('getSaveableFileName with name conflicts', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object);
 		const notebookFileName = 'mynotebook.ipynb';
@@ -123,7 +123,7 @@ suite('Notebook Service Tests', function (): void {
 				}
 				return false;
 			});
-		const actualFileName = notebookService.getTargetNotebookFileName(sourceNotebookPath, os.homedir());
+		const actualFileName = notebookService.getSaveableFileName(sourceNotebookPath);
 		mockPlatformService.verify((service) => service.fileExists(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
 		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
 	});
