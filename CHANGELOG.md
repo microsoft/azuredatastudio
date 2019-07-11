@@ -1,5 +1,31 @@
 # Change Log
 
+## Version 1.9.0
+* Release date: July 11, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Release of [SentryOne Plan Explorer Extension](https://www.sentryone.com/products/sentryone-plan-explorer-extension-azure-data-studio)
+* **Schema Compare**
+    * Schema Compare File Support (.SCMP)
+    * Cancel support
+    * [Other fixes and improvements](https://github.com/Microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22July+2019+Release%22+is%3Aclosed+label%3A%22Area%3A+Schema+Compare%22)
+* **Notebooks**
+    * Plotly Support
+    * Open Notebook from Browser
+    * Python Package Management
+    * Performance & Markdown Enhancements
+    * Improved Keyboard Shortcuts
+    * [Other fixes and improvements](https://github.com/Microsoft/azuredatastudio/issues?q=is%3Aissue+milestone%3A%22July+2019+Release%22+is%3Aclosed+label%3A%22Area%3A+Notebooks%22)
+* **SQL Server Profiler**
+    * Filtering by Database Name
+    * Copy & Paste Support
+    * Save/Load Filter
+* SQL Server 2019 Support
+* New Language Packs Available
+* Visual Studio Code May Release Merge 1.35 - the latest improvements can be found [here](https://code.visualstudio.com/updates/v1_35)
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/35?closed=1).
+
 ## Version 1.8.0
 * Release date: June 6, 2019
 * Release status: General Availability
