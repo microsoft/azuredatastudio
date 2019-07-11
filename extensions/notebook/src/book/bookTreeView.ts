@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import { BookTreeItem } from './bookTreeItem';
+import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -101,7 +101,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
 				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentsPath[i], 'utf-8'));
-				let book = new BookTreeItem(config.title, root, this.flattenArray(tableOfContents), tableOfContents, 'book');
+				let book = new BookTreeItem({
+					title: config.title,
+					root: root,
+					tableOfContents: this.flattenArray(tableOfContents),
+					page: tableOfContents,
+					type: BookTreeItemType.Book
+				});
 				books.push(book);
 			} catch (e) {
 				vscode.window.showErrorMessage(localize('openConfigFileError', 'Open file {0} failed: {1}',
@@ -117,7 +123,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
 				if (sections[i].external) {
-					let externalLink = new BookTreeItem(sections[i].title, root, tableOfContents, sections[i], 'externalLink');
+					let externalLink = new BookTreeItem({
+						title: sections[i].title,
+						root: root,
+						tableOfContents: tableOfContents,
+						page: sections[i],
+						type: BookTreeItemType.ExternalLink
+					});
 					notebooks.push(externalLink);
 				} else {
 					let pathToNotebook = path.join(root, 'content', sections[i].url.concat('.ipynb'));
@@ -125,11 +137,23 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 					// Following Jupyter Books behavior for now
 					if (fs.existsSync(pathToNotebook)) {
-						let notebook = new BookTreeItem(sections[i].title, root, tableOfContents, sections[i], 'notebook');
+						let notebook = new BookTreeItem({
+							title: sections[i].title,
+							root: root,
+							tableOfContents: tableOfContents,
+							page: sections[i],
+							type: BookTreeItemType.Notebook
+						});
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
 					} else if (fs.existsSync(pathToMarkdown)) {
-						let markdown = new BookTreeItem(sections[i].title, root, tableOfContents, sections[i], 'markdown');
+						let markdown = new BookTreeItem({
+							title: sections[i].title,
+							root: root,
+							tableOfContents: tableOfContents,
+							page: sections[i],
+							type: BookTreeItemType.Markdown
+						});
 						notebooks.push(markdown);
 					} else {
 						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sections[i].title));

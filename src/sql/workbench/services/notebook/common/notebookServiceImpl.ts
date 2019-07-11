@@ -273,7 +273,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._navigationProviders.set(provider.providerId, provider);
 	}
 
-	getNavigationProvider(notebookUri: URI): INavigationProvider {
+	getNavigationProvider(): INavigationProvider {
 		let provider = this._navigationProviders.size > 0 ? this._navigationProviders.values().next().value : undefined;
 		return provider;
 	}
