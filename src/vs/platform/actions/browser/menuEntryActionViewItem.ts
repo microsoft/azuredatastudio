@@ -9,7 +9,7 @@ import { ActionViewItem, Separator } from 'vs/base/browser/ui/actionbar/actionba
 import { IAction } from 'vs/base/common/actions';
 import { Emitter } from 'vs/base/common/event';
 import { IdGenerator } from 'vs/base/common/idGenerator';
-import { IDisposable, toDisposable, MutableDisposable, DisposableStore } from 'vs/base/common/lifecycle';
+import { IDisposable, toDisposable, MutableDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { isLinux, isWindows } from 'vs/base/common/platform';
 import { localize } from 'vs/nls';
 import { ICommandAction, IMenu, IMenuActionOptions, MenuItemAction, SubmenuItemAction } from 'vs/platform/actions/common/actions';
