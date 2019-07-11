@@ -475,6 +475,9 @@ import 'sql/workbench/parts/editData/browser/editData.contribution';
 // query plan editor
 import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
 
+//acounts
+import 'sql/workbench/parts/accounts/browser/accounts.contribution';
+
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';

@@ -29,6 +29,11 @@ import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import { localize } from 'vs/nls';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
+
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, QueryStatusStatusBarContributions } from 'sql/workbench/parts/query/browser/statusBarItems';
+import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -514,3 +519,10 @@ configurationRegistry.registerConfiguration({
 	'type': 'object',
 	'properties': registryProperties
 });
+
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
+
+workbenchRegistry.registerWorkbenchContribution(TimeElapsedStatusBarContributions, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(RowCountStatusBarContributions, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(QueryStatusStatusBarContributions, LifecyclePhase.Restored);
+workbenchRegistry.registerWorkbenchContribution(SqlFlavorStatusbarItem, LifecyclePhase.Restored);

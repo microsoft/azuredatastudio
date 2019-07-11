@@ -677,12 +677,14 @@ export class IssueReporter extends Disposable {
 
 	private logSearchError(error: Error) {
 		this.logService.warn('issueReporter#search ', error.message);
-		/* __GDPR__
-		"issueReporterSearchError" : {
-				"message" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" }
-			}
-		*/
-		this.telemetryService.publicLog('issueReporterSearchError', { message: error.message });
+		type IssueReporterSearchErrorClassification = {
+			message: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' }
+		};
+
+		type IssueReporterSearchError = {
+			message: string;
+		};
+		this.telemetryService.publicLog2<IssueReporterSearchError, IssueReporterSearchErrorClassification>('issueReporterSearchError', { message: error.message });
 	}
 
 	private setUpTypes(): void {
@@ -874,13 +876,15 @@ export class IssueReporter extends Disposable {
 			return false;
 		}
 
-		/* __GDPR__
-			"issueReporterSubmit" : {
-				"issueType" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true },
-				"numSimilarIssuesDisplayed" : { "classification": "SystemMetaData", "purpose": "FeatureInsight", "isMeasurement": true }
-			}
-		*/
-		this.telemetryService.publicLog('issueReporterSubmit', { issueType: this.issueReporterModel.getData().issueType, numSimilarIssuesDisplayed: this.numberOfSearchResultsDisplayed });
+		type IssueReporterSubmitClassification = {
+			issueType: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
+			numSimilarIssuesDisplayed: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
+		};
+		type IssueReporterSubmitEvent = {
+			issueType: any;
+			numSimilarIssuesDisplayed: number;
+		};
+		this.telemetryService.publicLog2<IssueReporterSubmitEvent, IssueReporterSubmitClassification>('issueReporterSubmit', { issueType: this.issueReporterModel.getData().issueType, numSimilarIssuesDisplayed: this.numberOfSearchResultsDisplayed });
 		this.hasBeenSubmitted = true;
 
 		const baseUrl = this.getIssueUrlWithTitle((<HTMLInputElement>this.getElementById('issue-title')).value);
@@ -1108,11 +1112,7 @@ export class IssueReporter extends Disposable {
 		// Exclude right click
 		if (event.which < 3) {
 			shell.openExternal((<HTMLAnchorElement>event.target).href);
-
-			/* __GDPR__
-				"issueReporterViewSimilarIssue" : { }
-			*/
-			this.telemetryService.publicLog('issueReporterViewSimilarIssue');
+			this.telemetryService.publicLog2('issueReporterViewSimilarIssue');
 		}
 	}
 
@@ -1123,12 +1123,13 @@ export class IssueReporter extends Disposable {
 		} else {
 			const error = new Error(`${elementId} not found.`);
 			this.logService.error(error);
-			/* __GDPR__
-				"issueReporterGetElementError" : {
-						"message" : { "classification": "CallstackOrException", "purpose": "PerformanceAndHealth" }
-					}
-				*/
-			this.telemetryService.publicLog('issueReporterGetElementError', { message: error.message });
+			type IssueReporterGetElementErrorClassification = {
+				message: { classification: 'CallstackOrException', purpose: 'PerformanceAndHealth' };
+			};
+			type IssueReporterGetElementErrorEvent = {
+				message: string;
+			};
+			this.telemetryService.publicLog2<IssueReporterGetElementErrorEvent, IssueReporterGetElementErrorClassification>('issueReporterGetElementError', { message: error.message });
 
 			return undefined;
 		}

@@ -26,7 +26,7 @@ import { Delayer } from 'vs/base/common/async';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ILocalProgressService } from 'vs/platform/progress/common/progress';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 @Component({
@@ -65,7 +65,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
-		@Inject(ILocalProgressService) private progressService: ILocalProgressService
+		@Inject(IEditorProgressService) private progressService: IEditorProgressService
 	) {
 		super();
 		this.init();

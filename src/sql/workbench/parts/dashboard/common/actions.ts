@@ -235,7 +235,7 @@ export class CollapseWidgetAction extends Action {
 		}
 		this.collpasedState = collapsed;
 		this._setClass(this.collpasedState ? CollapseWidgetAction.EXPAND_ICON : CollapseWidgetAction.COLLAPSE_ICON);
-		this._setLabel(this.collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL);
+		this.label = this.collpasedState ? CollapseWidgetAction.EXPAND_LABEL : CollapseWidgetAction.COLLPASE_LABEL;
 	}
 
 	public set state(collapsed: boolean) {

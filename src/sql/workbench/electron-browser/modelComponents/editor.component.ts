@@ -21,7 +21,7 @@ import { ComponentBase } from 'sql/workbench/electron-browser/modelComponents/co
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/electron-browser/modelComponents/interfaces';
 import { QueryTextEditor } from 'sql/workbench/electron-browser/modelComponents/queryTextEditor';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleLocalProgressService } from 'vs/editor/standalone/browser/simpleServices';
+import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 
 @Component({
@@ -59,7 +59,7 @@ export default class EditorComponent extends ComponentBase implements IComponent
 	}
 
 	private _createEditor(): void {
-		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleLocalProgressService()]));
+		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this._el.nativeElement);
 		this._editor.setVisible(true);

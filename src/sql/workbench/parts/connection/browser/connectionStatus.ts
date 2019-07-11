@@ -3,54 +3,64 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { $, append, show, hide } from 'vs/base/browser/dom';
-import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
-import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
+import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { localize } from 'vs/nls';
 
 // Connection status bar showing the current global connection
-export class ConnectionStatusbarItem implements IStatusbarItem {
+export class ConnectionStatusbarItem extends Disposable implements IWorkbenchContribution {
 
-	private _element: HTMLElement;
-	private _connectionElement: HTMLElement;
-	private _toDispose: IDisposable[];
+	private static readonly ID = 'status.connection.status';
+
+	private statusItem: IStatusbarEntryAccessor;
 
 	constructor(
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorService private _editorService: IEditorService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@IEditorService private readonly editorService: IEditorService,
+		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
 	) {
-	}
-
-	public render(container: HTMLElement): IDisposable {
-		this._element = append(container, $('.connection-statusbar-item'));
-		this._connectionElement = append(this._element, $('div.connection-statusbar-conninfo'));
-		hide(this._connectionElement);
-
-		this._toDispose = [];
-		this._toDispose.push(
-			this._connectionManagementService.onConnect(() => this._updateStatus()),
-			this._connectionManagementService.onConnectionChanged(() => this._updateStatus()),
-			this._connectionManagementService.onDisconnect(() => this._updateStatus()),
-			this._editorService.onDidActiveEditorChange(() => this._updateStatus()),
-			this._objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus())
+		super();
+		this.statusItem = this._register(
+			this.statusbarService.addEntry({
+				text: '',
+			},
+				ConnectionStatusbarItem.ID,
+				localize('status.connection.status', "Connection Status"),
+				StatusbarAlignment.RIGHT, 100)
 		);
 
-		return combinedDisposable(...this._toDispose);
+		this.hide();
+
+		this._register(this.connectionManagementService.onConnect(() => this._updateStatus()));
+		this._register(this.connectionManagementService.onConnectionChanged(() => this._updateStatus()));
+		this._register(this.connectionManagementService.onDisconnect(() => this._updateStatus()));
+		this._register(this.editorService.onDidActiveEditorChange(() => this._updateStatus()));
+		this._register(this.objectExplorerService.onSelectionOrFocusChange(() => this._updateStatus()));
+	}
+
+	private hide() {
+		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, false);
+	}
+
+	private show() {
+		this.statusbarService.updateEntryVisibility(ConnectionStatusbarItem.ID, true);
 	}
 
 	// Update the connection status shown in the bar
 	private _updateStatus(): void {
-		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this._objectExplorerService, this._connectionManagementService, this._editorService);
+		let activeConnection = TaskUtilities.getCurrentGlobalConnection(this.objectExplorerService, this.connectionManagementService, this.editorService);
 		if (activeConnection) {
 			this._setConnectionText(activeConnection);
-			show(this._connectionElement);
+			this.show();
 		} else {
-			hide(this._connectionElement);
+			this.hide();
 		}
 	}
 
@@ -73,7 +83,8 @@ export class ConnectionStatusbarItem implements IStatusbarItem {
 			tooltip = tooltip + 'Login: ' + connectionProfile.userName + '\r\n';
 		}
 
-		this._connectionElement.textContent = text;
-		this._connectionElement.title = tooltip;
+		this.statusItem.update({
+			text, tooltip
+		});
 	}
 }

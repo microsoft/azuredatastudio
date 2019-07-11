@@ -17,7 +17,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
-import { SimpleLocalProgressService } from 'vs/editor/standalone/browser/simpleServices';
+import { SimpleEditorProgressService } from 'vs/editor/standalone/browser/simpleServices';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ITextModel } from 'vs/editor/common/model';
@@ -189,7 +189,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private async createEditor(): Promise<void> {
-		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleLocalProgressService()]));
+		let instantiationService = this._instantiationService.createChild(new ServiceCollection([IProgressService, new SimpleEditorProgressService()]));
 		this._editor = instantiationService.createInstance(QueryTextEditor);
 		this._editor.create(this.codeElement.nativeElement);
 		this._editor.setVisible(true);

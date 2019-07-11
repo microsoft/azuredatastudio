@@ -9,15 +9,11 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { QueryStatusbarItem } from 'sql/workbench/parts/query/browser/queryStatus';
 import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
-import { RowCountStatusBarItem } from 'sql/workbench/parts/query/browser/rowCountStatus';
-import { TimeElapsedStatusBarItem } from 'sql/workbench/parts/query/browser/timeElapsedStatus';
 
 import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -85,40 +81,6 @@ export class QueryModelService implements IQueryModelService {
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
-
-		// Register Statusbar items
-
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			TimeElapsedStatusBarItem,
-			'status.timeElapsed',
-			nls.localize('status.timeElapsed', "Time Elapsed"),
-			StatusbarAlignment.RIGHT,
-			100 /* Should appear to the right of the SQL editor status */
-		));
-
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			RowCountStatusBarItem,
-			'status.rowCount',
-			nls.localize('status.rowCount', "Row Count"),
-			StatusbarAlignment.RIGHT,
-			100 /* Should appear to the right of the SQL editor status */
-		));
-
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			QueryStatusbarItem,
-			'status.query',
-			nls.localize('status.query', "Query"),
-			StatusbarAlignment.RIGHT,
-			100 /* High Priority */
-		));
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			SqlFlavorStatusbarItem,
-			'status.sqlFlavor',
-			nls.localize('status.sqlFlavor', "SQL Flavor"),
-			StatusbarAlignment.RIGHT,
-			90 /* Should appear to the right of the SQL editor status */
-		));
-
 	}
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////

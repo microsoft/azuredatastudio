@@ -11,26 +11,19 @@ import * as azdata from 'azdata';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
 import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
-// Register Statusbar item
-(<statusbar.IStatusbarRegistry>Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-	ConnectionStatusbarItem,
-	'status.connection',
-	localize('status.connection', "Connection"),
-	StatusbarAlignment.RIGHT,
-	100 /* High Priority */
-));
+workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, LifecyclePhase.Restored);
 
 // Connection Dashboard registration
 

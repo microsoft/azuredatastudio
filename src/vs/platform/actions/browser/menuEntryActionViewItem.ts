@@ -90,7 +90,7 @@ export function createAndFillInActionBarActions(menu: IMenu, options: IMenuActio
 	return asDisposable(groups);
 }
 
-function asDisposable(groups: [string, Array<MenuItemAction | SubmenuItemAction>][]): IDisposable {
+function asDisposable(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemAction | SubmenuItemAction>]>): IDisposable {
 	const disposables = new DisposableStore();
 	for (const [, actions] of groups) {
 		for (const action of actions) {
@@ -101,7 +101,7 @@ function asDisposable(groups: [string, Array<MenuItemAction | SubmenuItemAction>
 }
 
 // {{SQL CARBON EDIT}} add export modifier
-export function fillInActions(groups: [string, Array<MenuItemAction | SubmenuItemAction>][], target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, useAlternativeActions: boolean, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
+export function fillInActions(groups: ReadonlyArray<[string, ReadonlyArray<MenuItemAction | SubmenuItemAction>]>, target: IAction[] | { primary: IAction[]; secondary: IAction[]; }, useAlternativeActions: boolean, isPrimaryGroup: (group: string) => boolean = group => group === 'navigation'): void {
 	for (let tuple of groups) {
 		let [group, actions] = tuple;
 		if (useAlternativeActions) {
