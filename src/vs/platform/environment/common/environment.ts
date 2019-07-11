@@ -79,6 +79,12 @@ export interface ParsedArgs {
 	command?: string;
 	// {{SQL CARBON EDIT}}
 	'disable-inspect'?: boolean;
+	'force'?: boolean;
+	'gitCredential'?: string;
+	// node flags
+	'js-flags'?: boolean;
+	'disable-gpu'?: boolean;
+	'nolazy'?: boolean;
 }
 
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');

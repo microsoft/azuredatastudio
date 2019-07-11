@@ -14,22 +14,22 @@ import { writeFileSync } from 'vs/base/node/pfs';
  * This code is also used by standalone cli's. Avoid adding any other dependencies.
  */
 
-class HelpCategories {
-	o = localize('optionsUpperCase', "Options");
-	e = localize('extensionsManagement', "Extensions Management");
-	t = localize('troubleshooting', "Troubleshooting");
-}
+const helpCategories = {
+	o: localize('optionsUpperCase', "Options"),
+	e: localize('extensionsManagement', "Extensions Management"),
+	t: localize('troubleshooting', "Troubleshooting")
+};
 
 export interface Option {
-	id: string;
+	id: keyof ParsedArgs;
 	type: 'boolean' | 'string';
 	alias?: string;
 	deprecates?: string; // old deprecated id
 	args?: string | string[];
 	description?: string;
-	cat?: keyof HelpCategories;
+	cat?: keyof typeof helpCategories;
 }
-
+//_urls
 export const options: Option[] = [
 	{ id: 'diff', type: 'boolean', cat: 'o', alias: 'd', args: ['file', 'file'], description: localize('diff', "Compare two files with each other.") },
 	{ id: 'add', type: 'boolean', cat: 'o', alias: 'a', args: 'folder', description: localize('add', "Add folder(s) to the last active window.") },
@@ -85,15 +85,14 @@ export const options: Option[] = [
 	{ id: 'skip-add-to-recently-opened', type: 'boolean' },
 	{ id: 'unity-launch', type: 'boolean' },
 	{ id: 'open-url', type: 'boolean' },
-	{ id: 'nolazy', type: 'boolean' },
-	{ id: 'issue', type: 'boolean' },
 	{ id: 'file-write', type: 'boolean' },
 	{ id: 'file-chmod', type: 'boolean' },
 	{ id: 'driver-verbose', type: 'boolean' },
 	{ id: 'force', type: 'boolean' },
 	{ id: 'trace-category-filter', type: 'string' },
 	{ id: 'trace-options', type: 'string' },
-	{ id: 'prof-code-loading', type: 'boolean' },
+	{ id: '_', type: 'string' },
+
 	// {{SQL CARBON EDIT}}
 	{ id: 'command', type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run') },
 	{ id: 'database', type: 'string', alias: 'D', cat: 'o', args: 'database', description: localize('databaseParameter', 'Database name') },
@@ -102,7 +101,9 @@ export const options: Option[] = [
 	{ id: 'aad', type: 'boolean', cat: 'o', description: localize('aadParameter', 'Use Azure Active Directory authentication for server connection') },
 	{ id: 'integrated', type: 'boolean', alias: 'E', cat: 'o', description: localize('integratedAuthParameter', 'Use Integrated authentication for server connection') },
 	// {{SQL CARBON EDIT}} - End
-	{ id: '_', type: 'string' }
+
+	{ id: 'js-flags', type: 'string' }, // chrome js flags
+	{ id: 'nolazy', type: 'boolean' }, // node inspect
 ];
 
 export function parseArgs(args: string[], isOptionSupported = (_: Option) => true): ParsedArgs {
@@ -197,8 +198,6 @@ function wrapText(text: string, columns: number): string[] {
 export function buildHelpMessage(productName: string, executableName: string, version: string, isOptionSupported = (_: Option) => true, isPipeSupported = true): string {
 	const columns = (process.stdout).isTTY && (process.stdout).columns || 80;
 
-	let categories = new HelpCategories();
-
 	let help = [`${productName} ${version}`];
 	help.push('');
 	help.push(`${localize('usage', "Usage")}: ${executableName} [${localize('options', "options")}][${localize('paths', 'paths')}...]`);
@@ -211,10 +210,12 @@ export function buildHelpMessage(productName: string, executableName: string, ve
 		}
 		help.push('');
 	}
-	for (const key in categories) {
+	for (let helpCategoryKey in helpCategories) {
+		const key = <keyof typeof helpCategories>helpCategoryKey;
+
 		let categoryOptions = options.filter(o => !!o.description && o.cat === key && isOptionSupported(o));
 		if (categoryOptions.length) {
-			help.push(categories[key as keyof HelpCategories]);
+			help.push(helpCategories[key]);
 			help.push(...formatOptions(categoryOptions, columns));
 			help.push('');
 		}
