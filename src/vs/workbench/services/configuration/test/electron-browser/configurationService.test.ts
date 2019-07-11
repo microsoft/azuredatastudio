@@ -30,7 +30,7 @@ import { IJSONEditingService } from 'vs/workbench/services/configuration/common/
 import { JSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditingService';
 import { createHash } from 'crypto';
 import { Schemas } from 'vs/base/common/network';
-import { originalFSPath } from 'vs/base/common/resources';
+import { originalFSPath, dirname } from 'vs/base/common/resources';
 import { isLinux } from 'vs/base/common/platform';
 import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
@@ -47,8 +47,17 @@ import { SignService } from 'vs/platform/sign/browser/signService';
 import { FileUserDataProvider } from 'vs/workbench/services/userData/common/fileUserDataProvider';
 import { IKeybindingEditingService, KeybindingsEditingService } from 'vs/workbench/services/keybinding/common/keybindingEditing';
 import { WorkbenchEnvironmentService } from 'vs/workbench/services/environment/node/environmentService';
-import { UserDataFileSystemProvider } from 'vs/workbench/services/userData/common/userDataFileSystemProvider';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+
+class TestEnvironmentService extends WorkbenchEnvironmentService {
+
+	constructor(private _appSettingsHome: URI) {
+		super(parseArgs(process.argv) as IWindowConfiguration, process.execPath);
+	}
+
+	get appSettingsHome() { return this._appSettingsHome; }
+
+}
 
 function setUpFolderWorkspace(folderName: string): Promise<{ parentDir: string, folderDir: string }> {
 	const id = uuid.generateUuid();
@@ -149,12 +158,12 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 				remoteSettingsFile = path.join(parentDir, 'remote-settings.json');
 
 				instantiationService = <TestInstantiationService>workbenchInstantiationService();
-				const environmentService = new WorkbenchEnvironmentService(<IWindowConfiguration>parseArgs(process.argv), process.execPath);
+				const environmentService = new TestEnvironmentService(URI.file(parentDir));
 				const remoteEnvironmentPromise = new Promise<Partial<IRemoteAgentEnvironment>>(c => resolveRemoteEnvironment = () => c({ settingsPath: URI.file(remoteSettingsFile).with({ scheme: Schemas.vscodeRemote, authority: remoteAuthority }) }));
 				const remoteAgentService = instantiationService.stub(IRemoteAgentService, <Partial<IRemoteAgentService>>{ getEnvironment: () => remoteEnvironmentPromise });
 				const fileService = new FileService(new NullLogService());
 				fileService.registerProvider(Schemas.file, diskFileSystemProvider);
-				fileService.registerProvider(Schemas.userData, new UserDataFileSystemProvider(environmentService.userRoamingDataHome, new FileUserDataProvider(URI.file(parentDir), fileService)));
+				fileService.registerProvider(Schemas.userData, new FileUserDataProvider(environmentService.appSettingsHome, dirname(environmentService.appSettingsHome), diskFileSystemProvider));
 				const configurationCache: IConfigurationCache = { read: () => Promise.resolve(''), write: () => Promise.resolve(), remove: () => Promise.resolve() };
 				testObject = new WorkspaceService({ configurationCache, remoteAuthority }, environmentService, fileService, remoteAgentService);
 				instantiationService.stub(IWorkspaceContextService, testObject);
