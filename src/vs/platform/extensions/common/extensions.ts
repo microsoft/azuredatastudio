@@ -141,6 +141,7 @@ export interface IExtensionManifest {
 	readonly bugs?: { url: string; };
 	readonly enableProposedApi?: boolean;
 	readonly api?: string;
+	readonly scripts?: { [key: string]: string; };
 }
 
 export const enum ExtensionType {
