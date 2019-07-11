@@ -21,7 +21,6 @@ const json = require('gulp-json-editor');
 const _ = require('underscore');
 const util = require('./lib/util');
 const task = require('./lib/task');
-const ext = require('./lib/extensions');
 const buildfile = require('../src/buildfile');
 const common = require('./lib/optimize');
 const root = path.dirname(__dirname);
@@ -33,11 +32,13 @@ const i18n = require('./lib/i18n');
 // {{SQL CARBON EDIT}}
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platformInfo = require('service-downloader/out/platform').PlatformInformation;
+const ext = require('./lib/extensions');
 // {{SQL CARBON EDIT}} - End
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
+const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
 // @ts-ignore
@@ -123,10 +124,7 @@ const BUNDLED_FILE_HEADER = [
 ].join('\n');
 
 const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
-	task.parallel(
-		util.rimraf('out-vscode'),
-		compileBuildTask
-	),
+	util.rimraf('out-vscode'),
 	common.optimizeTask({
 		src: 'out-build',
 		entryPoints: vscodeEntryPoints,
@@ -138,23 +136,16 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 	})
 ));
 
-
-const optimizeIndexJSTask = task.define('optimize-index-js', task.series(
+const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
+const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	optimizeVSCodeTask,
+	util.rimraf('out-vscode-min'),
 	() => {
 		const fullpath = path.join(process.cwd(), 'out-vscode/bootstrap-window.js');
 		const contents = fs.readFileSync(fullpath).toString();
 		const newContents = contents.replace('[/*BUILD->INSERT_NODE_MODULES*/]', JSON.stringify(nodeModules));
 		fs.writeFileSync(fullpath, newContents);
-	}
-));
-
-const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
-const minifyVSCodeTask = task.define('minify-vscode', task.series(
-	task.parallel(
-		util.rimraf('out-vscode-min'),
-		optimizeIndexJSTask
-	),
+	},
 	common.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
 ));
 
@@ -285,9 +276,8 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		// {{SQL CARBON EDIT}}
 		ext.packageBuiltInExtensions();
 
-		const sources = es.merge(src, ext.packageExtensionsStream({
-			sourceMappingURLBase: sourceMappingURLBase
-		}));
+		const extensions = gulp.src('.build/extensions/**', { base: '.build', dot: true });
+		const sources = es.merge(src, extensions);
 
 		let version = packageJson.version;
 		// @ts-ignore JSON checking: quality is optional
@@ -452,12 +442,17 @@ BUILD_TARGETS.forEach(buildTarget => {
 		const sourceFolderName = `out-vscode${dashed(minified)}`;
 		const destinationFolderName = `azuredatastudio${dashed(platform)}${dashed(arch)}`;
 
-		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
-			task.parallel(
-				minified ? minifyVSCodeTask : optimizeVSCodeTask,
-				util.rimraf(path.join(buildRoot, destinationFolderName))
-			),
+		const vscodeTaskCI = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
+			minified ? minifyVSCodeTask : optimizeVSCodeTask,
+			util.rimraf(path.join(buildRoot, destinationFolderName)),
 			packageTask(platform, arch, sourceFolderName, destinationFolderName, opts)
+		));
+		gulp.task(vscodeTaskCI);
+
+		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+			compileBuildTask,
+			compileExtensionsBuildTask,
+			vscodeTaskCI
 		));
 		gulp.task(vscodeTask);
 	});
