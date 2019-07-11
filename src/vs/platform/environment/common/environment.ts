@@ -98,6 +98,8 @@ export interface IExtensionHostDebugParams extends IDebugParams {
 	debugId?: string;
 }
 
+export const BACKUPS = 'Backups';
+
 export interface IEnvironmentService {
 	_serviceBrand: any;
 
@@ -113,6 +115,9 @@ export interface IEnvironmentService {
 	appNameLong: string;
 	appQuality?: string;
 	appSettingsHome: URI;
+
+	// user roaming data
+	userRoamingDataHome: URI;
 	settingsResource: URI;
 	keybindingsResource: URI;
 	keyboardLayoutResource: URI;
