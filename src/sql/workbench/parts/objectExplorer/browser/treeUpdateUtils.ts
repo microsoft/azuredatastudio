@@ -13,6 +13,7 @@ import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import * as errors from 'vs/base/common/errors';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IExpandableTree extends ITree {
 	// {{SQL CARBON EDIT }}	- add back deleted VS Code tree methods
@@ -72,8 +73,11 @@ export class TreeUpdateUtils {
 		} else if (viewKey === 'saved') {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
-
+		const previousTreeInput: any = tree.getInput();
 		return tree.setInput(treeInput).then(() => {
+			if (previousTreeInput instanceof Disposable) {
+				previousTreeInput.dispose();
+			}
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
 				tree.expandAll(targetsToExpand);
@@ -135,6 +139,7 @@ export class TreeUpdateUtils {
 		if (groups && groups.length > 0) {
 			let treeInput = groups[0];
 			treeInput.name = 'root';
+			groups.forEach(cpg => cpg.dispose());
 			return treeInput;
 		}
 		// Should never get to this case.

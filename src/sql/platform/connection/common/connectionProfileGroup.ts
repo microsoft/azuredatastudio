@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IConnectionProfileGroup {
 	id: string;
@@ -13,7 +14,7 @@ export interface IConnectionProfileGroup {
 	description: string;
 }
 
-export class ConnectionProfileGroup implements IConnectionProfileGroup {
+export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
 
 	public children: ConnectionProfileGroup[];
 	public connections: ConnectionProfile[];
@@ -26,6 +27,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		public color: string,
 		public description: string
 	) {
+		super();
 		this.parentId = parent ? parent.id : undefined;
 		if (this.name === ConnectionProfileGroup.RootGroupName) {
 			this.name = '';
@@ -100,9 +102,8 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		}
 	}
 
-	public getChildren(): any {
-		let allChildren = [];
-
+	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
+		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
 		if (this.connections) {
 			this.connections.forEach((conn) => {
 				allChildren.push(conn);
@@ -131,6 +132,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		connections.forEach((conn) => {
 			this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
+			this._register(conn);
 			this.connections.push(conn);
 		});
 
@@ -143,6 +145,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		groups.forEach((group) => {
 			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
+			this._register(group);
 			this.children.push(group);
 		});
 	}
