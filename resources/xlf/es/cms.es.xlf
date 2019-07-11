@@ -434,10 +434,6 @@
   </file>
   <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" target-language="es" datatype="plaintext">
     <body>
-      <trans-unit id="cms.errors.expandCmsFail">
-        <source xml:lang="en">The Central Management Server {0} could not be found or is offline</source>
-        <target state="translated">No se pudo encontrar el servidor de administración central {0} o está sin conexión</target>
-      </trans-unit>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
         <target state="translated">No se han encontrado recursos</target>
@@ -457,10 +453,6 @@
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
         <target state="translated">El grupo de servidores de administración central ya tiene un servidor registrado con el nombre {0}</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.addRegisterServerFail">
-        <source xml:lang="en">Could not add the Registered Server {0}</source>
-        <target state="translated">No se ha podido agregar el servidor registrado {0}</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>

@@ -609,6 +609,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
+	$getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile>;
 	$getCredentials(connectionId: string): Thenable<{ [name: string]: string }>;
 	$getServerInfo(connectedId: string): Thenable<azdata.ServerInfo>;
 	$openConnectionDialog(providers: string[], initialConnectionProfile?: azdata.IConnectionProfile, connectionCompletionOptions?: azdata.IConnectionCompletionOptions): Thenable<azdata.connection.Connection>;
