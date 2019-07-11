@@ -784,7 +784,7 @@ class ExtHostVirtualProcess implements ITerminalChildProcess {
 			this._virtualProcess.exit(e => this._onProcessExit.fire(e));
 		}
 		if (this._virtualProcess.overrideDimensions) {
-			this._virtualProcess.overrideDimensions(e => this._onProcessOverrideDimensions.fire(e ? { cols: e.columns, rows: e.rows } : e));
+			this._virtualProcess.overrideDimensions(e => this._onProcessOverrideDimensions.fire(e ? { cols: e.columns, rows: e.rows } : undefined)); // {{SQL CARBON EDIT}} strict-null-check
 		}
 	}
 }
