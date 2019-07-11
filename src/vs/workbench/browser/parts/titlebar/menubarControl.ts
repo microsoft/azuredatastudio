@@ -46,29 +46,27 @@ export abstract class MenubarControl extends Disposable {
 		'window.nativeTabs'
 	];
 
-	// {{SQL CARBON EDIT}} - Disable unusued menus
 	protected menus: {
 		'File': IMenu;
 		'Edit': IMenu;
-		// 'Selection': IMenu;
+		// 'Selection': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'View': IMenu;
-		// 'Go': IMenu;
-		// 'Debug': IMenu;
-		// 'Terminal': IMenu;
+		// 'Go': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Debug': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
+		// 'Terminal': IMenu; {{SQL CARBON EDIT}} - Disable unusued menus
 		'Window'?: IMenu;
 		'Help': IMenu;
-		// [index: string]: IMenu | undefined;
+		// [index: string]: IMenu | undefined; {{SQL CARBON EDIT}} - Disable unusued menus
 	};
 
-	// {{SQL CARBON EDIT}} - Disable unused menus
-	protected topLevelTitles = {
+	protected topLevelTitles: { [menu: string]: string } = {
 		'File': nls.localize({ key: 'mFile', comment: ['&& denotes a mnemonic'] }, "&&File"),
 		'Edit': nls.localize({ key: 'mEdit', comment: ['&& denotes a mnemonic'] }, "&&Edit"),
-		// 'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"),
+		// 'Selection': nls.localize({ key: 'mSelection', comment: ['&& denotes a mnemonic'] }, "&&Selection"), {{SQL CARBON EDIT}} - Disable unused menus
 		'View': nls.localize({ key: 'mView', comment: ['&& denotes a mnemonic'] }, "&&View"),
-		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"),
-		// 'Debug': nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"),
-		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"),
+		// 'Go': nls.localize({ key: 'mGoto', comment: ['&& denotes a mnemonic'] }, "&&Go"), {{SQL CARBON EDIT}} - Disable unused menus
+		// 'Debug': nls.localize({ key: 'mDebug', comment: ['&& denotes a mnemonic'] }, "&&Debug"), {{SQL CARBON EDIT}} - Disable unused menus
+		// 'Terminal': nls.localize({ key: 'mTerminal', comment: ['&& denotes a mnemonic'] }, "&&Terminal"), {{SQL CARBON EDIT}} - Disable unused menus
 		'Help': nls.localize({ key: 'mHelp', comment: ['&& denotes a mnemonic'] }, "&&Help")
 	};
 
@@ -410,9 +408,12 @@ export class NativeMenubarControl extends MenubarControl {
 	}
 
 	private getAdditionalKeybindings(): { [id: string]: IMenubarKeybinding } {
-		const keybindings = {};
+		const keybindings: { [id: string]: IMenubarKeybinding } = {};
 		if (isMacintosh) {
-			keybindings['workbench.action.quit'] = (this.getMenubarKeybinding('workbench.action.quit'));
+			const keybinding = this.getMenubarKeybinding('workbench.action.quit');
+			if (keybinding) {
+				keybindings['workbench.action.quit'] = keybinding;
+			}
 		}
 
 		return keybindings;
