@@ -83,8 +83,9 @@ export interface IProductConfiguration {
 		readonly requestFeatureUrl: string
 	};
 	readonly documentationUrl: string;
-	readonly releaseNotesUrl: string; // {SQL CARBON EDIT}
-	readonly gettingStartedUrl: string;
+	readonly releaseNotesUrl: string;
+	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
+	readonly vscodeVersion: string; // {SQL CARBON EDIT}
 	readonly keyboardShortcutsUrlMac: string;
 	readonly keyboardShortcutsUrlLinux: string;
 	readonly keyboardShortcutsUrlWin: string;

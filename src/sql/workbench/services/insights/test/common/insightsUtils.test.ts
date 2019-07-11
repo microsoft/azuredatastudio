@@ -24,6 +24,7 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 import { IFileService } from 'vs/platform/files/common/files';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
+	localeResource: URI;
 	userRoamingDataHome: URI;
 	webviewEndpoint?: string;
 	webviewResourceRoot: string;
