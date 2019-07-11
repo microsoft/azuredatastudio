@@ -44,7 +44,6 @@ export interface IQueryMessage extends azdata.IResultMessage {
 * and handles getting more rows from the service layer and disposing when the content is closed.
 */
 export default class QueryRunner extends Disposable {
-
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _resultLineOffset: number;
 	private _totalElapsedMilliseconds: number = 0;

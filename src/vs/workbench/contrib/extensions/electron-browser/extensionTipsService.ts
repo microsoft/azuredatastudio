@@ -18,6 +18,7 @@ import { ITextModel } from 'vs/editor/common/model';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+// {{SQL CARBON EDIT}}
 import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction, ShowVisualizerExtensionsAction, InstallVisualizerExtensionsAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
@@ -1153,12 +1154,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						[{
 							label: localize('visualizer.installAll', "Install Extension"),
 							run: () => {
-								/* __GDPR__
-								"extensionAppLaunchRecommendations:popup" : {
-									"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-								}
-								*/
-								//this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'install' });
 								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
 								installAllAction.run();
 								installAllAction.dispose();
@@ -1173,13 +1168,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						}, {
 							label: localize('visualizer.showMoreInfo', "More Info"),
 							run: () => {
-								/* __GDPR__
-									"extensionAppLaunchRecommendations:popup" : {
-										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-									}
-								*/
-								//this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'show' });
-
 								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
 								showAction.run();
 								showAction.dispose();
@@ -1189,12 +1177,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						{
 							sticky: true,
 							onCancel: () => {
-								/* __GDPR__
-									"extensionAppLaunchRecommendations:popup" : {
-										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-									}
-								*/
-								//	this.telemetryService.publicLog('extensionAppLaunchRecommendations:popup', { userReaction: 'cancelled' });
 								c(undefined);
 							}
 						}

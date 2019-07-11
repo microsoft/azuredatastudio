@@ -255,7 +255,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public runQueryStatement(selection: ISelectionData): void {
 		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.state.executing = true;
-
 	}
 
 	public runQueryString(text: string): void {
