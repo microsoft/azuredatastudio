@@ -1149,7 +1149,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizer.VisualizerExtensions', "To utilize the Visualizer feature, the SandDance extension is required to be installed."),
+						localize('visualizer.VisualizerExtensions', "You will need to install this extension to visualize your data."),
 						[{
 							label: localize('visualizer.installAll', "Install Extension"),
 							run: () => {
@@ -1163,13 +1163,11 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								installAllAction.run();
 								installAllAction.dispose();
 								c(undefined);
-								const message = 'Completed installation of SandDance.';
+								const message = 'Your extension is ready. Select the Visualizer icon to visualize your data.';
 								const actions = [];
-								this.notificationService.prompt(
-									Severity.Info,
-									message,
-									actions,
-									{ sticky: true }
+
+								this.notificationService.info(
+									message
 								);
 							}
 						}, {
