@@ -250,6 +250,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
 		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.state.executing = true;
+		this._extensionTipsService.promptVisualizerExtensions();
 	}
 
 	public runQueryStatement(selection: ISelectionData): void {
