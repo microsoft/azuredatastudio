@@ -13,7 +13,8 @@ export enum BdcItemType {
 	folder = 'bigDataClusters.itemType.folderNode',
 	sqlMaster = 'bigDataClusters.itemType.sqlMasterNode',
 	EndPoint = 'bigDataClusters.itemType.endPointNode',
-	addController = 'bigDataClusters.itemType.addControllerNode'
+	addController = 'bigDataClusters.itemType.addControllerNode',
+	loadingController = 'bigDataClusters.itemType.loadingControllerNode'
 }
 
 export class IconPath {
