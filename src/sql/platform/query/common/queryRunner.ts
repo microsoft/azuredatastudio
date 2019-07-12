@@ -588,7 +588,7 @@ export default class QueryRunner extends Disposable {
 		let result: azdata.ResultSetSummary = {
 			batchId: batchId,
 			id: resultSetId,
-			columnInfo: undefined,
+			columnInfo: this.batchSets[batchId].resultSetSummaries[resultSetId].columnInfo,
 			complete: true,
 			rowCount: this.batchSets[batchId].resultSetSummaries[resultSetId].rowCount
 		};

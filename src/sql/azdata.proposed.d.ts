@@ -3970,8 +3970,15 @@ declare module 'azdata' {
 			| 'executionPlan'
 			| 'visualize';
 
+		/**
+		 * args for each event type
+		 * queryStart: undefined
+		 * queryStop: undefined
+		 * executionPlan: string
+		 * visualize: ResultSetSummary
+		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any): void;
+			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
 		// new extensibility interfaces
