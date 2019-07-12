@@ -129,6 +129,7 @@ export interface INotebookParams extends IBootstrapParams {
  */
 export interface INotebookSection {
 	header: string;
+	level: number;
 	relativeUri: string;
 }
 

@@ -615,15 +615,22 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 }
 
 class NotebookSection implements INotebookSection {
+	private _level: number;
 
 	constructor(public headerEl: HTMLElement) {
+		let indent = headerEl.nodeName.substring(1, 2);
+		this._level = parseInt(indent);
 	}
 
 	get relativeUri(): string {
-		return this.headerEl['id'];
+		return this.headerEl.id;
 	}
 
 	get header(): string {
 		return this.headerEl.textContent;
+	}
+
+	get level(): number {
+		return this._level;
 	}
 }

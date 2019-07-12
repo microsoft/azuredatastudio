@@ -7,6 +7,7 @@ import { nb } from 'azdata';
 import { localize } from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
+import * as modes from 'vs/editor/common/modes';
 
 import {
 	INotebookService, INotebookManager, INotebookProvider,
@@ -41,6 +42,7 @@ import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import { NotebookSymbolProvider } from 'sql/workbench/services/notebook/common/notebookSymbolProvider';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -134,6 +136,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this._updateTrustCacheScheduler = new RunOnceScheduler(() => this.updateTrustedCache(), 250);
 		this._register(notebookRegistry.onNewRegistration(this.updateRegisteredProviders, this));
 		this.registerBuiltInProvider();
+		this.registerSymbolProvider();
 		// If a provider has been already registered, the onNewRegistration event will not have a listener attached yet
 		// So, explicitly updating registered providers here.
 		if (notebookRegistry.providers.length > 0) {
@@ -514,6 +517,12 @@ export class NotebookService extends Disposable implements INotebookService {
 			fileExtensions: DEFAULT_NOTEBOOK_FILETYPE,
 			standardKernels: { name: notebookConstants.SQL, displayName: notebookConstants.SQL, connectionProviderIds: [notebookConstants.SQL_CONNECTION_PROVIDER] }
 		});
+	}
+	private registerSymbolProvider() {
+		// Note: can't use instantiation service since we register from constructor. If needed later, should only register
+		// on some Notebook being opened
+		let symbolProvider = new NotebookSymbolProvider(this);
+		modes.DocumentSymbolProviderRegistry.register('notebook', symbolProvider);
 	}
 
 	private removeContributedProvidersFromCache(identifier: IExtensionIdentifier, extensionService: IExtensionService) {
