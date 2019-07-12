@@ -17,7 +17,7 @@ export class LoadingControllerNode extends TreeNode {
 	private readonly nodeType: string;
 
 	constructor() {
-		super(localize('textLoadingWithDots', 'Loading...'));
+		super(localize('textLoadingWithDots', "Loading..."));
 		this.nodeType = BdcItemType.loadingController;
 	}
 
