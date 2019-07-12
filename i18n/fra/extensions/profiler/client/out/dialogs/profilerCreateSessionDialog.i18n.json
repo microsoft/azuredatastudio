@@ -13,5 +13,6 @@
 	"createSessionDialog.dialogOwnerInvalid": "Propriétaire de boîte de dialogue non valide, impossible d'ouvrir la boîte de dialogue",
 	"createSessionDialog.invalidProviderType": "Type de fournisseur non valide, impossible d'ouvrir la boîte de dialogue",
 	"createSessionDialog.selectTemplates": "Sélectionnez un modèle de session :",
-	"createSessionDialog.enterSessionName": "Entrez le nom de la session :"
+	"createSessionDialog.enterSessionName": "Entrez le nom de la session :",
+	"createSessionDialog.createSessionFailed": "La création de session a échoué"
 }

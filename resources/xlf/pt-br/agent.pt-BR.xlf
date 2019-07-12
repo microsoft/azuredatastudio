@@ -40,7 +40,7 @@
       </trans-unit>
       <trans-unit id="createProxy.ProxyName">
         <source xml:lang="en">Proxy name</source>
-        <target state="translated">Nome de proxy</target>
+        <target state="translated">Nome do proxy</target>
       </trans-unit>
       <trans-unit id="createProxy.CredentialName">
         <source xml:lang="en">Credential name</source>
@@ -396,7 +396,7 @@
       </trans-unit>
       <trans-unit id="jobStepDialog.servicesPackage">
         <source xml:lang="en">SQL Server Integration Service Package</source>
-        <target state="new">SQL Server Integration Service Package</target>
+        <target state="translated">Pacote do serviço de integração do SQL Server</target>
       </trans-unit>
       <trans-unit id="jobStepDialog.agentServiceAccount">
         <source xml:lang="en">SQL Server Agent Service Account</source>

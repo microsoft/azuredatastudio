@@ -13,5 +13,6 @@
 	"createSessionDialog.dialogOwnerInvalid": "对话框所有者无效，无法打开对话框",
 	"createSessionDialog.invalidProviderType": "提供程序类型无效，无法打开对话框",
 	"createSessionDialog.selectTemplates": "选择会话模板:",
-	"createSessionDialog.enterSessionName": "输入会话名称:"
+	"createSessionDialog.enterSessionName": "输入会话名称:",
+	"createSessionDialog.createSessionFailed": "未能创建会话"
 }

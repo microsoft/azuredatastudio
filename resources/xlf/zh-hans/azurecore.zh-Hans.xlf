@@ -28,7 +28,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.refreshall.title">
         <source xml:lang="en">Azure: Refresh All Accounts</source>
-        <target state="new">Azure: Refresh All Accounts</target>
+        <target state="translated">Azure: 刷新所有帐户</target>
       </trans-unit>
       <trans-unit id="azure.resource.refresh.title">
         <source xml:lang="en">Refresh</source>
@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.signin.title">
         <source xml:lang="en">Azure: Sign In</source>
-        <target state="new">Azure: Sign In</target>
+        <target state="translated">Azure: 登录</target>
       </trans-unit>
       <trans-unit id="azure.resource.selectsubscriptions.title">
         <source xml:lang="en">Select Subscriptions</source>
@@ -48,7 +48,7 @@
       </trans-unit>
       <trans-unit id="azure.resource.connectsqldb.title">
         <source xml:lang="en">Add to Servers</source>
-        <target state="new">Add to Servers</target>
+        <target state="translated">添加到服务器</target>
       </trans-unit>
       <trans-unit id="accounts.clearTokenCache">
         <source xml:lang="en">Clear Azure Account Token Cache</source>
@@ -72,19 +72,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="zh-Hans" datatype="plaintext">
-    <body>
-      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL Databases</source>
-        <target state="translated">SQL 数据库</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
         <source xml:lang="en">SQL Servers</source>
         <target state="translated">SQL Server</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="zh-Hans" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
+        <source xml:lang="en">SQL Databases</source>
+        <target state="translated">SQL 数据库</target>
       </trans-unit>
     </body>
   </file>

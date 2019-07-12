@@ -44,7 +44,7 @@
       </trans-unit>
       <trans-unit id="flatFileImport.prosePreviewMessageFail">
         <source xml:lang="en">This operation was unsuccessful. Please try a different input file.</source>
-        <target state="new">This operation was unsuccessful. Please try a different input file.</target>
+        <target state="translated">이 작업이 실패했습니다. 다른 입력 파일을 사용해 보세요.</target>
       </trans-unit>
       <trans-unit id="flatFileImport.refresh">
         <source xml:lang="en">Refresh</source>
@@ -185,6 +185,10 @@
       <trans-unit id="downloadingService">
         <source xml:lang="en">Downloading {0}</source>
         <target state="translated">{0}를 다운로드합니다.</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSize">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="new">({0} KB)</target>
       </trans-unit>
       <trans-unit id="downloadingServiceStatus">
         <source xml:lang="en">Downloading Service</source>

@@ -11,10 +11,6 @@
 	"dacfx.sourceServerName": "來源伺服器",
 	"dacfx.sourceDatabaseName": "來源資料庫",
 	"dacfx.fileLocation": "檔案位置",
-	"dacfx.scriptLocation": "部署指令碼位置",
-	"dacfx.action": "動作",
-	"dacfx.deploy": "部署",
-	"dacfx.generateScript": "產生部署指令碼",
 	"dacfxExtract.version": "版本",
 	"dacfx.settingColumn": "設定",
 	"dacfx.valueColumn": "值"

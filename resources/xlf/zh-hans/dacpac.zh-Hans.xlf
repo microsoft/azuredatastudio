@@ -280,7 +280,7 @@
       </trans-unit>
       <trans-unit id="dacfx.scriptGeneratingMessage">
         <source xml:lang="en">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</source>
-        <target state="new">You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.</target>
+        <target state="translated">关闭向导后，可在任务视图中查看脚本生成的状态。生成的脚本将在完成后打开。</target>
       </trans-unit>
       <trans-unit id="alertData.deployPlanErrorMessage">
         <source xml:lang="en">Generating deploy plan failed '{0}'</source>

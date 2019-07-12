@@ -196,7 +196,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		if (this._configurationService) {
 			this.updateNotebookThemes();
 			this._register(this._configurationService.onDidChangeConfiguration(e => {
-				if (e.affectsConfiguration(OVERRIDE_EDITOR_THEMING_SETTING)) {
+				if (e.affectsConfiguration(OVERRIDE_EDITOR_THEMING_SETTING)
+					|| e.affectsConfiguration('resultsGrid')) {
 					this.updateNotebookThemes();
 				}
 			}));
@@ -230,7 +231,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				this._themeParticipant.dispose();
 			}
 			this._overrideEditorThemeSetting = overrideEditorSetting;
-			this._themeParticipant = registerNotebookThemes(overrideEditorSetting);
+			this._themeParticipant = registerNotebookThemes(overrideEditorSetting, this._configurationService);
 		}
 	}
 
@@ -626,6 +627,13 @@ export class NotebookService extends Disposable implements INotebookService {
 			if (this._logService) {
 				this._logService.trace(`Failed to save trust state to cache: ${toErrorMessage(err)}`);
 			}
+		}
+	}
+
+	navigateTo(notebookUri: URI, sectionId: string): void {
+		let editor = this._editors.get(notebookUri.toString());
+		if (editor) {
+			editor.navigateToSection(sectionId);
 		}
 	}
 }

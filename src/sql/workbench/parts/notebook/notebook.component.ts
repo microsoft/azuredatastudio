@@ -26,7 +26,7 @@ import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
@@ -54,6 +54,7 @@ import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/br
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -551,11 +552,20 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 	}
 
-	public async runAllCells(): Promise<boolean> {
+	public async runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean> {
 		await this.modelReady;
 		let codeCells = this._model.cells.filter(cell => cell.cellType === CellTypes.Code);
 		if (codeCells && codeCells.length) {
-			for (let i = 0; i < codeCells.length; i++) {
+			// For the run all cells scenario where neither startId not endId are provided, set defaults
+			let startIndex = 0;
+			let endIndex = codeCells.length;
+			if (!isUndefinedOrNull(startCell)) {
+				startIndex = codeCells.findIndex(c => c.id === startCell.id);
+			}
+			if (!isUndefinedOrNull(endCell)) {
+				endIndex = codeCells.findIndex(c => c.id === endCell.id);
+			}
+			for (let i = startIndex; i < endIndex; i++) {
 				let cellStatus = await this.runCell(codeCells[i]);
 				if (!cellStatus) {
 					return Promise.reject(new Error(localize('cellRunFailed', "Run Cells failed - See error in output of the currently selected cell for more information.")));
@@ -620,5 +630,50 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		} catch (error) {
 			this.notificationService.error(notebookUtils.getErrorMessage(error));
 		}
+	}
+
+	getSections(): INotebookSection[] {
+		return this.getSectionElements();
+	}
+
+	private getSectionElements(): NotebookSection[] {
+		let headers: NotebookSection[] = [];
+		let el: HTMLElement = this.container.nativeElement;
+		let headerElements = el.querySelectorAll('h1, h2, h3, h4, h5, h6');
+		for (let i = 0; i < headerElements.length; i++) {
+			let headerEl = headerElements[i] as HTMLElement;
+			if (headerEl['id']) {
+				headers.push(new NotebookSection(headerEl));
+			}
+		}
+		return headers;
+	}
+
+	navigateToSection(id: string): void {
+		id = id.toLowerCase();
+		let section = this.getSectionElements().find(s => s.relativeUri && s.relativeUri.toLowerCase() === id);
+		if (section) {
+			// Scroll this section to the top of the header instead of just bringing header into view.
+			let scrollTop = jQuery(section.headerEl).offset().top;
+			(<HTMLElement>this.container.nativeElement).scrollTo({
+				top: scrollTop,
+				behavior: 'smooth'
+			});
+			section.headerEl.focus();
+		}
+	}
+}
+
+class NotebookSection implements INotebookSection {
+
+	constructor(public headerEl: HTMLElement) {
+	}
+
+	get relativeUri(): string {
+		return this.headerEl['id'];
+	}
+
+	get header(): string {
+		return this.headerEl.textContent;
 	}
 }
