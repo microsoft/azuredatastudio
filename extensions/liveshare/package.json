@@ -25,5 +25,20 @@
   },
   "dependencies": {
     "vsls": "^0.3.1291"
+  },
+
+  "contributes": {
+    "commands": [
+      {
+        "command": "collaboration.changeColorOfLiveShareHost",
+        "title": "Command 1",
+        "category": "Collaboraton"
+      },
+      {
+        "command": "collaboration.changeColorOfLiveShareGuest",
+        "title": "Command 2",
+        "category": "Collaboration"
+      }
+    ]
   }
 }
