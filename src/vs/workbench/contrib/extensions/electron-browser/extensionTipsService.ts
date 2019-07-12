@@ -634,7 +634,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 			this.storageService.store(
 				'extensionsAssistant/recommendations',
-				JSON.stringify(Object.keys(this._fileBasedRecommendations).reduce((result, key) => { result[key] = this._fileBasedRecommendations[key].recommendedTime; return result; }, {})),
+				JSON.stringify(Object.keys(this._fileBasedRecommendations).reduce((result, key) => { result[key] = this._fileBasedRecommendations[key].recommendedTime; return result; }, {} as { [key: string]: any })),
 				StorageScope.GLOBAL
 			);
 
@@ -947,7 +947,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		}
 
 		const storageKey = 'extensionsAssistant/dynamicWorkspaceRecommendations';
-		let storedRecommendationsJson = {};
+		let storedRecommendationsJson: { [key: string]: any } = {};
 		try {
 			storedRecommendationsJson = JSON.parse(this.storageService.get(storageKey, StorageScope.WORKSPACE, '{}'));
 		} catch (e) {
@@ -992,7 +992,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				if (context.res.statusCode !== 200) {
 					return Promise.resolve(undefined);
 				}
-				return asJson(context).then((result) => {
+				return asJson(context).then((result: { [key: string]: any }) => {
 					if (!result) {
 						return;
 					}
