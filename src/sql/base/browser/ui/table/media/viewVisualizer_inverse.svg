@@ -1,14 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 23.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 16 16" style="enable-background:new 0 0 16 16;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#FFFFFF;fill-opacity:0;}
-	.st1{fill:#FFFFFF;}
-</style>
-<title>files_Visulizer__16x</title>
-<path id="canvas-2" class="st0" d="M10.5,15.7H0.9V6.1h9.6V15.7z"/>
-<path id="iconBg" class="st1" d="M5.1,12.7H3.9v-2.4h1.2V12.7z M6.9,9.7H5.7v3h1.2V9.7z M8.7,7.3H7.5v5.4h1.2V7.3z M8.6,12.9
-	l-0.4,0.4l0.6,0.6H2.7V7.8l0.7,0.7L3.8,8L2.4,6.6L1,8l0.4,0.4l0.6-0.6v6.8h6.8l-0.7,0.7l0.4,0.4l1.4-1.4L8.6,12.9z"/>
-<path id="iconBg-2" class="st1" d="M15,2v12h-4.6c0-0.4,0-0.7,0-1H14V5H2v1.3H1V2H15z"/>
-</svg>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1,.cls-2{fill:#f6f6f6;}.cls-1{fill-opacity:0;}.cls-3{fill:#c5c5c5;}</style></defs><title>viewVisualizer</title><path id="canvas-2" class="cls-1" d="M10.89,16H0V5.13H10.89Z"/><path id="outline-2" class="cls-2" d="M.68,9.21V8.68h0L0,8.08V6.48L1.28,5.13H2l2.2,2.14L2.8,8.74l-.07-.07v.54h2V8.52H6.81V5.81l2.7,0v6.81h0L10.77,14v.73L9.64,16H7.85l-.58-.56.08-.08H.68Z"/><path id="iconBg" class="cls-3" d="M4.76,12.6H3.41V9.89H4.76ZM6.81,9.21H5.44V12.6H6.81Zm2-2.72H7.49V12.6H8.84Zm-.11,6.3-.47.48L9,14H2.05V7l.75.75.48-.49L1.71,5.73.15,7.29l.49.47.71-.71v7.63H9l-.75.76.48.47,1.62-1.57Z"/><path id="iconBg-2" class="cls-3" d="M16,.51V14.07H10.77V12.94h4.08v-9H1.28V5.32H.15V.51Z"/></svg>
