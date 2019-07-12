@@ -208,7 +208,7 @@ export class TreeViewDataProvider implements ITreeViewDataProvider {
 		if (current) {
 			const properties = distinct([...Object.keys(current), ...Object.keys(treeItem)]);
 			for (const property of properties) {
-				current[property] = treeItem[property];
+				(<any>current)[property] = (<any>treeItem)[property];
 			}
 		}
 	}

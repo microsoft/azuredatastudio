@@ -94,7 +94,7 @@ export interface IInitData {
 }
 
 export interface IConfigurationInitData extends IConfigurationData {
-	configurationScopes: { [key: string]: ConfigurationScope };
+	configurationScopes: [string, ConfigurationScope | undefined][];
 }
 
 export interface IWorkspaceConfigurationChangeEventData {

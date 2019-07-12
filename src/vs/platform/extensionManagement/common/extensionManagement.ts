@@ -39,7 +39,7 @@ export interface IGalleryExtensionAssets {
 	// {{SQL CARBON EDIT}}
 	downloadPage?: IGalleryExtensionAsset;
 	icon: IGalleryExtensionAsset;
-	coreTranslations: { [languageId: string]: IGalleryExtensionAsset };
+	coreTranslations: [string, IGalleryExtensionAsset][];
 }
 
 export function isIExtensionIdentifier(thing: any): thing is IExtensionIdentifier {
