@@ -119,32 +119,10 @@ export class GridRange {
 	 * The smallest position will be used as the start point, and the largest one as the end point.
 	 */
 	public static plusRange(a: IGridRange, b: IGridRange): GridRange {
-		let startRow: number;
-		let startColumn: number;
-		let endRow: number;
-		let endColumn: number;
-
-		if (b.startRow < a.startRow) {
-			startRow = b.startRow;
-			startColumn = b.startColumn;
-		} else if (b.startRow === a.startRow) {
-			startRow = b.startRow;
-			startColumn = Math.min(b.startColumn, a.startColumn);
-		} else {
-			startRow = a.startRow;
-			startColumn = a.startColumn;
-		}
-
-		if (b.endRow > a.endRow) {
-			endRow = b.endRow;
-			endColumn = b.endColumn;
-		} else if (b.endRow === a.endRow) {
-			endRow = b.endRow;
-			endColumn = Math.max(b.endColumn, a.endColumn);
-		} else {
-			endRow = a.endRow;
-			endColumn = a.endColumn;
-		}
+		let startRow = Math.min(a.startRow, b.startRow);
+		let startColumn = Math.min(a.startColumn, b.startColumn);
+		let endRow = Math.max(a.endRow, b.endRow);
+		let endColumn = Math.max(a.endColumn, b.endColumn);
 
 		return new GridRange(startRow, startColumn, endRow, endColumn);
 	}

@@ -202,35 +202,6 @@ class Trait<T> implements IDisposable {
 	}
 }
 
-/**
- * Given two sorted collections of numbers, returns the intersection
- * between them (OR).
- */
-// function disjunction(one: { row: number, column: number }[], other: { row: number, column: number }[]): { row: number, column: number }[] {
-// 	const result: number[] = [];
-// 	let i = 0, j = 0;
-
-// 	while (i < one.length || j < other.length) {
-// 		if (i >= one.length) {
-// 			result.push(other[j++]);
-// 		} else if (j >= other.length) {
-// 			result.push(one[i++]);
-// 		} else if (one[i] === other[j]) {
-// 			result.push(one[i]);
-// 			i++;
-// 			j++;
-// 			continue;
-// 		} else if (one[i] < other[j]) {
-// 			result.push(one[i++]);
-// 		} else {
-// 			result.push(other[j++]);
-// 		}
-// 	}
-
-// 	return result;
-// }
-
-
 class FocusTrait<T> extends Trait<T> {
 
 	constructor() {
