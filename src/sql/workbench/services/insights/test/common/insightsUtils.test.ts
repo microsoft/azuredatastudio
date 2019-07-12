@@ -62,7 +62,7 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	settingsSearchUrl?: string;
 	globalStorageHome: string;
 	workspaceStorageHome: string;
-	backupHome: string;
+	backupHome: URI;
 	backupWorkspacesPath: string;
 	untitledWorkspacesHome: URI;
 	isExtensionDevelopment: boolean;
