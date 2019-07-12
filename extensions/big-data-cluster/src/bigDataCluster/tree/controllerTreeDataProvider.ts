@@ -13,8 +13,8 @@ import { AddControllerNode } from './addControllerTreeNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { IEndPoint } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
+import { extensionMemento } from '../../extension';
 
-const ConfigNamespace = 'clusterControllers';
 const CredentialNamespace = 'clusterControllerCredentials';
 
 export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeNode>, IControllerTreeChangeHandler {
@@ -69,9 +69,9 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public async loadSavedControllers(): Promise<void> {
-		let config = vscode.workspace.getConfiguration(ConfigNamespace);
-		if (config && config.controllers) {
-			let controllers = config.controllers;
+		let controllers: { url: string, username: string, rememberPassword: boolean }[]
+			= extensionMemento.get('controllers');
+		if (controllers) {
 			this.root.clearChildren();
 			for (let c of controllers) {
 				let password = undefined;
@@ -107,7 +107,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		});
 
 		try {
-			await vscode.workspace.getConfiguration(ConfigNamespace).update('controllers', controllersWithoutPassword, true);
+			await extensionMemento.update('controllers', controllersWithoutPassword);
 		} catch (error) {
 			showErrorMessage(error);
 		}

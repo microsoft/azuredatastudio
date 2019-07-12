@@ -14,9 +14,11 @@ import { AddControllerDialogModel, AddControllerDialog } from './bigDataCluster/
 import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
 
 const localize = nls.loadMessageBundle();
+export let extensionMemento: vscode.Memento;
 
 export function activate(extensionContext: vscode.ExtensionContext) {
 	IconPath.setExtensionContext(extensionContext);
+	extensionMemento = extensionContext.globalState;
 	let treeDataProvider = new ControllerTreeDataProvider();
 
 	registerTreeDataProvider(treeDataProvider);
