@@ -9,7 +9,7 @@ import * as should from 'should';
 import * as azdata from 'azdata';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
-import { SchemaCompareResult } from './../schemaCompareResult';
+import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { SchemaCompareTestService } from './testSchemaCompareService';
 
 // Mock test data
@@ -54,7 +54,7 @@ const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
 
 describe('SchemaCompareDialog.openDialog', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareResult();
+		let schemaCompareResult = new SchemaCompareMainWindow();
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
@@ -69,7 +69,7 @@ describe('SchemaCompareResult.start', function (): void {
 		let sc = new SchemaCompareTestService();
 		azdata.dataprotocol.registerSchemaCompareServicesProvider(sc);
 
-		let result = new SchemaCompareResult();
+		let result = new SchemaCompareMainWindow();
 		await result.start(null);
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;

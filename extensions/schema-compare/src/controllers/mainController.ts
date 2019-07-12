@@ -7,7 +7,7 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SchemaCompareResult } from '../schemaCompareResult';
+import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 
 /**
  * The main controller class that initializes the extension
@@ -32,7 +32,7 @@ export default class MainController implements vscode.Disposable {
 	}
 
 	private initializeSchemaCompareDialog(): void {
-		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareResult().start(profile));
+		azdata.tasks.registerTask('schemaCompare.start', (profile: azdata.IConnectionProfile) => new SchemaCompareMainWindow().start(profile));
 	}
 
 	public dispose(): void {
