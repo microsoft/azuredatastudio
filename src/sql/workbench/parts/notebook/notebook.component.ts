@@ -132,8 +132,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this._register(this.themeService.onDidColorThemeChange(this.updateTheme, this));
 		this.updateTheme(this.themeService.getColorTheme());
 		this.initActionBar();
-		if (this.contextKeyService.getContextKeyValue(localize("isDevelopmentContextKey", "isDevelopment")) &&
-			this.contextKeyService.getContextKeyValue(localize("bookOpenedContextKey", "bookOpened"))) {
+		if (this.contextKeyService.getContextKeyValue('isDevelopment') &&
+			this.contextKeyService.getContextKeyValue('bookOpened')) {
 			this.initNavSection();
 		}
 		this.setScrollPosition();
