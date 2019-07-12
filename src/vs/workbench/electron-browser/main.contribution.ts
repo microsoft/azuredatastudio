@@ -23,7 +23,6 @@ import { ADD_ROOT_FOLDER_COMMAND_ID } from 'vs/workbench/browser/actions/workspa
 import { SupportsWorkspacesContext, IsMacContext, HasMacNativeTabsContext, IsDevelopmentContext, WorkbenchStateContext, WorkspaceFolderCountContext } from 'vs/workbench/browser/contextkeys';
 import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
-import { LogStorageAction } from 'vs/platform/storage/node/storageService';
 import product from 'vs/platform/product/node/product';
 
 // {{SQL CARBON EDIT}}
@@ -129,7 +128,6 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-brow
 		const developerCategory = nls.localize('developer', "Developer");
 		registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleSharedProcessAction, ToggleSharedProcessAction.ID, ToggleSharedProcessAction.LABEL), 'Developer: Toggle Shared Process', developerCategory);
 		registry.registerWorkbenchAction(new SyncActionDescriptor(ReloadWindowWithExtensionsDisabledAction, ReloadWindowWithExtensionsDisabledAction.ID, ReloadWindowWithExtensionsDisabledAction.LABEL), 'Developer: Reload Window With Extensions Disabled', developerCategory);
-		registry.registerWorkbenchAction(new SyncActionDescriptor(LogStorageAction, LogStorageAction.ID, LogStorageAction.LABEL), 'Developer: Log Storage Database Contents', developerCategory);
 		registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleDevToolsAction, ToggleDevToolsAction.ID, ToggleDevToolsAction.LABEL), 'Developer: Toggle Developer Tools', developerCategory);
 
 		KeybindingsRegistry.registerKeybindingRule({
