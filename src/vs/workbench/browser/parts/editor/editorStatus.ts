@@ -903,7 +903,7 @@ export class ChangeModeAction extends Action {
 
 			return {
 				label: lang,
-				iconClasses: getIconClasses(this.modelService, this.modeService, this.getResource(lang)),
+				iconClasses: getIconClasses(this.modelService, this.modeService, this.getFakeResource(lang)),
 				description
 			};
 		});
@@ -1007,7 +1007,7 @@ export class ChangeModeAction extends Action {
 			return {
 				id,
 				label: lang,
-				iconClasses: getIconClasses(this.modelService, this.modeService, this.getResource(lang)),
+				iconClasses: getIconClasses(this.modelService, this.modeService, this.getFakeResource(lang)),
 				description: (id === currentAssociation) ? nls.localize('currentAssociation', "Current Association") : undefined
 			};
 		});
@@ -1039,9 +1039,9 @@ export class ChangeModeAction extends Action {
 		}, 50 /* quick open is sensitive to being opened so soon after another */);
 	}
 
-	private getResource(lang: string): URI | undefined {
-		// construct a fake resource to be able to show nice icons if any
+	private getFakeResource(lang: string): URI | undefined {
 		let fakeResource: URI | undefined;
+
 		const extensions = this.modeService.getExtensions(lang);
 		if (extensions && extensions.length) {
 			fakeResource = URI.file(extensions[0]);
@@ -1051,6 +1051,7 @@ export class ChangeModeAction extends Action {
 				fakeResource = URI.file(filenames[0]);
 			}
 		}
+
 		return fakeResource;
 	}
 }
