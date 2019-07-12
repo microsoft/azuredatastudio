@@ -13,9 +13,15 @@ import { AddControllerNode } from './addControllerTreeNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { IEndPoint } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
-import { extensionMemento } from '../../extension';
 
 const CredentialNamespace = 'clusterControllerCredentials';
+
+interface IControllerInfoSlim {
+	url: string;
+	username: string;
+	password?: string;
+	rememberPassword: boolean;
+}
 
 export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeNode>, IControllerTreeChangeHandler {
 
@@ -24,7 +30,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	private root: ControllerRootNode;
 	private credentialProvider: azdata.CredentialProvider;
 
-	constructor() {
+	constructor(private memento: vscode.Memento) {
 		this.root = new ControllerRootNode(this);
 		this.loadSavedControllers();
 	}
@@ -69,8 +75,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public async loadSavedControllers(): Promise<void> {
-		let controllers: { url: string, username: string, rememberPassword: boolean }[]
-			= extensionMemento.get('controllers');
+		let controllers: IControllerInfoSlim[] = this.memento.get('controllers');
 		if (controllers) {
 			this.root.clearChildren();
 			for (let c of controllers) {
@@ -90,7 +95,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	public async saveControllers(): Promise<void> {
 		let controllers = this.root.children.map(e => {
 			let controller = e as ControllerNode;
-			return {
+			return <IControllerInfoSlim>{
 				url: controller.url,
 				username: controller.username,
 				password: controller.password,
@@ -99,7 +104,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		});
 
 		let controllersWithoutPassword = controllers.map(e => {
-			return {
+			return <IControllerInfoSlim>{
 				url: e.url,
 				username: e.username,
 				rememberPassword: e.rememberPassword
@@ -107,7 +112,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		});
 
 		try {
-			await extensionMemento.update('controllers', controllersWithoutPassword);
+			await this.memento.update('controllers', controllersWithoutPassword);
 		} catch (error) {
 			showErrorMessage(error);
 		}
