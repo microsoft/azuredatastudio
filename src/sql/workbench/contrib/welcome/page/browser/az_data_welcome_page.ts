@@ -39,7 +39,7 @@ export default () => `
 				<div class="section deploy" style="display:${showDeploySection() ? 'block' : 'none'}">
 					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
 					<ul>
-						<!--<li><a href="command:azdata.resource.sql-image.deploy">${escape(localize('welcomePage.deploy-image', "Deploy SQL Server on Docker…"))}</a></li>-->
+						<li><a href="command:azdata.resource.sql-image.deploy">${escape(localize('welcomePage.deploy-image', "Deploy SQL Server on Docker…"))}</a></li>
 						<li><a href="command:azdata.resource.sql-bdc.deploy">${escape(localize('welcomePage.deploy-bdc', "Deploy SQL Server big data cluster…"))}</a></li>
 						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.MoreOptions', "More…"))}</a></li>
 					</ul>
