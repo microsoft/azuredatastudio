@@ -117,7 +117,7 @@ export class GridTable<T> extends Disposable implements IView {
 
 		this.table = new Table<T>(this.tableContainer, this.columns, {
 			getRow: index => this.virtWindow.getIndex(index)
-		}, { rowHeight: this.rowHeight, headerHeight: HEADER_HEIGHT });
+		}, { rowHeight: this.rowHeight, headerHeight: HEADER_HEIGHT, rowCountColumn: false });
 		this.table.length = this.resultSet.rowCount;
 
 		this._register(attachHighPerfTableStyler(this.table, this.themeService));

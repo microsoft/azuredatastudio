@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
+import { ITableEvent, ITableRenderer, ITableMouseEvent, ITableContextMenuEvent, ITableDataSource, IStaticTableRenderer, ITableDragEvent } from 'sql/base/browser/ui/table/highPerf/table';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { memoize } from 'vs/base/common/decorators';
@@ -22,7 +22,7 @@ import { getOrDefault } from 'vs/base/common/objects';
 import { isNumber } from 'vs/base/common/types';
 import { clamp } from 'vs/base/common/numbers';
 import { GlobalMouseMoveMonitor } from 'vs/base/browser/globalMouseMoveMonitor';
-import { GridPosition } from 'sql/base/common/gridPosition';
+import { GridPosition, IGridPosition } from 'sql/base/common/gridPosition';
 import { GridRange, IGridRange } from 'sql/base/common/gridRange';
 
 interface ITraitChangeEvent {
@@ -440,7 +440,9 @@ export class MouseController<T> implements IDisposable {
 	private disposables: IDisposable[] = [];
 	private readonly _mouseMoveMonitor = new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();
 
-	constructor(protected table: Table<T>) {
+	private startMouseEvent: ITableMouseEvent<T>;
+
+	constructor(protected table: Table<T>, protected view: TableView<T>) {
 		this.multipleSelectionSupport = true;
 
 		if (this.multipleSelectionSupport) {
@@ -452,7 +454,7 @@ export class MouseController<T> implements IDisposable {
 		this.disposables.push(this._mouseMoveMonitor);
 
 		table.onMouseDown(this.onMouseDown, this, this.disposables);
-		table.onMouseClick(this.onPointer, this, this.disposables);
+		// table.onMouseClick(this.onPointer, this, this.disposables);
 		table.onContextMenu(this.onContextMenu, this, this.disposables);
 	}
 
@@ -480,11 +482,27 @@ export class MouseController<T> implements IDisposable {
 		if (document.activeElement !== e.browserEvent.target) {
 			this.table.domFocus();
 		}
+		const merger = (lastEvent: ITableMouseEvent<T>, currentEvent: MouseEvent): ITableMouseEvent<T> => {
+			return this.view.toMouseEvent(currentEvent);
+		};
+		this._mouseMoveMonitor.startMonitoring(merger, e => this.onMouseMove(e), () => this.onMouseStop());
+		this.onPointer(e);
 	}
 
 	private onContextMenu(e: ITableContextMenuEvent<T>): void {
 		const focus = typeof e.index === 'undefined' ? [] : [new GridRange(e.index.row, e.index.column)];
 		this.table.setFocus(focus, e.browserEvent);
+	}
+
+	protected onMouseMove(event: ITableMouseEvent<T>): void {
+		if (event.index) {
+			this.startMouseEvent = this.startMouseEvent || event;
+			this.table.setSelection([new GridRange(this.startMouseEvent.index.row, this.startMouseEvent.index.column, event.index.row, event.index.column)]);
+		}
+	}
+
+	protected onMouseStop(): void {
+		this.startMouseEvent = undefined;
 	}
 
 	protected onPointer(e: ITableMouseEvent<T>): void {
@@ -788,7 +806,7 @@ export class Table<T> implements IDisposable {
 	}
 
 	protected createMouseController(): MouseController<T> {
-		return new MouseController(this);
+		return new MouseController(this, this.view);
 	}
 
 	get length(): number {
@@ -833,6 +851,7 @@ export class Table<T> implements IDisposable {
 		// }
 
 		this.focus.set(indexes, browserEvent);
+		this.selection.set(indexes, browserEvent);
 	}
 
 	reveal(index: number, relativeTop?: number): void {
@@ -869,7 +888,7 @@ export class Table<T> implements IDisposable {
 		const targetColumn = this.findNextColumn(cellIndex + n, loop, filter);
 		const targetRow = focus.length > 0 ? focus[0].startRow : 0;
 
-		if (targetColumn) {
+		if (targetColumn > -1) {
 			this.setFocus([new GridRange(targetRow, targetColumn)], browserEvent);
 		}
 	}
@@ -882,7 +901,7 @@ export class Table<T> implements IDisposable {
 		const targetColumn = this.findPreviousColumn(cellIndex - n, loop, filter);
 		const targetRow = focus.length > 0 ? focus[0].startRow : 0;
 
-		if (targetColumn) {
+		if (targetColumn > -1) {
 			this.setFocus([new GridRange(targetRow, targetColumn)], browserEvent);
 		}
 	}

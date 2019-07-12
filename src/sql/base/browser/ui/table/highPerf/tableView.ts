@@ -692,14 +692,14 @@ export class TableView<T> implements IDisposable {
 	@memoize get onMouseOut(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'mouseout'), e => this.toMouseEvent(e)); }
 	@memoize get onContextMenu(): Event<ITableMouseEvent<T>> { return Event.map(domEvent(this.domNode, 'contextmenu'), e => this.toMouseEvent(e)); }
 
-	private toMouseEvent(browserEvent: MouseEvent): ITableMouseEvent<T> {
+	public toMouseEvent(browserEvent: MouseEvent): ITableMouseEvent<T> {
 		const index = this.getItemIndexFromEventTarget(browserEvent.target || null);
 		const item = typeof index === 'undefined' ? undefined : this.visibleRows[index.row];
 		const element = item && item.element;
 		return { browserEvent, index, element };
 	}
 
-	private getItemIndexFromEventTarget(target: EventTarget | null): GridPosition | undefined {
+	public getItemIndexFromEventTarget(target: EventTarget | null): GridPosition | undefined {
 		let element: HTMLElement | null = target as (HTMLElement | null);
 
 		while (element instanceof HTMLElement && element !== this.rowsContainer) {
@@ -708,7 +708,7 @@ export class TableView<T> implements IDisposable {
 			if (rawColumn) {
 				const column = Number(rawColumn);
 
-				if (column) {
+				if (!isNaN(column)) {
 					while (element instanceof HTMLElement && element !== this.rowsContainer) {
 						const rawIndex = element.getAttribute('data-index');
 

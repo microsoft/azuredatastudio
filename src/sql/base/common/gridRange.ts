@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IGridPosition, GridPosition } from 'sql/base/common/gridPosition';
+import { isNumber } from 'vs/base/common/types';
 
 /**
  * A range in a grid. This interface is suitable for serialization.
@@ -50,17 +51,10 @@ export class GridRange {
 	public readonly endColumn: number;
 
 	constructor(startRow: number, startColumn: number, endRow?: number, endColumn?: number) {
-		if (endRow && endColumn && ((startRow > endRow) || (startRow === endRow && startColumn > endColumn))) {
-			this.startRow = endRow;
-			this.startColumn = endColumn;
-			this.endRow = startRow;
-			this.endColumn = startColumn;
-		} else {
-			this.startRow = startRow;
-			this.startColumn = startColumn;
-			this.endRow = endRow || startRow;
-			this.endColumn = endColumn || startColumn;
-		}
+		this.startRow = isNumber(endRow) ? Math.min(startRow, endRow) : startRow;
+		this.startColumn = isNumber(endColumn) ? Math.min(startColumn, endColumn) : startColumn;
+		this.endRow = isNumber(endRow) ? Math.max(endRow, startRow) : startRow;
+		this.endColumn = isNumber(endColumn) ? Math.max(endColumn, startColumn) : startColumn;
 	}
 
 	/**

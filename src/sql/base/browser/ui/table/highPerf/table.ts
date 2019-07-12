@@ -40,3 +40,8 @@ export interface ITableContextMenuEvent<T> {
 	index: IGridPosition | undefined;
 	anchor: HTMLElement | { x: number; y: number; };
 }
+
+export interface ITableDragEvent {
+	start: IGridPosition;
+	current: IGridPosition;
+}
