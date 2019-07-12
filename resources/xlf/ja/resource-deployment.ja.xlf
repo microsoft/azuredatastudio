@@ -4,23 +4,23 @@
     <body>
       <trans-unit id="extension-displayName">
         <source xml:lang="en">SQL Server Deployment extension for Azure Data Studio</source>
-        <target state="new">SQL Server Deployment extension for Azure Data Studio</target>
+        <target state="translated">Azure Data Studio 用の SQL Server 配置拡張</target>
       </trans-unit>
       <trans-unit id="extension-description">
         <source xml:lang="en">Provides a notebook-based experience to deploy Microsoft SQL Server</source>
-        <target state="new">Provides a notebook-based experience to deploy Microsoft SQL Server</target>
+        <target state="translated">Microsoft SQL Server を展開するためのノートブック ベースのエクスペリエンスを提供します</target>
       </trans-unit>
       <trans-unit id="deploy-sql-image-command-name">
         <source xml:lang="en">Deploy SQL Server on Docker…</source>
-        <target state="new">Deploy SQL Server on Docker…</target>
+        <target state="translated">SQL Server を Docker に展開します...</target>
       </trans-unit>
       <trans-unit id="deploy-sql-bdc-command-name">
         <source xml:lang="en">Deploy SQL Server big data cluster…</source>
-        <target state="new">Deploy SQL Server big data cluster…</target>
+        <target state="translated">SQL Server Big Data Cluster を展開します…</target>
       </trans-unit>
       <trans-unit id="deploy-resource-command-name">
         <source xml:lang="en">Deploy SQL Server…</source>
-        <target state="new">Deploy SQL Server…</target>
+        <target state="translated">SQL Server の展開...</target>
       </trans-unit>
       <trans-unit id="deploy-resource-command-category">
         <source xml:lang="en">Deployment</source>
@@ -28,11 +28,11 @@
       </trans-unit>
       <trans-unit id="resource-type-sql-image-display-name">
         <source xml:lang="en">SQL Server container image</source>
-        <target state="new">SQL Server container image</target>
+        <target state="translated">SQL Server コンテナー イメージ</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-image-description">
         <source xml:lang="en">Run SQL Server container image with Docker</source>
-        <target state="new">Run SQL Server container image with Docker</target>
+        <target state="translated">Docker を使用して SQL Server コンテナー イメージを実行する</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-display-name">
         <source xml:lang="en">SQL Server big data cluster</source>
@@ -40,7 +40,7 @@
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-description">
         <source xml:lang="en">SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
-        <target state="new">SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</target>
+        <target state="translated">SQL Server Big Data Cluster を使用すると、Kubernetes で実行されている SQL Server、Spark、および HDFS のコンテナーのスケーラブルなクラスターをデプロイできます。</target>
       </trans-unit>
       <trans-unit id="version-display-name">
         <source xml:lang="en">Version</source>
@@ -48,27 +48,27 @@
       </trans-unit>
       <trans-unit id="sql-2017-display-name">
         <source xml:lang="en">SQL Server 2017</source>
-        <target state="new">SQL Server 2017</target>
+        <target state="translated">SQL Server 2017</target>
       </trans-unit>
       <trans-unit id="sql-2019-display-name">
         <source xml:lang="en">SQL Server 2019</source>
-        <target state="new">SQL Server 2019</target>
+        <target state="translated">SQL Server 2019</target>
       </trans-unit>
       <trans-unit id="sql-2017-docker-notebook">
         <source xml:lang="en">./notebooks/docker/2017/deploy-sql2017-image.ipynb</source>
-        <target state="new">./notebooks/docker/2017/deploy-sql2017-image.ipynb</target>
+        <target state="translated">./notebooks/docker/2017/deploy-sql2017-image.ipynb</target>
       </trans-unit>
       <trans-unit id="sql-2019-docker-notebook">
         <source xml:lang="en">./notebooks/docker/2019/deploy-sql2019-image.ipynb</source>
-        <target state="new">./notebooks/docker/2019/deploy-sql2019-image.ipynb</target>
+        <target state="translated">./notebooks/docker/2019/deploy-sql2019-image.ipynb</target>
       </trans-unit>
       <trans-unit id="sql-2019ctp31-display-name">
         <source xml:lang="en">SQL Server 2019 big data cluster CTP 3.1</source>
-        <target state="new">SQL Server 2019 big data cluster CTP 3.1</target>
+        <target state="translated">SQL Server 2019 Big Data Cluster CTP 3.1</target>
       </trans-unit>
       <trans-unit id="bdc-deployment-target">
         <source xml:lang="en">Deployment target</source>
-        <target state="new">Deployment target</target>
+        <target state="translated">配置ターゲット</target>
       </trans-unit>
       <trans-unit id="bdc-deployment-target-aks">
         <source xml:lang="en">New Azure Kubernetes Service Cluster</source>
@@ -80,11 +80,11 @@
       </trans-unit>
       <trans-unit id="bdc-ctp31-aks-notebook">
         <source xml:lang="en">./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb</source>
-        <target state="new">./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb</target>
+        <target state="translated">./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb</target>
       </trans-unit>
       <trans-unit id="bdc-ctp31-existing-cluster-notebook">
         <source xml:lang="en">./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb</source>
-        <target state="new">./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb</target>
+        <target state="translated">./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb</target>
       </trans-unit>
     </body>
   </file>
@@ -92,11 +92,11 @@
     <body>
       <trans-unit id="resourceDeployment.MssqlCtlDescription">
         <source xml:lang="en">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs</source>
-        <target state="new">A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs</target>
+        <target state="translated">Python で作成されたコマンドライン ユーティリティを使用すると、クラスター管理者は REST API を介してビッグ データ クラスターをブートストラップおよび管理できます</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.MssqlCtlDisplayName">
         <source xml:lang="en">mssqlctl</source>
-        <target state="new">mssqlctl</target>
+        <target state="translated">mssqlctl</target>
       </trans-unit>
     </body>
   </file>
@@ -104,11 +104,11 @@
     <body>
       <trans-unit id="resourceDeployment.KubeCtlDescription">
         <source xml:lang="en">A command-line tool allows you to run commands against Kubernetes clusters</source>
-        <target state="new">A command-line tool allows you to run commands against Kubernetes clusters</target>
+        <target state="translated">コマンドライン ツールを使用すると、Kubernetes クラスターに対してコマンドを実行できます。</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.KubeCtlDisplayName">
         <source xml:lang="en">kubectl</source>
-        <target state="new">kubectl</target>
+        <target state="translated">kubectl</target>
       </trans-unit>
     </body>
   </file>
@@ -116,7 +116,7 @@
     <body>
       <trans-unit id="resourceDeployment.DockerDescription">
         <source xml:lang="en">Provides the ability to package and run an application in isolated containers</source>
-        <target state="new">Provides the ability to package and run an application in isolated containers</target>
+        <target state="translated">分離されたコンテナーでアプリケーションをパッケージ化して実行する機能を提供します</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.DockerDisplayName">
         <source xml:lang="en">Docker</source>
@@ -128,27 +128,11 @@
     <body>
       <trans-unit id="resourceDeployment.AzCLIDescription">
         <source xml:lang="en">A command-line tool for managing Azure resources</source>
-        <target state="new">A command-line tool for managing Azure resources</target>
+        <target state="translated">Azure リソースを管理するためのコマンド ライン ツール</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.AzCLIDisplayName">
         <source xml:lang="en">Azure CLI</source>
-        <target state="new">Azure CLI</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/out/services/resourceTypeService" source-language="en" target-language="ja" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.extensionFullNameError">
-        <source xml:lang="en">Could not find package.json or the name/publisher is not set</source>
-        <target state="new">Could not find package.json or the name/publisher is not set</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/out/services/notebookService" source-language="en" target-language="ja" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.notebookNotFound">
-        <source xml:lang="en">The notebook {0} does not exist</source>
-        <target state="new">The notebook {0} does not exist</target>
+        <target state="translated">Azure CLI</target>
       </trans-unit>
     </body>
   </file>
@@ -156,11 +140,11 @@
     <body>
       <trans-unit id="deploymentDialog.title">
         <source xml:lang="en">Select the deployment options</source>
-        <target state="new">Select the deployment options</target>
+        <target state="translated">配置オプションを選択します</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.OKButtonText">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">ノートブックを開く</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.toolNameColumnHeader">
         <source xml:lang="en">Tool</source>
@@ -180,15 +164,31 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/resource-deployment/out/services/resourceTypeService" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.extensionFullNameError">
+        <source xml:lang="en">Could not find package.json or the name/publisher is not set</source>
+        <target state="translated">package.json が見つからないか、名前/発行元が設定されていません</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/out/services/notebookService" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.notebookNotFound">
+        <source xml:lang="en">The notebook {0} does not exist</source>
+        <target state="translated">ノートブック {0} が存在しません</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/resource-deployment/out/main" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="resourceDeployment.FailedToLoadExtension">
         <source xml:lang="en">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</source>
-        <target state="new">Failed to load extension: {0}, Error detected in the resource type definition in package.json, check debug console for details.</target>
+        <target state="translated">拡張機能を読み込めませんでした: {0}。package.json のリソースの種類の定義でエラーが検出されました。詳しくは、デバッグ コンソールを確認してください。</target>
       </trans-unit>
       <trans-unit id="resourceDeployment.UnknownResourceType">
         <source xml:lang="en">The resource type: {0} is not defined</source>
-        <target state="new">The resource type: {0} is not defined</target>
+        <target state="translated">リソースの種類: {0} が定義されていません</target>
       </trans-unit>
     </body>
   </file>

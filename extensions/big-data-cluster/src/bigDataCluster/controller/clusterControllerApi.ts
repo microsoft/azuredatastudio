@@ -77,7 +77,6 @@ export interface IEndPointsRequest {
 }
 
 export interface IEndPointsResponse {
-	request?: IEndPointsRequest;
 	response: IHttpResponse;
 	endPoints: IEndPoint[];
 }

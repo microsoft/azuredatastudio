@@ -13,5 +13,6 @@
 	"createSessionDialog.dialogOwnerInvalid": "Ungültiger Besitzer für Dialogfeld. Dialogfeld kann nicht geöffnet werden.",
 	"createSessionDialog.invalidProviderType": "Ungültiger Anbietertyp. Dialogfeld kann nicht geöffnet werden.",
 	"createSessionDialog.selectTemplates": "Sitzungsvorlage auswählen:",
-	"createSessionDialog.enterSessionName": "Sitzungsnamen eingeben:"
+	"createSessionDialog.enterSessionName": "Sitzungsnamen eingeben:",
+	"createSessionDialog.createSessionFailed": "Fehler beim Erstellen einer Sitzung."
 }
