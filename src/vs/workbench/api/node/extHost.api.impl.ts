@@ -264,7 +264,6 @@ export function createApiFactory(
 				return extHostClipboard;
 			},
 			get shell() {
-				checkProposedApiEnabled(extension);
 				return extHostTerminalService.getDefaultShell(configProvider);
 			},
 			openExternal(uri: URI) {
