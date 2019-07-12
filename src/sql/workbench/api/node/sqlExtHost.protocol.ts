@@ -913,6 +913,7 @@ export interface INotebookShowOptions {
 export interface ExtHostNotebookDocumentsAndEditorsShape {
 	$acceptDocumentsAndEditorsDelta(delta: INotebookDocumentsAndEditorsDelta): void;
 	$acceptModelChanged(strURL: UriComponents, e: INotebookModelChangedData);
+	$getNavigation(handle: number, uri: vscode.Uri): Thenable<azdata.nb.NavigationResult>;
 }
 
 export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable {
@@ -924,6 +925,7 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 	$clearOutput(id: string, cellUri: UriComponents): Promise<boolean>;
 	$clearAllOutputs(id: string): Promise<boolean>;
 	$changeKernel(id: string, kernel: azdata.nb.IKernelInfo): Promise<boolean>;
+	$registerNavigationProvider(providerId: string, handle: number);
 }
 
 export interface ExtHostExtensionManagementShape {
