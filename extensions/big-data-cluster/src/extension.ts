@@ -17,7 +17,7 @@ const localize = nls.loadMessageBundle();
 
 export function activate(extensionContext: vscode.ExtensionContext) {
 	IconPath.setExtensionContext(extensionContext);
-	let treeDataProvider = new ControllerTreeDataProvider();
+	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
 
 	registerTreeDataProvider(treeDataProvider);
 	registerCommands(treeDataProvider);
