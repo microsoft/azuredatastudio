@@ -511,7 +511,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 				if (terminal) {
 					callback(terminal);
 				}
-			}, EXT_HOST_CREATION_DELAY);
+			}, EXT_HOST_CREATION_DELAY * 2);
 		}
 	}
 
@@ -795,6 +795,10 @@ class ExtHostVirtualProcess implements ITerminalChildProcess {
 		}
 		if (this._virtualProcess.onDidOverrideDimensions) {
 			this._virtualProcess.onDidOverrideDimensions(e => this._onProcessOverrideDimensions.fire(e ? { cols: e.columns, rows: e.rows } : undefined)); // {{SQL CARBON EDIT}} strict-null-check
+		}
+
+		if (this._virtualProcess.start) {
+			this._virtualProcess.start();
 		}
 	}
 }
