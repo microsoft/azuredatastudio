@@ -90,8 +90,8 @@ const vscodeResources = [
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
 	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
-	'out-build/vs/workbench/services/files/**/*.exe',
-	'out-build/vs/workbench/services/files/**/*.md',
+	'out-build/vs/platform/files/**/*.exe',
+	'out-build/vs/platform/files/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
@@ -481,6 +481,8 @@ const apiToken = process.env.TRANSIFEX_API_TOKEN;
 gulp.task(task.define(
 	'vscode-translations-push',
 	task.series(
+		compileBuildTask,
+		compileExtensionsBuildTask,
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -500,6 +502,8 @@ gulp.task(task.define(
 gulp.task(task.define(
 	'vscode-translations-export',
 	task.series(
+		compileBuildTask,
+		compileExtensionsBuildTask,
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';

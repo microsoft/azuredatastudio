@@ -6,7 +6,7 @@
 import { localize } from 'vs/nls';
 import { join } from 'vs/base/common/path';
 import { forEach } from 'vs/base/common/collections';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { match } from 'vs/base/common/glob';
 import * as json from 'vs/base/common/json';
 import {
@@ -33,8 +33,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { guessMimeTypes, MIME_UNKNOWN } from 'vs/base/common/mime';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { getHashedRemotesFromUri } from 'vs/workbench/contrib/stats/electron-browser/workspaceStats';
-import { IRequestService } from 'vs/platform/request/node/request';
-import { asJson } from 'vs/base/node/request';
+import { IRequestService, asJson } from 'vs/platform/request/common/request';
 import { isNumber } from 'vs/base/common/types';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -86,7 +85,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private _globallyIgnoredRecommendations: string[] = [];
 	private _workspaceIgnoredRecommendations: string[] = [];
 	private _extensionsRecommendationsUrl: string;
-	private _disposables: IDisposable[] = [];
 	public loadWorkspaceConfigPromise: Promise<void>;
 	private proactiveRecommendationsFetched: boolean = false;
 
@@ -138,13 +136,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			this.fetchProactiveRecommendations(true);
 		}
 
-		// {{SQL CARBON EDIT}} disable extension recommendation prompt
-		this.loadWorkspaceConfigPromise = this.getWorkspaceRecommendations().then();
-		// .then(() => {
-		// 	this.promptWorkspaceRecommendations();
-		// 	this._modelService.onModelAdded(this.promptFiletypeBasedRecommendations, this, this._disposables);
-		// 	this._modelService.getModels().forEach(model => this.promptFiletypeBasedRecommendations(model));
-		// });
+		this.loadWorkspaceConfigPromise = this.getWorkspaceRecommendations().then(); // {{SQL CARBON EDIT}} disable workspace recommandations
 
 		this._register(this.contextService.onDidChangeWorkspaceFolders(e => this.onWorkspaceFoldersChanged(e)));
 		this._register(this.configurationService.onDidChangeConfiguration(e => {
@@ -1048,9 +1040,5 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	private isExtensionAllowedToBeRecommended(id: string): boolean {
 		return this._allIgnoredRecommendations.indexOf(id.toLowerCase()) === -1;
-	}
-
-	dispose() {
-		this._disposables = dispose(this._disposables);
 	}
 }

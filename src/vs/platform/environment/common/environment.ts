@@ -129,9 +129,6 @@ export interface IEnvironmentService {
 	machineSettingsHome: URI;
 	machineSettingsResource: URI;
 
-	settingsSearchBuildId?: number;
-	settingsSearchUrl?: string;
-
 	globalStorageHome: string;
 	workspaceStorageHome: string;
 
