@@ -9,10 +9,11 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
-import { AddControllerNode } from './addControllerTreeNode';
+import { AddControllerNode } from './addControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { IEndPoint } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
+import { LoadingControllerNode } from './loadingControllerNode';
 
 const CredentialNamespace = 'clusterControllerCredentials';
 
@@ -32,7 +33,6 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 	constructor(private memento: vscode.Memento) {
 		this.root = new ControllerRootNode(this);
-		this.loadSavedControllers();
 	}
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
@@ -42,13 +42,18 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 		if (this.root.hasChildren) {
 			return this.root.getChildren();
-		} else {
-			return [new AddControllerNode()];
 		}
+
+		this.loadSavedControllers();
+		return [new LoadingControllerNode()];
 	}
 
 	public getTreeItem(element: TreeNode): vscode.TreeItem | Thenable<vscode.TreeItem> {
 		return element.getTreeItem();
+	}
+
+	public notifyNodeChanged(node?: TreeNode): void {
+		this._onDidChangeTreeData.fire(node);
 	}
 
 	public addController(
@@ -58,6 +63,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		rememberPassword: boolean,
 		masterInstance?: IEndPoint
 	): void {
+		this.removeNonControllerNodes();
 		this.root.addControllerNode(url, username, password, rememberPassword, masterInstance);
 		this.notifyNodeChanged();
 	}
@@ -70,14 +76,42 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		return deleted;
 	}
 
-	public notifyNodeChanged(node?: TreeNode): void {
-		this._onDidChangeTreeData.fire(node);
+	private removeNonControllerNodes(): void {
+		this.removePlaceholderNodes();
+		this.removeDefectiveControllerNodes();
 	}
 
-	public async loadSavedControllers(): Promise<void> {
+	private removePlaceholderNodes(): void {
+		let nodes = this.root.children;
+		if (nodes.length > 0) {
+			for (let i = 0; i < nodes.length; ++i) {
+				if (nodes[i] instanceof AddControllerNode ||
+					nodes[i] instanceof LoadingControllerNode
+				) {
+					nodes.splice(i--, 1);
+				}
+			}
+		}
+	}
+
+	private removeDefectiveControllerNodes(): void {
+		let nodes = this.root.children;
+		if (nodes.length > 0) {
+			for (let i = 0; i < nodes.length; ++i) {
+				if (nodes[i] instanceof ControllerNode) {
+					let controller = nodes[i] as ControllerNode;
+					if (!controller.url || !controller.id) {
+						nodes.splice(i--, 1);
+					}
+				}
+			}
+		}
+	}
+
+	private async loadSavedControllers(): Promise<void> {
+		this.root.clearChildren();
 		let controllers: IControllerInfoSlim[] = this.memento.get('controllers');
 		if (controllers) {
-			this.root.clearChildren();
 			for (let c of controllers) {
 				let password = undefined;
 				if (c.rememberPassword) {
@@ -88,8 +122,14 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 					undefined, this.root, this, undefined
 				));
 			}
-			this.notifyNodeChanged();
+			this.removeDefectiveControllerNodes();
 		}
+
+		if (!this.root.hasChildren) {
+			this.root.addChild(new AddControllerNode());
+		}
+
+		this.notifyNodeChanged();
 	}
 
 	public async saveControllers(): Promise<void> {
