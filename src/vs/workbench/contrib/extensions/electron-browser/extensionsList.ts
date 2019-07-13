@@ -118,7 +118,7 @@ export class Renderer implements IPagedRenderer<IExtension, ITemplateData> {
 		const extensionContainers: ExtensionContainers = this.instantiationService.createInstance(ExtensionContainers, [...actions, ...widgets, disabledLabelAction]);
 
 		actionbar.push(actions, actionOptions);
-		const disposables = combinedDisposable(...actions, ...widgets, actionbar, extensionContainers);
+		const disposables = combinedDisposable(...actions, ...widgets, actionbar, extensionContainers, disabledLabelAction);
 
 		return {
 			// {{SQL CARBON EDIT}}
