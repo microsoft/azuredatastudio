@@ -33,7 +33,7 @@ enum ResetButtonState {
 	afterCompareComplete
 }
 
-export class SchemaCompareResult {
+export class SchemaCompareMainWindow {
 	private differencesTable: azdata.TableComponent;
 	private loader: azdata.LoadingComponent;
 	private startText: azdata.TextComponent;
@@ -268,7 +268,7 @@ export class SchemaCompareResult {
 
 	public async execute(): Promise<void> {
 		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
-		const service = await SchemaCompareResult.getService(msSqlProvider);
+		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 		if (!this.operationId) {
 			// create once per page
 			this.operationId = generateGuid();
@@ -584,7 +584,7 @@ export class SchemaCompareResult {
 
 		// cancel compare
 		if (this.operationId) {
-			const service = await SchemaCompareResult.getService(msSqlProvider);
+			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 			const result = await service.schemaCompareCancel(this.operationId);
 
 			if (!result || !result.success) {
@@ -616,7 +616,7 @@ export class SchemaCompareResult {
 				'startTime:': Date.now().toString(),
 				'operationId': this.comparisonResult.operationId
 			});
-			const service = await SchemaCompareResult.getService(msSqlProvider);
+			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 			const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptFailed', {
@@ -677,7 +677,7 @@ export class SchemaCompareResult {
 					// disable apply and generate script buttons because the results are no longer valid after applying the changes
 					this.setButtonsForRecompare();
 
-					const service = await SchemaCompareResult.getService(msSqlProvider);
+					const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 					if (!result || !result.success) {
 						Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
@@ -863,7 +863,7 @@ export class SchemaCompareResult {
 			}
 
 			let fileUri = fileUris[0];
-			const service = await SchemaCompareResult.getService('MSSQL');
+			const service = await SchemaCompareMainWindow.getService('MSSQL');
 			let startTime = Date.now();
 			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
 			if (!result || !result.success) {
@@ -962,7 +962,7 @@ export class SchemaCompareResult {
 
 			let startTime = Date.now();
 			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmp');
-			const service = await SchemaCompareResult.getService(msSqlProvider);
+			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpFailed', {
@@ -1012,7 +1012,7 @@ export class SchemaCompareResult {
 
 	private async GetDefaultDeploymentOptions(): Promise<void> {
 		// Same as dacfx default options
-		const service = await SchemaCompareResult.getService(msSqlProvider);
+		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 	}

@@ -7,7 +7,7 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { SchemaCompareResult } from '../schemaCompareResult';
+import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 
 const localize = nls.loadMessageBundle();
 
@@ -410,7 +410,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ServerTriggers
 	].sort();
 
-	constructor(defaultOptions: azdata.DeploymentOptions, private schemaComparison: SchemaCompareResult) {
+	constructor(defaultOptions: azdata.DeploymentOptions, private schemaComparison: SchemaCompareMainWindow) {
 		this.deploymentOptions = defaultOptions;
 	}
 
