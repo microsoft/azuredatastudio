@@ -327,7 +327,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
+		@INotebookService private readonly _notebookService: INotebookService
 	) {
 		super();
 		if (extHostContext) {
@@ -683,6 +684,24 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				resolve(true);
 			}));
 			this._modelToDisposeMap.set(editor.id, listeners);
+		});
+	}
+
+	$registerNavigationProvider(providerId: string, handle: number): void {
+		this._notebookService.registerNavigationProvider({
+			providerId: providerId,
+			onNext: async (uri) => {
+				let result = await this._proxy.$getNavigation(handle, uri);
+				if (result) {
+					this.doOpenEditor(result.next, {});
+				}
+			},
+			onPrevious: async (uri) => {
+				let result = await this._proxy.$getNavigation(handle, uri);
+				if (result) {
+					this.doOpenEditor(result.previous, {});
+				}
+			}
 		});
 	}
 }

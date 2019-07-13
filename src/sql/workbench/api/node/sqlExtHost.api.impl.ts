@@ -499,6 +499,9 @@ export function createApiFactory(
 				registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 					return extHostNotebook.registerNotebookProvider(provider);
 				},
+				registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
+					return extHostNotebookDocumentsAndEditors.registerNavigationProvider(provider);
+				},
 				CellRange: sqlExtHostTypes.CellRange,
 				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
