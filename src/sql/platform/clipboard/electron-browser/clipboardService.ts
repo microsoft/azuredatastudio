@@ -67,4 +67,8 @@ export class ClipboardService implements IClipboardService {
 	hasResources(): boolean {
 		return this._vsClipboardService.hasResources();
 	}
+
+	readTextSync(): string {
+		return this._vsClipboardService.readTextSync();
+	}
 }

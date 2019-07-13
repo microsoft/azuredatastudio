@@ -62,7 +62,6 @@ bootstrapWindow.load([
 	});
 
 /**
- * // configuration: IWindowConfiguration
  * @param {{
  *	partsSplashPath?: string,
  *	highContrast?: boolean,
