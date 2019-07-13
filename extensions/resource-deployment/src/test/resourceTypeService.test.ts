@@ -21,9 +21,9 @@ suite('Resource Type Service Tests', function (): void {
 		const resourceTypeService = new ResourceTypeService(mockPlatformService.object, toolsService);
 		// index 0: platform name, index 1: number of expected resource types
 		const platforms: { platform: string; resourceTypeCount: number }[] = [
-			{ platform: 'win32', resourceTypeCount: 1 },
-			{ platform: 'darwin', resourceTypeCount: 1 },
-			{ platform: 'linux', resourceTypeCount: 1 }];
+			{ platform: 'win32', resourceTypeCount: 2 },
+			{ platform: 'darwin', resourceTypeCount: 2 },
+			{ platform: 'linux', resourceTypeCount: 2 }];
 		const totalResourceTypeCount = 1;
 		platforms.forEach(platformInfo => {
 			mockPlatformService.reset();
