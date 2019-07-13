@@ -79,6 +79,9 @@ export class GridTable<T> extends Disposable implements IView {
 		return ((this.resultSet.rowCount) * this.rowHeight) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_SIZE;
 	}
 
+	// worthless for this table
+	public isOnlyTable: boolean;
+
 	constructor(
 		private readonly runner: QueryRunner,
 		private _resultSet: azdata.ResultSetSummary,

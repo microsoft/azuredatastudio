@@ -539,7 +539,7 @@ export class TableView<T> implements IDisposable {
 
 	domElement(index: number, column: number): HTMLElement | null {
 		const row = this.visibleRows[index];
-		const cell = row && row.cells[column];
+		const cell = row && row.cells && row.cells[column];
 		return cell && cell.domNode;
 	}
 

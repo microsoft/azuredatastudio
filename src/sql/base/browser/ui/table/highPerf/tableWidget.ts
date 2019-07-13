@@ -440,7 +440,7 @@ export class MouseController<T> implements IDisposable {
 	private disposables: IDisposable[] = [];
 	private readonly _mouseMoveMonitor = new GlobalMouseMoveMonitor<ITableMouseEvent<T>>();
 
-	private startMouseEvent: ITableMouseEvent<T>;
+	private startMouseEvent?: ITableMouseEvent<T>;
 
 	constructor(protected table: Table<T>, protected view: TableView<T>) {
 		this.multipleSelectionSupport = true;
@@ -497,7 +497,7 @@ export class MouseController<T> implements IDisposable {
 	protected onMouseMove(event: ITableMouseEvent<T>): void {
 		if (event.index) {
 			this.startMouseEvent = this.startMouseEvent || event;
-			this.table.setSelection([new GridRange(this.startMouseEvent.index.row, this.startMouseEvent.index.column, event.index.row, event.index.column)]);
+			this.table.setSelection([new GridRange(this.startMouseEvent.index!.row, this.startMouseEvent.index!.column, event.index.row, event.index.column)]);
 		}
 	}
 
@@ -544,7 +544,11 @@ export class MouseController<T> implements IDisposable {
 		if (this.isSelectionRangeChangeEvent(e) && reference !== undefined) {
 			const selection = this.table.getSelection();
 			const lastSelection = selection.pop();
-			this.table.setSelection([...selection, GridRange.plusRange(lastSelection, new GridRange(focus.row, focus.column))]);
+			if (lastSelection) {
+				this.table.setSelection([...selection, GridRange.plusRange(lastSelection, new GridRange(focus.row, focus.column))]);
+			} else {
+				this.table.setSelection([...selection, new GridRange(focus.row, focus.column)]);
+			}
 		} else if (this.isSelectionSingleChangeEvent(e)) {
 			const selection = this.table.getSelection();
 			selection.push(new GridRange(focus.row, focus.column));
