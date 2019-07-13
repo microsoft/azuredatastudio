@@ -345,14 +345,15 @@ async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionPr
 	if (!Utils.fileExists(notebookFullPath)) {
 		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
 	} else {
-		const title: string = Utils.getSaveableFileName(notebookFullPath);
+		const title: string = path.basename(notebookFullPath, '.ipynb');
 		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
 		vscode.workspace.openTextDocument(notebookFullPath).then((document) => {
 			let initialContent = document.getText();
 			azdata.nb.showNotebookDocument(untitledFileName, {
 				connectionProfile: profile,
 				preview: true,
-				initialContent: initialContent
+				initialContent: initialContent,
+				initialDirtyState: false
 			});
 		});
 	}

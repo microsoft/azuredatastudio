@@ -459,6 +459,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			let untitledModel = await input.textInput.resolve();
 			await untitledModel.load();
 			input.untitledEditorModel = untitledModel;
+			if (options.initialDirtyState === false) {
+				input.untitledEditorModel.setDirty(false);
+			}
 		}
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {

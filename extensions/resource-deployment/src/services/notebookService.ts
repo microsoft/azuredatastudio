@@ -8,7 +8,6 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 import { NotebookInfo } from '../interfaces';
 import { isString } from 'util';
-import * as os from 'os';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
 import { IPlatformService } from './platformService';
@@ -30,7 +29,7 @@ export class NotebookService implements INotebookService {
 		const notebookRelativePath = this.getNotebook(notebook);
 		const notebookFullPath = path.join(__dirname, '../../', notebookRelativePath);
 		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
-			this.showNotebook(notebookFullPath);
+			this.showNotebookAsUntitled(notebookFullPath);
 		}
 		else {
 			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookFullPath));
@@ -58,32 +57,17 @@ export class NotebookService implements INotebookService {
 		return notebookPath;
 	}
 
-
-	getSaveableFileName(filePath: string): string {
-		const targetDirectory = os.homedir();
-		const fileExtension = path.extname(filePath);
-		const baseName = path.basename(filePath, fileExtension);
-		let targetFilePath;
-		let idx = 0;
-		do {
-			const suffix = idx === 0 ? '' : `-${idx}`;
-			targetFilePath = path.join(targetDirectory, `${baseName}${suffix}${fileExtension}`);
-			idx++;
-		} while (this.platformService.fileExists(targetFilePath));
-
-		return path.basename(targetFilePath);
-	}
-
-	showNotebook(notebookPath: string): void {
-		let targetFileName: string = this.getSaveableFileName(notebookPath);
+	showNotebookAsUntitled(notebookPath: string): void {
+		let targetFileName: string = path.basename(notebookPath);
 		targetFileName = path.basename(targetFileName, '.ipynb');
 		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${targetFileName}`);
 		vscode.workspace.openTextDocument(notebookPath).then((document) => {
 			let initialContent = document.getText();
 			azdata.nb.showNotebookDocument(untitledFileName, {
 				connectionProfile: undefined,
-				preview: true,
-				initialContent: initialContent
+				preview: false,
+				initialContent: initialContent,
+				initialDirtyState: false
 			});
 		});
 	}
