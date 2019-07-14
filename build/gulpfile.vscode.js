@@ -118,12 +118,6 @@ const vscodeResources = [
 	'!**/test/**'
 ];
 
-const BUNDLED_FILE_HEADER = [
-	'/*!--------------------------------------------------------',
-	' * Copyright (C) Microsoft Corporation. All rights reserved.',
-	' *--------------------------------------------------------*/'
-].join('\n');
-
 const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 	util.rimraf('out-vscode'),
 	common.optimizeTask({
@@ -131,7 +125,6 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 		entryPoints: vscodeEntryPoints,
 		resources: vscodeResources,
 		loaderConfig: common.loaderConfig(nodeModules),
-		header: BUNDLED_FILE_HEADER,
 		out: 'out-vscode',
 		bundleInfo: undefined
 	})
@@ -283,7 +276,6 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const sources = es.merge(src, extensions);
 
 		let version = packageJson.version;
-		// @ts-ignore JSON checking: quality is optional
 		const quality = product.quality;
 
 		if (quality && quality !== 'stable') {
