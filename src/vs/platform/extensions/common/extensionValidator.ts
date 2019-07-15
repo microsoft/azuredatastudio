@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import pkg from 'vs/platform/product/node/package';
 
 export interface IParsedVersion {
 	hasCaret: boolean;
@@ -226,7 +225,7 @@ export function isValidExtensionVersion(version: string, extensionDesc: IReduced
 }
 
 // {{SQL CARBON EDIT}}
-export function isEngineValid(engine: string, version: string = pkg.version): boolean {
+export function isEngineValid(engine: string, version: string): boolean {
 	// TODO@joao: discuss with alex '*' doesn't seem to be a valid engine version
 	return engine === '*' || isVersionValid(version, engine);
 }

@@ -38,9 +38,9 @@ import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, is
 import { IModeService } from 'vs/editor/common/services/modeService';
 
 // {{SQL CARBON EDIT}}
-import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
 import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
 import pkg from 'vs/platform/product/node/package';
+import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;

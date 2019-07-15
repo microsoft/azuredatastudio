@@ -11,7 +11,7 @@ import { assign, getOrDefault } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
 import { IRequestService, IRequestOptions, IRequestContext, asJson, asText } from 'vs/platform/request/common/request';
-import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
+import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
 import { values } from 'vs/base/common/map';
@@ -388,7 +388,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		// {{SQL CARBON EDIT}}
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IFileService private readonly fileService: IFileService,
-		@IProductService productService: IProductService,
+		@IProductService private readonly productService: IProductService,
 	) {
 		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
@@ -438,7 +438,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
 					if (versionAsset) {
 						const extension = toExtension(rawExtension, versionAsset, 0, query);
-						if (extension.properties.engine && isEngineValid(extension.properties.engine)) {
+						if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version)) {
 							return extension;
 						}
 					}
@@ -784,7 +784,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions }) => {
 			if (galleryExtensions.length) {
 				if (compatible) {
-					return Promise.all(galleryExtensions[0].versions.map(v => this.getEngine(v).then(engine => isEngineValid(engine) ? v : null)))
+					return Promise.all(galleryExtensions[0].versions.map(v => this.getEngine(v).then(engine => isEngineValid(engine, this.productService.version) ? v : null)))
 						.then(versions => versions
 							.filter(v => !!v)
 							.map(v => ({ version: v!.version, date: v!.lastUpdated })));
@@ -870,7 +870,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!engine) {
 				return null;
 			}
-			if (isEngineValid(engine)) {
+			if (isEngineValid(engine, this.productService.version)) {
 				return Promise.resolve(version);
 			}
 		}
@@ -902,7 +902,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		const version = versions[0];
 		return this.getEngine(version)
 			.then(engine => {
-				if (!isEngineValid(engine)) {
+				if (!isEngineValid(engine, this.productService.version)) {
 					return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
 				}
 

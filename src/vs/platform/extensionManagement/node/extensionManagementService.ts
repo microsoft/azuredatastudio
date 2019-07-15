@@ -35,7 +35,7 @@ import { ExtensionsManifestCache } from 'vs/platform/extensionManagement/node/ex
 import { ExtensionsLifecycle } from 'vs/platform/extensionManagement/node/extensionLifecycle';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { isEngineValid } from 'vs/platform/extensions/node/extensionValidator';
+import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { tmpdir } from 'os';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IDownloadService } from 'vs/platform/download/common/download';
