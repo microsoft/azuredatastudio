@@ -25,9 +25,7 @@ import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
 import product from 'vs/platform/product/node/product';
 
-// {{SQL CARBON EDIT}}
-import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
-// {{SQL CARBON EDIT}} - End
+import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
 
 // Actions
 (function registerActions(): void {
