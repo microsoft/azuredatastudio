@@ -1150,9 +1150,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizer.VisualizerExtensions', "You will need to install this extension to visualize your data."),
+						localize('visualizerRecommendations.VisualizerExtensions', "You will need to install this extension to visualize your data."),
 						[{
-							label: localize('visualizer.installAll', "Install Extension"),
+							label: localize('visualizerRecommendations.installAll', "Install Extension"),
 							run: () => {
 								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
 								installAllAction.run();
@@ -1166,11 +1166,24 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								);
 							}
 						}, {
-							label: localize('visualizer.showMoreInfo', "More Info"),
+							label: localize('visualizerRecommendations.showMoreInfo', "More Info"),
 							run: () => {
-								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('visualizerRecommendations.moreInfo', "More Info"));
 								showAction.run();
 								showAction.dispose();
+								c(undefined);
+							}
+						}, {
+							label: choiceNever,
+							isSecondary: true,
+							run: () => {
+								/* __GDPR__
+									"extensionAppLaunchRecommendations:popup" : {
+										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+									}
+								*/
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'neverShowAgain' });
+								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
 								c(undefined);
 							}
 						}],

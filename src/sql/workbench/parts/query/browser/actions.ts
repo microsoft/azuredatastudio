@@ -200,12 +200,16 @@ export class ChartDataAction extends Action {
 	public static LABEL = localize('chart', 'Chart');
 	public static ICON = 'viewChart';
 
-	constructor(@IEditorService private editorService: IEditorService) {
+	constructor(
+		@IEditorService private editorService: IEditorService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
+	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
+		this.extensionTipsService.promptVisualizerExtensions();
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}
@@ -218,13 +222,12 @@ export class VisualizerDataAction extends Action {
 
 	constructor(
 		@IEditorService private editorService: IEditorService,
-		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
+
 	) {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
-		this.extensionTipsService.promptVisualizerExtensions();
 		// const activeEditor = this.editorService.activeControl as QueryEditor;
 		return Promise.resolve(true);
 	}
