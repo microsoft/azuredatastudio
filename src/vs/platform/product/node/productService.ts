@@ -14,6 +14,8 @@ export class ProductService implements IProductService {
 
 	get version(): string { return pkg.version; }
 
+	get vscodeVersion(): string { return '1.35.0'; } // {{SQL CARBON EDIT}} add vscodeversion
+
 	get commit(): string | undefined { return product.commit; }
 
 	get nameLong(): string { return product.nameLong; }

@@ -11,6 +11,7 @@ export interface IProductService {
 	_serviceBrand: any;
 
 	readonly version: string;
+	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
 	readonly commit?: string;
 
 	readonly nameLong: string;
