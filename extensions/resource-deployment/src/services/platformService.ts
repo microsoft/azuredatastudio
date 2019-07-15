@@ -6,6 +6,7 @@
 
 import * as fs from 'fs';
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 
 /**
  * Abstract of platform dependencies
@@ -16,6 +17,7 @@ export interface IPlatformService {
 	fileExists(file: string): boolean;
 	openFile(filePath: string): void;
 	showErrorMessage(message: string): void;
+	isNotebookNameUsed(title: string): boolean;
 }
 
 export class PlatformService implements IPlatformService {
@@ -37,5 +39,9 @@ export class PlatformService implements IPlatformService {
 
 	showErrorMessage(message: string): void {
 		vscode.window.showErrorMessage(message);
+	}
+
+	isNotebookNameUsed(title: string): boolean {
+		return (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
 	}
 }

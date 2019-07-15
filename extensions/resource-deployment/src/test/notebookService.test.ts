@@ -60,4 +60,40 @@ suite('Notebook Service Tests', function (): void {
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 	});
 
+	test('findNextUntitledEditorName with no name conflict', () => {
+		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
+		const notebookService = new NotebookService(mockPlatformService.object);
+		const notebookFileName = 'mynotebook.ipynb';
+		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
+
+		const expectedTargetFile = 'mynotebook';
+		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
+			.returns((path) => { return false; });
+		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookPath);
+		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
+		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
+	});
+
+	test('findNextUntitledEditorName with name conflicts', () => {
+		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
+		const notebookService = new NotebookService(mockPlatformService.object);
+		const notebookFileName = 'mynotebook.ipynb';
+		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
+		const expectedFileName = 'mynotebook-2';
+
+		const expected1stAttemptTargetFile = 'mynotebook';
+		const expected2ndAttemptTargetFile = 'mynotebook-1';
+		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
+			.returns((path) => {
+				// list all the possible values here and handle them
+				// if we only handle the expected value and return true for anything else, the test might run forever until times out
+				if (path === expected1stAttemptTargetFile || path === expected2ndAttemptTargetFile) {
+					return true;
+				}
+				return false;
+			});
+		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookPath);
+		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
+		assert.equal(actualFileName, expectedFileName, 'target file name is not correct');
+	});
 });

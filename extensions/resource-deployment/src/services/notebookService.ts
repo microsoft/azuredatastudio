@@ -57,9 +57,22 @@ export class NotebookService implements INotebookService {
 		return notebookPath;
 	}
 
+	findNextUntitledEditorName(filePath: string): string {
+		const fileExtension = path.extname(filePath);
+		const baseName = path.basename(filePath, fileExtension);
+		let idx = 0;
+		let title = `${baseName}`;
+		do {
+			const suffix = idx === 0 ? '' : `-${idx}`;
+			title = `${baseName}${suffix}`;
+			idx++;
+		} while (this.platformService.isNotebookNameUsed(title));
+
+		return title;
+	}
+
 	showNotebookAsUntitled(notebookPath: string): void {
-		let targetFileName: string = path.basename(notebookPath);
-		targetFileName = path.basename(targetFileName, '.ipynb');
+		let targetFileName: string = this.findNextUntitledEditorName(notebookPath);
 		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${targetFileName}`);
 		vscode.workspace.openTextDocument(notebookPath).then((document) => {
 			let initialContent = document.getText();
