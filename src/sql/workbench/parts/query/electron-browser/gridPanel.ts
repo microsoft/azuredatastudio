@@ -779,7 +779,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
-		private runner: QueryRunner,
+		private _runner: QueryRunner,
 		resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
