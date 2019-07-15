@@ -11,7 +11,7 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { join } from 'vs/base/common/path';
 import { mkdirp, RimRafMode, rimraf } from 'vs/base/node/pfs';
 // {{SQL CARBON EDIT}}
-import { resolveMarketplaceHeaders, ExtensionGalleryService } from 'vs/platform/extensionManagement/node/extensionGalleryService';
+import { resolveMarketplaceHeaders, ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
 import { isUUID } from 'vs/base/common/uuid';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IFileService } from 'vs/platform/files/common/files';
