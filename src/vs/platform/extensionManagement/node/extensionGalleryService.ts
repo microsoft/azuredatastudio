@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { tmpdir } from 'os';
 import * as path from 'vs/base/common/path';
 import { getErrorMessage, isPromiseCanceledError, canceled } from 'vs/base/common/errors';
 import { StatisticType, IGalleryExtension, IExtensionGalleryService, IGalleryExtensionAsset, IQueryOptions, SortBy, SortOrder, IExtensionIdentifier, IReportedExtension, InstallOperation, ITranslation, IGalleryExtensionVersion, IGalleryExtensionAssets, isIExtensionIdentifier } from 'vs/platform/extensionManagement/common/extensionManagement';
@@ -28,6 +27,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IExtensionManifest } from 'vs/platform/extensions/common/extensions';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { joinPath } from 'vs/base/common/resources';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -702,9 +702,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		});
 	}
 
-	download(extension: IGalleryExtension, operation: InstallOperation): Promise<string> {
+	download(extension: IGalleryExtension, location: URI, operation: InstallOperation): Promise<URI> {
 		this.logService.trace('ExtensionGalleryService#download', extension.identifier.id);
-		const zipPath = path.join(tmpdir(), generateUuid());
+		const zip = joinPath(location, generateUuid());
 		const data = getGalleryExtensionTelemetryData(extension);
 		const startTime = new Date().getTime();
 		/* __GDPR__
@@ -726,9 +726,9 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		} : extension.assets.download;
 
 		return this.getAsset(downloadAsset)
-			.then(context => this.fileService.writeFile(URI.file(zipPath), context.stream))
+			.then(context => this.fileService.writeFile(zip, context.stream))
 			.then(() => log(new Date().getTime() - startTime))
-			.then(() => zipPath);
+			.then(() => zip);
 	}
 
 	getReadme(extension: IGalleryExtension, token: CancellationToken): Promise<string> {
