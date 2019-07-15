@@ -264,16 +264,15 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 
 		const src = gulp.src(out + '/**', { base: '.' })
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + out), 'out'); }))
-			.pipe(util.setExecutableBit(['**/*.sh']))
-			.pipe(filter(['**', '!**/*.js.map']));
-
-		const root = path.resolve(path.join(__dirname, '..'));
+			.pipe(util.setExecutableBit(['**/*.sh']));
 
 		// {{SQL CARBON EDIT}}
 		ext.packageBuiltInExtensions();
 
 		const extensions = gulp.src('.build/extensions/**', { base: '.build', dot: true });
-		const sources = es.merge(src, extensions);
+
+		const sources = es.merge(src, extensions)
+			.pipe(filter(['**', '!**/*.js.map'], { dot: true }));
 
 		let version = packageJson.version;
 		const quality = product.quality;
@@ -314,6 +313,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 
 		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
 
+		const root = path.resolve(path.join(__dirname, '..'));
 		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]));
 
 		const deps = gulp.src(dependenciesSrc, { base: '.', dot: true })
@@ -530,32 +530,6 @@ gulp.task('vscode-translations-import', function () {
 		});
 	});
 	// {{SQL CARBON EDIT}} - End
-});
-
-// Sourcemaps
-
-gulp.task('upload-vscode-sourcemaps', () => {
-	const vs = gulp.src('out-vscode-min/**/*.map', { base: 'out-vscode-min' }) // client source-maps only
-		.pipe(es.mapSync(f => {
-			f.path = `${f.base}/core/${f.relative}`;
-			return f;
-		}));
-
-	const extensionsOut = gulp.src(['extensions/**/out/**/*.map', '!extensions/**/node_modules/**'], { base: '.' });
-	const extensionsDist = gulp.src(['extensions/**/dist/**/*.map', '!extensions/**/node_modules/**'], { base: '.' });
-
-	return es.merge(vs, extensionsOut, extensionsDist)
-		.pipe(es.through(function (data) {
-			// debug
-			console.log('Uploading Sourcemap', data.relative);
-			this.emit('data', data);
-		}))
-		.pipe(azure.upload({
-			account: process.env.AZURE_STORAGE_ACCOUNT,
-			key: process.env.AZURE_STORAGE_ACCESS_KEY,
-			container: 'sourcemaps',
-			prefix: commit + '/'
-		}));
 });
 
 // This task is only run for the MacOS build
