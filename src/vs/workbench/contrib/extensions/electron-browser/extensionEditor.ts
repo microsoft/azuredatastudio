@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/extensionEditor';
+import 'vs/css!../browser/media/extensionEditor';
 import { localize } from 'vs/nls';
 import * as marked from 'vs/base/common/marked/marked';
 import { createCancelablePromise } from 'vs/base/common/async';
@@ -58,7 +58,7 @@ import { renderDashboardContributions } from 'sql/workbench/parts/extensions/bro
 // {{SQL CARBON EDIT}} - End
 
 function renderBody(body: string): string {
-	const styleSheetPath = require.toUrl('./media/markdown.css').replace('file://', 'vscode-resource://');
+	const styleSheetPath = require.toUrl('../browser/media/markdown.css').replace('file://', 'vscode-resource://');
 	return `<!DOCTYPE html>
 		<html>
 			<head>
@@ -559,7 +559,7 @@ export class ExtensionEditor extends BaseEditor {
 					{
 						svgWhiteList: this.extensionsWorkbenchService.allowedBadgeProviders,
 						localResourceRoots: [
-							URI.parse(require.toUrl('./media'))
+							URI.parse(require.toUrl('../browser/media'))
 						]
 					});
 				webviewElement.mountTo(this.content);
