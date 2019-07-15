@@ -125,3 +125,15 @@
 .hc-black .monaco-workbench .notebook-action.new-notebook {
 	background: url('./media/dark/new_notebook_inverse.svg') center center no-repeat;
 }
+
+.notebookEditor .book-nav {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 5px;
+}
+
+.notebookEditor .book-nav .dialog-message-button {
+	min-width: 60px;
+	margin-right: 10px;
+}
