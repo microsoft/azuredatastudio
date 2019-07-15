@@ -420,7 +420,7 @@ export class ExtensionsListView extends ViewletPanel {
 		}
 
 		if (/@visualizerExtensions/i.test(query.value)) {
-			return this.getVisualizerRecommendations(token);
+			return this.getVisualizerExtensions(token);
 		}
 		// End of {{SQL CARBON EDIT}}
 
@@ -688,12 +688,11 @@ export class ExtensionsListView extends ViewletPanel {
 				});
 			});
 	}
-
-	private getVisualizerRecommendations(token: CancellationToken): Promise<IPagedModel<IExtension>> {
+	private getVisualizerExtensions(token: CancellationToken): Promise<IPagedModel<IExtension>> {
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))
 			.then(local => {
-				return this.tipsService.getVisualizerRecommendations().then((recommmended) => {
+				return this.tipsService.getVisualizerExtensions().then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
 					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
 						// filter out installed extensions and the extensions not in the recommended list
