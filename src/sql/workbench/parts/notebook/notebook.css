@@ -129,11 +129,11 @@
 .notebookEditor .book-nav {
 	display: flex;
 	align-items: center;
-	justify-content: center;
-	margin: 5px;
+	justify-content: flex-start;
+	margin: 25px;
 }
 
 .notebookEditor .book-nav .dialog-message-button {
-	min-width: 60px;
+	min-width: 100px;
 	margin-right: 10px;
 }
