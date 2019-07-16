@@ -21,6 +21,7 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { IConfigurationResolverService } from 'vs/workbench/services/configurationResolver/common/configurationResolver';
 import { IFileService } from 'vs/platform/files/common/files';
 import * as pfs from 'vs/base/node/pfs';
+import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	webviewCspSource: string;
@@ -101,6 +102,10 @@ suite('Insights Utils tests', function () {
 	suiteSetup(async () => {
 		// Create test file - just needs to exist for verifying the path resolution worked correctly
 		testRootPath = path.join(os.tmpdir(), 'adstests');
+		queryFileDir = getRandomTestPath(testRootPath, 'insightsutils');
+		await pfs.mkdirp(queryFileDir);
+		queryFilePath = path.join(queryFileDir, 'test.sql');
+		await pfs.writeFile(queryFilePath, '');
 	});
 
 	test('resolveQueryFilePath resolves path correctly with fully qualified path', async () => {
