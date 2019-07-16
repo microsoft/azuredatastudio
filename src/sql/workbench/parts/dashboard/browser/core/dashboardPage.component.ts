@@ -42,7 +42,7 @@ const dashboardRegistry = Registry.as<IDashboardRegistry>(DashboardExtensions.Da
 
 @Component({
 	selector: 'dashboard-page',
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/common/dashboardPage.component.html'))
+	templateUrl: decodeURI(require.toUrl('./dashboardPage.component.html'))
 })
 export abstract class DashboardPage extends AngularDisposable implements IConfigModifierCollection {
 

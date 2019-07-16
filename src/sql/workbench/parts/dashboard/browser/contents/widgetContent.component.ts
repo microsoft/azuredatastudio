@@ -69,7 +69,7 @@ function configSorter(a, b): number {
 
 @Component({
 	selector: 'widget-content',
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/contents/widgetContent.component.html'))
+	templateUrl: decodeURI(require.toUrl('./widgetContent.component.html'))
 })
 export class WidgetContent extends AngularDisposable implements AfterViewInit {
 	@Input() private widgets: WidgetConfig[];

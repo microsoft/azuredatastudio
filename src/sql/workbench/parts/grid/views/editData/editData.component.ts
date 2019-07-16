@@ -39,7 +39,7 @@ export const EDITDATA_SELECTOR: string = 'editdata-component';
 @Component({
 	selector: EDITDATA_SELECTOR,
 	host: { '(window:keydown)': 'keyEvent($event)', '(window:gridnav)': 'keyEvent($event)' },
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/grid/views/editData/editData.component.html'))
+	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
 })
 export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
 	// The time(in milliseconds) we wait before refreshing the grid.

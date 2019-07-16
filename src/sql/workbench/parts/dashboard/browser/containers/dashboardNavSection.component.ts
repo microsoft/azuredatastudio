@@ -23,7 +23,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 @Component({
 	selector: 'dashboard-nav-section',
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardNavSection) }],
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/containers/dashboardNavSection.component.html'))
+	templateUrl: decodeURI(require.toUrl('./dashboardNavSection.component.html'))
 })
 export class DashboardNavSection extends DashboardTab implements OnDestroy, OnChanges, AfterContentInit, IConfigModifierCollection {
 	@Input() private tab: TabConfig;

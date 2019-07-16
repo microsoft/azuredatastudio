@@ -112,7 +112,7 @@ const LocalizedStrings = {
 
 @Component({
 	selector: BACKUP_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/backup/electron-browser/backup.component.html'))
+	templateUrl: decodeURI(require.toUrl('./backup.component.html'))
 })
 export class BackupComponent {
 	@ViewChild('pathContainer', { read: ElementRef }) pathElement;

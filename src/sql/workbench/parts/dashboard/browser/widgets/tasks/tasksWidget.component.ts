@@ -38,7 +38,7 @@ const selector = 'tasks-widget';
 
 @Component({
 	selector,
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/widgets/tasks/tasksWidget.component.html'))
+	templateUrl: decodeURI(require.toUrl('./tasksWidget.component.html'))
 })
 export class TasksWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _size: number = 98;

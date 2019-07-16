@@ -44,7 +44,7 @@ export interface GridModelViewConfig extends GridCellConfig {
 
 @Component({
 	selector: 'dashboard-grid-container',
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/containers/dashboardGridContainer.component.html')),
+	templateUrl: decodeURI(require.toUrl('./dashboardGridContainer.component.html')),
 	providers: [{ provide: TabChild, useExisting: forwardRef(() => DashboardGridContainer) }]
 })
 export class DashboardGridContainer extends DashboardTab implements OnDestroy {

@@ -47,7 +47,7 @@ const componentMap: { [x: string]: Type<IDashboardWidget> } = {
 
 @Component({
 	selector: 'dashboard-widget-wrapper',
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/contents/dashboardWidgetWrapper.component.html'))
+	templateUrl: decodeURI(require.toUrl('./dashboardWidgetWrapper.component.html'))
 })
 export class DashboardWidgetWrapper extends AngularDisposable implements OnInit {
 	@Input() private _config: WidgetConfig;

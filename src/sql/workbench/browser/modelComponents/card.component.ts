@@ -18,7 +18,7 @@ import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } fro
 import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
-	templateUrl: decodeURI(require.toUrl('sql/workbench/electron-browser/modelComponents/card.component.html'))
+	templateUrl: decodeURI(require.toUrl('./card.component.html'))
 })
 export default class CardComponent extends ComponentWithIconBase implements IComponent, OnDestroy {
 	@Input() descriptor: IComponentDescriptor;

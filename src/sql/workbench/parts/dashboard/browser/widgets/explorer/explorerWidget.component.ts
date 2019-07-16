@@ -31,7 +31,7 @@ import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 
 @Component({
 	selector: 'explorer-widget',
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/widgets/explorer/explorerWidget.component.html'))
+	templateUrl: decodeURI(require.toUrl('./explorerWidget.component.html'))
 })
 export class ExplorerWidget extends DashboardWidget implements IDashboardWidget, OnInit {
 	private _input: InputBox;

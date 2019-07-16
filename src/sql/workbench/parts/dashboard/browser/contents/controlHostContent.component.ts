@@ -16,7 +16,7 @@ import { memoize } from 'vs/base/common/decorators';
 import { AgentViewComponent } from '../../../jobManagement/browser/agentView.component';
 
 @Component({
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/dashboard/contents/controlHostContent.component.html')),
+	templateUrl: decodeURI(require.toUrl('./controlHostContent.component.html')),
 	selector: 'controlhost-content'
 })
 export class ControlHostContent {
