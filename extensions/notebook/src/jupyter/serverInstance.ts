@@ -378,7 +378,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	}
 
 	private getEnvWithConfigPaths(env: { [key: string]: string }): any {
-		// Merge the current process.env object with the specified object
+		// Merge the current process.env object with the specified object so that we can pass information to notebooks
 		// Variables in the env object will overwrite the ones in process.env object
 		let newEnv: { [key: string]: string } = Object.assign({}, process.env);
 		for (let key in env) {
