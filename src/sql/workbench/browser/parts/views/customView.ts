@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable, dispose, Disposable, toDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable, toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAction, ActionRunner, Action } from 'vs/base/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -14,7 +14,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ViewContainer, ITreeItemLabel } from 'vs/workbench/common/views';
 import { FileIconThemableWorkbenchTree } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -44,7 +44,7 @@ import { dirname } from 'vs/base/common/resources';
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
-import { fillInActionBarActions, fillInContextMenuActions, ContextAwareMenuEntryActionViewItem } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { ContextAwareMenuEntryActionViewItem, createAndFillInActionBarActions, createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 class TitleMenus implements IDisposable {
@@ -74,7 +74,7 @@ class TitleMenus implements IDisposable {
 		const updateActions = () => {
 			this.titleActions = [];
 			this.titleSecondaryActions = [];
-			fillInActionBarActions(titleMenu, undefined, { primary: this.titleActions, secondary: this.titleSecondaryActions });
+			createAndFillInActionBarActions(titleMenu, undefined, { primary: this.titleActions, secondary: this.titleSecondaryActions });
 			this._onDidChangeTitle.fire();
 		};
 
@@ -159,7 +159,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		@IInstantiationService private instantiationService: IInstantiationService,
 		@ICommandService private commandService: ICommandService,
 		@IConfigurationService private configurationService: IConfigurationService,
-		@IProgressService2 private progressService: IProgressService2
+		@IProgressService private progressService: IProgressService
 	) {
 		super();
 		this.root = new Root();
@@ -515,7 +515,7 @@ class TreeDataSource implements IDataSource {
 		private treeView: ITreeView,
 		private container: ViewContainer,
 		private id: string,
-		@IProgressService2 private progressService: IProgressService2,
+		@IProgressService private progressService: IProgressService,
 		@IOEShimService private objectExplorerService: IOEShimService
 	) {
 	}
@@ -853,7 +853,7 @@ class TreeMenus extends Disposable implements IDisposable {
 		const primary: IAction[] = [];
 		const secondary: IAction[] = [];
 		const result = { primary, secondary };
-		fillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
+		createAndFillInContextMenuActions(menu, { shouldForwardArgs: true }, result, this.contextMenuService, g => /^inline/.test(g));
 
 		menu.dispose();
 		contextKeyService.dispose();
@@ -869,7 +869,7 @@ class MarkdownRenderer {
 	) {
 	}
 
-	private getOptions(disposeables: IDisposable[]): RenderOptions {
+	private getOptions(disposeables: DisposableStore): RenderOptions {
 		return {
 			actionHandler: {
 				callback: (content) => {
@@ -889,7 +889,7 @@ class MarkdownRenderer {
 	}
 
 	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		let disposeables: IDisposable[] = [];
+		let disposeables = new DisposableStore();
 		const element: HTMLElement = markdown ? renderMarkdown(markdown, this.getOptions(disposeables)) : document.createElement('span');
 		return {
 			element,

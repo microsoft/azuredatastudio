@@ -22,7 +22,7 @@ export class ResourceEditorInput extends EditorInput implements IModeSupport {
 
 	constructor(
 		private name: string,
-		private description: string | null,
+		private description: string | undefined,
 		private readonly resource: URI,
 		private preferredMode: string | undefined,
 		@ITextModelService private readonly textModelResolverService: ITextModelService
@@ -53,7 +53,7 @@ export class ResourceEditorInput extends EditorInput implements IModeSupport {
 		}
 	}
 
-	getDescription(): string | null {
+	getDescription(): string | undefined {
 		return this.description;
 	}
 
@@ -90,7 +90,7 @@ export class ResourceEditorInput extends EditorInput implements IModeSupport {
 			ref.dispose();
 			this.modelReference = null;
 
-			return Promise.reject(new Error(`Unexpected model for ResourceInput: ${this.resource}`));
+			throw new Error(`Unexpected model for ResourceInput: ${this.resource}`);
 		}
 
 		this.cachedModel = model;

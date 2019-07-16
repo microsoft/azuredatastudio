@@ -13,6 +13,15 @@ import { IDimension } from 'vs/editor/common/editorCommon';
 import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class EditorGroupTestService implements IEditorGroupsService {
+	getSize(group: number | IEditorGroup): {
+		width: number; height: number; /**
+ * Move an editor from this group either within this group or to another group.
+ */ } {
+		throw new Error('Method not implemented.');
+	}
+	setSize(group: number | IEditorGroup, size: { width: number; height: number; }): void {
+		throw new Error('Method not implemented.');
+	}
 	willRestoreEditors: boolean;
 	dimension: IDimension;
 	whenRestored: Promise<void>;
@@ -210,19 +219,6 @@ export class EditorGroupTestService implements IEditorGroupsService {
 	 */
 	public resizeGroup(position: Position, groupSizeChange: number): void {
 
-	}
-
-	/**
-	 * Returns the size of a group.
-	 */
-	getSize(group: IEditorGroup | GroupIdentifier): number {
-		return 0;
-	}
-
-	/**
-	 * Sets the size of a group.
-	 */
-	setSize(group: IEditorGroup | GroupIdentifier, size: number): void {
 	}
 
 	/**

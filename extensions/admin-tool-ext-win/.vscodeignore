@@ -3,3 +3,5 @@ src/**
 .gitignore
 tsconfig.json
 InstallSsmsMin.bat
+cgmanifest.json
+.vscode

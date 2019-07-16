@@ -24,11 +24,12 @@ import { Memento } from 'vs/workbench/common/memento';
 import { Emitter } from 'vs/base/common/event';
 import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { TestStorageService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -83,7 +84,7 @@ suite('notebook model', function (): void {
 	let memento: TypeMoq.Mock<Memento>;
 	let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
 	let defaultModelOptions: INotebookModelOptions;
-	const logService = new TestLogService();
+	const logService = new NullLogService();
 	setup(() => {
 		sessionReady = new Deferred<void>();
 		notificationService = TypeMoq.Mock.ofType(TestNotificationService, TypeMoq.MockBehavior.Loose);

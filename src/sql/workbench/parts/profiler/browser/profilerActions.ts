@@ -57,7 +57,7 @@ export class ProfilerConnect extends Action {
 	public set connected(value: boolean) {
 		this._connected = value;
 		this._setClass(value ? 'disconnect' : 'connect');
-		this._setLabel(value ? ProfilerConnect.DisconnectText : ProfilerConnect.ConnectText);
+		this.label = value ? ProfilerConnect.DisconnectText : ProfilerConnect.ConnectText;
 	}
 
 	public get connected(): boolean {
@@ -131,7 +131,7 @@ export class ProfilerPause extends Action {
 	public set paused(value: boolean) {
 		this._paused = value;
 		this._setClass(value ? ProfilerPause.ResumeCssClass : ProfilerPause.PauseCssClass);
-		this._setLabel(value ? ProfilerPause.ResumeText : ProfilerPause.PauseText);
+		this.label = value ? ProfilerPause.ResumeText : ProfilerPause.PauseText;
 	}
 
 	public get paused(): boolean {
@@ -183,7 +183,7 @@ export class ProfilerAutoScroll extends Action {
 
 	run(input: ProfilerInput): Promise<boolean> {
 		this.checked = !this.checked;
-		this._setLabel(this.checked ? ProfilerAutoScroll.AutoScrollOnText : ProfilerAutoScroll.AutoScrollOffText);
+		this.label = this.checked ? ProfilerAutoScroll.AutoScrollOnText : ProfilerAutoScroll.AutoScrollOffText;
 		this._setClass(this.checked ? ProfilerAutoScroll.CheckedCssClass : '');
 		input.state.change({ autoscroll: this.checked });
 		return Promise.resolve(true);
