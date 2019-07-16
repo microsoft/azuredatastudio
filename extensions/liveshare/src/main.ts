@@ -7,6 +7,8 @@ import * as vscode from 'vscode';
 
 import { GuestSessionManager } from './guestSession';
 import { HostSessionManager } from './hostSession';
+import { ConnectionFeature } from './providers/connectionProvider';
+import { QueryFeature } from './providers/queryProvider';
 
 declare var require: any;
 let vsls = require('vsls');
@@ -26,7 +28,15 @@ export class State {
 const changeColorOfLiveShareSessionFactory = (isHost: boolean) => {
 	return async function changeColorOfLiveShareSession() {
 
-
+		const vslsApi = await vsls.getApi();
+		const serviceName = 'mssql-query';
+		if (isHost) {
+			//const sharedService = await vslsApi.shareService(serviceName);
+			//this.sharedService.request('load', [ this.adapterId ]);
+		} else {
+			const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
+			sharedServiceProxy.request('load', [ 1050 ]);
+		}
 
 		return State.extensionContext;
 	};
@@ -75,12 +85,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 
 		const serviceName = 'mssql-query';
-
-
 		if (isHost) {
-
 			//const sharedService = await vslsApi.shareService(serviceName);
-
 			//this.sharedService.request('load', [ this.adapterId ]);
 		} else {
 			const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
@@ -92,7 +98,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	registerLiveShareIntegrationCommands();
 
-
 	const serviceName = 'mssql-query';
 	const sharedService = await vslsApi.shareService(serviceName);
 
@@ -100,7 +105,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.showErrorMessage('Could not create a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
 		return;
 	}
-
 
 	const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
 	if (!sharedServiceProxy) {
@@ -110,6 +114,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	new HostSessionManager(context, sharedService);
 	new GuestSessionManager(context, sharedServiceProxy);
+
+	new ConnectionFeature().registerProvider();
+	new QueryFeature().registerProvider();
 }
 
 export function deactivate(): void {

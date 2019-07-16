@@ -10,6 +10,7 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { Dictionary } from 'underscore';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -100,7 +101,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerQueryProvider(provider: azdata.QueryProvider): vscode.Disposable {
+	private liveShareProviders = new Map<string, any>();
+
+	$registerQueryProvider(provider: azdata.QueryProvider, isLiveShare?: boolean): vscode.Disposable {
+		if (isLiveShare) {
+			this.liveShareProviders['QueryProvider'] = provider;
+		}
+
 		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
 		this._proxy.$registerQueryProvider(provider.providerId, provider.handle);
 		return rt;
@@ -240,11 +247,28 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Query Management handlers
 
+	private isLiveShare(uri: string): boolean {
+		return (uri!.startsWith('vsls://'));
+	}
+
+	private liveshareProvider<P extends azdata.DataProvider>(providerName: string): P {
+		let provider = this.liveShareProviders[providerName] as P;
+		if (provider) {
+			return provider;
+		} else {
+			throw new Error(`Unfound provider ${providerName}`);
+		}
+	}
+
 	$cancelQuery(handle: number, ownerUri: string): Thenable<azdata.QueryCancelResult> {
 		return this._resolveProvider<azdata.QueryProvider>(handle).cancelQuery(ownerUri);
 	}
 
 	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
+		if (this.isLiveShare(ownerUri)) {
+			return this.liveshareProvider<azdata.QueryProvider>('QueryProvider').runQuery(ownerUri, selection, runOptions);
+		}
+
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
