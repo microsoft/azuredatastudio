@@ -458,8 +458,6 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 
 // {{SQL CARBON EDIT}}
 // SQL
-import 'sql/workbench/api/electron-browser/extensionHost.contribution';
-
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
 
 // data explorer
