@@ -434,10 +434,6 @@
   </file>
   <file original="extensions/cms/out/cmsResource/tree/cmsResourceTreeNode" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
-      <trans-unit id="cms.errors.expandCmsFail">
-        <source xml:lang="en">The Central Management Server {0} could not be found or is offline</source>
-        <target state="translated">找不到中央管理服务器 {0} 或它处于脱机状态</target>
-      </trans-unit>
       <trans-unit id="cms.resource.cmsResourceTreeNode.noResourcesLabel">
         <source xml:lang="en">No resources found</source>
         <target state="translated">找不到资源</target>
@@ -457,10 +453,6 @@
       <trans-unit id="cms.errors.sameCmsServerName">
         <source xml:lang="en">Central Management Server Group already has a Registered Server with the name {0}</source>
         <target state="translated">中央管理服务器组已具有名称为 {0} 的注册服务器</target>
-      </trans-unit>
-      <trans-unit id="cms.errors.addRegisterServerFail">
-        <source xml:lang="en">Could not add the Registered Server {0}</source>
-        <target state="translated">无法添加已注册的服务器 {0}</target>
       </trans-unit>
       <trans-unit id="cms.confirmDeleteServer">
         <source xml:lang="en">Are you sure you want to delete</source>

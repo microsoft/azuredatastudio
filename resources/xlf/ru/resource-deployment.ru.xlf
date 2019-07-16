@@ -136,22 +136,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/resource-deployment/out/services/resourceTypeService" source-language="en" target-language="ru" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.extensionFullNameError">
-        <source xml:lang="en">Could not find package.json or the name/publisher is not set</source>
-        <target state="translated">Не удалось найти package.json, либо не задано имя или издатель</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/resource-deployment/out/services/notebookService" source-language="en" target-language="ru" datatype="plaintext">
-    <body>
-      <trans-unit id="resourceDeployment.notebookNotFound">
-        <source xml:lang="en">The notebook {0} does not exist</source>
-        <target state="translated">Записная книжка {0} не существует</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/resource-deployment/out/ui/resourceDeploymentDialog" source-language="en" target-language="ru" datatype="plaintext">
     <body>
       <trans-unit id="deploymentDialog.title">
@@ -177,6 +161,22 @@
       <trans-unit id="deploymentDialog.RequiredToolsTitle">
         <source xml:lang="en">Required tools</source>
         <target state="translated">Необходимые инструменты</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/out/services/resourceTypeService" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.extensionFullNameError">
+        <source xml:lang="en">Could not find package.json or the name/publisher is not set</source>
+        <target state="translated">Не удалось найти package.json, либо не задано имя или издатель</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/resource-deployment/out/services/notebookService" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="resourceDeployment.notebookNotFound">
+        <source xml:lang="en">The notebook {0} does not exist</source>
+        <target state="translated">Записная книжка {0} не существует</target>
       </trans-unit>
     </body>
   </file>

@@ -17,7 +17,7 @@ import { IWindowService, IURIToOpen } from 'vs/platform/windows/common/windows';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
-import { Action } from 'vs/base/common/actions';
+import { Action, WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Schemas } from 'vs/base/common/network';
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
@@ -26,7 +26,7 @@ import { IExtensionEnablementService, IExtensionManagementService, IExtensionGal
 // {{SQL CARBON EDIT}} - Redirect to ADS welcome page
 import { used } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page';
 import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
 import { registerThemingParticipant } from 'vs/platform/theme/common/themeService';
 import { registerColor, focusBorder, textLinkForeground, textLinkActiveForeground, foreground, descriptionForeground, contrastBorder, activeContrastBorder } from 'vs/platform/theme/common/colorRegistry';
@@ -152,7 +152,7 @@ const extensionPacks: ExtensionSuggestion[] = [
 	// { name: localize('welcomePage.go', "Go"), id: 'lukehoban.go' },
 	{ name: localize('welcomePage.php', "PHP"), id: 'felixfbecker.php-pack' },
 	{ name: localize('welcomePage.azure', "Azure"), title: localize('welcomePage.showAzureExtensions', "Show Azure extensions"), id: 'workbench.extensions.action.showAzureExtensions', isCommand: true },
-	{ name: localize('welcomePage.docker', "Docker"), id: 'peterjausovec.vscode-docker' },
+	{ name: localize('welcomePage.docker', "Docker"), id: 'ms-azuretools.vscode-docker' },
 ];
 
 const keymapExtensions: ExtensionSuggestion[] = [
@@ -246,9 +246,7 @@ const keymapStrings: Strings = {
 
 const welcomeInputTypeId = 'workbench.editors.welcomePageInput';
 
-class WelcomePage {
-
-	private disposables: IDisposable[] = [];
+class WelcomePage extends Disposable {
 
 	readonly editorInput: WalkThroughInput;
 
@@ -268,7 +266,8 @@ class WelcomePage {
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService
 	) {
-		this.disposables.push(lifecycleService.onShutdown(() => this.dispose()));
+		super();
+		this._register(lifecycleService.onShutdown(() => this.dispose()));
 
 		const recentlyOpened = this.windowService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
@@ -323,14 +322,14 @@ class WelcomePage {
 				ul.append(...listEntries, moreRecent);
 			};
 			updateEntries();
-			this.disposables.push(this.labelService.onDidChangeFormatters(updateEntries));
+			this._register(this.labelService.onDidChangeFormatters(updateEntries));
 		}).then(undefined, onUnexpectedError);
 
 		this.addExtensionList(container, '.extensionPackList', extensionPacks, extensionPackStrings);
 		this.addExtensionList(container, '.keymapList', keymapExtensions, keymapStrings);
 
 		this.updateInstalledExtensions(container, installedExtensions);
-		this.disposables.push(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
+		this._register(this.instantiationService.invokeFunction(onExtensionChanged)(ids => {
 			for (const id of ids) {
 				if (container.querySelector(`.installExtension[data-extension="${id.id}"], .enabledExtension[data-extension="${id.id}"]`)) {
 					const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
@@ -363,13 +362,7 @@ class WelcomePage {
 			a.setAttribute('aria-label', localize('welcomePage.openFolderWithPath', "Open folder {0} with path {1}", name, parentPath));
 			a.href = 'javascript:void(0)';
 			a.addEventListener('click', e => {
-				/* __GDPR__
-					"workbenchActionExecuted" : {
-						"id" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-						"from": { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-					}
-				*/
-				this.telemetryService.publicLog('workbenchActionExecuted', {
+				this.telemetryService.publicLog2<WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification>('workbenchActionExecuted', {
 					id: 'openRecentFolder',
 					from: telemetryFrom
 				});
@@ -594,10 +587,6 @@ class WelcomePage {
 					}
 				});
 		}).then(undefined, onUnexpectedError);
-	}
-
-	dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }
 

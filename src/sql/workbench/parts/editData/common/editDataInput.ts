@@ -56,12 +56,11 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		this._setup = false;
 		this._stopButtonEnabled = false;
 		this._refreshButtonEnabled = false;
-		this._toDispose = [];
 		this._useQueryFilter = false;
 
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
-			this._toDispose.push(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
+			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 			this._sql.disableSaving();
 		}
 		this.disableSaving();
@@ -74,7 +73,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 			let self = this;
 
 			// Register callbacks for the Actions
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onRunQueryStart(uri => {
 					if (self.uri === uri) {
 						self.initEditStart();
@@ -82,7 +81,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 				})
 			);
 
-			this._toDispose.push(
+			this._register(
 				this._queryModelService.onEditSessionReady((result) => {
 					if (self.uri === result.ownerUri) {
 						self.initEditEnd(result);
@@ -210,7 +209,6 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 		this._queryModelService.disposeQuery(this.uri);
 		this._sql.dispose();
 		this._results.dispose();
-		this._toDispose = dispose(this._toDispose);
 
 		super.dispose();
 	}

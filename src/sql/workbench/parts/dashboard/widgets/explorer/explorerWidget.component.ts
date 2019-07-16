@@ -7,7 +7,7 @@ import 'vs/css!sql/media/objectTypes/objecttypes';
 import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/explorerWidget';
 
-import { Component, Inject, forwardRef, ChangeDetectorRef, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, Inject, forwardRef, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
@@ -26,7 +26,7 @@ import { Delayer } from 'vs/base/common/async';
 import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IProgressService } from 'vs/platform/progress/common/progress';
+import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 
 @Component({
@@ -58,7 +58,6 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
 		@Inject(forwardRef(() => Router)) private _router: Router,
-		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
 		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
@@ -66,7 +65,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
-		@Inject(IProgressService) private progressService: IProgressService
+		@Inject(IEditorProgressService) private progressService: IEditorProgressService
 	) {
 		super();
 		this.init();

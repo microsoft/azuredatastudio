@@ -32,13 +32,12 @@ export class AddControllerDialogModel {
 
 	public async onComplete(url: string, username: string, password: string, rememberPassword: boolean): Promise<void> {
 		let response = await getEndPoints(url, username, password, true);
-		if (response && response.request) {
+		if (response && response.endPoints) {
 			let masterInstance: IEndPoint = undefined;
 			if (response.endPoints) {
 				masterInstance = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
 			}
-			this.treeDataProvider.addController(response.request.url, response.request.username,
-				response.request.password, rememberPassword, masterInstance);
+			this.treeDataProvider.addController(url, username, password, rememberPassword, masterInstance);
 			await this.treeDataProvider.saveControllers();
 		}
 	}
