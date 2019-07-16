@@ -52,10 +52,10 @@ import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService'
 export class Workbench extends Layout {
 
 	private readonly _onShutdown = this._register(new Emitter<void>());
-	get onShutdown(): Event<void> { return this._onShutdown.event; }
+	readonly onShutdown: Event<void> = this._onShutdown.event;
 
 	private readonly _onWillShutdown = this._register(new Emitter<WillShutdownEvent>());
-	get onWillShutdown(): Event<WillShutdownEvent> { return this._onWillShutdown.event; }
+	readonly onWillShutdown: Event<WillShutdownEvent> = this._onWillShutdown.event;
 
 	constructor(
 		parent: HTMLElement,
