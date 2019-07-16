@@ -445,11 +445,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (this.contextKeyService.getContextKeyValue('isDevelopment') &&
 			this.contextKeyService.getContextKeyValue('bookOpened') &&
 			this._navProvider) {
-			this.addButton(localize('previousButtonLabel', "< Previous"),
-				() => this.previousPage());
-			this.addButton(localize('nextButtonLabel', "Next >"),
-				() => this.nextPage());
-
+			this._navProvider.hasPrevious(this._notebookParams.notebookUri).then((hasPrevious) => {
+				this.addButton(localize('previousButtonLabel', "Previous"),
+					() => this.previousPage(), hasPrevious);
+			});
+			this._navProvider.hasNext(this._notebookParams.notebookUri).then((hasNext) => {
+				this.addButton(localize('nextButtonLabel', "Next"),
+					() => this.nextPage(), hasNext);
+			});
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
 				this.navigationResult = result;
 				this.detectChanges();
@@ -466,13 +469,16 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return 'hidden';
 	}
 
-	private addButton(label: string, onDidClick?: () => void): void {
+	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
 		let button = new Button(container);
 		button.icon = '';
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));
+		}
+		if (!enabled) {
+			button.enabled = false;
 		}
 	}
 

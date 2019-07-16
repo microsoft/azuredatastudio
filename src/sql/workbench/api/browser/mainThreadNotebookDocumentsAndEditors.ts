@@ -694,6 +694,14 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		this._notebookService.registerNavigationProvider({
 			providerId: providerId,
 			hasNavigation: true,
+			hasNext: async (uri) => {
+				let result = await this._proxy.$getNavigation(handle, uri);
+				return result && result.next ? true : false;
+			},
+			hasPrevious: async (uri) => {
+				let result = await this._proxy.$getNavigation(handle, uri);
+				return result && result.previous ? true : false;
+			},
 			getNavigation: async (uri) => {
 				return await this._proxy.$getNavigation(handle, uri);
 			},
