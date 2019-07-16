@@ -4,14 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./media/flavorStatus';
-import { $, append, show, hide } from 'vs/base/browser/dom';
-import { IDisposable, combinedDisposable } from 'vs/base/common/lifecycle';
-import { IStatusbarItem } from 'vs/workbench/browser/parts/statusbar/statusbar';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IEditorCloseEvent } from 'vs/workbench/common/editor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Action } from 'vs/base/common/actions';
-import errors = require('vs/base/common/errors');
 import { getCodeEditor } from 'vs/editor/browser/editorBrowser';
 import * as nls from 'vs/nls';
 
@@ -24,6 +20,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { EditorServiceImpl } from 'vs/workbench/browser/parts/editor/editor';
 import { IQuickInputService, IQuickPickItem } from 'vs/platform/quickinput/common/quickInput';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from 'vs/platform/statusbar/common/statusbar';
 
 export interface ISqlProviderEntry extends IQuickPickItem {
 	providerId: string;
@@ -59,53 +57,54 @@ class SqlProviderEntry implements ISqlProviderEntry {
 }
 
 // Shows SQL flavor status in the editor
-export class SqlFlavorStatusbarItem implements IStatusbarItem {
+export class SqlFlavorStatusbarItem extends Disposable implements IWorkbenchContribution {
 
-	private _element: HTMLElement;
-	private _flavorElement: HTMLElement;
+	private static readonly ID = 'status.query.flavor';
+
+	private statusItem: IStatusbarEntryAccessor;
+
 	private _sqlStatusEditors: { [editorUri: string]: SqlProviderEntry };
-	private _toDispose: IDisposable[];
 
 	constructor(
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IEditorService private _editorService: EditorServiceImpl,
-		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IStatusbarService private readonly statusbarService: IStatusbarService,
+		@IEditorService private readonly editorService: EditorServiceImpl,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService
 	) {
+		super();
 		this._sqlStatusEditors = {};
-	}
 
-	public render(container: HTMLElement): IDisposable {
-		this._element = append(container, $('.query-statusbar-group'));
-		this._flavorElement = append(this._element, $('a.editor-status-selection'));
-		this._flavorElement.title = nls.localize('changeProvider', "Change SQL language provider");
-		this._flavorElement.onclick = () => this._onSelectionClick();
-		hide(this._flavorElement);
+		this.statusItem = this._register(
+			this.statusbarService.addEntry({
+				text: nls.localize('changeProvider', "Change SQL language provider"),
 
-		this._toDispose = [];
-		this._toDispose.push(
-			this._connectionManagementService.onLanguageFlavorChanged((changeParams: DidChangeLanguageFlavorParams) => this._onFlavorChanged(changeParams)),
-			this._editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()),
-			this._editorService.onDidCloseEditor(event => this._onEditorClosed(event))
+			},
+				SqlFlavorStatusbarItem.ID,
+				nls.localize('status.query.flavor', "SQL Language Flavor"),
+				StatusbarAlignment.RIGHT, 100)
 		);
-		return combinedDisposable(this._toDispose);
+
+		this._register(this.connectionManagementService.onLanguageFlavorChanged((changeParams: DidChangeLanguageFlavorParams) => this._onFlavorChanged(changeParams)));
+		this._register(this.editorService.onDidVisibleEditorsChange(() => this._onEditorsChanged()));
+		this._register(this.editorService.onDidCloseEditor(event => this._onEditorClosed(event)));
 	}
 
-	private _onSelectionClick() {
-		const action = this._instantiationService.createInstance(ChangeFlavorAction, ChangeFlavorAction.ID, ChangeFlavorAction.LABEL);
+	private hide() {
+		this.statusbarService.updateEntryVisibility(SqlFlavorStatusbarItem.ID, false);
+	}
 
-		action.run().then(null, errors.onUnexpectedError);
-		action.dispose();
+	private show() {
+		this.statusbarService.updateEntryVisibility(SqlFlavorStatusbarItem.ID, true);
 	}
 
 	private _onEditorClosed(event: IEditorCloseEvent): void {
 		let uri = WorkbenchUtils.getEditorUri(event.editor);
 		if (uri && uri in this._sqlStatusEditors) {
 			// If active editor is being closed, hide the query status.
-			let activeEditor = this._editorService.activeControl;
+			let activeEditor = this.editorService.activeControl;
 			if (activeEditor) {
 				let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 				if (uri === currentUri) {
-					hide(this._flavorElement);
+					this.hide();
 				}
 			}
 			// note: intentionally not removing language flavor. This is preserved across close/open events at present
@@ -114,7 +113,7 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 	}
 
 	private _onEditorsChanged(): void {
-		let activeEditor = this._editorService.activeControl;
+		let activeEditor = this.editorService.activeControl;
 		if (activeEditor) {
 			let uri = WorkbenchUtils.getEditorUri(activeEditor.input);
 
@@ -122,10 +121,10 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 			if (uri) {
 				this._showStatus(uri);
 			} else {
-				hide(this._flavorElement);
+				this.hide();
 			}
 		} else {
-			hide(this._flavorElement);
+			this.hide();
 		}
 	}
 
@@ -145,17 +144,17 @@ export class SqlFlavorStatusbarItem implements IStatusbarItem {
 
 	// Show/hide query status for active editor
 	private _showStatus(uri: string): void {
-		let activeEditor = this._editorService.activeControl;
+		let activeEditor = this.editorService.activeControl;
 		if (activeEditor) {
 			let currentUri = WorkbenchUtils.getEditorUri(activeEditor.input);
 			if (uri === currentUri) {
 				let flavor: SqlProviderEntry = this._sqlStatusEditors[uri];
 				if (flavor) {
-					this._flavorElement.textContent = flavor.label;
+					this.statusItem.update({ text: flavor.label });
 				} else {
-					this._flavorElement.textContent = SqlProviderEntry.getDefaultLabel();
+					this.statusItem.update({ text: SqlProviderEntry.getDefaultLabel() });
 				}
-				show(this._flavorElement);
+				this.show();
 			}
 		}
 	}

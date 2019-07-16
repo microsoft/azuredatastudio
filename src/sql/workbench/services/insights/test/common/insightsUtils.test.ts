@@ -24,7 +24,16 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 import { IFileService } from 'vs/platform/files/common/files';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
-	machineSettingsHome: string;
+	webviewCspSource: string;
+	webviewCspRule: string;
+	localeResource: URI;
+	userRoamingDataHome: URI;
+	webviewEndpoint?: string;
+	webviewResourceRoot: string;
+	keyboardLayoutResource: URI;
+	machineSettingsResource: URI;
+	keybindingsResource: URI;
+	machineSettingsHome: URI;
 	machineSettingsPath: string;
 	extensionDevelopmentLocationURI?: URI[];
 
@@ -47,14 +56,15 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 	userDataPath: string;
 	appNameLong: string;
 	appQuality?: string;
-	appSettingsHome: string;
-	appSettingsPath: string;
+	appSettingsHome: URI;
+
+	settingsResource: URI;
 	appKeybindingsPath: string;
 	settingsSearchBuildId?: number;
 	settingsSearchUrl?: string;
 	globalStorageHome: string;
 	workspaceStorageHome: string;
-	backupHome: string;
+	backupHome: URI;
 	backupWorkspacesPath: string;
 	untitledWorkspacesHome: URI;
 	isExtensionDevelopment: boolean;
