@@ -22,15 +22,15 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		let addBorderToInactiveCodeCells = true;
 
 		// Book Navigation Buttons
-		const foregroundColor = theme.getColor(buttonForeground);
-		const backgroundColor = theme.getColor(buttonBackground);
+		const buttonForegroundColor = theme.getColor(buttonForeground);
+		const buttonBackgroundColor = theme.getColor(buttonBackground);
 
-		if (foregroundColor && backgroundColor) {
+		if (buttonForegroundColor && buttonBackgroundColor) {
 			collector.addRule(`
 				.notebookEditor .book-nav .dialog-message-button .monaco-text-button {
-					border-color: ${backgroundColor} !important;
-					background-color: ${foregroundColor} !important;
-					color: ${backgroundColor} !important;
+					border-color: ${buttonBackgroundColor} !important;
+					background-color: ${buttonForegroundColor} !important;
+					color: ${buttonBackgroundColor} !important;
 					border-width: 1px;
 					border-style: solid;
 				}
