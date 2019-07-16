@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import { basename } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { Emitter, Event } from 'vs/base/common/event';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore, IDisposable } from 'vs/base/common/lifecycle';
 import { ExtHostTreeViewsShape, MainThreadTreeViewsShape } from './extHost.protocol';
 import { ITreeItem, TreeViewItemHandleArg, ITreeItemLabel, IRevealOptions } from 'vs/workbench/common/views';
 import { ExtHostCommands, CommandsConverter } from 'vs/workbench/api/common/extHostCommands';
@@ -142,8 +142,7 @@ export class ExtHostTreeViews implements ExtHostTreeViewsShape {
 type Root = null | undefined;
 type TreeData<T> = { message: boolean, element: T | Root | false };
 
-// {{SQL CARBON EDIT}}
-export interface TreeNode {
+export interface TreeNode extends IDisposable { // {{SQL CARBON EDIT}} export interface
 	item: ITreeItem;
 	parent: TreeNode | Root;
 	children?: TreeNode[];
@@ -435,6 +434,7 @@ export class ExtHostTreeView<T> extends Disposable {
 						if (extTreeItem) {
 							const newNode = this.createTreeNode(extElement, extTreeItem, existing.parent);
 							this.updateNodeCache(extElement, newNode, existing, existing.parent);
+							existing.dispose();
 							return newNode;
 						}
 						return null;
@@ -454,18 +454,8 @@ export class ExtHostTreeView<T> extends Disposable {
 		return node;
 	}
 
-	// {{SQL CARBON EDIT}}
-	protected createTreeNode(element: T, extensionTreeItem: vscode.TreeItem, parent: TreeNode | Root): TreeNode {
-		return {
-			item: this.createTreeItem(element, extensionTreeItem, parent),
-			parent,
-			children: undefined
-		};
-	}
-
-	// {{SQL CARBON EDIT}}
-	protected createTreeItem(element: T, extensionTreeItem: azdata.TreeItem, parent: TreeNode | Root): ITreeItem {
-
+	protected createTreeNode(element: T, extensionTreeItem: azdata.TreeItem, parent: TreeNode | Root): TreeNode { 	// {{SQL CARBON EDIT}} change to protected, change to azdata.TreeItem
+		const disposable = new DisposableStore();
 		const handle = this.createHandle(element, extensionTreeItem, parent);
 		const icon = this.getLightIconPath(extensionTreeItem);
 		const item = {
@@ -475,7 +465,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			description: extensionTreeItem.description,
 			resourceUri: extensionTreeItem.resourceUri,
 			tooltip: typeof extensionTreeItem.tooltip === 'string' ? extensionTreeItem.tooltip : undefined,
-			command: extensionTreeItem.command ? this.commands.toInternal(extensionTreeItem.command) : undefined,
+			command: extensionTreeItem.command ? this.commands.toInternal(extensionTreeItem.command, disposable) : undefined,
 			contextValue: extensionTreeItem.contextValue,
 			icon,
 			iconDark: this.getDarkIconPath(extensionTreeItem) || icon,
@@ -487,7 +477,12 @@ export class ExtHostTreeView<T> extends Disposable {
 			type: extensionTreeItem.type
 		};
 
-		return item;
+		return {
+			item,
+			parent,
+			children: undefined,
+			dispose(): void { disposable.dispose(); }
+		};
 	}
 
 	private createHandle(element: T, { id, label, resourceUri }: vscode.TreeItem, parent: TreeNode | Root, returnFirst?: boolean): TreeItemHandle {
@@ -524,14 +519,14 @@ export class ExtHostTreeView<T> extends Disposable {
 				|| extensionTreeItem.iconPath instanceof URI) {
 				return this.getIconPath(extensionTreeItem.iconPath);
 			}
-			return this.getIconPath(extensionTreeItem.iconPath['light']);
+			return this.getIconPath((<{ light: string | URI; dark: string | URI }>extensionTreeItem.iconPath).light);
 		}
 		return undefined;
 	}
 
 	private getDarkIconPath(extensionTreeItem: vscode.TreeItem): URI | undefined {
-		if (extensionTreeItem.iconPath && !(extensionTreeItem.iconPath instanceof ThemeIcon) && extensionTreeItem.iconPath['dark']) {
-			return this.getIconPath(extensionTreeItem.iconPath['dark']);
+		if (extensionTreeItem.iconPath && !(extensionTreeItem.iconPath instanceof ThemeIcon) && (<{ light: string | URI; dark: string | URI }>extensionTreeItem.iconPath).dark) {
+			return this.getIconPath((<{ light: string | URI; dark: string | URI }>extensionTreeItem.iconPath).dark);
 		}
 		return undefined;
 	}
@@ -614,6 +609,7 @@ export class ExtHostTreeView<T> extends Disposable {
 			}
 			this.nodes.delete(element);
 			this.elements.delete(node.item.handle);
+			node.dispose();
 		}
 	}
 
@@ -621,6 +617,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	protected clearAll(): void {
 		this.roots = null;
 		this.elements.clear();
+		this.nodes.forEach(node => node.dispose());
 		this.nodes.clear();
 	}
 

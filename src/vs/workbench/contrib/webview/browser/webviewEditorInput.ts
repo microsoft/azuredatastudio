@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 import * as dom from 'vs/base/browser/dom';
 import { Emitter } from 'vs/base/common/event';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
 import { IEditorModel } from 'vs/platform/editor/common/editor';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
@@ -13,15 +13,14 @@ import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/bro
 import { WebviewEvents, WebviewInputOptions } from './webviewEditorService';
 import { Webview, WebviewOptions } from 'vs/workbench/contrib/webview/common/webview';
 
-export class WebviewEditorInput extends EditorInput {
-	private static handlePool = 0;
+export class WebviewEditorInput<State = any> extends EditorInput {
 
 	private static _styleElement?: HTMLStyleElement;
 
-	private static _icons = new Map<number, { light: URI, dark: URI }>();
+	private static _icons = new Map<string, { light: URI, dark: URI }>();
 
 	private static updateStyleElement(
-		id: number,
+		id: string,
 		iconPath: { light: URI, dark: URI } | undefined
 	) {
 		if (!this._styleElement) {
@@ -39,10 +38,10 @@ export class WebviewEditorInput extends EditorInput {
 		this._icons.forEach((value, key) => {
 			const webviewSelector = `.show-file-icons .webview-${key}-name-file-icon::before`;
 			if (URI.isUri(value)) {
-				cssRules.push(`${webviewSelector} { content: ""; background-image: url(${value.toString()}); }`);
+				cssRules.push(`${webviewSelector} { content: ""; background-image: url(${dom.asDomUri(value).toString()}); }`);
 			} else {
-				cssRules.push(`.vs ${webviewSelector} { content: ""; background-image: url(${value.light.toString()}); }`);
-				cssRules.push(`.vs-dark ${webviewSelector} { content: ""; background-image: url(${value.dark.toString()}); }`);
+				cssRules.push(`.vs ${webviewSelector} { content: ""; background-image: url(${dom.asDomUri(value.light).toString()}); }`);
+				cssRules.push(`.vs-dark ${webviewSelector} { content: ""; background-image: url(${dom.asDomUri(value.dark).toString()}); }`);
 			}
 		});
 		this._styleElement.innerHTML = cssRules.join('\n');
@@ -59,22 +58,22 @@ export class WebviewEditorInput extends EditorInput {
 	private _container?: HTMLElement;
 	private _webview?: Webview;
 	private _webviewOwner: any;
-	private _webviewDisposables: IDisposable[] = [];
+	private readonly _webviewDisposables = this._register(new DisposableStore());
 	private _group?: GroupIdentifier;
 	private _scrollYPercentage: number = 0;
-	private _state: any;
+	private _state: State;
 
 	public readonly extension?: {
 		readonly location: URI;
 		readonly id: ExtensionIdentifier;
 	};
-	private readonly _id: number;
 
 	constructor(
+		public readonly id: string,
 		public readonly viewType: string,
 		name: string,
 		options: WebviewInputOptions,
-		state: any,
+		state: State,
 		events: WebviewEvents,
 		extension: undefined | {
 			readonly location: URI;
@@ -83,8 +82,6 @@ export class WebviewEditorInput extends EditorInput {
 		@IWorkbenchLayoutService private readonly _layoutService: IWorkbenchLayoutService,
 	) {
 		super();
-
-		this._id = WebviewEditorInput.handlePool++;
 
 		this._name = name;
 		this._options = options;
@@ -120,7 +117,7 @@ export class WebviewEditorInput extends EditorInput {
 	public getResource(): URI {
 		return URI.from({
 			scheme: 'webview-panel',
-			path: `webview-panel/webview-${this._id}`
+			path: `webview-panel/webview-${this.id}`
 		});
 	}
 
@@ -133,7 +130,7 @@ export class WebviewEditorInput extends EditorInput {
 	}
 
 	public getDescription() {
-		return null;
+		return undefined;
 	}
 
 	public setName(value: string): void {
@@ -147,7 +144,7 @@ export class WebviewEditorInput extends EditorInput {
 
 	public set iconPath(value: { light: URI, dark: URI } | undefined) {
 		this._iconPath = value;
-		WebviewEditorInput.updateStyleElement(this._id, value);
+		WebviewEditorInput.updateStyleElement(this.id, value);
 	}
 
 	public matches(other: IEditorInput): boolean {
@@ -175,16 +172,12 @@ export class WebviewEditorInput extends EditorInput {
 		}
 	}
 
-	public get state(): any {
+	public get state(): State {
 		return this._state;
 	}
 
-	public set state(value: any) {
+	public set state(value: State) {
 		this._state = value;
-	}
-
-	public get webviewState() {
-		return this._state.state;
 	}
 
 	public get options(): WebviewInputOptions {
@@ -217,7 +210,7 @@ export class WebviewEditorInput extends EditorInput {
 	public get container(): HTMLElement {
 		if (!this._container) {
 			this._container = document.createElement('div');
-			this._container.id = `webview-${this._id}`;
+			this._container.id = `webview-${this.id}`;
 			const part = this._layoutService.getContainer(Parts.EDITOR_PART);
 			part.appendChild(this._container);
 		}
@@ -229,7 +222,7 @@ export class WebviewEditorInput extends EditorInput {
 	}
 
 	public set webview(value: Webview | undefined) {
-		this._webviewDisposables = dispose(this._webviewDisposables);
+		this._webviewDisposables.clear();
 
 		this._webview = value;
 		if (!this._webview) {
@@ -253,7 +246,9 @@ export class WebviewEditorInput extends EditorInput {
 		}, null, this._webviewDisposables);
 
 		this._webview.onDidUpdateState(newState => {
-			this._state.state = newState;
+			if (this._events && this._events.onDidUpdateWebviewState) {
+				this._events.onDidUpdateWebviewState(newState);
+			}
 		}, null, this._webviewDisposables);
 	}
 
@@ -262,7 +257,6 @@ export class WebviewEditorInput extends EditorInput {
 	}
 
 	public claimWebview(owner: any) {
-
 		this._webviewOwner = owner;
 	}
 
@@ -284,8 +278,7 @@ export class WebviewEditorInput extends EditorInput {
 			this._webview = undefined;
 		}
 
-		this._webviewDisposables = dispose(this._webviewDisposables);
-
+		this._webviewDisposables.clear();
 		this._webviewOwner = undefined;
 
 		if (this._container) {
@@ -305,6 +298,7 @@ export class RevivedWebviewEditorInput extends WebviewEditorInput {
 	private _revived: boolean = false;
 
 	constructor(
+		id: string,
 		viewType: string,
 		name: string,
 		options: WebviewInputOptions,
@@ -317,7 +311,7 @@ export class RevivedWebviewEditorInput extends WebviewEditorInput {
 		private readonly reviver: (input: WebviewEditorInput) => Promise<void>,
 		@IWorkbenchLayoutService partService: IWorkbenchLayoutService,
 	) {
-		super(viewType, name, options, state, events, extension, partService);
+		super(id, viewType, name, options, state, events, extension, partService);
 	}
 
 	public async resolve(): Promise<IEditorModel> {

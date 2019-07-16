@@ -10,8 +10,7 @@ import * as path from 'vs/base/common/path';
 import * as os from 'os';
 import { URI } from 'vs/base/common/uri';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { ParsedArgs, IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { EnvironmentService } from 'vs/platform/environment/node/environmentService';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { parseArgs } from 'vs/platform/environment/node/argv';
 import * as pfs from 'vs/base/node/pfs';
 import * as uuid from 'vs/base/common/uuid';
@@ -37,21 +36,27 @@ import { IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { RemoteAgentService } from 'vs/workbench/services/remote/electron-browser/remoteAgentServiceImpl';
 import { RemoteAuthorityResolverService } from 'vs/platform/remote/electron-browser/remoteAuthorityResolverService';
 import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
-import { FileService } from 'vs/workbench/services/files/common/fileService';
+import { FileService } from 'vs/platform/files/common/fileService';
 import { NullLogService } from 'vs/platform/log/common/log';
-import { DiskFileSystemProvider } from 'vs/workbench/services/files/node/diskFileSystemProvider';
+import { DiskFileSystemProvider } from 'vs/platform/files/node/diskFileSystemProvider';
 import { ConfigurationCache } from 'vs/workbench/services/configuration/node/configurationCache';
-import { ConfigurationFileService } from 'vs/workbench/services/configuration/node/configurationFileService';
 import { IRemoteAgentEnvironment } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { IConfigurationCache } from 'vs/workbench/services/configuration/common/configuration';
+// import { VSBuffer } from 'vs/base/common/buffer';
+import { SignService } from 'vs/platform/sign/browser/signService';
+import { FileUserDataProvider } from 'vs/workbench/services/userData/common/fileUserDataProvider';
+import { IKeybindingEditingService, KeybindingsEditingService } from 'vs/workbench/services/keybinding/common/keybindingEditing';
+import { WorkbenchEnvironmentService } from 'vs/workbench/services/environment/node/environmentService';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
-class SettingsTestEnvironmentService extends EnvironmentService {
+class TestEnvironmentService extends WorkbenchEnvironmentService {
 
-	constructor(args: ParsedArgs, _execPath: string, private customAppSettingsHome: string) {
-		super(args, _execPath);
+	constructor(private _appSettingsHome: URI) {
+		super(parseArgs(process.argv) as IWindowConfiguration, process.execPath);
 	}
 
-	get appSettingsPath(): string { return this.customAppSettingsHome; }
+	get appSettingsHome() { return this._appSettingsHome; }
+
 }
 
 function setUpFolderWorkspace(folderName: string): Promise<{ parentDir: string, folderDir: string }> {
@@ -93,6 +98,14 @@ function setUpWorkspace(folders: string[]): Promise<{ parentDir: string, configP
 
 
 suite('WorkspaceContextService - Folder', () => {
+	setup(() => {
+		// {{SQL CARBON EDIT}} - Remove tests
+	});
+
+	teardown(() => {
+		// {{SQL CARBON EDIT}} - Remove tests
+	});
+
 	test('getWorkspace()', () => {
 		// {{SQL CARBON EDIT}} - Remove tests
 		assert.equal(0, 0);
@@ -145,15 +158,14 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 				remoteSettingsFile = path.join(parentDir, 'remote-settings.json');
 
 				instantiationService = <TestInstantiationService>workbenchInstantiationService();
-				const environmentService = new SettingsTestEnvironmentService(parseArgs(process.argv), process.execPath, globalSettingsFile);
+				const environmentService = new TestEnvironmentService(URI.file(parentDir));
 				const remoteEnvironmentPromise = new Promise<Partial<IRemoteAgentEnvironment>>(c => resolveRemoteEnvironment = () => c({ settingsPath: URI.file(remoteSettingsFile).with({ scheme: Schemas.vscodeRemote, authority: remoteAuthority }) }));
 				const remoteAgentService = instantiationService.stub(IRemoteAgentService, <Partial<IRemoteAgentService>>{ getEnvironment: () => remoteEnvironmentPromise });
 				const fileService = new FileService(new NullLogService());
 				fileService.registerProvider(Schemas.file, diskFileSystemProvider);
-				const configurationFileService = new ConfigurationFileService();
-				configurationFileService.fileService = fileService;
+				fileService.registerProvider(Schemas.userData, new FileUserDataProvider(environmentService.appSettingsHome, environmentService.backupHome, diskFileSystemProvider, environmentService));
 				const configurationCache: IConfigurationCache = { read: () => Promise.resolve(''), write: () => Promise.resolve(), remove: () => Promise.resolve() };
-				testObject = new WorkspaceService({ userSettingsResource: URI.file(environmentService.appSettingsPath), configurationCache, remoteAuthority }, configurationFileService, remoteAgentService);
+				testObject = new WorkspaceService({ configurationCache, remoteAuthority }, environmentService, fileService, remoteAgentService);
 				instantiationService.stub(IWorkspaceContextService, testObject);
 				instantiationService.stub(IConfigurationService, testObject);
 				instantiationService.stub(IEnvironmentService, environmentService);
@@ -264,7 +276,7 @@ suite('WorkspaceConfigurationService - Remote Folder', () => {
 	// 			}
 	// 		});
 	// 	});
-	// 	fs.writeFileSync(remoteSettingsFile, '{ "configurationService.remote.machineSetting": "remoteValue" }');
+	// 	await instantiationService.get(IFileService).writeFile(URI.file(remoteSettingsFile), VSBuffer.fromString('{ "configurationService.remote.machineSetting": "remoteValue" }'));
 	// 	return promise;
 	// });
 
