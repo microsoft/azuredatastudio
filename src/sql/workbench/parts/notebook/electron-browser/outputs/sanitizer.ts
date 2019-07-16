@@ -118,7 +118,7 @@ class CssProp {
 		rgb: String.raw`rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)`,
 		rgba: String.raw`rgba\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(${
 			CssProp.N.integer_zero_ff
-		}|${CssProp.N.number_zero_one}|${CssProp.B.percentage_zero_hundred})\s*\)`
+			}|${CssProp.N.number_zero_one}|${CssProp.B.percentage_zero_hundred})\s*\)`
 	};
 
 	/*
@@ -127,19 +127,19 @@ class CssProp {
 	private static readonly _C = {
 		alpha: `${CssProp.N.integer_zero_ff}|${CssProp.N.number_zero_one}|${
 			CssProp.B.percentage_zero_hundred
-		}`,
+			}`,
 		alphavalue: CssProp.N.number_zero_one,
 		bg_position: `((${
 			CssProp.B.len_or_perc
-		}|left|center|right|top|bottom)\\s*){1,4}`,
+			}|left|center|right|top|bottom)\\s*){1,4}`,
 		bg_size: `(${CssProp.B.length_pos}|${
 			CssProp.B.percentage
-		}|auto){1,2}|cover|contain`,
+			}|auto){1,2}|cover|contain`,
 		border_width: `thin|medium|thick|${CssProp.B.length}`,
 		bottom: `${CssProp.B.length}|auto`,
 		color: `${CssProp._COLOR.hex}|${CssProp._COLOR.rgb}|${
 			CssProp._COLOR.rgba
-		}|${CssProp._COLOR.name}`,
+			}|${CssProp._COLOR.name}`,
 		family_name: `${CssProp.B.string}|(${CssProp.B.ident}\\s*)+`,
 		image_decl: CssProp.B.url,
 		left: `${CssProp.B.length}|auto`,
@@ -149,24 +149,24 @@ class CssProp {
 		page_url: CssProp.B.url,
 		position: `((${
 			CssProp.B.len_or_perc
-		}|left|center|right|top|bottom)\\s*){1,4}`,
+			}|left|center|right|top|bottom)\\s*){1,4}`,
 		right: `${CssProp.B.length}|auto`,
 		shadow: '',
 		size: `closest-side|farthest-side|closest-corner|farthest-corner|${
 			CssProp.B.length
-		}|(${CssProp.B.len_or_perc})\\s+(${CssProp.B.len_or_perc})`,
+			}|(${CssProp.B.len_or_perc})\\s+(${CssProp.B.len_or_perc})`,
 		top: `${CssProp.B.length}|auto`
 	};
 
 	private static readonly _C1 = {
 		image_list: `image\\(\\s*(${CssProp.B.url})*\\s*(${CssProp.B.url}|${
 			CssProp._C.color
-		})\\s*\\)`,
+			})\\s*\\)`,
 		shadow: `((${CssProp._C.color})\\s+((${
 			CssProp.B.length
-		})\\s*){2,4}(\s+inset)?)|((inset\\s+)?((${
+			})\\s*){2,4}(\s+inset)?)|((inset\\s+)?((${
 			CssProp.B.length
-		})\\s*){2,4}\\s*(${CssProp._C.color})?)`
+			})\\s*){2,4}\\s*(${CssProp._C.color})?)`
 	};
 
 	private static readonly _C2 = {
@@ -174,7 +174,7 @@ class CssProp {
 		image: `${CssProp.B.url}|${CssProp._C1.image_list}`,
 		shape: `rect\\(\\s*(${CssProp._C.top})\\s*,\\s*(${
 			CssProp._C.right
-		})\\s*,\\s*(${CssProp._C.bottom})\\s*,\\s*(${CssProp._C.left})\\s*\\)`
+			})\\s*,\\s*(${CssProp._C.bottom})\\s*,\\s*(${CssProp._C.left})\\s*\\)`
 	};
 
 	private static readonly C = { ...CssProp._C, ...CssProp._C1, ...CssProp._C2 };
@@ -226,18 +226,18 @@ class CssProp {
 	private static readonly _CP = {
 		background_attachment: `${CssProp.A.attachment}(,\\s*${
 			CssProp.A.attachment
-		})*`,
+			})*`,
 		background_color: CssProp.C.color,
 		background_origin: `${CssProp.A.box}(,\\s*${CssProp.A.box})*`,
 		background_repeat: `${CssProp.A.repeat_style}(,\\s*${
 			CssProp.A.repeat_style
-		})*`,
+			})*`,
 		border: `((${CssProp.C.border_width}|${CssProp.A.border_style}|${
 			CssProp.C.color
-		})\\s*){1,3}`,
+			})\\s*){1,3}`,
 		border_radius: `((${CssProp.B.len_or_perc})\\s*){1,4}(\\/\\s*((${
 			CssProp.B.len_or_perc
-		})\\s*){1,4})?`,
+			})\\s*){1,4})?`,
 		border_spacing: `${CssProp.B.length}\\s*(${CssProp.B.length})?`,
 		border_top_color: CssProp.C.color,
 		border_top_style: CssProp.A.border_style,
@@ -245,15 +245,15 @@ class CssProp {
 		color: CssProp.C.color,
 		cursor: `(${
 			CssProp.B.url
-		}(\\s*,\\s*)?)*(auto|crosshair|default|pointer|move|e-resize|ne-resize|nw-resize|n-resize|se-resize|sw-resize|s-resize|w-resize|text|wait|help|progress|all-scroll|col-resize|hand|no-drop|not-allowed|row-resize|vertical-text)`,
+			}(\\s*,\\s*)?)*(auto|crosshair|default|pointer|move|e-resize|ne-resize|nw-resize|n-resize|se-resize|sw-resize|s-resize|w-resize|text|wait|help|progress|all-scroll|col-resize|hand|no-drop|not-allowed|row-resize|vertical-text)`,
 		display: `inline|block|list-item|run-in|inline-list-item|inline-block|table|inline-table|table-cell|table-caption|flex|inline-flex|grid|inline-grid|${
 			CssProp.A.display_inside
-		}|${CssProp.A.display_outside}|inherit|inline-box|inline-stack`,
+			}|${CssProp.A.display_outside}|inherit|inline-box|inline-stack`,
 		display_outside: CssProp.A.display_outside,
 		elevation: `${CssProp.B.angle}|below|level|above|higher|lower`,
 		font_family: `(${CssProp.C.family_name}|${
 			CssProp.A.generic_family
-		})(,\\s*(${CssProp.C.family_name}|${CssProp.A.generic_family}))*`,
+			})(,\\s*(${CssProp.C.family_name}|${CssProp.A.generic_family}))*`,
 		height: `${CssProp.B.length}|${CssProp.B.percentage}|auto`,
 		letter_spacing: `normal|${CssProp.B.length}`,
 		list_style_image: `${CssProp.C.image}|none`,
@@ -272,14 +272,14 @@ class CssProp {
 		text_shadow: `none|${CssProp.C.shadow}(,\\s*(${CssProp.C.shadow}))*`,
 		volume: `${CssProp.N.number_pos}|${
 			CssProp.B.percentage_pos
-		}|silent|x-soft|soft|medium|loud|x-loud`,
+			}|silent|x-soft|soft|medium|loud|x-loud`,
 		word_wrap: CssProp.AP.overflow_wrap,
 		zoom: `normal|${CssProp.N.number_pos}|${CssProp.B.percentage_pos}`,
 		backface_visibility: CssProp.AP.visibility,
 		background_clip: `${CssProp.A.box}(,\\s*(${CssProp.A.box}))*`,
 		background_position: `${CssProp.C.bg_position}(,\\s*(${
 			CssProp.C.bg_position
-		}))*`,
+			}))*`,
 		border_bottom_color: CssProp.C.color,
 		border_bottom_style: CssProp.A.border_style,
 		border_color: `((${CssProp.C.color})\\s*){1,4}`,
@@ -288,17 +288,17 @@ class CssProp {
 		border_style: `((${CssProp.A.border_style})\\s*){1,4}`,
 		border_top_left_radius: `(${CssProp.B.length}|${
 			CssProp.B.percentage
-		})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
+			})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
 		border_top_width: CssProp.C.border_width,
 		box_shadow: `none|${CssProp.C.shadow}(,\\s*(${CssProp.C.shadow}))*`,
 		clip: `${CssProp.C.shape}|auto`,
 		display_inside: CssProp.A.display_inside,
 		font_size: `${CssProp.A.absolute_size}|${CssProp.A.relative_size}|${
 			CssProp.B.length_pos
-		}|${CssProp.B.percentage_pos}`,
+			}|${CssProp.B.percentage_pos}`,
 		line_height: `normal|${CssProp.N.number_pos}|${CssProp.B.length_pos}|${
 			CssProp.B.percentage_pos
-		}`,
+			}`,
 		margin_left: CssProp.C.margin_width,
 		max_width: `${CssProp.B.length_pos}|${CssProp.B.percentage_pos}|none|auto`,
 		outline_style: CssProp.A.border_style,
@@ -313,37 +313,37 @@ class CssProp {
 		// Simplified background
 		background: `(((${CssProp.C.bg_position}\\s*(\\/\\s*${
 			CssProp.C.bg_size
-		})?)|(${CssProp.A.repeat_style})|(${CssProp.A.attachment})|(${
+			})?)|(${CssProp.A.repeat_style})|(${CssProp.A.attachment})|(${
 			CssProp.A.bg_origin
-		})|(${CssProp.C.bg_image})|(${CssProp.C.color}))\\s*)+`,
+			})|(${CssProp.C.bg_image})|(${CssProp.C.color}))\\s*)+`,
 		background_size: `${CssProp.C.bg_size}(,\\s*${CssProp.C.bg_size})*`,
 		border_bottom_left_radius: `(${CssProp.B.length}|${
 			CssProp.B.percentage
-		})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
+			})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
 		border_bottom_width: CssProp.C.border_width,
 		border_left_style: CssProp.A.border_style,
 		border_right_style: CssProp.A.border_style,
 		border_top: `((${CssProp.C.border_width}|${CssProp.A.border_style}|${
 			CssProp.C.color
-		})\\s*){1,3}`,
+			})\\s*){1,3}`,
 		bottom: `${CssProp.B.len_or_perc}|auto`,
 		list_style: `((${CssProp.AP.list_style_type}|${
 			CssProp.AP.list_style_position
-		}|${CssProp.C.image}|none})\\s*){1,3}`,
+			}|${CssProp.C.image}|none})\\s*){1,3}`,
 		margin_top: CssProp.C.margin_width,
 		outline: `((${CssProp.C.color}|invert|${CssProp.A.border_style}|${
 			CssProp.C.border_width
-		})\\s*){1,3}`,
+			})\\s*){1,3}`,
 		overflow_y: CssProp.AP.overflow_x,
 		pitch: `${CssProp.B.frequency}|x-low|low|medium|high|x-high`,
 		vertical_align: `baseline|sub|super|top|text-top|middle|bottom|text-bottom|${
 			CssProp.B.len_or_perc
-		}`,
+			}`,
 		word_spacing: `normal|${CssProp.B.length}`,
 		background_image: `${CssProp.C.bg_image}(,\\s*${CssProp.C.bg_image})*`,
 		border_bottom_right_radius: `(${CssProp.B.length}|${
 			CssProp.B.percentage
-		})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
+			})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
 		border_left_width: CssProp.C.border_width,
 		border_right_width: CssProp.C.border_width,
 		left: `${CssProp.B.len_or_perc}|auto`,
@@ -351,34 +351,34 @@ class CssProp {
 		pause_after: `${CssProp.B.time}|${CssProp.B.percentage}`,
 		speech_rate: `${
 			CssProp.N.number
-		}|x-slow|slow|medium|fast|x-fast|faster|slower`,
+			}|x-slow|slow|medium|fast|x-fast|faster|slower`,
 		transition_duration: `${CssProp.B.time}(,\\s*${CssProp.B.time})*`,
 		border_bottom: `((${CssProp.C.border_width}|${CssProp.A.border_style}|${
 			CssProp.C.color
-		})\\s*){1,3}`,
+			})\\s*){1,3}`,
 		border_right: `((${CssProp.C.border_width}|${CssProp.A.border_style}|${
 			CssProp.C.color
-		})\\s*){1,3}`,
+			})\\s*){1,3}`,
 		margin: `((${CssProp.C.margin_width})\\s*){1,4}`,
 		padding_left: CssProp.C.padding_width,
 		border_left: `((${CssProp.C.border_width}|${CssProp.A.border_style}|${
 			CssProp.C.color
-		})\\s*){1,3}`,
+			})\\s*){1,3}`,
 		quotes: `(${CssProp.B.string}\\s*${CssProp.B.string})+|none`,
 		border_top_right_radius: `(${CssProp.B.length}|${
 			CssProp.B.percentage
-		})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
+			})(\\s*(${CssProp.B.length}|${CssProp.B.percentage}))?`,
 		min_width: `${CssProp.B.length_pos}|${CssProp.B.percentage_pos}|auto`
 	};
 
 	private static readonly _CP1 = {
 		font: `(((((${CssProp.AP.font_style}|${CssProp.AP.font_variant}|${
 			CssProp.AP.font_weight
-		})\\s*){1,3})?\\s*(${CssProp._CP.font_size})\\s*(\\/\\s*(${
+			})\\s*){1,3})?\\s*(${CssProp._CP.font_size})\\s*(\\/\\s*(${
 			CssProp._CP.line_height
-		}))?\\s+(${
+			}))?\\s+(${
 			CssProp._CP.font_family
-		}))|caption|icon|menu|message-box|small-caption|status-bar)`
+			}))|caption|icon|menu|message-box|small-caption|status-bar)`
 	};
 
 	private static readonly CP = { ...CssProp._CP, ...CssProp._CP1 };
