@@ -15,8 +15,8 @@ import * as assert from 'assert';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { Event, Emitter } from 'vs/base/common/event';
-import { TestLogService } from 'vs/workbench/test/workbenchTestServices';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { NullLogService } from 'vs/platform/log/common/log';
 import { TestObjectExplorerProvider } from 'sql/workbench/services/objectExplorer/test/common/testObjectExplorerProvider';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
@@ -270,7 +270,7 @@ suite('SQL Object Explorer Service tests', () => {
 			}
 		};
 
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		objectExplorerService = new ObjectExplorerService(connectionManagementService.object, undefined, capabilitiesService, logService);
 		objectExplorerService.registerProvider(mssqlProviderName, sqlOEProvider.object);
 		sqlOEProvider.setup(x => x.createNewSession(TypeMoq.It.is<azdata.ConnectionInfo>(x => x.options['serverName'] === connection.serverName))).returns(() => new Promise<any>((resolve) => {

@@ -78,8 +78,6 @@ export class QueryModelService implements IQueryModelService {
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
-
-		// Register Statusbar items
 	}
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////

@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./dashboardWebviewContainer';
-
 import { Component, forwardRef, Input, AfterContentInit, ViewChild } from '@angular/core';
 
 import { Event, Emitter } from 'vs/base/common/event';

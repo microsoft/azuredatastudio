@@ -6,19 +6,18 @@
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
-import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { MainThreadNotebook } from 'sql/workbench/api/node/mainThreadNotebook';
+import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { TestLifecycleService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 suite('MainThreadNotebook Tests', () => {
 

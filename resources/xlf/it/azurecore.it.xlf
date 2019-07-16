@@ -72,19 +72,19 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="it" datatype="plaintext">
-    <body>
-      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
-        <source xml:lang="en">SQL Databases</source>
-        <target state="translated">Database SQL</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/azurecore/out/azureResource/providers/databaseServer/databaseServerTreeDataProvider" source-language="en" target-language="it" datatype="plaintext">
     <body>
       <trans-unit id="azure.resource.providers.databaseServer.treeDataProvider.databaseServerContainerLabel">
         <source xml:lang="en">SQL Servers</source>
         <target state="translated">Istanze di SQL Server</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/azurecore/out/azureResource/providers/database/databaseTreeDataProvider" source-language="en" target-language="it" datatype="plaintext">
+    <body>
+      <trans-unit id="azure.resource.providers.database.treeDataProvider.databaseContainerLabel">
+        <source xml:lang="en">SQL Databases</source>
+        <target state="translated">Database SQL</target>
       </trans-unit>
     </body>
   </file>

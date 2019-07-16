@@ -13,6 +13,7 @@ export interface ParsedArgs {
 	_urls?: string[];
 	help?: boolean;
 	version?: boolean;
+	telemetry?: boolean;
 	status?: boolean;
 	wait?: boolean;
 	waitMarkerFilePath?: string;
@@ -27,7 +28,6 @@ export interface ParsedArgs {
 	'prof-startup'?: string;
 	'prof-startup-prefix'?: string;
 	'prof-append-timers'?: string;
-	'prof-modules'?: string;
 	verbose?: boolean;
 	trace?: boolean;
 	'trace-category-filter'?: string;
@@ -65,10 +65,11 @@ export interface ParsedArgs {
 	'max-memory'?: string;
 	'file-write'?: boolean;
 	'file-chmod'?: boolean;
-	'upload-logs'?: string;
 	'driver'?: string;
 	'driver-verbose'?: boolean;
 	remote?: string;
+	'disable-user-env-probe'?: boolean;
+	'enable-remote-auto-shutdown'?: boolean;
 	// {{SQL CARBON EDIT}}
 	aad?: boolean;
 	database?: string;
@@ -77,6 +78,16 @@ export interface ParsedArgs {
 	user?: string;
 	command?: string;
 	// {{SQL CARBON EDIT}}
+	'disable-inspect'?: boolean;
+	'force'?: boolean;
+	'gitCredential'?: string;
+	// node flags
+	'js-flags'?: boolean;
+	'disable-gpu'?: boolean;
+	'nolazy'?: boolean;
+
+	// Web flags
+	'web-user-data-dir'?: string;
 }
 
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');
@@ -89,6 +100,8 @@ export interface IDebugParams {
 export interface IExtensionHostDebugParams extends IDebugParams {
 	debugId?: string;
 }
+
+export const BACKUPS = 'Backups';
 
 export interface IEnvironmentService {
 	_serviceBrand: any;
@@ -104,20 +117,22 @@ export interface IEnvironmentService {
 
 	appNameLong: string;
 	appQuality?: string;
-	appSettingsHome: string;
-	appSettingsPath: string;
-	appKeybindingsPath: string;
+	appSettingsHome: URI;
 
-	machineSettingsHome: string;
-	machineSettingsPath: string;
+	// user roaming data
+	userRoamingDataHome: URI;
+	settingsResource: URI;
+	keybindingsResource: URI;
+	keyboardLayoutResource: URI;
+	localeResource: URI;
 
-	settingsSearchBuildId?: number;
-	settingsSearchUrl?: string;
+	machineSettingsHome: URI;
+	machineSettingsResource: URI;
 
 	globalStorageHome: string;
 	workspaceStorageHome: string;
 
-	backupHome: string;
+	backupHome: URI;
 	backupWorkspacesPath: string;
 
 	untitledWorkspacesHome: URI;
@@ -159,4 +174,8 @@ export interface IEnvironmentService {
 
 	driverHandle?: string;
 	driverVerbose: boolean;
+
+	webviewEndpoint?: string;
+	readonly webviewResourceRoot: string;
+	readonly webviewCspSource: string;
 }

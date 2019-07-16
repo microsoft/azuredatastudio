@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import * as strings from 'vs/base/common/strings';
 import { ILocalization } from 'vs/platform/localizations/common/localizations';
 import { URI } from 'vs/base/common/uri';
@@ -109,24 +108,6 @@ export interface IExtensionContributions {
 
 export type ExtensionKind = 'ui' | 'workspace';
 
-export class ExtensionIdentifierWithVersion {
-	constructor(
-		readonly identifier: IExtensionIdentifier,
-		readonly version: string
-	) { }
-
-	key(): string {
-		return `${this.identifier.id}-${this.version}`;
-	}
-
-	equals(o: any): boolean {
-		if (!(o instanceof ExtensionIdentifierWithVersion)) {
-			return false;
-		}
-		return areSameExtensions(this.identifier, o.identifier) && this.version === o.version;
-	}
-}
-
 export function isIExtensionIdentifier(thing: any): thing is IExtensionIdentifier {
 	return thing
 		&& typeof thing === 'object'
@@ -144,8 +125,8 @@ export interface IExtensionManifest {
 	readonly displayName?: string;
 	readonly publisher: string;
 	readonly version: string;
-	// {{SQL CARBON EDIT}}
-	engines: { vscode: string; azdata?: string };
+	readonly engines: { vscode: string; azdata?: string }; // {{SQL CARBON EDIT}} add field
+	readonly forceReload?: boolean; // {{ SQL CARBON EDIT }} add field
 	readonly description?: string;
 	readonly main?: string;
 	readonly icon?: string;
@@ -160,6 +141,7 @@ export interface IExtensionManifest {
 	readonly bugs?: { url: string; };
 	readonly enableProposedApi?: boolean;
 	readonly api?: string;
+	readonly scripts?: { [key: string]: string; };
 }
 
 export const enum ExtensionType {

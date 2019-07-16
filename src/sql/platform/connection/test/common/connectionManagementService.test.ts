@@ -28,9 +28,10 @@ import * as TypeMoq from 'typemoq';
 import { IConnectionProfileGroup, ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
-import { TestStorageService, TestEnvironmentService, TestLogService, TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { TestStorageService, TestEnvironmentService, TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import { NullLogService } from 'vs/platform/log/common/log';
 
 suite('SQL ConnectionManagementService tests', () => {
 
@@ -81,7 +82,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionDialogService = TypeMoq.Mock.ofType(TestConnectionDialogService);
 		connectionStore = TypeMoq.Mock.ofType(ConnectionStore, TypeMoq.MockBehavior.Loose, new TestStorageService());
 		workbenchEditorService = TypeMoq.Mock.ofType(TestEditorService);
-		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new TestLogService(), TestEnvironmentService, new TestNotificationService());
+		connectionStatusManager = new ConnectionStatusManager(capabilitiesService, new NullLogService(), TestEnvironmentService, new TestNotificationService());
 		mssqlConnectionProvider = TypeMoq.Mock.ofType(TestConnectionProvider);
 		let resourceProviderStub = new TestResourceProvider();
 		resourceProviderStubMock = TypeMoq.Mock.ofInstance(resourceProviderStub);
@@ -155,14 +156,13 @@ suite('SQL ConnectionManagementService tests', () => {
 			workspaceConfigurationServiceMock.object,
 			capabilitiesService,
 			undefined, // IQuickInputService
-			undefined, // IStatusbarService
+			new TestNotificationService(),
 			resourceProviderStubMock.object,
 			undefined, // IAngularEventingService
 			accountManagementService.object,
-			new TestLogService(), // ILogService
+			new NullLogService(), // ILogService
 			undefined, // IStorageService
-			TestEnvironmentService,
-			new TestNotificationService()
+			TestEnvironmentService
 		);
 		return connectionManagementService;
 	}
@@ -946,7 +946,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStoreMock.setup(x => x.getConnectionProfileGroups(TypeMoq.It.isAny(), undefined)).returns(() => {
 			return [group1];
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 

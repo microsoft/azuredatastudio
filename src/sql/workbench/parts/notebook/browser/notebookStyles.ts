@@ -8,11 +8,11 @@ import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platf
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
 import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
 import * as types from 'vs/base/common/types';
-import { IDisposable } from 'vs/base/common/lifecycle';
 
 export function registerNotebookThemes(overrideEditorThemeSetting: boolean, configurationService: IConfigurationService): IDisposable {
 	return registerThemingParticipant((theme: ITheme, collector: ICssStyleCollector) => {
