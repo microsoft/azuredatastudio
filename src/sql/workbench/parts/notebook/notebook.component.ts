@@ -468,18 +468,12 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private addButton(label: string, onDidClick?: () => void): void {
 		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
-		let button = new Button(container, {
-			buttonBackground: Color.white,
-			buttonHoverBackground: Color.white,
-			buttonForeground: Color.blue,
-			buttonBorder: Color.blue,
-		});
+		let button = new Button(container);
 		button.icon = '';
 		button.label = label;
 		if (onDidClick) {
 			this._register(button.onDidClick(onDidClick));
 		}
-		this._register(button);
 	}
 
 	private actionItemProvider(action: Action): IActionViewItem {

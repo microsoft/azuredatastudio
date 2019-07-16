@@ -157,7 +157,7 @@ export interface INotebookEditor {
 export interface INavigationProvider {
 	providerId: string;
 	hasNavigation: boolean;
-	getNavigation(uri): Thenable<azdata.nb.NavigationResult>;
+	getNavigation(uri: URI): Thenable<azdata.nb.NavigationResult>;
 	onNext(uri: URI): void;
 	onPrevious(uri: URI): void;
 }
