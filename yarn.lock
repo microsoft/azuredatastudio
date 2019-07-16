@@ -8336,9 +8336,9 @@ slice-ansi@^2.0.0:
     astral-regex "^1.0.0"
     is-fullwidth-code-point "^2.0.0"
 
-"slickgrid@github:anthonydresser/SlickGrid#2.3.29":
-  version "2.3.29"
-  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/40b88f10d36d35f350838d1a2142c4b790701709"
+"slickgrid@github:anthonydresser/SlickGrid#2.3.30":
+  version "2.3.30"
+  resolved "https://codeload.github.com/anthonydresser/SlickGrid/tar.gz/c941811d833504dfaf40b29b69044a42595bfafb"
   dependencies:
     jquery ">=1.8.0"
     jquery-ui ">=1.8.0"

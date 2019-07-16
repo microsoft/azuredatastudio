@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
+import { ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { ComponentBase } from 'sql/workbench/electron-browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/electron-browser/modelComponents/interfaces';
@@ -163,16 +164,21 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 		// convert the tri-state viewmodel columnSizingMode to be either true or false for SlickGrid
 		switch (this.forceFitColumns) {
-			case azdata.ColumnSizingMode.Default: {
+			case ColumnSizingMode.Default: {
 				forceFit = false;
 				break;
 			}
-			case azdata.ColumnSizingMode.ForceFit: {
+			case ColumnSizingMode.ForceFit: {
 				forceFit = true;
 				break;
 			}
-			case azdata.ColumnSizingMode.AutoFit: {
+			case ColumnSizingMode.AutoFit: {
 				// determine if force fit should be on or off based on the number of columns
+				// this can be made more sophisticated if need be in the future.  a simple
+				// check for 3 or less force fits causes the small number of columns to fill the
+				// screen better.  4 or more, slickgrid seems to do a good job filling the view and having forceFit
+				// false enables the scroll bar and avoids the over-packing should there be a very large
+				// number of columns
 				if (this._table.columns.length > 3) {
 					forceFit = false;
 				}
@@ -181,7 +187,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				}
 				break;
 			}
-
 		}
 		let updateOptions = <Slick.GridOptions<any>>{
 			forceFitColumns: forceFit
@@ -282,6 +287,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	public get forceFitColumns() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.ColumnSizingMode>((props) => props.forceFitColumns, azdata.ColumnSizingMode.Default);
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.Default);
 	}
 }
