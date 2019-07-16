@@ -35,7 +35,6 @@ import { Schemas } from 'vs/base/common/network';
 import { URI } from 'vs/base/common/uri';
 import { isWindows } from 'vs/base/common/platform';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 export const TERMINAL_PICKER_PREFIX = 'term ';
 
@@ -160,10 +159,10 @@ export class CopyTerminalSelectionAction extends Action {
 		super(id, label);
 	}
 
-	public run(event?: any): Promise<any> {
+	public async run(event?: any): Promise<any> {
 		const terminalInstance = this.terminalService.getActiveInstance();
 		if (terminalInstance) {
-			terminalInstance.copySelection();
+			await terminalInstance.copySelection();
 		}
 		return Promise.resolve(undefined);
 	}
@@ -239,7 +238,7 @@ export class DeleteWordRightTerminalAction extends BaseSendTextTerminalAction {
 
 export class DeleteToLineStartTerminalAction extends BaseSendTextTerminalAction {
 	public static readonly ID = TERMINAL_COMMAND_ID.DELETE_TO_LINE_START;
-	public static readonly LABEL = nls.localize('workbench.action.terminal.deleteToLineStart', "Delete to Line Start");
+	public static readonly LABEL = nls.localize('workbench.action.terminal.deleteToLineStart', "Delete To Line Start");
 
 	constructor(
 		id: string,
@@ -624,13 +623,13 @@ export class SelectDefaultShellWindowsTerminalAction extends Action {
 
 	constructor(
 		id: string, label: string,
-		@ITerminalService private readonly terminalService: ITerminalService
+		@ITerminalService private readonly _terminalService: ITerminalService
 	) {
 		super(id, label);
 	}
 
 	public run(event?: any): Promise<any> {
-		return this.terminalService.selectDefaultWindowsShell();
+		return this._terminalService.selectDefaultWindowsShell();
 	}
 }
 
@@ -743,24 +742,20 @@ export class SwitchTerminalActionViewItem extends SelectActionViewItem {
 		action: IAction,
 		@ITerminalService private readonly terminalService: ITerminalService,
 		@IThemeService themeService: IThemeService,
-		@IContextViewService contextViewService: IContextViewService,
-		@IWorkbenchEnvironmentService private workbenchEnvironmentService: IWorkbenchEnvironmentService
+		@IContextViewService contextViewService: IContextViewService
 	) {
 		super(null, action, terminalService.getTabLabels().map(label => <ISelectOptionItem>{ text: label }), terminalService.activeTabIndex, contextViewService, { ariaLabel: nls.localize('terminals', 'Open Terminals.') });
 
-		this.toDispose.push(terminalService.onInstancesChanged(this._updateItems, this));
-		this.toDispose.push(terminalService.onActiveTabChanged(this._updateItems, this));
-		this.toDispose.push(terminalService.onInstanceTitleChanged(this._updateItems, this));
-		this.toDispose.push(attachSelectBoxStyler(this.selectBox, themeService));
+		this._register(terminalService.onInstancesChanged(this._updateItems, this));
+		this._register(terminalService.onActiveTabChanged(this._updateItems, this));
+		this._register(terminalService.onInstanceTitleChanged(this._updateItems, this));
+		this._register(attachSelectBoxStyler(this.selectBox, themeService));
 	}
 
 	private _updateItems(): void {
 		const items = this.terminalService.getTabLabels().map(label => <ISelectOptionItem>{ text: label });
-		let enableSelectDefaultShell = this.workbenchEnvironmentService.configuration.remoteAuthority ? false : isWindows;
-		if (enableSelectDefaultShell) {
-			items.push({ text: SwitchTerminalActionViewItem.SEPARATOR });
-			items.push({ text: SelectDefaultShellWindowsTerminalAction.LABEL });
-		}
+		items.push({ text: SwitchTerminalActionViewItem.SEPARATOR, isDisabled: true });
+		items.push({ text: SelectDefaultShellWindowsTerminalAction.LABEL });
 		this.setOptions(items, this.terminalService.activeTabIndex);
 	}
 }
@@ -1041,7 +1036,7 @@ export class QuickOpenActionTermContributor extends ActionBarContributor {
 		super();
 	}
 
-	public getActions(context: any): IAction[] {
+	public getActions(context: any): ReadonlyArray<IAction> {
 		const actions: Action[] = [];
 		if (context.element instanceof TerminalEntry) {
 			actions.push(this.instantiationService.createInstance(RenameTerminalQuickOpenAction, RenameTerminalQuickOpenAction.ID, RenameTerminalQuickOpenAction.LABEL, context.element));

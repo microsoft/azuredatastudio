@@ -8,30 +8,30 @@ import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 
-import { IProgressService, IProgressRunner } from 'vs/platform/progress/common/progress';
+// import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 export class TreeSelectionHandler {
-	progressRunner: IProgressRunner;
+	// progressRunner: IProgressRunner;
 
 	private _clicks: number = 0;
 	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
 
-	constructor(@IProgressService private _progressService: IProgressService) {
+	// constructor(@IProgressService private _progressService: IProgressService) {
 
-	}
+	// }
 
 	public onTreeActionStateChange(started: boolean): void {
-		if (this.progressRunner) {
-			this.progressRunner.done();
-		}
+		// if (this.progressRunner) {
+		// 	this.progressRunner.done();
+		// }
 
-		if (started) {
-			this.progressRunner = this._progressService.show(true);
-		} else {
-			this.progressRunner = null;
-		}
+		// if (started) {
+		// 	this.progressRunner = this._progressService.show(true);
+		// } else {
+		// 	this.progressRunner = null;
+		// }
 	}
 
 	private isMouseEvent(event: any): boolean {

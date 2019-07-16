@@ -210,6 +210,13 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
+	hasBackup(): boolean {
+		if (this.sql) {
+			return this.sql.hasBackup();
+		}
+
+		return false;
+	}
 
 	public getName(longForm?: boolean): string {
 		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {

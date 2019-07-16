@@ -23,91 +23,21 @@ const buffer = require('gulp-buffer');
 import json = require('gulp-json-editor');
 const webpack = require('webpack');
 const webpackGulp = require('webpack-stream');
+const util = require('./util');
+const root = path.dirname(path.dirname(__dirname));
+const commit = util.getVersion(root);
+const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
 
-const root = path.resolve(path.join(__dirname, '..', '..'));
-
-// {{SQL CARBON EDIT}}
-import * as _ from 'underscore';
-import * as vfs from 'vinyl-fs';
-const deps = require('../dependencies');
-const extensionsRoot = path.join(root, 'extensions');
-const extensionsProductionDependencies = deps.getProductionDependencies(extensionsRoot);
-
-export function packageBuiltInExtensions() {
-	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
-		.map(manifestPath => {
-			const extensionPath = path.dirname(path.join(root, manifestPath));
-			const extensionName = path.basename(extensionPath);
-			return { name: extensionName, path: extensionPath };
-		})
-		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
-	const visxDirectory = path.join(path.dirname(root), 'vsix');
-	try {
-		if (!fs.existsSync(visxDirectory)) {
-			fs.mkdirSync(visxDirectory);
-		}
-	} catch (err) {
-		// don't fail the build if the output directory already exists
-		console.warn(err);
-	}
-	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
-		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
-		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
-		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
-		vsce.createVSIX({
-			cwd: element.path,
-			packagePath: packagePath,
-			useYarn: true
-		});
-	});
-}
-
-export function packageExtensionTask(extensionName: string, platform: string, arch: string) {
-	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
-	if (platform === 'darwin') {
-		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
-	} else {
-		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
-	}
-
-	platform = platform || process.platform;
-
-	return () => {
-		const root = path.resolve(path.join(__dirname, '../..'));
-		const localExtensionDescriptions = glob.sync('extensions/*/package.json')
-			.map(manifestPath => {
-				const extensionPath = path.dirname(path.join(root, manifestPath));
-				const extensionName = path.basename(extensionPath);
-				return { name: extensionName, path: extensionPath };
-			})
-			.filter(({ name }) => extensionName === name);
-
-		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
-			return fromLocal(extension.path);
-		}));
-
-		let result = localExtensions
-			.pipe(util2.skipDirectories())
-			.pipe(util2.fixWin32DirectoryPermissions())
-			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
-
-		return result.pipe(vfs.dest(destination));
-	};
-}
-// {{SQL CARBON EDIT}} - End
-
-function fromLocal(extensionPath: string, sourceMappingURLBase?: string): Stream {
+function fromLocal(extensionPath: string): Stream {
 	const webpackFilename = path.join(extensionPath, 'extension.webpack.config.js');
 	if (fs.existsSync(webpackFilename)) {
-		return fromLocalWebpack(extensionPath, sourceMappingURLBase);
+		return fromLocalWebpack(extensionPath);
 	} else {
 		return fromLocalNormal(extensionPath);
 	}
 }
 
-function fromLocalWebpack(extensionPath: string, sourceMappingURLBase: string | undefined): Stream {
+function fromLocalWebpack(extensionPath: string): Stream {
 	const result = es.through();
 
 	const packagedDependencies: string[] = [];
@@ -163,7 +93,7 @@ function fromLocalWebpack(extensionPath: string, sourceMappingURLBase: string | 
 			.pipe(packageJsonFilter.restore);
 
 
-		const webpackStreams = webpackConfigLocations.map(webpackConfigPath => () => {
+		const webpackStreams = webpackConfigLocations.map(webpackConfigPath => {
 
 			const webpackDone = (err: any, stats: any) => {
 				fancyLog(`Bundled extension: ${ansiColors.yellow(path.join(path.basename(extensionPath), path.relative(extensionPath, webpackConfigPath)))}...`);
@@ -195,24 +125,16 @@ function fromLocalWebpack(extensionPath: string, sourceMappingURLBase: string | 
 					// source map handling:
 					// * rewrite sourceMappingURL
 					// * save to disk so that upload-task picks this up
-					if (sourceMappingURLBase) {
-						const contents = (<Buffer>data.contents).toString('utf8');
-						data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
-							return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
-						}), 'utf8');
+					const contents = (<Buffer>data.contents).toString('utf8');
+					data.contents = Buffer.from(contents.replace(/\n\/\/# sourceMappingURL=(.*)$/gm, function (_m, g1) {
+						return `\n//# sourceMappingURL=${sourceMappingURLBase}/extensions/${path.basename(extensionPath)}/${relativeOutputPath}/${g1}`;
+					}), 'utf8');
 
-						if (/\.js\.map$/.test(data.path)) {
-							if (!fs.existsSync(path.dirname(data.path))) {
-								fs.mkdirSync(path.dirname(data.path));
-							}
-							fs.writeFileSync(data.path, data.contents);
-						}
-					}
 					this.emit('data', data);
 				}));
 		});
 
-		es.merge(sequence(webpackStreams), patchFilesStream)
+		es.merge(...webpackStreams, patchFilesStream)
 			// .pipe(es.through(function (data) {
 			// 	// debug
 			// 	console.log('out', data.path, data.contents.length);
@@ -282,14 +204,6 @@ export function fromMarketplace(extensionName: string, version: string, metadata
 		.pipe(packageJsonFilter.restore);
 }
 
-interface IPackageExtensionsOptions {
-	/**
-	 * Set to undefined to package all of them.
-	 */
-	desiredExtensions?: string[];
-	sourceMappingURLBase?: string;
-}
-
 const excludedExtensions = [
 	'vscode-api-tests',
 	'vscode-colorize-tests',
@@ -332,33 +246,7 @@ interface IBuiltInExtension {
 
 const builtInExtensions: IBuiltInExtension[] = require('../builtInExtensions.json');
 
-/**
- * We're doing way too much stuff at once, with webpack et al. So much stuff
- * that while downloading extensions from the marketplace, node js doesn't get enough
- * stack frames to complete the download in under 2 minutes, at which point the
- * marketplace server cuts off the http request. So, we sequentialize the extensino tasks.
- */
-function sequence(streamProviders: { (): Stream }[]): Stream {
-	const result = es.through();
-
-	function pop() {
-		if (streamProviders.length === 0) {
-			result.emit('end');
-		} else {
-			const fn = streamProviders.shift()!;
-			fn()
-				.on('end', function () { setTimeout(pop, 0); })
-				.pipe(result, { end: false });
-		}
-	}
-
-	pop();
-	return result;
-}
-
-export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): NodeJS.ReadWriteStream {
-	const opts = optsIn || {};
-
+export function packageLocalExtensionsStream(): NodeJS.ReadWriteStream {
 	const localExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))
 		.map(manifestPath => {
 			const extensionPath = path.dirname(path.join(root, manifestPath));
@@ -366,38 +254,94 @@ export function packageExtensionsStream(optsIn?: IPackageExtensionsOptions): Nod
 			return { name: extensionName, path: extensionPath };
 		})
 		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
-		.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
 		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
-		// {{SQL CARBON EDIT}}
-		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1);
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) === -1); // {{SQL CARBON EDIT}} add aditional filter
 
-	const localExtensions = () => sequence([...localExtensionDescriptions.map(extension => () => {
-		return fromLocal(extension.path, opts.sourceMappingURLBase)
+	const nodeModules = gulp.src('extensions/node_modules/**', { base: '.' });
+	const localExtensions = localExtensionDescriptions.map(extension => {
+		return fromLocal(extension.path)
 			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-	})]);
+	});
 
-	// {{SQL CARBON EDIT}}
-	const extensionDepsSrc = [
-		..._.flatten(extensionsProductionDependencies.map((d: any) => path.relative(root, d.path)).map((d: any) => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
-	];
-
-	const localExtensionDependencies = () => gulp.src(extensionDepsSrc, { base: '.', dot: true })
-		.pipe(filter(['**', '!**/package-lock.json']));
-
-	// Original code commented out here
-	// const localExtensionDependencies = () => gulp.src('extensions/node_modules/**', { base: '.' });
-
-	// const marketplaceExtensions = () => es.merge(
-	// 	...builtInExtensions
-	// 		.filter(({ name }) => opts.desiredExtensions ? opts.desiredExtensions.indexOf(name) >= 0 : true)
-	// 		.map(extension => {
-	// 			return fromMarketplace(extension.name, extension.version, extension.metadata)
-	// 				.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
-	// 		})
-	// );
-
-	return sequence([localExtensions, localExtensionDependencies, /*marketplaceExtensions*/])
-		.pipe(util2.setExecutableBit(['**/*.sh']))
-		.pipe(filter(['**', '!**/*.js.map']));
-	// {{SQL CARBON EDIT}} - End
+	return es.merge(nodeModules, ...localExtensions)
+		.pipe(util2.setExecutableBit(['**/*.sh']));
 }
+
+export function packageMarketplaceExtensionsStream(): NodeJS.ReadWriteStream {
+	const extensions = builtInExtensions.map(extension => {
+		return fromMarketplace(extension.name, extension.version, extension.metadata)
+			.pipe(rename(p => p.dirname = `extensions/${extension.name}/${p.dirname}`));
+	});
+
+	return es.merge(extensions)
+		.pipe(util2.setExecutableBit(['**/*.sh']));
+}
+
+// {{SQL CARBON EDIT}}
+import * as _ from 'underscore';
+import * as vfs from 'vinyl-fs';
+
+export function packageBuiltInExtensions() {
+	const sqlBuiltInLocalExtensionDescriptions = glob.sync('extensions/*/package.json')
+		.map(manifestPath => {
+			const extensionPath = path.dirname(path.join(root, manifestPath));
+			const extensionName = path.basename(extensionPath);
+			return { name: extensionName, path: extensionPath };
+		})
+		.filter(({ name }) => excludedExtensions.indexOf(name) === -1)
+		.filter(({ name }) => builtInExtensions.every(b => b.name !== name))
+		.filter(({ name }) => sqlBuiltInExtensions.indexOf(name) >= 0);
+	const visxDirectory = path.join(path.dirname(root), 'vsix');
+	try {
+		if (!fs.existsSync(visxDirectory)) {
+			fs.mkdirSync(visxDirectory);
+		}
+	} catch (err) {
+		// don't fail the build if the output directory already exists
+		console.warn(err);
+	}
+	sqlBuiltInLocalExtensionDescriptions.forEach(element => {
+		let pkgJson = JSON.parse(fs.readFileSync(path.join(element.path, 'package.json'), { encoding: 'utf8' }));
+		const packagePath = path.join(visxDirectory, `${pkgJson.name}-${pkgJson.version}.vsix`);
+		console.info('Creating vsix for ' + element.path + ' result:' + packagePath);
+		vsce.createVSIX({
+			cwd: element.path,
+			packagePath: packagePath,
+			useYarn: true
+		});
+	});
+}
+
+export function packageExtensionTask(extensionName: string, platform: string, arch: string) {
+	var destination = path.join(path.dirname(root), 'azuredatastudio') + (platform ? '-' + platform : '') + (arch ? '-' + arch : '');
+	if (platform === 'darwin') {
+		destination = path.join(destination, 'Azure Data Studio.app', 'Contents', 'Resources', 'app', 'extensions', extensionName);
+	} else {
+		destination = path.join(destination, 'resources', 'app', 'extensions', extensionName);
+	}
+
+	platform = platform || process.platform;
+
+	return () => {
+		const root = path.resolve(path.join(__dirname, '../..'));
+		const localExtensionDescriptions = glob.sync('extensions/*/package.json')
+			.map(manifestPath => {
+				const extensionPath = path.dirname(path.join(root, manifestPath));
+				const extensionName = path.basename(extensionPath);
+				return { name: extensionName, path: extensionPath };
+			})
+			.filter(({ name }) => extensionName === name);
+
+		const localExtensions = es.merge(...localExtensionDescriptions.map(extension => {
+			return fromLocal(extension.path);
+		}));
+
+		let result = localExtensions
+			.pipe(util2.skipDirectories())
+			.pipe(util2.fixWin32DirectoryPermissions())
+			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
+
+		return result.pipe(vfs.dest(destination));
+	};
+}
+// {{SQL CARBON EDIT}} - End
