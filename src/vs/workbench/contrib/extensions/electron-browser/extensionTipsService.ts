@@ -1150,10 +1150,11 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizerRecommendations.VisualizerExtensions', "You will need to install this extension to visualize your data."),
+						localize('visualizerRecommendations.VisualizerExtensions', "Azure Data Studio has data visualization extension recommendations."),
 						[{
 							label: localize('visualizerRecommendations.installAll', "Install Extension"),
 							run: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'install' });
 								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
 								installAllAction.run();
 								installAllAction.dispose();
@@ -1168,6 +1169,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						}, {
 							label: localize('visualizerRecommendations.showMoreInfo', "More Info"),
 							run: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'show' });
 								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('visualizerRecommendations.moreInfo', "More Info"));
 								showAction.run();
 								showAction.dispose();
@@ -1177,11 +1179,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							label: choiceNever,
 							isSecondary: true,
 							run: () => {
-								/* __GDPR__
-									"extensionAppLaunchRecommendations:popup" : {
-										"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-									}
-								*/
 								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'neverShowAgain' });
 								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
 								c(undefined);
@@ -1190,6 +1187,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						{
 							sticky: true,
 							onCancel: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'cancelled' });
 								c(undefined);
 							}
 						}
