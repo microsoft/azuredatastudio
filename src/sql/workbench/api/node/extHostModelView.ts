@@ -1126,10 +1126,10 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('selectedRows', v);
 	}
 
-	public get forceFitColumns(): boolean {
+	public get forceFitColumns(): azdata.ColumnSizingMode {
 		return this.properties['forceFitColumns'];
 	}
-	public set forceFitColunms(v: boolean) {
+	public set forceFitColunms(v: azdata.ColumnSizingMode) {
 		this.setProperty('forceFitColumns', v);
 	}
 

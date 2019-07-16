@@ -36,7 +36,7 @@ export class ProsePreviewPage extends ImportPage {
 			data: null,
 			columns: null,
 			fontSize: 32,
-			forceFitColumns: false
+			forceFitColumns: azdata.ColumnSizingMode.AutoFit
 		}).component();
 		this.refresh = this.view.modelBuilder.button().withProperties({
 			label: localize('flatFileImport.refresh', 'Refresh'),

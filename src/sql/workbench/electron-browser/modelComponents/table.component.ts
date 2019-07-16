@@ -119,7 +119,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				syncColumnCellResize: true,
 				enableColumnReorder: false,
 				enableCellNavigation: true,
-				forceFitColumns: false// this.forceFitColumns
+				forceFitColumns: true // default to true during init, actual value will be updated when setProperties() is called
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
@@ -159,10 +159,32 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private layoutTable(): void {
 		let width: number = this.convertSizeToNumber(this.width);
 		let height: number = this.convertSizeToNumber(this.height);
+		let forceFit: boolean = true;
 
-		// update the slickgrid options
+		// convert the tri-state viewmodel columnSizingMode to be either true or false for SlickGrid
+		switch (this.forceFitColumns) {
+			case azdata.ColumnSizingMode.Default: {
+				forceFit = false;
+				break;
+			}
+			case azdata.ColumnSizingMode.ForceFit: {
+				forceFit = true;
+				break;
+			}
+			case azdata.ColumnSizingMode.AutoFit: {
+				// determine if force fit should be on or off based on the number of columns
+				if (this._table.columns.length > 3) {
+					forceFit = false;
+				}
+				else {
+					forceFit = true;
+				}
+				break;
+			}
+
+		}
 		let updateOptions = <Slick.GridOptions<any>>{
-			forceFitColumns: this.forceFitColumns
+			forceFitColumns: forceFit
 		};
 		this._table.setOptions(updateOptions);
 
@@ -260,6 +282,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	public get forceFitColumns() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.forceFitColumns, true);
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, azdata.ColumnSizingMode>((props) => props.forceFitColumns, azdata.ColumnSizingMode.Default);
 	}
 }

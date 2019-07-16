@@ -554,7 +554,8 @@ export function createApiFactory(
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
-				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType
+				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
+				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode
 			};
 		},
 
