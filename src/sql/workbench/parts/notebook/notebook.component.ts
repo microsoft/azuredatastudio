@@ -446,11 +446,11 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			this.contextKeyService.getContextKeyValue('bookOpened') &&
 			this._navProvider) {
 			this._navProvider.hasPrevious(this._notebookParams.notebookUri).then((hasPrevious) => {
-				this.addButton(localize('previousButtonLabel', "Previous"),
+				this.addButton(localize('previousButtonLabel', "< Previous"),
 					() => this.previousPage(), hasPrevious);
 			});
 			this._navProvider.hasNext(this._notebookParams.notebookUri).then((hasNext) => {
-				this.addButton(localize('nextButtonLabel', "Next"),
+				this.addButton(localize('nextButtonLabel', "Next >"),
 					() => this.nextPage(), hasNext);
 			});
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
