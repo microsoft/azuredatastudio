@@ -184,6 +184,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 			endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
 
 			await view.initializeModel(endpointsContainer);
+
 		}
 	});
 
