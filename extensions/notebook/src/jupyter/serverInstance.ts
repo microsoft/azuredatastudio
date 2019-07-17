@@ -380,10 +380,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private getEnvWithConfigPaths(env: { [key: string]: string }): any {
 		// Merge the current process.env object with the specified object so that we can pass information to notebooks
 		// Variables in the env object will overwrite the ones in process.env object
-		let newEnv: { [key: string]: string } = Object.assign({}, process.env);
-		for (let key in env) {
-			newEnv[key] = env[key];
-		}
+		let newEnv: { [key: string]: string } = Object.assign({}, process.env, env);
 
 		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
 		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
