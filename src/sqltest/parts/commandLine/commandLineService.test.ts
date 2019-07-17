@@ -22,10 +22,10 @@ import { WorkspaceConfigurationTestService } from 'sqltest/stubs/workspaceConfig
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { assertThrowsAsync } from 'sqltest/utils/testUtils';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { TestEditorService, TestLogService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
 import { QueryInput, QueryEditorState } from 'sql/workbench/parts/query/common/queryInput';
 import { URI } from 'vs/base/common/uri';
-import { ILogService } from 'vs/platform/log/common/log';
+import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -199,7 +199,7 @@ suite('commandLineService tests', () => {
 			.verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
 		const configurationService = getConfigurationServiceMock(true);
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
 		await service.processCommandLine(args);
 		connectionManagementService.verifyAll();
@@ -304,7 +304,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
 		connectionManagementService.setup(c => c.getConnectionGroups(TypeMoq.It.isAny())).returns(() => []);
 		const configurationService = getConfigurationServiceMock(true);
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
 		await service.processCommandLine(args);
 		connectionManagementService.verifyAll();
@@ -347,7 +347,7 @@ suite('commandLineService tests', () => {
 		connectionManagementService.setup(c => c.getConnectionProfileById('testID')).returns(() => originalProfile).verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(x => x.getConnectionGroups(TypeMoq.It.isAny())).returns(() => [conProfGroup]);
 		const configurationService = getConfigurationServiceMock(true);
-		const logService = new TestLogService();
+		const logService = new NullLogService();
 		let service = getCommandLineService(connectionManagementService.object, configurationService.object, capabilitiesService, undefined, undefined, logService);
 		await service.processCommandLine(args);
 		connectionManagementService.verifyAll();

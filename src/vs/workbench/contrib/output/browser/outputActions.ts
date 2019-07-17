@@ -69,13 +69,12 @@ export class ToggleOrSetOutputScrollLockAction extends Action {
 
 	private toDispose: IDisposable[] = [];
 
-	constructor(id: string, label: string,
-		@IOutputService private readonly outputService: IOutputService) {
+	constructor(id: string, label: string, @IOutputService private readonly outputService: IOutputService) {
 		super(id, label, 'output-action output-scroll-unlock');
 		this.toDispose.push(this.outputService.onActiveOutputChannel(channel => {
 			const activeChannel = this.outputService.getActiveChannel();
 			if (activeChannel) {
-				this.setClass(activeChannel.scrollLock);
+				this.setClassAndLabel(activeChannel.scrollLock);
 			}
 		}));
 	}
@@ -90,17 +89,19 @@ export class ToggleOrSetOutputScrollLockAction extends Action {
 			else {
 				activeChannel.scrollLock = !activeChannel.scrollLock;
 			}
-			this.setClass(activeChannel.scrollLock);
+			this.setClassAndLabel(activeChannel.scrollLock);
 		}
 
 		return Promise.resolve(true);
 	}
 
-	private setClass(locked: boolean) {
+	private setClassAndLabel(locked: boolean) {
 		if (locked) {
 			this.class = 'output-action output-scroll-lock';
+			this.label = nls.localize('outputScrollOn', "Turn Auto Scrolling On");
 		} else {
 			this.class = 'output-action output-scroll-unlock';
+			this.label = nls.localize('outputScrollOff', "Turn Auto Scrolling Off");
 		}
 	}
 
@@ -141,10 +142,10 @@ export class SwitchOutputActionViewItem extends SelectActionViewItem {
 		super(null, action, [], 0, contextViewService, { ariaLabel: nls.localize('outputChannels', 'Output Channels.') });
 
 		let outputChannelRegistry = Registry.as<IOutputChannelRegistry>(OutputExt.OutputChannels);
-		this.toDispose.push(outputChannelRegistry.onDidRegisterChannel(() => this.updateOtions()));
-		this.toDispose.push(outputChannelRegistry.onDidRemoveChannel(() => this.updateOtions()));
-		this.toDispose.push(this.outputService.onActiveOutputChannel(() => this.updateOtions()));
-		this.toDispose.push(attachSelectBoxStyler(this.selectBox, themeService));
+		this._register(outputChannelRegistry.onDidRegisterChannel(() => this.updateOtions()));
+		this._register(outputChannelRegistry.onDidRemoveChannel(() => this.updateOtions()));
+		this._register(this.outputService.onActiveOutputChannel(() => this.updateOtions()));
+		this._register(attachSelectBoxStyler(this.selectBox, themeService));
 
 		this.updateOtions();
 	}

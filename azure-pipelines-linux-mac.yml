@@ -35,9 +35,9 @@ steps:
     yarn tslint
   displayName: 'Run TSLint'
 
-- script: |
-    yarn strict-null-check
-  displayName: 'Run Strict Null Check'
+# - script: |
+#     yarn strict-null-check
+#   displayName: 'Run Strict Null Check'
 
 - script: |
     yarn compile

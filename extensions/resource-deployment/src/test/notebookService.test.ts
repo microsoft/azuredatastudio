@@ -7,8 +7,6 @@
 
 import * as TypeMoq from 'typemoq';
 import 'mocha';
-import * as path from 'path';
-import * as os from 'os';
 import { NotebookService } from '../services/NotebookService';
 import assert = require('assert');
 import { NotebookInfo } from '../interfaces';
@@ -62,59 +60,30 @@ suite('Notebook Service Tests', function (): void {
 		mockPlatformService.verify((service) => service.platform(), TypeMoq.Times.once());
 	});
 
-	test('launchNotebook', () => {
-		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object);
-		const notebookFileName = 'mynotebook.ipynb';
-		const notebookPath = `./notebooks/${notebookFileName}`;
-
-		let actualSourceFile;
-		const expectedSourceFile = path.join(__dirname, '../../', notebookPath);
-		let actualTargetFile;
-		const expectedTargetFile = path.join(os.homedir(), notebookFileName);
-		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
-		mockPlatformService.setup((service) => service.openFile(TypeMoq.It.isAnyString()));
-		mockPlatformService.setup((service) => service.fileExists(TypeMoq.It.isAnyString()))
-			.returns((path) => {
-				if (path === expectedSourceFile) {
-					return true;
-				}
-				return false;
-			});
-		mockPlatformService.setup((service) => service.copyFile(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString()))
-			.returns((source, target) => { actualSourceFile = source; actualTargetFile = target; });
-		notebookService.launchNotebook(notebookPath);
-		mockPlatformService.verify((service) => service.copyFile(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString()), TypeMoq.Times.once());
-		mockPlatformService.verify((service) => service.openFile(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
-		assert.equal(actualSourceFile, expectedSourceFile, 'source file is not correct');
-		assert.equal(actualTargetFile, expectedTargetFile, 'target file is not correct');
-	});
-
-	test('getTargetNotebookFileName with no name conflict', () => {
+	test('findNextUntitledEditorName with no name conflict', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object);
 		const notebookFileName = 'mynotebook.ipynb';
 		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
 
-		const expectedTargetFile = path.join(os.homedir(), notebookFileName);
-		mockPlatformService.setup((service) => service.fileExists(TypeMoq.It.isAnyString()))
+		const expectedTargetFile = 'mynotebook';
+		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
 			.returns((path) => { return false; });
-		const actualFileName = notebookService.getTargetNotebookFileName(sourceNotebookPath, os.homedir());
-		mockPlatformService.verify((service) => service.fileExists(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
+		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookPath);
+		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
 	});
 
-	test('getTargetNotebookFileName with name conflicts', () => {
+	test('findNextUntitledEditorName with name conflicts', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const notebookService = new NotebookService(mockPlatformService.object);
 		const notebookFileName = 'mynotebook.ipynb';
 		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
-		const expectedFileName = 'mynotebook-2.ipynb';
+		const expectedFileName = 'mynotebook-2';
 
-		const expected1stAttemptTargetFile = path.join(os.homedir(), notebookFileName);
-		const expected2ndAttemptTargetFile = path.join(os.homedir(), 'mynotebook-1.ipynb');
-		const expectedTargetFile = path.join(os.homedir(), expectedFileName);
-		mockPlatformService.setup((service) => service.fileExists(TypeMoq.It.isAnyString()))
+		const expected1stAttemptTargetFile = 'mynotebook';
+		const expected2ndAttemptTargetFile = 'mynotebook-1';
+		mockPlatformService.setup((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()))
 			.returns((path) => {
 				// list all the possible values here and handle them
 				// if we only handle the expected value and return true for anything else, the test might run forever until times out
@@ -123,8 +92,8 @@ suite('Notebook Service Tests', function (): void {
 				}
 				return false;
 			});
-		const actualFileName = notebookService.getTargetNotebookFileName(sourceNotebookPath, os.homedir());
-		mockPlatformService.verify((service) => service.fileExists(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
-		assert.equal(actualFileName, expectedTargetFile, 'target file name is not correct');
+		const actualFileName = notebookService.findNextUntitledEditorName(sourceNotebookPath);
+		mockPlatformService.verify((service) => service.isNotebookNameUsed(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
+		assert.equal(actualFileName, expectedFileName, 'target file name is not correct');
 	});
 });
