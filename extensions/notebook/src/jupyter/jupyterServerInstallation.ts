@@ -280,7 +280,7 @@ export class JupyterServerInstallation {
 	private async isPythonRunning(installPath: string, existingPython: boolean): Promise<boolean> {
 		if (process.platform === constants.winPlatform) {
 			let pythonExe = JupyterServerInstallation.getPythonExePath(installPath, existingPython);
-			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process | Where-Object {$_.Path -eq '${pythonExe}'}}"`;
+			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process python | Where-Object {$_.Path -eq '${pythonExe}'}}"`;
 			let processInfo = await this.executeBufferedCommand(cmd);
 			return processInfo !== undefined && processInfo.length > 0;
 		} else {
