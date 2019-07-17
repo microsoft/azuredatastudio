@@ -109,8 +109,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					type: BookTreeItemType.Book
 				});
 				book.iconPath = {
-					light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-					dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+					light: path.join(__filename, '..', '..', 'resources', 'light', 'book.svg'),
+					dark: path.join(__filename, '..', '..', 'resources', 'dark', 'book_inverse.svg')
 				};
 				books.push(book);
 			} catch (e) {
@@ -135,8 +135,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						type: BookTreeItemType.ExternalLink
 					});
 					externalLink.iconPath = {
-						light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-						dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+						light: path.join(__filename, '..', '..', 'resources', 'light', 'link.svg'),
+						dark: path.join(__filename, '..', '..', 'resources', 'dark', 'link_inverse.svg')
 					};
 					notebooks.push(externalLink);
 				} else {
@@ -153,8 +153,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							type: BookTreeItemType.Notebook
 						});
 						notebook.iconPath = {
-							light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-							dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+							light: path.join(__filename, '..', '..', 'resources', 'light', 'notebook.svg'),
+							dark: path.join(__filename, '..', '..', 'resources', 'dark', 'notebook_inverse.svg')
 						};
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
@@ -167,8 +167,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							type: BookTreeItemType.Markdown
 						});
 						markdown.iconPath = {
-							light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
-							dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+							light: path.join(__filename, '..', '..', 'resources', 'light', 'markdown.svg'),
+							dark: path.join(__filename, '..', '..', 'resources', 'dark', 'markdown_inverse.svg')
 						};
 						notebooks.push(markdown);
 					} else {
