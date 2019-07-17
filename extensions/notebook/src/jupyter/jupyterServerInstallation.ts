@@ -277,8 +277,15 @@ export class JupyterServerInstallation {
 		};
 	}
 
-	private isPythonRunning(pythonInstallPath: string): Promise<boolean> {
-		return Promise.resolve(false);
+	private async isPythonRunning(installPath: string, existingPython: boolean): Promise<boolean> {
+		if (process.platform === constants.winPlatform) {
+			let pythonExe = JupyterServerInstallation.getPythonExePath(installPath, existingPython);
+			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process | Where-Object {$_.Path -eq '${pythonExe}'}}"`;
+			let processInfo = await this.executeBufferedCommand(cmd);
+			return processInfo !== undefined && processInfo.length > 0;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -288,7 +295,13 @@ export class JupyterServerInstallation {
 	 * The previous path (or the default) is used if a new path is not specified.
 	 */
 	public async startInstallProcess(forceInstall: boolean, installSettings?: { installPath: string, existingPython: boolean }): Promise<void> {
-		let isPythonRunning = await this.isPythonRunning(installSettings ? installSettings.installPath : this._pythonInstallationPath);
+		let isPythonRunning: boolean;
+		if (installSettings) {
+			isPythonRunning = await this.isPythonRunning(installSettings.installPath, installSettings.existingPython);
+		} else {
+			isPythonRunning = await this.isPythonRunning(this._pythonInstallationPath, this._usingExistingPython);
+		}
+
 		if (isPythonRunning) {
 			return Promise.reject(msgPythonRunningError);
 		}
