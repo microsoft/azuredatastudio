@@ -157,8 +157,6 @@ export interface INotebookEditor {
 export interface INavigationProvider {
 	providerId: string;
 	hasNavigation: boolean;
-	hasNext(uri: URI): Promise<boolean>;
-	hasPrevious(uri: URI): Promise<boolean>;
 	getNavigation(uri: URI): Thenable<azdata.nb.NavigationResult>;
 	onNext(uri: URI): void;
 	onPrevious(uri: URI): void;
