@@ -42,7 +42,7 @@ export class ShowVisualizerExtensionsAction extends Action {
 export class InstallVisualizerExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.installVisualizerExtensions';
-	static LABEL = localize('installVisualizerExtensions', "Install Visualizer Extensions");
+	static LABEL = localize('installVisualizerExtensions', "Install Extensions");
 
 	private _recommendations: IExtensionRecommendation[] = [];
 	get recommendations(): IExtensionRecommendation[] { return this._recommendations; }
@@ -75,9 +75,7 @@ export class InstallVisualizerExtensionsAction extends Action {
 					let installPromises: Promise<any>[] = [];
 					let model = new PagedModel(pager);
 					for (let i = 0; i < pager.total; i++) {
-						installPromises.push(model.resolve(i, CancellationToken.None).then(e =>
-							this.extensionWorkbenchService.install(e)
-						));
+						installPromises.push(model.resolve(i, CancellationToken.None).then(e => this.extensionWorkbenchService.install(e)));
 					}
 					return Promise.all(installPromises);
 				});

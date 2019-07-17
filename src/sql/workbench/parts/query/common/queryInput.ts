@@ -118,8 +118,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@IExtensionTipsService private _extensionTipsService: IExtensionTipsService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();

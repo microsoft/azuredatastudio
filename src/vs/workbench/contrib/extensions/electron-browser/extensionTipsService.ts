@@ -1152,23 +1152,23 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('visualizerRecommendations.VisualizerExtensions', "Azure Data Studio has data visualization extension recommendations."),
+						localize('VisualizerExtensionsRecommended', "Azure Data Studio has data visualization extension recommendations."),
 						[{
-							label: localize('visualizerRecommendations.installAll', "Install Extension"),
+							label: localize('installAll', "Install All"),
 							run: () => {
 								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'install' });
 								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
 								installAllAction.run();
 								installAllAction.dispose();
 								c(undefined);
-								const message = 'Your extension is ready. Select the Visualizer icon to visualize your data.';
+								const message = 'The visualization extensions are ready. Select the Visualizer icon to visualize your data.';
 								this.notificationService.info(message);
 							}
 						}, {
-							label: localize('visualizerRecommendations.showMoreInfo', "More Info"),
+							label: localize('showRecommendations', "Show Recommendations"),
 							run: () => {
 								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'show' });
-								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('visualizerRecommendations.moreInfo', "More Info"));
+								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
 								showAction.run();
 								showAction.dispose();
 								c(undefined);
