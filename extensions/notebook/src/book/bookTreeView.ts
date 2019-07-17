@@ -20,13 +20,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
 	private _tableOfContentsPath: string[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
+	private _extensionContext: vscode.ExtensionContext;
 
-	constructor(private workspaceRoot: string) {
+	constructor(private workspaceRoot: string, extensionContext: vscode.ExtensionContext) {
 		if (workspaceRoot !== '') {
 			this._tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
 			let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
 			vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		}
+		this._extensionContext = extensionContext;
 	}
 
 	private getTocFiles(dir: string): string[] {
@@ -109,8 +111,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					type: BookTreeItemType.Book
 				});
 				book.iconPath = {
-					light: path.join(__filename, '..', '..', 'resources', 'light', 'book.svg'),
-					dark: path.join(__filename, '..', '..', 'resources', 'dark', 'book_inverse.svg')
+					light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
+					dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
 				};
 				books.push(book);
 			} catch (e) {
@@ -135,8 +137,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						type: BookTreeItemType.ExternalLink
 					});
 					externalLink.iconPath = {
-						light: path.join(__filename, '..', '..', 'resources', 'light', 'link.svg'),
-						dark: path.join(__filename, '..', '..', 'resources', 'dark', 'link_inverse.svg')
+						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
+						dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
 					};
 					notebooks.push(externalLink);
 				} else {
@@ -153,8 +155,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							type: BookTreeItemType.Notebook
 						});
 						notebook.iconPath = {
-							light: path.join(__filename, '..', '..', 'resources', 'light', 'notebook.svg'),
-							dark: path.join(__filename, '..', '..', 'resources', 'dark', 'notebook_inverse.svg')
+							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
 						};
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
@@ -167,8 +169,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							type: BookTreeItemType.Markdown
 						});
 						markdown.iconPath = {
-							light: path.join(__filename, '..', '..', 'resources', 'light', 'markdown.svg'),
-							dark: path.join(__filename, '..', '..', 'resources', 'dark', 'markdown_inverse.svg')
+							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
 						};
 						notebooks.push(markdown);
 					} else {
