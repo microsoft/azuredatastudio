@@ -95,7 +95,7 @@ export class ExtensionsListView extends ViewletPanel {
 		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
 		@IExperimentService private readonly experimentService: IExperimentService,
 		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
-		@IExtensionManagementServerService protected readonly extensionManagementServerService: IExtensionManagementServerService,
+		@IExtensionManagementServerService protected readonly extensionManagementServerService: IExtensionManagementServerService
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
 		this.server = options.server;
@@ -838,7 +838,7 @@ export class ExtensionsListView extends ViewletPanel {
 		this.notificationService.error(err);
 	}
 
-	protected getPagedModel(arg: IPager<IExtension> | IExtension[]): IPagedModel<IExtension> {
+	private getPagedModel(arg: IPager<IExtension> | IExtension[]): IPagedModel<IExtension> {
 		if (Array.isArray(arg)) {
 			return new PagedModel(arg);
 		}

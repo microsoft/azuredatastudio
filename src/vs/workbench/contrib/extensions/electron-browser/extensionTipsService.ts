@@ -1198,7 +1198,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return Promise.resolve();
 			}
 		});
-
 	}
 
 	getVisualizerExtensions(): Promise<IExtensionRecommendation[]> {

@@ -220,15 +220,11 @@ export class VisualizerDataAction extends Action {
 	public static LABEL = localize('visualizer', 'Visualizer');
 	public static ICON = 'viewVisualizer';
 
-	constructor(
-		@IEditorService private editorService: IEditorService,
-
-	) {
+	constructor(@IEditorService private editorService: IEditorService, ) {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
-		// const activeEditor = this.editorService.activeControl as QueryEditor;
 		return Promise.resolve(true);
 	}
 }
