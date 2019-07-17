@@ -109,11 +109,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					tableOfContents: this.flattenArray(tableOfContents),
 					page: tableOfContents,
 					type: BookTreeItemType.Book
-				});
-				book.iconPath = {
-					light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
-					dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
-				};
+				},
+					{
+						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
+						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
+					}
+				);
 				books.push(book);
 			} catch (e) {
 				vscode.window.showErrorMessage(localize('openConfigFileError', 'Open file {0} failed: {1}',
@@ -135,11 +136,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						tableOfContents: tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink
-					});
-					externalLink.iconPath = {
-						light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
-						dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
-					};
+					},
+						{
+							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/link_inverse.svg')
+						}
+					);
+
 					notebooks.push(externalLink);
 				} else {
 					let pathToNotebook = path.join(root, 'content', sections[i].url.concat('.ipynb'));
@@ -153,11 +156,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Notebook
-						});
-						notebook.iconPath = {
-							light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
-							dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
-						};
+						},
+							{
+								light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
+								dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
+							}
+						);
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
 					} else if (fs.existsSync(pathToMarkdown)) {
@@ -167,11 +171,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Markdown
-						});
-						markdown.iconPath = {
-							light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
-							dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
-						};
+						},
+							{
+								light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
+								dark: this._extensionContext.asAbsolutePath('resources/dark/markdown_inverse.svg')
+							}
+						);
 						notebooks.push(markdown);
 					} else {
 						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sections[i].title));
