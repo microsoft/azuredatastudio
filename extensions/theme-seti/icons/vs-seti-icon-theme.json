@@ -248,11 +248,11 @@
 		},
 		"_db_light": {
 			"fontCharacter": "\\E01D",
-			"fontColor": "#bfc2c1"
+			"fontColor": "#dd4b78"
 		},
 		"_db": {
 			"fontCharacter": "\\E01D",
-			"fontColor": "#d4d7d6"
+			"fontColor": "#f55385"
 		},
 		"_default_light": {
 			"fontCharacter": "\\E01E",
@@ -968,11 +968,11 @@
 		},
 		"_shell_light": {
 			"fontCharacter": "\\E075",
-			"fontColor": "#bfc2c1"
+			"fontColor": "#455155"
 		},
 		"_shell": {
 			"fontCharacter": "\\E075",
-			"fontColor": "#d4d7d6"
+			"fontColor": "#4d5a5e"
 		},
 		"_slim_light": {
 			"fontCharacter": "\\E076",

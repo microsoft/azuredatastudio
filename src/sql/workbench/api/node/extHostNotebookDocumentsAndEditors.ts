@@ -13,6 +13,7 @@ import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import * as typeConverters from 'vs/workbench/api/common/extHostTypeConverters';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ok } from 'vs/base/common/assert';
+import { localize } from 'vs/nls';
 
 import {
 	SqlMainContext, INotebookDocumentsAndEditorsDelta, ExtHostNotebookDocumentsAndEditorsShape,
@@ -21,10 +22,13 @@ import {
 import { ExtHostNotebookDocumentData } from 'sql/workbench/api/node/extHostNotebookDocumentData';
 import { ExtHostNotebookEditor } from 'sql/workbench/api/node/extHostNotebookEditor';
 
+type Adapter = azdata.nb.NavigationProvider;
 
 export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocumentsAndEditorsShape {
+	private static _handlePool: number = 0;
 
 	private _disposables: Disposable[] = [];
+	private _adapters = new Map<number, Adapter>();
 
 	private _activeEditorId: string;
 	private _proxy: MainThreadNotebookDocumentsAndEditorsShape;
@@ -152,6 +156,33 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		}
 	}
 
+	private _nextHandle(): number {
+		return ExtHostNotebookDocumentsAndEditors._handlePool++;
+	}
+
+	private _addNewAdapter(adapter: Adapter): number {
+		const handle = this._nextHandle();
+		this._adapters.set(handle, adapter);
+		return handle;
+	}
+
+	private _getAdapter<T>(id: number): T {
+		let adapter = <T><any>this._adapters.get(id);
+		if (adapter === undefined) {
+			throw new Error('No adapter found');
+		}
+		return adapter;
+	}
+
+	$getNavigation(handle: number, notebookUri: UriComponents): Thenable<azdata.nb.NavigationResult> {
+		let navProvider = this._getAdapter<azdata.nb.NavigationProvider>(handle);
+		if (navProvider) {
+			let uri = URI.revive(notebookUri);
+			return navProvider.getNavigation(uri);
+		}
+		throw new Error('No navigation provider found for handle ${handle}');
+	}
+
 	//#endregion
 
 	//#region Extension accessible methods
@@ -175,6 +206,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 					options.initialContent = showOptions.initialContent;
 				}
 			}
+			options.initialDirtyState = showOptions.initialDirtyState;
 		}
 		let id = await this._proxy.$tryShowNotebookDocument(uri, options);
 		let editor = this.getEditor(id);
@@ -212,5 +244,17 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 		this._editors.forEach(data => result.push(data));
 		return result;
 	}
+
+	registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
+		if (!provider || !provider.providerId) {
+			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));
+		}
+		const handle = this._addNewAdapter(provider);
+		this._proxy.$registerNavigationProvider(provider.providerId, handle);
+		return new Disposable(() => {
+			this._adapters.delete(handle);
+		});
+	}
+
 	//#endregion
 }

@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { nb } from 'azdata';
+import * as vscode from 'vscode';
 import { OnInit, Component, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnDestroy } from '@angular/core';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -19,12 +20,13 @@ import { IAction, Action, IActionViewItem } from 'vs/base/common/actions';
 import { IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/node/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/models/contracts';
 import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, INotebookSection, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INavigationProvider } from 'sql/workbench/services/notebook/common/notebookService';
 import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { NotebookModel } from 'sql/workbench/parts/notebook/models/notebookModel';
 import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
@@ -50,6 +52,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
+import { Button } from 'sql/base/browser/ui/button/button';
+import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 
 
@@ -63,6 +67,8 @@ export const NOTEBOOK_SELECTOR: string = 'notebook-component';
 export class NotebookComponent extends AngularDisposable implements OnInit, OnDestroy, INotebookEditor {
 	@ViewChild('toolbar', { read: ElementRef }) private toolbar: ElementRef;
 	@ViewChild('container', { read: ElementRef }) private container: ElementRef;
+	@ViewChild('bookNav', { read: ElementRef }) private bookNav: ElementRef;
+
 	private _model: NotebookModel;
 	private _isInErrorState: boolean = false;
 	private _errorMessage: string;
@@ -75,7 +81,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	private _runAllCellsAction: RunAllCellsAction;
 	private _providerRelatedActions: IAction[] = [];
 	private _scrollTop: number;
-
+	private _navProvider: INavigationProvider;
+	private navigationResult: nb.NavigationResult;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -129,6 +136,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.initActionBar();
 		this.setScrollPosition();
 		this.doLoad();
+		this.initNavSection();
 	}
 
 	ngOnDestroy() {
@@ -392,7 +400,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.notificationService.error(error);
 	}
 
-	protected initActionBar() {
+	protected initActionBar(): void {
 		let kernelContainer = document.createElement('div');
 		let kernelDropdown = new KernelsDropdown(kernelContainer, this.contextViewService, this.modelReady);
 		kernelDropdown.render(kernelContainer);
@@ -428,7 +436,45 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			{ action: this._runAllCellsAction },
 			{ action: clearResultsButton }
 		]);
+	}
 
+	protected initNavSection(): void {
+		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
+
+		if (this.contextKeyService.getContextKeyValue('isDevelopment') &&
+			this.contextKeyService.getContextKeyValue('bookOpened') &&
+			this._navProvider) {
+			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
+				this.navigationResult = result;
+				this.addButton(localize('previousButtonLabel', "< Previous"),
+					() => this.previousPage(), this.navigationResult.previous ? true : false);
+				this.addButton(localize('nextButtonLabel', "Next >"),
+					() => this.nextPage(), this.navigationResult.next ? true : false);
+				this.detectChanges();
+			}, err => {
+				console.log(err);
+			});
+		}
+	}
+
+	public get navigationVisibility(): 'hidden' | 'visible' {
+		if (this.navigationResult) {
+			return this.navigationResult.hasNavigation ? 'visible' : 'hidden';
+		}
+		return 'hidden';
+	}
+
+	private addButton(label: string, onDidClick?: () => void, enabled?: boolean): void {
+		const container = DOM.append(this.bookNav.nativeElement, DOM.$('.dialog-message-button'));
+		let button = new Button(container);
+		button.icon = '';
+		button.label = label;
+		if (onDidClick) {
+			this._register(button.onDidClick(onDidClick));
+		}
+		if (!enabled) {
+			button.enabled = false;
+		}
 	}
 
 	private actionItemProvider(action: Action): IActionViewItem {
@@ -579,6 +625,26 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		}
 		catch (e) {
 			return Promise.reject(e);
+		}
+	}
+
+	public async nextPage(): Promise<void> {
+		try {
+			if (this._navProvider) {
+				this._navProvider.onNext(this.model.notebookUri);
+			}
+		} catch (error) {
+			this.notificationService.error(notebookUtils.getErrorMessage(error));
+		}
+	}
+
+	public previousPage() {
+		try {
+			if (this._navProvider) {
+				this._navProvider.onPrevious(this.model.notebookUri);
+			}
+		} catch (error) {
+			this.notificationService.error(notebookUtils.getErrorMessage(error));
 		}
 	}
 

@@ -27,7 +27,7 @@ export class NotebookMarkdownRenderer {
 		const element: HTMLElement = markdown ? this.renderMarkdown(markdown, undefined) : document.createElement('span');
 		return {
 			element,
-			dispose: () => dispose()
+			dispose: () => { }
 		};
 	}
 

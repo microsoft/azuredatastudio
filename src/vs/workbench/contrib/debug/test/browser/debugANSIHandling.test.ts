@@ -11,8 +11,30 @@ import { TestInstantiationService } from 'vs/platform/instantiation/test/common/
 import { workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
 import { LinkDetector } from 'vs/workbench/contrib/debug/browser/linkDetector';
 import { Color, RGBA } from 'vs/base/common/color';
+import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { TestThemeService, TestTheme } from 'vs/platform/theme/test/common/testThemeService';
+import { ansiColorMap } from 'vs/workbench/contrib/terminal/common/terminalColorRegistry';
 
 suite('Debug - ANSI Handling', () => {
+
+	let linkDetector: LinkDetector;
+	let themeService: IThemeService;
+
+	/**
+	 * Instantiate services for use by the functions being tested.
+	 */
+	setup(() => {
+		const instantiationService: TestInstantiationService = <TestInstantiationService>workbenchInstantiationService();
+		linkDetector = instantiationService.createInstance(LinkDetector);
+
+		const colors: { [id: string]: string; } = {};
+		for (let color in ansiColorMap) {
+			colors[color] = <any>ansiColorMap[color].defaults.dark;
+		}
+		const testTheme = new TestTheme(colors);
+		themeService = new TestThemeService(testTheme);
+	});
+
 	test('appendStylizedStringToContainer', () => {
 		assert.equal('', '');
 	});
