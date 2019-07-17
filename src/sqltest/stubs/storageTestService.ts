@@ -7,6 +7,9 @@ import { IStorageService, StorageScope, IWorkspaceStorageChangeEvent, IWillSaveS
 import { Event } from 'vs/base/common/event';
 
 export class StorageTestService implements IStorageService {
+	logStorage(): void {
+
+	}
 	_serviceBrand: any;
 
 	/**

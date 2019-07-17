@@ -128,7 +128,6 @@ export class ConnectionViewletPanel extends ViewletPanel {
 	}
 
 	dispose(): void {
-		this.disposables = dispose(this.disposables);
 		super.dispose();
 	}
 

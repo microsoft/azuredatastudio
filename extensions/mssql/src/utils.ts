@@ -35,19 +35,18 @@ export function getAppDataPath() {
  * @param filePath source notebook file name
  * @param fileExtension file type
  */
-export function getTargetFileName(filePath: string): string {
-	const targetDirectory = os.homedir();
+export function findNextUntitledEditorName(filePath: string): string {
 	const fileExtension = path.extname(filePath);
 	const baseName = path.basename(filePath, fileExtension);
-	let targetFileName;
 	let idx = 0;
+	let title = `${baseName}`;
 	do {
 		const suffix = idx === 0 ? '' : `-${idx}`;
-		targetFileName = path.join(targetDirectory, `${baseName}${suffix}${fileExtension}`);
+		title = `${baseName}${suffix}`;
 		idx++;
-	} while (fs.existsSync(targetFileName));
+	} while (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
 
-	return targetFileName;
+	return title;
 }
 
 export function fileExists(file: string): boolean {
