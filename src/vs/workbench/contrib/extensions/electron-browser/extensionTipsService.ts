@@ -19,7 +19,9 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 // {{SQL CARBON EDIT}}
-import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction, ShowVisualizerExtensionsAction, InstallVisualizerExtensionsAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
+import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction, } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
+// {{SQL CARBON EDIT}}
+import { ShowVisualizerExtensionsAction, InstallVisualizerExtensionsAction } from 'sql/workbench/contrib/extensions/electron-browser/extensionsActions';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -1133,7 +1135,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 
-	// called when Visualizer icon is clicked in the Query Results grid; "Never Show Again" is not an option
 	promptVisualizerExtensions(): void {
 		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
 
