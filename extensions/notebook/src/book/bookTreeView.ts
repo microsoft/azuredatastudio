@@ -108,6 +108,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					page: tableOfContents,
 					type: BookTreeItemType.Book
 				});
+				book.iconPath = {
+					light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
+					dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+				};
 				books.push(book);
 			} catch (e) {
 				vscode.window.showErrorMessage(localize('openConfigFileError', 'Open file {0} failed: {1}',
@@ -130,6 +134,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink
 					});
+					externalLink.iconPath = {
+						light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
+						dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+					};
 					notebooks.push(externalLink);
 				} else {
 					let pathToNotebook = path.join(root, 'content', sections[i].url.concat('.ipynb'));
@@ -144,6 +152,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							page: sections[i],
 							type: BookTreeItemType.Notebook
 						});
+						notebook.iconPath = {
+							light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
+							dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+						};
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
 					} else if (fs.existsSync(pathToMarkdown)) {
@@ -154,6 +166,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							page: sections[i],
 							type: BookTreeItemType.Markdown
 						});
+						markdown.iconPath = {
+							light: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg'),
+							dark: path.join(__filename, '..', '..', 'resources', 'light', 'dependency.svg')
+						};
 						notebooks.push(markdown);
 					} else {
 						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sections[i].title));
