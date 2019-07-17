@@ -31,7 +31,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	private _nextUri: string;
 	public command: vscode.Command;
 
-	constructor(public book: BookTreeItemFormat) {
+	constructor(public book: BookTreeItemFormat, icons: any) {
 		super(book.title, vscode.TreeItemCollapsibleState.Collapsed);
 
 		if (book.type === BookTreeItemType.Book) {
@@ -41,6 +41,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			this.setPageVariables();
 			this.setCommand();
 		}
+		this.iconPath = icons;
 	}
 
 	private setPageVariables() {
