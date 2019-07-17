@@ -452,9 +452,9 @@ export class CellModel implements ICellModel {
 						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
 						let port = endpoint && endpoint.port ? ':' + endpoint.port.toString() : defaultPort;
 						let html = result.data['text/html'];
-						// Old Spark link
+						// CTP 3.1 and earlier Spark link
 						html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
-						// New spark link
+						// CTP 3.2 and later spark link
 						html = this.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
 						// Driver link
 						html = this.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
