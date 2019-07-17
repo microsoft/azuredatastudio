@@ -4,9 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
+import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import { NotebookInfo } from '../interfaces';
 import { isString } from 'util';
-import * as os from 'os';
 import * as path from 'path';
 import * as nls from 'vscode-nls';
 import { IPlatformService } from './platformService';
@@ -28,9 +29,7 @@ export class NotebookService implements INotebookService {
 		const notebookRelativePath = this.getNotebook(notebook);
 		const notebookFullPath = path.join(__dirname, '../../', notebookRelativePath);
 		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
-			const targetFileName = this.getTargetNotebookFileName(notebookFullPath, os.homedir());
-			this.platformService.copyFile(notebookFullPath, targetFileName);
-			this.platformService.openFile(targetFileName);
+			this.showNotebookAsUntitled(notebookFullPath);
 		}
 		else {
 			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookFullPath));
@@ -58,22 +57,31 @@ export class NotebookService implements INotebookService {
 		return notebookPath;
 	}
 
-	/**
-	 * Get a file name that is not already used in the target directory
-	 * @param notebook source notebook file name
-	 * @param targetDirectory target directory
-	 */
-	getTargetNotebookFileName(notebook: string, targetDirectory: string): string {
-		const notebookFileExtension = '.ipynb';
-		const baseName = path.basename(notebook, notebookFileExtension);
-		let targetFileName;
+	findNextUntitledEditorName(filePath: string): string {
+		const fileExtension = path.extname(filePath);
+		const baseName = path.basename(filePath, fileExtension);
 		let idx = 0;
+		let title = `${baseName}`;
 		do {
 			const suffix = idx === 0 ? '' : `-${idx}`;
-			targetFileName = path.join(targetDirectory, `${baseName}${suffix}${notebookFileExtension}`);
+			title = `${baseName}${suffix}`;
 			idx++;
-		} while (this.platformService.fileExists(targetFileName));
+		} while (this.platformService.isNotebookNameUsed(title));
 
-		return targetFileName;
+		return title;
+	}
+
+	showNotebookAsUntitled(notebookPath: string): void {
+		let targetFileName: string = this.findNextUntitledEditorName(notebookPath);
+		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${targetFileName}`);
+		vscode.workspace.openTextDocument(notebookPath).then((document) => {
+			let initialContent = document.getText();
+			azdata.nb.showNotebookDocument(untitledFileName, {
+				connectionProfile: undefined,
+				preview: false,
+				initialContent: initialContent,
+				initialDirtyState: false
+			});
+		});
 	}
 }

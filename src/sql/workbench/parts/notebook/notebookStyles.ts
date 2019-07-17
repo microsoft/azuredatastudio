@@ -6,9 +6,9 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder } from 'vs/platform/theme/common/colorRegistry';
-import { IDisposable } from 'vscode-xterm';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { BareResultsGridInfo, getBareResultsGridInfoStyles } from 'sql/workbench/parts/query/browser/queryResultsEditor';
 import { getZoomLevel } from 'vs/base/browser/browser';
@@ -20,6 +20,22 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 		let lightBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 0.14)';
 		let darkBoxShadow = '0px 4px 6px 0px rgba(0, 0, 0, 1)';
 		let addBorderToInactiveCodeCells = true;
+
+		// Book Navigation Buttons
+		const buttonForegroundColor = theme.getColor(buttonForeground);
+		const buttonBackgroundColor = theme.getColor(buttonBackground);
+
+		if (buttonForegroundColor && buttonBackgroundColor) {
+			collector.addRule(`
+				.notebookEditor .book-nav .dialog-message-button .monaco-text-button {
+					border-color: ${buttonBackgroundColor} !important;
+					background-color: ${buttonForegroundColor} !important;
+					color: ${buttonBackgroundColor} !important;
+					border-width: 1px;
+					border-style: solid;
+				}
+			`);
+		}
 
 		// Active border
 		const activeBorder = theme.getColor(buttonBackground);

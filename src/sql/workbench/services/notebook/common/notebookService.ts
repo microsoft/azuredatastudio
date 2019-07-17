@@ -45,6 +45,10 @@ export interface INotebookService {
 	 */
 	unregisterProvider(providerId: string): void;
 
+	registerNavigationProvider(provider: INavigationProvider): void;
+
+	getNavigationProvider(notebookUri: URI): INavigationProvider;
+
 	getSupportedFileExtensions(): string[];
 
 	getProvidersForFileType(fileType: string): string[];
@@ -148,4 +152,12 @@ export interface INotebookEditor {
 	clearAllOutputs(): Promise<boolean>;
 	getSections(): INotebookSection[];
 	navigateToSection(sectionId: string): void;
+}
+
+export interface INavigationProvider {
+	providerId: string;
+	hasNavigation: boolean;
+	getNavigation(uri: URI): Thenable<azdata.nb.NavigationResult>;
+	onNext(uri: URI): void;
+	onPrevious(uri: URI): void;
 }

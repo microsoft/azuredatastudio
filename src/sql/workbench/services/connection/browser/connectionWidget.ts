@@ -140,9 +140,9 @@ export class ConnectionWidget {
 		});
 	}
 
-	protected _handleClipboard(): void {
+	protected async _handleClipboard(): Promise<void> {
 		if (this._configurationService.getValue<boolean>('connection.parseClipboardForConnectionString')) {
-			let paste = this._clipboardService.readText();
+			let paste = await this._clipboardService.readText();
 			this._connectionManagementService.buildConnectionInfo(paste, this._providerName).then(e => {
 				if (e) {
 					let profile = new ConnectionProfile(this._capabilitiesService, this._providerName);
