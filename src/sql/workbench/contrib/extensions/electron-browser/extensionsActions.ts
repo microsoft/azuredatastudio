@@ -65,6 +65,7 @@ export class InstallVisualizerExtensionsAction extends Action {
 	}
 
 	run(): Promise<any> {
+		if (!this.recommendations.length) { return Promise.resolve(); }
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
