@@ -12,12 +12,9 @@ import * as path from 'path';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
-import { sanitizeStringForFilename } from './utils';
+import { sanitizeStringForFilename, isValidBasename } from './utils';
 
 const localize = nls.loadMessageBundle();
-const isWindows = os.type().includes('Windows');
-const INVALID_FILE_CHARS = isWindows ? /[\\/:\*\?"<>\|]/g : /[\\/]/g;
-const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
 
 export abstract class DacFxConfigPage extends BasePage {
 
@@ -146,11 +143,11 @@ export abstract class DacFxConfigPage extends BasePage {
 
 	protected async createFileBrowserParts() {
 		this.fileTextBox = this.view.modelBuilder.inputBox().withValidation(
-			component =>  this.isValidBasename(component.value)
+			component => isValidBasename(component.value)
 		)
-		.withProperties({
-			required: true
-		}).component();
+			.withProperties({
+				required: true
+			}).component();
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
@@ -172,46 +169,11 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected validateFilePath() {
-		// make sure filepath ends in proper file extension
-		if(!this.model.filePath.endsWith(this.fileExtension)) {
+		// make sure filepath ends in proper file extension if it's a valid name
+		if (!this.model.filePath.endsWith(this.fileExtension) && isValidBasename(this.model.filePath)) {
 			this.model.filePath += this.fileExtension;
 			this.fileTextBox.value = this.model.filePath;
 		}
-	}
-
-	private isValidBasename(name: string | null | undefined): boolean {
-
-		let basename = path.parse(name).name;
-		if (!basename || basename.length === 0 || /^\s+$/.test(basename)) {
-			return false; // require a name that is not just whitespace
-		}
-
-		INVALID_FILE_CHARS.lastIndex = 0;
-		if (INVALID_FILE_CHARS.test(basename)) {
-			return false; // check for certain invalid file characters
-		}
-
-		if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(basename)) {
-			return false; // check for certain invalid file names
-		}
-
-		if (basename === '.' || basename === '..') {
-			return false; // check for reserved values
-		}
-
-		if (isWindows && basename[basename.length - 1] === '.') {
-			return false; // Windows: file cannot end with a "."
-		}
-
-		if (isWindows && basename.length !== basename.trim().length) {
-			return false; // Windows: file cannot end with a whitespace
-		}
-
-		if (basename.length > 255) {
-			return false; // most file systems do not allow files > 255 length
-		}
-
-		return true;
 	}
 }
 
