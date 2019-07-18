@@ -42,7 +42,6 @@ function initLoader(opts) {
 		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
 		// {{SQL CARBON EDIT}}
 		paths: {
-			'vs/css': '../test/css.mock',
 			'vs': `../${outdir}/vs`,
 			'sqltest': `../${outdir}/sqltest`,
 			'sql': `../${outdir}/sql`,
