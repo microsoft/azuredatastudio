@@ -109,7 +109,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', 'Run');
