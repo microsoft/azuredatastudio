@@ -117,7 +117,6 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.state = val;
 	}
 }
-
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', 'Results');
 	public readonly identifier = 'resultsTab';
@@ -307,6 +306,8 @@ export class QueryResultsView extends Disposable {
 		this.dynamicModelViewTabs.forEach((dynamicTab: QueryModelViewTab) => {
 			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
 		});
+
+		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 
 		let info = this.queryModelService._getQueryInfo(input.uri);
 		if (info) {

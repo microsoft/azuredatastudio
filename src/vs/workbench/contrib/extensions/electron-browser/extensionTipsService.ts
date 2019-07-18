@@ -18,7 +18,10 @@ import { ITextModel } from 'vs/editor/common/model';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction } from 'vs/workbench/contrib/extensions/electron-browser/extensionsActions';
+// {{SQL CARBON EDIT}}
+import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction, ShowAppLaunchRecommendedExtensionsAction, InstallAppLaunchRecommendedExtensionsAction, } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+// {{SQL CARBON EDIT}}
+import { ShowVisualizerExtensionsAction, InstallVisualizerExtensionsAction } from 'sql/workbench/contrib/extensions/electron-browser/extensionsActions';
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -1045,11 +1048,6 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private isExtensionAllowedToBeRecommended(id: string): boolean {
 		return this._allIgnoredRecommendations.indexOf(id.toLowerCase()) === -1;
 	}
-<<<<<<< HEAD
-
-	dispose() {
-		this._disposables = dispose(this._disposables);
-	}
 
 	// {{SQL CARBON EDIT}}
 	private promptADSLaunchRecommendedExtensions() {
@@ -1138,7 +1136,71 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 
+	promptVisualizerExtensions(): void {
+		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
+
+		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
+			return;
+		}
+
+		let recommendations: IExtensionRecommendation[];
+		let localExtensions: ILocalExtension[];
+		const getRecommendationPromise = this.getVisualizerExtensions().then(recs => { recommendations = recs; });
+		const getLocalExtensionPromise = this.extensionsService.getInstalled(ExtensionType.User).then(local => { localExtensions = local; });
+		Promise.all([getRecommendationPromise, getLocalExtensionPromise]).then(() => {
+			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
+				return new Promise<void>(c => {
+					this.notificationService.prompt(
+						Severity.Info,
+						localize('VisualizerExtensionsRecommended', "Azure Data Studio has data visualization extension recommendations."),
+						[{
+							label: localize('installAll', "Install All"),
+							run: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'install' });
+								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
+								installAllAction.run();
+								installAllAction.dispose();
+								c(undefined);
+								const message = 'The visualization extensions are ready. Select the Visualizer icon to visualize your data.';
+								this.notificationService.info(message);
+							}
+						}, {
+							label: localize('showRecommendations', "Show Recommendations"),
+							run: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'show' });
+								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+								showAction.run();
+								showAction.dispose();
+								c(undefined);
+							}
+						}, {
+							label: choiceNever,
+							isSecondary: true,
+							run: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'neverShowAgain' });
+								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+								c(undefined);
+							}
+						}],
+						{
+							sticky: true,
+							onCancel: () => {
+								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'cancelled' });
+								c(undefined);
+							}
+						}
+					);
+				});
+			} else {
+				return Promise.resolve();
+			}
+		});
+	}
+
+	getVisualizerExtensions(): Promise<IExtensionRecommendation[]> {
+		return Promise.resolve((product.recommendedVisualizers || [])
+			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
+			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
+	}
 	// End of {{SQL CARBON EDIT}}
-=======
->>>>>>> origin/master
 }

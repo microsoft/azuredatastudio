@@ -1761,7 +1761,6 @@ export class InstallAppLaunchRecommendedExtensionsAction extends Action {
 			});
 	}
 }
-
 export class InstallWorkspaceRecommendedExtensionsAction extends Action {
 
 	static readonly ID = 'workbench.extensions.action.installWorkspaceRecommendedExtensions';
