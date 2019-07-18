@@ -81,8 +81,6 @@ describe('Check for invalid filename tests', function (): void {
 	});
 
 	it('Should determine Windows forbidden filenames', async () => {
-		let isWindows = os.platform() === 'win32';
-
 		// invalid only for Windows
 		should(isValidBasename(formatFileName('CON.dacpac'))).equal(isWindows ? false : true);
 		should(isValidBasename(formatFileName('PRN.dacpac'))).equal(isWindows ? false : true);
