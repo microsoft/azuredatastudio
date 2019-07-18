@@ -8,6 +8,7 @@ import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
@@ -18,6 +19,8 @@ import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
+import product from 'vs/platform/product/node/product';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -199,13 +202,38 @@ export class ChartDataAction extends Action {
 	public static LABEL = localize('chart', 'Chart');
 	public static ICON = 'viewChart';
 
-	constructor(@IEditorService private editorService: IEditorService) {
+	constructor(
+		@IEditorService private editorService: IEditorService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
+	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
+		if (product.quality !== 'stable' && product.quality !== 'insiders') {
+			this.extensionTipsService.promptVisualizerExtensions();
+		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
+		return Promise.resolve(true);
+	}
+}
+
+export class VisualizerDataAction extends Action {
+	public static ID = 'grid.visualizer';
+	public static LABEL = localize('visualizer', 'Visualizer');
+	public static ICON = 'viewVisualizer';
+
+	constructor(
+		private runner: QueryRunner,
+		@IEditorService private editorService: IEditorService,
+
+	) {
+		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
+	}
+
+	public run(context: IGridActionContext): Promise<boolean> {
+		this.runner.notifyVisualizeRequested(context.batchId, context.resultId);
 		return Promise.resolve(true);
 	}
 }
