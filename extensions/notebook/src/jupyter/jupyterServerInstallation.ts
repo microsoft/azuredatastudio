@@ -281,8 +281,13 @@ export class JupyterServerInstallation {
 		if (process.platform === constants.winPlatform) {
 			let pythonExe = JupyterServerInstallation.getPythonExePath(installPath, existingPython);
 			let cmd = `powershell.exe -NoProfile -Command "& {Get-Process python | Where-Object {$_.Path -eq '${pythonExe}'}}"`;
-			let processInfo = await this.executeBufferedCommand(cmd);
-			return processInfo !== undefined && processInfo.length > 0;
+			let cmdResult: string;
+			try {
+				cmdResult = await this.executeBufferedCommand(cmd);
+			} catch (err) {
+				return false;
+			}
+			return cmdResult !== undefined && cmdResult.length > 0;
 		} else {
 			return false;
 		}
