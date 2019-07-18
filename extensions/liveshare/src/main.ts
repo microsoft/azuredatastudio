@@ -85,38 +85,46 @@ export async function activate(context: vscode.ExtensionContext) {
 		}
 
 		const serviceName = 'mssql-query';
-		if (isHost) {
-			//const sharedService = await vslsApi.shareService(serviceName);
-			//this.sharedService.request('load', [ this.adapterId ]);
-		} else {
-			const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
-			sharedServiceProxy.request('load', [ 1050 ]);
+		const sharedService = await vslsApi.shareService(serviceName);
+
+		if (!sharedService) {
+			vscode.window.showErrorMessage('Could not create a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
+			return;
 		}
+
+		const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
+		if (!sharedServiceProxy) {
+			vscode.window.showErrorMessage('Could not access a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
+			return;
+		}
+
+		new HostSessionManager(context, sharedService);
+		new GuestSessionManager(context, sharedServiceProxy);
+
+		let connection = new ConnectionFeature();
+		connection.registerProvider();
+		connection.registerListeners(isHost, sharedService, sharedServiceProxy);
+
+		new QueryFeature().registerProvider();
+
+
+		// const serviceName = 'mssql-query';
+		// if (isHost) {
+		// 	//const sharedService = await vslsApi.shareService(serviceName);
+		// 	//this.sharedService.request('load', [ this.adapterId ]);
+		// } else {
+		// 	const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
+		// 	sharedServiceProxy.request('load', [ 1050 ]);
+		// }
 
 		return;
 	});
 
 	registerLiveShareIntegrationCommands();
 
-	const serviceName = 'mssql-query';
-	const sharedService = await vslsApi.shareService(serviceName);
 
-	if (!sharedService) {
-		vscode.window.showErrorMessage('Could not create a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
-		return;
-	}
 
-	const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
-	if (!sharedServiceProxy) {
-		vscode.window.showErrorMessage('Could not access a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
-		return;
-	}
 
-	new HostSessionManager(context, sharedService);
-	new GuestSessionManager(context, sharedServiceProxy);
-
-	new ConnectionFeature().registerProvider();
-	new QueryFeature().registerProvider();
 }
 
 export function deactivate(): void {

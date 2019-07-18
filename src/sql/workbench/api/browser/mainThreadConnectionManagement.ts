@@ -7,7 +7,7 @@ import { SqlExtHostContext, SqlMainContext, ExtHostConnectionManagementShape, Ma
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
@@ -42,6 +42,20 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 
 	public dispose(): void {
 		this._toDispose = dispose(this._toDispose);
+	}
+
+	public $registerConnectionEventListener(handle: number, providerId: string): void {
+		this._connectionManagementService.onConnect((params: IConnectionParams) => {
+			this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, params.connectionProfile);
+		});
+
+		this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
+			this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, params.connectionProfile);
+		});
+
+		this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
+			this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, params.connectionProfile);
+		});
 	}
 
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {

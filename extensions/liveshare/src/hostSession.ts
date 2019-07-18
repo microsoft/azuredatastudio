@@ -16,9 +16,7 @@ export class HostSessionManager {
 	//	private readonly liveShare: LiveShare,
 		private readonly sharedService: SharedService
 	) {
-
 		const vslsApi = vsls.getApi();
-
 
 		if (!vslsApi) {
 			return;

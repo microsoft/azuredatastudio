@@ -10,12 +10,27 @@ import * as azdata from 'azdata';
 export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
 
 	private _proxy: MainThreadConnectionManagementShape;
+	private _nextListenerHandle: number = 0;
+	private _connectionListeners = new Map<number, azdata.connection.ConnectionEventListener>();
 
 	constructor(
 		mainContext: IMainContext
 	) {
 		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
+	}
+
+	public $onConnectionEvent(handle: number, type: azdata.connection.ConnectionEvent, ownerUri: string, profile: azdata.IConnectionProfile): void {
+		let listener = this._connectionListeners[handle];
+		if (listener) {
+			listener.onConnectionEvent(type, ownerUri, profile);
+		}
+	 }
+
+	public $registerConnectionEventListener(providerId: string, listener: azdata.connection.ConnectionEventListener): void {
+		this._connectionListeners[this._nextListenerHandle] = listener;
+		this._proxy.$registerConnectionEventListener(this._nextListenerHandle, providerId);
+		this._nextListenerHandle++;
 	}
 
 	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {

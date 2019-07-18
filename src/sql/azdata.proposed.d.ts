@@ -126,6 +126,20 @@ declare module 'azdata' {
 			*/
 			connectionId: string;
 		}
+
+		export type ConnectionEvent =
+			| 'onConnect'
+			| 'onDisconnect'
+			| 'onConnectionChanged';
+
+		export interface ConnectionEventListener {
+			onConnectionEvent(type: ConnectionEvent, ownerUri: string, args: IConnectionProfile): void;
+		}
+
+		/**
+		 * Register a connection event listener
+		 */
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
 	}
 
 	/**

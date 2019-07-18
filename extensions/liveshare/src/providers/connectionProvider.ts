@@ -6,9 +6,33 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
+import { SharedService, SharedServiceProxy }  from '../liveshare';
+
 import * as constants from '../constants';
 
 export class ConnectionFeature {
+
+	public registerListeners(isHost: boolean, sharedService: SharedService, sharedServiceProxy: SharedServiceProxy): void {
+		if (isHost) {
+			azdata.connection.registerConnectionEventListener({
+				onConnectionEvent(type: azdata.connection.ConnectionEvent, ownerUri: string, profile: azdata.IConnectionProfile) {
+					sharedService.notify(<string>type, { ownerUri, profile});
+				}
+			});
+		} else {
+			sharedServiceProxy.onNotify('onConnect', (args: any) => {
+				return args;
+			});
+
+			sharedServiceProxy.onNotify('onDisconnect', (args: any) => {
+				return args;
+			});
+
+			sharedServiceProxy.onNotify('onConnectionChanged', (args: any) => {
+				return args;
+			});
+		}
+	}
 
 	public registerProvider(): vscode.Disposable {
 
