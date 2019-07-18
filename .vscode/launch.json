@@ -81,7 +81,7 @@
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
 			},
 			"breakOnLoad": false,
-			"urlFilter": "*workbench.html*",
+			"urlFilter": "*index.html*",
 			"runtimeArgs": [
 				"--inspect=5875",
 				"--no-cached-data"
