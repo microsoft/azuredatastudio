@@ -32,9 +32,29 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.addToCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-					() => callback(null, false),
-					(err) => callback(err, true)
+					() => callback(null, true),
+					(err) => callback(err, false)
 				);
+		});
+	}
+
+	/**
+	 * Wrapper to make callback-based find method into a thenable method
+	 * @param query Partial object to use to look up tokens. Ideally should be partial of adal.TokenResponse
+	 * @returns Promise to return the matching adal.TokenResponse objects.
+	 *     Rejected if an error was sent in the callback
+	 */
+	public addThenable(entries: adal.TokenResponse[]): Thenable<boolean> {
+		let self = this;
+
+		return new Promise<boolean>((resolve, reject) => {
+			self.add(entries, (error: Error, results: boolean) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(results);
+				}
+			});
 		});
 	}
 
