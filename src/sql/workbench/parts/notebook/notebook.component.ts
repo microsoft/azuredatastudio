@@ -53,8 +53,8 @@ import { ITextFileService } from 'vs/workbench/services/textfile/common/textfile
 import { LabeledMenuItemActionItem, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Button } from 'sql/base/browser/ui/button/button';
-import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import product from 'vs/platform/product/node/product';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -109,6 +109,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		super();
 		this.updateProfile();
 		this.isLoading = true;
+		let insiders: boolean = product.quality !== 'stable';
+		vscode.commands.executeCommand('setContext', 'insiders', insiders);
 	}
 
 	private updateProfile(): void {
@@ -441,7 +443,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected initNavSection(): void {
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
-		if (this.contextKeyService.getContextKeyValue('isDevelopment') &&
+		if (this.contextKeyService.getContextKeyValue('insiders') &&
 			this.contextKeyService.getContextKeyValue('bookOpened') &&
 			this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
