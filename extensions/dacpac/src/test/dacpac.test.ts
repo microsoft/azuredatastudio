@@ -7,9 +7,10 @@
 import 'mocha';
 import * as should from 'should';
 import * as os from 'os';
+import * as path from 'path';
 import { isValidFilenameCharacter, sanitizeStringForFilename, isValidBasename } from '../wizard/api/utils';
 
-const isWindows = os.type().includes('Windows');
+const isWindows = os.platform() === 'win32';
 
 describe('Sanitize database name for filename tests', function (): void {
 	it('Should only validate if one character is passed', async () => {
@@ -108,6 +109,5 @@ describe('Check for invalid filename tests', function (): void {
 });
 
 function formatFileName(filename: string): string {
-	const filePath = isWindows ? 'c:\\users\\test\\' : '/Users/test/';
-	return filePath + filename;
+	return path.join(os.tmpdir(), filename);
 }

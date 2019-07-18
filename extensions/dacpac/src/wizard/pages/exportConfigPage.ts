@@ -54,7 +54,7 @@ export class ExportConfigPage extends DacFxConfigPage {
 
 
 	async onPageLeave(): Promise<boolean> {
-		this.validateFilePath();
+		this.appendFileExtensionIfNeeded();
 		return true;
 	}
 

@@ -168,7 +168,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
 	}
 
-	protected validateFilePath() {
+	protected appendFileExtensionIfNeeded() {
 		// make sure filepath ends in proper file extension if it's a valid name
 		if (!this.model.filePath.endsWith(this.fileExtension) && isValidBasename(this.model.filePath)) {
 			this.model.filePath += this.fileExtension;

@@ -7,7 +7,7 @@ import * as path from 'path';
 
 const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
 const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
-const isWindows = os.type().includes('Windows');
+const isWindows = os.platform() === 'win32';
 const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
 
 /**
