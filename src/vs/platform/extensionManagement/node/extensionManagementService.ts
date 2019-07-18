@@ -138,7 +138,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	) {
 		super();
 		this.systemExtensionsPath = environmentService.builtinExtensionsPath;
-		this.extensionsPath = environmentService.extensionsPath;
+		this.extensionsPath = environmentService.extensionsPath!;
 		this.uninstalledPath = path.join(this.extensionsPath, '.obsolete');
 		this.uninstalledFileLimiter = new Queue();
 		this.manifestCache = this._register(new ExtensionsManifestCache(environmentService, this));
