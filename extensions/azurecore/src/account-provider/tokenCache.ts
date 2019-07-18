@@ -39,9 +39,9 @@ export default class TokenCache implements adal.TokenCache {
 	}
 
 	/**
-	 * Wrapper to make callback-based find method into a thenable method
-	 * @param query Partial object to use to look up tokens. Ideally should be partial of adal.TokenResponse
-	 * @returns Promise to return the matching adal.TokenResponse objects.
+	 * Wrapper to make callback-based add method into a thenable method
+	 * @param entries Entries to add into the cache
+	 * @returns Promise to return the result of adding the tokens to the cache
 	 *     Rejected if an error was sent in the callback
 	 */
 	public addThenable(entries: adal.TokenResponse[]): Thenable<boolean> {
