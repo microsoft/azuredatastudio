@@ -652,7 +652,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						cell_type: cell.cellType,
 						execution_count: cell.executionCount,
 						metadata: {
-							language: cell.language
+							language: cell.language,
+							cellGuid: cell.cellGuid
 						},
 						source: undefined,
 						outputs: [...cell.outputs]
@@ -667,7 +668,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					cell_type: cells.cellType,
 					execution_count: undefined,
 					metadata: {
-						language: cells.language
+						language: cells.language,
+						cellGuid: cells.cellGuid
 					},
 					source: undefined
 				}

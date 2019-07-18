@@ -4696,6 +4696,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				cellGuid?: string;
 			};
 			execution_count?: number;
 			outputs?: ICellOutput[];

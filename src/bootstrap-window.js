@@ -122,7 +122,8 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'rxjs/Observer',
 		'htmlparser2',
 		'sanitize',
-		'plotly.js-dist'
+		'plotly.js-dist',
+		'jsonc-parser'
 	]);
 	// {{SQL CARBON EDIT}} - End
 

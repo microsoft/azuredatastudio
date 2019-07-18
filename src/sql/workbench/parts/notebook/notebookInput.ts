@@ -9,6 +9,7 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
+import * as jsonc from 'jsonc-parser';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
@@ -43,7 +44,7 @@ export class NotebookEditorModel extends EditorModel {
 				// Hook to content change events
 				notebook.modelReady.then(() => {
 					this._register(notebook.model.kernelChanged(e => this.updateModel()));
-					this._register(notebook.model.contentChanged(e => this.updateModel(e)));
+					this._register(notebook.model.contentChanged(e => this.updateModel(e, NotebookChangeType.CellSourceUpdated)));
 				}, err => undefined);
 			}
 		}));
@@ -92,7 +93,7 @@ export class NotebookEditorModel extends EditorModel {
 		}
 	}
 
-	public updateModel(contentChange?: NotebookContentChange): void {
+	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
 		if (contentChange && contentChange.changeType === NotebookChangeType.Saved) {
 			// We send the saved events out, so ignore. Otherwise we double-count this as a change
 			// and cause the text to be reapplied
@@ -104,20 +105,64 @@ export class NotebookEditorModel extends EditorModel {
 			// Request serialization so trusted state is preserved but don't update the model
 			this.sendNotebookSerializationStateChange();
 		} else {
-			// For all other changes, update the backing model with the latest contents
 			let notebookModel = this.getNotebookModel();
-			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
-				let content = JSON.stringify(notebookModel.toJSON(), undefined, '    ');
-				let model = this.textEditorModel.textEditorModel;
-				let endLine = model.getLineCount();
-				let endCol = model.getLineMaxColumn(endLine);
 
-				this.textEditorModel.textEditorModel.applyEdits([{
-					range: new Range(1, 1, endLine, endCol),
-					text: content
-				}]);
+			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
+				if (type === NotebookChangeType.CellSourceUpdated && contentChange) {
+					let sourceMap = new Map<string, jsonc.Node>();
+					let lastNode: jsonc.Node;
+					let lastPropertySource = false;
+					let lastPropertyGuid = false;
+					let content = this.textEditorModel.textEditorModel.getValue();
+					jsonc.visit(content, {
+						onObjectProperty: (property, offset, length, startLine, startChracter) => {
+							lastPropertyGuid = false;
+							lastPropertySource = false;
+
+							if (property === 'source') {
+								lastPropertySource = true;
+							} else if (property === 'cellGuid') {
+								lastPropertyGuid = true;
+							}
+						},
+						onLiteralValue: (value, offset, length) => {
+							if (lastPropertySource) {
+								lastNode = jsonc.getLocation(content, offset).previousNode;
+							} else if (lastPropertyGuid) {
+								sourceMap.set(value, lastNode);
+							}
+						}
+					});
+					let node = sourceMap.get(contentChange.cells[0].cellGuid);
+					if (node) {
+						let startPosition = this.textEditorModel.textEditorModel.getPositionAt(node.offset + 1);
+						let endPosition = this.textEditorModel.textEditorModel.getPositionAt(node.offset + node.length - 1);
+						console.log('fast edit');
+						this.textEditorModel.textEditorModel.applyEdits([{
+							range: new Range(startPosition.lineNumber, startPosition.column, endPosition.lineNumber, endPosition.column),
+							text: contentChange.cells[0].source
+						}]);
+					} else {
+						console.log('slow edit1');
+						this.replaceEntireTextEditorModel(notebookModel, type);
+					}
+				} else {
+					console.log('slow edit2');
+					this.replaceEntireTextEditorModel(notebookModel, type);
+				}
 			}
 		}
+	}
+
+	private replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType) {
+		let content = JSON.stringify(notebookModel.toJSON(type), undefined, '    ');
+		let model = this.textEditorModel.textEditorModel;
+		let endLine = model.getLineCount();
+		let endCol = model.getLineMaxColumn(endLine);
+		this.textEditorModel.textEditorModel.applyEdits([{
+			range: new Range(1, 1, endLine, endCol),
+			text: content
+		}]);
 	}
 
 	private sendNotebookSerializationStateChange(): void {

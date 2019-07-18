@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from './modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, INotebookContentsEditable } from './modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
 import { nbversion } from '../notebookConstants';
 import * as notebookUtils from '../notebookUtils';
@@ -78,6 +78,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
 
 	public requestConnectionHandler: () => Promise<boolean>;
+	private _nbSerializedContents: INotebookContentsEditable;
 
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -977,18 +978,28 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	/**
 	 * Serialize the model to JSON.
 	 */
-	toJSON(): nb.INotebookContents {
-		let cells: nb.ICellContents[] = this.cells.map(c => c.toJSON());
+	toJSON(type?: NotebookChangeType): nb.INotebookContents {
+		if (!this._nbSerializedContents) {
+			this._nbSerializedContents = {
+				cells: undefined,
+				metadata: undefined,
+				nbformat: this._nbformat,
+				nbformat_minor: this._nbformatMinor
+			};
+		}
+		if (type === NotebookChangeType.CellSourceUpdated && this._nbSerializedContents.cells) {
+			this._nbSerializedContents.cells.forEach(cell => {
+				cell.source = this.cells.find((c) => c.cellGuid === cell.metadata.cellGuid).source;
+			});
+		} else {
+			this._nbSerializedContents.cells = this.cells.map(c => c.toJSON());
+		}
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
-		return {
-			metadata,
-			nbformat_minor: this._nbformatMinor,
-			nbformat: this._nbformat,
-			cells
-		};
+		this._nbSerializedContents.metadata = metadata;
+		return this._nbSerializedContents;
 	}
 
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void {

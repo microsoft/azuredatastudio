@@ -20,3 +20,4 @@
 /// <reference path="modules/ng2-charts/index.d.ts" />
 /// <reference path="modules/rxjs/index.d.ts" />
 /// <reference path="modules/@types/plotly.js-dist/index.d.ts" />
+/// <reference path="modules/jsonc-parser/index.d.ts" />
