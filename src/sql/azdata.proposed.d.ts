@@ -4493,6 +4493,11 @@ declare module 'azdata' {
 			 * Optional content used to give an initial notebook state
 			 */
 			initialContent?: nb.INotebookContents | string;
+
+			/**
+			 * A optional boolean value indicating the dirty state after the intial content is loaded, default value is true
+			 */
+			initialDirtyState?: boolean;
 		}
 
 		/**
@@ -4567,8 +4572,8 @@ declare module 'azdata' {
 		* }
 		* ```
 		 * @export
-		 * @param {NotebookProvider} provider
-		 * @returns {vscode.Disposable}
+		 * @param notebook provider
+		 * @returns disposable
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
@@ -5261,6 +5266,19 @@ declare module 'azdata' {
 		 */
 		export interface IInputReply {
 			value: string;
+		}
+
+		export function registerNavigationProvider(provider: NavigationProvider): vscode.Disposable;
+
+		export interface NavigationProvider {
+			readonly providerId: string;
+			getNavigation(notebookUri: vscode.Uri): Thenable<NavigationResult>;
+		}
+
+		export interface NavigationResult {
+			hasNavigation: boolean;
+			previous?: vscode.Uri;
+			next?: vscode.Uri;
 		}
 
 		//#endregion

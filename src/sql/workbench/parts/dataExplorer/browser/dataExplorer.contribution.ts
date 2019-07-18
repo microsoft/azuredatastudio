@@ -54,7 +54,7 @@ registry.registerWorkbenchAction(
 		OpenDataExplorerViewletAction,
 		OpenDataExplorerViewletAction.ID,
 		OpenDataExplorerViewletAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.Shift | KeyCode.KEY_C }),
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D }),
 	'View: Show Data Explorer',
 	localize('dataExplorer.view', "View")
 );

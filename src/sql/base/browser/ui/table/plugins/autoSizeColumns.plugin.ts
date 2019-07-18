@@ -14,7 +14,7 @@ const defaultOptions: IAutoColumnSizeOptions = {
 	autoSizeOnRender: false
 };
 
-export class AutoColumnSize<T> implements Slick.Plugin<T> {
+export class AutoColumnSize<T extends Object> implements Slick.Plugin<T> {
 	private _grid: Slick.Grid<T>;
 	private _$container: JQuery;
 	private _context: CanvasRenderingContext2D;

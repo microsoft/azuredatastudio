@@ -10,7 +10,6 @@ import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
@@ -118,8 +117,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@IExtensionTipsService private _extensionTipsService: IExtensionTipsService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
@@ -212,6 +210,13 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public getResource(): URI { return this._sql.getResource(); }
 	public getEncoding(): string { return this._sql.getEncoding(); }
 	public suggestFileName(): string { return this._sql.suggestFileName(); }
+	hasBackup(): boolean {
+		if (this.sql) {
+			return this.sql.hasBackup();
+		}
+
+		return false;
+	}
 
 	public getName(longForm?: boolean): string {
 		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
