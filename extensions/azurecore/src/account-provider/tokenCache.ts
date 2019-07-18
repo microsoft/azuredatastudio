@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 
 export default class TokenCache implements adal.TokenCache {
-	private static CipherAlgorithm = 'aes256';
+	private static CipherAlgorithm = 'aes-256-cbc';
 	private static CipherAlgorithmIvLength = 16;
 	private static CipherKeyLength = 32;
 	private static FsOptions = { encoding: 'ascii' };
