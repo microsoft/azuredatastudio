@@ -19,6 +19,7 @@ import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import product from 'vs/platform/product/node/product';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -209,7 +210,9 @@ export class ChartDataAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
-		this.extensionTipsService.promptVisualizerExtensions();
+		if (product.quality !== 'stable' && product.quality !== 'insiders') {
+			this.extensionTipsService.promptVisualizerExtensions();
+		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}
