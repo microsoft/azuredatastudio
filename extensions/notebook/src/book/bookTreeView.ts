@@ -21,6 +21,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _tableOfContentsPath: string[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _extensionContext: vscode.ExtensionContext;
+	private _throttleTimer: any;
+	private _resource: string;
 
 	constructor(private workspaceRoot: string, extensionContext: vscode.ExtensionContext) {
 		if (workspaceRoot !== '') {
@@ -57,12 +59,33 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	openMarkdown(resource: string): void {
-		try {
-			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
-		} catch (e) {
-			vscode.window.showErrorMessage(localize('openMarkdownError', 'Open file {0} failed: {1}',
-				resource,
-				e instanceof Error ? e.message : e));
+		this.runThrottledAction(resource, () => {
+			try {
+				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+			} catch (e) {
+				vscode.window.showErrorMessage(localize('openMarkdownError', "Open file {0} failed: {1}",
+					resource,
+					e instanceof Error ? e.message : e));
+			}
+		});
+	}
+
+	private runThrottledAction(resource: string, action: () => void) {
+		const isResourceChange = resource !== this._resource;
+		if (isResourceChange) {
+			clearTimeout(this._throttleTimer);
+			this._throttleTimer = undefined;
+		}
+
+		this._resource = resource;
+
+		// Schedule update if none is pending
+		if (!this._throttleTimer) {
+			if (isResourceChange) {
+				action();
+			} else {
+				this._throttleTimer = setTimeout(() => action(), 300);
+			}
 		}
 	}
 
