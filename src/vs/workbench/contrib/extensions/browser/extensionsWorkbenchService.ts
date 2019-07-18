@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as nls from 'vs/nls';
-import * as semver from 'semver';
+import * as semver from 'semver-umd';
 import { Event, Emitter } from 'vs/base/common/event';
 import { index, distinct } from 'vs/base/common/arrays';
 import { ThrottledDelayer } from 'vs/base/common/async';
@@ -15,8 +15,9 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 // {{SQL CARBON EDIT}}
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionEnablementService, IExtensionIdentifier, EnablementState, IExtensionManagementServerService, IExtensionManagementServer, INSTALL_ERROR_INCOMPATIBLE
+	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, INSTALL_ERROR_INCOMPATIBLE
 } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -36,6 +37,7 @@ import { IFileService } from 'vs/platform/files/common/files';
 import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IProductService } from 'vs/platform/product/common/product';
+import { asDomUri } from 'vs/base/browser/dom';
 
 // {{SQL CARBON EDIT}}
 import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
@@ -145,7 +147,7 @@ class Extension implements IExtension {
 
 	private get localIconUrl(): string | null {
 		if (this.local && this.local.manifest.icon) {
-			return resources.joinPath(this.local.location, this.local.manifest.icon).toString();
+			return asDomUri(resources.joinPath(this.local.location, this.local.manifest.icon)).toString();
 		}
 		return null;
 	}
@@ -795,17 +797,15 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return false;
 	}
 
-	install(extension: string | IExtension): Promise<IExtension> {
-		// {{SQL CARBON EDIT}}
-		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-
-		if (typeof extension === 'string') {
+	install(extension: URI | IExtension): Promise<IExtension> {
+		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey); // {{SQL CARBON EDIT}} add line
+		if (extension instanceof URI) {
 			return this.installWithProgress(async () => {
 				// {{SQL CARBON EDIT}} - Wrap async call in try/catch.
 				// This is the error handler when installing local VSIX file.
 				// Prompt the user about the error detail.
 				try {
-					const { identifier } = await this.extensionService.install(URI.file(extension));
+					const { identifier } = await this.extensionService.install(extension);
 					this.checkAndEnableDisabledDependencies(identifier);
 					return this.local.filter(local => areSameExtensions(local.identifier, identifier))[0];
 				} catch (error) {
