@@ -119,4 +119,8 @@ export class BookTreeItem extends vscode.TreeItem {
 	public get nextUri(): string {
 		return this._nextUri;
 	}
+
+	get tooltip(): string {
+		return `${this._uri}`;
+	}
 }
