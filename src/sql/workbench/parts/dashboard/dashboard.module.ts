@@ -50,9 +50,11 @@ import { DashboardHomeContainer } from 'sql/workbench/parts/dashboard/containers
 import { ControlHostContent } from 'sql/workbench/parts/dashboard/contents/controlHostContent.component';
 import { DashboardControlHostContainer } from 'sql/workbench/parts/dashboard/containers/dashboardControlHostContainer.component';
 import { JobsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobsView.component';
+import { NotebooksViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/notebooksView.component';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { AlertsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/alertsView.component';
 import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/jobHistory.component';
+import { NotebookHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/notebookHistory.component';
 import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/proxiesView.component';
 import LoadingSpinner from 'sql/workbench/electron-browser/modelComponents/loadingSpinner.component';
@@ -64,7 +66,7 @@ import { EditableDropDown } from 'sql/platform/electron-browser/editableDropdown
 const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-	JobsViewComponent, AgentViewComponent, JobHistoryComponent, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
+	JobsViewComponent, NotebooksViewComponent, AgentViewComponent, JobHistoryComponent, NotebookHistoryComponent, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
 	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, LoadingSpinner];
 
 /* Panel */

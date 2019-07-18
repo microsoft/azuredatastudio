@@ -398,6 +398,21 @@ export abstract class ExtHostDataProtocolShape {
 	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 
 	/**
+	 * Get Agent Notebook list
+	 */
+	$getNotebooks(handle: number, ownerUri: string): Thenable<azdata.AgentNotebooksResult> { throw ni(); }
+
+	/**
+	 * Get a Agent Notebook's history
+	 */
+	$getNotebookHistory(handle: number, ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> { throw ni(); }
+
+	/**
+	 * Get a Agent materialized notebook
+	 */
+	$getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> { throw ni(); }
+
+	/**
 	 * Get Agent Alerts list
 	 */
 	$getAlerts(handle: number, connectionUri: string): Thenable<azdata.AgentAlertsResult> { throw ni(); }

@@ -1371,6 +1371,11 @@ declare module 'azdata' {
 		alerts: AgentAlertInfo[];
 	}
 
+	export interface AgentNotebookInfo extends AgentJobInfo {
+		templateId: number;
+		targetDatabase: string;
+	}
+
 	export interface AgentJobScheduleInfo {
 		id: number;
 		name: string;
@@ -1471,6 +1476,12 @@ declare module 'azdata' {
 		steps: AgentJobStep[];
 	}
 
+	export interface AgentNotebookHistoryInfo extends AgentJobHistoryInfo {
+		materializedNotebookId: number;
+		materializedNotebookErrorFlag: number;
+		materializedNotebookErrorInfo: string;
+	}
+
 	export interface AgentProxyInfo {
 		id: number;
 		accountName: string;
@@ -1536,11 +1547,25 @@ declare module 'azdata' {
 		jobs: AgentJobInfo[];
 	}
 
+	export interface AgentNotebooksResult extends ResultStatus {
+		notebooks: AgentNotebookInfo[];
+	}
+
 	export interface AgentJobHistoryResult extends ResultStatus {
 		histories: AgentJobHistoryInfo[];
 		schedules: AgentJobScheduleInfo[];
 		alerts: AgentAlertInfo[];
 		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookHistoryResult extends ResultStatus {
+		histories: AgentNotebookHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookMaterializedResult extends ResultStatus {
+		notebookMaterializedJson: string;
 	}
 
 	export interface CreateAgentJobResult extends ResultStatus {
@@ -1639,6 +1664,11 @@ declare module 'azdata' {
 		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
 		updateJobStep(ownerUri: string, originalJobStepName: string, stepInfo: AgentJobStepInfo): Thenable<UpdateAgentJobStepResult>;
 		deleteJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<ResultStatus>;
+
+		// Notebook management methods
+		getNotebooks(ownerUri: string): Thenable<AgentNotebooksResult>;
+		getNotebookHistory(ownerUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<AgentNotebookHistoryResult>;
+		getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
 
 		// Alert management methods
 		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;

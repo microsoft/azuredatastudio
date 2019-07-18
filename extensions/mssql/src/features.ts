@@ -488,6 +488,44 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		// Notebook Management methods
+
+		let getNotebooks = (ownerUri: string): Thenable<azdata.AgentNotebooksResult> => {
+			let params: contracts.AgentNotebookParams = { ownerUri: ownerUri };
+			return client.sendRequest(contracts.AgentNotebooksRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.AgentNotebooksRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		let getNotebookHistory = (ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> => {
+			let params: contracts.AgentNotebookHistoryParams = { ownerUri: ownerUri, jobId: jobID, jobName: jobName, targetDatabase: targetDatabase };
+
+			return client.sendRequest(contracts.AgentNotebookHistoryRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.AgentNotebookHistoryRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		let getMaterializedNotebook = (ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> => {
+			let params: contracts.AgentNotebookMaterializedParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, notebookMaterializedId: notebookMaterializedId };
+			return client.sendRequest(contracts.AgentNotebookMaterializedRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.AgentNotebookMaterializedRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
 		// Alert management methods
 		let getAlerts = (ownerUri: string): Thenable<azdata.AgentAlertsResult> => {
 			let params: contracts.AgentAlertsParams = {
@@ -796,6 +834,9 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			createJobStep,
 			updateJobStep,
 			deleteJobStep,
+			getNotebooks,
+			getNotebookHistory,
+			getMaterializedNotebook,
 			getAlerts,
 			createAlert,
 			updateAlert,

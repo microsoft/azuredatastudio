@@ -20,6 +20,8 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/electron-browser/jobManagementView';
+import { NotebooksViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/notebooksView.component';
+import { NotebookHistoryComponent } from 'sql/workbench/parts/jobManagement/electron-browser/notebookHistory.component';
 
 export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
 export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
@@ -282,6 +284,29 @@ export class DeleteStepAction extends Action {
 	}
 }
 
+
+// Notebook Actions
+
+export class OpenNotebookAction extends Action {
+	public static ID = 'notebookaction.openNotebook';
+	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Materialized Notebook");
+
+	constructor(
+	) {
+		super(OpenNotebookAction.ID, OpenNotebookAction.LABEL, 'newStepIcon');
+	}
+
+	public run(context: NotebookHistoryComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			if (context) {
+				context.openNotebook();
+				resolve(true);
+			} else {
+				reject(false);
+			}
+		});
+	}
+}
 
 // Alert Actions
 

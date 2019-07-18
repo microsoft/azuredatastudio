@@ -674,6 +674,27 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Get Agent Notebook list
+	 */
+	public $getNotebooks(handle: number, ownerUri: string): Thenable<azdata.AgentNotebooksResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getNotebooks(ownerUri);
+	}
+
+	/**
+	 * Get a Agent Notebook's history
+	 */
+	public $getNotebookHistory(handle: number, ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getNotebookHistory(ownerUri, jobID, jobName, targetDatabase);
+	}
+
+	/**
+	 * Get a Agent Materialized Notebook
+	 */
+	public $getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getMaterializedNotebook(ownerUri, targetDatabase, notebookMaterializedId);
+	}
+
+	/**
 	 * Get Agent Oeprators list
 	 */
 	$getOperators(handle: number, ownerUri: string): Thenable<azdata.AgentOperatorsResult> {

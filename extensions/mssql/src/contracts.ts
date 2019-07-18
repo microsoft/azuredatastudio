@@ -87,6 +87,24 @@ export interface DeleteAgentJobStepParams {
 	step: azdata.AgentJobStepInfo;
 }
 
+// Notebook management parameters
+export interface AgentNotebookParams {
+	ownerUri: string;
+}
+
+export interface AgentNotebookHistoryParams {
+	ownerUri: string;
+	jobId: string;
+	jobName: string;
+	targetDatabase: string;
+}
+
+export interface AgentNotebookMaterializedParams {
+	ownerUri: string;
+	targetDatabase: string;
+	notebookMaterializedId: number;
+}
+
 // Alert management parameters
 export interface AgentAlertsParams {
 	ownerUri: string;
@@ -216,6 +234,19 @@ export namespace UpdateAgentJobStepRequest {
 
 export namespace DeleteAgentJobStepRequest {
 	export const type = new RequestType<DeleteAgentJobStepParams, azdata.ResultStatus, void, void>('agent/deletejobstep');
+}
+
+// Notebooks request
+export namespace AgentNotebooksRequest {
+	export const type = new RequestType<AgentNotebookParams, azdata.AgentNotebooksResult, void, void>('agent/notebooks');
+}
+
+export namespace AgentNotebookHistoryRequest {
+	export const type = new RequestType<AgentNotebookHistoryParams, azdata.AgentNotebookHistoryResult, void, void>('agent/notebookhistory');
+}
+
+export namespace AgentNotebookMaterializedRequest {
+	export const type = new RequestType<AgentNotebookMaterializedParams, azdata.AgentNotebookMaterializedResult, void, void>('agent/notebookmaterialized');
 }
 
 // Alerts requests

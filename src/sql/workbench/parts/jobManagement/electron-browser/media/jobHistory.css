@@ -10,6 +10,12 @@ jobhistory-component .all-jobs {
 	font-size: 15px;
 	width: 10%;
 }
+notebookhistory-component .all-jobs {
+	display: inline-block;
+	cursor: pointer;
+	font-size: 15px;
+	width: 15%;
+}
 
 .overview-container .overview-tab .resultsViewCollapsible {
 	padding: 15px;
@@ -136,15 +142,19 @@ input#accordion:checked ~ .accordion-content {
 }
 
 jobhistory-component .hc-black .icon.edit,
-jobhistory-component .vs-dark .icon.edit {
+jobhistory-component .vs-dark .icon.edit,
+notebookhistory-component .hc-black .icon.edit,
+notebookhistory-component .vs-dark .icon.edit {
 	background-image: url('edit_inverse.svg');
 }
 
-jobhistory-component .vs .icon.edit {
+jobhistory-component .vs .icon.edit,
+notebookhistory-component .vs .icon.edit {
 	background-image: url('edit.svg');
 }
 
-jobhistory-component .actions-container .icon.edit {
+jobhistory-component .actions-container .icon.edit,
+notebookhistory-component .actions-container .icon.edit {
 	background-position: 0% 50%;
 	background-repeat: no-repeat;
 	background-size: 12px;
@@ -258,40 +268,48 @@ table.step-list tr.step-row td {
 	flex-direction: column;
 }
 
-jobhistory-component {
+jobhistory-component,
+notebookhistory-component {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	width: 100%;
 }
 
-jobhistory-component > .jobhistory-heading-container {
+jobhistory-component > .jobhistory-heading-container,
+notebookhistory-component > .jobhistory-heading-container {
 	display: flex;
 }
 
-jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
+jobhistory-component > .jobhistory-heading-container > .icon.in-progress,
+notebookhistory-component > .jobhistory-heading-container > .icon.in-progress {
 	width: 20px;
 	height: 20px;
 	padding-top: 16px;
 	padding-left: 20px;
 }
 
-jobhistory-component > .agent-actionbar-container {
+jobhistory-component > .agent-actionbar-container,
+notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #f4f4f4;
 }
 
-.vs-dark jobhistory-component > .agent-actionbar-container {
+.vs-dark jobhistory-component > .agent-actionbar-container,
+.vs-dark notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #444444;
 }
 
-.hc-black jobhistory-component > .agent-actionbar-container {
+.hc-black jobhistory-component > .agent-actionbar-container,
+.hc-black notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #2b56f2;
 }
 
-jobhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row {
+jobhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row,
+notebookhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row {
 	width: 96%;
 }
 
-jobhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar {
+jobhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar,
+notebookhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar {
 	margin: 10px 0px 5px 0px;
 }
