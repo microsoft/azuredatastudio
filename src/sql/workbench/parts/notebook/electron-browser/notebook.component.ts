@@ -54,6 +54,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
+import product from 'vs/platform/product/node/product';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -440,7 +441,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected initNavSection(): void {
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
-		if (this.contextKeyService.getContextKeyValue('isDevelopment') &&
+		if (product.quality !== 'stable' &&
 			this.contextKeyService.getContextKeyValue('bookOpened') &&
 			this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
