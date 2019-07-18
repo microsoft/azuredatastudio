@@ -11,15 +11,8 @@ import 'mocha';
 
 import CredentialServiceTokenCache from '../../account-provider/tokenCache';
 import { CredentialsTestProvider } from '../stubs/credentialsTestProvider';
-import { AzureResourceDatabase } from '../../azureResource/providers/database/models';
 
 describe('AccountProvider.TokenCache', function (): void {
-	beforeEach(() => {
-		// mockDatabaseService = TypeMoq.Mock.ofType<IAzureResourceDatabaseService>();
-		// mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
-		// mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-	});
-
 	it('Can save and load tokens', async function (): Promise<void> {
 		const tokenResponse: adal.TokenResponse = {
 			tokenType: 'testTokenType',
