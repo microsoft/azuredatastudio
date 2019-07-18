@@ -109,8 +109,6 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		super();
 		this.updateProfile();
 		this.isLoading = true;
-		let insiders: boolean = product.quality !== 'stable';
-		vscode.commands.executeCommand('setContext', 'insiders', insiders);
 	}
 
 	private updateProfile(): void {

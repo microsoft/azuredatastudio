@@ -41,6 +41,7 @@ import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import product from 'vs/platform/product/node/product';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -167,6 +168,9 @@ export class NotebookService extends Disposable implements INotebookService {
 		lifecycleService.onWillShutdown(() => this.shutdown());
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
+		// Temporary (issue #6427 will remove): Add a product quality key so we can only show books on Insiders
+		this._contextKeyService.createKey<string>('notebookQuality', product.quality);
+
 	}
 
 	public dispose(): void {

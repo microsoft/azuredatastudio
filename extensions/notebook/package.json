@@ -339,7 +339,7 @@
 				{
 					"id": "bookTreeView",
 					"name": "Books",
-					"when": "bookOpened && insiders"
+					"when": "bookOpened && notebookQuality != stable"
 				}
 			]
 		}
