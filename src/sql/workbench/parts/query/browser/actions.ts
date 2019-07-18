@@ -19,6 +19,7 @@ import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import product from 'vs/platform/product/node/product';
 
 export interface IGridActionContext {
@@ -223,11 +224,16 @@ export class VisualizerDataAction extends Action {
 	public static LABEL = localize('visualizer', 'Visualizer');
 	public static ICON = 'viewVisualizer';
 
-	constructor(@IEditorService private editorService: IEditorService, ) {
+	constructor(
+		private runner: QueryRunner,
+		@IEditorService private editorService: IEditorService,
+
+	) {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
+		this.runner.notifyVisualizeRequested(context.batchId, context.resultId);
 		return Promise.resolve(true);
 	}
 }
