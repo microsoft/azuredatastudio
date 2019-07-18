@@ -461,8 +461,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		return new Promise<void>(() => {
-			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
+			this._connectionDialog.open(recentConnections.length > 0);
 			this.uiController.focusOnOpen();
+			recentConnections.forEach(conn => conn.dispose());
 		});
 	}
 
