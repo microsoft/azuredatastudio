@@ -441,7 +441,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected initNavSection(): void {
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
-		if (this.contextKeyService.getContextKeyValue('notebookQuality') &&
+		if (this.contextKeyService.getContextKeyValue('notebookQuality') !== 'stable' &&
 			this.contextKeyService.getContextKeyValue('bookOpened') &&
 			this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {
