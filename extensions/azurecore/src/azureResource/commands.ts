@@ -84,6 +84,6 @@ export function registerAzureResourceCommands(appContext: AppContext, tree: Azur
 	});
 
 	appContext.apiWrapper.registerCommand('azure.resource.signin', async (node?: TreeNode) => {
-		appContext.apiWrapper.executeCommand('sql.action.accounts.manageLinkedAccount');
+		appContext.apiWrapper.executeCommand('workbench.actions.modal.linkedAccount');
 	});
 }
