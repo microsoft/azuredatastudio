@@ -460,6 +460,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			let untitledModel = await input.textInput.resolve();
 			await untitledModel.load();
 			input.untitledEditorModel = untitledModel;
+			if (options.initialDirtyState === false) {
+				input.untitledEditorModel.setDirty(false);
+			}
 		}
 		let editor = await this._editorService.openEditor(input, editorOptions, viewColumnToEditorGroup(this._editorGroupService, options.position));
 		if (!editor) {
@@ -690,6 +693,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	$registerNavigationProvider(providerId: string, handle: number): void {
 		this._notebookService.registerNavigationProvider({
 			providerId: providerId,
+			hasNavigation: true,
+			getNavigation: async (uri) => {
+				return await this._proxy.$getNavigation(handle, uri);
+			},
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {

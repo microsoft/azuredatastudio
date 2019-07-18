@@ -206,6 +206,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 					options.initialContent = showOptions.initialContent;
 				}
 			}
+			options.initialDirtyState = showOptions.initialDirtyState;
 		}
 		let id = await this._proxy.$tryShowNotebookDocument(uri, options);
 		let editor = this.getEditor(id);

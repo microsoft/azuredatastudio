@@ -91,7 +91,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		}, (context) => this.getBuiltinConnectionActions(context));
 	}
 
-	private getAllActions(context: ObjectExplorerContext, getDefaultActions: (ObjectExplorerContext) => IAction[]) {
+	private getAllActions(context: ObjectExplorerContext, getDefaultActions: (context: ObjectExplorerContext) => IAction[]) {
 		// Create metadata needed to get a useful set of actions
 		let scopedContextService = this.getContextKeyService(context);
 		let menu = this.menuService.createMenu(MenuId.ObjectExplorerItemContext, scopedContextService);
@@ -190,7 +190,9 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private addNewQueryNotebookActions(context: ObjectExplorerContext, actions: IAction[]): void {
 		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
 			actions.push(this._instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
-			actions.push(this._instantiationService.createInstance(OEAction, NewNotebookAction.ID, NewNotebookAction.LABEL));
+			// Workaround for #6397 right-click and run New Notebook connects to wrong server. Use notebook action instead of generic command action
+			let notebookAction = this._instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL);
+			actions.push(notebookAction);
 		}
 	}
 
