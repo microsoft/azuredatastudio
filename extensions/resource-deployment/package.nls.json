@@ -11,13 +11,13 @@
 	"resource-type-sql-bdc-description": "SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes",
 	"version-display-name": "Version",
 	"sql-2017-display-name": "SQL Server 2017",
-	"sql-2019-display-name": "SQL Server 2019 CTP 3.1",
+	"sql-2019-display-name": "SQL Server 2019 CTP 3.2",
 	"sql-2017-docker-notebook": "./notebooks/docker/2017/deploy-sql2017-image.ipynb",
 	"sql-2019-docker-notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
-	"sql-2019ctp31-display-name": "SQL Server 2019 big data cluster CTP 3.1",
+	"bdc-2019-display-name": "SQL Server 2019 CTP 3.2 big data cluster",
 	"bdc-deployment-target": "Deployment target",
 	"bdc-deployment-target-aks": "New Azure Kubernetes Service Cluster",
-	"bdc-deployment-target-existing-cluster": "Existing Kubernetes Cluster",
-	"bdc-ctp31-aks-notebook": "./notebooks/bdc/2019/ctp3-1/deploy-bdc-aks.ipynb",
-	"bdc-ctp31-existing-cluster-notebook": "./notebooks/bdc/2019/ctp3-1/deploy-bdc-existing-cluster.ipynb"
+	"bdc-deployment-target-existing-cluster": "Existing Azure Kubernetes Service Cluster",
+	"bdc-2019-aks-notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb",
+	"bdc-2019-existing-cluster-notebook": "./notebooks/bdc/2019/deploy-bdc-existing-cluster.ipynb"
 }

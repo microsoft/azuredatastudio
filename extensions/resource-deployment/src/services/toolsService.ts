@@ -6,7 +6,7 @@
 import { ITool } from '../interfaces';
 import { DockerTool } from './tools/dockerTool';
 import { AzCliTool } from './tools/azCliTool';
-import { MSSQLCtlTool } from './tools/mssqlCtlTool';
+import { AzDataTool } from './tools/azdataTool';
 import { KubeCtlTool } from './tools/kubeCtlTool';
 
 export interface IToolsService {
@@ -15,7 +15,7 @@ export interface IToolsService {
 
 export class ToolsService implements IToolsService {
 	constructor() {
-		this.SupportedTools = [new DockerTool(), new AzCliTool(), new MSSQLCtlTool(), new KubeCtlTool()];
+		this.SupportedTools = [new DockerTool(), new AzCliTool(), new AzDataTool(), new KubeCtlTool()];
 	}
 
 	private SupportedTools: ITool[];

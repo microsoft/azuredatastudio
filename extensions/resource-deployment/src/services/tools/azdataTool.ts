@@ -7,13 +7,13 @@ import { ToolType, ITool } from '../../interfaces';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-export class MSSQLCtlTool implements ITool {
+export class AzDataTool implements ITool {
 	get name(): string {
-		return 'mssqlctl';
+		return 'azdata';
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.MssqlCtlDescription', 'A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs');
+		return localize('resourceDeployment.AzDataDescription', 'A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs');
 	}
 
 	get type(): ToolType {
@@ -21,6 +21,6 @@ export class MSSQLCtlTool implements ITool {
 	}
 
 	get displayName(): string {
-		return localize('resourceDeployment.MssqlCtlDisplayName', 'mssqlctl');
+		return localize('resourceDeployment.AzDataDisplayName', 'azdata');
 	}
 }

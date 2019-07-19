@@ -162,7 +162,7 @@
               "name": "azcli"
             },
             {
-              "name": "mssqlctl"
+              "name": "azdata"
             }
           ],
           "when": "target=aks&&version=bdc2019"
@@ -174,10 +174,10 @@
               "name": "kubectl"
             },
             {
-              "name": "mssqlctl"
+              "name": "azdata"
             }
           ],
-          "when": "target=existingCluster&&version=bdc-2019"
+          "when": "target=existingCluster&&version=bdc2019"
         }
       ]
     }
