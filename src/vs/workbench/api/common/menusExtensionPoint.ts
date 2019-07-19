@@ -415,10 +415,10 @@ ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: schema.IUserFriendlyM
 				return;
 			}
 
-			if (schema.isProposedAPI(menu) && !extension.description.enableProposedApi) {
-				collector.error(localize('proposedAPI.invalid', "{0} is a proposed menu identifier and is only available when running out of dev or with the following command line switch: --enable-proposed-api {1}", entry.key, extension.description.identifier.value));
-				return;
-			}
+			// if (schema.isProposedAPI(menu) && !extension.description.enableProposedApi) {
+			// 	collector.error(localize('proposedAPI.invalid', "{0} is a proposed menu identifier and is only available when running out of dev or with the following command line switch: --enable-proposed-api {1}", entry.key, extension.description.identifier.value));
+			// 	return;
+			// }
 
 			for (let item of entry.value) {
 				let command = MenuRegistry.getCommand(item.command);

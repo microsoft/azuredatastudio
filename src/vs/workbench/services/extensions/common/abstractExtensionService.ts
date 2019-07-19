@@ -460,9 +460,11 @@ class ProposedApiController {
 			}
 		}
 
-		this.enableProposedApiForAll = !environmentService.isBuilt ||
-			(!!environmentService.extensionDevelopmentLocationURI && productService.nameLong !== 'Visual Studio Code') ||
-			(this.enableProposedApiFor.length === 0 && 'enable-proposed-api' in environmentService.args);
+		// this.enableProposedApiForAll = !environmentService.isBuilt ||
+		// 	(!!environmentService.extensionDevelopmentLocationURI && productService.nameLong !== 'Visual Studio Code') ||
+		// 	(this.enableProposedApiFor.length === 0 && 'enable-proposed-api' in environmentService.args);
+
+		this.enableProposedApiForAll = true;
 
 		this.productAllowProposedApi = new Set<string>();
 		if (isNonEmptyArray(productService.extensionAllowedProposedApi)) {
