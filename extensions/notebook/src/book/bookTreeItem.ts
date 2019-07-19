@@ -124,5 +124,8 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (this.book.type === BookTreeItemType.ExternalLink) {
 			return `${this._uri}`;
 		}
+		else {
+			return undefined;
+		}
 	}
 }
