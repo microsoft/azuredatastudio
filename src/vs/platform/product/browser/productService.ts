@@ -21,7 +21,7 @@ export class ProductService implements IProductService {
 
 	get vscodeVersion(): string { return '1.35.0'; } // {{SQL CARBON EDIT}} add vscodeversion
 
-	get commit(): string | undefined { return undefined; }
+	get commit(): string | undefined { return this.productConfiguration ? this.productConfiguration.commit : undefined; }
 
 	get nameLong(): string { return ''; }
 
@@ -46,4 +46,6 @@ export class ProductService implements IProductService {
 	get extensionKeywords(): { [extension: string]: readonly string[]; } | undefined { return this.productConfiguration ? this.productConfiguration.extensionKeywords : undefined; }
 
 	get extensionAllowedBadgeProviders(): readonly string[] | undefined { return this.productConfiguration ? this.productConfiguration.extensionAllowedBadgeProviders : undefined; }
+
+	get aiConfig() { return this.productConfiguration ? this.productConfiguration.aiConfig : undefined; }
 }

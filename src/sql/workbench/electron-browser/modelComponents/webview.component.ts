@@ -18,7 +18,7 @@ import { ComponentBase } from 'sql/workbench/electron-browser/modelComponents/co
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/electron-browser/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { WebviewContentOptions } from 'vs/workbench/contrib/webview/common/webview';
 
 function reviveWebviewOptions(options: vscode.WebviewOptions): vscode.WebviewOptions {
@@ -38,7 +38,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private static readonly standardSupportedLinkSchemes = ['http', 'https', 'mailto'];
 
-	private _webview: WebviewElement;
+	private _webview: ElectronWebviewBasedWebview;
 	private _renderedHtml: string;
 	private _extensionLocationUri: URI;
 	private _ready: Promise<void>;
@@ -65,7 +65,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 	}
 
 	private _createWebview(): void {
-		this._webview = this.instantiationService.createInstance(WebviewElement,
+		this._webview = this.instantiationService.createInstance(ElectronWebviewBasedWebview,
 			{
 				allowSvgs: true
 			},
@@ -158,7 +158,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 			this._ready.then(() => {
 				super.setProperties(properties);
 				if (this.options) {
-					this._webview.options = this.getExtendedOptions();
+					this._webview.contentOptions = this.getExtendedOptions();
 				}
 				if (this.html !== this._renderedHtml) {
 					this.setHtml();

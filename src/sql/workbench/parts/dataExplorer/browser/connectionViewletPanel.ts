@@ -5,17 +5,13 @@
 
 import 'vs/css!./media/connectionViewletPanel';
 import * as DOM from 'vs/base/browser/dom';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IDisposable } from 'vs/base/common/lifecycle';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IAction } from 'vs/base/common/actions';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import {
@@ -23,12 +19,10 @@ import {
 	AddServerAction, AddServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { IExtensionsWorkbenchService } from 'vs/workbench/contrib/extensions/common/extensions';
 
 export class ConnectionViewletPanel extends ViewletPanel {
 
 	private _root: HTMLElement;
-	private _toDisposeViewlet: IDisposable[] = [];
 	private _serverTreeView: ServerTreeView;
 	private _addServerAction: IAction;
 	private _addServerGroupAction: IAction;
@@ -36,17 +30,11 @@ export class ConnectionViewletPanel extends ViewletPanel {
 
 	constructor(
 		private options: IViewletViewOptions,
-		@INotificationService protected notificationService: INotificationService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IInstantiationService protected instantiationService: IInstantiationService,
-		@IThemeService private themeService: IThemeService,
-		@IExtensionsWorkbenchService protected extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IExtensionTipsService protected tipsService: IExtensionTipsService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IWorkspaceContextService protected contextService: IWorkspaceContextService,
-		@IExtensionManagementServerService protected extensionManagementServerService: IExtensionManagementServerService,
-		@IObjectExplorerService private objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
