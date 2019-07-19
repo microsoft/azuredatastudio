@@ -449,7 +449,7 @@ export interface ICellModel {
 	cellUri: URI;
 	id: string;
 	readonly language: string;
-	source: string;
+	source: string | string[];
 	cellType: CellType;
 	trustedMode: boolean;
 	active: boolean;
