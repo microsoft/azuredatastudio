@@ -16,7 +16,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 
 import * as azdata from 'azdata';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -31,7 +31,7 @@ const selector = 'webview-widget';
 export class WebviewWidget extends DashboardWidget implements IDashboardWidget, OnInit, IDashboardWebview {
 
 	private _id: string;
-	private _webview: WebviewElement;
+	private _webview: ElectronWebviewBasedWebview;
 	private _html: string;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
@@ -99,7 +99,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.instantiationService.createInstance(WebviewElement,
+		this._webview = this.instantiationService.createInstance(ElectronWebviewBasedWebview,
 			{},
 			{
 				allowScripts: true,

@@ -18,7 +18,7 @@ import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import * as azdata from 'azdata';
-import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 
 @Component({
 	template: '',
@@ -33,7 +33,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _webview: WebviewElement;
+	private _webview: ElectronWebviewBasedWebview;
 	private _html: string;
 
 	constructor(
@@ -100,7 +100,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.instantiationService.createInstance(WebviewElement,
+		this._webview = this.instantiationService.createInstance(ElectronWebviewBasedWebview,
 			{},
 			{
 				allowScripts: true
