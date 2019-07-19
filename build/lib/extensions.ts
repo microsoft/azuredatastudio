@@ -181,7 +181,6 @@ const baseHeaders = {
 export function fromMarketplace(extensionName: string, version: string, metadata: any): Stream {
 	// {{SQL CARBON EDIT}}
 	const [, name] = extensionName.split('.');
-	// const url = `https://marketplace.visualstudio.com/_apis/public/gallery/publishers/${publisher}/vsextensions/${name}/${version}/vspackage`;
 	const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`;
 
 	fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');

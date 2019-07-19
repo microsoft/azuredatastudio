@@ -13,21 +13,20 @@ const resolveExtensionResource = (extension: vscode.Extension<any>, resourcePath
 };
 
 const resolveBookResources = (extension: vscode.Extension<any>, books: BookContribution | BookContribution[]): BookContribution[] => {
-	const result: BookContribution[] = [];
 	if (!books) {
-		return result;
+		return [];
 	}
 	if (!Array.isArray(books)) {
 		books = [books];
 	}
-	for (const book of books) {
+	let result = books.map(book => {
 		try {
 			book.path = resolveExtensionResource(extension, book.path).fsPath;
 		} catch (e) {
 			// noop
 		}
-		result.push(book);
-	}
+		return book;
+	});
 	return result;
 };
 
@@ -40,6 +39,11 @@ export interface BookContribution {
 export namespace BookContributions {
 
 	export function merge(a: BookContribution[], b: BookContribution[]): BookContribution[] {
+		if (!a) {
+			return b;
+		} else if (!b) {
+			return a;
+		}
 		return a.concat(b);
 	}
 

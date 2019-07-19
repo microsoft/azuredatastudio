@@ -121,7 +121,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	const bookContributionProvider = getBookExtensionContributions(context);
 	context.subscriptions.push(bookContributionProvider);
 
-
 	let api: MssqlExtensionApi = {
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
 			return {
