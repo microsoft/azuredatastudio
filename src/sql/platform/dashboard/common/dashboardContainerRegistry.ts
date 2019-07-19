@@ -5,10 +5,6 @@
 
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IJSONSchema, IJSONSchemaMap } from 'vs/base/common/jsonSchema';
-import { Extensions as ConfigurationExtension } from 'vs/platform/configuration/common/configurationRegistry';
-import { deepClone } from 'vs/base/common/objects';
-
-import { WidgetConfig } from 'sql/workbench/parts/dashboard/common/dashboardWidget';
 
 export const Extensions = {
 	dashboardContainerContributions: 'dashboard.contributions.container'

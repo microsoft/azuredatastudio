@@ -261,7 +261,7 @@ class Extension implements IExtension {
 		if (this.type === ExtensionType.System) {
 			// {{SQL CARBON EDIT}}
 			return Promise.resolve(`# ${this.displayName || this.name}
-**Notice** This is a an extension that is bundled with Azure Data Studio.
+**Notice:** This extension is bundled with Azure Data Studio. It can be disabled but not uninstalled.
 ## Features
 ${this.description}
 `);

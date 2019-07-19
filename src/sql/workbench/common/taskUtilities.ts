@@ -15,12 +15,11 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -31,6 +30,7 @@ import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {

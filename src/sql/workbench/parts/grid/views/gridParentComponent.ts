@@ -9,7 +9,6 @@ import 'vs/css!sql/workbench/parts/grid/media/styles';
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
 import { SlickGrid } from 'angular2-slickgrid';
-import { toDisposableSubscription } from 'sql/base/node/rxjsUtils';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
@@ -31,6 +30,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ILogService } from 'vs/platform/log/common/log';
+import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
 
 export abstract class GridParentComponent {
 	// CONSTANTS
@@ -174,7 +174,7 @@ export abstract class GridParentComponent {
 	 */
 	protected subscribeWithDispose<T>(subject: Subject<T>, event: (value: any) => void): void {
 		let sub: Subscription = subject.subscribe(event);
-		this.toDispose.push(toDisposableSubscription(sub));
+		this.toDispose.push(subscriptionToDisposable(sub));
 	}
 
 	private bindKeys(contextKeyService: IContextKeyService): void {

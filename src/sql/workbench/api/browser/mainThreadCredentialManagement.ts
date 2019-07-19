@@ -7,7 +7,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostCredentialManagementShape,
 	MainThreadCredentialManagementShape, SqlMainContext
-} from 'sql/workbench/api/node/sqlExtHost.protocol';
+} from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ICredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';

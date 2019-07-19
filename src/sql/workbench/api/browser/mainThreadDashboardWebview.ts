@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { MainThreadDashboardWebviewShape, SqlMainContext, ExtHostDashboardWebviewsShape, SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { IDashboardViewService, IDashboardWebview } from 'sql/platform/dashboard/common/dashboardViewService';

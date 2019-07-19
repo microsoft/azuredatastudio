@@ -32,7 +32,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as BackupConstants from 'sql/workbench/parts/backup/common/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/parts/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
