@@ -70,12 +70,10 @@
 				"timeout": 20000
 			},
 			"osx": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"linux": {
-				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh"
 			},
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
@@ -93,6 +91,9 @@
 			"request": "launch",
 			"name": "Launch ADS (Main Process)",
 			"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
+			"windows": {
+				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
+			},
 			"runtimeArgs": [
 				"--no-cached-data"
 			],
