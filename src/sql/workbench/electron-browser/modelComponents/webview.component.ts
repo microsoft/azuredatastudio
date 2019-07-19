@@ -14,8 +14,8 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 
-import { ComponentBase } from 'sql/workbench/electron-browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/electron-browser/modelComponents/interfaces';
+import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';

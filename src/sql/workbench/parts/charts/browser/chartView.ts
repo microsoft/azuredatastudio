@@ -9,8 +9,8 @@ import { IPanelView } from 'sql/base/browser/ui/panel/panel';
 import { Insight } from './insight';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { ChartOptions, IChartOption, ControlType } from './chartOptions';
-import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/common/insightRegistry';
-import { IInsightOptions } from './interfaces';
+import { Extensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightData } from './interfaces';
 import { Registry } from 'vs/platform/registry/common/platform';
 import * as DOM from 'vs/base/browser/dom';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
@@ -21,22 +21,10 @@ import { attachSelectBoxStyler, attachInputBoxStyler } from 'vs/platform/theme/c
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { isUndefinedOrNull } from 'vs/base/common/types';
-import { ChartType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { CreateInsightAction, CopyAction, SaveImageAction, IChartActionContext } from 'sql/workbench/parts/charts/browser/actions';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
-
-export class ChartState {
-	dataId: { batchId: number, resultId: number };
-	options: IInsightOptions = {
-		type: ChartType.Bar
-	};
-
-	dispose() {
-
-	}
-}
+import { ChartState, IInsightOptions, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
 declare class Proxy {
 	constructor(object, handler);

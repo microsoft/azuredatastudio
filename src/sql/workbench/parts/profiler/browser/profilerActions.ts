@@ -6,7 +6,7 @@
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { IProfilerController } from 'sql/workbench/parts/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
-import { Task } from 'sql/platform/tasks/common/tasks';
+import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
