@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { TaskRegistry, ITaskHandlerDescription } from 'sql/platform/tasks/common/tasks';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 
@@ -13,11 +12,12 @@ import {
 	SqlMainContext,
 	ExtHostTasksShape,
 	MainThreadTasksShape
-} from 'sql/workbench/api/node/sqlExtHost.protocol';
+} from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 import { IConnectionProfile } from 'azdata';
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadTasks)
 export class MainThreadTasks implements MainThreadTasksShape {

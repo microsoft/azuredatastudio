@@ -7,7 +7,7 @@ import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostSerializationProviderShape,
 	MainThreadSerializationProviderShape, SqlMainContext
-} from 'sql/workbench/api/node/sqlExtHost.protocol';
+} from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';

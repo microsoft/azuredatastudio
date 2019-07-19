@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 
 export default class TokenCache implements adal.TokenCache {
-	private static CipherAlgorithm = 'aes256';
+	private static CipherAlgorithm = 'aes-256-cbc';
 	private static CipherAlgorithmIvLength = 16;
 	private static CipherKeyLength = 32;
 	private static FsOptions = { encoding: 'ascii' };
@@ -32,9 +32,29 @@ export default class TokenCache implements adal.TokenCache {
 				.then(cache => self.addToCache(cache, entries))
 				.then(updatedCache => self.writeCache(updatedCache))
 				.then(
-					() => callback(null, false),
-					(err) => callback(err, true)
+					() => callback(null, true),
+					(err) => callback(err, false)
 				);
+		});
+	}
+
+	/**
+	 * Wrapper to make callback-based add method into a thenable method
+	 * @param entries Entries to add into the cache
+	 * @returns Promise to return the result of adding the tokens to the cache
+	 *     Rejected if an error was sent in the callback
+	 */
+	public addThenable(entries: adal.TokenResponse[]): Thenable<boolean> {
+		let self = this;
+
+		return new Promise<boolean>((resolve, reject) => {
+			self.add(entries, (error: Error, results: boolean) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(results);
+				}
+			});
 		});
 	}
 

@@ -31,7 +31,7 @@ import { IDimension } from 'vs/platform/layout/browser/layoutService';
 
 // {{SQL CARBON EDIT}}
 import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/electron-browser/notebookActions';
 
 const $ = dom.$;
 
