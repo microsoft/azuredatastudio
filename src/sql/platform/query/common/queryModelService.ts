@@ -9,19 +9,16 @@ import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
 
 import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
-import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 const selectionSnippetMaxLen = 100;
 

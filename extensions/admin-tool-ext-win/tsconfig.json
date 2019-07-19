@@ -13,8 +13,7 @@
 		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
-		"moduleResolution": "node",
-		"declaration": true
+		"moduleResolution": "node"
 	},
 	"exclude": [
 		"node_modules"

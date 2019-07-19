@@ -45,6 +45,7 @@
 		"Microsoft.cms",
 		"Microsoft.dacpac",
 		"Microsoft.import",
+		"Microsoft.managed-instance-dashboard",
 		"Microsoft.powershell",
 		"Microsoft.profiler",
 		"Microsoft.schema-compare",
@@ -57,6 +58,6 @@
 		"msrvida.azdata-sanddance"
 	],
 	"extensionsGallery": {
-		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallerys.json"
+		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	}
 }

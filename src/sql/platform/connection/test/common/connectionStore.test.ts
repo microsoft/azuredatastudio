@@ -13,7 +13,7 @@ import { TestConfigurationService } from 'sql/platform/connection/test/common/te
 import { TestCredentialsService } from 'sql/platform/credentials/test/common/testCredentialsService';
 import { ConnectionOptionSpecialType, ServiceOptionType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-import { CapabilitiesTestService } from 'sqltest/stubs/capabilitiesTestService';
+import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { deepClone, deepFreeze } from 'vs/base/common/objects';
 import { ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
@@ -37,7 +37,7 @@ suite('ConnectionStore', () => {
 		saveProfile: true,
 		id: undefined
 	});
-	let capabilitiesService: CapabilitiesTestService;
+	let capabilitiesService: TestCapabilitiesService;
 	let maxRecent = 5;
 	let msSQLCapabilities: ConnectionProviderProperties;
 	let provider2Capabilities: ConnectionProviderProperties;
@@ -46,7 +46,7 @@ suite('ConnectionStore', () => {
 	setup(() => {
 		// setup configuration to return maxRecent for the #MRU items
 
-		capabilitiesService = new CapabilitiesTestService();
+		capabilitiesService = new TestCapabilitiesService();
 		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',

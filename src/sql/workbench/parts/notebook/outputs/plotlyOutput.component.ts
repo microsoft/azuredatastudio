@@ -5,14 +5,14 @@
 
 
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild } from '@angular/core';
-import { AngularDisposable } from 'sql/base/node/lifecycle';
-import { IMimeComponent } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
-import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
-import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { IMimeComponent } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
+import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 type ObjectType = object;
 
