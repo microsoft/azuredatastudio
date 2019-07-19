@@ -113,7 +113,7 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 							when: ContextKeyExpr.deserialize(item.when),
 							canToggleVisibility: true,
 							collapsed: this.showCollapsed(container),
-							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, container)
+							treeView: this.instantiationService.createInstance(CustomTreeView, item.id, item.name, container)
 						};
 
 						viewIds.push(viewDescriptor.id);
