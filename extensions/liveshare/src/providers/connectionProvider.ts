@@ -13,13 +13,13 @@ import * as constants from '../constants';
 export class ConnectionFeature {
 
 	public registerListeners(isHost: boolean, sharedService: SharedService, sharedServiceProxy: SharedServiceProxy): void {
-		if (isHost) {
+		// if (isHost) {
 			azdata.connection.registerConnectionEventListener({
 				onConnectionEvent(type: azdata.connection.ConnectionEvent, ownerUri: string, profile: azdata.IConnectionProfile) {
 					sharedService.notify(<string>type, { ownerUri, profile});
 				}
 			});
-		} else {
+		// } else {
 			sharedServiceProxy.onNotify('onConnect', (args: any) => {
 				return args;
 			});
@@ -31,7 +31,7 @@ export class ConnectionFeature {
 			sharedServiceProxy.onNotify('onConnectionChanged', (args: any) => {
 				return args;
 			});
-		}
+		// }
 	}
 
 	public registerProvider(): vscode.Disposable {

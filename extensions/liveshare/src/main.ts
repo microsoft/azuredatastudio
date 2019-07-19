@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 
 import { GuestSessionManager } from './guestSession';
 import { HostSessionManager } from './hostSession';
@@ -49,16 +50,24 @@ const changeColorOfLiveShareSessionFactory = (isHost: boolean) => {
 	false
   );
 
-  export function registerLiveShareIntegrationCommands() {
+export function registerLiveShareIntegrationCommands() {
 	vscode.commands.registerCommand(
-	   'collaboration.changeColorOfLiveShareHost',
-	  changeColorOfLiveShareHostHandler
+		'collaboration.changeColorOfLiveShareHost',
+		changeColorOfLiveShareHostHandler
 	);
 	vscode.commands.registerCommand(
-	  'collaboration.changeColorOfLiveShareGuest',
-	  changeColorOfLiveShareGuestHandler
+		'collaboration.changeColorOfLiveShareGuest',
+		changeColorOfLiveShareGuestHandler
 	);
-  }
+}
+
+
+async function onDidOpenTextDocument(doc: vscode.TextDocument): Promise<void> {
+	let queryDoc = await azdata.queryeditor.getQueryDocument(doc.uri.toString());
+	if (queryDoc) {
+
+	}
+}
 
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -75,6 +84,8 @@ export async function activate(context: vscode.ExtensionContext) {
 	if (!vslsApi) {
 		return;
 	}
+
+	vscode.workspace.onDidOpenTextDocument(params => onDidOpenTextDocument(params));
 
 	vslsApi!.onDidChangeSession(async function onLiveShareSessionCHange(e: any) {
 		// If there isn't a session ID, then that
@@ -106,17 +117,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		connection.registerListeners(isHost, sharedService, sharedServiceProxy);
 
 		new QueryFeature().registerProvider();
-
-
-		// const serviceName = 'mssql-query';
-		// if (isHost) {
-		// 	//const sharedService = await vslsApi.shareService(serviceName);
-		// 	//this.sharedService.request('load', [ this.adapterId ]);
-		// } else {
-		// 	const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
-		// 	sharedServiceProxy.request('load', [ 1050 ]);
-		// }
-
 		return;
 	});
 
