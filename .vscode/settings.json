@@ -1,6 +1,5 @@
 {
 	"editor.insertSpaces": false,
-	"files.eol": "\n",
 	"files.trimTrailingWhitespace": true,
 	"files.exclude": {
 		".git": true,
@@ -40,7 +39,6 @@
 	],
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"npm.exclude": "**/extensions/**",
-	"git.ignoreLimitWarning": true,
 	"emmet.excludeLanguages": [],
 	"typescript.preferences.importModuleSpecifier": "non-relative",
 	"typescript.preferences.quoteStyle": "single",
