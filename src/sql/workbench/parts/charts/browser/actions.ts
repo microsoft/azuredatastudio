@@ -3,10 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsightOptions, IInsight } from './interfaces';
+import { IInsight } from './interfaces';
 import { Graph } from './graphInsight';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { resolveCurrentDirectory, getRootPath } from 'sql/platform/common/pathUtilities';
 
 import { localize } from 'vs/nls';
@@ -20,6 +19,8 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
+import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import { IInsightOptions } from 'sql/workbench/parts/charts/common/interfaces';
 
 export interface IChartActionContext {
 	options: IInsightOptions;

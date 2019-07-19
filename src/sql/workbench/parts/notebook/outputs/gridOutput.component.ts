@@ -3,14 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { OnInit, Component, Input, Inject, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
+import { OnInit, Component, Input, Inject, ViewChild, ElementRef } from '@angular/core';
 import * as azdata from 'azdata';
 
-import { AngularDisposable } from 'sql/base/node/lifecycle';
-import { IMimeComponent } from 'sql/workbench/parts/notebook/outputs/mimeRegistry';
-import { MimeModel } from 'sql/workbench/parts/notebook/outputs/common/mimemodel';
-import { ICellModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { GridTableBase, GridTableState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -25,9 +20,15 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
 import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { IMimeComponent } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
+import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
+import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
+import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,

@@ -3,18 +3,13 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { SqlExtHostContext, SqlMainContext, ExtHostObjectExplorerShape, MainThreadObjectExplorerShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { SqlExtHostContext, SqlMainContext, ExtHostObjectExplorerShape, MainThreadObjectExplorerShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService, NodeInfoWithConnection } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
-import { TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadObjectExplorer)
 export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
@@ -24,9 +19,7 @@ export class MainThreadObjectExplorer implements MainThreadObjectExplorerShape {
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IEditorService private _workbenchEditorService: IEditorService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostObjectExplorer);

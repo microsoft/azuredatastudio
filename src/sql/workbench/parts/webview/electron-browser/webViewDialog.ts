@@ -6,7 +6,7 @@
 import 'vs/css!sql/media/icons/common-icons';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -16,7 +16,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { localize } from 'vs/nls';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { WebviewElement } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -27,7 +27,7 @@ export class WebViewDialog extends Modal {
 	private _okButton: Button;
 	private _okLabel: string;
 	private _closeLabel: string;
-	private _webview: WebviewElement;
+	private _webview: ElectronWebviewBasedWebview;
 	private _html: string;
 	private _headerTitle: string;
 
@@ -87,7 +87,7 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._body = DOM.append(container, DOM.$('div.webview-dialog'));
 
-		this._webview = this._instantiationService.createInstance(WebviewElement,
+		this._webview = this._instantiationService.createInstance(ElectronWebviewBasedWebview,
 			{},
 			{
 				allowScripts: true

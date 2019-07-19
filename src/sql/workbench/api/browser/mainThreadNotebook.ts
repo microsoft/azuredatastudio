@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { SqlExtHostContext, SqlMainContext, ExtHostNotebookShape, MainThreadNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -15,7 +15,7 @@ import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workb
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
-import { FutureInternal } from 'sql/workbench/parts/notebook/models/modelInterfaces';
+import { FutureInternal } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
