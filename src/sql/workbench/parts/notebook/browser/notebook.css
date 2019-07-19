@@ -50,7 +50,7 @@
 }
 
 .notebookEditor .notebook-button.icon-add{
-	background-image: url("./media/light/add.svg");
+	background-image: url("../electron-browser/media/light/add.svg");
 }
 
 .vs-dark .notebookEditor .notebook-button.icon-add,
