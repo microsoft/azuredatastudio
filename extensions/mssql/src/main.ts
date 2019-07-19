@@ -8,6 +8,8 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
+import * as fs from 'fs';
+
 const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
@@ -133,6 +135,67 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	context.subscriptions.push(new CopyPathCommand(appContext));
 	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
+
+	azdata.ui.registerModelViewProvider('books-widget', async (view) => {
+		const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+		const bookslocationContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '270px', height: '100%', alignItems: 'left', position: 'absolute' }).component();
+		const bookRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
+		const tsgbooklink = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			label: localize('troubleshootingBooks', 'Troubleshooting Book'),
+			title: localize('troubleshootingBooksTitle', 'Troubleshooting Book'),
+		}).component();
+		tsgbooklink.onDidClick(() => {
+			pickFolderAndSaveBooks().then(function (pickedFolder) {
+				if (pickedFolder) {
+					// Prompt for reload or open new instance.
+					promptToReloadWindow(pickedFolder);
+				}
+			});
+		});
+		// view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({label: 'Troubleshooting Notebooks', url: 'https://jupyter.org/jupyter-book/intro.html'}).component();
+		bookRow.addItem(tsgbooklink, { CSSStyles: { 'width': '100%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px', 'text-align': 'left' } });
+		container.addItem(bookRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
+		bookslocationContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
+		await view.initializeModel(bookslocationContainer);
+	});
+	async function pickFolderAndSaveBooks(): Promise<vscode.Uri> {
+		let filter = {
+			'All files': ['*']
+		};
+		let uris = await vscode.window.showOpenDialog({
+			filters: filter,
+			canSelectFiles: false,
+			canSelectMany: false,
+			canSelectFolders: true,
+			openLabel: 'Pick Folder'
+		});
+		if (uris && uris.length > 0) {
+			let fileUri = uris[0];
+			// Test code: copy a test file return the path
+			const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
+			const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
+			let targetPath = path.join(fileUri.path, 'test.ipynb');
+			fs.copyFileSync(notebookFullPath, targetPath);
+			// Next To Do: Copy the books to the picked folder
+			return fileUri;
+		}
+		return undefined; // vscode.Uri.parse(os.homedir());
+	}
+	function promptToReloadWindow(folderUri: vscode.Uri) {
+		const actionReload = 'Reload';
+		const actionOpenNew = 'Open New Instance';
+		vscode.window.showInformationMessage(`Reload window in order for opening the jupyter books.`, actionReload, actionOpenNew)
+			.then(selectedAction => {
+				// vscode.commands.executeCommand('_workbench.enterWorkspace', folderUri, {});
+				if (selectedAction === actionReload) {
+					vscode.commands.executeCommand('workbench.action.reloadWindow');
+				}
+				if (selectedAction === actionOpenNew) {
+					//vscode.commands.executeCommand('_files.pickFolderAndOpen', folderUri, {forceNewWindow: true});
+					vscode.commands.executeCommand('_files.pickFolderAndOpen', { forceNewWindow: true });
+				}
+			});
+	}
 
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
 
