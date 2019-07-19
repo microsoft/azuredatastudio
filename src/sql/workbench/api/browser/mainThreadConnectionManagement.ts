@@ -45,16 +45,41 @@ export class MainThreadConnectionManagement implements MainThreadConnectionManag
 	}
 
 	public $registerConnectionEventListener(handle: number, providerId: string): void {
+
+		let stripProfile = (inputProfile: azdata.IConnectionProfile) => {
+			if (!inputProfile) {
+				return inputProfile;
+			}
+
+			let outputProfile: azdata.IConnectionProfile = {
+				connectionName: inputProfile.connectionName,
+				serverName: inputProfile.serverName,
+				databaseName: inputProfile.databaseName,
+				userName: inputProfile.userName,
+				password: inputProfile.password,
+				authenticationType: inputProfile.authenticationType,
+				savePassword: inputProfile.savePassword,
+				groupFullName: inputProfile.groupFullName,
+				groupId: inputProfile.groupId,
+				providerName: inputProfile.providerName,
+				saveProfile: inputProfile.saveProfile,
+				id: inputProfile.id,
+				azureTenantId: inputProfile.azureTenantId,
+				options: inputProfile.options
+			};
+			return outputProfile;
+		};
+
 		this._connectionManagementService.onConnect((params: IConnectionParams) => {
-			this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, params.connectionProfile);
+			this._proxy.$onConnectionEvent(handle, 'onConnect', params.connectionUri, stripProfile(params.connectionProfile));
 		});
 
 		this._connectionManagementService.onConnectionChanged((params: IConnectionParams) => {
-			this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, params.connectionProfile);
+			this._proxy.$onConnectionEvent(handle, 'onConnectionChanged', params.connectionUri, stripProfile(params.connectionProfile));
 		});
 
 		this._connectionManagementService.onDisconnect((params: IConnectionParams) => {
-			this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, params.connectionProfile);
+			this._proxy.$onConnectionEvent(handle, 'onDisconnect', params.connectionUri, stripProfile(params.connectionProfile));
 		});
 	}
 
