@@ -12,11 +12,10 @@ import { VirtualizedCollection } from 'angular2-slickgrid';
 
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
-import { IEditDataComponentParams } from 'sql/platform/bootstrap/node/bootstrapParams';
+import { IEditDataComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { GridParentComponent } from 'sql/workbench/parts/grid/views/gridParentComponent';
 import { EditDataGridActionProvider } from 'sql/workbench/parts/grid/views/editData/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { AdditionalKeyBindings } from 'sql/base/browser/ui/table/plugins/additionalKeyBindings.plugin';
@@ -40,7 +39,7 @@ export const EDITDATA_SELECTOR: string = 'editdata-component';
 @Component({
 	selector: EDITDATA_SELECTOR,
 	host: { '(window:keydown)': 'keyEvent($event)', '(window:gridnav)': 'keyEvent($event)' },
-	templateUrl: decodeURI(require.toUrl('sql/workbench/parts/grid/views/editData/editData.component.html'))
+	templateUrl: decodeURI(require.toUrl('./editData.component.html'))
 })
 export class EditDataComponent extends GridParentComponent implements OnInit, OnDestroy {
 	// The time(in milliseconds) we wait before refreshing the grid.

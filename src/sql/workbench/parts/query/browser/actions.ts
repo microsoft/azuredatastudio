@@ -11,13 +11,13 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { GridTableState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;

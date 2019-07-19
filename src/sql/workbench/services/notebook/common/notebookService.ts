@@ -8,14 +8,14 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
-import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
-import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
+import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/electron-browser/outputs/registry';
+import { ModelFactory } from 'sql/workbench/parts/notebook/node/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/node/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel, ILanguageMagic } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -24,6 +24,13 @@ export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
 export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
+
+export interface ILanguageMagic {
+	magic: string;
+	language: string;
+	kernels?: string[];
+	executionTarget?: string;
+}
 
 export interface INotebookService {
 	_serviceBrand: any;

@@ -11,7 +11,7 @@ import {
 	MainThreadResourceProviderShape,
 	SqlExtHostContext,
 	SqlMainContext
-} from 'sql/workbench/api/node/sqlExtHost.protocol';
+} from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
