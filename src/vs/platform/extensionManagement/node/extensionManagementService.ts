@@ -943,7 +943,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private _devSystemExtensionsPath: string | null = null;
 	private get devSystemExtensionsPath(): string {
 		if (!this._devSystemExtensionsPath) {
-			this._devSystemExtensionsPath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', '.build', 'builtInExtensions'));
+			// {{SQL CARBON EDIT}
+			let builtInPath = product.quality === 'stable' ? 'builtInExtensions' : 'builtInExtensions-insiders';
+			this._devSystemExtensionsPath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', '.build', builtInPath));
 		}
 		return this._devSystemExtensionsPath;
 	}
@@ -951,7 +953,9 @@ export class ExtensionManagementService extends Disposable implements IExtension
 	private _devSystemExtensionsFilePath: string | null = null;
 	private get devSystemExtensionsFilePath(): string {
 		if (!this._devSystemExtensionsFilePath) {
-			this._devSystemExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', 'builtInExtensions.json'));
+			// {{SQL CARBON EDIT}
+			let builtInPath = product.quality === 'stable' ? 'builtInExtensions' : 'builtInExtensions-insiders';
+			this._devSystemExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', `${builtInPath}.json`));
 		}
 		return this._devSystemExtensionsFilePath;
 	}
