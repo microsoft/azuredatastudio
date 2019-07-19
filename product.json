@@ -57,6 +57,6 @@
 		"msrvida.azdata-sanddance"
 	],
 	"extensionsGallery": {
-		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery-test.json"
+		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallerys.json"
 	}
 }
