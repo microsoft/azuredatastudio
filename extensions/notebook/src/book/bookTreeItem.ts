@@ -119,4 +119,13 @@ export class BookTreeItem extends vscode.TreeItem {
 	public get nextUri(): string {
 		return this._nextUri;
 	}
+
+	get tooltip(): string {
+		if (this.book.type === BookTreeItemType.ExternalLink) {
+			return `${this._uri}`;
+		}
+		else {
+			return undefined;
+		}
+	}
 }
