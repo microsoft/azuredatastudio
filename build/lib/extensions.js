@@ -151,8 +151,9 @@ const baseHeaders = {
     'X-Market-User-Id': '291C1CD0-051A-4123-9B4B-30D60EF52EE2',
 };
 function fromMarketplace(extensionName, version, metadata) {
-    const [publisher, name] = extensionName.split('.');
-    const url = `https://marketplace.visualstudio.com/_apis/public/gallery/publishers/${publisher}/vsextensions/${name}/${version}/vspackage`;
+    // {{SQL CARBON EDIT}}
+    const [, name] = extensionName.split('.');
+    const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`;
     fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
     const options = {
         base: url,
@@ -199,7 +200,8 @@ const sqlBuiltInExtensions = [
 if (process.env['VSCODE_QUALITY'] === 'stable') {
     sqlBuiltInExtensions.push('resource-deployment');
 }
-const builtInExtensions = require('../builtInExtensions.json');
+const builtInExtensions = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
+// {{SQL CARBON EDIT}} - End
 function packageLocalExtensionsStream() {
     const localExtensionDescriptions = glob.sync('extensions/*/package.json')
         .map(manifestPath => {
