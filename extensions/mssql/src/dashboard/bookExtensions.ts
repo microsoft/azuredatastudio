@@ -14,7 +14,7 @@ const resolveExtensionResource = (extension: vscode.Extension<any>, resourcePath
 
 const resolveBookResources = (extension: vscode.Extension<any>, books: BookContribution | BookContribution[]): BookContribution[] => {
 	const result: BookContribution[] = [];
-	if (books === undefined || books === null) {
+	if (!books) {
 		return result;
 	}
 	if (!Array.isArray(books)) {
@@ -38,7 +38,6 @@ export interface BookContribution {
 }
 
 export namespace BookContributions {
-
 
 	export function merge(a: BookContribution[], b: BookContribution[]): BookContribution[] {
 		return a.concat(b);
