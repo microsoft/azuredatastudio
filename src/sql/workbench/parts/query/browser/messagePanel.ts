@@ -395,6 +395,7 @@ export class MessageController extends WorkbenchTreeController {
 			const codeEditor = <ICodeEditor>editor.getControl();
 			codeEditor.focus();
 			codeEditor.setSelection({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
+			codeEditor.revealRangeInCenterIfOutsideViewport({ endColumn: selection.endColumn + 1, endLineNumber: selection.endLine + 1, startColumn: selection.startColumn + 1, startLineNumber: selection.startLine + 1 });
 		}
 
 		return true;
