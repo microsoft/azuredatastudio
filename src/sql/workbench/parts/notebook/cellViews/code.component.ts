@@ -196,7 +196,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
 		let uri = this.cellModel.cellUri;
-		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, this.cellModel.source, '');
+		let cellModelSource: string;
+		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
+		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
 		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
@@ -262,7 +264,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	/// Editor Functions
 	private updateModel() {
 		if (this._editorModel) {
-			this._modelService.updateModel(this._editorModel, this.cellModel.source);
+			let cellModelSource: string;
+			cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
+			this._modelService.updateModel(this._editorModel, cellModelSource);
 		}
 	}
 

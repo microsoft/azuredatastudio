@@ -275,7 +275,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	private getCodeWithoutCellMagic(content: nb.IExecuteRequest): string {
-		let code = content.code;
+		let code = Array.isArray(content.code) ? content.code.join('') : content.code;
 		let firstLineEnd = code.indexOf(os.EOL);
 		let firstLine = code.substring(0, (firstLineEnd >= 0) ? firstLineEnd : 0).trimLeft();
 		if (firstLine.startsWith('%%')) {
