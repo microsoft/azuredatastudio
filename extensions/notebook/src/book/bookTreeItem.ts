@@ -121,6 +121,8 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	get tooltip(): string {
-		return `${this._uri}`;
+		if (this.book.type === BookTreeItemType.ExternalLink) {
+			return `${this._uri}`;
+		}
 	}
 }
