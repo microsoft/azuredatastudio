@@ -48,7 +48,7 @@ code-component .toolbarIconRunError {
 
 code-component .toolbarIconStop {
 	height: 20px;
-	background-image: url('../media/light/stop_cell_solidanimation.svg');
+	background-image: url('./media/light/stop_cell_solidanimation.svg');
 	padding-bottom: 10px;
 }
 
