@@ -64,8 +64,8 @@ class Extension implements IExtension {
 		@IProductService private readonly productService: IProductService
 	) { }
 
-	get type(): ExtensionType | undefined {
-		return this.local ? this.local.type : undefined;
+	get type(): ExtensionType {
+		return this.local ? this.local.type : ExtensionType.User;
 	}
 
 	get name(): string {
