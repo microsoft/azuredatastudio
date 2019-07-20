@@ -8,7 +8,6 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
-import * as fs from 'fs';
 
 const localize = nls.loadMessageBundle();
 
@@ -35,6 +34,9 @@ import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExp
 import { CmsService } from './cms/cmsService';
 import { registerSearchServerCommand } from './objectExplorerNodeProvider/command';
 import { MssqlIconProvider } from './iconProvider';
+import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
+import { getBookExtensionContributions } from './dashboard/bookExtensions';
+import { registerBooksWidget } from './dashboard/bookWidget';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -65,23 +67,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 
 	serverdownloader.eventEmitter.onAny(generateHandleServerProviderEvent());
 
-	let clientOptions: ClientOptions = {
-		documentSelector: ['sql'],
-		synchronize: {
-			configurationSection: Constants.extensionConfigSectionName
-		},
-		providerId: Constants.providerId,
-		errorHandler: new LanguageClientErrorHandler(),
-		features: [
-			// we only want to add new features
-			...SqlOpsDataClient.defaultFeatures,
-			TelemetryFeature,
-			AgentServicesFeature,
-			DacFxServicesFeature,
-			SchemaCompareServicesFeature
-		],
-		outputChannel: new CustomOutputChannel()
-	};
+	let clientOptions: ClientOptions = getClientOptions();
 
 	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());
@@ -104,6 +90,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 				totalTime: String(processEnd - installationStart),
 				beginningTimestamp: String(installationStart)
 			});
+
 		});
 		statusView.show();
 		statusView.text = 'Starting service';
@@ -128,166 +115,15 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	context.subscriptions.push(contextProvider);
 	context.subscriptions.push(credentialsStore);
 	context.subscriptions.push(resourceProvider);
-	context.subscriptions.push(new UploadFilesCommand(prompter, appContext));
-	context.subscriptions.push(new MkDirCommand(prompter, appContext));
-	context.subscriptions.push(new SaveFileCommand(prompter, appContext));
-	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
-	context.subscriptions.push(new CopyPathCommand(appContext));
-	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
+	registerHdfsCommands(context, prompter, appContext);
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
 
-	azdata.ui.registerModelViewProvider('books-widget', async (view) => {
-		const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
-		const bookslocationContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '270px', height: '100%', alignItems: 'left', position: 'absolute' }).component();
-		const bookRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-		const tsgbooklink = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: localize('troubleshootingBooks', 'Troubleshooting Book'),
-			title: localize('troubleshootingBooksTitle', 'Troubleshooting Book'),
-		}).component();
-		tsgbooklink.onDidClick(() => {
-			pickFolderAndSaveBooks().then(function (pickedFolder) {
-				if (pickedFolder) {
-					// Prompt for reload or open new instance.
-					promptToReloadWindow(pickedFolder);
-				}
-			});
-		});
-		// view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({label: 'Troubleshooting Notebooks', url: 'https://jupyter.org/jupyter-book/intro.html'}).component();
-		bookRow.addItem(tsgbooklink, { CSSStyles: { 'width': '100%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px', 'text-align': 'left' } });
-		container.addItem(bookRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
-		bookslocationContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
-		await view.initializeModel(bookslocationContainer);
-	});
-	async function pickFolderAndSaveBooks(): Promise<vscode.Uri> {
-		let filter = {
-			'All files': ['*']
-		};
-		let uris = await vscode.window.showOpenDialog({
-			filters: filter,
-			canSelectFiles: false,
-			canSelectMany: false,
-			canSelectFolders: true,
-			openLabel: 'Pick Folder'
-		});
-		if (uris && uris.length > 0) {
-			let fileUri = uris[0];
-			// Test code: copy a test file return the path
-			const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
-			const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-			let targetPath = path.join(fileUri.path, 'test.ipynb');
-			fs.copyFileSync(notebookFullPath, targetPath);
-			// Next To Do: Copy the books to the picked folder
-			return fileUri;
-		}
-		return undefined; // vscode.Uri.parse(os.homedir());
-	}
-	function promptToReloadWindow(folderUri: vscode.Uri) {
-		const actionReload = 'Reload';
-		const actionOpenNew = 'Open New Instance';
-		vscode.window.showInformationMessage(`Reload window in order for opening the jupyter books.`, actionReload, actionOpenNew)
-			.then(selectedAction => {
-				// vscode.commands.executeCommand('_workbench.enterWorkspace', folderUri, {});
-				if (selectedAction === actionReload) {
-					vscode.commands.executeCommand('workbench.action.reloadWindow');
-				}
-				if (selectedAction === actionOpenNew) {
-					//vscode.commands.executeCommand('_files.pickFolderAndOpen', folderUri, {forceNewWindow: true});
-					vscode.commands.executeCommand('_files.pickFolderAndOpen', { forceNewWindow: true });
-				}
-			});
-	}
+	registerServiceEndpoints(context);
+	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
+	const bookContributionProvider = getBookExtensionContributions(context);
+	context.subscriptions.push(bookContributionProvider);
 
-	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
-
-		const endpointsArray: Array<Utils.IEndpoint> = Object.assign([], view.serverInfo.options['clusterEndpoints']);
-		endpointsArray.forEach(endpointInfo => {
-			endpointInfo.isHyperlink = true;
-			endpointInfo.hyperlink = 'https://' + endpointInfo.ipAddress + ':' + endpointInfo.port;
-
-		});
-		if (endpointsArray.length > 0) {
-			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy' || e.serviceName === 'mgmtproxy');
-			if (managementProxyEp) {
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("grafana", "Metrics Dashboard"), '/grafana/d/wZx3OUdmz'));
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("kibana", "Log Search Dashboard"), '/kibana/app/kibana#/discover'));
-			}
-
-			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
-			if (gatewayEp) {
-				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("sparkHostory", "Spark Job Monitoring"), '/gateway/default/sparkhistory'));
-				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("yarnHistory", "Spark Resource Management"), '/gateway/default/yarn'));
-			}
-
-			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
-			endpointsArray.forEach(endpointInfo => {
-				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: getFriendlyEndpointNames(endpointInfo.serviceName) }).component();
-				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
-				if (endpointInfo.isHyperlink) {
-					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink }).component();
-					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px' } });
-				}
-				else {
-					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
-					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '62%', 'user-select': 'text' } });
-				}
-				const copyValueCell = view.modelBuilder.button().component();
-				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.png'), dark: context.asAbsolutePath('resources/dark/copy_inverse.png') };
-				copyValueCell.onDidClick(() => {
-					vscode.env.clipboard.writeText(endpointInfo.hyperlink);
-				});
-				copyValueCell.title = localize("copyText", "Copy");
-				copyValueCell.iconHeight = '14px';
-				copyValueCell.iconWidth = '14px';
-				endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '3%', 'padding-top': '10px' } });
-
-				container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
-			});
-			const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '540px', height: '100%', alignItems: 'left', position: 'absolute' }).component();
-			endpointsContainer.addItem(container, { CSSStyles: { 'padding-top': '25px', 'padding-left': '5px' } });
-
-			await view.initializeModel(endpointsContainer);
-		}
-
-	});
-
-	function getCustomEndpoint(parentEndpoint: Utils.IEndpoint, serviceName: string, serviceUrl?: string): Utils.IEndpoint {
-		if (parentEndpoint) {
-			let endpoint: Utils.IEndpoint = {
-				serviceName: serviceName,
-				ipAddress: parentEndpoint.ipAddress,
-				port: parentEndpoint.port,
-				isHyperlink: serviceUrl ? true : false,
-				hyperlink: 'https://' + parentEndpoint.ipAddress + ':' + parentEndpoint.port + serviceUrl
-			};
-			return endpoint;
-		}
-		return null;
-	}
-
-	function getFriendlyEndpointNames(name: string): string {
-		let friendlyName: string = name;
-		switch (name) {
-			case 'app-proxy':
-				friendlyName = localize("appproxy", "Application Proxy");
-				break;
-			case 'controller':
-				friendlyName = localize("controller", "Cluster Management Service");
-				break;
-			case 'gateway':
-				friendlyName = localize("gateway", "HDFS and Spark");
-				break;
-			case 'management-proxy':
-				friendlyName = localize("managementproxy", "Management Proxy");
-				break;
-			case 'mgmtproxy':
-				friendlyName = localize("mgmtproxy", "Management Proxy");
-				break;
-			default:
-				break;
-		}
-		return friendlyName;
-	}
+	registerBooksWidget(bookContributionProvider);
 
 	let api: MssqlExtensionApi = {
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {
@@ -303,6 +139,35 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		}
 	};
 	return api;
+}
+
+function getClientOptions(): ClientOptions {
+	return {
+		documentSelector: ['sql'],
+		synchronize: {
+			configurationSection: Constants.extensionConfigSectionName
+		},
+		providerId: Constants.providerId,
+		errorHandler: new LanguageClientErrorHandler(),
+		features: [
+			// we only want to add new features
+			...SqlOpsDataClient.defaultFeatures,
+			TelemetryFeature,
+			AgentServicesFeature,
+			DacFxServicesFeature,
+			SchemaCompareServicesFeature
+		],
+		outputChannel: new CustomOutputChannel()
+	};
+}
+
+function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPrompter, appContext: AppContext) {
+	context.subscriptions.push(new UploadFilesCommand(prompter, appContext));
+	context.subscriptions.push(new MkDirCommand(prompter, appContext));
+	context.subscriptions.push(new SaveFileCommand(prompter, appContext));
+	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
+	context.subscriptions.push(new CopyPathCommand(appContext));
+	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
 }
 
 function activateSparkFeatures(appContext: AppContext): void {

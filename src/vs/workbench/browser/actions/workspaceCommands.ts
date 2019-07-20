@@ -19,6 +19,8 @@ import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IWindowService } from 'vs/platform/windows/common/windows';
+import { Uri } from 'vscode';
 
 export const ADD_ROOT_FOLDER_COMMAND_ID = 'addRootFolder';
 export const ADD_ROOT_FOLDER_LABEL = nls.localize('addFolderToWorkspace', "Add Folder to Workspace...");
@@ -74,6 +76,41 @@ CommandsRegistry.registerCommand({
 		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
 	}
 });
+
+CommandsRegistry.registerCommand({
+	id: 'workbench.action.setWorkspaceAndOpen',
+	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: Uri }) => {
+		const viewletService = accessor.get(IViewletService);
+		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
+		const dialogsService = accessor.get(IFileDialogService);
+		const windowService = accessor.get(IWindowService);
+		let folders = [];
+		if (!options.folderPath) {
+			folders = await dialogsService.showOpenDialog({
+				openLabel: mnemonicButtonLabel(nls.localize({ key: 'add', comment: ['&& denotes a mnemonic'] }, "&&Add")),
+				title: nls.localize('addFolderToWorkspaceTitle', "Add Folder to Workspace"),
+				canSelectFolders: true,
+				canSelectMany: true,
+				defaultUri: dialogsService.defaultFolderPath()
+			});
+			if (!folders || !folders.length) {
+				return;
+			}
+		}
+		else {
+			folders.push(options.folderPath);
+		}
+		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: resources.removeTrailingPathSeparator(folder) })));
+		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
+		if (options.forceNewWindow) {
+			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+		}
+		else {
+			return windowService.reloadWindow();
+		}
+	}
+});
+
 
 CommandsRegistry.registerCommand(PICK_WORKSPACE_FOLDER_COMMAND_ID, async function (accessor, args?: [IPickOptions<IQuickPickItem>, CancellationToken]) {
 	const quickInputService = accessor.get(IQuickInputService);
