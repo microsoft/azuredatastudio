@@ -35,8 +35,8 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 				flexFlow: 'row'
 			}).component();
 			const tsgbooklink = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-				label: contribution.name, //localize('troubleshootingBooks', 'Troubleshooting Book'),
-				title: contribution.name // localize('troubleshootingBooksTitle', 'Troubleshooting Book'),
+				label: contribution.name,
+				title: contribution.name
 			}).component();
 			tsgbooklink.onDidClick(() => {
 				PromptForFolder(contribution);
@@ -73,15 +73,15 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 }
 
 async function PromptForFolder(bookContribution: BookContribution) {
-	let filter = {
-		'All files': ['*']
-	};
+	const allFilesFilter = localize('allFiles', "All Files");
+	let filter = {};
+	filter[allFilesFilter] = '*';
 	let uris = await vscode.window.showOpenDialog({
 		filters: filter,
 		canSelectFiles: false,
 		canSelectMany: false,
 		canSelectFolders: true,
-		openLabel: localize('labePickFolder', 'Pick Folder')
+		openLabel: localize('labePickFolder', "Pick Folder")
 	});
 	if (uris && uris.length > 0) {
 		let pickedFolder = uris[0];
@@ -100,9 +100,9 @@ async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookCo
 	}
 }
 function promptToReloadWindow(folderUri: vscode.Uri): void {
-	const actionReload = localize('strReload', 'Reload');
-	const actionOpenNew = localize('strOpenNewInstance', 'Open new instance');
-	vscode.window.showInformationMessage(localize('informationOfOptions', 'Reload window to open the Jupyter Books.'), actionReload, actionOpenNew)
+	const actionReload = localize('strReload', "Reload");
+	const actionOpenNew = localize('strOpenNewInstance', "Open new instance");
+	vscode.window.showInformationMessage(localize('informationOfOptions', "Reload window to open the Jupyter Books."), actionReload, actionOpenNew)
 		.then(selectedAction => {
 			if (selectedAction === actionReload) {
 				vscode.commands.executeCommand('workbench.action.setWorkspaceAndOpen', {
