@@ -102,7 +102,9 @@ async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookCo
 		//remove folder if exists
 		await fs.removeSync(path.join(folderUri.path, bookContribution.name));
 		//copy them from the books extension:
-		await fs.copy(bookContribution.path, folderUri.path);
+		const destinationFolder = path.join(folderUri.path, bookContribution.name);
+		fs.mkdirSync(destinationFolder);
+		await fs.copy(bookContribution.path, destinationFolder);
 	}
 }
 function promptToReloadWindow(folderUri: vscode.Uri): void {
