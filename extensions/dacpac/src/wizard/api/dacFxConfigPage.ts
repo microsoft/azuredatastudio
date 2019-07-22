@@ -12,7 +12,7 @@ import * as path from 'path';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
-import { sanitizeStringForFilename } from './utils';
+import { sanitizeStringForFilename, isValidBasename } from './utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -142,9 +142,12 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createFileBrowserParts() {
-		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
-		}).component();
+		this.fileTextBox = this.view.modelBuilder.inputBox().withValidation(
+			component => isValidBasename(component.value)
+		)
+			.withProperties({
+				required: true
+			}).component();
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
@@ -163,6 +166,14 @@ export abstract class DacFxConfigPage extends BasePage {
 	protected getRootPath(): string {
 		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
 		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+	}
+
+	protected appendFileExtensionIfNeeded() {
+		// make sure filepath ends in proper file extension if it's a valid name
+		if (!this.model.filePath.endsWith(this.fileExtension) && isValidBasename(this.model.filePath)) {
+			this.model.filePath += this.fileExtension;
+			this.fileTextBox.value = this.model.filePath;
+		}
 	}
 }
 
