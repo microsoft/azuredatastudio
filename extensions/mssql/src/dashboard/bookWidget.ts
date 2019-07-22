@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
-	BookContributionProvider
+	BookContributionProvider, BookContribution
 } from './bookExtensions';
 
 const localize = nls.loadMessageBundle();
@@ -29,27 +29,32 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 			alignItems: 'left',
 			position: 'absolute'
 		}).component();
-		const bookRow = view.modelBuilder.flexContainer().withLayout({
-			flexFlow: 'row'
-		}).component();
-		const tsgbooklink = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
-			label: localize('troubleshootingBooks', 'Troubleshooting Book'),
-			title: localize('troubleshootingBooksTitle', 'Troubleshooting Book'),
-		}).component();
-		tsgbooklink.onDidClick(() => {
-			PromptForFolder(bookContributionProvider);
+
+		let books = bookContributionProvider.contributions.map(contribution => {
+			const bookRow = view.modelBuilder.flexContainer().withLayout({
+				flexFlow: 'row'
+			}).component();
+			const tsgbooklink = view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+				label: contribution.name, //localize('troubleshootingBooks', 'Troubleshooting Book'),
+				title: contribution.name // localize('troubleshootingBooksTitle', 'Troubleshooting Book'),
+			}).component();
+			tsgbooklink.onDidClick(() => {
+				PromptForFolder(contribution);
+			});
+			bookRow.addItem(tsgbooklink, {
+				CSSStyles: {
+					'width': '100%',
+					'color': '#0078d4',
+					'text-decoration': 'underline',
+					'padding-top': '10px',
+					'text-align': 'left'
+				}
+			});
+			return bookRow;
 		});
 
-		bookRow.addItem(tsgbooklink, {
-			CSSStyles: {
-				'width': '100%',
-				'color': '#0078d4',
-				'text-decoration': 'underline',
-				'padding-top': '10px',
-				'text-align': 'left'
-			}
-		});
-		container.addItem(bookRow, {
+
+		container.addItems(books, {
 			CSSStyles: {
 				'padding-left': '10px',
 				'border-top': 'solid 1px #ccc',
@@ -67,7 +72,7 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 	});
 }
 
-async function PromptForFolder(bookContributionProvider: BookContributionProvider) {
+async function PromptForFolder(bookContribution: BookContribution) {
 	let filter = {
 		'All files': ['*']
 	};
@@ -76,28 +81,28 @@ async function PromptForFolder(bookContributionProvider: BookContributionProvide
 		canSelectFiles: false,
 		canSelectMany: false,
 		canSelectFolders: true,
-		openLabel: 'Pick Folder'
+		openLabel: localize('labePickFolder', 'Pick Folder')
 	});
 	if (uris && uris.length > 0) {
 		let pickedFolder = uris[0];
-		saveBooksToFolder(pickedFolder, bookContributionProvider);
-		promptToReloadWindow(pickedFolder);
+		await saveBooksToFolder(pickedFolder, bookContribution);
+		await promptToReloadWindow(pickedFolder);
 	}
 }
 
-async function saveBooksToFolder(folderUri: vscode.Uri, bookContributionProvider: BookContributionProvider): Promise<void> {
+async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookContribution): Promise<void> {
 	// Get book contributions
-	if (bookContributionProvider.contributions.length > 0 && folderUri) {
+	if (bookContribution && folderUri) {
 		//remove folder if exists
-		fs.removeSync(path.join(folderUri.path, 'SQL Big Data Books'));
+		await fs.removeSync(path.join(folderUri.path, bookContribution.name));
 		//copy them from the books extension:
-		fs.copy(path.join(bookContributionProvider.contributions[0].path, 'content'), path.join(folderUri.path, 'SQL Big Data Books'));
+		await fs.copy(bookContribution.path, folderUri.path);
 	}
 }
-async function promptToReloadWindow(folderUri: vscode.Uri): Promise<void> {
-	const actionReload = 'Reload';
-	const actionOpenNew = 'Open New Instance';
-	vscode.window.showInformationMessage(`Reload window in order for opening the jupyter books.`, actionReload, actionOpenNew)
+function promptToReloadWindow(folderUri: vscode.Uri): void {
+	const actionReload = localize('strReload', 'Reload');
+	const actionOpenNew = localize('strOpenNewInstance', 'Open new instance');
+	vscode.window.showInformationMessage(localize('informationOfOptions', 'Reload window to open the Jupyter Books.'), actionReload, actionOpenNew)
 		.then(selectedAction => {
 			if (selectedAction === actionReload) {
 				vscode.commands.executeCommand('workbench.action.setWorkspaceAndOpen', {
