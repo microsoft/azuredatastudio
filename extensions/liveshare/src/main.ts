@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as azdata from 'azdata';
+//import * as azdata from 'azdata';
 
-import { GuestSessionManager } from './guestSession';
-import { HostSessionManager } from './hostSession';
+// import { GuestSessionManager } from './guestSession';
+// import { HostSessionManager } from './hostSession';
 import { ConnectionFeature } from './providers/connectionProvider';
 import { QueryFeature } from './providers/queryProvider';
 
@@ -26,60 +26,73 @@ export class State {
 	}
 }
 
-const changeColorOfLiveShareSessionFactory = (isHost: boolean) => {
-	return async function changeColorOfLiveShareSession() {
+// const changeColorOfLiveShareSessionFactory = (isHost: boolean) => {
+// 	return async function changeColorOfLiveShareSession() {
 
-		const vslsApi = await vsls.getApi();
-		const serviceName = 'mssql-query';
-		if (isHost) {
-			//const sharedService = await vslsApi.shareService(serviceName);
-			//this.sharedService.request('load', [ this.adapterId ]);
-		} else {
-			const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
-			sharedServiceProxy.request('load', [ 1050 ]);
-		}
+// 		const vslsApi = await vsls.getApi();
+// 		const serviceName = 'mssql-query';
+// 		if (isHost) {
+// 			//const sharedService = await vslsApi.shareService(serviceName);
+// 			//this.sharedService.request('load', [ this.adapterId ]);
+// 		} else {
+// 			const sharedServiceProxy = await vslsApi.getSharedService(serviceName);
+// 			sharedServiceProxy.request('load', [ 1050 ]);
+// 		}
 
-		return State.extensionContext;
-	};
-  };
+// 		return State.extensionContext;
+// 	};
+//   };
 
-  export const changeColorOfLiveShareHostHandler = changeColorOfLiveShareSessionFactory(
-	true
-  );
-  export const changeColorOfLiveShareGuestHandler = changeColorOfLiveShareSessionFactory(
-	false
-  );
+//   export const changeColorOfLiveShareHostHandler = changeColorOfLiveShareSessionFactory(
+// 	true
+//   );
+//   export const changeColorOfLiveShareGuestHandler = changeColorOfLiveShareSessionFactory(
+// 	false
+//   );
+
+
+function testCommand1() {
+
+}
+
+function testCommand2() {
+
+}
 
 export function registerLiveShareIntegrationCommands() {
 	vscode.commands.registerCommand(
-		'collaboration.changeColorOfLiveShareHost',
-		changeColorOfLiveShareHostHandler
+		'collaboration.testcmd1',
+		testCommand1
 	);
 	vscode.commands.registerCommand(
-		'collaboration.changeColorOfLiveShareGuest',
-		changeColorOfLiveShareGuestHandler
+		'collaboration.testcmd2',
+		testCommand2
 	);
 }
 
+const vslsPrefix: string = 'vsls';
+
+function isLiveShareDocument(doc: vscode.TextDocument): boolean {
+	return (doc && doc.uri.toString().startsWith(vslsPrefix));
+}
 
 async function onDidOpenTextDocument(doc: vscode.TextDocument): Promise<void> {
-	let queryDoc = await azdata.queryeditor.getQueryDocument(doc.uri.toString());
-	if (queryDoc) {
+	//let queryDoc = await azdata.queryeditor.getQueryDocument(doc.uri.toString());
+	if (isLiveShareDocument(doc)) {
 
 	}
 }
-
 
 export async function activate(context: vscode.ExtensionContext) {
 
 	State.extensionContext = context;
 
 	const vslsApi = await vsls.getApi();
-	await vscode.commands.executeCommand(
-		'setContext',
-		'ads:liveshare',
-		!!vslsApi
-	);
+	// await vscode.commands.executeCommand(
+	// 	'setContext',
+	// 	'ads:liveshare',
+	// 	!!vslsApi
+	// );
 
 	if (!vslsApi) {
 		return;
@@ -109,8 +122,8 @@ export async function activate(context: vscode.ExtensionContext) {
 			return;
 		}
 
-		new HostSessionManager(context, sharedService);
-		new GuestSessionManager(context, sharedServiceProxy);
+		// new HostSessionManager(context, sharedService);
+		// new GuestSessionManager(context, sharedServiceProxy);
 
 		let connection = new ConnectionFeature();
 		connection.registerProvider();
