@@ -8,6 +8,8 @@
 import 'mocha';
 import * as azdata from 'azdata';
 import * as utils from './utils';
+import * as os from 'os';
+import * as fs from 'fs';
 const path = require('path');
 import { context } from './testContext';
 import assert = require('assert');
@@ -20,6 +22,7 @@ let dacpac1: string = path.join(__dirname, 'testData/Database1.dacpac');
 let dacpac2: string = path.join(__dirname, 'testData/Database2.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
+const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
 
 if (context.RunTest) {
 	suite('Schema compare integration test suite', () => {
@@ -36,13 +39,13 @@ if (context.RunTest) {
 			schemaCompareTester = new SchemaCompareTester();
 			console.log(`Start schema compare tests`);
 		});
-		test('Schema compare dacpac to dacpac comparison', async function () {
+		test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDacpacToDacpac();
 		});
-		test('Schema compare database to database comparison and script generation', async function () {
+		test('Schema compare database to database comparison, script generation, and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
 		});
-		test('Schema compare dacpac to database comparison and script generation', async function () {
+		test('Schema compare dacpac to database comparison, script generation, and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDacpacToDatabase();
 		});
 	});
@@ -78,6 +81,21 @@ class SchemaCompareTester {
 
 		let schemaCompareResult = await schemaCompareService.schemaCompare(operationId, source, target, azdata.TaskExecutionMode.execute, null);
 		this.assertSchemaCompareResult(schemaCompareResult, operationId);
+
+		// save to scmp
+		const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
+		if (!fs.existsSync(folderPath)) {
+			fs.mkdirSync(folderPath);
+		}
+		const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
+		assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
+		assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+
+		// open scmp
+		const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
+		assert(openScmpResult.success && !openScmpResult.errorMessage, `Open scmp should succeed. Expected: there should be no error. Actual Error message: "${openScmpResult.errorMessage}`);
+		assert(openScmpResult.sourceEndpointInfo.packageFilePath === source.packageFilePath, `Expected: source packageFilePath to be ${source.packageFilePath}, Actual: ${openScmpResult.sourceEndpointInfo.packageFilePath}`);
+		assert(openScmpResult.targetEndpointInfo.packageFilePath === target.packageFilePath, `Expected: target packageFilePath to be ${target.packageFilePath}, Actual: ${openScmpResult.targetEndpointInfo.packageFilePath}`);
 	}
 
 	@stressify({ dop: SchemaCompareTester.ParallelCount })
@@ -138,6 +156,23 @@ class SchemaCompareTester {
 			// TODO : add wait for tasks to complete
 			// script generation might take too long and the 'success' status does not mean that script is created.
 			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
+
+			// save to scmp
+			const filepath = path.join(folderPath,`ads_schemaCompare_${now.getTime().toString()}.scmp`);
+			if (!fs.existsSync(folderPath)) {
+				fs.mkdirSync(folderPath);
+			}
+			const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
+			assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
+			assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+
+			// open scmp
+			const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
+			assert(openScmpResult.success && !openScmpResult.errorMessage, `Open scmp should succeed. Expected: there should be no error. Actual Error message: "${openScmpResult.errorMessage}`);
+			assert(openScmpResult.sourceEndpointInfo.databaseName === source.databaseName, `Expected: source database to be ${source.databaseName}, Actual: ${openScmpResult.sourceEndpointInfo.databaseName}`);
+			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
+
+			fs.unlinkSync(filepath);
 		}
 		finally {
 			await utils.deleteDB(sourceDB, ownerUri);
@@ -194,6 +229,21 @@ class SchemaCompareTester {
 
 			let status = await schemaCompareService.schemaCompareGenerateScript(schemaCompareResult.operationId, server.serverName, targetDB, azdata.TaskExecutionMode.script);
 			await this.assertScriptGenerationResult(status, target.serverName, target.databaseName);
+
+			// save to scmp
+			const filepath = path.join(folderPath, `ads_schemaCompare_${now.getTime().toString()}.scmp`);
+			if (!fs.existsSync(folderPath)) {
+				fs.mkdirSync(folderPath);
+			}
+			const saveScmpResult = await schemaCompareService.schemaCompareSaveScmp(source, target, azdata.TaskExecutionMode.execute, null, filepath, [], []);
+			assert(saveScmpResult.success && !saveScmpResult.errorMessage, `Save scmp should succeed. Expected: there should be no error. Actual Error message: "${saveScmpResult.errorMessage}`);
+			assert(fs.existsSync(filepath), `File ${filepath} is expected to be present`);
+
+			// open scmp
+			const openScmpResult = await schemaCompareService.schemaCompareOpenScmp(filepath);
+			assert(openScmpResult.success && !openScmpResult.errorMessage, `Open scmp should succeed. Expected: there should be no error. Actual Error message: "${openScmpResult.errorMessage}`);
+			assert(openScmpResult.sourceEndpointInfo.packageFilePath === source.packageFilePath, `Expected: source packageFilePath to be ${source.packageFilePath}, Actual: ${openScmpResult.sourceEndpointInfo.packageFilePath}`);
+			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 		}
 		finally {
 			await utils.deleteDB(targetDB, ownerUri);
