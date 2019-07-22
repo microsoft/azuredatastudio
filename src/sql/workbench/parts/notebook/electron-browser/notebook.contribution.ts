@@ -210,5 +210,3 @@ registerComponentType({
 	ctor: PlotlyOutputComponent,
 	selector: PlotlyOutputComponent.SELECTOR
 });
-
-

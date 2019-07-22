@@ -19,8 +19,6 @@ import { getIconClasses } from 'vs/editor/common/services/getIconClasses';
 import { IModelService } from 'vs/editor/common/services/modelService';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { IWindowService } from 'vs/platform/windows/common/windows';
-import { Uri } from 'vscode';
 
 export const ADD_ROOT_FOLDER_COMMAND_ID = 'addRootFolder';
 export const ADD_ROOT_FOLDER_LABEL = nls.localize('addFolderToWorkspace', "Add Folder to Workspace...");

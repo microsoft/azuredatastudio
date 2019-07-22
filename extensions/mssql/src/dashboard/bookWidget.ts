@@ -11,6 +11,7 @@ import * as path from 'path';
 import {
 	BookContributionProvider, BookContribution
 } from './bookExtensions';
+import * as Utils from '../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -39,7 +40,7 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 				title: contribution.name
 			}).component();
 			tsgbooklink.onDidClick(() => {
-				PromptForFolder(contribution);
+				promptForFolder(contribution);
 			});
 			bookRow.addItem(tsgbooklink, {
 				CSSStyles: {
@@ -72,21 +73,26 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 	});
 }
 
-async function PromptForFolder(bookContribution: BookContribution) {
-	const allFilesFilter = localize('allFiles', "All Files");
-	let filter = {};
-	filter[allFilesFilter] = '*';
-	let uris = await vscode.window.showOpenDialog({
-		filters: filter,
-		canSelectFiles: false,
-		canSelectMany: false,
-		canSelectFolders: true,
-		openLabel: localize('labePickFolder', "Pick Folder")
-	});
-	if (uris && uris.length > 0) {
-		let pickedFolder = uris[0];
-		await saveBooksToFolder(pickedFolder, bookContribution);
-		await promptToReloadWindow(pickedFolder);
+async function promptForFolder(bookContribution: BookContribution): Promise<void> {
+	try {
+		const allFilesFilter = localize('allFiles', "All Files");
+		let filter = {};
+		filter[allFilesFilter] = '*';
+		let uris = await vscode.window.showOpenDialog({
+			filters: filter,
+			canSelectFiles: false,
+			canSelectMany: false,
+			canSelectFolders: true,
+			openLabel: localize('labePickFolder', "Pick Folder")
+		});
+		if (uris && uris.length > 0) {
+			let pickedFolder = uris[0];
+			await saveBooksToFolder(pickedFolder, bookContribution);
+			await promptToReloadWindow(pickedFolder);
+		}
+		return;
+	} catch (error) {
+		vscode.window.showErrorMessage(localize('FailedDuringSaveAndPrompt', 'Failed : {0}', Utils.getErrorMessage(error)));
 	}
 }
 
@@ -100,9 +106,9 @@ async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookCo
 	}
 }
 function promptToReloadWindow(folderUri: vscode.Uri): void {
-	const actionReload = localize('strReload', "Reload");
-	const actionOpenNew = localize('strOpenNewInstance', "Open new instance");
-	vscode.window.showInformationMessage(localize('informationOfOptions', "Reload window to open the Jupyter Books."), actionReload, actionOpenNew)
+	const actionReload = localize('prompt.reloadInstance', "Reload");
+	const actionOpenNew = localize('prompt.openNewInstance', "Open new instance");
+	vscode.window.showInformationMessage(localize('prompt.reloadDescription', "Reload and view the Jupyter Books in the Files view."), actionReload, actionOpenNew)
 		.then(selectedAction => {
 			if (selectedAction === actionReload) {
 				vscode.commands.executeCommand('workbench.action.setWorkspaceAndOpen', {
