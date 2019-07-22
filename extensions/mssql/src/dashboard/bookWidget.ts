@@ -83,7 +83,7 @@ async function promptForFolder(bookContribution: BookContribution): Promise<void
 			canSelectFiles: false,
 			canSelectMany: false,
 			canSelectFolders: true,
-			openLabel: localize('labePickFolder', "Pick Folder")
+			openLabel: localize('labelPickFolder', "Pick Folder")
 		});
 		if (uris && uris.length > 0) {
 			let pickedFolder = uris[0];
