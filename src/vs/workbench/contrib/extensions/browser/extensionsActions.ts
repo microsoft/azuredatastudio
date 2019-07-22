@@ -2844,7 +2844,9 @@ export class InstallVSIXAction extends Action {
 	run(): Promise<any> {
 		// {{SQL CARBON EDIT}} - Replace run body
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
-		if (extensionPolicy === ExtensionsPolicy.allowAll) {
+
+		// TEMP - disable this since it is currently broken - karlb 7/22
+		//if (extensionPolicy === ExtensionsPolicy.allowAll) {
 			return Promise.resolve(this.windowService.showOpenDialog({
 				title: localize('installFromVSIX', "Install from VSIX"),
 				filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
@@ -2914,10 +2916,10 @@ export class InstallVSIXAction extends Action {
 					}
 				})).then(() => Promise.resolve());
 			}));
-		} else {
-			this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.'));
-			return Promise.resolve();
-		}
+		// } else {
+		// 	this.notificationService.error(localize('InstallVSIXAction.allowNone', 'Your extension policy does not allow downloading extensions. Please change your extension policy and try again.'));
+		// 	return Promise.resolve();
+		// }
 		// {{SQL CARBON EDIT}} - End
 	}
 }
