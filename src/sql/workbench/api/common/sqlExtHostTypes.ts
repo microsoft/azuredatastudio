@@ -681,3 +681,9 @@ export enum NotebookChangeKind {
 	Save = 2,
 	CellExecuted = 3
 }
+
+export enum QueryEventType {
+	QueryStart = 'queryStart',
+	QueryStop = 'queryStop',
+	ExecutionPlan = 'executionPlan'
+}

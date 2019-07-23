@@ -3964,13 +3964,14 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
-		export type QueryEvent =
-			| 'queryStart'
-			| 'queryStop'
-			| 'executionPlan';
+		export enum QueryEventType {
+			QueryStart = 'queryStart',
+			QueryStop = 'queryStop',
+			ExecutionPlan = 'executionPlan'
+		}
 
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: any): void;
+			onQueryEvent(type: QueryEventType, document: queryeditor.QueryDocument, args: any): void;
 		}
 
 		// new extensibility interfaces

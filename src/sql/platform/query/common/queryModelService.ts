@@ -19,6 +19,7 @@ import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
+import { QueryEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const selectionSnippetMaxLen = 100;
 
@@ -279,7 +280,7 @@ export class QueryModelService implements IQueryModelService {
 
 			// fire extensibility API event
 			let event: IQueryEvent = {
-				type: 'queryStop',
+				type: QueryEventType.QueryStop,
 				uri: uri
 			};
 			this._onQueryEvent.fire(event);
@@ -292,7 +293,7 @@ export class QueryModelService implements IQueryModelService {
 
 			// fire extensibility API event
 			let event: IQueryEvent = {
-				type: 'queryStart',
+				type: QueryEventType.QueryStart,
 				uri: uri
 			};
 			this._onQueryEvent.fire(event);
@@ -303,7 +304,7 @@ export class QueryModelService implements IQueryModelService {
 		queryRunner.onQueryPlanAvailable(planInfo => {
 			// fire extensibility API event
 			let event: IQueryEvent = {
-				type: 'executionPlan',
+				type: QueryEventType.ExecutionPlan,
 				uri: planInfo.fileUri,
 				params: planInfo
 			};
@@ -419,7 +420,7 @@ export class QueryModelService implements IQueryModelService {
 				this._onRunQueryComplete.fire(ownerUri);
 				// fire extensibility API event
 				let event: IQueryEvent = {
-					type: 'queryStop',
+					type: QueryEventType.QueryStop,
 					uri: ownerUri
 				};
 				this._onQueryEvent.fire(event);
@@ -431,7 +432,7 @@ export class QueryModelService implements IQueryModelService {
 				this._onRunQueryStart.fire(ownerUri);
 				// fire extensibility API event
 				let event: IQueryEvent = {
-					type: 'queryStart',
+					type: QueryEventType.QueryStart,
 					uri: ownerUri
 				};
 				this._onQueryEvent.fire(event);
@@ -576,7 +577,7 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	private _fireQueryEvent(uri: string, type: string, data?: any) {
+	private _fireQueryEvent(uri: string, type: QueryEventType, data?: any) {
 		let info: QueryInfo = this._getQueryInfo(uri);
 
 		if (info.dataServiceReady) {
@@ -586,7 +587,7 @@ export class QueryModelService implements IQueryModelService {
 				data: data
 			});
 		} else {
-			let queueItem: QueryEvent = { type: type, data: data };
+			let queueItem: QueryEventType = { type: type, data: data };
 			info.queryEventQueue.push(queueItem);
 		}
 	}

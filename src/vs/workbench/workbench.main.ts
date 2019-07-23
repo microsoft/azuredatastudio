@@ -462,7 +462,6 @@ import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/cont
 // {{SQL CARBON EDIT}}
 // SQL
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
-
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
@@ -475,6 +474,9 @@ import 'sql/workbench/parts/connection/browser/connection.contribution';
 // query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';
+
+// query history
+import 'sql/workbench/parts/queryHistory/browser/queryHistory.contribution';
 
 // edit data editor
 import 'sql/workbench/parts/editData/browser/editData.contribution';

@@ -32,7 +32,7 @@ export interface IQueryPlanInfo {
 }
 
 export interface IQueryEvent {
-	type: queryeditor.QueryEvent;
+	type: queryeditor.QueryEventType;
 	uri: string;
 	params?: any;
 }
