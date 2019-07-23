@@ -6,13 +6,16 @@
 import * as vscode from 'vscode';
 import { LiveShare, SharedServiceProxy } from './liveshare';
 import { ConnectionProvider } from './providers/connectionProvider';
-import { LiveShareSharedServiceName } from './constants';
+import { StatusProvider, LiveShareDocumentState } from './providers/statusProvider';
+import { LiveShareServiceName } from './constants';
 
 declare var require: any;
 let vsls = require('vsls');
 
 export class GuestSessionManager {
 	private static readonly VslsPrefix: string = 'vsls';
+
+	private _statusProvider: StatusProvider;
 
 	constructor(
 		context: vscode.ExtensionContext,
@@ -26,13 +29,15 @@ export class GuestSessionManager {
 				return;
 			}
 
-			const sharedServiceProxy: SharedServiceProxy = await vslsApi.getSharedService(LiveShareSharedServiceName);
+			const sharedServiceProxy: SharedServiceProxy = await vslsApi.getSharedService(LiveShareServiceName);
 			if (!sharedServiceProxy) {
 				vscode.window.showErrorMessage('Could not access a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
 				return;
 			}
 
 			new ConnectionProvider(false, sharedServiceProxy);
+
+			this._statusProvider = new StatusProvider(true, sharedServiceProxy);
 		});
 	}
 
@@ -42,6 +47,10 @@ export class GuestSessionManager {
 
 	private async onDidOpenTextDocument(doc: vscode.TextDocument): Promise<void> {
 		if (this.isLiveShareDocument(doc)) {
+			/* tslint:disable:no-unused-variable */
+			let documentState: LiveShareDocumentState = await this._statusProvider.getDocumentState(doc);
+			let outlog: string = `Document state: isConnected=${documentState.isConnected}, serverName=${documentState.serverName}, databaseName=${documentState.databaseName}`;
+			console.log(outlog)
 		}
 	}
 }

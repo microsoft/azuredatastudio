@@ -6,7 +6,8 @@
 import * as vscode from 'vscode';
 import { LiveShare, SharedService } from './liveshare';
 import { ConnectionProvider } from './providers/connectionProvider';
-import { LiveShareSharedServiceName } from './constants';
+import { StatusProvider } from './providers/statusProvider';
+import { LiveShareServiceName } from './constants';
 
 export class HostSessionManager {
 	constructor(
@@ -15,13 +16,15 @@ export class HostSessionManager {
 	) {
 
 		vslsApi!.onDidChangeSession(async function onLiveShareSessionCHange(e: any) {
-			const sharedService: SharedService = await vslsApi.shareService(LiveShareSharedServiceName);
+			const sharedService: SharedService = await vslsApi.shareService(LiveShareServiceName);
 			if (!sharedService) {
 				vscode.window.showErrorMessage('Could not create a shared service. You have to set "liveshare.features" to "experimental" in your user settings in order to use this extension.');
 				return;
 			}
 
 			new ConnectionProvider(true, sharedService);
+
+			new StatusProvider(true, sharedService);
 		});
 
 		// context.subscriptions.push(sharedService.onDidChangeIsServiceAvailable(available => {
