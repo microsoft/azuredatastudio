@@ -28,7 +28,7 @@ export interface ITreeItem extends vsITreeItem {
 
 export interface ITreeView extends vsITreeView {
 
-	collapse(itemOrItems: ITreeItem | ITreeItem[]): Thenable<void>;
+	collapse(itemOrItems: ITreeItem): boolean;
 
 }
 

@@ -41,7 +41,8 @@ CommandsRegistry.registerCommand({
 			return oeService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
 				const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 				// we need to collapse it then refresh it so that the tree doesn't try and use it's cache next time the user expands the node
-				return treeView.collapse(args.$treeItem).then(() => treeView.refresh([args.$treeItem]).then(() => true));
+				treeView.collapse(args.$treeItem);
+				treeView.refresh([args.$treeItem]).then(() => true);
 			});
 		}
 		return Promise.resolve(true);
