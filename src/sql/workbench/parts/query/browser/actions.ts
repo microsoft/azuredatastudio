@@ -211,7 +211,7 @@ export class ChartDataAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
-		if (product.quality !== 'stable' && product.quality !== 'insiders') {
+		if (product.quality !== 'stable') {
 			this.extensionTipsService.promptVisualizerExtensions();
 		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
