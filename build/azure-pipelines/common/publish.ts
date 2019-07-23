@@ -215,11 +215,15 @@ async function publish(commit: string, quality: string, platform: string, type: 
 
 	console.log('Asset:', JSON.stringify(asset, null, '  '));
 
+	// {{SQL CARBON EDIT}}
+	// Insiders: nightly build from master
+	const isReleased = (quality === 'insider' && /^master$|^refs\/heads\/master$/.test(sourceBranch) && /Project Collection Service Accounts|Microsoft.VisualStudio.Services.TFS/.test(queuedBy));
+
 	const release = {
 		id: commit,
 		timestamp: (new Date()).getTime(),
 		version,
-		isReleased: false,
+		isReleased: isReleased,
 		sourceBranch,
 		queuedBy,
 		assets: [] as Array<Asset>,
