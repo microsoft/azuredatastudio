@@ -1162,8 +1162,7 @@ suite('ExtensionsActions Test', () => {
 
 		return new Promise(c => {
 			testObject.onDidChange(() => {
-				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to complete the uninstallation of this extension.') {
+				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to complete the uninstallation of this extension.') { // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 					c();
 				}
 			});
@@ -1204,8 +1203,7 @@ suite('ExtensionsActions Test', () => {
 
 		return new Promise(c => {
 			testObject.onDidChange(() => {
-				// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to enable the updated extension.') {
+				if (testObject.enabled && testObject.tooltip === 'Please reload Azure Data Studio to enable the updated extension.') { // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 					c();
 				}
 			});
@@ -1447,7 +1445,7 @@ suite('ExtensionsActions Test', () => {
 		onDidInstallEvent.fire({ identifier: remoteExtension.identifier, local: remoteExtension, operation: InstallOperation.Install });
 
 		assert.ok(testObject.enabled);
-		assert.equal(testObject.tooltip, 'Please reload Visual Studio Code to enable this extension.');
+		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to enable this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 	});
 
 	test('Test ReloadAction when ui extension is disabled on remote server and installed in local server', async () => {
@@ -1483,7 +1481,7 @@ suite('ExtensionsActions Test', () => {
 		onDidInstallEvent.fire({ identifier: localExtension.identifier, local: localExtension, operation: InstallOperation.Install });
 
 		assert.ok(testObject.enabled);
-		assert.equal(testObject.tooltip, 'Please reload Visual Studio Code to enable this extension.');
+		assert.equal(testObject.tooltip, 'Please reload Azure Data Studio to enable this extension.'); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 	});
 
 	test('Test remote install action is enabled for local workspace extension', async () => {
