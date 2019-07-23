@@ -1,12 +1,13 @@
-// /*---------------------------------------------------------------------------------------------
-//  *  Copyright (c) Microsoft Corporation. All rights reserved.
-//  *  Licensed under the Source EULA. See License.txt in the project root for license information.
-//  *--------------------------------------------------------------------------------------------*/
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
 import { LiveShare, SharedServiceProxy } from './liveshare';
 import { ConnectionProvider } from './providers/connectionProvider';
 import { LiveShareSharedServiceName } from './constants';
+import { QueryProvider } from './providers/queryProvider';
 
 declare var require: any;
 let vsls = require('vsls');
@@ -32,7 +33,11 @@ export class GuestSessionManager {
 				return;
 			}
 
-			new ConnectionProvider(false, sharedServiceProxy);
+			const connectionProvider = new ConnectionProvider(false);
+			connectionProvider.initialize(false, sharedServiceProxy);
+
+			const queryProvider = new QueryProvider(false);
+			queryProvider.initialize(false, sharedServiceProxy);
 		});
 	}
 

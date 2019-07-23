@@ -3,6 +3,34 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export const LiveShareProviderId: string = "ads-liveshare";
+/**
+ * Provider Constants
+ */
+export const LiveShareProviderId: string = 'ads-liveshare';
+export const LiveShareSharedServiceName: string = 'ads-liveshare';
 
-export const LiveShareSharedServiceName: string = "ads-liveshare";
+/**
+ *  Connection Provider Constants
+ */
+export const connectRequest = 'connect';
+export const disconnectRequest = 'disconnect';
+export const cancelConnectRequest = 'cancelConnect';
+export const changeDatabaseRequest = 'changeDatabase';
+export const listDatabasesRequest = 'listDatabases';
+export const getConnectionStringRequest = 'getConnectionString';
+export const buildConnectionInfoRequest = 'buildConnectionInfo';
+export const rebuildIntellisenseCacheRequest = 'rebuildIntelliSenseCache';
+
+/**
+ * Query Provider Constants
+ */
+export const cancelQueryRequest = 'cancelQuery';
+export const runQueryRequest = 'runQuery';
+export const runQueryStatementRequest = 'runQueryStatement';
+export const runQueryStringRequest = 'runQueryString';
+export const runQueryAndReturnRequest = 'runQueryAndReturn';
+export const parseSyntaxRequest = 'parseSyntax';
+export const getQueryRowsRequest = 'getQueryRows';
+export const disposeQueryRequest = 'disposeQuery';
+export const saveResultsRequest = 'saveResults';
+export const setQueryExecutionOptionsRequest = 'setQueryExecutionOptions';

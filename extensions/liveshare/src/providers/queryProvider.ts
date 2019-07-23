@@ -7,40 +7,125 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 
 import * as constants from '../constants';
+import { SharedService, SharedServiceProxy } from '../liveshare';
 
-export class QueryFeature {
+export class QueryProvider {
+	private _sharedService: SharedService;
+	private _sharedServiceProxy: SharedServiceProxy;
+
+	public constructor(private _isHost: boolean) { }
+
+	public initialize(isHost: boolean, service: any) {
+		if (this._isHost) {
+			this._sharedService = <SharedService>service;
+
+			this.registerProviderListener();
+		} else {
+			this._sharedServiceProxy = <SharedServiceProxy>service;
+
+
+			this.registerProvider();
+		}
+	}
+
+	public registerProviderListener() {
+		this._sharedService.onRequest(constants.cancelConnectRequest, (args: any) => {
+			return;
+		});
+
+		this._sharedService.onRequest(constants.runQueryRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.runQueryStatementRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.runQueryStringRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.runQueryAndReturnRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.parseSyntaxRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.getQueryRowsRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.disposeQueryRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.saveResultsRequest, (args: any) => {
+			return true;
+		});
+
+		this._sharedService.onRequest(constants.setQueryExecutionOptionsRequest, (args: any) => {
+			return true;
+		});
+	}
+
+
 	public registerProvider(): vscode.Disposable {
-
+		const self = this;
 		let runQuery = (ownerUri: string, querySelection: azdata.ISelectionData, executionPlanOptions?: azdata.ExecutionPlanOptions): Thenable<void> => {
-			return Promise.resolve(undefined);
+			return self._sharedServiceProxy.request(constants.runQueryRequest, [{
+				ownerUri: ownerUri,
+				querySelection: querySelection,
+				executionPlanOptions: executionPlanOptions
+			}]);
 		};
 
 		let cancelQuery = (ownerUri: string): Thenable<azdata.QueryCancelResult> => {
-			return Promise.resolve(undefined);
+			return self._sharedServiceProxy.request(constants.cancelQueryRequest, [{
+				ownerUri: ownerUri
+			}]);
 		};
 
 		let runQueryStatement = (ownerUri: string, line: number, column: number): Thenable<void> => {
-			return Promise.resolve();
+			return self._sharedServiceProxy.request(constants.runQueryStatementRequest, [{
+				ownerUri: ownerUri,
+				line: line,
+				column: column
+			}]);
 		};
 
 		let runQueryString = (ownerUri: string, query: string): Thenable<void> => {
-			return Promise.resolve();
+			return self._sharedServiceProxy.request(constants.runQueryStringRequest, [{
+				ownerUri: ownerUri,
+				query: query
+			}]);
 		};
 
 		let runQueryAndReturn = (ownerUri: string, queryString: string): Thenable<azdata.SimpleExecuteResult> => {
-			return Promise.resolve(undefined);
+			return self._sharedServiceProxy.request(constants.runQueryAndReturnRequest, [{
+				ownerUri: ownerUri,
+				query: queryString
+			}]);
 		};
 
 		let parseSyntax = (ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> => {
-			return Promise.resolve(undefined);
-		}
+			return self._sharedServiceProxy.request(constants.parseSyntaxRequest, [{
+				ownerUri: ownerUri,
+				query: query
+			}]);
+		};
 
 		let getQueryRows = (rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> => {
-			return Promise.resolve(undefined);
+			return self._sharedServiceProxy.request(constants.getQueryRowsRequest, [{
+				rowData: rowData
+			}]);
 		};
 
 		let disposeQuery = (ownerUri: string): Thenable<void> => {
-			return Promise.resolve();
+			return self._sharedServiceProxy.request(constants.disposeQueryRequest, [{
+				ownerUri: ownerUri
+			}]);
 		};
 
 		let registerOnQueryComplete = (handler: (result: azdata.QueryExecuteCompleteNotificationResult) => any): void => {
@@ -56,7 +141,7 @@ export class QueryFeature {
 		};
 
 		let registerOnResultSetUpdated = (handler: (resultSetInfo: azdata.QueryExecuteResultSetNotificationParams) => any): void => {
-		}
+		};
 
 		let registerOnMessage = (handler: (message: azdata.QueryExecuteMessageParams) => any): void => {
 		};

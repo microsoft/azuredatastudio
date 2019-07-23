@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import { LiveShare, SharedService } from './liveshare';
 import { ConnectionProvider } from './providers/connectionProvider';
 import { LiveShareSharedServiceName } from './constants';
+import { QueryProvider } from './providers/queryProvider';
 
 export class HostSessionManager {
 	constructor(
@@ -21,7 +22,11 @@ export class HostSessionManager {
 				return;
 			}
 
-			new ConnectionProvider(true, sharedService);
+			const connectionProvider = new ConnectionProvider(true);
+			connectionProvider.initialize(true, sharedService);
+
+			const queryProvider = new QueryProvider(true);
+			queryProvider.initialize(true, sharedService);
 		});
 
 		// context.subscriptions.push(sharedService.onDidChangeIsServiceAvailable(available => {
