@@ -31,6 +31,7 @@
 	"title.clearSearchServerResult": "Search: Clear Search Server Results",
 
 	"title.endpoints": "Service Endpoints",
+	"title.books": "Notebooks",
 
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
