@@ -6,7 +6,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, registerAction } from 'vs/platform/actions/common/actions';
 
 import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
@@ -15,12 +15,15 @@ import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 import { localize } from 'vs/nls';
-import product from 'vs/platform/product/node/product';
 import { GridOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/gridOutput.component';
 import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
 import { MimeRendererComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRenderer.component';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/markdownOutput.component';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { URI } from 'vs/base/common/uri';
+import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
+import { IWindowService } from 'vs/platform/windows/common/windows';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -45,6 +48,29 @@ actionRegistry.registerWorkbenchAction(
 	),
 	NewNotebookAction.LABEL
 );
+
+registerAction({
+	id: 'workbench.action.setWorkspaceAndOpen',
+	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
+		const viewletService = accessor.get(IViewletService);
+		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
+		const windowService = accessor.get(IWindowService);
+		let folders = [];
+		if (!options.folderPath) {
+			return;
+		}
+		folders.push(options.folderPath);
+		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
+		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
+		if (options.forceNewWindow) {
+			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+		}
+		else {
+			return windowService.reloadWindow();
+		}
+	}
+});
+
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'notebook',
