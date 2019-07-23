@@ -69,7 +69,7 @@ export class UploadFilesCommand extends ProgressCommand {
 	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
 		try {
 			let folderNode = await getNode<FolderNode>(context, this.appContext);
-			const allFilesFilter = localize('allFiles', 'All Files');
+			const allFilesFilter = localize('allFiles', "All Files");
 			let filter = {};
 			filter[allFilesFilter] = '*';
 			if (folderNode) {
