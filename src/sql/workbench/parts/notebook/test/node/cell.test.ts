@@ -10,10 +10,10 @@ import { nb } from 'azdata';
 import * as objects from 'vs/base/common/objects';
 
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ModelFactory } from 'sql/workbench/parts/notebook/node/models/modelFactory';
+import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
 import { NotebookModelStub } from './common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
-import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

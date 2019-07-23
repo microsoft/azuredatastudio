@@ -8,7 +8,7 @@ import { IConnectionProfile } from 'azdata';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/parts/notebook/node/models/notebookUtils';
+import { formatServerNameWithDatabaseNameForAttachTo, getServerFromFormattedAttachToName, getDatabaseFromFormattedAttachToName } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 suite('notebookUtils', function (): void {
