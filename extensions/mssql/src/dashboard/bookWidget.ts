@@ -100,9 +100,10 @@ async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookCo
 	// Get book contributions
 	if (bookContribution && folderUri) {
 		//remove folder if exists
-		await fs.removeSync(path.join(folderUri.path, bookContribution.name));
+		await fs.removeSync(path.join(folderUri.fsPath, bookContribution.name));
 		//copy them from the books extension:
-		const destinationFolder = path.join(folderUri.path, bookContribution.name);
+		const destinationFolder = path.join(folderUri.fsPath, bookContribution.name);
+		//make directory for each contribution book.
 		fs.mkdirSync(destinationFolder);
 		await fs.copy(bookContribution.path, destinationFolder);
 	}
