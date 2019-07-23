@@ -246,7 +246,7 @@ export class JupyterSession implements nb.ISession {
 					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_KNOX) ||
 					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
 				if (!clusterEndpoint) {
-					return Promise.reject(new Error(localize('connectionNotValid', 'Spark kernels require a connection to a SQL Server big data cluster master instance.')));
+					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server big data cluster master instance.")));
 				}
 				connection.options[KNOX_ENDPOINT_SERVER] = clusterEndpoint.ipAddress;
 				connection.options[KNOX_ENDPOINT_PORT] = clusterEndpoint.port;
