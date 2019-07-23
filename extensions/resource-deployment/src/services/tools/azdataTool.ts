@@ -17,7 +17,7 @@ export class AzdataTool implements ITool {
 	}
 
 	get type(): ToolType {
-		return ToolType.MSSQLCtl;
+		return ToolType.Azdata;
 	}
 
 	get displayName(): string {
