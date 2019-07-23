@@ -3,12 +3,12 @@
   <file original="extensions/big-data-cluster/package" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
       <trans-unit id="description">
-        <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
-        <target state="new">Support for managing SQL Server Big Data Clusters</target>
+        <source xml:lang="en">Support for managing SQL Server big data clusters</source>
+        <target state="new">Support for managing SQL Server big data clusters</target>
       </trans-unit>
       <trans-unit id="text.sqlServerBigDataClusters">
-        <source xml:lang="en">SQL Server Big Data Clusters</source>
-        <target state="new">SQL Server Big Data Clusters</target>
+        <source xml:lang="en">SQL Server big data clusters</source>
+        <target state="new">SQL Server big data clusters</target>
       </trans-unit>
       <trans-unit id="command.addController.title">
         <source xml:lang="en">Connect to Controller</source>
@@ -35,8 +35,8 @@
   <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
-        <source xml:lang="en">Add Big Data Cluster Controller...</source>
-        <target state="new">Add Big Data Cluster Controller...</target>
+        <source xml:lang="en">Add big data cluster controller...</source>
+        <target state="new">Add big data cluster controller...</target>
       </trans-unit>
       <trans-unit id="textConnectToController">
         <source xml:lang="en">Connect to Controller</source>

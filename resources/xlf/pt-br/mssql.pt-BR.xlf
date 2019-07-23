@@ -59,11 +59,11 @@
         <target state="translated">Abrir o Notebook</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+        <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
         <target state="translated">Tarefas e informações sobre o cluster de Big data do SQL Server</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <source xml:lang="en">SQL Server big data cluster</source>
         <target state="translated">CLUSTER DE BIG DATA DO SQL SERVER</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
@@ -655,7 +655,7 @@
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" target-language="pt-BR" datatype="plaintext">
     <body>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
+        <source xml:lang="en">Please select SQL Server with big data cluster. </source>
         <target state="translated">Selecione o SQL Server com o Cluster de Big Data.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
@@ -1023,7 +1023,7 @@
         <target state="translated">O arquivo local {0} não existia. </target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
+        <source xml:lang="en">No Sql Server big data cluster found.</source>
         <target state="translated">Não foi encontrado nenhum cluster de Big Data do SQL Server.</target>
       </trans-unit>
     </body>
