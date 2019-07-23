@@ -577,7 +577,7 @@ export class QueryModelService implements IQueryModelService {
 		}
 	}
 
-	private _fireQueryEvent(uri: string, type: QueryEventType, data?: any) {
+	private _fireQueryEvent(uri: string, type: string, data?: any) {
 		let info: QueryInfo = this._getQueryInfo(uri);
 
 		if (info.dataServiceReady) {
