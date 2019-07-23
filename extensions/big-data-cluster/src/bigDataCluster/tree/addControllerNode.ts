@@ -17,7 +17,7 @@ export class AddControllerNode extends TreeNode {
 	private readonly nodeType: string;
 
 	constructor() {
-		super(localize('textBigDataClusterControllerWithDots', 'Add big data cluster Controller...'));
+		super(localize('textBigDataClusterControllerWithDots', "Add SQL Server big data cluster controller..."));
 		this.nodeType = BdcItemType.addController;
 	}
 
