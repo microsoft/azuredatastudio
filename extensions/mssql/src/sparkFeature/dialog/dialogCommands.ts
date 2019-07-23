@@ -63,7 +63,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 		let selectedHost: string = await vscode.window.showQuickPick(displayList, {
 			placeHolder:
 				localize('sparkJobSubmission_PleaseSelectSqlWithCluster',
-					'Please select SQL Server with Big Data Cluster. ')
+					"Please select SQL Server with big data cluster.")
 		});
 		let errorMsg = localize('sparkJobSubmission_NoSqlSelected', 'No Sql Server is selected.');
 		if (!selectedHost) { throw new Error(errorMsg); }

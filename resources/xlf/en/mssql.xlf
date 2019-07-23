@@ -44,10 +44,10 @@
       <source xml:lang="en">Open Notebook</source>
     </trans-unit>
     <trans-unit id="tab.bigDataClusterDescription">
-      <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+      <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
     </trans-unit>
     <trans-unit id="title.bigDataCluster">
-      <source xml:lang="en">SQL Server Big Data Cluster</source>
+      <source xml:lang="en">SQL Server big data cluster</source>
     </trans-unit>
     <trans-unit id="title.submitSparkJob">
       <source xml:lang="en">Submit Spark Job</source>
@@ -485,7 +485,7 @@
   </body></file>
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" datatype="plaintext"><body>
     <trans-unit id="sparkJobSubmission_PleaseSelectSqlWithCluster">
-      <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
+      <source xml:lang="en">Please select SQL Server with big data cluster. </source>
     </trans-unit>
     <trans-unit id="sparkJobSubmission_NoSqlSelected">
       <source xml:lang="en">No Sql Server is selected.</source>
@@ -770,7 +770,7 @@
       <source xml:lang="en">Local file {0} does not existed. </source>
     </trans-unit>
     <trans-unit id="sparkJobSubmission_NoSqlBigDataClusterFound">
-      <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
+      <source xml:lang="en">No Sql Server big data cluster found.</source>
     </trans-unit>
   </body></file>
 </xliff>

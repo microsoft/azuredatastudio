@@ -61,11 +61,11 @@ import { IPreferencesService } from 'vs/workbench/services/preferences/common/pr
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IProductService } from 'vs/platform/product/common/product';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
-// {{SQL CARBON EDIT}}
-import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage'; // {{SQL CARBON EDIT}}
 
-function toExtensionDescription(local: ILocalExtension): IExtensionDescription {
+export function toExtensionDescription(local: ILocalExtension): IExtensionDescription {
 	return {
 		identifier: new ExtensionIdentifier(local.identifier.id),
 		isBuiltin: local.type === ExtensionType.System,
@@ -76,7 +76,8 @@ function toExtensionDescription(local: ILocalExtension): IExtensionDescription {
 	};
 }
 
-const promptDownloadManually = (extension: IGalleryExtension | undefined, message: string, error: Error, instantiationService: IInstantiationService, notificationService: INotificationService, openerService: IOpenerService, productService: IProductService) => {
+const promptDownloadManually = (extension: IGalleryExtension | undefined, message: string, error: Error,
+	instantiationService: IInstantiationService, notificationService: INotificationService, openerService: IOpenerService, productService: IProductService) => {
 	if (!extension || error.name === INSTALL_ERROR_INCOMPATIBLE || error.name === INSTALL_ERROR_MALICIOUS || !productService.extensionsGallery) {
 		return Promise.reject(error);
 	} else {
@@ -1182,9 +1183,7 @@ export class ReloadAction extends ExtensionAction {
 		@IWindowService private readonly windowService: IWindowService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
-		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IProductService private readonly productService: IProductService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
 	) {
 		super('extensions.reload', localize('reloadAction', "Reload"), ReloadAction.DisabledClass, false);
 		this._register(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
@@ -1232,8 +1231,9 @@ export class ReloadAction extends ExtensionAction {
 		}
 		if (this.extension.local) {
 			const isEnabled = this.extensionEnablementService.isEnabled(this.extension.local);
+
+			// Extension is runningÎ
 			if (runningExtension) {
-				// Extension is running
 				if (isEnabled) {
 					if (!this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
 						if (isSameExtensionRunning) {
@@ -1259,39 +1259,27 @@ export class ReloadAction extends ExtensionAction {
 					}
 				}
 				return;
-			} else {
-				// Extension is not running
+			}
+
+			// Extension is not running
+			else {
 				if (isEnabled && !this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
 					this.enabled = true;
 					this.label = localize('reloadRequired', "Reload Required");
 					this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 					return;
 				}
-				if (this.extensionManagementServerService.localExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer) {
-					const uiExtension = isUIExtension(this.extension.local.manifest, this.productService, this.configurationService);
-					// Local Workspace Extension
-					if (!uiExtension && this.extension.server === this.extensionManagementServerService.localExtensionManagementServer) {
-						const remoteExtension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === this.extensionManagementServerService.remoteExtensionManagementServer)[0];
-						// Extension exist in remote and enabled
-						if (remoteExtension && remoteExtension.local && this.extensionEnablementService.isEnabled(remoteExtension.local)) {
-							this.enabled = true;
-							this.label = localize('reloadRequired', "Reload Required");
-							this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-							alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-							return;
-						}
-					}
-					// Remote UI Extension
-					if (uiExtension && this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer) {
-						const localExtension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === this.extensionManagementServerService.localExtensionManagementServer)[0];
-						// Extension exist in local and enabled
-						if (localExtension && localExtension.local && this.extensionEnablementService.isEnabled(localExtension.local)) {
-							this.enabled = true;
-							this.label = localize('reloadRequired', "Reload Required");
-							this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-							alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-							return;
-						}
+
+				const otherServer = this.extension.server ? this.extension.server === this.extensionManagementServerService.localExtensionManagementServer ? this.extensionManagementServerService.remoteExtensionManagementServer : this.extensionManagementServerService.localExtensionManagementServer : null;
+				if (otherServer && this.extension.enablementState === EnablementState.DisabledByExtensionKind) {
+					const extensionInOtherServer = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier) && e.server === otherServer)[0];
+					// Same extension in other server exists and
+					if (extensionInOtherServer && extensionInOtherServer.local && this.extensionEnablementService.isEnabled(extensionInOtherServer.local)) {
+						this.enabled = true;
+						this.label = localize('reloadRequired', "Reload Required");
+						this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension."); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						alert(localize('installExtensionComplete', "Installing extension {0} is completed. Please reload Azure Data Studio to enable it.", this.extension.displayName)); // {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
+						return;
 					}
 				}
 			}
@@ -2548,7 +2536,7 @@ export class MaliciousStatusLabelAction extends ExtensionAction {
 	}
 }
 
-export class DisabledLabelAction extends ExtensionAction {
+export class ExtensionToolTipAction extends ExtensionAction {
 
 	private static readonly Class = 'disable-status';
 
@@ -2557,10 +2545,12 @@ export class DisabledLabelAction extends ExtensionAction {
 
 	constructor(
 		private readonly warningAction: SystemDisabledWarningAction,
+		private readonly reloadAction: ReloadAction,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
 		@IExtensionService private readonly extensionService: IExtensionService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
 	) {
-		super('extensions.disabledLabel', warningAction.tooltip, `${DisabledLabelAction.Class} hide`, false);
+		super('extensions.tooltip', warningAction.tooltip, `${ExtensionToolTipAction.Class} hide`, false);
 		this._register(warningAction.onDidChange(() => this.update(), this));
 		this._register(this.extensionService.onDidChangeExtensions(this.updateRunningExtensions, this));
 		this.updateRunningExtensions();
@@ -2571,25 +2561,51 @@ export class DisabledLabelAction extends ExtensionAction {
 	}
 
 	update(): void {
-		this.class = `${DisabledLabelAction.Class} hide`;
-		this.label = '';
+		this.label = this.getTooltip();
+		this.class = ExtensionToolTipAction.Class;
+		if (!this.label) {
+			this.class = `${ExtensionToolTipAction.Class} hide`;
+		}
+	}
+
+	private getTooltip(): string {
+		if (!this.extension) {
+			return '';
+		}
+		if (this.reloadAction.enabled) {
+			return this.reloadAction.tooltip;
+		}
 		if (this.warningAction.tooltip) {
-			this.class = DisabledLabelAction.Class;
-			this.label = this.warningAction.tooltip;
-			return;
+			return this.warningAction.tooltip;
 		}
-		if (this.extension && this.extension.local && isLanguagePackExtension(this.extension.local.manifest)) {
-			return;
-		}
-		if (this.extension && this.extension.local && this._runningExtensions) {
+		if (this.extension && this.extension.local && this.extension.state === ExtensionState.Installed && this._runningExtensions) {
+			const isRunning = this._runningExtensions.some(e => areSameExtensions({ id: e.identifier.value, uuid: e.uuid }, this.extension.identifier));
 			const isEnabled = this.extensionEnablementService.isEnabled(this.extension.local);
-			const isExtensionRunning = this._runningExtensions.some(e => areSameExtensions({ id: e.identifier.value, uuid: e.uuid }, this.extension.identifier));
-			if (!isExtensionRunning && !isEnabled && this.extensionEnablementService.canChangeEnablement(this.extension.local)) {
-				this.class = DisabledLabelAction.Class;
-				this.label = localize('disabled by user', "This extension is disabled by the user.");
-				return;
+
+			if (isEnabled && isRunning) {
+				if (this.extensionManagementServerService.localExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer) {
+					if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer) {
+						return localize('extension enabled on remote', "Extension is enabled on '{0}'", this.extension.server.label);
+					}
+				}
+				if (this.extension.enablementState === EnablementState.EnabledGlobally) {
+					return localize('globally enabled', "This extension is enabled globally.");
+				}
+				if (this.extension.enablementState === EnablementState.EnabledWorkspace) {
+					return localize('workspace enabled', "This extension is enabled for this workspace by the user.");
+				}
+			}
+
+			if (!isEnabled && !isRunning) {
+				if (this.extension.enablementState === EnablementState.DisabledGlobally) {
+					return localize('globally disabled', "This extension is disabled globally by the user.");
+				}
+				if (this.extension.enablementState === EnablementState.DisabledWorkspace) {
+					return localize('workspace disabled', "This extension is disabled for this workspace by the user.");
+				}
 			}
 		}
+		return '';
 	}
 
 	run(): Promise<any> {
@@ -2832,6 +2848,7 @@ export class InstallVSIXAction extends Action {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IWindowService private readonly windowService: IWindowService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		// {{SQL CARBON EDIT}}
