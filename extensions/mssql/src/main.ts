@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import * as path from 'path';
 import * as os from 'os';
 import * as nls from 'vscode-nls';
+
 const localize = nls.loadMessageBundle();
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
@@ -35,6 +36,7 @@ import { registerSearchServerCommand } from './objectExplorerNodeProvider/comman
 import { MssqlIconProvider } from './iconProvider';
 import { registerServiceEndpoints } from './dashboard/serviceEndpoints';
 import { getBookExtensionContributions } from './dashboard/bookExtensions';
+import { registerBooksWidget } from './dashboard/bookWidget';
 
 const baseConfig = require('./config.json');
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
@@ -120,6 +122,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
 	const bookContributionProvider = getBookExtensionContributions(context);
 	context.subscriptions.push(bookContributionProvider);
+
+	registerBooksWidget(bookContributionProvider);
 
 	let api: MssqlExtensionApi = {
 		getMssqlObjectExplorerBrowser(): MssqlObjectExplorerBrowser {

@@ -6,7 +6,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, registerAction } from 'vs/platform/actions/common/actions';
 
 import { NotebookInput } from 'sql/workbench/parts/notebook/node/notebookInput';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/electron-browser/notebookEditor';
@@ -21,6 +21,11 @@ import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/outputs/plot
 import { registerComponentType } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRegistry';
 import { MimeRendererComponent } from 'sql/workbench/parts/notebook/electron-browser/outputs/mimeRenderer.component';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/electron-browser/outputs/markdownOutput.component';
+import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
+import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IWindowService } from 'vs/platform/windows/common/windows';
+import { Uri } from 'vscode';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -45,6 +50,29 @@ actionRegistry.registerWorkbenchAction(
 	),
 	NewNotebookAction.LABEL
 );
+
+registerAction({
+	id: 'workbench.action.setWorkspaceAndOpen',
+	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: Uri }) => {
+		const viewletService = accessor.get(IViewletService);
+		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
+		const windowService = accessor.get(IWindowService);
+		let folders = [];
+		if (!options.folderPath) {
+			return;
+		}
+		folders.push(options.folderPath);
+		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
+		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
+		if (options.forceNewWindow) {
+			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+		}
+		else {
+			return windowService.reloadWindow();
+		}
+	}
+});
+
 const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'notebook',
