@@ -224,15 +224,15 @@ const sqlBuiltInExtensions = [
 	'import',
 	'profiler',
 	'admin-pack',
-	'big-data-cluster',
 	'dacpac',
 	'schema-compare',
 	'cms'
 ];
 
-// make resource deployment extension only available in insiders
+// make resource deployment and BDC extension only available in insiders
 if (process.env['VSCODE_QUALITY'] === 'stable') {
 	sqlBuiltInExtensions.push('resource-deployment');
+	sqlBuiltInExtensions.push('big-data-cluster');
 }
 
 
