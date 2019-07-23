@@ -16,7 +16,6 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 
 import * as azdata from 'azdata';
 import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
-import { IWebviewEditorService } from 'vs/workbench/contrib/webview/browser/webviewEditorService';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -42,7 +41,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 		@Inject(WIDGET_CONFIG) protected readonly _config: WidgetConfig,
 		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
 		@Inject(IDashboardViewService) private readonly dashboardViewService: IDashboardViewService,
-		@Inject(IWebviewEditorService) private readonly webviewService: IWebviewService
+		@Inject(IWebviewService) private readonly webviewService: IWebviewService
 	) {
 		super();
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
