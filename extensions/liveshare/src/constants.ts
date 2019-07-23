@@ -4,3 +4,5 @@
  *--------------------------------------------------------------------------------------------*/
 
 export const LiveShareProviderId: string = "ads-liveshare";
+
+export const LiveShareSharedServiceName: string = "ads-liveshare";
