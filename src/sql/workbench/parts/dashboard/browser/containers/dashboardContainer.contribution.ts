@@ -11,7 +11,7 @@ import { registerContainer, generateContainerTypeSchemaProperties } from 'sql/pl
 import { NAV_SECTION, validateNavSectionContributionAndRegisterIcon } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import { WIDGETS_CONTAINER, validateWidgetContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER, validateGridContainerContribution } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
-import { WEBVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
+import { WEBVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 
 const containerTypes = [
 	WIDGETS_CONTAINER,

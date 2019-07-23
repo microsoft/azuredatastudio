@@ -15,11 +15,11 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { localize } from 'vs/nls';
 import { IDisposable, toDisposable } from 'vs/base/common/lifecycle';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/common/webview';
+import { generateUuid } from 'vs/base/common/uuid';
 
 export class WebViewDialog extends Modal {
 
@@ -27,7 +27,7 @@ export class WebViewDialog extends Modal {
 	private _okButton: Button;
 	private _okLabel: string;
 	private _closeLabel: string;
-	private _webview: ElectronWebviewBasedWebview;
+	private _webview: WebviewElement;
 	private _html: string;
 	private _headerTitle: string;
 
@@ -38,6 +38,8 @@ export class WebViewDialog extends Modal {
 	private contentDisposables: IDisposable[] = [];
 	private _onMessage = new Emitter<any>();
 
+	private readonly id = generateUuid();
+
 	constructor(
 		@IThemeService themeService: IThemeService,
 		@IClipboardService clipboardService: IClipboardService,
@@ -45,7 +47,7 @@ export class WebViewDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@IInstantiationService private _instantiationService: IInstantiationService
+		@IWebviewService private readonly webviewService: IWebviewService
 	) {
 		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', 'OK');
@@ -87,7 +89,7 @@ export class WebViewDialog extends Modal {
 	protected renderBody(container: HTMLElement) {
 		this._body = DOM.append(container, DOM.$('div.webview-dialog'));
 
-		this._webview = this._instantiationService.createInstance(ElectronWebviewBasedWebview,
+		this._webview = this.webviewService.createWebview(this.id,
 			{},
 			{
 				allowScripts: true
