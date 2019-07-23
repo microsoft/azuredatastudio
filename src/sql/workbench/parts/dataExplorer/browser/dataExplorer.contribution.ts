@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/media/actionBarLabel';
+import 'vs/css!./media/dataExplorer.contribution';
 import { localize } from 'vs/nls';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
