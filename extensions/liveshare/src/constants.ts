@@ -7,7 +7,7 @@
  * Provider Constants
  */
 export const LiveShareProviderId: string = 'ads-liveshare';
-export const LiveShareSharedServiceName: string = 'ads-liveshare';
+export const LiveShareServiceName: string = 'ads-liveshare';
 
 /**
  *  Connection Provider Constants
@@ -34,3 +34,4 @@ export const getQueryRowsRequest = 'getQueryRows';
 export const disposeQueryRequest = 'disposeQuery';
 export const saveResultsRequest = 'saveResults';
 export const setQueryExecutionOptionsRequest = 'setQueryExecutionOptions';
+
