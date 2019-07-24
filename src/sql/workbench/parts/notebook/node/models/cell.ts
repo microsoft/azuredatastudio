@@ -21,12 +21,14 @@ import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { generateUuid } from 'vs/base/common/uuid';
 let modelId = 0;
 
 export class CellModel implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string;
 	private _language: string;
+	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
 	private _isEditMode: boolean;
@@ -44,7 +46,7 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; };
+	private _metadata: { language?: string, cellGuid?: string; };
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -175,6 +177,13 @@ export class CellModel implements ICellModel {
 			return this._language;
 		}
 		return this.options.notebook.language;
+	}
+
+	public get cellGuid(): string {
+		if (!this._cellGuid) {
+			this._cellGuid = generateUuid();
+		}
+		return this._cellGuid;
 	}
 
 	public setOverrideLanguage(newLanguage: string) {
@@ -519,9 +528,10 @@ export class CellModel implements ICellModel {
 			source: this._source,
 			metadata: this._metadata || {}
 		};
+		cellJson.metadata.cellGuid = this._cellGuid;
 		if (this._cellType === CellTypes.Code) {
-			cellJson.metadata.language = this._language,
-				cellJson.outputs = this._outputs;
+			cellJson.metadata.language = this._language;
+			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
 		}
 		return cellJson as nb.ICellContents;
@@ -535,6 +545,7 @@ export class CellModel implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = Array.isArray(cell.source) ? cell.source.join('') : cell.source;
 		this._metadata = cell.metadata;
+		this._cellGuid = cell.metadata.cellGuid ? cell.metadata.cellGuid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {

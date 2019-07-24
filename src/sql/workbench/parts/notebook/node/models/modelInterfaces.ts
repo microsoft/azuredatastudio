@@ -377,7 +377,7 @@ export interface INotebookModel {
 	/**
 	 * Serialize notebook cell content to JSON
 	 */
-	toJSON(): nb.INotebookContents;
+	toJSON(type?: NotebookChangeType): nb.INotebookContents;
 
 	/**
 	 * Notifies the notebook of a change in the cell
@@ -449,6 +449,7 @@ export interface ICellModel {
 	cellUri: URI;
 	id: string;
 	readonly language: string;
+	readonly cellGuid: string;
 	source: string;
 	cellType: CellType;
 	trustedMode: boolean;
@@ -532,4 +533,12 @@ export namespace notebookConstants {
 		language: 'sql',
 		display_name: sqlKernel
 	});
+}
+
+export interface INotebookContentsEditable {
+
+	cells: nb.ICellContents[];
+	metadata: nb.INotebookMetadata;
+	nbformat: number;
+	nbformat_minor: number;
 }
