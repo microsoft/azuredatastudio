@@ -374,6 +374,7 @@ function hygiene(some) {
 		// {{SQL CARBON EDIT}}
 		.pipe(filter(useStrictFilter))
 		.pipe(useStrict)
+		// Only look at files under the sql folder since we don't want to cause conflicts with VS code
 		.pipe(filter(sqlFilter))
 		.pipe(localizeDoubleQuotes);
 
