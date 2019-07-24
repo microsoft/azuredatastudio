@@ -12,7 +12,7 @@ const withDefaults = require('../shared.webpack.config');
 module.exports = withDefaults({
 	context: __dirname,
 	entry: {
-		main: './src/extension.ts'
+		extension: './src/extension.ts'
 	},
 	externals: {
 	}
