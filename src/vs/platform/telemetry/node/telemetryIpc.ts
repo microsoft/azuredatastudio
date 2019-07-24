@@ -37,8 +37,7 @@ export class TelemetryAppenderClient implements ITelemetryAppender {
 		return Promise.resolve(null);
 	}
 
-	flush(): Promise<void> {
+	dispose(): any {
 		// TODO
-		return Promise.resolve();
 	}
 }

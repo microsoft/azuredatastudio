@@ -73,7 +73,7 @@ export class AppInsightsAppender implements ITelemetryAppender {
 		});
 	}
 
-	flush(): Promise<any> {
+	dispose(): Promise<any> | undefined {
 		if (this._aiClient) {
 			return new Promise(resolve => {
 				this._aiClient!.flush({
@@ -85,6 +85,6 @@ export class AppInsightsAppender implements ITelemetryAppender {
 				});
 			});
 		}
-		return Promise.resolve(undefined);
+		return undefined;
 	}
 }

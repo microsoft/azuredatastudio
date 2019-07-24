@@ -30,7 +30,7 @@ class TestTelemetryAppender implements ITelemetryAppender {
 		return this.events.length;
 	}
 
-	public flush(): Promise<any> {
+	public dispose(): Promise<any> {
 		this.isDisposed = true;
 		return Promise.resolve(null);
 	}
