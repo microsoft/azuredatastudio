@@ -8,7 +8,7 @@ import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
-import { DeleteAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
+import { DeleteAction, OpenQueryAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
 
 /**
  *  Provides actions for the history tasks
@@ -46,7 +46,7 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 		const actions = [];
 
 		actions.push(this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL));
-
+		actions.push(this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL));
 		return actions;
 	}
 }

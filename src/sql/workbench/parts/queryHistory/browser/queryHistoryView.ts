@@ -132,7 +132,10 @@ export class QueryHistoryView extends Disposable {
 
 		//Get the tree Input
 		// let treeInput = this._taskService.getAllTasks();
-		const treeInput: QueryHistoryNode[] = this._nodes;
+		let node: QueryHistoryNode = new QueryHistoryNode('test', 'test123', new Date());
+		node.children = this._nodes;
+		node.hasChildren = true;
+		const treeInput: QueryHistoryNode = node;
 		if (treeInput) {
 			this._tree.setInput(treeInput).then(() => {
 				// Make sure to expand all folders that where expanded in the previous session
