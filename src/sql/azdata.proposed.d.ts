@@ -4984,7 +4984,7 @@ declare module 'azdata' {
 		 * The contents of a requestExecute message sent to the server.
 		 */
 		export interface IExecuteRequest extends IExecuteOptions {
-			code: string;
+			code: string | string[];
 		}
 
 		/**
