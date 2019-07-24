@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { generateUuid } from 'vs/base/common/uuid';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 
 export class QueryHistoryNode {
@@ -18,11 +19,14 @@ export class QueryHistoryNode {
 	 */
 	public children: QueryHistoryNode[];
 
+	public database: string;
+
 	constructor(
 		public queryText: string,
-		public connectionId: string,
+		public connectionProfile: IConnectionProfile,
 		public startTime: Date,
 		public id: string = undefined) {
+		this.database = connectionProfile ? connectionProfile.databaseName : '';
 		this.id = this.id || generateUuid();
 	}
 }

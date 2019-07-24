@@ -6,17 +6,14 @@
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
 import * as dom from 'vs/base/browser/dom';
-import { localize } from 'vs/nls';
-import * as Utils from 'sql/platform/connection/common/utils';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 const $ = dom.$;
 
 export interface IQueryHistoryItemTemplateData {
 	root: HTMLElement;
-	icon: HTMLElement;
 	label: HTMLSpanElement;
-	description: HTMLSpanElement;
+	connectionInfo: HTMLSpanElement;
 	time: HTMLSpanElement;
 	disposables: Array<IDisposable>;
 }
@@ -49,10 +46,9 @@ export class QueryHistoryRenderer implements IRenderer {
 	 */
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): any {
 		const taskTemplate: IQueryHistoryItemTemplateData = Object.create(null);
-		taskTemplate.root = dom.append(container, $('.task-group'));
-		taskTemplate.icon = dom.append(taskTemplate.root, $('.icon.task-icon'));
+		taskTemplate.root = dom.append(container, $('.query-history-item'));
 		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
-		taskTemplate.description = dom.append(taskTemplate.root, $('.description'));
+		taskTemplate.connectionInfo = dom.append(taskTemplate.root, $('.connection-info'));
 		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));
 		taskTemplate.disposables = [];
 		return taskTemplate;
@@ -67,10 +63,10 @@ export class QueryHistoryRenderer implements IRenderer {
 			templateData.label.title = templateData.label.textContent;
 
 			// Determine the target name and set hover text equal to that
-			const description = element.connectionId;
-			templateData.description.textContent = description;
-			templateData.description.title = templateData.description.textContent;
-			templateData.time.textContent = element.startTime.toLocaleDateString();
+			const connectionInfo = `${element.connectionProfile.serverName}|${element.database}`;
+			templateData.connectionInfo.textContent = connectionInfo;
+			templateData.connectionInfo.title = templateData.connectionInfo.textContent;
+			templateData.time.textContent = element.startTime.toLocaleString();
 			templateData.time.title = templateData.time.textContent;
 
 		}
