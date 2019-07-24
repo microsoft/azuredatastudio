@@ -6,7 +6,11 @@
 import { generateUuid } from 'vs/base/common/uuid';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
-
+export enum QueryStatus {
+	Succeeded = 0,
+	Failed = 1,
+	Nothing = 2
+}
 export class QueryHistoryNode {
 
 	/**
@@ -21,14 +25,16 @@ export class QueryHistoryNode {
 
 	public database: string;
 
-	public success: boolean = true;
+	public status: QueryStatus;
 
 	constructor(
 		public queryText: string,
 		public connectionProfile: IConnectionProfile,
 		public startTime: Date,
-		public id: string = undefined) {
+		public id: string = undefined,
+		status?: QueryStatus) {
 		this.database = connectionProfile ? connectionProfile.databaseName : '';
 		this.id = this.id || generateUuid();
+		this.status = status;
 	}
 }

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import { QueryHistoryNode, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryNode';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -67,11 +67,11 @@ export class QueryHistoryRenderer implements IRenderer {
 		if (element) {
 
 			templateData.icon.className = 'query-history-icon';
-			if (element.success) {
+			if (element.status === QueryStatus.Succeeded) {
 				dom.addClass(templateData.icon, QueryHistoryRenderer.SUCCESS_CLASS);
 				taskStatus = localize('succeeded', "succeeded");
 			}
-			else {
+			else if (element.status === QueryStatus.Failed) {
 				dom.addClass(templateData.icon, QueryHistoryRenderer.FAIL_CLASS);
 				taskStatus = localize('failed', "failed");
 			}
