@@ -18,7 +18,7 @@ import { QueryHistoryRenderer } from 'sql/workbench/parts/queryHistory/browser/q
 import { QueryHistoryDataSource } from 'sql/workbench/parts/queryHistory/browser/queryHistoryDataSource';
 import { QueryHistoryController } from 'sql/workbench/parts/queryHistory/browser/queryHistoryController';
 import { QueryHistoryActionProvider } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActionProvider';
-import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import { QueryHistoryNode, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryNode';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { URI } from 'vs/base/common/uri';
@@ -71,11 +71,20 @@ export class QueryHistoryView extends Disposable {
 					e.queryInfo.selection[0].endLine,
 					e.queryInfo.selection[0].endColumn + 1));
 
-				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date());
+				// exapnd as required
+				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date(), undefined, QueryStatus.Succeeded);
 				newNode.hasChildren = true;
 				if (text.length > 100) {
-					newNode.children = [new QueryHistoryNode(text, undefined, undefined)];
+					newNode.children = [new QueryHistoryNode(text, undefined, undefined, undefined, QueryStatus.Nothing)];
 				}
+
+				// icon as required (for now logic is if any message has error query has error)
+				let error: boolean = false;
+				e.queryInfo.queryRunner.messages.forEach(x => error = error || x.isError);
+				if (error) {
+					newNode.status = QueryStatus.Failed;
+				}
+
 				this._nodes = [newNode].concat(this._nodes);
 				this.refreshTree();
 			}
