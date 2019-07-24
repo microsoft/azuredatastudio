@@ -185,8 +185,9 @@ const tslintFilter = [
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
-	'!extensions/html-language-features/server/lib/jquery.d.ts'
+	'!extensions/html-language-features/server/lib/jquery.d.ts',
+	// {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
 ];
 
 // {{SQL CARBON EDIT}}

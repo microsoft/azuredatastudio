@@ -148,6 +148,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 		let controllersWithoutPassword = controllers.map(e => {
 			return <IControllerInfoSlim>{
+				clusterName: e.clusterName,
 				url: e.url,
 				username: e.username,
 				rememberPassword: e.rememberPassword
