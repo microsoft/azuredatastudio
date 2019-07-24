@@ -195,6 +195,10 @@ const useStrictFilter = [
 	'src/**'
 ];
 
+const sqlFilter = [
+	'src/sql/**'
+];
+
 // {{SQL CARBON EDIT}}
 const copyrightHeaderLines = [
 	'/*---------------------------------------------------------------------------------------------',
@@ -284,6 +288,23 @@ function hygiene(some) {
 
 		this.emit('data', file);
 	});
+
+	const localizeDoubleQuotes = es.through(function (file) {
+		const lines = file.__lines;
+		lines.forEach((line, i) => {
+			if (/localize/.test(line)) {
+				//console.error(file.relative + '(' + (i + 1) + ',1): Message parameter to localize calls should be double-quotes');
+				//errorCount++;
+			}
+			if (/localize\(['"].*['"],\s'.*'\)/.test(line)) {
+				console.error(file.relative + '(' + (i + 1) + ',1): Message parameter to localize calls should be double-quotes');
+				errorCount++;
+			}
+		});
+
+		this.emit('data', file);
+	});
+
 	// {{SQL CARBON EDIT}} END
 
 	const formatting = es.map(function (file, cb) {
@@ -352,7 +373,9 @@ function hygiene(some) {
 		.pipe(tsl)
 		// {{SQL CARBON EDIT}}
 		.pipe(filter(useStrictFilter))
-		.pipe(useStrict);
+		.pipe(useStrict)
+		.pipe(filter(sqlFilter))
+		.pipe(localizeDoubleQuotes);
 
 	const javascript = result
 		.pipe(filter(eslintFilter))
