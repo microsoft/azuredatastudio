@@ -34,6 +34,7 @@ export interface IQueryPlanInfo {
 export interface IQueryEvent {
 	type: QueryEventType;
 	uri: string;
+	queryInfo: QueryInfo;
 	params?: any;
 }
 

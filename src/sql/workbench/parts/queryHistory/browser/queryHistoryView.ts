@@ -22,7 +22,8 @@ import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryN
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-
+import * as vscode from 'vscode';
+import { URI } from 'vs/base/common/uri';
 /**
  * QueryHistoryView implements the dynamic tree view for displaying Query History
  */
@@ -67,6 +68,12 @@ export class QueryHistoryView extends Disposable {
 
 		this._register(this._queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (e.type === QueryEventType.QueryStop) {
+				if (URI.isUri(e.uri)) {
+					openTextDocument(e.uri).then((doc) => {
+						let text = doc.getText();
+					});
+				}
+
 				this._nodes.push(new QueryHistoryNode('SELECT * FROM sys.tables', 'abc123', new Date()));
 				this.refreshTree();
 			}
