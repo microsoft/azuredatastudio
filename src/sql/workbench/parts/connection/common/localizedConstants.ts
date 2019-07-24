@@ -5,6 +5,6 @@
 
 import { localize } from 'vs/nls';
 
-export const onDidConnectMessage = localize('onDidConnectMessage', 'Connected to');
-export const onDidDisconnectMessage = localize('onDidDisconnectMessage', 'Disconnected');
-export const unsavedGroupLabel = localize('unsavedGroupLabel', 'Unsaved Connections');
+export const onDidConnectMessage = localize('onDidConnectMessage', "Connected to");
+export const onDidDisconnectMessage = localize('onDidDisconnectMessage', "Disconnected");
+export const unsavedGroupLabel = localize('unsavedGroupLabel', "Unsaved Connections");

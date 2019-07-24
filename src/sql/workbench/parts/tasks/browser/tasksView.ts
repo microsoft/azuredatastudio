@@ -53,7 +53,7 @@ export class TaskHistoryView {
 		if (taskNode && taskNode.hasChildren) {
 			hide(this._messages);
 		}
-		let noTaskMessage = localize('noTaskMessage', 'No task history to display.');
+		let noTaskMessage = localize('noTaskMessage', "No task history to display.");
 		append(this._messages, $('span')).innerText = noTaskMessage;
 
 		this._tree = this.createTaskHistoryTree(container, this._instantiationService);
@@ -143,7 +143,7 @@ export class TaskHistoryView {
 			if (isDoubleClick) {
 				if (task.status === TaskStatus.Failed) {
 					let err = task.taskName + ': ' + task.message;
-					this._errorMessageService.showDialog(Severity.Error, localize('taskError', 'Task error'), err);
+					this._errorMessageService.showDialog(Severity.Error, localize('taskError', "Task error"), err);
 				}
 			}
 		}

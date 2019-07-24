@@ -81,7 +81,7 @@ export class OEAction extends ExecuteCommandAction {
 
 export class ManageConnectionAction extends Action {
 	public static ID = 'objectExplorer.manage';
-	public static LABEL = localize('ManageAction', 'Manage');
+	public static LABEL = localize('ManageAction', "Manage");
 
 	private _treeSelectionHandler: TreeSelectionHandler;
 

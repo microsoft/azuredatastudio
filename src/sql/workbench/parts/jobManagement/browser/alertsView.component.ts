@@ -37,16 +37,16 @@ export class AlertsViewComponent extends JobManagementView implements OnInit, On
 
 	private columns: Array<Slick.Column<any>> = [
 		{
-			name: nls.localize('jobAlertColumns.name', 'Name'),
+			name: nls.localize('jobAlertColumns.name', "Name"),
 			field: 'name',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
 			width: 500,
 			id: 'name'
 		},
-		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', 'Last Occurrence'), field: 'lastOccurrenceDate', width: 150, id: 'lastOccurrenceDate' },
-		{ name: nls.localize('jobAlertColumns.enabled', 'Enabled'), field: 'enabled', width: 80, id: 'enabled' },
-		{ name: nls.localize('jobAlertColumns.delayBetweenResponses', 'Delay Between Responses (in secs)'), field: 'delayBetweenResponses', width: 200, id: 'delayBetweenResponses' },
-		{ name: nls.localize('jobAlertColumns.categoryName', 'Category Name'), field: 'categoryName', width: 250, id: 'categoryName' },
+		{ name: nls.localize('jobAlertColumns.lastOccurrenceDate', "Last Occurrence"), field: 'lastOccurrenceDate', width: 150, id: 'lastOccurrenceDate' },
+		{ name: nls.localize('jobAlertColumns.enabled', "Enabled"), field: 'enabled', width: 80, id: 'enabled' },
+		{ name: nls.localize('jobAlertColumns.delayBetweenResponses', "Delay Between Responses (in secs)"), field: 'delayBetweenResponses', width: 200, id: 'delayBetweenResponses' },
+		{ name: nls.localize('jobAlertColumns.categoryName', "Category Name"), field: 'categoryName', width: 250, id: 'categoryName' },
 	];
 
 	private options: Slick.GridOptions<any> = {

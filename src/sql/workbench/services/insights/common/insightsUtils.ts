@@ -41,5 +41,5 @@ export async function resolveQueryFilePath(services: ServicesAccessor, filePath:
 		}
 	}
 
-	throw Error(localize('insightsDidNotFindResolvedFile', 'Could not find query file at any of the following paths :\n {0}', resolvedFilePaths.join('\n')));
+	throw Error(localize('insightsDidNotFindResolvedFile', "Could not find query file at any of the following paths :\n {0}", resolvedFilePaths.join('\n')));
 }

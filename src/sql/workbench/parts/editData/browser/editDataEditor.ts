@@ -323,7 +323,7 @@ export class EditDataEditor extends BaseEditor {
 
 		// Create HTML Elements for the taskbar
 		let separator = Taskbar.createTaskbarSeparator();
-		let textSeparator = Taskbar.createTaskbarText(nls.localize('maxRowTaskbar', 'Max Rows:'));
+		let textSeparator = Taskbar.createTaskbarText(nls.localize('maxRowTaskbar', "Max Rows:"));
 
 		this._spinnerElement = Taskbar.createTaskbarSpinner();
 

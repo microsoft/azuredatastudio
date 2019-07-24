@@ -53,7 +53,7 @@ interface FileListElement {
 
 const LocalizedStrings = {
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
-	TARGETDATABASE: localize('targetDatabase', 'Target database')
+	TARGETDATABASE: localize('targetDatabase', "Target database")
 };
 
 export class RestoreDialog extends Modal {
@@ -161,8 +161,8 @@ export class RestoreDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let cancelLabel = localize('restoreDialog.cancel', 'Cancel');
-		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', 'Script'), () => this.restore(true));
+		let cancelLabel = localize('restoreDialog.cancel', "Cancel");
+		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', "Script"), () => this.restore(true));
 		this._restoreButton = this.addFooterButton(this._restoreLabel, () => this.restore(false));
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
@@ -217,7 +217,7 @@ export class RestoreDialog extends Modal {
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE,
-				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			}
 		);
 		this._databaseDropdown.onValueChange(s => {
@@ -331,7 +331,7 @@ export class RestoreDialog extends Modal {
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._generalTabId = this._panel.pushTab({
 			identifier: 'general',
-			title: localize('generalTitle', 'General'),
+			title: localize('generalTitle', "General"),
 			view: {
 				render: c => {
 					DOM.append(c, generalTab);
@@ -343,7 +343,7 @@ export class RestoreDialog extends Modal {
 
 		const fileTab = this._panel.pushTab({
 			identifier: 'fileContent',
-			title: localize('filesTitle', 'Files'),
+			title: localize('filesTitle', "Files"),
 			view: {
 				layout: () => { },
 				render: c => {
@@ -355,7 +355,7 @@ export class RestoreDialog extends Modal {
 
 		this._panel.pushTab({
 			identifier: 'options',
-			title: localize('optionsTitle', 'Options'),
+			title: localize('optionsTitle', "Options"),
 			view: {
 				layout: () => { },
 				render: c => {

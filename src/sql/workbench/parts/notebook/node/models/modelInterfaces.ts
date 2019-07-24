@@ -526,7 +526,7 @@ export interface ICellMagicMapper {
 export namespace notebookConstants {
 	export const SQL = 'SQL';
 	export const SQL_CONNECTION_PROVIDER = mssqlProviderName;
-	export const sqlKernel: string = localize('sqlKernel', 'SQL');
+	export const sqlKernel: string = localize('sqlKernel', "SQL");
 	export const sqlKernelSpec: nb.IKernelSpec = ({
 		name: sqlKernel,
 		language: 'sql',
