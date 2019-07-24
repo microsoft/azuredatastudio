@@ -11,7 +11,7 @@ import { IJSONSchemaSnippet } from 'vs/base/common/jsonSchema';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorContribution } from 'vs/editor/common/editorCommon';
 import { ITextModel as EditorIModel } from 'vs/editor/common/model';
-import { IEditor } from 'vs/workbench/common/editor';
+import { IEditor, ITextEditor } from 'vs/workbench/common/editor';
 import { Position } from 'vs/editor/common/core/position';
 import { CompletionItem } from 'vs/editor/common/modes';
 import { Source } from 'vs/workbench/contrib/debug/common/debugSource';
@@ -25,6 +25,8 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { TaskIdentifier } from 'vs/workbench/contrib/tasks/common/tasks';
 import { TelemetryService } from 'vs/platform/telemetry/common/telemetryService';
 import { ITerminalConfiguration } from 'vs/workbench/contrib/terminal/common/terminal';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IExternalTerminalSettings } from 'vs/workbench/contrib/externalTerminal/common/externalTerminal';
 
 export const VIEWLET_ID = 'workbench.view.debug';
 export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
@@ -54,6 +56,7 @@ export const CONTEXT_LOADED_SCRIPTS_ITEM_TYPE = new RawContextKey<string>('loade
 export const CONTEXT_FOCUSED_SESSION_IS_ATTACH = new RawContextKey<boolean>('focusedSessionIsAttach', false);
 export const CONTEXT_STEP_BACK_SUPPORTED = new RawContextKey<boolean>('stepBackSupported', false);
 export const CONTEXT_RESTART_FRAME_SUPPORTED = new RawContextKey<boolean>('restartFrameSupported', false);
+export const CONTEXT_JUMP_TO_CURSOR_SUPPORTED = new RawContextKey<boolean>('jumpToCursorSupported', false);
 
 export const EDITOR_CONTRIBUTION_ID = 'editor.contrib.debug';
 export const DEBUG_SCHEME = 'debug';
@@ -222,6 +225,9 @@ export interface IDebugSession extends ITreeElement {
 	setVariable(variablesReference: number | undefined, name: string, value: string): Promise<DebugProtocol.SetVariableResponse>;
 	loadSource(resource: uri): Promise<DebugProtocol.SourceResponse>;
 	getLoadedSources(): Promise<Source[]>;
+
+	gotoTargets(source: DebugProtocol.Source, line: number, column?: number): Promise<DebugProtocol.GotoTargetsResponse>;
+	goto(threadId: number, targetId: number): Promise<DebugProtocol.GotoResponse>;
 }
 
 export interface IThread extends ITreeElement {
@@ -296,9 +302,10 @@ export interface IStackFrame extends ITreeElement {
 	getScopes(): Promise<IScope[]>;
 	getMostSpecificScopes(range: IRange): Promise<ReadonlyArray<IScope>>;
 	getSpecificSourceName(): string;
+	forgetScopes(): void;
 	restart(): Promise<any>;
 	toString(): string;
-	openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean): Promise<any>;
+	openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean): Promise<ITextEditor | null>;
 }
 
 export interface IEnablement extends ITreeElement {
@@ -339,6 +346,7 @@ export interface IBreakpoint extends IBaseBreakpoint {
 	readonly endColumn?: number;
 	readonly message?: string;
 	readonly adapterData: any;
+	readonly sessionAgnosticData: { lineNumber: number, column: number | undefined };
 }
 
 export interface IFunctionBreakpoint extends IBaseBreakpoint {
@@ -432,6 +440,7 @@ export interface IDebugConfiguration {
 		fontSize: number;
 		fontFamily: string;
 		lineHeight: number;
+		wordWrap: boolean;
 	};
 }
 
@@ -481,7 +490,7 @@ export interface IDebugAdapter extends IDisposable {
 	startSession(): Promise<void>;
 	sendMessage(message: DebugProtocol.ProtocolMessage): void;
 	sendResponse(response: DebugProtocol.Response): void;
-	sendRequest(command: string, args: any, clb: (result: DebugProtocol.Response) => void, timemout?: number): void;
+	sendRequest(command: string, args: any, clb: (result: DebugProtocol.Response) => void, timeout?: number): void;
 	stopSession(): Promise<void>;
 }
 
@@ -568,11 +577,7 @@ export interface ITerminalLauncher {
 }
 
 export interface ITerminalSettings {
-	external: {
-		windowsExec: string,
-		osxExec: string,
-		linuxExec: string
-	};
+	external: IExternalTerminalSettings;
 	integrated: ITerminalConfiguration;
 }
 
@@ -717,7 +722,7 @@ export interface IDebugService {
 	/**
 	 * Updates the breakpoints.
 	 */
-	updateBreakpoints(uri: uri, data: { [id: string]: IBreakpointUpdateData }, sendOnResourceSaved: boolean): void;
+	updateBreakpoints(uri: uri, data: Map<string, IBreakpointUpdateData>, sendOnResourceSaved: boolean): Promise<void>;
 
 	/**
 	 * Enables or disables all breakpoints. If breakpoint is passed only enables or disables the passed breakpoint.
@@ -828,4 +833,15 @@ export interface IDebugEditorContribution extends IEditorContribution {
 	showBreakpointWidget(lineNumber: number, column: number | undefined, context?: BreakpointWidgetContext): void;
 	closeBreakpointWidget(): void;
 	addLaunchConfiguration(): Promise<any>;
+}
+
+// temporary debug helper service
+
+export const DEBUG_HELPER_SERVICE_ID = 'debugHelperService';
+export const IDebugHelperService = createDecorator<IDebugHelperService>(DEBUG_HELPER_SERVICE_ID);
+
+export interface IDebugHelperService {
+	_serviceBrand: any;
+
+	createTelemetryService(configurationService: IConfigurationService, args: string[]): TelemetryService | undefined;
 }

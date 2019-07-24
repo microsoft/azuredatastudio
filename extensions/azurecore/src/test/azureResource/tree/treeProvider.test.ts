@@ -75,7 +75,7 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 		mockCacheService.setup((o) => o.generateKey(TypeMoq.It.isAnyString())).returns(() => generateGuid());
 	});
 
-	it('Should load accounts.', async function(): Promise<void> {
+	xit('Should load accounts.', async function(): Promise<void> {
 		mockAccountService.setup((o) => o.getAccounts()).returns(() => Promise.resolve(mockAccounts));
 
 		const treeProvider = new AzureResourceTreeProvider(mockAppContext);
@@ -110,7 +110,7 @@ describe('AzureResourceTreeProvider.getChildren', function(): void {
 		should(children[0]).instanceof(AzureResourceAccountNotSignedInTreeNode);
 	});
 
-	it('Should handle errors.', async function(): Promise<void> {
+	xit('Should handle errors.', async function(): Promise<void> {
 		const mockAccountError = 'Test account error';
 		mockAccountService.setup((o) => o.getAccounts()).returns(() => { throw new Error(mockAccountError); });
 

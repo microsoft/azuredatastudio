@@ -14,6 +14,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
+import { TopOperationsState } from 'sql/workbench/parts/queryPlan/common/topOperationsState';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
 	{ name: localize('topOperations.operation', 'Operation'), field: 'operation', sortable: true },
@@ -32,13 +33,6 @@ const topOperationColumns: Array<Slick.Column<any>> = [
 	{ name: localize('topOperations.estRewinds', 'Est Rewinds'), field: 'estRewinds', sortable: true },
 	{ name: localize('topOperations.partitioned', 'Partitioned'), field: 'partitioned', sortable: true }
 ];
-
-export class TopOperationsState {
-	xml: string;
-	dispose() {
-
-	}
-}
 
 export class TopOperationsTab implements IPanelTab {
 	public readonly title = localize('topOperationsTitle', 'Top Operations');

@@ -130,25 +130,25 @@ const copyrightFilter = [
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
-	'!src/sql/workbench/parts/notebook/outputs/tableRenderers.ts',
-	'!src/sql/workbench/parts/notebook/outputs/common/url.ts',
-	'!src/sql/workbench/parts/notebook/outputs/common/renderMimeInterfaces.ts',
-	'!src/sql/workbench/parts/notebook/outputs/common/outputProcessor.ts',
-	'!src/sql/workbench/parts/notebook/outputs/common/mimemodel.ts',
-	'!src/sql/workbench/parts/notebook/cellViews/media/*.css',
+	'!src/sql/workbench/parts/notebook/browser/outputs/tableRenderers.ts',
+	'!src/sql/workbench/parts/notebook/common/models/url.ts',
+	'!src/sql/workbench/parts/notebook/common/models/renderMimeInterfaces.ts',
+	'!src/sql/workbench/parts/notebook/common/models/outputProcessor.ts',
+	'!src/sql/workbench/parts/notebook/common/models/mimemodel.ts',
+	'!src/sql/workbench/parts/notebook/electron-browser/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
 	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
-	'!src/sql/workbench/parts/notebook/outputs/sanitizer.ts',
-	'!src/sql/workbench/parts/notebook/outputs/renderers.ts',
-	'!src/sql/workbench/parts/notebook/outputs/registry.ts',
-	'!src/sql/workbench/parts/notebook/outputs/factories.ts',
-	'!src/sql/workbench/parts/notebook/models/nbformat.ts',
+	'!src/sql/workbench/parts/notebook/electron-browser/outputs/sanitizer.ts',
+	'!src/sql/workbench/parts/notebook/electron-browser/outputs/renderers.ts',
+	'!src/sql/workbench/parts/notebook/electron-browser/outputs/registry.ts',
+	'!src/sql/workbench/parts/notebook/electron-browser/outputs/factories.ts',
+	'!src/sql/workbench/parts/notebook/common/models/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
-	'!src/sql/workbench/electron-browser/modelComponents/media/highlight.css',
+	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
 	'!src/sql/parts/modelComponents/highlight.css',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
@@ -219,6 +219,17 @@ gulp.task('tslint', () => {
 
 function hygiene(some) {
 	let errorCount = 0;
+
+	const productJson = es.through(function (file) {
+		// const product = JSON.parse(file.contents.toString('utf8'));
+
+		// if (product.extensionsGallery) { // {{SQL CARBON EDIT}} @todo we need to research on what the point of this is
+		// 	console.error('product.json: Contains "extensionsGallery"');
+		// 	errorCount++;
+		// }
+
+		this.emit('data', file);
+	});
 
 	const indentation = es.through(function (file) {
 		const lines = file.contents.toString('utf8').split(/\r\n|\r|\n/);
@@ -320,8 +331,13 @@ function hygiene(some) {
 		input = some;
 	}
 
+	const productJsonFilter = filter('product.json', { restore: true });
+
 	const result = input
 		.pipe(filter(f => !f.stat.isDirectory()))
+		.pipe(productJsonFilter)
+		.pipe(process.env['BUILD_SOURCEVERSION'] ? es.through() : productJson)
+		.pipe(productJsonFilter.restore)
 		.pipe(filter(indentationFilter))
 		.pipe(indentation)
 		.pipe(filter(copyrightFilter))

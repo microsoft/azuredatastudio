@@ -22,7 +22,7 @@ import { Taskbar, ITaskbarContent } from 'sql/base/browser/ui/taskbar/taskbar';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
 import { Action } from 'vs/base/common/actions';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/common/editorDescriptorService';
+import { IEditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 import {
 	RefreshTableAction, StopRefreshTableAction, ChangeMaxRowsAction, ChangeMaxRowsActionItem, ShowQueryPaneAction
 } from 'sql/workbench/parts/editData/browser/editDataActions';

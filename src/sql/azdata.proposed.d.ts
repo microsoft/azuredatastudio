@@ -4485,6 +4485,11 @@ declare module 'azdata' {
 			 * Optional content used to give an initial notebook state
 			 */
 			initialContent?: nb.INotebookContents | string;
+
+			/**
+			 * A optional boolean value indicating the dirty state after the intial content is loaded, default value is true
+			 */
+			initialDirtyState?: boolean;
 		}
 
 		/**
@@ -4559,8 +4564,8 @@ declare module 'azdata' {
 		* }
 		* ```
 		 * @export
-		 * @param {NotebookProvider} provider
-		 * @returns {vscode.Disposable}
+		 * @param notebook provider
+		 * @returns disposable
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 

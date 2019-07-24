@@ -8,8 +8,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IResourceProviderService, IHandleFirewallRuleResult } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { FirewallRuleDialogController } from 'sql/platform/accounts/browser/firewallRuleDialogController';
 
 import * as azdata from 'azdata';

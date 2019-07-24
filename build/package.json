@@ -1,6 +1,7 @@
 {
   "name": "azuredatastudio-oss-dev-build",
   "version": "1.0.0",
+  "license": "MIT",
   "devDependencies": {
     "@types/ansi-colors": "^3.2.0",
     "@types/azure": "0.9.19",
@@ -30,10 +31,8 @@
     "@types/xml2js": "0.0.33",
     "applicationinsights": "1.0.6",
     "azure-storage": "^2.1.0",
-    "decompress": "^4.2.0",
     "del": "^3.0.0",
     "documentdb": "1.13.0",
-    "fs-extra-promise": "^1.0.1",
     "github-releases": "^0.4.1",
     "gulp-bom": "^1.0.0",
     "gulp-sourcemaps": "^1.11.0",
@@ -43,8 +42,9 @@
     "request": "^2.85.0",
     "tslint": "^5.9.1",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
-    "typescript": "3.4.5",
+    "typescript": "3.5.2",
     "vsce": "1.48.0",
+    "vscode-telemetry-extractor": "1.4.3",
     "xml2js": "^0.4.17"
   },
   "scripts": {
