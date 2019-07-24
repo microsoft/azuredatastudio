@@ -113,14 +113,20 @@ export class ControllerRootNode extends ControllerTreeNode {
 		return this.children as ControllerNode[];
 	}
 
-	public addControllerNode(url: string, username: string, password: string, rememberPassword: boolean, masterInstance?: IEndPoint): void {
+	public addControllerNode(clusterName: string,
+		url: string,
+		username: string,
+		password: string,
+		rememberPassword: boolean,
+		masterInstance?: IEndPoint
+	): void {
 		let controllerNode = this.getExistingControllerNode(url, username);
 		if (controllerNode) {
 			controllerNode.password = password;
 			controllerNode.rememberPassword = rememberPassword;
 			controllerNode.clearChildren();
 		} else {
-			controllerNode = new ControllerNode(url, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
+			controllerNode = new ControllerNode(clusterName, url, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
 			this.addChild(controllerNode);
 		}
 
@@ -158,6 +164,7 @@ export class ControllerRootNode extends ControllerTreeNode {
 export class ControllerNode extends ControllerTreeNode {
 
 	constructor(
+		private _clusterName: string,
 		private _url: string,
 		private _username: string,
 		private _password: string,
@@ -184,7 +191,7 @@ export class ControllerNode extends ControllerTreeNode {
 		}
 
 		try {
-			let response = await getEndPoints(this._url, this._username, this._password, true);
+			let response = await getEndPoints(this._clusterName, this._url, this._username, this._password, true);
 			if (response && response.endPoints) {
 				let master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
 				this.addSqlMasterNode(master.endpoint, master.description);
@@ -224,6 +231,14 @@ export class ControllerNode extends ControllerTreeNode {
 		let item: vscode.TreeItem = super.getTreeItem();
 		item.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
 		return item;
+	}
+
+	public get clusterName() {
+		return this._clusterName;
+	}
+
+	public set clusterName(clusterName: string) {
+		this._clusterName = clusterName;
 	}
 
 	public get url() {
