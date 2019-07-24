@@ -12,7 +12,7 @@
 	display:flex;
 }
 
-/* task label and description */
+/* query history label and description */
 .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .label {
 	text-overflow: ellipsis;
 	overflow: hidden;
@@ -33,3 +33,24 @@
 	text-overflow: ellipsis;
 	font-style: italic
 }
+
+/* query history icon status */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon {
+	background-size: 16px;
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-right: 6px;
+	width: 22px;
+	height: 22px;
+	display: inline-block;
+}
+
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon.success {
+	background-image: url("status_success.svg");
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon.error {
+	background-image: url("status_error.svg");
+}
+

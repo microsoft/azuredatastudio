@@ -6,12 +6,14 @@
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
 import * as dom from 'vs/base/browser/dom';
+import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 
 const $ = dom.$;
 
 export interface IQueryHistoryItemTemplateData {
 	root: HTMLElement;
+	icon: HTMLElement;
 	label: HTMLSpanElement;
 	connectionInfo: HTMLSpanElement;
 	time: HTMLSpanElement;
@@ -26,7 +28,8 @@ export class QueryHistoryRenderer implements IRenderer {
 
 	public static readonly QUERYHISTORYOBJECT_HEIGHT = 22;
 	private static readonly QUERYHISTORYOBJECT_TEMPLATE_ID = 'carbonQueryHistoryItem';
-
+	private static readonly FAIL_CLASS = 'error';
+	private static readonly SUCCESS_CLASS = 'success';
 	/**
 	 * Returns the element's height in the tree, in pixels.
 	 */
@@ -47,6 +50,7 @@ export class QueryHistoryRenderer implements IRenderer {
 	public renderTemplate(tree: ITree, templateId: string, container: HTMLElement): any {
 		const taskTemplate: IQueryHistoryItemTemplateData = Object.create(null);
 		taskTemplate.root = dom.append(container, $('.query-history-item'));
+		taskTemplate.icon = dom.append(taskTemplate.root, $('.icon.query-history-icon'));
 		taskTemplate.label = dom.append(taskTemplate.root, $('.label'));
 		taskTemplate.connectionInfo = dom.append(taskTemplate.root, $('.connection-info'));
 		taskTemplate.time = dom.append(taskTemplate.root, $('.time'));
@@ -58,7 +62,22 @@ export class QueryHistoryRenderer implements IRenderer {
 	 * Render a element, given an object bag returned by the template
 	 */
 	public renderElement(tree: ITree, element: QueryHistoryNode, templateId: string, templateData: IQueryHistoryItemTemplateData): void {
+
+		let taskStatus;
 		if (element) {
+
+			templateData.icon.className = 'query-history-icon';
+			if (element.success) {
+				dom.addClass(templateData.icon, QueryHistoryRenderer.SUCCESS_CLASS);
+				taskStatus = localize('succeeded', "succeeded");
+			}
+			else {
+				dom.addClass(templateData.icon, QueryHistoryRenderer.FAIL_CLASS);
+				taskStatus = localize('failed', "failed");
+			}
+
+			templateData.icon.title = taskStatus;
+
 			templateData.label.textContent = element.queryText;
 			templateData.label.title = templateData.label.textContent;
 

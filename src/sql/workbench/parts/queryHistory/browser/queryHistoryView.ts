@@ -71,7 +71,12 @@ export class QueryHistoryView extends Disposable {
 					e.queryInfo.selection[0].endLine,
 					e.queryInfo.selection[0].endColumn + 1));
 
-				this._nodes = [new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date())].concat(this._nodes);
+				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date());
+				newNode.hasChildren = true;
+				if (text.length > 100) {
+					newNode.children = [new QueryHistoryNode(text, undefined, undefined)];
+				}
+				this._nodes = [newNode].concat(this._nodes);
 				this.refreshTree();
 			}
 		}));

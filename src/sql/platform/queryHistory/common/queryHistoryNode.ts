@@ -21,6 +21,8 @@ export class QueryHistoryNode {
 
 	public database: string;
 
+	public success: boolean = true;
+
 	constructor(
 		public queryText: string,
 		public connectionProfile: IConnectionProfile,
