@@ -47,3 +47,33 @@ export class DeleteAction extends Action {
 		}
 	}
 }
+
+
+export class OpenQueryAction extends Action {
+	public static ID = 'queryHistory.openQuery';
+	public static LABEL = localize('queryHistory.openQuery', 'Open Query');
+
+	constructor(
+		id: string,
+		label: string,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IQueryEditorService private _queryEditorService: IQueryEditorService
+	) {
+		super(id, label);
+	}
+
+	public run(element: QueryHistoryNode): Promise<boolean> {
+		if (element instanceof QueryHistoryNode) {
+			if (element.queryText && element.queryText !== '') {
+				this._queryEditorService.newSqlEditor(element.queryText);
+			}
+		}
+		return Promise.resolve(true);
+	}
+
+	private showError(errorMessage: string) {
+		if (this._errorMessageService) {
+			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
+		}
+	}
+}

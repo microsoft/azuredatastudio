@@ -587,7 +587,7 @@ export class QueryModelService implements IQueryModelService {
 				data: data
 			});
 		} else {
-			let queueItem: QueryEventType = { type: type, data: data };
+			let queueItem = { type: type, data: data };
 			info.queryEventQueue.push(queueItem);
 		}
 	}
