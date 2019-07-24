@@ -44,3 +44,13 @@
 	height: 22px;
 	display: inline-block;
 }
+
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success {
+	background-image: url("status_success.svg");
+}
+
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.error {
+	background-image: url("status_error.svg");
+}
+

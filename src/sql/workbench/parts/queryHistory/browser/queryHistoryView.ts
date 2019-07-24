@@ -67,7 +67,15 @@ export class QueryHistoryView extends Disposable {
 
 		this._register(this._queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (e.type === QueryEventType.QueryStop) {
-				this._nodes.push(new QueryHistoryNode('SELECT * FROM sys.tables', 'abc123', new Date()));
+
+				// make node expandable
+				let node = new QueryHistoryNode('SELECT * FROM sys.tables', 'abc123', new Date());
+				let nodeChild = new QueryHistoryNode('query details', '... for longer query', new Date());
+				node.hasChildren = true;
+				node.children = [];
+				node.children.push(nodeChild);
+
+				this._nodes.push(node);
 				this.refreshTree();
 			}
 		}));

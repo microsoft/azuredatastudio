@@ -18,6 +18,8 @@ export class QueryHistoryNode {
 	 */
 	public children: QueryHistoryNode[];
 
+	public success: boolean = true;
+
 	constructor(
 		public queryText: string,
 		public connectionId: string,
