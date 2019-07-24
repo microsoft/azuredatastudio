@@ -281,7 +281,8 @@ export class QueryModelService implements IQueryModelService {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: QueryEventType.QueryStop,
-				uri: uri
+				uri: uri,
+				queryInfo: info
 			};
 			this._onQueryEvent.fire(event);
 
@@ -294,7 +295,8 @@ export class QueryModelService implements IQueryModelService {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: QueryEventType.QueryStart,
-				uri: uri
+				uri: uri,
+				queryInfo: info
 			};
 			this._onQueryEvent.fire(event);
 
@@ -306,6 +308,7 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: QueryEventType.ExecutionPlan,
 				uri: planInfo.fileUri,
+				queryInfo: info,
 				params: planInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -421,7 +424,8 @@ export class QueryModelService implements IQueryModelService {
 				// fire extensibility API event
 				let event: IQueryEvent = {
 					type: QueryEventType.QueryStop,
-					uri: ownerUri
+					uri: ownerUri,
+					queryInfo: info
 				};
 				this._onQueryEvent.fire(event);
 
@@ -433,7 +437,8 @@ export class QueryModelService implements IQueryModelService {
 				// fire extensibility API event
 				let event: IQueryEvent = {
 					type: QueryEventType.QueryStart,
-					uri: ownerUri
+					uri: ownerUri,
+					queryInfo: info
 				};
 				this._onQueryEvent.fire(event);
 
@@ -587,7 +592,7 @@ export class QueryModelService implements IQueryModelService {
 				data: data
 			});
 		} else {
-			let queueItem = { type: type, data: data };
+			let queueItem: QueryEvent = { type: type, data: data };
 			info.queryEventQueue.push(queueItem);
 		}
 	}

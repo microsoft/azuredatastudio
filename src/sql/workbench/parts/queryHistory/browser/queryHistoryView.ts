@@ -19,10 +19,12 @@ import { QueryHistoryDataSource } from 'sql/workbench/parts/queryHistory/browser
 import { QueryHistoryController } from 'sql/workbench/parts/queryHistory/browser/queryHistoryController';
 import { QueryHistoryActionProvider } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActionProvider';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-
+import { URI } from 'vs/base/common/uri';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IModelService } from 'vs/editor/common/services/modelService';
+import { Range } from 'vs/editor/common/core/range';
 /**
  * QueryHistoryView implements the dynamic tree view for displaying Query History
  */
@@ -34,8 +36,9 @@ export class QueryHistoryView extends Disposable {
 	constructor(
 		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IThemeService private _themeService: IThemeService
+		@IThemeService private _themeService: IThemeService,
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@IModelService private readonly _modelService: IModelService
 	) {
 		super();
 	}
@@ -44,61 +47,45 @@ export class QueryHistoryView extends Disposable {
 	 * Render the view body
 	 */
 	public renderBody(container: HTMLElement): void {
-
-		const queryHistoryNodes: QueryHistoryNode[] = []; // this._taskService.getAllTasks();
-
 		// Add div to display no task executed message
 		this._messages = append(container, $('div.no-queries-message'));
-
-		/*
-		if (queryHistoryNodes) {
-			hide(this._messages);
-		}
-		*/
 
 		const noQueriesMessage = localize('noQueriesMessage', 'No queries to display.');
 		append(this._messages, $('span')).innerText = noQueriesMessage;
 
-		this._tree = this._register(this.createTaskHistoryTree(container, this._instantiationService));
+		this._tree = this._register(this.createQueryHistoryTree(container, this._instantiationService));
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 
 		// Theme styler
 		this._register(attachListStyler(this._tree, this._themeService));
 
 		this._register(this._queryModelService.onQueryEvent((e: IQueryEvent) => {
+
 			if (e.type === QueryEventType.QueryStop) {
+				const uri: URI = URI.parse(e.uri);
+				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
+				// by 1 from the original input range sent in as well so take that into account and don't modify
+				const text: string = this._modelService.getModel(uri).getValueInRange(new Range(
+					e.queryInfo.selection[0].startLine + 1,
+					e.queryInfo.selection[0].startColumn + 1,
+					e.queryInfo.selection[0].endLine,
+					e.queryInfo.selection[0].endColumn + 1));
 
-				// make node expandable
-				let node = new QueryHistoryNode('SELECT * FROM sys.tables', 'abc123', new Date());
-				let nodeChild = new QueryHistoryNode('query details', '... for longer query', new Date());
-				node.hasChildren = true;
-				node.children = [];
-				node.children.push(nodeChild);
-
-				this._nodes.push(node);
+				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date());
+				newNode.hasChildren = true;
+				if (text.length > 100) {
+					newNode.children = [new QueryHistoryNode(text, undefined, undefined)];
+				}
+				this._nodes = [newNode].concat(this._nodes);
 				this.refreshTree();
 			}
 		}));
-
-		/*
-		this._toDispose.push(this._taskService.onAddNewTask(args => {
-			hide(this._messages);
-			this.refreshTree();
-		}));
-
-		this._toDispose.push(this._taskService.onTaskComplete(task => {
-			this.updateTask(task);
-		}));
-		*/
-
-		// Refresh Tree when these events are emitted
-		this.refreshTree();
 	}
 
 	/**
 	 * Create a task history tree
 	 */
-	public createTaskHistoryTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
+	public createQueryHistoryTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
 		const dataSource = instantiationService.createInstance(QueryHistoryDataSource);
 		const actionProvider = instantiationService.createInstance(QueryHistoryActionProvider);
 		const renderer = instantiationService.createInstance(QueryHistoryRenderer);
@@ -115,10 +102,6 @@ export class QueryHistoryView extends Disposable {
 				twistiePixels: 20,
 				ariaLabel: localize({ key: 'queryHistory.regTreeAriaLabel', comment: ['QueryHistory'] }, 'Query History')
 			});
-	}
-
-	private updateNode(node: QueryHistoryNode): void {
-		this._tree.refresh(node);
 	}
 
 	public refreshTree(): void {
@@ -138,9 +121,12 @@ export class QueryHistoryView extends Disposable {
 			targetsToExpand = expandableTree.getExpandedElements();
 		}
 
-		//Get the tree Input
-		// let treeInput = this._taskService.getAllTasks();
-		let node: QueryHistoryNode = new QueryHistoryNode('test', 'test123', new Date());
+		if (this._nodes.length > 0) {
+			hide(this._messages);
+		}
+
+		// Set the tree input - root node is just an empty container node
+		let node: QueryHistoryNode = new QueryHistoryNode('', undefined, undefined);
 		node.children = this._nodes;
 		node.hasChildren = true;
 		const treeInput: QueryHistoryNode = node;

@@ -7,35 +7,35 @@
 	padding: 10px 22px 0 22px;
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group {
-	line-height: 22px;
-	display: flex;
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item {
+	line-height:22px;
+	display:flex;
 }
 
-/* task label and description */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .label {
+/* query history label and description */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .label {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	font-weight: bold;
 }
 
 /* style for server name | database name */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .description {
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .connection-info {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	padding-left: 12px
 }
 
 /* style for timing */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .time {
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .time {
 	padding-left: 12px;
 	opacity: .6;
 	text-overflow: ellipsis;
 	font-style: italic
 }
 
-/* task icon status */
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon {
+/* query history icon status */
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon {
 	background-size: 16px;
 	background-position: left center;
 	background-repeat: no-repeat;
@@ -46,11 +46,11 @@
 }
 
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.success {
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon.success {
 	background-image: url("status_success.svg");
 }
 
-.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .task-group > .task-icon.error {
+.monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon.error {
 	background-image: url("status_error.svg");
 }
 
