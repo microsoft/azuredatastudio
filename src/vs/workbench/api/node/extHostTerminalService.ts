@@ -319,6 +319,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 		const terminal = new ExtHostTerminal(this._proxy, name);
 		terminal.create(shellPath, shellArgs);
 		this._terminals.push(terminal);
+
 		return terminal;
 	}
 
@@ -610,6 +611,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 			baseEnv
 		);
 
+		this._proxy.$sendResolvedLaunchConfig(id, shellLaunchConfig);
 		// Fork the process and listen for messages
 		this._logService.debug(`Terminal process launching on ext host`, shellLaunchConfig, initialCwd, cols, rows, env);
 		// TODO: Support conpty on remote, it doesn't seem to work for some reason?
