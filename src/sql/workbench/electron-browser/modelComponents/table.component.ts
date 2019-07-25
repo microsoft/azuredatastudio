@@ -164,12 +164,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 		// convert the tri-state viewmodel columnSizingMode to be either true or false for SlickGrid
 		switch (this.forceFitColumns) {
-			case ColumnSizingMode.Default: {
+			case ColumnSizingMode.DataFit: {
 				forceFit = false;
-				break;
-			}
-			case ColumnSizingMode.ForceFit: {
-				forceFit = true;
 				break;
 			}
 			case ColumnSizingMode.AutoFit: {
@@ -179,12 +175,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				// screen better.  4 or more, slickgrid seems to do a good job filling the view and having forceFit
 				// false enables the scroll bar and avoids the over-packing should there be a very large
 				// number of columns
-				if (this._table.columns.length > 3) {
-					forceFit = false;
-				}
-				else {
-					forceFit = true;
-				}
+				forceFit = (this._table.columns.length <= 3);
+				break;
+			}
+			case ColumnSizingMode.ForceFit:
+			default: {
+				// default behavior for the table component (used primarily in wizards) is to forcefit the columns
+				forceFit = true;
 				break;
 			}
 		}
@@ -287,6 +284,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	}
 
 	public get forceFitColumns() {
-		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.Default);
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
 	}
 }

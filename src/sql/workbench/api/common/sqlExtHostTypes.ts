@@ -171,8 +171,8 @@ export enum ModelComponentTypes {
 
 export enum ColumnSizingMode {
 	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
-	AutoFit = 1,	// columns will be ForceFit unless there are too many.  If too many component will revert to default column sizing
-	Default = 2		// columns use default sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
 }
 
 export enum AgentSubSystem {
