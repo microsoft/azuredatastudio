@@ -6,9 +6,12 @@
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import Severity from 'vs/base/common/severity';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import { IConnectionManagementService, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+
 
 export class DeleteAction extends Action {
 	public static ID = 'queryHistory.delete';
@@ -16,8 +19,7 @@ export class DeleteAction extends Action {
 
 	constructor(
 		id: string,
-		label: string,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		label: string
 	) {
 		super(id, label);
 	}
@@ -40,12 +42,6 @@ export class DeleteAction extends Action {
 		}
 		return true;
 	}
-
-	private showError(errorMessage: string) {
-		if (this._errorMessageService) {
-			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
-		}
-	}
 }
 
 
@@ -56,24 +52,54 @@ export class OpenQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@IEditorService private _editorService: IEditorService
 	) {
 		super(id, label);
 	}
 
 	public run(element: QueryHistoryNode): Promise<boolean> {
 		if (element instanceof QueryHistoryNode) {
-			if (element.queryText && element.queryText !== '') {
-				this._queryEditorService.newSqlEditor(element.queryText);
-			}
+			TaskUtilities.newQuery(
+				element.connectionProfile,
+				this._connectionManagementService,
+				this._queryEditorService,
+				this._objectExplorerService,
+				this._editorService,
+				element.queryText);
 		}
 		return Promise.resolve(true);
 	}
+}
 
-	private showError(errorMessage: string) {
-		if (this._errorMessageService) {
-			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
+export class RunQueryAction extends Action {
+	public static ID = 'queryHistory.runQuery';
+	public static LABEL = localize('queryHistory.runQuery', "Run Query");
+
+	constructor(
+		id: string,
+		label: string,
+		@IQueryEditorService private _queryEditorService: IQueryEditorService,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
+		@IEditorService private _editorService: IEditorService
+	) {
+		super(id, label);
+	}
+
+	public run(element: QueryHistoryNode): Promise<boolean> {
+		if (element instanceof QueryHistoryNode) {
+			TaskUtilities.newQuery(
+				element.connectionProfile,
+				this._connectionManagementService,
+				this._queryEditorService,
+				this._objectExplorerService,
+				this._editorService,
+				element.queryText,
+				RunQueryOnConnectionMode.executeQuery);
 		}
+		return Promise.resolve(true);
 	}
 }
