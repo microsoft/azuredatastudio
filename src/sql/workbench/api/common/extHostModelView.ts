@@ -13,7 +13,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
@@ -1124,6 +1124,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	}
 	public set selectedRows(v: number[]) {
 		this.setProperty('selectedRows', v);
+	}
+
+	public get forceFitColumns(): ColumnSizingMode {
+		return this.properties['forceFitColumns'];
+	}
+	public set forceFitColunms(v: ColumnSizingMode) {
+		this.setProperty('forceFitColumns', v);
 	}
 
 	public get onRowSelected(): vscode.Event<any> {
