@@ -8,7 +8,7 @@ import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
-import { DeleteAction, OpenQueryAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
+import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
 
 /**
  *  Provides actions for the history tasks
@@ -43,9 +43,12 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 	 * Return actions for query history task
 	 */
 	public getQueryHistoryActions(tree: ITree, element: QueryHistoryNode): IAction[] {
-		return [
-			this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL),
-			this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL)
-		];
+		const actions: IAction[] = [];
+		if (element.queryText && element.queryText !== '') {
+			actions.push(this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL));
+			actions.push(this._instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL));
+		}
+		actions.push(this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL));
+		return actions;
 	}
 }
