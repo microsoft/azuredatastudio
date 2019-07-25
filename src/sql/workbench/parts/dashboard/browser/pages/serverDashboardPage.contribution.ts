@@ -17,7 +17,7 @@ export interface IPropertiesConfig {
 }
 
 export const serverDashboardPropertiesSchema: IJSONSchema = {
-	description: nls.localize('dashboardServerProperties', 'Enable or disable the properties widget'),
+	description: nls.localize('dashboardServerProperties', "Enable or disable the properties widget"),
 	default: true,
 	oneOf: [
 		{ type: 'boolean' },
@@ -35,36 +35,36 @@ export const serverDashboardPropertiesSchema: IJSONSchema = {
 					type: 'number'
 				},
 				properties: {
-					description: nls.localize('dashboard.serverproperties', 'Property values to show'),
+					description: nls.localize('dashboard.serverproperties', "Property values to show"),
 					type: 'array',
 					items: {
 						type: 'object',
 						properties: {
 							displayName: {
 								type: 'string',
-								description: nls.localize('dashboard.serverproperties.displayName', 'Display name of the property')
+								description: nls.localize('dashboard.serverproperties.displayName', "Display name of the property")
 							},
 							value: {
 								type: 'string',
-								description: nls.localize('dashboard.serverproperties.value', 'Value in the Server Info Object')
+								description: nls.localize('dashboard.serverproperties.value', "Value in the Server Info Object")
 							}
 						}
 					},
 					default: [
 						{
-							displayName: nls.localize('version', 'Version'),
+							displayName: nls.localize('version', "Version"),
 							value: 'serverVersion'
 						},
 						{
-							displayName: nls.localize('edition', 'Edition'),
+							displayName: nls.localize('edition', "Edition"),
 							value: 'serverEdition'
 						},
 						{
-							displayName: nls.localize('computerName', 'Computer Name'),
+							displayName: nls.localize('computerName', "Computer Name"),
 							value: 'machineName'
 						},
 						{
-							displayName: nls.localize('osVersion', 'OS Version'),
+							displayName: nls.localize('osVersion', "OS Version"),
 							value: 'osVersion'
 						}
 					]
@@ -109,14 +109,14 @@ const defaultVal = [
 
 export const serverDashboardSettingSchema: IJSONSchema = {
 	type: ['array'],
-	description: nls.localize('dashboardServer', 'Customizes the server dashboard page'),
+	description: nls.localize('dashboardServer', "Customizes the server dashboard page"),
 	items: generateDashboardWidgetSchema('server'),
 	default: defaultVal
 };
 
 export const serverDashboardTabsSchema: IJSONSchema = {
 	type: ['array'],
-	description: nls.localize('dashboardServerTabs', 'Customizes the Server dashboard tabs'),
+	description: nls.localize('dashboardServerTabs', "Customizes the Server dashboard tabs"),
 	items: generateDashboardTabSchema('server'),
 	default: []
 };

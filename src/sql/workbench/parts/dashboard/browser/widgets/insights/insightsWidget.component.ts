@@ -229,7 +229,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		this._cd.detectChanges();
 
 		if (result.rowCount === 0) {
-			this.showError(nls.localize('noResults', 'No results to show'));
+			this.showError(nls.localize('noResults', "No results to show"));
 			return;
 		}
 

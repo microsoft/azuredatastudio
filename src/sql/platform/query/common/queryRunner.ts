@@ -467,7 +467,7 @@ export default class QueryRunner extends Disposable {
 				}
 				resolve(result);
 			}, error => {
-				// let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
+				// let errorMessage = nls.localize('query.moreRowsFailedError', "Something went wrong getting more rows:");
 				// self._notificationService.notify({
 				// 	severity: Severity.Error,
 				// 	message: `${errorMessage} ${error}`

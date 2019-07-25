@@ -25,7 +25,7 @@ import * as nls from 'vs/nls';
 	`
 })
 export default class LoadingComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
-	private readonly _loadingTitle = nls.localize('loadingMessage', 'Loading');
+	private readonly _loadingTitle = nls.localize('loadingMessage', "Loading");
 	private _component: IComponentDescriptor;
 
 	@Input() descriptor: IComponentDescriptor;

@@ -164,7 +164,7 @@ export class QueryModelService implements IQueryModelService {
 	public showCommitError(error: string): void {
 		this._notificationService.notify({
 			severity: Severity.Error,
-			message: nls.localize('commitEditFailed', 'Commit row failed: ') + error
+			message: nls.localize('commitEditFailed', "Commit row failed: ") + error
 		});
 	}
 
@@ -480,7 +480,7 @@ export class QueryModelService implements IQueryModelService {
 			return queryRunner.updateCell(ownerUri, rowId, columnId, newValue).then((result) => result, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('updateCellFailed', 'Update cell failed: ') + error.message
+					message: nls.localize('updateCellFailed', "Update cell failed: ") + error.message
 				});
 				return Promise.reject(error);
 			});
@@ -495,7 +495,7 @@ export class QueryModelService implements IQueryModelService {
 			return queryRunner.commitEdit(ownerUri).then(() => { }, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('commitEditFailed', 'Commit row failed: ') + error.message
+					message: nls.localize('commitEditFailed', "Commit row failed: ") + error.message
 				});
 				return Promise.reject(error);
 			});

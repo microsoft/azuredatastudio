@@ -166,7 +166,7 @@ export class EditDataInput extends EditorInput implements IConnectableInput {
 
 			this.notificationService.notify({
 				severity: Severity.Error,
-				message: nls.localize('connectionFailure', 'Edit Data Session Failed To Connect')
+				message: nls.localize('connectionFailure', "Edit Data Session Failed To Connect")
 			});
 		}
 	}

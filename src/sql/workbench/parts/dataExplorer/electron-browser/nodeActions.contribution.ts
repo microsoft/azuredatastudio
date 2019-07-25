@@ -28,7 +28,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 4,
 	command: {
 		id: DISCONNECT_COMMAND_ID,
-		title: localize('disconnect', 'Disconnect')
+		title: localize('disconnect', "Disconnect")
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
 		new ContextKeyNotEqualsExpr('nodeType', NodeType.Folder))
@@ -39,7 +39,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 3,
 	command: {
 		id: DISCONNECT_COMMAND_ID,
-		title: localize('disconnect', 'Disconnect')
+		title: localize('disconnect', "Disconnect")
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
 		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
@@ -52,7 +52,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 2,
 	command: {
 		id: NEW_QUERY_COMMAND_ID,
-		title: localize('newQuery', 'New Query')
+		title: localize('newQuery', "New Query")
 	},
 	when: MssqlNodeContext.IsDatabaseOrServer
 });
@@ -63,7 +63,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 1,
 	command: {
 		id: MANAGE_COMMAND_ID,
-		title: localize('manage', 'Manage')
+		title: localize('manage', "Manage")
 	},
 	when: MssqlNodeContext.IsDatabaseOrServer
 });
@@ -75,7 +75,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 6,
 	command: {
 		id: REFRESH_COMMAND_ID,
-		title: localize('refresh', 'Refresh')
+		title: localize('refresh', "Refresh")
 	},
 	when: NodeContextKey.IsConnectable
 });
@@ -87,7 +87,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 3,
 	command: {
 		id: NEW_NOTEBOOK_COMMAND_ID,
-		title: localize('newNotebook', 'New Notebook')
+		title: localize('newNotebook', "New Notebook")
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnectable,
 		MssqlNodeContext.IsDatabaseOrServer,
@@ -100,7 +100,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 7,
 	command: {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
-		title: localize('dacFx', 'Data-tier Application Wizard')
+		title: localize('dacFx', "Data-tier Application Wizard")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsDatabaseOrServer)
@@ -112,7 +112,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 7,
 	command: {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
-		title: localize('dacFx', 'Data-tier Application Wizard')
+		title: localize('dacFx', "Data-tier Application Wizard")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Folder),
@@ -125,7 +125,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 8,
 	command: {
 		id: PROFILER_COMMAND_ID,
-		title: localize('profiler', 'Launch Profiler')
+		title: localize('profiler', "Launch Profiler")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server))
@@ -137,7 +137,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 10,
 	command: {
 		id: IMPORT_COMMAND_ID,
-		title: localize('flatFileImport', 'Import Wizard')
+		title: localize('flatFileImport', "Import Wizard")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
@@ -149,7 +149,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 9,
 	command: {
 		id: SCHEMA_COMPARE_COMMAND_ID,
-		title: localize('schemaCompare', 'Schema Compare')
+		title: localize('schemaCompare', "Schema Compare")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
@@ -161,7 +161,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 4,
 	command: {
 		id: BACKUP_COMMAND_ID,
-		title: localize('backup', 'Backup')
+		title: localize('backup', "Backup")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
@@ -173,7 +173,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 5,
 	command: {
 		id: RESTORE_COMMAND_ID,
-		title: localize('restore', 'Restore')
+		title: localize('restore', "Restore")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
@@ -185,7 +185,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 11,
 	command: {
 		id: GENERATE_SCRIPTS_COMMAND_ID,
-		title: localize('generateScripts', 'Generate Scripts...')
+		title: localize('generateScripts', "Generate Scripts...")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database),
@@ -198,7 +198,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 12,
 	command: {
 		id: PROPERTIES_COMMAND_ID,
-		title: localize('properties', 'Properties')
+		title: localize('properties', "Properties")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
@@ -210,7 +210,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 12,
 	command: {
 		id: PROPERTIES_COMMAND_ID,
-		title: localize('properties', 'Properties')
+		title: localize('properties', "Properties")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsWindows,
@@ -225,7 +225,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 3,
 	command: {
 		id: SCRIPT_AS_CREATE_COMMAND_ID,
-		title: localize('scriptAsCreate', 'Script as Create')
+		title: localize('scriptAsCreate', "Script as Create")
 	},
 	when: MssqlNodeContext.CanScriptAsCreateOrDelete
 });
@@ -236,7 +236,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 4,
 	command: {
 		id: SCRIPT_AS_DELETE_COMMAND_ID,
-		title: localize('scriptAsDelete', 'Script as Drop')
+		title: localize('scriptAsDelete', "Script as Drop")
 	},
 	when: MssqlNodeContext.CanScriptAsCreateOrDelete
 });
@@ -247,7 +247,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 1,
 	command: {
 		id: SCRIPT_AS_SELECT_COMMAND_ID,
-		title: localize('scriptAsSelect', 'Select Top 1000')
+		title: localize('scriptAsSelect', "Select Top 1000")
 	},
 	when: MssqlNodeContext.CanScriptAsSelect
 });
@@ -258,7 +258,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 5,
 	command: {
 		id: SCRIPT_AS_EXECUTE_COMMAND_ID,
-		title: localize('scriptAsExecute', 'Script as Execute')
+		title: localize('scriptAsExecute', "Script as Execute")
 	},
 	when: MssqlNodeContext.CanScriptAsExecute
 });
@@ -269,7 +269,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 5,
 	command: {
 		id: SCRIPT_AS_ALTER_COMMAND_ID,
-		title: localize('scriptAsAlter', 'Script as Alter')
+		title: localize('scriptAsAlter', "Script as Alter")
 	},
 	when: MssqlNodeContext.CanScriptAsAlter
 });
@@ -280,7 +280,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	order: 2,
 	command: {
 		id: EDIT_DATA_COMMAND_ID,
-		title: localize('editData', 'Edit Data')
+		title: localize('editData', "Edit Data")
 	},
 	when: MssqlNodeContext.CanEditData
 });

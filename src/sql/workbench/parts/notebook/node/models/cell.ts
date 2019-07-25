@@ -287,7 +287,7 @@ export class CellModel implements ICellModel {
 		} catch (error) {
 			let message: string;
 			if (error.message === 'Canceled') {
-				message = localize('executionCanceled', 'Query execution was canceled');
+				message = localize('executionCanceled', "Query execution was canceled");
 			} else {
 				message = getErrorMessage(error);
 			}
@@ -306,17 +306,17 @@ export class CellModel implements ICellModel {
 		let model = this.options.notebook;
 		let clientSession = model && model.clientSession;
 		if (!clientSession) {
-			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', 'The session for this notebook is not yet ready'));
+			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', "The session for this notebook is not yet ready"));
 			return undefined;
 		} else if (!clientSession.isReady || clientSession.status === 'dead') {
 
-			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', 'The session for this notebook will start momentarily'));
+			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', "The session for this notebook will start momentarily"));
 			await clientSession.kernelChangeCompleted;
 		}
 		if (!clientSession.kernel) {
 			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
 			if (!defaultKernel) {
-				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', 'No kernel is available for this notebook'));
+				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', "No kernel is available for this notebook"));
 				return undefined;
 			}
 			await clientSession.changeKernel({

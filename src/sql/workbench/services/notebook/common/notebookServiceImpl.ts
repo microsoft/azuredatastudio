@@ -348,7 +348,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 	async getOrCreateNotebookManager(providerId: string, uri: URI): Promise<INotebookManager> {
 		if (!uri) {
-			throw new Error(localize('notebookUriNotDefined', 'No URI was passed when creating a notebook manager'));
+			throw new Error(localize('notebookUriNotDefined', "No URI was passed when creating a notebook manager"));
 		}
 		let uriString = uri.toString();
 		let managers: INotebookManager[] = this._managersMap.get(uriString);
@@ -472,7 +472,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		// Should never happen, but if default wasn't registered we should throw
 		if (!instance) {
-			throw new Error(localize('notebookServiceNoProvider', 'Notebook provider does not exist'));
+			throw new Error(localize('notebookServiceNoProvider', "Notebook provider does not exist"));
 		}
 		return instance;
 	}

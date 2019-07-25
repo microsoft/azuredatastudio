@@ -21,8 +21,8 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { JobManagementView } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
 
-export const successLabel: string = nls.localize('jobaction.successLabel', 'Success');
-export const errorLabel: string = nls.localize('jobaction.faillabel', 'Error');
+export const successLabel: string = nls.localize('jobaction.successLabel', "Success");
+export const errorLabel: string = nls.localize('jobaction.faillabel', "Error");
 
 export enum JobActions {
 	Run = 'run',
@@ -104,7 +104,7 @@ export class RunJobAction extends Action {
 		return new Promise<boolean>((resolve, reject) => {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Run).then(async (result) => {
 				if (result.success) {
-					let startMsg = nls.localize('jobSuccessfullyStarted', ': The job was successfully started.');
+					let startMsg = nls.localize('jobSuccessfullyStarted', ": The job was successfully started.");
 					this.notificationService.info(jobName + startMsg);
 					await refreshAction.run(context);
 					resolve(true);
@@ -140,7 +140,7 @@ export class StopJobAction extends Action {
 			this.jobManagementService.jobAction(ownerUri, jobName, JobActions.Stop).then(async (result) => {
 				if (result.success) {
 					await refreshAction.run(context);
-					let stopMsg = nls.localize('jobSuccessfullyStopped', ': The job was successfully stopped.');
+					let stopMsg = nls.localize('jobSuccessfullyStopped', ": The job was successfully stopped.");
 					this.notificationService.info(jobName + stopMsg);
 					resolve(true);
 				} else {
@@ -200,7 +200,7 @@ export class DeleteJobAction extends Action {
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
-							let successMessage = nls.localize('jobaction.deletedJob', 'The job was successfully deleted');
+							let successMessage = nls.localize('jobaction.deletedJob', "The job was successfully deleted");
 							self._notificationService.info(successMessage);
 						}
 					});
@@ -268,7 +268,7 @@ export class DeleteStepAction extends Action {
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 							await refreshAction.run(actionInfo);
 						} else {
-							let successMessage = nls.localize('jobaction.deletedStep', 'The job step was successfully deleted');
+							let successMessage = nls.localize('jobaction.deletedStep', "The job step was successfully deleted");
 							self._notificationService.info(successMessage);
 						}
 					});
@@ -357,7 +357,7 @@ export class DeleteAlertAction extends Action {
 								alert.name, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
-							let successMessage = nls.localize('jobaction.deletedAlert', 'The alert was successfully deleted');
+							let successMessage = nls.localize('jobaction.deletedAlert', "The alert was successfully deleted");
 							self._notificationService.info(successMessage);
 						}
 					});
@@ -443,7 +443,7 @@ export class DeleteOperatorAction extends Action {
 								operator.name, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
-							let successMessage = nls.localize('joaction.deletedOperator', 'The operator was deleted successfully');
+							let successMessage = nls.localize('joaction.deletedOperator', "The operator was deleted successfully");
 							self._notificationService.info(successMessage);
 						}
 					});
@@ -538,7 +538,7 @@ export class DeleteProxyAction extends Action {
 								proxy.accountName, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
 						} else {
-							let successMessage = nls.localize('jobaction.deletedProxy', 'The proxy was deleted successfully');
+							let successMessage = nls.localize('jobaction.deletedProxy', "The proxy was deleted successfully");
 							self._notificationService.info(successMessage);
 						}
 					});

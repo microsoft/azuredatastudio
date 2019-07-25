@@ -446,7 +446,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
 			if (!tokenFillSuccess) {
-				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
+				throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -485,7 +485,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					});
 				} else {
 					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', 'Connection Not Accepted'));
+						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 					}
 					resolve(connectionResult);
 				}
@@ -500,7 +500,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private handleConnectionError(connection: IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', 'Connection Not Accepted');
+			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 			if (options.showFirewallRuleOnError && connectionResult.errorCode) {
 				this.handleFirewallRuleError(connection, connectionResult).then(success => {
 					if (success) {
@@ -1068,11 +1068,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			// Setup our cancellation choices
 			let choices: { key, value }[] = [
-				{ key: nls.localize('connectionService.yes', 'Yes'), value: true },
-				{ key: nls.localize('connectionService.no', 'No'), value: false }
+				{ key: nls.localize('connectionService.yes', "Yes"), value: true },
+				{ key: nls.localize('connectionService.no', "No"), value: false }
 			];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});

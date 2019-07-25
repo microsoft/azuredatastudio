@@ -70,7 +70,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerDisplayNames: string[] = [];
 	private _currentProviderType: string = Constants.mssqlProviderName;
 	private _connecting: boolean = false;
-	private _connectionErrorTitle = localize('connectionError', 'Connection error');
+	private _connectionErrorTitle = localize('connectionError', "Connection error");
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
 	/**

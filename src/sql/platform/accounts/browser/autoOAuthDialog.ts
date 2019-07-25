@@ -74,8 +74,8 @@ export class AutoOAuthDialog extends Modal {
 		this.backButton.onDidClick(() => this.cancel());
 		this._register(attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND }));
 
-		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', 'Copy & Open'), () => this.addAccount());
-		this._closeButton = this.addFooterButton(localize('oauthDialog.cancel', 'Cancel'), () => this.cancel());
+		this._copyAndOpenButton = this.addFooterButton(localize('copyAndOpen', "Copy & Open"), () => this.addAccount());
+		this._closeButton = this.addFooterButton(localize('oauthDialog.cancel', "Cancel"), () => this.cancel());
 		this.registerListeners();
 		this._userCodeInputBox.disable();
 		this._websiteInputBox.disable();
@@ -90,8 +90,8 @@ export class AutoOAuthDialog extends Modal {
 		this._descriptionElement = append(body, $('.auto-oauth-description-section.new-section'));
 
 		const addAccountSection = append(body, $('.auto-oauth-info-section.new-section'));
-		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', 'User code'));
-		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', 'Website'));
+		this._userCodeInputBox = this.createInputBoxHelper(addAccountSection, localize('userCode', "User code"));
+		this._websiteInputBox = this.createInputBoxHelper(addAccountSection, localize('website', "Website"));
 	}
 
 	private createInputBoxHelper(container: HTMLElement, label: string): InputBox {
