@@ -426,7 +426,7 @@ export class ExtensionsListView extends ViewletPanel {
 
 		// {{SQL CARBON EDIT}}
 		if (/@visualizerExtensions/i.test(query.value)) {
-			return this.getVisualizerExtensions(token);
+			return this.getRecommendedExtensionsByScenario(token, "visualizerExtensions");
 		}
 		// {{SQL CARBON EDIT}} - End
 
@@ -657,11 +657,12 @@ export class ExtensionsListView extends ViewletPanel {
 	}
 
 	// {{SQL CARBON EDIT}}
-	private getVisualizerExtensions(token: CancellationToken): Promise<IPagedModel<IExtension>> {
+	private getRecommendedExtensionsByScenario(token: CancellationToken, scenarioType: string): Promise<IPagedModel<IExtension>> {
+		// if (!scenarioType) { return Promise.resolve(); }
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))
 			.then(local => {
-				return this.tipsService.getVisualizerExtensions().then((recommmended) => {
+				return this.tipsService.getRecommendedExtensionsByScenario(scenarioType).then((recommmended) => {
 					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
 					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
 						// filter out installed extensions and the extensions not in the recommended list

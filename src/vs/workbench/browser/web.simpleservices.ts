@@ -73,11 +73,11 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 	}
 
 	// {{SQL CARBON EDIT}}
-	getVisualizerExtensions(): Promise<IExtensionRecommendation[]> {
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
 		return Promise.resolve([]);
 	}
 
-	promptVisualizerExtensions(): void {
+	promptRecommendedExtensionsByScenario(scenarioType: string): void {
 		return;
 	}
 	// End of {{SQL CARBON EDIT}}

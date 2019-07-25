@@ -16,41 +16,40 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { PagedModel } from 'vs/base/common/paging';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
-export class ShowVisualizerExtensionsAction extends Action {
+function getScenarioID(scenarioType: string) {
+	console.log('workbench.extensions.action.show' + scenarioType);
+	return 'workbench.extensions.action.show' + scenarioType;
+}
 
-	static readonly ID = 'workbench.extensions.action.showVisualizerExtensions';
-	static LABEL = localize('showVisualizerExtensions', "Show Visualizers");
+function getScenarioLabel(scenarioType: string) {
+	return localize('show' + scenarioType, "Show Recommendations");
+}
 
+export class ShowRecommendedExtensionsByScenarioAction extends Action {
 	constructor(
-		id: string,
-		label: string,
+		private readonly scenarioType: string,
 		@IViewletService private readonly viewletService: IViewletService
 	) {
-		super(id, label, undefined, true);
+		super(getScenarioID(scenarioType), getScenarioLabel(scenarioType), undefined, true);
 	}
 
 	run(): Promise<void> {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
-				viewlet.search('@visualizerExtensions');
+				viewlet.search('@' + this.scenarioType);
 				viewlet.focus();
 			});
 	}
 }
 
-export class InstallVisualizerExtensionsAction extends Action {
-
-	static readonly ID = 'workbench.extensions.action.installVisualizerExtensions';
-	static LABEL = localize('installVisualizerExtensions', "Install Extensions");
-
+export class InstallRecommendedExtensionsByScenarioAction extends Action {
 	private _recommendations: IExtensionRecommendation[] = [];
 	get recommendations(): IExtensionRecommendation[] { return this._recommendations; }
 	set recommendations(recommendations: IExtensionRecommendation[]) { this._recommendations = recommendations; this.enabled = this._recommendations.length > 0; }
 
 	constructor(
-		id: string = InstallVisualizerExtensionsAction.ID,
-		label: string = InstallVisualizerExtensionsAction.LABEL,
+		private readonly scenarioType: string,
 		recommendations: IExtensionRecommendation[],
 		@IViewletService private readonly viewletService: IViewletService,
 		@INotificationService private readonly notificationService: INotificationService,
@@ -58,9 +57,9 @@ export class InstallVisualizerExtensionsAction extends Action {
 		@IOpenerService private readonly openerService: IOpenerService,
 		@IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
+		@IExtensionManagementServerService private readonly extensionMaznagementServerService: IExtensionManagementServerService
 	) {
-		super(id, label, 'extension-action');
+		super(getScenarioID(scenarioType), getScenarioLabel(scenarioType), 'extension-action');
 		this.recommendations = recommendations;
 	}
 
@@ -69,10 +68,10 @@ export class InstallVisualizerExtensionsAction extends Action {
 		return this.viewletService.openViewlet(VIEWLET_ID, true)
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
-				viewlet.search('@visualizerExtensions');
+				viewlet.search('@' + this.scenarioType);
 				viewlet.focus();
 				const names = this.recommendations.map(({ extensionId }) => extensionId);
-				return this.extensionWorkbenchService.queryGallery({ names, source: 'install-visualizer-extensions' }, CancellationToken.None).then(pager => {
+				return this.extensionWorkbenchService.queryGallery({ names, source: 'install-' + this.scenarioType }, CancellationToken.None).then(pager => {
 					let installPromises: Promise<any>[] = [];
 					let model = new PagedModel(pager);
 					for (let i = 0; i < pager.total; i++) {

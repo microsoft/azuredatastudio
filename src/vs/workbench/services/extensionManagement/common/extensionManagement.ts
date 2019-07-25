@@ -107,8 +107,8 @@ export interface IExtensionTipsService {
 	getAllIgnoredRecommendations(): { global: string[], workspace: string[] };
 	onRecommendationChange: Event<RecommendationChangeNotification>;
 	// {{SQL CARBON EDIT}}
-	getVisualizerExtensions(): Promise<IExtensionRecommendation[]>;
-	promptVisualizerExtensions(): void;
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>;
+	promptRecommendedExtensionsByScenario(scenarioType: string): void;
 	// {{SQL CARBON EDIT}} - End
 }
 

@@ -18,7 +18,7 @@ import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 // {{SQL CARBON EDIT}}
 import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
-import { ShowVisualizerExtensionsAction, InstallVisualizerExtensionsAction } from 'sql/workbench/contrib/extensions/electron-browser/extensionsActions';
+import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/electron-browser/extensionsActions';
 // {{SQL CARBON EDIT}} - End
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
@@ -1045,8 +1045,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	}
 
 	// {{SQL CARBON EDIT}}
-	promptVisualizerExtensions(): void {
-		const storageKey = 'extensionsAssistant/VisualizerRecommendationsIgnore';
+	promptRecommendedExtensionsByScenario(scenarioType: string): void {
+		const storageKey = 'extensionAssistant/RecommendationsIgnore/' + scenarioType;
 
 		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
 			return;
@@ -1054,30 +1054,33 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 		let recommendations: IExtensionRecommendation[];
 		let localExtensions: ILocalExtension[];
-		const getRecommendationPromise = this.getVisualizerExtensions().then(recs => { recommendations = recs; });
+		const getRecommendationPromise = this.getRecommendedExtensionsByScenario(scenarioType).then(recs => { recommendations = recs; });
 		const getLocalExtensionPromise = this.extensionsService.getInstalled(ExtensionType.User).then(local => { localExtensions = local; });
 		Promise.all([getRecommendationPromise, getLocalExtensionPromise]).then(() => {
 			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
 				return new Promise<void>(c => {
 					this.notificationService.prompt(
 						Severity.Info,
-						localize('VisualizerExtensionsRecommended', "Azure Data Studio has data visualization extension recommendations."),
+						localize('ExtensionsRecommended', "Azure Data Studio has extension recommendations."),
 						[{
 							label: localize('installAll', "Install All"),
 							run: () => {
-								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'install' });
-								const installAllAction = this.instantiationService.createInstance(InstallVisualizerExtensionsAction, InstallVisualizerExtensionsAction.ID, localize('installAll', "Install All"), recommendations);
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'install' });
+								const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
 								installAllAction.run();
 								installAllAction.dispose();
-								c(undefined);
-								const message = 'The visualization extensions are ready. Select the Visualizer icon to visualize your data.';
-								this.notificationService.info(message);
+
+								if (scenarioType === 'VisualizerExtensions') {
+									c(undefined);
+									const message = 'The  extensions are ready. Select the Visualizer icon to visualize your data.';
+									this.notificationService.info(message);
+								}
 							}
 						}, {
 							label: localize('showRecommendations', "Show Recommendations"),
 							run: () => {
-								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'show' });
-								const showAction = this.instantiationService.createInstance(ShowVisualizerExtensionsAction, ShowVisualizerExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'show' });
+								const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
 								showAction.run();
 								showAction.dispose();
 								c(undefined);
@@ -1086,7 +1089,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							label: choiceNever,
 							isSecondary: true,
 							run: () => {
-								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'neverShowAgain' });
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'neverShowAgain' });
 								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
 								c(undefined);
 							}
@@ -1094,7 +1097,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						{
 							sticky: true,
 							onCancel: () => {
-								this.telemetryService.publicLog('visualizerRecommendations:popup', { userReaction: 'cancelled' });
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'cancelled' });
 								c(undefined);
 							}
 						}
@@ -1106,8 +1109,9 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		});
 	}
 
-	getVisualizerExtensions(): Promise<IExtensionRecommendation[]> {
-		return Promise.resolve((product.recommendedVisualizers || [])
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
+		if (!scenarioType) { return Promise.resolve([]); }
+		return Promise.resolve((product.recommendedExtensionsByScenario[scenarioType] || [])
 			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}

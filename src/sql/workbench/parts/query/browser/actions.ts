@@ -212,7 +212,7 @@ export class ChartDataAction extends Action {
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
 		if (product.quality !== 'stable') {
-			this.extensionTipsService.promptVisualizerExtensions();
+			this.extensionTipsService.promptRecommendedExtensionsByScenario('visualizerExtensions');
 		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
