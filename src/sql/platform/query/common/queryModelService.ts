@@ -311,7 +311,6 @@ export class QueryModelService implements IQueryModelService {
 		});
 
 		queryRunner.onVisualize(resultSetInfo => {
-			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'visualize',
 				uri: uri,

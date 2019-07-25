@@ -80,7 +80,7 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 	promptRecommendedExtensionsByScenario(scenarioType: string): void {
 		return;
 	}
-	// End of {{SQL CARBON EDIT}}
+	// {{SQL CARBON EDIT}} - End
 }
 
 registerSingleton(IExtensionTipsService, SimpleExtensionTipsService, true);

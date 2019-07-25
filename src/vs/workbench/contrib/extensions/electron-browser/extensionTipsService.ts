@@ -19,6 +19,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 // {{SQL CARBON EDIT}}
 import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/electron-browser/extensionsActions';
+import * as LocalizedConstants from 'sql/workbench/contrib/extensions/electron-browser/localizedConstants';
 // {{SQL CARBON EDIT}} - End
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
@@ -1070,7 +1071,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 								installAllAction.run();
 								installAllAction.dispose();
 
-								if (scenarioType === 'VisualizerExtensions') {
+								if (scenarioType === LocalizedConstants.visualizerExtensions) {
 									c(undefined);
 									const message = 'The  extensions are ready. Select the Visualizer icon to visualize your data.';
 									this.notificationService.info(message);
@@ -1110,7 +1111,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	}
 
 	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
-		if (!scenarioType) { return Promise.resolve([]); }
+		if (!scenarioType) {
+			return Promise.reject(new Error('There are no recommended extensions at this time.'));
+		}
+
 		return Promise.resolve((product.recommendedExtensionsByScenario[scenarioType] || [])
 			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));

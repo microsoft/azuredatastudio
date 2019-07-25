@@ -55,7 +55,7 @@
 		"SentryOne.plan-explorer"
 	],
 	"recommendedExtensionsByScenario": {
-		"VisualizerExtensions": [
+		"visualizerExtensions": [
 			"msrvida.azdata-sanddance"
 		]
 	},

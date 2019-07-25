@@ -9,7 +9,6 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
@@ -21,6 +20,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import product from 'vs/platform/product/node/product';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
+import * as LocalizedConstants from 'sql/workbench/contrib/extensions/electron-browser/localizedConstants';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -212,7 +212,7 @@ export class ChartDataAction extends Action {
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
 		if (product.quality !== 'stable') {
-			this.extensionTipsService.promptRecommendedExtensionsByScenario('visualizerExtensions');
+			this.extensionTipsService.promptRecommendedExtensionsByScenario(LocalizedConstants.visualizerExtensions);
 		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);

@@ -17,12 +17,7 @@ import { PagedModel } from 'vs/base/common/paging';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 function getScenarioID(scenarioType: string) {
-	console.log('workbench.extensions.action.show' + scenarioType);
 	return 'workbench.extensions.action.show' + scenarioType;
-}
-
-function getScenarioLabel(scenarioType: string) {
-	return localize('show' + scenarioType, "Show Recommendations");
 }
 
 export class ShowRecommendedExtensionsByScenarioAction extends Action {
@@ -30,7 +25,7 @@ export class ShowRecommendedExtensionsByScenarioAction extends Action {
 		private readonly scenarioType: string,
 		@IViewletService private readonly viewletService: IViewletService
 	) {
-		super(getScenarioID(scenarioType), getScenarioLabel(scenarioType), undefined, true);
+		super(getScenarioID(scenarioType), localize('showRecommendations', "Show Recommendations"), undefined, true);
 	}
 
 	run(): Promise<void> {
@@ -57,9 +52,9 @@ export class InstallRecommendedExtensionsByScenarioAction extends Action {
 		@IOpenerService private readonly openerService: IOpenerService,
 		@IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IExtensionManagementServerService private readonly extensionMaznagementServerService: IExtensionManagementServerService
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
 	) {
-		super(getScenarioID(scenarioType), getScenarioLabel(scenarioType), 'extension-action');
+		super(getScenarioID(scenarioType), localize('Install Extensions', "Install Extensions"), 'extension-action');
 		this.recommendations = recommendations;
 	}
 
