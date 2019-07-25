@@ -97,7 +97,8 @@ const indentationFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
-	'!extensions/mssql/notebooks/**'
+	'!extensions/mssql/notebooks/**',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
 ];
 
 const copyrightFilter = [
@@ -184,7 +185,9 @@ const tslintFilter = [
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
-	'!extensions/html-language-features/server/lib/jquery.d.ts'
+	'!extensions/html-language-features/server/lib/jquery.d.ts',
+	// {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
 ];
 
 // {{SQL CARBON EDIT}}
