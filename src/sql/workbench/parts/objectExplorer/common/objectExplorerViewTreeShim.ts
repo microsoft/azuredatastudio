@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionType, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITreeItem } from 'sql/workbench/common/views';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
@@ -17,7 +17,6 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { TreeItemCollapsibleState } from 'vs/workbench/common/views';
 import { localize } from 'vs/nls';
-import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
@@ -157,18 +156,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			}
 		}
 		icon = icon.toLowerCase();
-		// Change the database if the node has a different database
-		// than its parent
-		let databaseChanged = false;
-		let updatedPayload: azdata.IConnectionProfile | any = {};
-		if (node.nodeTypeId === NodeType.Database) {
-			const database = node.getDatabaseName();
-			if (database) {
-				databaseChanged = true;
-				updatedPayload = Object.assign(updatedPayload, parentNode.payload);
-				updatedPayload.databaseName = node.getDatabaseName();
-			}
-		}
+
 		const nodeInfo: azdata.NodeInfo = {
 			nodePath: nodePath,
 			nodeType: node.nodeTypeId,
@@ -180,7 +168,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			errorMessage: node.errorStateMessage,
 			iconType: icon,
 			childProvider: node.childProvider || parentNode.childProvider,
-			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload)
+			payload: node.payload || parentNode.payload
 		};
 		let newTreeItem: ITreeItem = {
 			parentHandle: node.parent.id,
@@ -191,7 +179,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 			},
 			childProvider: node.childProvider || parentNode.childProvider,
 			providerHandle: parentNode.childProvider,
-			payload: node.payload || (databaseChanged ? updatedPayload : parentNode.payload),
+			payload: node.payload || parentNode.payload,
 			contextValue: node.nodeTypeId,
 			sqlIcon: icon
 		};
