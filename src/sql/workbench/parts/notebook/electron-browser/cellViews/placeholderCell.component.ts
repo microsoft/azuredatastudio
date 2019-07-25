@@ -49,23 +49,23 @@ export class PlaceholderCellComponent extends CellView implements OnInit, OnChan
 	}
 
 	get clickOn(): string {
-		return localize('clickOn', 'Click on');
+		return localize('clickOn', "Click on");
 	}
 
 	get plusCode(): string {
-		return localize('plusCode', '+ Code');
+		return localize('plusCode', "+ Code");
 	}
 
 	get or(): string {
-		return localize('or', 'or');
+		return localize('or', "or");
 	}
 
 	get plusText(): string {
-		return localize('plusText', '+ Text');
+		return localize('plusText', "+ Text");
 	}
 
 	get toAddCell(): string {
-		return localize('toAddCell', 'to add a code or text cell');
+		return localize('toAddCell', "to add a code or text cell");
 	}
 
 	public addCell(cellType: string, event?: Event): void {

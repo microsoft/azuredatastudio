@@ -43,7 +43,7 @@ export class CreateInsightAction extends Action {
 	public run(context: IChartActionContext): Promise<boolean> {
 		let uriString: string = this.getActiveUriString();
 		if (!uriString) {
-			this.showError(localize('createInsightNoEditor', 'Cannot create insight as the active editor is not a SQL Editor'));
+			this.showError(localize('createInsightNoEditor', "Cannot create insight as the active editor is not a SQL Editor"));
 			return Promise.resolve(false);
 		}
 
@@ -62,7 +62,7 @@ export class CreateInsightAction extends Action {
 		};
 
 		let widgetConfig = {
-			name: localize('myWidgetName', 'My-Widget'),
+			name: localize('myWidgetName', "My-Widget"),
 			gridItemConfig: {
 				sizex: 2,
 				sizey: 1
@@ -119,7 +119,7 @@ export class CopyAction extends Action {
 		if (context.insight instanceof Graph) {
 			let data = context.insight.getCanvasData();
 			if (!data) {
-				this.showError(localize('chartNotFound', 'Could not find chart to save'));
+				this.showError(localize('chartNotFound', "Could not find chart to save"));
 				return Promise.resolve(false);
 			}
 
@@ -157,7 +157,7 @@ export class SaveImageAction extends Action {
 			return this.promptForFilepath().then(filePath => {
 				let data = (<Graph>context.insight).getCanvasData();
 				if (!data) {
-					this.showError(localize('chartNotFound', 'Could not find chart to save'));
+					this.showError(localize('chartNotFound', "Could not find chart to save"));
 					return false;
 				}
 				if (filePath) {
@@ -190,7 +190,7 @@ export class SaveImageAction extends Action {
 		let filepathPlaceHolder = resolveCurrentDirectory(this.getActiveUriString(), getRootPath(this.workspaceContextService));
 		filepathPlaceHolder = join(filepathPlaceHolder, 'chart.png');
 		return this.windowService.showSaveDialog({
-			title: localize('chartViewer.saveAsFileTitle', 'Choose Results File'),
+			title: localize('chartViewer.saveAsFileTitle', "Choose Results File"),
 			defaultPath: normalize(filepathPlaceHolder)
 		});
 	}

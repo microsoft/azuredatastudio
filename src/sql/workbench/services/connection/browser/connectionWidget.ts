@@ -46,7 +46,7 @@ export class ConnectionWidget {
 	private _azureAccountDropdown: SelectBox;
 	private _azureTenantDropdown: SelectBox;
 	private _refreshCredentialsLink: HTMLLinkElement;
-	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
+	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', "Add an account...");
 	private readonly _azureProviderId = 'azurePublicCloud';
 	private _azureTenantId: string;
 	private _azureAccountList: azdata.Account[];
@@ -54,9 +54,9 @@ export class ConnectionWidget {
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
-	private _defaultDatabaseName: string = localize('defaultDatabaseOption', '<Default>');
-	private _loadingDatabaseName: string = localize('loadingDatabaseOption', 'Loading...');
-	private _serverGroupDisplayString: string = localize('serverGroup', 'Server group');
+	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
+	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
+	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
@@ -72,7 +72,7 @@ export class ConnectionWidget {
 	protected _advancedButton: Button;
 	public DefaultServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('defaultServerGroup', '<Default>'),
+		name: localize('defaultServerGroup', "<Default>"),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
@@ -80,14 +80,14 @@ export class ConnectionWidget {
 
 	private _addNewServerGroup = {
 		id: '',
-		name: localize('addNewServerGroup', 'Add new group...'),
+		name: localize('addNewServerGroup', "Add new group..."),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
 	};
 	public NoneServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('noneServerGroup', '<Do not save>'),
+		name: localize('noneServerGroup', "<Do not save>"),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
@@ -223,20 +223,20 @@ export class ConnectionWidget {
 		this._password = '';
 
 		// Remember password
-		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
+		let rememberPasswordLabel = localize('rememberPassword', "Remember password");
 		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-input', 'username-password-row', false);
 
 		// Azure account picker
-		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
+		let accountLabel = localize('connection.azureAccountDropdownLabel', "Account");
 		let accountDropdown = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
 		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdown, { ariaLabel: accountLabel });
 		DialogHelper.appendInputSelectBox(accountDropdown, this._azureAccountDropdown);
 		let refreshCredentials = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', ['azure-account-row', 'refresh-credentials-link']);
 		this._refreshCredentialsLink = DOM.append(refreshCredentials, DOM.$('a'));
 		this._refreshCredentialsLink.href = '#';
-		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials');
+		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', "Refresh account credentials");
 		// Azure tenant picker
-		let tenantLabel = localize('connection.azureTenantDropdownLabel', 'Azure AD tenant');
+		let tenantLabel = localize('connection.azureTenantDropdownLabel', "Azure AD tenant");
 		let tenantDropdown = DialogHelper.appendRow(this._tableContainer, tenantLabel, 'connection-label', 'connection-input', ['azure-account-row', 'azure-tenant-row']);
 		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdown, { ariaLabel: tenantLabel });
 		DialogHelper.appendInputSelectBox(tenantDropdown, this._azureTenantDropdown);
@@ -253,7 +253,7 @@ export class ConnectionWidget {
 				placeholder: this._defaultDatabaseName,
 				maxHeight: 125,
 				ariaLabel: databaseOption.displayName,
-				actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+				actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			});
 		}
 	}
@@ -269,13 +269,13 @@ export class ConnectionWidget {
 	protected addConnectionNameOptions(): void {
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
-		connectionNameOption.displayName = localize('connectionName', 'Name (optional)');
+		connectionNameOption.displayName = localize('connectionName', "Name (optional)");
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder, this._contextViewService, { ariaLabel: connectionNameOption.displayName });
 	}
 
 	protected addAdvancedOptions(): void {
-		let AdvancedLabel = localize('advanced', 'Advanced...');
+		let AdvancedLabel = localize('advanced', "Advanced...");
 		this._advancedButton = this.createAdvancedButton(this._tableContainer, AdvancedLabel);
 	}
 
@@ -754,7 +754,7 @@ export class ConnectionWidget {
 		if (selected === '' || selected === this._addAzureAccountMessage) {
 			if (showMessage) {
 				this._azureAccountDropdown.showMessage({
-					content: localize('connectionWidget.invalidAzureAccount', 'You must select an account'),
+					content: localize('connectionWidget.invalidAzureAccount', "You must select an account"),
 					type: MessageType.ERROR
 				});
 			}

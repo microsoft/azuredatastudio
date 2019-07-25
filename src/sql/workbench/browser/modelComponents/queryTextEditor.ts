@@ -101,7 +101,7 @@ export class QueryTextEditor extends BaseTextEditor {
 	}
 
 	protected getAriaLabel(): string {
-		return nls.localize('queryTextEditorAriaLabel', 'modelview code editor for view model.');
+		return nls.localize('queryTextEditorAriaLabel', "modelview code editor for view model.");
 	}
 
 	public layout(dimension?: DOM.Dimension) {

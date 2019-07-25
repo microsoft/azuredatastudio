@@ -89,7 +89,7 @@ export class OEShimService extends Disposable implements IOEShimService {
 					resolve(connProfile);
 				},
 				onConnectCanceled: () => {
-					reject(new Error(localize('loginCanceled', 'User canceled')));
+					reject(new Error(localize('loginCanceled', "User canceled")));
 				},
 				onConnectReject: undefined,
 				onConnectStart: undefined,

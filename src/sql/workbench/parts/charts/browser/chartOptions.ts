@@ -35,16 +35,16 @@ export interface IChartOptions {
 }
 
 const dataDirectionOption: IChartOption = {
-	label: localize('dataDirectionLabel', 'Data Direction'),
+	label: localize('dataDirectionLabel', "Data Direction"),
 	type: ControlType.combo,
-	displayableOptions: [localize('verticalLabel', 'Vertical'), localize('horizontalLabel', 'Horizontal')],
+	displayableOptions: [localize('verticalLabel', "Vertical"), localize('horizontalLabel', "Horizontal")],
 	options: [DataDirection.Vertical, DataDirection.Horizontal],
 	configEntry: 'dataDirection',
 	default: DataDirection.Horizontal
 };
 
 const columnsAsLabelsInput: IChartOption = {
-	label: localize('columnsAsLabelsLabel', 'Use column names as labels'),
+	label: localize('columnsAsLabelsLabel', "Use column names as labels"),
 	type: ControlType.checkbox,
 	configEntry: 'columnsAsLabels',
 	default: true,
@@ -54,7 +54,7 @@ const columnsAsLabelsInput: IChartOption = {
 };
 
 const labelFirstColumnInput: IChartOption = {
-	label: localize('labelFirstColumnLabel', 'Use first column as row label'),
+	label: localize('labelFirstColumnLabel', "Use first column as row label"),
 	type: ControlType.checkbox,
 	configEntry: 'labelFirstColumn',
 	default: false,
@@ -64,7 +64,7 @@ const labelFirstColumnInput: IChartOption = {
 };
 
 const legendInput: IChartOption = {
-	label: localize('legendLabel', 'Legend Position'),
+	label: localize('legendLabel', "Legend Position"),
 	type: ControlType.combo,
 	options: Object.values(LegendPosition),
 	configEntry: 'legendPosition',
@@ -72,66 +72,66 @@ const legendInput: IChartOption = {
 };
 
 const yAxisLabelInput: IChartOption = {
-	label: localize('yAxisLabel', 'Y Axis Label'),
+	label: localize('yAxisLabel', "Y Axis Label"),
 	type: ControlType.input,
 	configEntry: 'yAxisLabel',
 	default: undefined
 };
 
 const yAxisMinInput: IChartOption = {
-	label: localize('yAxisMinVal', 'Y Axis Minimum Value'),
+	label: localize('yAxisMinVal', "Y Axis Minimum Value"),
 	type: ControlType.numberInput,
 	configEntry: 'yAxisMin',
 	default: undefined
 };
 
 const yAxisMaxInput: IChartOption = {
-	label: localize('yAxisMaxVal', 'Y Axis Maximum Value'),
+	label: localize('yAxisMaxVal', "Y Axis Maximum Value"),
 	type: ControlType.numberInput,
 	configEntry: 'yAxisMax',
 	default: undefined
 };
 
 const xAxisLabelInput: IChartOption = {
-	label: localize('xAxisLabel', 'X Axis Label'),
+	label: localize('xAxisLabel', "X Axis Label"),
 	type: ControlType.input,
 	configEntry: 'xAxisLabel',
 	default: undefined
 };
 
 const xAxisMinInput: IChartOption = {
-	label: localize('xAxisMinVal', 'X Axis Minimum Value'),
+	label: localize('xAxisMinVal', "X Axis Minimum Value"),
 	type: ControlType.numberInput,
 	configEntry: 'xAxisMin',
 	default: undefined
 };
 
 const xAxisMaxInput: IChartOption = {
-	label: localize('xAxisMaxVal', 'X Axis Maximum Value'),
+	label: localize('xAxisMaxVal', "X Axis Maximum Value"),
 	type: ControlType.numberInput,
 	configEntry: 'xAxisMax',
 	default: undefined
 };
 
 const xAxisMinDateInput: IChartOption = {
-	label: localize('xAxisMinDate', 'X Axis Minimum Date'),
+	label: localize('xAxisMinDate', "X Axis Minimum Date"),
 	type: ControlType.dateInput,
 	configEntry: 'xAxisMin',
 	default: undefined
 };
 
 const xAxisMaxDateInput: IChartOption = {
-	label: localize('xAxisMaxDate', 'X Axis Maximum Date'),
+	label: localize('xAxisMaxDate', "X Axis Maximum Date"),
 	type: ControlType.dateInput,
 	configEntry: 'xAxisMax',
 	default: undefined
 };
 
 const dataTypeInput: IChartOption = {
-	label: localize('dataTypeLabel', 'Data Type'),
+	label: localize('dataTypeLabel', "Data Type"),
 	type: ControlType.combo,
 	options: [DataType.Number, DataType.Point],
-	displayableOptions: [localize('numberLabel', 'Number'), localize('pointLabel', 'Point')],
+	displayableOptions: [localize('numberLabel', "Number"), localize('pointLabel', "Point")],
 	configEntry: 'dataType',
 	default: DataType.Number
 };
@@ -139,7 +139,7 @@ const dataTypeInput: IChartOption = {
 export const ChartOptions: IChartOptions = {
 	general: [
 		{
-			label: localize('chartTypeLabel', 'Chart Type'),
+			label: localize('chartTypeLabel', "Chart Type"),
 			type: ControlType.combo,
 			options: insightRegistry.getAllIds(),
 			configEntry: 'type',
@@ -205,13 +205,13 @@ export const ChartOptions: IChartOptions = {
 	[InsightType.Image]: [
 		{
 			configEntry: 'encoding',
-			label: localize('encodingOption', 'Encoding'),
+			label: localize('encodingOption', "Encoding"),
 			type: ControlType.input,
 			default: 'hex'
 		},
 		{
 			configEntry: 'imageFormat',
-			label: localize('imageFormatOption', 'Image Format'),
+			label: localize('imageFormatOption', "Image Format"),
 			type: ControlType.input,
 			default: 'jpeg'
 		}

@@ -25,7 +25,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/co
 export class ClearRecentConnectionsAction extends Action {
 
 	public static ID = 'clearRecentConnectionsAction';
-	public static LABEL = nls.localize('ClearRecentlyUsedLabel', 'Clear List');
+	public static LABEL = nls.localize('ClearRecentlyUsedLabel', "Clear List");
 	public static ICON = 'search-action clear-search-results';
 
 	private _onRecentConnectionsRemoved = new Emitter<void>();
@@ -65,7 +65,7 @@ export class ClearRecentConnectionsAction extends Action {
 					const actions: INotificationActions = { primary: [] };
 					this._notificationService.notify({
 						severity: Severity.Info,
-						message: nls.localize('ClearedRecentConnections', 'Recent connections list cleared'),
+						message: nls.localize('ClearedRecentConnections', "Recent connections list cleared"),
 						actions
 					});
 					this._onRecentConnectionsRemoved.fire();
@@ -78,11 +78,11 @@ export class ClearRecentConnectionsAction extends Action {
 		const self = this;
 		return new Promise<boolean>((resolve, reject) => {
 			let choices: { key, value }[] = [
-				{ key: nls.localize('connectionAction.yes', 'Yes'), value: true },
-				{ key: nls.localize('connectionAction.no', 'No'), value: false }
+				{ key: nls.localize('connectionAction.yes', "Yes"), value: true },
+				{ key: nls.localize('connectionAction.no', "No"), value: false }
 			];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', 'Clear List'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('ClearRecentlyUsedLabel', "Clear List"), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});
@@ -91,9 +91,9 @@ export class ClearRecentConnectionsAction extends Action {
 
 	private promptConfirmationMessage(): Promise<IConfirmationResult> {
 		let confirm: IConfirmation = {
-			message: nls.localize('clearRecentConnectionMessage', 'Are you sure you want to delete all the connections from the list?'),
-			primaryButton: nls.localize('connectionDialog.yes', 'Yes'),
-			secondaryButton: nls.localize('connectionDialog.no', 'No'),
+			message: nls.localize('clearRecentConnectionMessage', "Are you sure you want to delete all the connections from the list?"),
+			primaryButton: nls.localize('connectionDialog.yes', "Yes"),
+			secondaryButton: nls.localize('connectionDialog.no', "No"),
 			type: 'question'
 		};
 
@@ -111,7 +111,7 @@ export class ClearRecentConnectionsAction extends Action {
 export class ClearSingleRecentConnectionAction extends Action {
 
 	public static ID = 'clearSingleRecentConnectionAction';
-	public static LABEL = nls.localize('delete', 'Delete');
+	public static LABEL = nls.localize('delete', "Delete");
 	private _onRecentConnectionRemoved = new Emitter<void>();
 	public onRecentConnectionRemoved: Event<void> = this._onRecentConnectionRemoved.event;
 
