@@ -87,8 +87,9 @@ async function promptForFolder(bookContribution: BookContribution): Promise<void
 		});
 		if (uris && uris.length > 0) {
 			let pickedFolder = uris[0];
-			await saveBooksToFolder(pickedFolder, bookContribution);
-			await promptToReloadWindow(pickedFolder);
+			let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, bookContribution.name));
+			await saveBooksToFolder(destinationUri, bookContribution);
+			await promptToReloadWindow(destinationUri);
 		}
 		return;
 	} catch (error) {
@@ -100,12 +101,10 @@ async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookCo
 	// Get book contributions
 	if (bookContribution && folderUri) {
 		//remove folder if exists
-		await fs.removeSync(path.join(folderUri.fsPath, bookContribution.name));
-		//copy them from the books extension:
-		const destinationFolder = path.join(folderUri.fsPath, bookContribution.name);
+		await fs.removeSync(folderUri.fsPath);
 		//make directory for each contribution book.
-		fs.mkdirSync(destinationFolder);
-		await fs.copy(bookContribution.path, destinationFolder);
+		await fs.mkdirSync(folderUri.fsPath);
+		await fs.copy(bookContribution.path, folderUri.fsPath);
 	}
 }
 function promptToReloadWindow(folderUri: vscode.Uri): void {
