@@ -292,10 +292,6 @@ function hygiene(some) {
 	const localizeDoubleQuotes = es.through(function (file) {
 		const lines = file.__lines;
 		lines.forEach((line, i) => {
-			if (/localize/.test(line)) {
-				//console.error(file.relative + '(' + (i + 1) + ',1): Message parameter to localize calls should be double-quotes');
-				//errorCount++;
-			}
 			if (/localize\(['"].*['"],\s'.*'\)/.test(line)) {
 				console.error(file.relative + '(' + (i + 1) + ',1): Message parameter to localize calls should be double-quotes');
 				errorCount++;

@@ -46,7 +46,7 @@ const tabSchema: IJSONSchema = {
 			type: 'string'
 		},
 		provider: {
-			description: localize('azdata.extension.contributes.tab.provider', "Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set"),
+			description: localize('azdata.extension.contributes.tab.provider', "Defines the connection types this tab is compatible with. Defaults to 'MSSQL' if not set"),
 			type: ['string', 'array']
 
 		},
