@@ -51,7 +51,7 @@ export class DeleteAction extends Action {
 
 export class OpenQueryAction extends Action {
 	public static ID = 'queryHistory.openQuery';
-	public static LABEL = localize('queryHistory.openQuery', 'Open Query');
+	public static LABEL = localize('queryHistory.openQuery', "Open Query");
 
 	constructor(
 		id: string,

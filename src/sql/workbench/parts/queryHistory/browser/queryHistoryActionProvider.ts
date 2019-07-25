@@ -43,10 +43,9 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 	 * Return actions for query history task
 	 */
 	public getQueryHistoryActions(tree: ITree, element: QueryHistoryNode): IAction[] {
-		const actions = [];
-
-		actions.push(this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL));
-		actions.push(this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL));
-		return actions;
+		return [
+			this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL),
+			this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL)
+		];
 	}
 }
