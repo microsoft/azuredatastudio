@@ -86,9 +86,12 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		}
 		await p;
 	}
-	let copyString = '';
 
+	let copyString = '';
 	copyTable.forEach((row) => {
+		if (row === undefined) {
+			return;
+		}
 		copyString = copyString.concat(row.join('\t').concat(eol));
 	});
 
