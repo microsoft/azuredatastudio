@@ -151,7 +151,7 @@ export class CommandLineService implements ICommandLineProcessing {
 					showFirewallRuleOnError: warnOnConnectFailure
 				};
 				if (this._notificationService) {
-					this._notificationService.status(localize('connectingQueryLabel', 'Connecting query file'), { hideAfter: 2500 });
+					this._notificationService.status(localize('connectingQueryLabel', "Connecting query file"), { hideAfter: 2500 });
 				}
 				await this._connectionManagementService.connect(profile, uriString, options);
 			}

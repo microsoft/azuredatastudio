@@ -202,7 +202,7 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 		super();
 		this._register(
 			this.statusbarService.addEntry({
-				text: localize('query.status.executing', 'Executing query...'),
+				text: localize('query.status.executing', "Executing query..."),
 			},
 				QueryStatusStatusBarContributions.ID,
 				localize('status.query.status', "Execution Status"),

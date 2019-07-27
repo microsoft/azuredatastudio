@@ -41,15 +41,15 @@ export class ProxiesViewComponent extends JobManagementView implements OnInit, O
 
 	private columns: Array<Slick.Column<any>> = [
 		{
-			name: nls.localize('jobProxiesView.accountName', 'Account Name'),
+			name: nls.localize('jobProxiesView.accountName', "Account Name"),
 			field: 'accountName',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
 			width: 200,
 			id: 'accountName'
 		},
-		{ name: nls.localize('jobProxiesView.credentialName', 'Credential Name'), field: 'credentialName', width: 200, id: 'credentialName' },
-		{ name: nls.localize('jobProxiesView.description', 'Description'), field: 'description', width: 200, id: 'description' },
-		{ name: nls.localize('jobProxiesView.isEnabled', 'Enabled'), field: 'isEnabled', width: 200, id: 'isEnabled' }
+		{ name: nls.localize('jobProxiesView.credentialName', "Credential Name"), field: 'credentialName', width: 200, id: 'credentialName' },
+		{ name: nls.localize('jobProxiesView.description', "Description"), field: 'description', width: 200, id: 'description' },
+		{ name: nls.localize('jobProxiesView.isEnabled', "Enabled"), field: 'isEnabled', width: 200, id: 'isEnabled' }
 	];
 
 	private options: Slick.GridOptions<any> = {

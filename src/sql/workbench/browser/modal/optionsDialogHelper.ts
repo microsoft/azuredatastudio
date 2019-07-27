@@ -25,8 +25,8 @@ export function createOptionElement(option: azdata.ServiceOption, rowContainer: 
 	let optionValue = getOptionValueAndCategoryValues(option, options, possibleInputs);
 	let optionWidget: any;
 	let inputElement: HTMLElement;
-	let missingErrorMessage = localize('optionsDialog.missingRequireField', ' is required.');
-	let invalidInputMessage = localize('optionsDialog.invalidInput', 'Invalid input.  Numeric value expected.');
+	let missingErrorMessage = localize('optionsDialog.missingRequireField', " is required.");
+	let invalidInputMessage = localize('optionsDialog.invalidInput', "Invalid input.  Numeric value expected.");
 
 	if (option.valueType === ServiceOptionType.number) {
 		optionWidget = new InputBox(rowContainer, contextViewService, {

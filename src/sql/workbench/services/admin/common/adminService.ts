@@ -38,13 +38,13 @@ export class AdminService implements IAdminService {
 		let providerId: string = this._connectionService.getProviderIdFromUri(uri);
 
 		if (!providerId) {
-			return Promise.reject(new Error(localize('adminService.providerIdNotValidError', 'Connection is required in order to interact with adminservice')));
+			return Promise.reject(new Error(localize('adminService.providerIdNotValidError', "Connection is required in order to interact with adminservice")));
 		}
 		let handler = this._providers[providerId];
 		if (handler) {
 			return action(handler);
 		} else {
-			return Promise.reject(new Error(localize('adminService.noHandlerRegistered', 'No Handler Registered')));
+			return Promise.reject(new Error(localize('adminService.noHandlerRegistered', "No Handler Registered")));
 		}
 	}
 

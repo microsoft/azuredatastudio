@@ -8,8 +8,8 @@ import { localize } from 'vs/nls';
 import { FutureInternal } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
-export const noKernel: string = localize('noKernel', 'No Kernel');
-const runNotebookDisabled = localize('runNotebookDisabled', 'Cannot run cells as no kernel has been configured');
+export const noKernel: string = localize('noKernel', "No Kernel");
+const runNotebookDisabled = localize('runNotebookDisabled', "Cannot run cells as no kernel has been configured");
 
 let noKernelSpec: nb.IKernelSpec = ({
 	name: noKernel,
@@ -210,7 +210,7 @@ export class EmptyFuture implements FutureInternal {
 					msg_type: 'error'
 				},
 				content: <nb.IErrorResult>{
-					ename: localize('errorName', 'Error'),
+					ename: localize('errorName', "Error"),
 					evalue: runNotebookDisabled,
 					output_type: 'error'
 				},

@@ -263,57 +263,57 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 let registryProperties = {
 	'sql.saveAsCsv.includeHeaders': {
 		'type': 'boolean',
-		'description': localize('sql.saveAsCsv.includeHeaders', '[Optional] When true, column headers are included when saving results as CSV'),
+		'description': localize('sql.saveAsCsv.includeHeaders', "[Optional] When true, column headers are included when saving results as CSV"),
 		'default': true
 	},
 	'sql.saveAsCsv.delimiter': {
 		'type': 'string',
-		'description': localize('sql.saveAsCsv.delimiter', '[Optional] The custom delimiter to use between values when saving as CSV'),
+		'description': localize('sql.saveAsCsv.delimiter', "[Optional] The custom delimiter to use between values when saving as CSV"),
 		'default': ','
 	},
 	'sql.saveAsCsv.lineSeperator': {
 		'type': '',
-		'description': localize('sql.saveAsCsv.lineSeperator', '[Optional] Character(s) used for seperating rows when saving results as CSV'),
+		'description': localize('sql.saveAsCsv.lineSeperator', "[Optional] Character(s) used for seperating rows when saving results as CSV"),
 		'default': null
 	},
 	'sql.saveAsCsv.textIdentifier': {
 		'type': 'string',
-		'description': localize('sql.saveAsCsv.textIdentifier', '[Optional] Character used for enclosing text fields when saving results as CSV'),
+		'description': localize('sql.saveAsCsv.textIdentifier', "[Optional] Character used for enclosing text fields when saving results as CSV"),
 		'default': '\"'
 	},
 	'sql.saveAsCsv.encoding': {
 		'type': 'string',
-		'description': localize('sql.saveAsCsv.encoding', '[Optional] File encoding used when saving results as CSV'),
+		'description': localize('sql.saveAsCsv.encoding', "[Optional] File encoding used when saving results as CSV"),
 		'default': 'utf-8'
 	},
 	'sql.results.streaming': {
 		'type': 'boolean',
-		'description': localize('sql.results.streaming', 'Enable results streaming; contains few minor visual issues'),
+		'description': localize('sql.results.streaming', "Enable results streaming; contains few minor visual issues"),
 		'default': true
 	},
 	'sql.saveAsXml.formatted': {
 		'type': 'string',
-		'description': localize('sql.saveAsXml.formatted', '[Optional] When true, XML output will be formatted when saving results as XML'),
+		'description': localize('sql.saveAsXml.formatted', "[Optional] When true, XML output will be formatted when saving results as XML"),
 		'default': true
 	},
 	'sql.saveAsXml.encoding': {
 		'type': 'string',
-		'description': localize('sql.saveAsXml.encoding', '[Optional] File encoding used when saving results as XML'),
+		'description': localize('sql.saveAsXml.encoding', "[Optional] File encoding used when saving results as XML"),
 		'default': 'utf-8'
 	},
 	'sql.copyIncludeHeaders': {
 		'type': 'boolean',
-		'description': localize('sql.copyIncludeHeaders', '[Optional] Configuration options for copying results from the Results View'),
+		'description': localize('sql.copyIncludeHeaders', "[Optional] Configuration options for copying results from the Results View"),
 		'default': false
 	},
 	'sql.copyRemoveNewLine': {
 		'type': 'boolean',
-		'description': localize('sql.copyRemoveNewLine', '[Optional] Configuration options for copying multi-line results from the Results View'),
+		'description': localize('sql.copyRemoveNewLine', "[Optional] Configuration options for copying multi-line results from the Results View"),
 		'default': true
 	},
 	'sql.showBatchTime': {
 		'type': 'boolean',
-		'description': localize('sql.showBatchTime', '[Optional] Should execution time be shown for individual batches'),
+		'description': localize('sql.showBatchTime', "[Optional] Should execution time be shown for individual batches"),
 		'default': false
 	},
 	'sql.chart.defaultChartType': {
@@ -340,142 +340,142 @@ let registryProperties = {
 	'sql.promptToSaveGeneratedFiles': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('sql.promptToSaveGeneratedFiles', 'Prompt to save generated SQL files')
+		'description': localize('sql.promptToSaveGeneratedFiles', "Prompt to save generated SQL files")
 	},
 	'mssql.intelliSense.enableIntelliSense': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.intelliSense.enableIntelliSense', 'Should IntelliSense be enabled')
+		'description': localize('mssql.intelliSense.enableIntelliSense', "Should IntelliSense be enabled")
 	},
 	'mssql.intelliSense.enableErrorChecking': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.intelliSense.enableErrorChecking', 'Should IntelliSense error checking be enabled')
+		'description': localize('mssql.intelliSense.enableErrorChecking', "Should IntelliSense error checking be enabled")
 	},
 	'mssql.intelliSense.enableSuggestions': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.intelliSense.enableSuggestions', 'Should IntelliSense suggestions be enabled')
+		'description': localize('mssql.intelliSense.enableSuggestions', "Should IntelliSense suggestions be enabled")
 	},
 	'mssql.intelliSense.enableQuickInfo': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.intelliSense.enableQuickInfo', 'Should IntelliSense quick info be enabled')
+		'description': localize('mssql.intelliSense.enableQuickInfo', "Should IntelliSense quick info be enabled")
 	},
 	'mssql.intelliSense.lowerCaseSuggestions': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.intelliSense.lowerCaseSuggestions', 'Should IntelliSense suggestions be lowercase')
+		'description': localize('mssql.intelliSense.lowerCaseSuggestions', "Should IntelliSense suggestions be lowercase")
 	},
 	'mssql.query.rowCount': {
 		'type': 'number',
 		'default': 0,
-		'description': localize('mssql.query.setRowCount', 'Maximum number of rows to return before the server stops processing your query.')
+		'description': localize('mssql.query.setRowCount', "Maximum number of rows to return before the server stops processing your query.")
 	},
 	'mssql.query.textSize': {
 		'type': 'number',
 		'default': 2147483647,
-		'description': localize('mssql.query.textSize', 'Maximum size of text and ntext data returned from a SELECT statement')
+		'description': localize('mssql.query.textSize', "Maximum size of text and ntext data returned from a SELECT statement")
 	},
 	'mssql.query.executionTimeout': {
 		'type': 'number',
 		'default': 0,
-		'description': localize('mssql.query.executionTimeout', 'An execution time-out of 0 indicates an unlimited wait (no time-out)')
+		'description': localize('mssql.query.executionTimeout', "An execution time-out of 0 indicates an unlimited wait (no time-out)")
 	},
 	'mssql.query.noCount': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.noCount', 'Enable SET NOCOUNT option')
+		'description': localize('mssql.query.noCount', "Enable SET NOCOUNT option")
 	},
 	'mssql.query.noExec': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.noExec', 'Enable SET NOEXEC option')
+		'description': localize('mssql.query.noExec', "Enable SET NOEXEC option")
 	},
 	'mssql.query.parseOnly': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.parseOnly', 'Enable SET PARSEONLY option')
+		'description': localize('mssql.query.parseOnly', "Enable SET PARSEONLY option")
 	},
 	'mssql.query.arithAbort': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.query.arithAbort', 'Enable SET ARITHABORT option')
+		'description': localize('mssql.query.arithAbort', "Enable SET ARITHABORT option")
 	},
 	'mssql.query.statisticsTime': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.statisticsTime', 'Enable SET STATISTICS TIME option')
+		'description': localize('mssql.query.statisticsTime', "Enable SET STATISTICS TIME option")
 	},
 	'mssql.query.statisticsIO': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.statisticsIO', 'Enable SET STATISTICS IO option')
+		'description': localize('mssql.query.statisticsIO', "Enable SET STATISTICS IO option")
 	},
 	'mssql.query.xactAbortOn': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.xactAbortOn', 'Enable SET XACT_ABORT ON option')
+		'description': localize('mssql.query.xactAbortOn', "Enable SET XACT_ABORT ON option")
 	},
 	'mssql.query.transactionIsolationLevel': {
 		'enum': ['READ COMMITTED', 'READ UNCOMMITTED', 'REPEATABLE READ', 'SERIALIZABLE'],
 		'default': 'READ COMMITTED',
-		'description': localize('mssql.query.transactionIsolationLevel', 'Enable SET TRANSACTION ISOLATION LEVEL option')
+		'description': localize('mssql.query.transactionIsolationLevel', "Enable SET TRANSACTION ISOLATION LEVEL option")
 	},
 	'mssql.query.deadlockPriority': {
 		'enum': ['Normal', 'Low'],
 		'default': 'Normal',
-		'description': localize('mssql.query.deadlockPriority', 'Enable SET DEADLOCK_PRIORITY option')
+		'description': localize('mssql.query.deadlockPriority', "Enable SET DEADLOCK_PRIORITY option")
 	},
 	'mssql.query.lockTimeout': {
 		'type': 'number',
 		'default': -1,
-		'description': localize('mssql.query.lockTimeout', 'Enable SET LOCK TIMEOUT option (in milliseconds)')
+		'description': localize('mssql.query.lockTimeout', "Enable SET LOCK TIMEOUT option (in milliseconds)")
 	},
 	'mssql.query.queryGovernorCostLimit': {
 		'type': 'number',
 		'default': -1,
-		'description': localize('mssql.query.queryGovernorCostLimit', 'Enable SET QUERY_GOVERNOR_COST_LIMIT')
+		'description': localize('mssql.query.queryGovernorCostLimit', "Enable SET QUERY_GOVERNOR_COST_LIMIT")
 	},
 	'mssql.query.ansiDefaults': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.ansiDefaults', 'Enable SET ANSI_DEFAULTS')
+		'description': localize('mssql.query.ansiDefaults', "Enable SET ANSI_DEFAULTS")
 	},
 	'mssql.query.quotedIdentifier': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.query.quotedIdentifier', 'Enable SET QUOTED_IDENTIFIER')
+		'description': localize('mssql.query.quotedIdentifier', "Enable SET QUOTED_IDENTIFIER")
 	},
 	'mssql.query.ansiNullDefaultOn': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.query.ansiNullDefaultOn', 'Enable SET ANSI_NULL_DFLT_ON')
+		'description': localize('mssql.query.ansiNullDefaultOn', "Enable SET ANSI_NULL_DFLT_ON")
 	},
 	'mssql.query.implicitTransactions': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.implicitTransactions', 'Enable SET IMPLICIT_TRANSACTIONS')
+		'description': localize('mssql.query.implicitTransactions', "Enable SET IMPLICIT_TRANSACTIONS")
 	},
 	'mssql.query.cursorCloseOnCommit': {
 		'type': 'boolean',
 		'default': false,
-		'description': localize('mssql.query.cursorCloseOnCommit', 'Enable SET CURSOR_CLOSE_ON_COMMIT')
+		'description': localize('mssql.query.cursorCloseOnCommit', "Enable SET CURSOR_CLOSE_ON_COMMIT")
 	},
 	'mssql.query.ansiPadding': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.query.ansiPadding', 'Enable SET ANSI_PADDING')
+		'description': localize('mssql.query.ansiPadding', "Enable SET ANSI_PADDING")
 	},
 	'mssql.query.ansiWarnings': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.query.ansiWarnings', 'Enable SET ANSI_WARNINGS')
+		'description': localize('mssql.query.ansiWarnings', "Enable SET ANSI_WARNINGS")
 	},
 	'mssql.query.ansiNulls': {
 		'type': 'boolean',
 		'default': true,
-		'description': localize('mssql.query.ansiNulls', 'Enable SET ANSI_NULLS')
+		'description': localize('mssql.query.ansiNulls', "Enable SET ANSI_NULLS")
 	}
 };
 

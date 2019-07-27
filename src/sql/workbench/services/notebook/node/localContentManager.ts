@@ -39,7 +39,7 @@ export class LocalContentManager implements nb.ContentManager {
 		}
 
 		// else, fallthrough condition
-		throw new TypeError(localize('nbNotSupported', 'This file does not have a valid notebook format'));
+		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
 
 	}
 
@@ -69,7 +69,7 @@ export class LocalContentManager implements nb.ContentManager {
 		}
 
 		// else, fallthrough condition
-		throw new TypeError(localize('nbNotSupported', 'This file does not have a valid notebook format'));
+		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
 
 	}
 

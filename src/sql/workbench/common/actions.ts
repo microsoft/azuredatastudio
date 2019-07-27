@@ -44,7 +44,7 @@ export interface ManageActionContext extends BaseActionContext {
 // --- actions
 export class NewQueryAction extends Task {
 	public static ID = 'newQuery';
-	public static LABEL = nls.localize('newQueryAction.newQuery', 'New Query');
+	public static LABEL = nls.localize('newQueryAction.newQuery', "New Query");
 	public static ICON = 'new-query';
 
 	constructor() {
@@ -69,7 +69,7 @@ export class NewQueryAction extends Task {
 
 export class ScriptSelectAction extends Action {
 	public static ID = 'selectTop';
-	public static LABEL = nls.localize('scriptSelect', 'Select Top 1000');
+	public static LABEL = nls.localize('scriptSelect', "Select Top 1000");
 
 	constructor(
 		id: string, label: string,
@@ -93,7 +93,7 @@ export class ScriptSelectAction extends Action {
 
 export class ScriptExecuteAction extends Action {
 	public static ID = 'scriptExecute';
-	public static LABEL = nls.localize('scriptExecute', 'Script as Execute');
+	public static LABEL = nls.localize('scriptExecute', "Script as Execute");
 
 	constructor(
 		id: string, label: string,
@@ -120,7 +120,7 @@ export class ScriptExecuteAction extends Action {
 
 export class ScriptAlterAction extends Action {
 	public static ID = 'scriptAlter';
-	public static LABEL = nls.localize('scriptAlter', 'Script as Alter');
+	public static LABEL = nls.localize('scriptAlter', "Script as Alter");
 
 	constructor(
 		id: string, label: string,
@@ -147,7 +147,7 @@ export class ScriptAlterAction extends Action {
 
 export class EditDataAction extends Action {
 	public static ID = 'editData';
-	public static LABEL = nls.localize('editData', 'Edit Data');
+	public static LABEL = nls.localize('editData', "Edit Data");
 
 	constructor(
 		id: string, label: string,
@@ -198,7 +198,7 @@ export class ScriptCreateAction extends Action {
 
 export class ScriptDeleteAction extends Action {
 	public static ID = 'scriptDelete';
-	public static LABEL = nls.localize('scriptDelete', 'Script as Drop');
+	public static LABEL = nls.localize('scriptDelete', "Script as Drop");
 
 	constructor(
 		id: string, label: string,
@@ -227,7 +227,7 @@ export const BackupFeatureName = 'backup';
 
 export class BackupAction extends Task {
 	public static readonly ID = BackupFeatureName;
-	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
+	public static readonly LABEL = nls.localize('backupAction.backup', "Backup");
 	public static readonly ICON = BackupFeatureName;
 
 	constructor() {
@@ -243,7 +243,7 @@ export class BackupAction extends Task {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
+			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', "You must enable preview features in order to use backup"));
 		}
 
 		const connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -255,11 +255,11 @@ export class BackupAction extends Task {
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
 			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', 'Backup command is not supported for Azure SQL databases.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', "Backup command is not supported for Azure SQL databases."));
 			}
 
 			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', 'Backup command is not supported in Server Context. Please select a Database and try again.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', "Backup command is not supported in Server Context. Please select a Database and try again."));
 			}
 		}
 
@@ -274,7 +274,7 @@ export const RestoreFeatureName = 'restore';
 
 export class RestoreAction extends Task {
 	public static readonly ID = RestoreFeatureName;
-	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
+	public static readonly LABEL = nls.localize('restoreAction.restore', "Restore");
 	public static readonly ICON = RestoreFeatureName;
 
 	constructor() {
@@ -290,7 +290,7 @@ export class RestoreAction extends Task {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
+			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', "You must enable preview features in order to use restore"));
 		}
 
 		let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -302,11 +302,11 @@ export class RestoreAction extends Task {
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
 			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', 'Restore command is not supported for Azure SQL databases.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', "Restore command is not supported for Azure SQL databases."));
 			}
 
 			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', 'Restore command is not supported in Server Context. Please select a Database and try again.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', "Restore command is not supported in Server Context. Please select a Database and try again."));
 			}
 		}
 
@@ -319,7 +319,7 @@ export class RestoreAction extends Task {
 
 export class ManageAction extends Action {
 	public static ID = 'manage';
-	public static LABEL = nls.localize('manage', 'Manage');
+	public static LABEL = nls.localize('manage', "Manage");
 
 	constructor(
 		id: string, label: string,
@@ -341,7 +341,7 @@ export class ManageAction extends Action {
 
 export class InsightAction extends Action {
 	public static ID = 'showInsight';
-	public static LABEL = nls.localize('showDetails', 'Show Details');
+	public static LABEL = nls.localize('showDetails', "Show Details");
 
 	constructor(
 		id: string, label: string,
@@ -358,7 +358,7 @@ export class InsightAction extends Action {
 
 export class ConfigureDashboardAction extends Task {
 	public static readonly ID = 'configureDashboard';
-	public static readonly LABEL = nls.localize('configureDashboard', 'Learn How To Configure The Dashboard');
+	public static readonly LABEL = nls.localize('configureDashboard', "Learn How To Configure The Dashboard");
 	public static readonly ICON = 'configure-dashboard';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 
