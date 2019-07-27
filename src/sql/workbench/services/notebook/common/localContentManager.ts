@@ -42,7 +42,7 @@ export class LocalContentManager implements nb.ContentManager {
 		}
 
 		// else, fallthrough condition
-		throw new TypeError(localize('nbNotSupported', 'This file does not have a valid notebook format'));
+		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
 
 	}
 
@@ -70,7 +70,7 @@ export class LocalContentManager implements nb.ContentManager {
 		}
 
 		// else, fallthrough condition
-		throw new TypeError(localize('nbNotSupported', 'This file does not have a valid notebook format'));
+		throw new TypeError(localize('nbNotSupported', "This file does not have a valid notebook format"));
 
 	}
 
@@ -125,7 +125,7 @@ namespace v4 {
 	export function createDefaultCell(cell: nb.ICellContents): nb.ICellContents {
 		return {
 			cell_type: cell.cell_type,
-			source: demultiline(cell.source),
+			source: cell.source,
 			metadata: cell.metadata
 		};
 	}
@@ -133,7 +133,7 @@ namespace v4 {
 	function createCodeCell(cell: nb.ICellContents): nb.ICellContents {
 		return {
 			cell_type: cell.cell_type,
-			source: demultiline(cell.source),
+			source: cell.source,
 			metadata: cell.metadata,
 			execution_count: cell.execution_count,
 			outputs: createOutputs(cell)

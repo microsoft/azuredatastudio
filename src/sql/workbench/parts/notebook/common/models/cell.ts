@@ -24,7 +24,7 @@ let modelId = 0;
 
 export class CellModel implements ICellModel {
 	private _cellType: nb.CellType;
-	private _source: string;
+	private _source: string | string[];
 	private _language: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
@@ -155,11 +155,12 @@ export class CellModel implements ICellModel {
 		return this._cellType;
 	}
 
-	public get source(): string {
+	public get source(): string | string[] {
 		return this._source;
 	}
 
-	public set source(newSource: string) {
+	public set source(newSource: string | string[]) {
+		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
@@ -286,7 +287,7 @@ export class CellModel implements ICellModel {
 		} catch (error) {
 			let message: string;
 			if (error.message === 'Canceled') {
-				message = localize('executionCanceled', 'Query execution was canceled');
+				message = localize('executionCanceled', "Query execution was canceled");
 			} else {
 				message = getErrorMessage(error);
 			}
@@ -305,17 +306,17 @@ export class CellModel implements ICellModel {
 		let model = this.options.notebook;
 		let clientSession = model && model.clientSession;
 		if (!clientSession) {
-			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', 'The session for this notebook is not yet ready'));
+			this.sendNotification(notificationService, Severity.Error, localize('notebookNotReady', "The session for this notebook is not yet ready"));
 			return undefined;
 		} else if (!clientSession.isReady || clientSession.status === 'dead') {
 
-			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', 'The session for this notebook will start momentarily'));
+			this.sendNotification(notificationService, Severity.Info, localize('sessionNotReady', "The session for this notebook will start momentarily"));
 			await clientSession.kernelChangeCompleted;
 		}
 		if (!clientSession.kernel) {
 			let defaultKernel = model && model.defaultKernel && model.defaultKernel.name;
 			if (!defaultKernel) {
-				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', 'No kernel is available for this notebook'));
+				this.sendNotification(notificationService, Severity.Error, localize('noDefaultKernel', "No kernel is available for this notebook"));
 				return undefined;
 			}
 			await clientSession.changeKernel({
@@ -532,7 +533,7 @@ export class CellModel implements ICellModel {
 		}
 		this._cellType = cell.cell_type;
 		this.executionCount = cell.execution_count;
-		this._source = Array.isArray(cell.source) ? cell.source.join('') : cell.source;
+		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
@@ -591,6 +592,26 @@ export class CellModel implements ICellModel {
 			}
 		}
 		return endpoint;
+	}
+
+	private getMultilineSource(source: string | string[]): string | string[] {
+		if (typeof source === 'string') {
+			let sourceMultiline = source.split('\n');
+			// If source is one line (i.e. no '\n'), return it immediately
+			if (sourceMultiline.length <= 1) {
+				return source;
+			}
+			// Otherwise, add back all of the newlines here
+			// Note: for Windows machines that require '/r/n',
+			// splitting on '\n' and putting back the '\n' will still
+			// retain the '\r', so that isn't lost in the process
+			// Note: the last line will not include a newline at the end
+			for (let i = 0; i < sourceMultiline.length - 1; i++) {
+				sourceMultiline[i] += '\n';
+			}
+			return sourceMultiline;
+		}
+		return source;
 	}
 
 	// Dispose and set current future to undefined

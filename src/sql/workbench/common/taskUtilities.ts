@@ -69,15 +69,15 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 	let defaultName: string = ScriptOperation[operation];
 	switch (operation) {
 		case ScriptOperation.Select:
-			return nls.localize('selectOperationName', 'Select');
+			return nls.localize('selectOperationName', "Select");
 		case ScriptOperation.Create:
-			return nls.localize('createOperationName', 'Create');
+			return nls.localize('createOperationName', "Create");
 		case ScriptOperation.Insert:
-			return nls.localize('insertOperationName', 'Insert');
+			return nls.localize('insertOperationName', "Insert");
 		case ScriptOperation.Update:
-			return nls.localize('updateOperationName', 'Update');
+			return nls.localize('updateOperationName', "Update");
 		case ScriptOperation.Delete:
-			return nls.localize('deleteOperationName', 'Delete');
+			return nls.localize('deleteOperationName', "Delete");
 		default:
 			// return the raw, non-localized string name
 			return defaultName;
@@ -109,7 +109,7 @@ export function scriptSelect(connectionProfile: IConnectionProfile, metadata: az
 						reject(editorError);
 					});
 				} else {
-					let errMsg: string = nls.localize('scriptSelectNotFound', 'No script was returned when calling select script on object ');
+					let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
 					reject(errMsg.concat(metadata.metadataTypeName));
 				}
 			}, scriptError => {
@@ -144,7 +144,7 @@ export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata
 						reject(editorError);
 					});
 				} else {
-					let errMsg: string = nls.localize('scriptSelectNotFound', 'No script was returned when calling select script on object ');
+					let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
 					reject(errMsg.concat(metadata.metadataTypeName));
 				}
 			}, scriptError => {
@@ -197,7 +197,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 							messageDetail = operationResult.errorDetails;
 						}
 						if (errorMessageService) {
-							let title = nls.localize('scriptingFailed', 'Scripting Failed');
+							let title = nls.localize('scriptingFailed', "Scripting Failed");
 							errorMessageService.showDialog(Severity.Error, title, scriptNotFoundMsg, messageDetail);
 						}
 						reject(scriptNotFoundMsg);

@@ -3,10 +3,37 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { EndpointRouterApi } from './apiGenerated';
+import * as request from 'request';
+import { ClusterRouterApi, Authentication } from './apiGenerated';
+
+
+class AuthConfiguration implements Authentication {
+	public username: string = '';
+	public password: string = '';
+
+	constructor(private _ignoreSslVerification: boolean) {
+	}
+
+	applyToRequest(requestOptions: request.Options): void {
+		requestOptions['agentOptions'] = {
+			rejectUnauthorized: !this._ignoreSslVerification
+		};
+	}
+}
+
+class ClusterApiWrapper extends ClusterRouterApi {
+	constructor(basePathOrUsername: string, password?: string, basePath?: string, ignoreSslVerification?: boolean) {
+		super(basePathOrUsername, password, basePath);
+		this.authentications.default = new AuthConfiguration(!!ignoreSslVerification);
+	}
+}
 
 export async function getEndPoints(
-	url: string, username: string, password: string, ignoreSslVerification?: boolean
+	clusterName: string,
+	url: string,
+	username: string,
+	password: string,
+	ignoreSslVerification?: boolean
 ): Promise<IEndPointsResponse> {
 
 	if (!url || !username || !password) {
@@ -14,8 +41,7 @@ export async function getEndPoints(
 	}
 
 	url = adjustUrl(url);
-	let endPointApi = new EndpointRouterApi(username, password, url);
-	endPointApi.ignoreSslVerification = !!ignoreSslVerification;
+	let endPointApi = new ClusterApiWrapper(username, password, url, !!ignoreSslVerification);
 
 	let controllerResponse: IEndPointsResponse = undefined;
 	let controllerError: IControllerError = undefined;
@@ -27,7 +53,7 @@ export async function getEndPoints(
 	};
 
 	try {
-		let result = await endPointApi.endpointsGet();
+		let result = await endPointApi.endpointsGet(clusterName);
 		controllerResponse = <IEndPointsResponse>{
 			response: result.response as IHttpResponse,
 			endPoints: result.body as IEndPoint[],

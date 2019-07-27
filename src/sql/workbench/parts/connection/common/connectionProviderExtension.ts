@@ -69,7 +69,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 			description: localize('schema.displayName', "Display Name for the provider")
 		},
 		iconPath: {
-			description: localize('schema.iconPath', 'Icon path for the server type'),
+			description: localize('schema.iconPath', "Icon path for the server type"),
 			oneOf: [
 				{
 					type: 'array',

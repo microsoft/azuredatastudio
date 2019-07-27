@@ -13,14 +13,14 @@ export class AzdataTool implements ITool {
 	}
 
 	get description(): string {
-		return localize('resourceDeployment.AzdataDescription', 'A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs');
+		return localize('resourceDeployment.AzdataDescription', "A command-line utility written in Python that enables cluster administrators to bootstrap and manage the big data cluster via REST APIs");
 	}
 
 	get type(): ToolType {
-		return ToolType.MSSQLCtl;
+		return ToolType.Azdata;
 	}
 
 	get displayName(): string {
-		return localize('resourceDeployment.AzdataDisplayName', 'azdata');
+		return localize('resourceDeployment.AzdataDisplayName', "azdata");
 	}
 }

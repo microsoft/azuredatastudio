@@ -59,11 +59,11 @@
         <target state="translated">開啟 Notebook</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+        <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
         <target state="translated">SQL Server 巨量資料叢集的工作和資訊</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <source xml:lang="en">SQL Server big data cluster</source>
         <target state="translated">SQL Server 巨量資料叢集</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
@@ -655,7 +655,7 @@
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" target-language="zh-Hant" datatype="plaintext">
     <body>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
+        <source xml:lang="en">Please select SQL Server with big data cluster. </source>
         <target state="translated">請選取具有巨量資料叢集的 SQL Server。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
@@ -1023,7 +1023,7 @@
         <target state="translated">本機檔案 {0} 不存在。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
+        <source xml:lang="en">No Sql Server big data cluster found.</source>
         <target state="translated">找不到任何 Sql Server 巨量資料叢集。</target>
       </trans-unit>
     </body>

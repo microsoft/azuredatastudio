@@ -199,9 +199,9 @@ export abstract class MultiStateAction<T> extends Action {
 
 export class TrustedAction extends ToggleableAction {
 	// Constants
-	private static readonly trustedLabel = localize('trustLabel', 'Trusted');
-	private static readonly notTrustedLabel = localize('untrustLabel', 'Not Trusted');
-	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', 'Notebook is already trusted.');
+	private static readonly trustedLabel = localize('trustLabel', "Trusted");
+	private static readonly notTrustedLabel = localize('untrustLabel', "Not Trusted");
+	private static readonly alreadyTrustedMsg = localize('alreadyTrustedMsg', "Notebook is already trusted.");
 	private static readonly baseClass = 'notebook-button';
 	private static readonly trustedCssClass = 'icon-trusted';
 	private static readonly notTrustedCssClass = 'icon-notTrusted';

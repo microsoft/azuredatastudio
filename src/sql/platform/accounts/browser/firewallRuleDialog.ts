@@ -120,7 +120,7 @@ export class FirewallRuleDialog extends Modal {
 
 		this._helpLink = DOM.append(textDescriptionContainer, DOM.$('a.help-link'));
 		this._helpLink.setAttribute('href', firewallHelpUri);
-		this._helpLink.innerHTML += localize('firewallRuleHelpDescription', 'Learn more about firewall settings');
+		this._helpLink.innerHTML += localize('firewallRuleHelpDescription', "Learn more about firewall settings");
 		this._helpLink.onclick = () => {
 			this._windowsService.openExternal(firewallHelpUri);
 		};
@@ -140,7 +140,7 @@ export class FirewallRuleDialog extends Modal {
 		this._accountPickerService.renderAccountPicker(DOM.append(azureAccountSection, DOM.$('.dialog-input')));
 
 		const firewallRuleSection = DOM.append(body, DOM.$('.firewall-rule-section.new-section'));
-		const firewallRuleLabel = localize('filewallRule', 'Firewall rule');
+		const firewallRuleLabel = localize('filewallRule', "Firewall rule");
 		this.createLabelElement(firewallRuleSection, firewallRuleLabel, true);
 		const radioContainer = DOM.append(firewallRuleSection, DOM.$('.radio-section'));
 		const form = DOM.append(radioContainer, DOM.$('form.firewall-rule'));
@@ -153,7 +153,7 @@ export class FirewallRuleDialog extends Modal {
 		this._IPAddressInput.setAttribute('name', 'firewallRuleChoice');
 		this._IPAddressInput.setAttribute('value', 'ipAddress');
 		const IPAddressDescription = DOM.append(IPAddressContainer, DOM.$('div.option-description'));
-		IPAddressDescription.innerText = localize('addIPAddressLabel', 'Add my client IP ');
+		IPAddressDescription.innerText = localize('addIPAddressLabel', "Add my client IP ");
 		this._IPAddressElement = DOM.append(IPAddressContainer, DOM.$('div.option-ip-address'));
 
 		const subnetIpRangeContainer = DOM.append(subnetIPRangeDiv, DOM.$('div.option-container'));
@@ -162,7 +162,7 @@ export class FirewallRuleDialog extends Modal {
 		this._subnetIPRangeInput.setAttribute('name', 'firewallRuleChoice');
 		this._subnetIPRangeInput.setAttribute('value', 'ipRange');
 		const subnetIPRangeDescription = DOM.append(subnetIpRangeContainer, DOM.$('div.option-description'));
-		subnetIPRangeDescription.innerText = localize('addIpRangeLabel', 'Add my subnet IP range');
+		subnetIPRangeDescription.innerText = localize('addIpRangeLabel', "Add my subnet IP range");
 		const subnetIPRangeSection = DOM.append(subnetIPRangeDiv, DOM.$('.subnet-ip-range-input'));
 
 		const inputContainer = DOM.append(subnetIPRangeSection, DOM.$('.dialog-input-section'));

@@ -77,7 +77,7 @@ export interface IInsightRegistry {
 }
 
 class InsightRegistry implements IInsightRegistry {
-	private _insightSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.InsightsRegistry', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
+	private _insightSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.InsightsRegistry', "Widget used in the dashboards"), properties: {}, additionalProperties: false };
 	private _extensionInsights: { [x: string]: IInsightsConfig } = {};
 	private _idToCtor: { [x: string]: Type<IInsightsView> } = {};
 

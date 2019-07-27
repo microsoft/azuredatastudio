@@ -70,7 +70,7 @@ export class RefreshTableAction extends EditDataAction {
 		@INotificationService private _notificationService: INotificationService,
 	) {
 		super(editor, RefreshTableAction.ID, RefreshTableAction.EnabledClass, _connectionManagementService);
-		this.label = nls.localize('editData.run', 'Run');
+		this.label = nls.localize('editData.run', "Run");
 	}
 
 	public run(): Promise<void> {
@@ -91,7 +91,7 @@ export class RefreshTableAction extends EditDataAction {
 			}, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('disposeEditFailure', 'Dispose Edit Failed With Error: ') + error
+					message: nls.localize('disposeEditFailure', "Dispose Edit Failed With Error: ") + error
 				});
 			});
 		}
@@ -113,7 +113,7 @@ export class StopRefreshTableAction extends EditDataAction {
 	) {
 		super(editor, StopRefreshTableAction.ID, StopRefreshTableAction.EnabledClass, _connectionManagementService);
 		this.enabled = false;
-		this.label = nls.localize('editData.stop', 'Stop');
+		this.label = nls.localize('editData.stop', "Stop");
 	}
 
 	public run(): Promise<void> {
@@ -235,8 +235,8 @@ export class ShowQueryPaneAction extends EditDataAction {
 
 	private static EnabledClass = 'filterLabel';
 	public static ID = 'showQueryPaneAction';
-	private readonly showSqlLabel = nls.localize('editData.showSql', 'Show SQL Pane');
-	private readonly closeSqlLabel = nls.localize('editData.closeSql', 'Close SQL Pane');
+	private readonly showSqlLabel = nls.localize('editData.showSql', "Show SQL Pane");
+	private readonly closeSqlLabel = nls.localize('editData.closeSql', "Close SQL Pane");
 
 	constructor(editor: EditDataEditor,
 		@IQueryModelService private _queryModelService: IQueryModelService,

@@ -183,7 +183,7 @@
     }
   ],
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "typemoq": "^2.1.0",

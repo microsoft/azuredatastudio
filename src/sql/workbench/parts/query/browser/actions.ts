@@ -45,19 +45,19 @@ function mapForNumberColumn(ranges: Slick.Range[]): Slick.Range[] {
 
 export class SaveResultAction extends Action {
 	public static SAVECSV_ID = 'grid.saveAsCsv';
-	public static SAVECSV_LABEL = localize('saveAsCsv', 'Save As CSV');
+	public static SAVECSV_LABEL = localize('saveAsCsv', "Save As CSV");
 	public static SAVECSV_ICON = 'saveCsv';
 
 	public static SAVEJSON_ID = 'grid.saveAsJson';
-	public static SAVEJSON_LABEL = localize('saveAsJson', 'Save As JSON');
+	public static SAVEJSON_LABEL = localize('saveAsJson', "Save As JSON");
 	public static SAVEJSON_ICON = 'saveJson';
 
 	public static SAVEEXCEL_ID = 'grid.saveAsExcel';
-	public static SAVEEXCEL_LABEL = localize('saveAsExcel', 'Save As Excel');
+	public static SAVEEXCEL_LABEL = localize('saveAsExcel', "Save As Excel");
 	public static SAVEEXCEL_ICON = 'saveExcel';
 
 	public static SAVEXML_ID = 'grid.saveAsXml';
-	public static SAVEXML_LABEL = localize('saveAsXml', 'Save As XML');
+	public static SAVEXML_LABEL = localize('saveAsXml', "Save As XML");
 	public static SAVEXML_ICON = 'saveXml';
 
 	constructor(
@@ -81,10 +81,10 @@ export class SaveResultAction extends Action {
 
 export class CopyResultAction extends Action {
 	public static COPY_ID = 'grid.copySelection';
-	public static COPY_LABEL = localize('copySelection', 'Copy');
+	public static COPY_LABEL = localize('copySelection', "Copy");
 
 	public static COPYWITHHEADERS_ID = 'grid.copyWithHeaders';
-	public static COPYWITHHEADERS_LABEL = localize('copyWithHeaders', 'Copy With Headers');
+	public static COPYWITHHEADERS_LABEL = localize('copyWithHeaders', "Copy With Headers");
 
 	constructor(
 		id: string,
@@ -109,7 +109,7 @@ export class CopyResultAction extends Action {
 
 export class SelectAllGridAction extends Action {
 	public static ID = 'grid.selectAll';
-	public static LABEL = localize('selectAll', 'Select All');
+	public static LABEL = localize('selectAll', "Select All");
 
 	constructor() {
 		super(SelectAllGridAction.ID, SelectAllGridAction.LABEL);
@@ -123,7 +123,7 @@ export class SelectAllGridAction extends Action {
 
 export class CopyMessagesAction extends Action {
 	public static ID = 'grid.messages.copy';
-	public static LABEL = localize('copyMessages', 'Copy');
+	public static LABEL = localize('copyMessages', "Copy");
 
 	constructor(
 		@IClipboardService private clipboardService: IClipboardService
@@ -166,7 +166,7 @@ export class CopyAllMessagesAction extends Action {
 
 export class MaximizeTableAction extends Action {
 	public static ID = 'grid.maximize';
-	public static LABEL = localize('maximize', 'Maximize');
+	public static LABEL = localize('maximize', "Maximize");
 	public static ICON = 'extendFullScreen';
 
 	constructor() {
@@ -181,7 +181,7 @@ export class MaximizeTableAction extends Action {
 
 export class RestoreTableAction extends Action {
 	public static ID = 'grid.restore';
-	public static LABEL = localize('restore', 'Restore');
+	public static LABEL = localize('restore', "Restore");
 	public static ICON = 'exitFullScreen';
 
 	constructor() {
@@ -196,7 +196,7 @@ export class RestoreTableAction extends Action {
 
 export class ChartDataAction extends Action {
 	public static ID = 'grid.chart';
-	public static LABEL = localize('chart', 'Chart');
+	public static LABEL = localize('chart', "Chart");
 	public static ICON = 'viewChart';
 
 	constructor(@IEditorService private editorService: IEditorService) {
