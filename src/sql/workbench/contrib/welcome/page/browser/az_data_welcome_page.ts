@@ -76,7 +76,8 @@ export default () => `
 				<div class="section learn">
 					<h2 class="caption">${escape(localize('welcomePage.learn', "Learn"))}</h2>
 					<div class="list">
-						<div class="item showCommands"><button data-href="command:workbench.action.showCommands"><h3 class="caption">${escape(localize('welcomePage.showCommands', "Find and run all commands"))}</h3> <span class="detail">${escape(localize('welcomePage.showCommandsDescription', "Rapidly access and search commands from the Command Palette ({0})")).replace('{0}', '<span class="shortcut" data-command="workbench.action.showCommands"></span>')}</span></button></div>
+						<div class="item showCommands"><button data-href="command:workbench.action.showCommands"><h3 class="caption">${escape(localize('welcomePage.showCommands', "Find and run all commands"))}</h3> <span class="detail">${escape(localize('welcomePage.showCommandsDescription', "Rapidly access and search commands from the Command Palette ({0})"))
+		.replace('{0}', '<span class="shortcut" data-command="workbench.action.showCommands"></span>')}</span></button></div>
 						<div class="item showInterfaceOverview"><button data-href="https://aka.ms/azdata-blog"><h3 class="caption">${escape(localize('welcomePage.azdataBlog', "Discover what's new in the latest release"))}</h3> <span class="detail">${escape(localize('welcomePage.azdataBlogDescription', "New monthly blog posts each month showcasing our new features"))}</span></button></div>
 						<div class="item showInteractivePlayground"><button data-href="https://twitter.com/azuredatastudio"><h3 class="caption">${escape(localize('welcomePage.followTwitter', "Follow us on Twitter"))}</h3> <span class="detail">${escape(localize('welcomePage.followTwitterDescription', "Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers."))}</span></button></div>
 					</div>

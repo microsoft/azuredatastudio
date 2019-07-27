@@ -127,7 +127,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 	}
 
 	public getName(): string {
-		let name: string = nls.localize('profilerInput.profiler', 'Profiler');
+		let name: string = nls.localize('profilerInput.profiler', "Profiler");
 		if (!this.connection) {
 			return name;
 		}
@@ -287,9 +287,9 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			return this._dialogService.show(Severity.Warning,
 				nls.localize('confirmStopProfilerSession', "Would you like to stop the running XEvent session?"),
 				[
-					nls.localize('profilerClosingActions.yes', 'Yes'),
-					nls.localize('profilerClosingActions.no', 'No'),
-					nls.localize('profilerClosingActions.cancel', 'Cancel')
+					nls.localize('profilerClosingActions.yes', "Yes"),
+					nls.localize('profilerClosingActions.no', "No"),
+					nls.localize('profilerClosingActions.cancel', "Cancel")
 				]).then((selection: number) => {
 					if (selection === 0) {
 						this._profilerService.stopSession(this.id);

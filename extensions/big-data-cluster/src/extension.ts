@@ -15,6 +15,12 @@ import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
 
 const localize = nls.loadMessageBundle();
 
+const AddControllerCommand = 'bigDataClusters.command.addController';
+const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
+const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
+
+let throttleTimers: { [key: string]: any } = {};
+
 export function activate(extensionContext: vscode.ExtensionContext) {
 	IconPath.setExtensionContext(extensionContext);
 	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
@@ -31,15 +37,15 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 }
 
 function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand('bigDataClusters.command.addController', (node?: TreeNode) => {
-		addBdcController(treeDataProvider, node);
+	vscode.commands.registerCommand(AddControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(AddControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand('bigDataClusters.command.deleteController', (node: TreeNode) => {
+	vscode.commands.registerCommand(DeleteControllerCommand, (node: TreeNode) => {
 		deleteBdcController(treeDataProvider, node);
 	});
 
-	vscode.commands.registerCommand('bigDataClusters.command.refreshController', (node: TreeNode) => {
+	vscode.commands.registerCommand(RefreshControllerCommand, (node: TreeNode) => {
 		if (!node) {
 			return;
 		}
@@ -82,4 +88,22 @@ function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, 
 	if (deleted) {
 		treeDataProvider.saveControllers();
 	}
+}
+
+
+
+/**
+ * Throttles actions to avoid bug where on clicking in tree, action gets called twice
+ * instead of once. Any right-click action is safe, just the default on-click action in a tree
+ */
+function runThrottledAction(id: string, action: () => void) {
+	let timer = throttleTimers[id];
+	if (!timer) {
+		throttleTimers[id] = timer = setTimeout(() => {
+			action();
+			clearTimeout(timer);
+			throttleTimers[id] = undefined;
+		}, 150);
+	}
+	// else ignore this as we got an identical action in the last 150ms
 }

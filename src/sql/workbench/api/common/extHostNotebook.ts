@@ -212,7 +212,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#region APIs called by extensions
 	registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
-			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));
+			throw new Error(localize('providerRequired', "A NotebookProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerNotebookProvider(provider.providerId, handle);
@@ -263,7 +263,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _withProvider<R>(handle: number, callback: (provider: azdata.nb.NotebookProvider) => R | PromiseLike<R>): Promise<R> {
 		let provider = this._adapters.get(handle) as azdata.nb.NotebookProvider;
 		if (provider === undefined) {
-			return Promise.reject(new Error(localize('errNoProvider', 'no notebook provider found')));
+			return Promise.reject(new Error(localize('errNoProvider', "no notebook provider found")));
 		}
 		return Promise.resolve(callback(provider));
 	}
@@ -271,7 +271,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _withNotebookManager<R>(handle: number, callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>): Promise<R> {
 		let manager = this._adapters.get(handle) as NotebookManagerAdapter;
 		if (manager === undefined) {
-			return Promise.reject(new Error(localize('errNoManager', 'No Manager found')));
+			return Promise.reject(new Error(localize('errNoManager', "No Manager found")));
 		}
 		return this.callbackWithErrorWrap<R>(callback, manager);
 	}

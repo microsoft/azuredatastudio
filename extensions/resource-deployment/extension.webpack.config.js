@@ -3,8 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
+//@ts-check
 
-export const onDidConnectMessage = localize('onDidConnectMessage', "Connected to");
-export const onDidDisconnectMessage = localize('onDidDisconnectMessage', "Disconnected");
-export const unsavedGroupLabel = localize('unsavedGroupLabel', "Unsaved Connections");
+'use strict';
+
+const withDefaults = require('../shared.webpack.config');
+
+module.exports = withDefaults({
+	context: __dirname,
+	entry: {
+		main: './src/main.ts'
+	}
+});

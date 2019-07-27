@@ -69,7 +69,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.activeCell = undefined;
 	}
 
-	private _content: string;
+	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
@@ -169,7 +169,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if (!this.cellModel.source && !this.isEditMode) {
-				this._content = localize('doubleClickEdit', 'Double-click to edit');
+				this._content = localize('doubleClickEdit', "Double-click to edit");
 			} else {
 				this._content = this.cellModel.source;
 			}
@@ -178,7 +178,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 				this.markdownResult = this.markdownRenderer.render({
 					isTrusted: true,
-					value: this._content
+					value: Array.isArray(this._content) ? this._content.join('') : this._content
 				});
 				this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 				this.setLoading(false);

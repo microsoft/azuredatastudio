@@ -58,16 +58,16 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 	function handleCommand(dashboardContainer: IDashboardContainerContrib, extension: IExtensionPointUser<any>) {
 		const { id, container } = dashboardContainer;
 		if (!id) {
-			extension.collector.error(localize('dashboardContainer.contribution.noIdError', 'No id in dashboard container specified for extension.'));
+			extension.collector.error(localize('dashboardContainer.contribution.noIdError', "No id in dashboard container specified for extension."));
 			return;
 		}
 
 		if (!container) {
-			extension.collector.error(localize('dashboardContainer.contribution.noContainerError', 'No container in dashboard container specified for extension.'));
+			extension.collector.error(localize('dashboardContainer.contribution.noContainerError', "No container in dashboard container specified for extension."));
 			return;
 		}
 		if (Object.keys(container).length !== 1) {
-			extension.collector.error(localize('dashboardContainer.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
+			extension.collector.error(localize('dashboardContainer.contribution.moreThanOneDashboardContainersError', "Exactly 1 dashboard container must be defined per space."));
 			return;
 		}
 
@@ -77,7 +77,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardContainerContrib | IDashboar
 
 		const containerTypeFound = containerTypes.find(c => (c === containerkey));
 		if (!containerTypeFound) {
-			extension.collector.error(localize('dashboardTab.contribution.unKnownContainerType', 'Unknown container type defines in dashboard container for extension.'));
+			extension.collector.error(localize('dashboardTab.contribution.unKnownContainerType', "Unknown container type defines in dashboard container for extension."));
 			return;
 		}
 
