@@ -21,11 +21,11 @@ import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookInput } from 'sql/workbench/parts/notebook/node/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';

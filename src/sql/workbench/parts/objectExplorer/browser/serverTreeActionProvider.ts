@@ -31,7 +31,7 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/electron-browser/notebookActions';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 
 /**
  *  Provides actions for the server tree elements

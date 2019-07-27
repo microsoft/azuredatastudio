@@ -17,7 +17,7 @@ import { coalesce } from 'vs/base/common/arrays';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
-import { NotebookInput } from 'sql/workbench/parts/notebook/node/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import * as path from 'path';
 import * as os from 'os';
