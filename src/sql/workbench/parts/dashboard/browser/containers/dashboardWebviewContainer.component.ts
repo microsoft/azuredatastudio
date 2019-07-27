@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 
 import { DashboardTab } from 'sql/workbench/parts/dashboard/browser/core/interfaces';
 import { TabConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
-import { WebviewContent } from 'sql/workbench/parts/dashboard/electron-browser/contents/webviewContent.component';
+import { WebviewContent } from 'sql/workbench/parts/dashboard/browser/contents/webviewContent.component';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 @Component({

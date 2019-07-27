@@ -15,10 +15,9 @@ import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 import * as azdata from 'azdata';
-import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
 
 @Component({
 	template: '',
@@ -33,14 +32,14 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 	public readonly onMessage: Event<string> = this._onMessage.event;
 
 	private _onMessageDisposable: IDisposable;
-	private _webview: ElectronWebviewBasedWebview;
+	private _webview: WebviewElement;
 	private _html: string;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService
+		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _dashboardService: DashboardServiceInterface,
+		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
+		@Inject(IDashboardViewService) private readonly dashboardViewService: IDashboardViewService,
+		@Inject(IWebviewService) private readonly webviewService: IWebviewService
 	) {
 		super();
 	}
@@ -100,7 +99,7 @@ export class WebviewContent extends AngularDisposable implements OnInit, IDashbo
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.instantiationService.createInstance(ElectronWebviewBasedWebview,
+		this._webview = this.webviewService.createWebview(this.id,
 			{},
 			{
 				allowScripts: true

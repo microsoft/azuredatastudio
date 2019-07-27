@@ -15,8 +15,7 @@ import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonSer
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 
 import * as azdata from 'azdata';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ElectronWebviewBasedWebview } from 'vs/workbench/contrib/webview/electron-browser/webviewElement';
+import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
 
 interface IWebviewWidgetConfig {
 	id: string;
@@ -31,18 +30,18 @@ const selector = 'webview-widget';
 export class WebviewWidget extends DashboardWidget implements IDashboardWidget, OnInit, IDashboardWebview {
 
 	private _id: string;
-	private _webview: ElectronWebviewBasedWebview;
+	private _webview: WebviewElement;
 	private _html: string;
 	private _onMessage = new Emitter<string>();
 	public readonly onMessage: Event<string> = this._onMessage.event;
 	private _onMessageDisposable: IDisposable;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _dashboardService: DashboardServiceInterface,
-		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IDashboardViewService) private dashboardViewService: IDashboardViewService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
+		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _dashboardService: DashboardServiceInterface,
+		@Inject(WIDGET_CONFIG) protected readonly _config: WidgetConfig,
+		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
+		@Inject(IDashboardViewService) private readonly dashboardViewService: IDashboardViewService,
+		@Inject(IWebviewService) private readonly webviewService: IWebviewService
 	) {
 		super();
 		this._id = (_config.widget[selector] as IWebviewWidgetConfig).id;
@@ -99,7 +98,7 @@ export class WebviewWidget extends DashboardWidget implements IDashboardWidget, 
 			this._onMessageDisposable.dispose();
 		}
 
-		this._webview = this.instantiationService.createInstance(ElectronWebviewBasedWebview,
+		this._webview = this.webviewService.createWebview(this.id,
 			{},
 			{
 				allowScripts: true,
