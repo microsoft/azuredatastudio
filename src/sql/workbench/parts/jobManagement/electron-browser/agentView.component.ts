@@ -33,7 +33,7 @@ export class AgentViewComponent {
 	private _expanded: Map<string, string>;
 
 	public jobsIconClass: string = 'jobsview-icon';
-	public notebooksIconClass: string = 'jobsview-icon';
+	public notebooksIconClass: string = 'notebooksview-icon';
 	public alertsIconClass: string = 'alertsview-icon';
 	public proxiesIconClass: string = 'proxiesview-icon';
 	public operatorsIconClass: string = 'operatorsview-icon';

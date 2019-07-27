@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/common/jobActions';
+import { EditJobAction, DeleteJobAction, RunJobAction, NewNotebookJobAction } from 'sql/platform/jobManagement/common/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -88,7 +88,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private jobSteps: { [jobId: string]: azdata.AgentJobStepInfo[]; } = Object.create(null);
 	private jobAlerts: { [jobId: string]: azdata.AgentAlertInfo[]; } = Object.create(null);
 	private jobSchedules: { [jobId: string]: azdata.AgentJobScheduleInfo[]; } = Object.create(null);
-	public contextAction = NewJobAction;
+	public contextAction = NewNotebookJobAction;
 
 	@ViewChild('jobsgrid') _gridEl: ElementRef;
 

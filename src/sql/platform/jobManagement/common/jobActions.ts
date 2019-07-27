@@ -284,30 +284,6 @@ export class DeleteStepAction extends Action {
 	}
 }
 
-
-// Notebook Actions
-
-export class OpenNotebookAction extends Action {
-	public static ID = 'notebookaction.openNotebook';
-	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Materialized Notebook");
-
-	constructor(
-	) {
-		super(OpenNotebookAction.ID, OpenNotebookAction.LABEL, 'newStepIcon');
-	}
-
-	public run(context: NotebookHistoryComponent): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			if (context) {
-				context.openNotebook();
-				resolve(true);
-			} else {
-				reject(false);
-			}
-		});
-	}
-}
-
 // Alert Actions
 
 export class NewAlertAction extends Action {
@@ -574,5 +550,72 @@ export class DeleteProxyAction extends Action {
 			}]
 		);
 		return Promise.resolve(true);
+	}
+}
+
+//Notebook Actions
+
+export class NewNotebookJobAction extends Action {
+	public static ID = 'notebookaction.newJob';
+	public static LABEL = nls.localize('notebookaction.newJob', "New Notebook");
+
+	constructor(
+	) {
+		super(NewNotebookJobAction.ID, NewNotebookJobAction.LABEL, 'newStepIcon');
+	}
+
+	public run(context: IJobActionInfo): Promise<boolean> {
+		let component = context.component as JobsViewComponent;
+		return new Promise<boolean>(async (resolve, reject) => {
+			try {
+				await component.openCreateJobDialog();
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+		return new Promise<boolean>(async (resolve, reject) => {
+		});
+	}
+}
+
+
+export class EditNotebookJobAction extends Action {
+	public static ID = 'notebookaction.editJob';
+	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(EditNotebookJobAction.ID, EditNotebookJobAction.LABEL, 'edit');
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		this._commandService.executeCommand(
+			'agent.openJobDialog',
+			actionInfo.ownerUri,
+			actionInfo.targetObject.job);
+		return Promise.resolve(true);
+	}
+}
+
+export class OpenNotebookAction extends Action {
+	public static ID = 'notebookaction.openNotebook';
+	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Materialized Notebook");
+
+	constructor(
+	) {
+		super(OpenNotebookAction.ID, OpenNotebookAction.LABEL, 'openNotebook');
+	}
+
+	public run(context: NotebookHistoryComponent): Promise<boolean> {
+		return new Promise<boolean>((resolve, reject) => {
+			if (context) {
+				//context.openNotebook();
+				resolve(true);
+			} else {
+				reject(false);
+			}
+		});
 	}
 }

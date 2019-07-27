@@ -102,6 +102,14 @@ export class MainController {
 			let uri = vscode.Uri.file(tempfilePath);
 			await azdata.nb.showNotebookDocument(uri);
 		});
+		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo) => {
+			if (!this.jobDialog || (this.jobDialog && !this.jobDialog.isOpen)) {
+				this.jobDialog = new JobDialog(ownerUri, notebookInfo);
+			}
+			if (!this.jobDialog.isOpen) {
+				this.jobDialog.dialogName ? await this.jobDialog.openDialog(this.jobDialog.dialogName) : await this.jobDialog.openDialog();
+			}
+		});
 	}
 
 	/**

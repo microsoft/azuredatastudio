@@ -175,9 +175,20 @@ notebooksview-component {
 	background-image: url('./job.svg');
 }
 
+
 .vs-dark .jobsview-icon,
 .hc-black .jobsview-icon {
 	background-image: url('./job_inverse.svg');
+}
+
+
+.notebooksview-icon {
+	background-image: url('./notebook.svg');
+}
+
+.vs-dark .notebooksview-icon,
+.hc-black .notebooksview-icon {
+	background-image: url('./notebook_inverse.svg');
 }
 
 .alertsview-icon {
@@ -293,6 +304,8 @@ table.jobprevruns > tbody {
 	display: block;
 }
 
+
+
 .vs .action-label.icon.refreshIcon {
 	background-image: url('refresh.svg');
 }
@@ -300,6 +313,16 @@ table.jobprevruns > tbody {
 .vs-dark .action-label.icon.refreshIcon,
 .hc-black .action-label.icon.refreshIcon  {
 	background-image: url('refresh_inverse.svg');
+}
+
+
+.vs .action-label.icon.openNotebook {
+	background-image: url('open_notebook.svg');
+}
+
+.vs-dark .action-label.icon.openNotebook,
+.hc-black .action-label.icon.openNotebook  {
+	background-image: url('open_notebook_inverse.svg');
 }
 
 .agent-actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {

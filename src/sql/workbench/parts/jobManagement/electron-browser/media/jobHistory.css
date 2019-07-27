@@ -3,12 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 jobhistory-component .all-jobs {
 	display: inline-block;
 	cursor: pointer;
 	font-size: 15px;
 	width: 10%;
+	margin-top: 10px;
 }
 notebookhistory-component .all-jobs {
 	display: inline-block;
@@ -17,7 +17,8 @@ notebookhistory-component .all-jobs {
 	width: 15%;
 }
 
-.overview-container .overview-tab .resultsViewCollapsible {
+.overview-container .overview-tab .resultsViewCollapsible,
+.overview-container .overview-tab .notebooksgridViewCollapsible {
 	padding: 15px;
 	display: inline;
 }
@@ -48,7 +49,8 @@ notebookhistory-component .all-jobs {
 	overflow: hidden;
 }
 
-input#accordion {
+input#accordion,
+input#accordion2 {
 	position: absolute;
 	opacity: 0;
 	z-index: -1;
@@ -74,7 +76,8 @@ input#accordion {
 	width: 100%;
 }
 
-.vs-dark .overview-tab .accordion-content {
+.vs-dark .overview-tab .accordion-content,
+.vs-dark .overview-tab .accordion2-content {
 	background: #333333;
 }
 
@@ -87,9 +90,9 @@ input#accordion {
 	max-height: 0;
 	overflow: hidden;
 	background: #eaeaea;
-	-webkit-transition: max-height .35s;
-	-o-transition: max-height .35s;
-	transition: max-height .35s;
+	-webkit-transition: max-height 0.35s;
+	-o-transition: max-height 0.35s;
+	transition: max-height 0.35s;
 	width: 100%;
 }
 
@@ -98,7 +101,13 @@ input#accordion {
 }
 
 /* :checked */
-input#accordion:checked ~ .accordion-content {
+input#accordion:checked ~ .accordion-content,
+input#accordion2:checked {
+	max-height: 10em;
+}
+
+input#accordion:checked ~ .accordion-content,
+input#accordion2:checked {
 	max-height: 10em;
 }
 
@@ -112,13 +121,13 @@ input#accordion:checked ~ .accordion-content {
 	height: 3em;
 	line-height: 3;
 	text-align: center;
-	-webkit-transition: all .3s;
-	-o-transition: all .3s;
-	transition: all .3s;
+	-webkit-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
 }
 
 .all-jobs > .back-button-icon {
-	content: url('back.svg');
+	content: url("back.svg");
 	width: 20px;
 	margin-right: 10px;
 	float: left;
@@ -127,30 +136,30 @@ input#accordion:checked ~ .accordion-content {
 	padding-bottom: 10px;
 }
 
-.vs-dark .all-jobs >.back-button-icon,
-.hc-black .all-jobs >.back-button-icon {
-	content: url('back_inverse.svg');
+.vs-dark .all-jobs > .back-button-icon,
+.hc-black .all-jobs > .back-button-icon {
+	content: url("back_inverse.svg");
 }
 
 .vs .action-label.icon.newStepIcon {
-	background-image: url('new.svg');
+	background-image: url("new.svg");
 }
 
 .vs-dark .action-label.icon.newStepIcon,
 .hc-black .action-label.icon.newStepIcon {
-	background-image: url('new_inverse.svg');
+	background-image: url("new_inverse.svg");
 }
 
 jobhistory-component .hc-black .icon.edit,
 jobhistory-component .vs-dark .icon.edit,
 notebookhistory-component .hc-black .icon.edit,
 notebookhistory-component .vs-dark .icon.edit {
-	background-image: url('edit_inverse.svg');
+	background-image: url("edit_inverse.svg");
 }
 
 jobhistory-component .vs .icon.edit,
 notebookhistory-component .vs .icon.edit {
-	background-image: url('edit.svg');
+	background-image: url("edit.svg");
 }
 
 jobhistory-component .actions-container .icon.edit,
@@ -220,12 +229,20 @@ table.step-list tr.step-row td {
 	max-height: 200px;
 }
 
-.step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+.step-table
+	.monaco-tree
+	.monaco-tree-rows.show-twisties
+	> .monaco-tree-row.has-children
+	> .content:before {
 	background: none;
 	background-image: none;
 }
 
-.step-table .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
+.step-table
+	.monaco-tree.focused
+	.monaco-tree-rows.show-twisties
+	> .monaco-tree-row.has-children.selected:not(.loading)
+	> .content:before {
 	background-image: none;
 }
 
@@ -304,12 +321,82 @@ notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #2b56f2;
 }
 
-jobhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row,
-notebookhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row {
+jobhistory-component
+	.step-table.prev-run-list
+	.monaco-tree-wrapper
+	.monaco-tree-row,
+notebookhistory-component
+	.step-table.prev-run-list
+	.monaco-tree-wrapper
+	.monaco-tree-row {
 	width: 96%;
 }
 
-jobhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar,
-notebookhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar {
+jobhistory-component
+	.agent-actionbar-container
+	> .monaco-toolbar.carbon-taskbar,
+notebookhistory-component
+	.agent-actionbar-container
+	> .monaco-toolbar.carbon-taskbar {
 	margin: 10px 0px 5px 0px;
+}
+.notebook-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	grid-gap: 10px;
+	padding: 10px;
+}
+
+.notebook-grid-item {
+	border-radius: 5px;
+	padding-bottom: 5px;
+	height: 95px;
+	display: block;
+	border-radius: 0px;
+	border: 1px solid black;
+}
+.vs-dark .notebook-grid-item {
+	border: 1px solid white;
+}
+
+.notebook-grid-item > img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 50px;
+	height: 50px;
+}
+
+.notebook-grid-item:focus {
+	background: rgb(0, 0, 0, 60);
+}
+
+.vs-dark .notebook-grid-item:focus {
+	background: rgb(255, 255, 255, 60);
+}
+
+.notebook-grid-item > .img-success {
+	content: url(./notebook.svg);
+}
+
+.vs-dark .notebook-grid-item > .img-success {
+	content: url(./notebook_inverse.svg);
+}
+
+.notebook-grid-item > .img-failure {
+	content: url(./open_notebook.svg);
+}
+
+.vs-dark .notebook-grid-item > .img-failure {
+	content: url(./open_notebook_inverse.svg);
+}
+
+.notebook-grid-item > p {
+	display: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 100%;
+	text-align: center;
 }

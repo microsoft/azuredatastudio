@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/electron-browser/agentView.component';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/node/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction, OpenNotebookAction } from 'sql/platform/jobManagement/common/jobActions';
+import { RunJobAction, StopJobAction, JobsRefreshAction, OpenNotebookAction, EditNotebookJobAction } from 'sql/platform/jobManagement/common/jobActions';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -47,11 +47,7 @@ export const DASHBOARD_SELECTOR: string = 'notebookhistory-component';
 @Injectable()
 export class NotebookHistoryComponent extends JobManagementView implements OnInit {
 
-	private _tree: Tree;
-	private _treeController: JobHistoryController;
-	private _treeDataSource: JobHistoryDataSource;
-	private _treeRenderer: JobHistoryRenderer;
-	private _treeFilter: JobHistoryFilter;
+
 
 	@ViewChild('table') private _tableContainer: ElementRef;
 	@ViewChild('jobsteps') private _jobStepsView: ElementRef;
@@ -59,6 +55,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 	@Input() public agentJobInfo: azdata.AgentJobInfo = undefined;
 	@Input() public agentJobHistories: azdata.AgentJobHistoryInfo[] = undefined;
+	public notebookHistories: azdata.AgentNotebookHistoryInfo[] = undefined;
 	public agentNotebookHistoryInfo: azdata.AgentNotebookHistoryInfo = undefined;
 
 	private _isVisible: boolean = false;
@@ -73,7 +70,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	protected _notebookHistoryActionBar: Taskbar;
 
 	// Job Actions
-	private _editJobAction: EditJobAction;
+	private _editNotebookJobAction: EditNotebookJobAction;
 	private _runJobAction: RunJobAction;
 	private _stopJobAction: StopJobAction;
 	private _refreshAction: JobsRefreshAction;
@@ -97,10 +94,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
-		this._treeController = new JobHistoryController();
-		this._treeDataSource = new JobHistoryDataSource();
-		this._treeRenderer = new JobHistoryRenderer();
-		this._treeFilter = new JobHistoryFilter();
 		let notebookCacheObjectMap = this._jobManagementService.notebookCacheObjectMap;
 		this._serverName = commonService.connectionManagementService.connectionInfo.connectionProfile.serverName;
 		let notebookCache = notebookCacheObjectMap[this._serverName];
@@ -121,45 +114,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 		this.initActionBar();
 		const self = this;
-		this._treeController.onClick = (tree, element, event, origin = 'mouse') => {
-			const payload = { origin: origin };
-			const isDoubleClick = (origin === 'mouse' && event.detail === 2);
-			// Cancel Event
-			const isMouseDown = event && event.browserEvent && event.browserEvent.type === 'mousedown';
-			if (!isMouseDown) {
-				event.preventDefault(); // we cannot preventDefault onMouseDown because this would break DND otherwise
-			}
-			event.stopPropagation();
-			tree.setFocus(element, payload);
-			if (element && isDoubleClick) {
-				event.preventDefault(); // focus moves to editor, we need to prevent default
-			} else {
-				tree.setFocus(element, payload);
-				tree.setSelection([element], payload);
-				if (element.rowID) {
-					self.setStepsTree(element);
-				} else {
-					event.preventDefault();
-				}
-			}
-			return true;
-		};
-		this._treeController.onKeyDown = (tree, event) => {
-			this._treeController.onKeyDownWrapper(tree, event);
-			let element = tree.getFocus();
-			if (element) {
-				self.setStepsTree(element);
-			}
-			return true;
-		};
-		this._tree = new Tree(this._tableContainer.nativeElement, {
-			controller: this._treeController,
-			dataSource: this._treeDataSource,
-			filter: this._treeFilter,
-			renderer: this._treeRenderer
-		}, { verticalScrollMode: ScrollbarVisibility.Visible });
-		this._register(attachListStyler(this._tree, this.themeService));
-		this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
 		this._telemetryService.publicLog(TelemetryKeys.JobHistoryView);
 	}
 
@@ -171,6 +125,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
 			if (result && result.histories) {
+				this.notebookHistories = result.histories.reverse();
 				self._notebookCacheObject.setNotebookHistory(jobId, result.histories);
 				self._notebookCacheObject.setJobSchedules(jobId, result.schedules);
 				self._notebookCacheObject.setJobSteps(jobId, result.steps);
@@ -181,7 +136,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				if (result.histories.length > 0) {
 					self._noJobsAvailable = false;
 					self._showPreviousRuns = true;
-					self.buildHistoryTree(self, result.histories);
 				} else {
 					self._notebookCacheObject.setNotebookHistory(self._agentViewComponent.jobId, result.histories);
 					self._noJobsAvailable = true;
@@ -193,12 +147,12 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				self._showSteps = false;
 			}
 			this._actionBar.context = { targetObject: { canEdit: true, job: this._agentJobInfo }, ownerUri: this.ownerUri, component: this };
-			this._editJobAction.enabled = true;
+			this._editNotebookJobAction.enabled = true;
 			this._actionBar.setContent([
 				{ action: this._runJobAction },
 				{ action: this._stopJobAction },
 				{ action: this._refreshAction },
-				{ action: this._editJobAction }
+				{ action: this._editNotebookJobAction }
 			]);
 			if (self._agentViewComponent.showNotebookHistory) {
 				self._cd.detectChanges();
@@ -212,9 +166,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		if (cachedHistory) {
 			self.agentNotebookHistoryInfo = cachedHistory.find(
 				history => self.formatTime(history.runDate) === self.formatTime(element.runDate));
-		} else {
-			self.agentNotebookHistoryInfo = self._treeController.jobHistories.find(
-				history => self.formatTime(history.runDate) === self.formatTime(element.runDate)) as azdata.AgentNotebookHistoryInfo;
 		}
 		if (self.agentNotebookHistoryInfo) {
 			self.agentNotebookHistoryInfo.runDate = self.formatTime(self.agentNotebookHistoryInfo.runDate);
@@ -253,29 +204,11 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 		return false;
 	}
-
-	private buildHistoryTree(self: any, jobHistories: azdata.AgentJobHistoryInfo[]) {
-		self._treeController.jobHistories = jobHistories;
-		let jobHistoryRows: JobHistoryRow[] = this._treeController.jobHistories.map(job => self.convertToJobHistoryRow(job));
-		let sortedRows = jobHistoryRows.sort((row1, row2) => {
-			let date1 = new Date(row1.runDate).getTime();
-			let date2 = new Date(row2.runDate).getTime();
-			return date2 - date1;
-		});
-		self._treeDataSource.data = sortedRows;
-		self._tree.setInput(new JobHistoryModel());
-		self.agentJobHistoryInfo = self._treeController.jobHistories[0];
-		if (self.agentJobHistoryInfo) {
-			self.agentJobHistoryInfo.runDate = self.formatTime(self.agentJobHistoryInfo.runDate);
-		}
-		const payload = { origin: 'origin' };
-		let element = this._treeDataSource.getFirstElement();
-		this._tree.setFocus(element, payload);
-		this._tree.setSelection([element], payload);
-		if (element.rowID) {
-			self.setStepsTree(element);
-		}
-	}
+	// let sortedRows = jobHistoryRows.sort((row1, row2) => {
+	// 	let date1 = new Date(row1.runDate).getTime();
+	// 	let date2 = new Date(row2.runDate).getTime();
+	// 	return date2 - date1;
+	// });
 
 	private toggleCollapse(): void {
 		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
@@ -284,6 +217,16 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			arrow.className = 'resultsViewCollapsible collapsed';
 		} else if (arrow.className === 'resultsViewCollapsible collapsed' && checkbox.checked === true) {
 			arrow.className = 'resultsViewCollapsible';
+		}
+	}
+
+	private toggleCollapse2(): void {
+		let arrow: HTMLElement = jQuery('.notebooksgridViewCollapsible').get(0);
+		let checkbox: any = document.getElementById('accordion2');
+		if (arrow.className === 'notebooksgridViewCollapsible' && checkbox.checked === false) {
+			arrow.className = 'notebooksgridViewCollapsible collapsed';
+		} else if (arrow.className === 'notebooksgridViewCollapsible collapsed' && checkbox.checked === true) {
+			arrow.className = 'notebooksgridViewCollapsible';
 		}
 	}
 
@@ -305,6 +248,35 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		return time.replace('T', ' ');
 	}
 
+	private formatTimeToVisibleString(time: string) {
+		time = time.replace('T', ' ');
+		let datetime = new Date(time);
+		let difference = (new Date().getTime() - datetime.getTime()) / 1000;
+		let interval = Math.floor(difference / 31536000);
+		if (interval > 1) {
+			return interval + ' years ago';
+		}
+		interval = Math.floor(difference / 2592000);
+		if (interval > 1) {
+			return interval + ' months ago';
+		}
+		interval = Math.floor(difference / 86400);
+		if (interval > 1) {
+			return interval + ' days ago';
+		}
+		interval = Math.floor(difference / 3600);
+		if (interval > 1) {
+			return interval + ' hours ago';
+		}
+		interval = Math.floor(difference / 60);
+		if (interval > 1) {
+			return interval + ' minutes ago';
+		}
+		return Math.floor(difference) + ' seconds ago';
+		return difference;
+	}
+
+
 	private showProgressWheel(): boolean {
 		return this._showPreviousRuns !== true && this._noJobsAvailable === false;
 	}
@@ -322,6 +294,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 
 		let jobHistories = this._notebookCacheObject.notebookHistories[this._agentViewComponent.jobId];
+		this.notebookHistories = jobHistories.reverse();
 		if (jobHistories) {
 			if (jobHistories.length > 0) {
 				const self = this;
@@ -331,19 +304,18 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 					this._agentViewComponent.agentJobInfo.jobSteps = this._notebookCacheObject.getJobSteps(this._agentJobInfo.jobId);
 					this._agentViewComponent.agentJobInfo.jobSchedules = this._notebookCacheObject.getJobSchedules(this._agentJobInfo.jobId);
 					this._agentJobInfo = this._agentViewComponent.agentJobInfo;
-					this.buildHistoryTree(self, jobHistories);
 				}
 			} else if (jobHistories.length === 0) {
 				this._showPreviousRuns = false;
 				this._showSteps = false;
 				this._noJobsAvailable = true;
 			}
-			this._editJobAction.enabled = true;
+			this._editNotebookJobAction.enabled = true;
 			this._actionBar.setContent([
 				{ action: this._runJobAction },
 				{ action: this._stopJobAction },
 				{ action: this._refreshAction },
-				{ action: this._editJobAction }
+				{ action: this._editNotebookJobAction }
 			]);
 			this._cd.detectChanges();
 
@@ -367,54 +339,41 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 					dom.getContentWidth(this._tableContainer.nativeElement),
 					height));
 			}
-
-			if (this._tree) {
-				this._tree.layout(dom.getContentHeight(this._tableContainer.nativeElement));
-			}
 		}
 	}
 
 	protected initActionBar() {
 		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
 		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
-		this._editJobAction = this.instantiationService.createInstance(EditJobAction);
+		this._editNotebookJobAction = this.instantiationService.createInstance(EditNotebookJobAction);
 		this._refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
-		this._editJobAction.enabled = !this.showProgressWheel();
+		this._editNotebookJobAction.enabled = !this.showProgressWheel();
 		let targetObject: JobActionContext = { canEdit: !this.showProgressWheel(), job: this._agentJobInfo };
 		this._actionBar.context = { targetObject: targetObject, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
 			{ action: this._runJobAction },
 			{ action: this._stopJobAction },
 			{ action: this._refreshAction },
-			{ action: this._editJobAction }
-		]);
-
-		this._openMaterializedNotebookAction = this.instantiationService.createInstance(OpenNotebookAction);
-		let notebookHistoryTaskBar = <HTMLElement>this._notebookHistoryActionbarView.nativeElement;
-		this._notebookHistoryActionBar = new Taskbar(notebookHistoryTaskBar);
-		this._notebookHistoryActionBar.context = this;
-		this._notebookHistoryActionBar.setContent([
-			{ action: this._openMaterializedNotebookAction }
+			{ action: this._editNotebookJobAction }
 		]);
 	}
 
-	public openNotebook() {
+	public openNotebook(history: azdata.AgentNotebookHistoryInfo) {
+		console.log(history.materializedNotebookId);
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
-		let notebookMaterializedId = 1;
-		this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, notebookMaterializedId).then(async (result) => {
+		this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, history.materializedNotebookId).then(async (result) => {
 			if (result) {
-				console.log(result);
 				let regex = /:|-/gi;
-				let readableDataTimeStirng = this.agentNotebookHistoryInfo.runDate.replace(regex, '').replace(' ', '');
+				let readableDataTimeStirng = history.runDate.replace(regex, '').replace(' ', '');
 				let tempNotebookFileName = this._agentViewComponent.agentNotebookInfo.name + '_' + readableDataTimeStirng;
-				console.log(tempNotebookFileName);
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterializedJson);
 			}
 		});
 	}
+
 
 	/** GETTERS  */
 
