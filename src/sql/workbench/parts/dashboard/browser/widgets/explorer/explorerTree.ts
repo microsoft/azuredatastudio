@@ -33,7 +33,7 @@ import { $ } from 'vs/base/browser/dom';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { IKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IEditorProgressService } from 'vs/platform/progress/common/progress';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/electron-browser/notebookActions';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 
 export class ObjectMetadataWrapper implements ObjectMetadata {
 	public metadataType: MetadataType;
