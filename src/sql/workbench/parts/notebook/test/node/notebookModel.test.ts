@@ -11,12 +11,12 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { NotebookManagerStub } from './common';
-import { NotebookModel } from 'sql/workbench/parts/notebook/node/models/notebookModel';
-import { ModelFactory } from 'sql/workbench/parts/notebook/node/models/modelFactory';
-import { IClientSession, ICellModel, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
-import { ClientSession } from 'sql/workbench/parts/notebook/node/models/clientSession';
+import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
+import { IClientSession, ICellModel, INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ClientSession } from 'sql/workbench/parts/notebook/common/models/clientSession';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
