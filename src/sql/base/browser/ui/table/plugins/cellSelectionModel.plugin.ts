@@ -38,6 +38,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		this.grid = grid;
 		this._handler.subscribe(this.grid.onActiveCellChanged, (e: Event, args: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e, args));
 		this._handler.subscribe(this.grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
+		this._handler.subscribe(this.grid.onClick, (e: MouseEvent, args: Slick.OnClickEventArgs<T>) => this.handleCtrlClick(e, args));
 		this._handler.subscribe(this.grid.onHeaderClick, (e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args));
 		this.grid.registerPlugin(this.selector);
 		this._handler.subscribe(this.selector.onCellRangeSelected, (e: Event, range: Slick.Range) => this.handleCellRangeSelected(e, range));
@@ -116,6 +117,21 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				this.setSelectedRanges(ranges);
 			}
 		}
+	}
+
+	private handleCtrlClick(e: MouseEvent, args: Slick.OnClickEventArgs<T>) {
+		if (!e.ctrlKey) {
+			return;
+		}
+		let ranges: Array<Slick.Range>;
+
+		ranges = this.getSelectedRanges();
+
+		ranges.push(new Slick.Range(args.row, args.cell));
+		this.grid.setActiveCell(args.row, args.cell);
+		this.setSelectedRanges(ranges);
+		e.preventDefault();
+		e.stopImmediatePropagation();
 	}
 
 	private handleKeyDown(e: KeyboardEvent) {
