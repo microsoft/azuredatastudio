@@ -49,12 +49,10 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			}
 
 			//QueryPlanInput
-			// uri = getQueryPlanEditorUri(input);
-			// if (uri) {
-			// 	let queryPlanXml: string = fs.readFileSync(uri.fsPath);
-			// 	let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
-			// 	return queryPlanInput;
-			// }
+			uri = getQueryPlanEditorUri(input);
+			if (uri) {
+				return instantiationService.createInstance(QueryPlanInput, uri, undefined);
+			}
 		}
 
 		//Notebook

@@ -107,16 +107,6 @@ export class QueryEditorService implements IQueryEditorService {
 		});
 	}
 
-	// Creates a new query plan document
-	public newQueryPlanEditor(xmlShowPlan: string): Promise<any> {
-		const self = this;
-		return new Promise<any>((resolve, reject) => {
-			let queryPlanInput: QueryPlanInput = self._instantiationService.createInstance(QueryPlanInput, xmlShowPlan, 'aaa', undefined);
-			self._editorService.openEditor(queryPlanInput, { pinned: true }, ACTIVE_GROUP);
-			resolve(true);
-		});
-	}
-
 	/**
 	 * Creates new edit data session
 	 */
