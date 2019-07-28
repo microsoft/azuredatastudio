@@ -23,7 +23,7 @@ import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
-	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
+	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction, ListDatabasesKeyboardAction
 } from 'sql/workbench/parts/query/browser/keyboardQueryActions';
 import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
 import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
@@ -121,6 +121,16 @@ actionRegistry.registerWorkbenchAction(
 		RefreshIntellisenseKeyboardAction.LABEL
 	),
 	RefreshIntellisenseKeyboardAction.LABEL
+);
+
+actionRegistry.registerWorkbenchAction(
+	new SyncActionDescriptor(
+		ListDatabasesKeyboardAction,
+		ListDatabasesKeyboardAction.ID,
+		ListDatabasesKeyboardAction.LABEL,
+		{ primary: KeyMod.CtrlCmd | KeyCode.KEY_U },
+	),
+	ListDatabasesKeyboardAction.LABEL
 );
 
 actionRegistry.registerWorkbenchAction(

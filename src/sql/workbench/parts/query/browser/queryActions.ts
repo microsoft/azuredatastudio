@@ -494,6 +494,15 @@ export class ListDatabasesActionItem implements IActionViewItem {
 		}
 	}
 
+	public focusAndOpen(): void {
+		if (this._isInAccessibilityMode) {
+			this._databaseSelectBox.focus();
+		} else {
+			this._dropdown.focusAndOpen();
+		}
+
+	}
+
 	public blur(): void {
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox.blur();

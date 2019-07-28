@@ -597,6 +597,13 @@ export class QueryEditor extends BaseEditor {
 		this._cancelQueryAction.run();
 	}
 
+	/**
+	 * Calls the focusAndOpen method of this editor's list databases action item
+	 */
+	public openDatabaseList(): void {
+		this._listDatabasesActionItem.focusAndOpen();
+	}
+
 	public registerQueryModelViewTab(title: string, componentId: string): void {
 		this.resultsEditor.registerQueryModelViewTab(title, componentId);
 	}

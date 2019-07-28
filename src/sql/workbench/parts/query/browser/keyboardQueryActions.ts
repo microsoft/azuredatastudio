@@ -180,6 +180,32 @@ export class CancelQueryKeyboardAction extends Action {
 }
 
 /**
+ * Change queryeditor database
+ */
+export class ListDatabasesKeyboardAction extends Action {
+	public static ID = 'listDatabasesKeyboardAction';
+	public static LABEL = nls.localize('listDatabasesKeyboardAction', 'Change Database');
+
+	constructor(
+		id: string,
+		label: string,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@IEditorService private editorService: IEditorService
+	) {
+		super(id, label);
+		this.enabled = true;
+	}
+
+	public run(): Promise<void> {
+		const editor = this.editorService.activeControl;
+		if (editor instanceof QueryEditor) {
+			editor.openDatabaseList();
+		}
+		return Promise.resolve(null);
+	}
+}
+
+/**
  * Refresh the IntelliSense cache
  */
 export class RefreshIntellisenseKeyboardAction extends Action {

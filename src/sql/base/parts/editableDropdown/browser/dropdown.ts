@@ -289,6 +289,11 @@ export class Dropdown extends Disposable {
 		this._input.focus();
 	}
 
+	public focusAndOpen() {
+		this._input.focus();
+		this._showList();
+	}
+
 	public blur() {
 		this._input.blur();
 		this.contextViewService.hideContextView();
