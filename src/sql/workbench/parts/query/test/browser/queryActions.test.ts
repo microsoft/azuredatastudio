@@ -30,6 +30,11 @@ import { TestStorageService, TestFileService } from 'vs/workbench/test/workbench
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { TestEditorInput } from 'vs/workbench/services/editor/test/browser/editorGroupsService.test';
+import { URI } from 'vs/base/common/uri';
+import { Schemas } from 'vs/base/common/network';
 
 let none: void;
 
@@ -43,7 +48,9 @@ suite('SQL QueryAction Tests', () => {
 
 	setup(() => {
 		// Setup a reusable mock QueryInput
-		testQueryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict);
+		const instantiationService = new TestInstantiationService();
+		const fileInput = new TestEditorInput(URI.from({ scheme: Schemas.untitled }));
+		testQueryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, undefined, instantiationService);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 
@@ -163,8 +170,9 @@ suite('SQL QueryAction Tests', () => {
 		let countCalledRunQuery: number = 0;
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
-		let queryInput: TypeMoq.Mock<QueryInput> = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict);
-		queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict);
+		const instantiationService = new TestInstantiationService();
+		const fileInput = new TestEditorInput(URI.from({ scheme: Schemas.untitled }));
+		let queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, undefined, instantiationService);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
@@ -224,7 +232,9 @@ suite('SQL QueryAction Tests', () => {
 			.returns(() => Promise.resolve(none));
 
 		// ... Mock "getSelection" in QueryEditor
-		let queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Loose);
+		const instantiationService = new TestInstantiationService();
+		const fileInput = new TestEditorInput(URI.from({ scheme: Schemas.untitled }));
+		let queryInput = TypeMoq.Mock.ofType(QueryInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, undefined, undefined, instantiationService);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: ISelectionData) => {
 			runQuerySelection = selection;
@@ -305,32 +315,6 @@ suite('SQL QueryAction Tests', () => {
 		assert.equal(runQuerySelection.startColumn, selectionToReturnInGetSelection.startColumn, 'startColumn should match');
 		assert.equal(runQuerySelection.endLine, selectionToReturnInGetSelection.endLine, 'endLine should match');
 		assert.equal(runQuerySelection.endColumn, selectionToReturnInGetSelection.endColumn, 'endColumn should match');
-	});
-
-	test('CancelQueryAction calls cancelQuery() only if URI is connected', (done) => {
-		// ... Create assert variables
-		let isConnected: boolean = undefined;
-		let calledCancelQuery: boolean = false;
-
-		// ... Mock "isConnected" in ConnectionManagementService
-		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {});
-		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
-
-		// If I call run on CancelQueryAction when I am not connected
-		let queryAction: CancelQueryAction = new CancelQueryAction(editor.object, connectionManagementService.object);
-		isConnected = false;
-		queryAction.run();
-
-		// cancelQuery should not be run
-		assert.equal(calledCancelQuery, false, 'run should not call cancelQuery');
-
-		// If I call run on CancelQueryAction when I am connected
-		isConnected = true;
-		queryAction.run();
-
-		// cancelQuery should be run
-		assert.equal(calledCancelQuery, true, 'run should call cancelQuery');
-		done();
 	});
 
 	// We want to call disconnectEditor regardless of connection to be able to cancel in-progress connections

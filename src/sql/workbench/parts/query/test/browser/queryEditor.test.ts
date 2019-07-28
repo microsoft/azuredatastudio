@@ -22,6 +22,8 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -260,6 +262,7 @@ suite('SQL QueryEditor Tests', () => {
 
 			// Mock InstantiationService to give us the actions
 			queryActionInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
+			instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(QueryRunner), TypeMoq.It.isAnyString())).returns(() => new QueryRunner('', undefined, undefined, undefined, undefined, undefined));
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 				return new Promise((resolve) => resolve(mockEditor));
@@ -281,6 +284,8 @@ suite('SQL QueryEditor Tests', () => {
 					return new RunQueryAction(undefined, undefined);
 				});
 
+			const mockInstantiationService = new TestInstantiationService();
+
 			let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
 			queryInput = new QueryInput(
 				'',
@@ -288,7 +293,7 @@ suite('SQL QueryEditor Tests', () => {
 				undefined,
 				connectionManagementService.object,
 				undefined,
-				instantiationService.object
+				mockInstantiationService
 			);
 		});
 
