@@ -31,7 +31,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('disconnect', "Disconnect")
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
-		new ContextKeyNotEqualsExpr('nodeType', NodeType.Folder))
+		ContextKeyNotEqualsExpr.create('nodeType', NodeType.Folder))
 });
 
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -214,7 +214,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsWindows,
-		new ContextKeyRegexExpr('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
+		ContextKeyRegexExpr.create('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
 });
 
 //////////////// Scripting Actions /////////////////
