@@ -1105,7 +1105,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 
 	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
 		if (!scenarioType) {
-			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.'));
+			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
 		}
 
 		return Promise.resolve((product.recommendedExtensionsByScenario[scenarioType] || [])

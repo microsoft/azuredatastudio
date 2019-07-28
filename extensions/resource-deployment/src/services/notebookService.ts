@@ -19,7 +19,7 @@ export interface INotebookService {
 
 export class NotebookService implements INotebookService {
 
-	constructor(private platformService: IPlatformService) { }
+	constructor(private platformService: IPlatformService, private extensionPath: string) { }
 
 	/**
 	 * Copy the notebook to the user's home directory and launch the notebook from there.
@@ -27,7 +27,7 @@ export class NotebookService implements INotebookService {
 	 */
 	launchNotebook(notebook: string | NotebookInfo): void {
 		const notebookRelativePath = this.getNotebook(notebook);
-		const notebookFullPath = path.join(__dirname, '../../', notebookRelativePath);
+		const notebookFullPath = path.join(this.extensionPath, notebookRelativePath);
 		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
 			this.showNotebookAsUntitled(notebookFullPath);
 		}

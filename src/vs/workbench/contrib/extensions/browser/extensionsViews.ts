@@ -669,7 +669,7 @@ export class ExtensionsListView extends ViewletPanel {
 	// {{SQL CARBON EDIT}}
 	private getRecommendedExtensionsByScenario(token: CancellationToken, scenarioType: string): Promise<IPagedModel<IExtension>> {
 		if (!scenarioType) {
-			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations cannot be empty.'));
+			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
 		}
 		return this.extensionsWorkbenchService.queryLocal()
 			.then(result => result.filter(e => e.type === ExtensionType.User))

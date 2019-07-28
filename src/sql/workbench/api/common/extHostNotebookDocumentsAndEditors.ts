@@ -247,7 +247,7 @@ export class ExtHostNotebookDocumentsAndEditors implements ExtHostNotebookDocume
 
 	registerNavigationProvider(provider: azdata.nb.NavigationProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
-			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));
+			throw new Error(localize('providerRequired', "A NotebookProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerNavigationProvider(provider.providerId, handle);

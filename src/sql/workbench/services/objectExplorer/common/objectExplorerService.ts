@@ -232,7 +232,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			this.handleSessionCreated(session);
 		} else {
 			let errorMessage = session && session.errorMessage ? session.errorMessage :
-				nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
+				nls.localize('OeSessionFailedError', "Failed to create Object Explorer session");
 			this.logService.error(errorMessage);
 		}
 	}
@@ -252,7 +252,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 				}
 				else {
 					errorMessage = session && session.errorMessage ? session.errorMessage :
-						nls.localize('OeSessionFailedError', 'Failed to create Object Explorer session');
+						nls.localize('OeSessionFailedError', "Failed to create Object Explorer session");
 					this.logService.error(errorMessage);
 				}
 				// Send on session created about the session to all node providers so they can prepare for node expansion
@@ -472,7 +472,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (finalResult) {
 			if (errorMessages.length > 0) {
 				if (errorMessages.length > 1) {
-					errorMessages.unshift(nls.localize('nodeExpansionError', 'Multiple errors:'));
+					errorMessages.unshift(nls.localize('nodeExpansionError', "Multiple errors:"));
 				}
 				errorNode.errorMessage = errorMessages.join('\n');
 				errorNode.label = errorNode.errorMessage;
@@ -772,7 +772,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	private getUpdatedTreeNode(treeNode: TreeNode): Promise<TreeNode> {
 		return this.getTreeNode(treeNode.getConnectionProfile().id, treeNode.nodePath).then(treeNode => {
 			if (!treeNode) {
-				// throw new Error(nls.localize('treeNodeNoLongerExists', 'The given tree node no longer exists'));
+				// throw new Error(nls.localize('treeNodeNoLongerExists', "The given tree node no longer exists"));
 				return undefined;
 			}
 			return treeNode;

@@ -16,7 +16,7 @@
       </trans-unit>
       <trans-unit id="deploy-sql-bdc-command-name">
         <source xml:lang="en">Deploy SQL Server big data cluster…</source>
-        <target state="translated">SQL Server Big Data Cluster を展開します…</target>
+        <target state="translated">SQL Server big data cluster を展開します…</target>
       </trans-unit>
       <trans-unit id="deploy-resource-command-name">
         <source xml:lang="en">Deploy SQL Server…</source>
@@ -40,7 +40,7 @@
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-description">
         <source xml:lang="en">SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
-        <target state="translated">SQL Server Big Data Cluster を使用すると、Kubernetes で実行されている SQL Server、Spark、および HDFS のコンテナーのスケーラブルなクラスターをデプロイできます。</target>
+        <target state="translated">SQL Server big data cluster を使用すると、Kubernetes で実行されている SQL Server、Spark、および HDFS のコンテナーのスケーラブルなクラスターをデプロイできます。</target>
       </trans-unit>
       <trans-unit id="version-display-name">
         <source xml:lang="en">Version</source>
@@ -64,7 +64,7 @@
       </trans-unit>
       <trans-unit id="sql-2019ctp31-display-name">
         <source xml:lang="en">SQL Server 2019 big data cluster CTP 3.1</source>
-        <target state="translated">SQL Server 2019 Big Data Cluster CTP 3.1</target>
+        <target state="translated">SQL Server 2019 big data cluster CTP 3.1</target>
       </trans-unit>
       <trans-unit id="bdc-deployment-target">
         <source xml:lang="en">Deployment target</source>

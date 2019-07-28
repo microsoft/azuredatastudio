@@ -14,11 +14,11 @@ import * as azdata from 'azdata';
 import { SqlMainContext, ExtHostModelViewDialogShape, MainThreadModelViewDialogShape, ExtHostModelViewShape, ExtHostBackgroundTaskManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
-const DONE_LABEL = nls.localize('dialogDoneLabel', 'Done');
-const CANCEL_LABEL = nls.localize('dialogCancelLabel', 'Cancel');
-const GENERATE_SCRIPT_LABEL = nls.localize('generateScriptLabel', 'Generate script');
-const NEXT_LABEL = nls.localize('dialogNextLabel', 'Next');
-const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', 'Previous');
+const DONE_LABEL = nls.localize('dialogDoneLabel', "Done");
+const CANCEL_LABEL = nls.localize('dialogCancelLabel', "Cancel");
+const GENERATE_SCRIPT_LABEL = nls.localize('generateScriptLabel', "Generate script");
+const NEXT_LABEL = nls.localize('dialogNextLabel', "Next");
+const PREVIOUS_LABEL = nls.localize('dialogPreviousLabel', "Previous");
 
 class ModelViewPanelImpl implements azdata.window.ModelViewPanel {
 	private _modelView: azdata.ModelView;

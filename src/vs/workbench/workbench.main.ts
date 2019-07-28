@@ -508,16 +508,16 @@ import 'sql/workbench/common/actions.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
-import 'sql/workbench/parts/dashboard/electron-browser/widgets/webview/webviewWidget.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboardConfig.contribution';
 /* Model-based Views */
 import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
+import 'sql/workbench/parts/notebook/browser/notebook.contribution';
 /* Containers */
-import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';

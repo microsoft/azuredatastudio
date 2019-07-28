@@ -59,11 +59,11 @@
         <target state="translated">노트북 열기</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+        <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
         <target state="translated">SQL Server 빅 데이터 클러스터에 대한 작업 및 정보</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <source xml:lang="en">SQL Server big data cluster</source>
         <target state="translated">SQL Server 빅 데이터 클러스터</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
@@ -655,7 +655,7 @@
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" target-language="ko" datatype="plaintext">
     <body>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
+        <source xml:lang="en">Please select SQL Server with big data cluster. </source>
         <target state="translated">빅 데이터 클러스터가 있는 SQL 서버를 선택하세요.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
@@ -1023,7 +1023,7 @@
         <target state="translated">로컬 파일 {0}이(가) 없습니다.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
+        <source xml:lang="en">No Sql Server big data cluster found.</source>
         <target state="translated">Sql Server 빅 데이터 클러스터를 찾을 수 없습니다.</target>
       </trans-unit>
     </body>

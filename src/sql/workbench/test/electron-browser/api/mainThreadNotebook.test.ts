@@ -14,10 +14,12 @@ import { MainThreadNotebook } from 'sql/workbench/api/browser/mainThreadNotebook
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookProvider } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, INotebookFutureDetails } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { TestLifecycleService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ExtHostNotebookShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 suite('MainThreadNotebook Tests', () => {
 
@@ -32,9 +34,10 @@ suite('MainThreadNotebook Tests', () => {
 		let extContext = <IExtHostContext>{
 			getProxy: proxyType => mockProxy.object
 		};
-		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, undefined, new MockContextKeyService());
+		const instantiationService = new TestInstantiationService();
+		mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService());
 		notebookUri = URI.parse('file:/user/default/my.ipynb');
-		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object);
+		mainThreadNotebook = new MainThreadNotebook(extContext, mockNotebookService.object, instantiationService);
 	});
 
 	suite('On registering a provider', () => {

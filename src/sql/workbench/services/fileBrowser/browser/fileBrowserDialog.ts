@@ -86,20 +86,20 @@ export class FileBrowserDialog extends Modal {
 		this._treeContainer = DOM.append(this._body, DOM.$('.tree-view'));
 
 		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.file-table-content'));
-		let pathLabel = localize('filebrowser.filepath', 'Selected path');
+		let pathLabel = localize('filebrowser.filepath', "Selected path");
 		let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
 		this._filePathInputBox = new InputBox(pathBuilder, this._contextViewService, {
 			ariaLabel: pathLabel
 		});
 
 		this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
-		let filterLabel = localize('fileFilter', 'Files of type');
+		let filterLabel = localize('fileFilter', "Files of type");
 		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
 
-		this._okButton = this.addFooterButton(localize('fileBrowser.ok', 'OK'), () => this.ok());
+		this._okButton = this.addFooterButton(localize('fileBrowser.ok', "OK"), () => this.ok());
 		this._okButton.enabled = false;
-		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', 'Discard'), () => this.close());
+		this._cancelButton = this.addFooterButton(localize('fileBrowser.discard', "Discard"), () => this.close());
 
 		this.registerListeners();
 		this.updateTheme();

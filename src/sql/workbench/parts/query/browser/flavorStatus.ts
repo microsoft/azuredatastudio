@@ -52,7 +52,7 @@ class SqlProviderEntry implements ISqlProviderEntry {
 	}
 
 	public static getDefaultLabel(): string {
-		return nls.localize('chooseSqlLang', 'Choose SQL Language');
+		return nls.localize('chooseSqlLang', "Choose SQL Language");
 	}
 }
 
