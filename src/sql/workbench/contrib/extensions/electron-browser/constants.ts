@@ -6,5 +6,4 @@
 import { localize } from 'vs/nls';
 
 // localizable strings
-
 export const visualizerExtensions = 'visualizerExtensions';

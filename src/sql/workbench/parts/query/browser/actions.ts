@@ -20,7 +20,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import product from 'vs/platform/product/node/product';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
-import * as LocalizedConstants from 'sql/workbench/contrib/extensions/electron-browser/localizedConstants';
+import * as Constants from 'sql/workbench/contrib/extensions/electron-browser/constants';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -212,7 +212,7 @@ export class ChartDataAction extends Action {
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
 		if (product.quality !== 'stable') {
-			this.extensionTipsService.promptRecommendedExtensionsByScenario(LocalizedConstants.visualizerExtensions);
+			this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
@@ -221,7 +221,7 @@ export class ChartDataAction extends Action {
 
 export class VisualizerDataAction extends Action {
 	public static ID = 'grid.visualizer';
-	public static LABEL = localize('visualizer', 'Visualizer');
+	public static LABEL = localize("visualizer", "Visualizer");
 	public static ICON = 'viewVisualizer';
 
 	constructor(
