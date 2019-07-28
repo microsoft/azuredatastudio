@@ -80,7 +80,7 @@ if (isMacintosh) {
 	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
 		command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
 		group: 'query',
-		when: new ContextKeyEqualsExpr('activeEditor', 'workbench.editor.queryEditor')
+		when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
 	});
 }
 
