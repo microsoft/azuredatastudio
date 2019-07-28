@@ -43,12 +43,12 @@ export class QueryEditorService implements IQueryEditorService {
 
 	private static CHANGE_UNSUPPORTED_ERROR_MESSAGE = nls.localize(
 		'queryEditorServiceChangeUnsupportedError',
-		'Change Language Mode is not supported for unsaved queries'
+		"Change Language Mode is not supported for unsaved queries"
 	);
 
 	private static CHANGE_ERROR_MESSAGE = nls.localize(
 		'queryEditorServiceChangeError',
-		'Please save or discard changes before switching to/from the SQL Language Mode'
+		"Please save or discard changes before switching to/from the SQL Language Mode"
 	);
 
 	// service references for static functions

@@ -170,7 +170,7 @@ export class SaveImageAction extends Action {
 							this.windowsService.openExternal(fileUri.toString());
 							this.notificationService.notify({
 								severity: Severity.Error,
-								message: localize('chartSaved', 'Saved Chart to path: {0}', filePath)
+								message: localize('chartSaved', "Saved Chart to path: {0}", filePath)
 							});
 						}
 					});

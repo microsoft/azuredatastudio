@@ -188,7 +188,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 							reject(editorError);
 						});
 					} else {
-						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', 'No script was returned when scripting as {0} on object {1}',
+						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', "No script was returned when scripting as {0} on object {1}",
 							GetScriptOperationName(operation), metadata.metadataTypeName);
 						let messageDetail = '';
 						let operationResult = scriptingService.getOperationFailedResult(result.operationId);
@@ -203,7 +203,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 						reject(scriptNotFoundMsg);
 					}
 				} else {
-					reject(nls.localize('scriptNotFound', 'No script was returned when scripting as {0}', GetScriptOperationName(operation)));
+					reject(nls.localize('scriptNotFound', "No script was returned when scripting as {0}", GetScriptOperationName(operation)));
 				}
 			}, scriptingError => {
 				reject(scriptingError);
