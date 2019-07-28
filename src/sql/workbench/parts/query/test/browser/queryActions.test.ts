@@ -21,7 +21,6 @@ import {
 } from 'sql/workbench/parts/query/browser/queryActions';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
-import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -69,7 +68,7 @@ suite('SQL QueryAction Tests', () => {
 
 	test('setClass sets child CSS class correctly', (done) => {
 		// If I create a RunQueryAction
-		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, undefined);
+		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined);
 
 		// "class should automatically get set to include the base class and the RunQueryAction class
 		let className = RunQueryAction.EnabledClass;
@@ -93,7 +92,7 @@ suite('SQL QueryAction Tests', () => {
 		editor.setup(x => x.input).returns(() => testQueryInput.object);
 
 		// If I create a QueryTaskbarAction and I pass a non-connected editor to _getConnectedQueryEditorUri
-		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, undefined, connectionManagementService.object);
+		let queryAction: QueryTaskbarAction = new RunQueryAction(undefined, connectionManagementService.object);
 		let connected: boolean = queryAction.isConnected(editor.object);
 
 		// I should get an unconnected state
@@ -129,14 +128,8 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
 
-		// ... Mock QueryModelService
-		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-		queryModelService.setup(x => x.runQuery(TypeMoq.It.isAny(), undefined, TypeMoq.It.isAny(), TypeMoq.It.isAny())).callback(() => {
-			calledRunQuery = true;
-		});
-
 		// If I call run on RunQueryAction when I am not connected
-		let queryAction: RunQueryAction = new RunQueryAction(editor.object, queryModelService.object, connectionManagementService.object);
+		let queryAction: RunQueryAction = new RunQueryAction(editor.object, connectionManagementService.object);
 		isConnected = false;
 		calledRunQueryOnInput = false;
 		queryAction.run();
@@ -191,11 +184,8 @@ suite('SQL QueryAction Tests', () => {
 		connectionManagementService.callBase = true;
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => true);
 
-		// ... Mock QueryModelService
-		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-
 		// If I call run on RunQueryAction when I have a non empty selection
-		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, queryModelService.object, connectionManagementService.object);
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, connectionManagementService.object);
 		isSelectionEmpty = false;
 		queryAction.run();
 
@@ -266,7 +256,7 @@ suite('SQL QueryAction Tests', () => {
 		/// End Setup Test ///
 
 		////// If I call run on RunQueryAction while disconnected and with an undefined selection
-		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, undefined, connectionManagementService.object);
+		let queryAction: RunQueryAction = new RunQueryAction(queryEditor.object, connectionManagementService.object);
 		isConnected = false;
 		selectionToReturnInGetSelection = undefined;
 		queryAction.run();
@@ -326,14 +316,8 @@ suite('SQL QueryAction Tests', () => {
 		let connectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, {});
 		connectionManagementService.setup(x => x.isConnected(TypeMoq.It.isAnyString())).returns(() => isConnected);
 
-		// ... Mock QueryModelService
-		let queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose);
-		queryModelService.setup(x => x.cancelQuery(TypeMoq.It.isAny())).callback(() => {
-			calledCancelQuery = true;
-		});
-
 		// If I call run on CancelQueryAction when I am not connected
-		let queryAction: CancelQueryAction = new CancelQueryAction(editor.object, queryModelService.object, connectionManagementService.object);
+		let queryAction: CancelQueryAction = new CancelQueryAction(editor.object, connectionManagementService.object);
 		isConnected = false;
 		queryAction.run();
 
