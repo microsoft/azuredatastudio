@@ -22,6 +22,8 @@ export const IQueryManagementService = createDecorator<IQueryManagementService>(
 export interface IQueryManagementService {
 	_serviceBrand: any;
 
+	onHandlerAdded: Event<string>;
+
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	isProviderRegistered(providerId: string): boolean;
 	getRegisteredProviders(): string[];
