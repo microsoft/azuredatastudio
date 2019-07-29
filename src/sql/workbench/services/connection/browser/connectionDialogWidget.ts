@@ -321,10 +321,14 @@ export class ConnectionDialogWidget extends Modal {
 		const actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
-			this.open(this._connectionManagementService.getRecentConnections().length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0);
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
-			this.open(this._connectionManagementService.getRecentConnections().length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0);
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
 
