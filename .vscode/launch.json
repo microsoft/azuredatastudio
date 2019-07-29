@@ -219,13 +219,6 @@
 				"Launch azuredatastudio",
 				"Attach to Extension Host"
 			]
-		},
-		{
-			"name": "Attach Main and Extension Host",
-			"configurations": [
-				"Attach to azuredatastudio",
-				"Attach to Extension Host"
-			]
 		}
 	]
 }
