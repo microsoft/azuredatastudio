@@ -16,7 +16,11 @@ import { ITextModel } from 'vs/editor/common/model';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+// {{SQL CARBON EDIT}}
 import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/extensionsActions';
+import * as Constants from 'sql/workbench/contrib/extensions/constants';
+// {{SQL CARBON EDIT}} - End
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -1150,4 +1154,79 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	private isExtensionAllowedToBeRecommended(id: string): boolean {
 		return this._allIgnoredRecommendations.indexOf(id.toLowerCase()) === -1;
 	}
+
+	// {{SQL CARBON EDIT}}
+	promptRecommendedExtensionsByScenario(scenarioType: string): void {
+		const storageKey = 'extensionAssistant/RecommendationsIgnore/' + scenarioType;
+
+		if (this.storageService.getBoolean(storageKey, StorageScope.GLOBAL, false)) {
+			return;
+		}
+
+		let recommendations: IExtensionRecommendation[];
+		let localExtensions: ILocalExtension[];
+		const getRecommendationPromise = this.getRecommendedExtensionsByScenario(scenarioType).then(recs => { recommendations = recs; });
+		const getLocalExtensionPromise = this.extensionsService.getInstalled(ExtensionType.User).then(local => { localExtensions = local; });
+
+		let recommendationMessage = localize('ExtensionsRecommended', "Azure Data Studio has extension recommendations.");
+		if (scenarioType === Constants.visualizerExtensions) {
+			recommendationMessage = localize('VisualizerExtensionsRecommended', "Azure Data Studio has extension recommendations for data visualization.\nOnce installed, you can select the Visualizer icon to visualize your query results.");
+		}
+		Promise.all([getRecommendationPromise, getLocalExtensionPromise]).then(() => {
+			if (!recommendations.every(rec => { return localExtensions.findIndex(local => local.identifier.id.toLocaleLowerCase() === rec.extensionId.toLocaleLowerCase()) !== -1; })) {
+				return new Promise<void>(c => {
+					this.notificationService.prompt(
+						Severity.Info,
+						recommendationMessage,
+						[{
+							label: localize('installAll', "Install All"),
+							run: () => {
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'install' });
+								const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
+								installAllAction.run();
+								installAllAction.dispose();
+							}
+						}, {
+							label: localize('showRecommendations', "Show Recommendations"),
+							run: () => {
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'show' });
+								const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
+								showAction.run();
+								showAction.dispose();
+								c(undefined);
+							}
+						}, {
+							label: choiceNever,
+							isSecondary: true,
+							run: () => {
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'neverShowAgain' });
+								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
+								c(undefined);
+							}
+						}],
+						{
+							sticky: true,
+							onCancel: () => {
+								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'cancelled' });
+								c(undefined);
+							}
+						}
+					);
+				});
+			} else {
+				return Promise.resolve();
+			}
+		});
+	}
+
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
+		if (!scenarioType) {
+			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
+		}
+
+		return Promise.resolve((product.recommendedExtensionsByScenario[scenarioType] || [])
+			.filter(extensionId => this.isExtensionAllowedToBeRecommended(extensionId))
+			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
+	}
+	// {{SQL CARBON EDIT}} - End
 }

@@ -71,6 +71,16 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 	getAllIgnoredRecommendations(): { global: string[]; workspace: string[]; } {
 		return { global: [], workspace: [] };
 	}
+
+	// {{SQL CARBON EDIT}}
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
+		return Promise.resolve([]);
+	}
+
+	promptRecommendedExtensionsByScenario(scenarioType: string): void {
+		return;
+	}
+	// {{SQL CARBON EDIT}} - End
 }
 
 registerSingleton(IExtensionTipsService, SimpleExtensionTipsService, true);

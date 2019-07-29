@@ -74,6 +74,7 @@ export interface IProductConfiguration {
 	};
 	extensionTips: { [id: string]: string; };
 	recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
+	recommendedExtensionsByScenario: string[]; // {{SQL CARBON EDIT}}
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
 	readonly exeBasedExtensionTips: { [id: string]: IExeBasedExtensionTip; };
 	readonly extensionKeywords: { [extension: string]: readonly string[]; };
