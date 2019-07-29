@@ -20,7 +20,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import product from 'vs/platform/product/node/product';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
-import * as Constants from 'sql/workbench/contrib/extensions/electron-browser/constants';
+import * as Constants from 'sql/workbench/contrib/extensions/constants';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
