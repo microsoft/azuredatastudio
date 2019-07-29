@@ -107,7 +107,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			let columnIndex = this.grid.getColumnIndex(args.column.id!);
 			if (this.grid.canCellBeSelected(0, columnIndex)) {
 				let ranges: Array<Slick.Range>;
-				if (e.shiftKey) {
+				if (e.shiftKey || e.ctrlKey) {
 					ranges = this.getSelectedRanges();
 					ranges.push(new Slick.Range(0, columnIndex, this.grid.getDataLength() - 1, columnIndex));
 				} else {
