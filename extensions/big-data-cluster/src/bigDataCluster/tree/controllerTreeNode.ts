@@ -167,19 +167,10 @@ export class ControllerNode extends ControllerTreeNode {
 		super(label, parent, treeChangeHandler, description, BdcItemType.controller, IconPath.controllerNode);
 		this.label = label;
 		this.description = description;
-		// Start preloading the creation of the master node so it's available immediately later on
-		this._sqlMasterNodePromise = new Promise<SqlMasterNode>(async (resolve, reject) => {
-			const response = await getEndPoints(this._clusterName, this._url, this._username, this._password, true);
-			if (response && response.endPoints) {
-				const master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
-				resolve(new SqlMasterNode(master.endpoint, this._endPointFolderNode, undefined, this.treeChangeHandler, master.description));
-			}
-			reject(new Error(localize('noEndpointsError', "Did not receive valid response when fetching endpoints.")));
-		});
-
-		this._sqlMasterNodePromise.then((sqlMasterNode) => {
-			this._endPointFolderNode.addChild(sqlMasterNode);
-		});
+		// If we have a password start preloading the master node data now - otherwise wait until we're given a password
+		if (this._password) {
+			this.createSqlMasterNode();
+		}
 	}
 
 	public async getChildren(): Promise<ControllerTreeNode[]> {
@@ -230,16 +221,13 @@ export class ControllerNode extends ControllerTreeNode {
 		return this._username;
 	}
 
-	public set username(username: string) {
-		this._username = username;
-	}
-
 	public get password() {
 		return this._password;
 	}
 
 	public set password(pw: string) {
 		this._password = pw;
+		this.createSqlMasterNode();
 	}
 
 	public get rememberPassword() {
@@ -266,8 +254,38 @@ export class ControllerNode extends ControllerTreeNode {
 		return super.description;
 	}
 
+	/**
+	 * Gets the TreeNode for the SQL master Instance. This is async since we need to fetch endpoint data
+	 * for the master instance first from the controller.
+	 */
 	public async getSqlMasterNode(): Promise<SqlMasterNode> {
+		if (!this._sqlMasterNodePromise) {
+			return this.createSqlMasterNode();
+		}
 		return this._sqlMasterNodePromise;
+	}
+
+	/**
+	 * Fetches the endpoint data for the SQL master instance, creates the TreeNode with that data and adds it
+	 * to the Endpoints folder node once complete. This is async since we need to fetch endpoint data for the
+	 * master instance first from the controller.
+	 */
+	private async createSqlMasterNode(): Promise<SqlMasterNode> {
+		this._sqlMasterNodePromise = new Promise<SqlMasterNode>(async (resolve, reject) => {
+			const response = await getEndPoints(this._clusterName, this._url, this._username, this._password, true);
+			if (response && response.endPoints) {
+				const master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
+				resolve(new SqlMasterNode(master.endpoint, this._endPointFolderNode, undefined, this.treeChangeHandler, master.description));
+			}
+			reject(new Error(localize('noEndpointsError', "Did not receive valid response when fetching endpoints.")));
+		});
+
+		this._sqlMasterNodePromise.then((sqlMasterNode) => {
+			this._endPointFolderNode.addChild(sqlMasterNode);
+			this._endPointFolderNode.refresh();
+		});
+
+		return await this._sqlMasterNodePromise;
 	}
 }
 
