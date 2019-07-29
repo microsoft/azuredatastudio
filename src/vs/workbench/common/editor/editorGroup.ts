@@ -16,8 +16,8 @@ import { coalesce } from 'vs/base/common/arrays';
 // {{SQL CARBON EDIT}}
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import * as path from 'path';
 import * as os from 'os';
+import * as path from 'vs/base/common/path';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',

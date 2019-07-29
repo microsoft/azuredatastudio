@@ -10,11 +10,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/co
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-<<<<<<< HEAD:src/sql/workbench/test/common/taskUtilities.test.ts
 import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
-=======
-import { WorkbenchEditorTestService } from 'sqltest/stubs/workbenchEditorTestService';
->>>>>>> fix tests:src/sqltest/workbench/common/taskUtilities.test.ts
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
