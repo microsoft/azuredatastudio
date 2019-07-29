@@ -15,8 +15,8 @@
 			<text-cell-component class="notebook-cell" *ngIf="cell.cellType === 'markdown'" (click)="selectCell(cell, $event)" [class.active]="cell.active" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
 			</text-cell-component>
 			<div class="hoverButtonsContainer">
-				<button class="notebook-button">Button1</button>
-				<button class="notebook-button">Button2</button>
+				<button class="hoverButton">Button1</button>
+				<button class="hoverButton">Button2</button>
 			</div>
 		</div>
 		<div class="notebook-cell" *ngIf="(!cells || !cells.length) && !isLoading">

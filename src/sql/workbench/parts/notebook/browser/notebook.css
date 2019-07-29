@@ -143,11 +143,18 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	visibility: visible;
+	width: 100%;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: gray;
 }
 
-/*
 .hoverButtonsContainer:hover {
-	visibility: hidden;
+	background-color: white;
 }
-*/
+
+.hoverButton {
+	margin-left: 20px;
+	margin-right: 20px;
+	padding: 10px 20px 10px 20px;
+}
