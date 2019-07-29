@@ -102,25 +102,20 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	private _state = this._register(new QueryEditorState());
 	public get state(): QueryEditorState { return this._state; }
 
-	public get onDidChangeDirty(): Event<void> { return this._text.onDidChangeDirty; } // divert to text since we never do this
-
 	constructor(
 		private _description: string,
-		private _text: EditorInput,
-		private _results: QueryResultsInput,
+		protected _text: EditorInput,
+		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 
-		this._register(this.text);
+		this._register(this._text);
 		this._register(this._results);
 
-		// re-emit sql editor events through this editor if it exists
-		if (this.text) {
-			this._register(this.text.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
-		}
+		this._text.onDidChangeDirty(() => this._onDidChangeDirty.fire());
 
 		this._register(
 			this.queryModelService.onRunQueryComplete(uri => {

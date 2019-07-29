@@ -28,7 +28,7 @@ export class FileQueryEditorInputFactory implements IEditorInputFactory {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(FILE_EDITOR_INPUT_ID);
 		const fileEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as FileEditorInput;
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, fileEditorInput.getResource().toString());
-		return instantiationService.createInstance(FileQueryEditorInput, '', fileEditorInput, queryResultsInput, undefined);
+		return instantiationService.createInstance(FileQueryEditorInput, '', fileEditorInput, queryResultsInput);
 	}
 }
 
@@ -45,6 +45,6 @@ export class UntitledQueryEditorInputFactory implements IEditorInputFactory {
 		const factory = editorInputFactoryRegistry.getEditorInputFactory(UntitledEditorInput.ID);
 		const untitledEditorInput = factory.deserialize(instantiationService, serializedEditorInput) as UntitledEditorInput;
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, untitledEditorInput.getResource().toString());
-		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput, undefined);
+		return instantiationService.createInstance(UntitledQueryEditorInput, '', untitledEditorInput, queryResultsInput);
 	}
 }

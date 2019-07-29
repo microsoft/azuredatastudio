@@ -59,9 +59,9 @@ Registry.as<ILanguageAssociationRegistry>(LanguageAssociationExtensions.Language
 		const instantiationService = accessor.get(IInstantiationService);
 		const queryResultsInput = instantiationService.createInstance(QueryResultsInput, editor.getResource().toString());
 		if (editor instanceof FileEditorInput) {
-			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput, undefined);
+			return instantiationService.createInstance(FileQueryEditorInput, '', editor, queryResultsInput);
 		} else if (editor instanceof UntitledEditorInput) {
-			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput, undefined);
+			return instantiationService.createInstance(UntitledQueryEditorInput, '', editor, queryResultsInput);
 		} else {
 			return undefined;
 		}
@@ -75,7 +75,7 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
-// Query Actions
+// Query Actionsr
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
 		RunQueryKeyboardAction,
