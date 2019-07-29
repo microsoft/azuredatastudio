@@ -712,7 +712,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('settings', "Settings ({0})", contrib.length)),
+			$('summary', { tabindex: '0' }, localize('settings', "Settings ({0})", contrib.length)),
 			$('table', undefined,
 				$('tr', undefined,
 					$('th', undefined, localize('setting name', "Name")),
@@ -740,7 +740,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('debuggers', "Debuggers ({0})", contrib.length)),
+			$('summary', { tabindex: '0' }, localize('debuggers', "Debuggers ({0})", contrib.length)),
 			$('table', undefined,
 				$('tr', undefined,
 					$('th', undefined, localize('debugger name', "Name")),
@@ -771,7 +771,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('viewContainers', "View Containers ({0})", viewContainers.length)),
+			$('summary', { tabindex: '0' }, localize('viewContainers', "View Containers ({0})", viewContainers.length)),
 			$('table', undefined,
 				$('tr', undefined, $('th', undefined, localize('view container id', "ID")), $('th', undefined, localize('view container title', "Title")), $('th', undefined, localize('view container location', "Where"))),
 				...viewContainers.map(viewContainer => $('tr', undefined, $('td', undefined, viewContainer.id), $('td', undefined, viewContainer.title), $('td', undefined, viewContainer.location)))
@@ -797,7 +797,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('views', "Views ({0})", views.length)),
+			$('summary', { tabindex: '0' }, localize('views', "Views ({0})", views.length)),
 			$('table', undefined,
 				$('tr', undefined, $('th', undefined, localize('view id', "ID")), $('th', undefined, localize('view name', "Name")), $('th', undefined, localize('view location', "Where"))),
 				...views.map(view => $('tr', undefined, $('td', undefined, view.id), $('td', undefined, view.name), $('td', undefined, view.location)))
@@ -817,7 +817,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('localizations', "Localizations ({0})", localizations.length)),
+			$('summary', { tabindex: '0' }, localize('localizations', "Localizations ({0})", localizations.length)),
 			$('table', undefined,
 				$('tr', undefined, $('th', undefined, localize('localizations language id', "Language Id")), $('th', undefined, localize('localizations language name', "Language Name")), $('th', undefined, localize('localizations localized language name', "Language Name (Localized)"))),
 				...localizations.map(localization => $('tr', undefined, $('td', undefined, localization.languageId), $('td', undefined, localization.languageName || ''), $('td', undefined, localization.localizedLanguageName || '')))
@@ -837,7 +837,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('colorThemes', "Color Themes ({0})", contrib.length)),
+			$('summary', { tabindex: '0' }, localize('colorThemes', "Color Themes ({0})", contrib.length)),
 			$('ul', undefined, ...contrib.map(theme => $('li', undefined, theme.label)))
 		);
 
@@ -854,7 +854,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('iconThemes', "Icon Themes ({0})", contrib.length)),
+			$('summary', { tabindex: '0' }, localize('iconThemes', "Icon Themes ({0})", contrib.length)),
 			$('ul', undefined, ...contrib.map(theme => $('li', undefined, theme.label)))
 		);
 
@@ -883,7 +883,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('colors', "Colors ({0})", colors.length)),
+			$('summary', { tabindex: '0' }, localize('colors', "Colors ({0})", colors.length)),
 			$('table', undefined,
 				$('tr', undefined,
 					$('th', undefined, localize('colorId', "Id")),
@@ -916,7 +916,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('JSON Validation', "JSON Validation ({0})", contrib.length)),
+			$('summary', { tabindex: '0' }, localize('JSON Validation', "JSON Validation ({0})", contrib.length)),
 			$('table', undefined,
 				$('tr', undefined,
 					$('th', undefined, localize('fileMatch', "File Match")),
@@ -990,7 +990,7 @@ export class ExtensionEditor extends BaseEditor {
 		};
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('commands', "Commands ({0})", commands.length)),
+			$('summary', { tabindex: '0' }, localize('commands', "Commands ({0})", commands.length)),
 			$('table', undefined,
 				$('tr', undefined,
 					$('th', undefined, localize('command name', "Name")),
@@ -1057,7 +1057,7 @@ export class ExtensionEditor extends BaseEditor {
 		}
 
 		const details = $('details', { open: true, ontoggle: onDetailsToggle },
-			$('summary', undefined, localize('languages', "Languages ({0})", languages.length)),
+			$('summary', { tabindex: '0' }, localize('languages', "Languages ({0})", languages.length)),
 			$('table', undefined,
 				$('tr', undefined,
 					$('th', undefined, localize('language id', "ID")),
