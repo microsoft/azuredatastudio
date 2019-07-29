@@ -47,3 +47,16 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 		}
 	}
 });
+
+Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
+	'id': 'enableObsoleteApiUsageNotification',
+	'title': nls.localize('enableObsoleteApiUsageNotification', "Enable obsolete API usage notification"),
+	'type': 'object',
+	'properties': {
+		'workbench.enableObsoleteApiUsageNotification': {
+			'type': 'boolean',
+			'default': true,
+			'description': nls.localize('enableObsoleteApiUsageNotification', "Enable obsolete API usage notification")
+		}
+	}
+});
