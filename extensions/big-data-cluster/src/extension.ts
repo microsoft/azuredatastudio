@@ -56,7 +56,6 @@ function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 
 	vscode.commands.registerCommand(ManageCommand, async (node: TreeNode) => {
 		if (node instanceof ControllerNode) {
-			// await node.getChildren();
 			const sqlMasterNode: SqlMasterNode = await node.getSqlMasterNode();
 
 			const connectionProfile: azdata.IConnectionProfile = {
