@@ -55,7 +55,7 @@ export interface ICapabilitiesService {
 	isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean;
 
 	/**
-	 * When a new capabilities is registered, it emits the provider name, be to use to get the new capabilities
+	 * When new capabilities are registered, it emits the @see ProviderFeatures, which can be used to get the new capabilities
 	 */
 	readonly onCapabilitiesRegistered: Event<ProviderFeatures>;
 
