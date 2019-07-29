@@ -137,3 +137,17 @@
 	min-width: 100px;
 	margin-right: 10px;
 }
+
+.hoverButtonsContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	visibility: visible;
+}
+
+/*
+.hoverButtonsContainer:hover {
+	visibility: hidden;
+}
+*/
