@@ -563,7 +563,7 @@ export function createApiFactory(
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
 
-			extHostExtensionManagement.$showObsoleteExtensionApiUsageNotification(localize('ObsoleteApiModuleMessage', "The extension\"{0}\" is using sqlops module which has been replaced by azdata module, the sqlops module will be removed in a future release", extension.identifier.value));
+			extHostExtensionManagement.$showObsoleteExtensionApiUsageNotification(localize('ObsoleteApiModuleMessage', "The extension \"{0}\" is using sqlops module which has been replaced by azdata module, the sqlops module will be removed in a future release.", extension.identifier.value));
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
 				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {

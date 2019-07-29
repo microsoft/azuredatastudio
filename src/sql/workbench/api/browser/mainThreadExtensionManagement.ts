@@ -12,6 +12,7 @@ import { URI } from 'vs/base/common/uri';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
+import { IWindowService } from 'vs/platform/windows/common/windows';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
 export class MainThreadExtensionManagement implements MainThreadExtensionManagementShape {
@@ -23,7 +24,8 @@ export class MainThreadExtensionManagement implements MainThreadExtensionManagem
 		extHostContext: IExtHostContext,
 		@IExtensionManagementService private _extensionService: IExtensionManagementService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IWindowService protected readonly _windowService: IWindowService
 	) {
 		this._toDispose = [];
 	}
@@ -49,13 +51,16 @@ export class MainThreadExtensionManagement implements MainThreadExtensionManagem
 		}
 
 		this._notificationService.prompt(Severity.Warning,
-			localize('workbench.generalObsoleteApiNotification', "Some of the loaded extensions are using obsolete APIs, please find the detailed information in the console of Developer Tools"),
+			localize('workbench.generalObsoleteApiNotification', "Some of the loaded extensions are using obsolete APIs, please find the detailed information in the Console tab of Developer Tools window"),
 			[{
-				label: localize('doNotShowAgain', "Do not show again"),
+				label: localize('dontShowAgain', "Don't Show Again"),
 				run: () => {
 					this._configurationService.updateValue('workbench.enableObsoleteApiUsageNotification', false, ConfigurationTarget.USER);
 				},
 				isSecondary: true
+			}, {
+				label: localize('devTools', "Open Developer Tools"),
+				run: () => this._windowService.openDevTools()
 			}]);
 		this._obsoleteExtensionApiUsageNotificationShown = true;
 	}
