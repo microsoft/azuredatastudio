@@ -40,13 +40,19 @@ export class FlatFileWizard {
 		let pages: Map<number, ImportPage> = new Map<number, ImportPage>();
 
 
-		let connections = await azdata.connection.getActiveConnections();
+		let connections = await azdata.connection.getConnections();
 		if (!connections || connections.length === 0) {
 			vscode.window.showErrorMessage(localize('import.needConnection', 'Please connect to a server before using this wizard.'));
 			return;
 		}
 
-		let currentConnection = await azdata.connection.getCurrentConnection();
+		let currentConnection = await azdata.connection.openConnectionDialog();
+
+		if (!currentConnection) {
+			vscode.window.showInformationMessage(localize('import.noConnection', 'You need to connect to a database to use this wizard.'));
+			return;
+		}
+
 		model.serverId = currentConnection.connectionId;
 
 		this.wizard = azdata.window.createWizard(localize('flatFileImport.wizardName', 'Import flat file wizard'));
