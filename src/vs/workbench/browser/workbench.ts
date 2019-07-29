@@ -44,10 +44,6 @@ import { WorkbenchContextKeysHandler } from 'vs/workbench/browser/contextkeys';
 import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
-import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
-import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
-import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
 
 export class Workbench extends Layout {
 
@@ -182,11 +178,6 @@ export class Workbench extends Layout {
 		}
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
-
-		// {{SQL CARBON EDIT }}
-		// TODO@Davidshi commandLineService currently has no referents, so force its creation
-		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
-		// {{SQL CARBON EDIT}} - End
 
 		// Wrap up
 		instantiationService.invokeFunction(accessor => {

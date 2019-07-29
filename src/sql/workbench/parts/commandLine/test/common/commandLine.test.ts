@@ -8,7 +8,7 @@ import * as TypeMoq from 'typemoq';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
+import { CommandLineWorkbenchContribution } from 'sql/workbench/parts/commandLine/electron-main/commandLine';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -104,8 +104,8 @@ suite('commandLineService tests', () => {
 		commandService?: ICommandService,
 		editorService?: IEditorService,
 		logService?: ILogService
-	): CommandLineService {
-		let service = new CommandLineService(
+	): CommandLineWorkbenchContribution {
+		let service = new CommandLineWorkbenchContribution(
 			capabilitiesService,
 			connectionManagementService,
 			undefined,

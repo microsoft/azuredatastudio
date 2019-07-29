@@ -7,7 +7,6 @@ import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { equalsIgnoreCase } from 'vs/base/common/strings';
-import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -27,9 +26,9 @@ import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 
-export class CommandLineService implements ICommandLineProcessing {
-	public _serviceBrand: any;
+export class CommandLineWorkbenchContribution implements IWorkbenchContribution {
 
 	constructor(
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
