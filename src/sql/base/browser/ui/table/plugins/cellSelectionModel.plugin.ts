@@ -123,13 +123,31 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		if (!e.ctrlKey) {
 			return;
 		}
+		const handleRangeInput = (ranges: Array<Slick.Range>, current: Slick.Range) => {
+			let removed: boolean = false;
+			ranges = ranges.filter((r) => {
+				if (r.fromCell === current.fromCell && r.fromRow === current.fromRow && !removed) {
+					removed = true;
+					return false;
+				}
+				return true;
+			});
+
+			if (!removed) {
+				ranges.push(current);
+			}
+
+			return ranges;
+		};
+
 		let ranges: Array<Slick.Range>;
 
 		ranges = this.getSelectedRanges();
+		ranges = handleRangeInput(ranges, new Slick.Range(args.row, args.cell));
 
-		ranges.push(new Slick.Range(args.row, args.cell));
 		this.grid.setActiveCell(args.row, args.cell);
 		this.setSelectedRanges(ranges);
+
 		e.preventDefault();
 		e.stopImmediatePropagation();
 	}
