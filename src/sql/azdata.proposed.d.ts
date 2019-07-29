@@ -4000,6 +4000,18 @@ declare module 'azdata' {
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
 			createQueryTab(tab: window.DialogTab): void;
+
+			readonly selections: Thenable<GridSelection[]>;
+		}
+
+		export interface GridSelection {
+			startRow: number;
+
+			startColumn: number;
+
+			endRow: number;
+
+			endColumn: number;
 		}
 
 		/**

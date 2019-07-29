@@ -26,6 +26,10 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	public createQueryTab(tab: azdata.window.DialogTab): void {
 		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
 	}
+
+	public get selections(): Thenable<azdata.queryeditor.GridSelection[]> {
+		return this._proxy.$getQueryGridSelections(this.uri);
+	}
 }
 
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape {

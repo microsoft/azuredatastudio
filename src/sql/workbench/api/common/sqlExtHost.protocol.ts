@@ -180,6 +180,8 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void> { throw ni(); }
 
+	$getQueryGridSelections(fileUri: string): Thenable<azdata.queryeditor.GridSelection[]> { throw ni(); }
+
 	/**
 	 * Disposes the cached information regarding a query
 	 */
@@ -819,6 +821,7 @@ export interface MainThreadQueryEditorShape extends IDisposable {
 	$runQuery(fileUri: string): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
+	$getQueryGridSelections(fileUri: string): Thenable<azdata.queryeditor.GridSelection[]>;
 	$registerQueryInfoListener(handle: number, providerId: string): void;
 }
 

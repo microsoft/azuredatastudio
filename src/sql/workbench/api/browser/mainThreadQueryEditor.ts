@@ -13,6 +13,7 @@ import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
@@ -100,5 +101,30 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 
 	public $setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void> {
 		return this._queryManagementService.setQueryExecutionOptions(fileUri, options);
+	}
+
+	public $getQueryGridSelections(fileUri: string): Thenable<azdata.queryeditor.GridSelection[]> {
+		for (let editor of this._editorService.editors) {
+			let currentUri = editor.getResource();
+			if (currentUri && currentUri.toString() === fileUri) {
+				if (editor instanceof QueryInput) {
+					return Promise.resolve(editor.results.state.gridPanelState.tableStates.map(e => {
+						let currentSelection = e.selection[0];
+						return {
+							startRow: currentSelection.fromRow,
+
+							startColumn: currentSelection.fromCell,
+
+							endRow: currentSelection.toRow,
+
+							endColumn: currentSelection.toCell
+						};
+					}));
+				}
+				break;
+			}
+		}
+
+		return Promise.resolve(undefined);
 	}
 }
