@@ -54,6 +54,11 @@
 		"IDERA.sqldm-performance-insights",
 		"SentryOne.plan-explorer"
 	],
+	"recommendedExtensionsByScenario": {
+		"visualizerExtensions": [
+			"msrvida.azdata-sanddance"
+		]
+	},
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	}
