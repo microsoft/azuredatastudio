@@ -353,10 +353,8 @@ notebookhistory-component
 	height: 95px;
 	display: block;
 	border-radius: 0px;
-	border: 1px solid black;
 }
 .vs-dark .notebook-grid-item {
-	border: 1px solid white;
 }
 
 .notebook-grid-item > img {
@@ -368,28 +366,32 @@ notebookhistory-component
 	height: 50px;
 }
 
-.notebook-grid-item:focus {
-	background: rgb(0, 0, 0, 60);
+.notebook-grid-item:hover {
+	background:#dcdcdc !important;
 }
 
-.vs-dark .notebook-grid-item:focus {
-	background: rgb(255, 255, 255, 60);
+.vs-dark .notebook-grid-item:hover {
+	background:#444444 !important;
 }
 
 .notebook-grid-item > .img-success {
 	content: url(./notebook.svg);
+	background: #00ff00
 }
 
 .vs-dark .notebook-grid-item > .img-success {
 	content: url(./notebook_inverse.svg);
+	background: #00ff00
 }
 
 .notebook-grid-item > .img-failure {
-	content: url(./open_notebook.svg);
+	content: url(./notebook.svg);
+	background: #ff0000
 }
 
 .vs-dark .notebook-grid-item > .img-failure {
-	content: url(./open_notebook_inverse.svg);
+	content: url(./notebook_inverse.svg);
+	background: #ff0000
 }
 
 .notebook-grid-item > p {
