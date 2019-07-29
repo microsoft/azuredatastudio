@@ -11,8 +11,7 @@ import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
 import { IconPath, BdcItemType } from '../constants';
-import { IEndPoint, IControllerError, getEndPoints } from '../controller/clusterControllerApi';
-import { showErrorMessage } from '../utils';
+import { getEndPoints } from '../controller/clusterControllerApi';
 
 const localize = nls.loadMessageBundle();
 
@@ -177,6 +176,10 @@ export class ControllerNode extends ControllerTreeNode {
 			}
 			reject(new Error(localize('noEndpointsError', "Did not receive valid response when fetching endpoints.")));
 		});
+
+		this._sqlMasterNodePromise.then((sqlMasterNode) => {
+			this._endPointFolderNode.addChild(sqlMasterNode);
+		});
 	}
 
 	public async getChildren(): Promise<ControllerTreeNode[]> {
@@ -191,14 +194,7 @@ export class ControllerNode extends ControllerTreeNode {
 
 		this.addChild(this._endPointFolderNode);
 
-		try {
-			const masterNode = await this.getSqlMasterNode();
-			this._endPointFolderNode.addChild(masterNode);
-			return this.children as ControllerTreeNode[];
-		} catch (error) {
-			showErrorMessage(error);
-			return this.children as ControllerTreeNode[];
-		}
+		return this.children as ControllerTreeNode[];
 	}
 
 	private static toIpAndPort(url: string): string {

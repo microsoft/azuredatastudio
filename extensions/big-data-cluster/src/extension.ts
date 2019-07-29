@@ -51,7 +51,7 @@ function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 		if (!node) {
 			return;
 		}
-		treeDataProvider.notifyNodeChanged(node);
+		node.refresh();
 	});
 
 	vscode.commands.registerCommand(ManageCommand, async (node: TreeNode) => {
