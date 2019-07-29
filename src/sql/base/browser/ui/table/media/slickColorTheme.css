@@ -122,6 +122,10 @@
 	background-image: url("viewChart.svg");
 }
 
+.vs .icon.viewVisualizer {
+	background-image: url("viewVisualizer.svg");
+}
+
 /* headers */
 .vs .resultsMessageHeader {
 	background: var(--color-bg-header);
@@ -258,6 +262,11 @@
 .hc-black .icon.viewChart {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("viewChart_inverse.svg");
+}
+
+.vs-dark .icon.viewVisualizer,
+.hc-black .icon.viewVisualizer {
+	background-image: url("viewVisualizer_inverse.svg");
 }
 
 .grid-panel .action-label.icon {

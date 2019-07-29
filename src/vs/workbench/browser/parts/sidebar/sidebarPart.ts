@@ -47,6 +47,22 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 
 	readonly snap = true;
 
+	get preferredWidth(): number | undefined {
+		const viewlet = this.getActiveViewlet();
+
+		if (!viewlet) {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+		}
+
+		const width = viewlet.getOptimalWidth();
+
+		if (typeof width !== 'number') {
+			return undefined; // {{SQL CARBON EDIT}} strict-null-check
+		}
+
+		return width;
+	}
+
 	//#endregion
 
 	get onDidViewletRegister(): Event<ViewletDescriptor> { return <Event<ViewletDescriptor>>this.viewletRegistry.onDidRegister; }

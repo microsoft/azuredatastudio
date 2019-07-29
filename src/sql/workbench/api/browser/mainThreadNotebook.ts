@@ -13,9 +13,10 @@ import { URI } from 'vs/base/common/uri';
 
 import { INotebookService, INotebookProvider, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { INotebookManagerDetails, INotebookSessionDetails, INotebookKernelDetails, FutureMessageType, INotebookFutureDetails, INotebookFutureDone } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import { Deferred } from 'sql/base/common/promise';
-import { FutureInternal } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { FutureInternal } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadNotebook)
 export class MainThreadNotebook extends Disposable implements MainThreadNotebookShape {
@@ -26,7 +27,8 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 
 	constructor(
 		extHostContext: IExtHostContext,
-		@INotebookService private notebookService: INotebookService
+		@INotebookService private notebookService: INotebookService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super();
 		if (extHostContext) {
@@ -48,7 +50,7 @@ export class MainThreadNotebook extends Disposable implements MainThreadNotebook
 			main: this,
 			ext: this._proxy
 		};
-		let notebookProvider = new NotebookProviderWrapper(proxy, providerId, handle);
+		let notebookProvider = this.instantiationService.createInstance(NotebookProviderWrapper, proxy, providerId, handle);
 		this._providers.set(handle, notebookProvider);
 		this.notebookService.registerProvider(providerId, notebookProvider);
 	}
@@ -87,7 +89,12 @@ interface Proxies {
 class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 	private _notebookUriToManagerMap = new Map<string, NotebookManagerWrapper>();
 
-	constructor(private _proxy: Proxies, public readonly providerId, public readonly providerHandle: number) {
+	constructor(
+		private _proxy: Proxies,
+		public readonly providerId,
+		public readonly providerHandle: number,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
+	) {
 		super();
 	}
 
@@ -100,7 +107,7 @@ class NotebookProviderWrapper extends Disposable implements INotebookProvider {
 		let uriString = notebookUri.toString();
 		let manager = this._notebookUriToManagerMap.get(uriString);
 		if (!manager) {
-			manager = new NotebookManagerWrapper(this._proxy, this.providerId, notebookUri);
+			manager = this.instantiationService.createInstance(NotebookManagerWrapper, this._proxy, this.providerId, notebookUri);
 			await manager.initialize(this.providerHandle);
 			this._notebookUriToManagerMap.set(uriString, manager);
 		}
@@ -121,13 +128,14 @@ class NotebookManagerWrapper implements INotebookManager {
 
 	constructor(private _proxy: Proxies,
 		public readonly providerId,
-		private notebookUri: URI
+		private notebookUri: URI,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) { }
 
 	public async initialize(providerHandle: number): Promise<NotebookManagerWrapper> {
 		this.managerDetails = await this._proxy.ext.$getNotebookManager(providerHandle, this.notebookUri);
 		let managerHandle = this.managerDetails.handle;
-		this._contentManager = this.managerDetails.hasContentManager ? new ContentManagerWrapper(managerHandle, this._proxy) : new LocalContentManager();
+		this._contentManager = this.managerDetails.hasContentManager ? new ContentManagerWrapper(managerHandle, this._proxy) : this.instantiationService.createInstance(LocalContentManager);
 		this._serverManager = this.managerDetails.hasServerManager ? new ServerManagerWrapper(managerHandle, this._proxy) : undefined;
 		this._sessionManager = new SessionManagerWrapper(managerHandle, this._proxy);
 		return this;

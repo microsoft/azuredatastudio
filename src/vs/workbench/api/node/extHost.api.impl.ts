@@ -66,7 +66,6 @@ import * as vscode from 'vscode';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { originalFSPath } from 'vs/base/common/resources';
 import { CLIServer } from 'vs/workbench/api/node/extHostCLIServer';
-import { withNullAsUndefined } from 'vs/base/common/types';
 import { values } from 'vs/base/common/collections';
 import { Schemas } from 'vs/base/common/network';
 import { IURITransformer } from 'vs/base/common/uriIpc';
@@ -75,6 +74,7 @@ import { ExtHostLabelService } from 'vs/workbench/api/common/extHostLabelService
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { getSingletonServiceDescriptors } from 'vs/platform/instantiation/common/extensions';
+import { getRemoteName } from 'vs/platform/remote/common/remoteHosts';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -249,7 +249,11 @@ export function createApiFactory(
 			},
 			getCommands(filterInternal: boolean = false): Thenable<string[]> {
 				return extHostCommands.getCommands(filterInternal);
-			}
+			},
+			onDidExecuteCommand: proposedApiFunction(extension, (listener, thisArgs?, disposables?) => {
+				checkProposedApiEnabled(extension);
+				return extHostCommands.onDidExecuteCommand(listener, thisArgs, disposables);
+			}),
 		};
 
 		// namespace: env
@@ -278,15 +282,7 @@ export function createApiFactory(
 				return extHostWindow.openUri(uri, { allowTunneling: !!initData.remote.isRemote });
 			},
 			get remoteName() {
-				if (!initData.remote.authority) {
-					return undefined;
-				}
-				const pos = initData.remote.authority.indexOf('+');
-				if (pos < 0) {
-					// funky? bad authority?
-					return initData.remote.authority;
-				}
-				return initData.remote.authority.substr(0, pos);
+				return getRemoteName(initData.remote.authority);
 			}
 		};
 		if (!initData.environment.extensionTestsLocationURI) {
@@ -540,10 +536,10 @@ export function createApiFactory(
 				checkProposedApiEnabled(extension);
 				return extHostEditorInsets.createWebviewEditorInset(editor, line, height, options, extension);
 			},
-			createTerminal(nameOrOptions?: vscode.TerminalOptions | vscode.TerminalVirtualProcessOptions | string, shellPath?: string, shellArgs?: string[] | string): vscode.Terminal {
+			createTerminal(nameOrOptions?: vscode.TerminalOptions | vscode.ExtensionTerminalOptions | string, shellPath?: string, shellArgs?: string[] | string): vscode.Terminal {
 				if (typeof nameOrOptions === 'object') {
-					if ('virtualProcess' in nameOrOptions) {
-						return extHostTerminalService.createVirtualProcessTerminal(nameOrOptions);
+					if ('pty' in nameOrOptions) {
+						return extHostTerminalService.createExtensionTerminal(nameOrOptions);
 					} else {
 						nameOrOptions.hideFromUser = nameOrOptions.hideFromUser || (nameOrOptions.runInBackground && extension.enableProposedApi);
 						return extHostTerminalService.createTerminalFromOptions(nameOrOptions);
@@ -613,7 +609,8 @@ export function createApiFactory(
 				return extHostWorkspace.getRelativePath(pathOrUri, includeWorkspace);
 			},
 			findFiles: (include, exclude, maxResults?, token?) => {
-				return extHostWorkspace.findFiles(typeConverters.GlobPattern.from(include), typeConverters.GlobPattern.from(withNullAsUndefined(exclude)), maxResults, extension.identifier, token);
+				// Note, undefined/null have different meanings on "exclude"
+				return extHostWorkspace.findFiles(typeConverters.GlobPattern.from(include), typeConverters.GlobPattern.from(exclude), maxResults, extension.identifier, token);
 			},
 			findTextInFiles: (query: vscode.TextSearchQuery, optionsOrCallback: vscode.FindTextInFilesOptions | ((result: vscode.TextSearchResult) => void), callbackOrToken?: vscode.CancellationToken | ((result: vscode.TextSearchResult) => void), token?: vscode.CancellationToken) => {
 				let options: vscode.FindTextInFilesOptions;
