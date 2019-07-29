@@ -71,7 +71,7 @@ suite('SQL QueryAction Tests', () => {
 		const instantiationService = new TestInstantiationService();
 		let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, undefined);
 		// Setup a reusable mock QueryInput
-		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		testQueryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		testQueryInput.setup(x => x.uri).returns(() => testUri);
 		testQueryInput.setup(x => x.runQuery(undefined)).callback(() => { calledRunQueryOnInput = true; });
 	});
@@ -183,7 +183,7 @@ suite('SQL QueryAction Tests', () => {
 		let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, undefined);
 
 		// ... Mock "isSelectionEmpty" in QueryEditor
-		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Strict, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(undefined)).callback(() => {
 			countCalledRunQuery++;
@@ -232,7 +232,7 @@ suite('SQL QueryAction Tests', () => {
 		const instantiationService = new TestInstantiationService();
 		let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService, undefined, undefined);
 
-		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
+		let queryInput = TypeMoq.Mock.ofType(UntitledQueryEditorInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, connectionManagementService.object, queryModelService.object, configurationService.object);
 		queryInput.setup(x => x.uri).returns(() => testUri);
 		queryInput.setup(x => x.runQuery(TypeMoq.It.isAny())).callback((selection: ISelectionData) => {
 			runQuerySelection = selection;

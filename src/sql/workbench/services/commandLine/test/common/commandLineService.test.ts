@@ -128,7 +128,7 @@ suite('commandLineService tests', () => {
 	function getConfigurationServiceMock(showConnectDialogOnStartup: boolean): TypeMoq.Mock<IConfigurationService> {
 		let configurationService = TypeMoq.Mock.ofType<IConfigurationService>(TestConfigurationService);
 		configurationService.setup((c) => c.getValue(TypeMoq.It.isAnyString())).returns((config: string) => showConnectDialogOnStartup);
-		configurationService.setup(c => c.onDidChangeConfiguration).returns(() => Event.None);
+		configurationService.object.onDidChangeConfiguration = Event.None;
 		return configurationService;
 	}
 
