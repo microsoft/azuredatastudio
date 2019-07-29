@@ -6,18 +6,20 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ControllerTreeDataProvider } from './bigDataCluster/tree/controllerTreeDataProvider';
 import { IconPath } from './bigDataCluster/constants';
 import { TreeNode } from './bigDataCluster/tree/treeNode';
 import { AddControllerDialogModel, AddControllerDialog } from './bigDataCluster/dialog/addControllerDialog';
-import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
+import { ControllerNode, ControllerTreeNode, SqlMasterNode } from './bigDataCluster/tree/controllerTreeNode';
 
 const localize = nls.loadMessageBundle();
 
 const AddControllerCommand = 'bigDataClusters.command.addController';
 const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
 const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
+const ManageCommand = 'bigDataClusters.command.manage';
 
 let throttleTimers: { [key: string]: any } = {};
 
@@ -51,6 +53,34 @@ function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 		}
 		treeDataProvider.notifyNodeChanged(node);
 	});
+
+	vscode.commands.registerCommand(ManageCommand, async (node: TreeNode) => {
+		if (!node) {
+			return;
+		}
+		if (node instanceof ControllerNode) {
+			// await node.getChildren();
+			const sqlMasterNode: SqlMasterNode = await node.getSqlMasterNode();
+
+			const connectionProfile: azdata.IConnectionProfile = {
+				id: sqlMasterNode.id,
+				connectionName: '',
+				serverName: sqlMasterNode.endPointAddress,
+				databaseName: '',
+				userName: sqlMasterNode.username,
+				password: node.password,
+				authenticationType: 'SqlLogin',
+				savePassword: false,
+				groupFullName: '',
+				groupId: '',
+				providerName: 'MSSQL',
+				saveProfile: false,
+				options: {}
+			};
+
+			azdata.connection.connect(connectionProfile, false, true);
+		}
+	});
 }
 
 function addBdcController(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {
@@ -67,12 +97,12 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 	let controllerNode = node as ControllerNode;
 
 	let choices: { [id: string]: boolean } = {};
-	choices[localize('textYes', 'Yes')] = true;
-	choices[localize('textNo', 'No')] = false;
+	choices[localize('textYes', "Yes")] = true;
+	choices[localize('textNo', "No")] = false;
 
 	let options = {
 		ignoreFocusOut: false,
-		placeHolder: localize('textConfirmDeleteController', 'Are you sure you want to delete \'{0}\'?', controllerNode.label)
+		placeHolder: localize('textConfirmDeleteController', "Are you sure you want to delete '{0}'?", controllerNode.label)
 	};
 
 	let result = await vscode.window.showQuickPick(Object.keys(choices), options);

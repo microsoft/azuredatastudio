@@ -62,11 +62,10 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		url: string,
 		username: string,
 		password: string,
-		rememberPassword: boolean,
-		masterInstance?: IEndPoint
+		rememberPassword: boolean
 	): void {
 		this.removeNonControllerNodes();
-		this.root.addControllerNode(clusterName, url, username, password, rememberPassword, masterInstance);
+		this.root.addControllerNode(clusterName, url, username, password, rememberPassword);
 		this.notifyNodeChanged();
 	}
 

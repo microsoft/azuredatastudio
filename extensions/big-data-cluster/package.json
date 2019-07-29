@@ -39,6 +39,10 @@
 					"when": "false"
 				},
 				{
+					"command": "bigDataClusters.command.manage",
+					"when": "false"
+				},
+				{
 					"command": "bigDataClusters.command.refreshController",
 					"when": "false"
 				}
@@ -52,14 +56,19 @@
 			],
 			"view/item/context": [
 				{
-					"command": "bigDataClusters.command.deleteController",
+					"command": "bigDataClusters.command.manage",
 					"when": "viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@1"
 				},
 				{
+					"command": "bigDataClusters.command.deleteController",
+					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"group": "navigation@2"
+				},
+				{
 					"command": "bigDataClusters.command.refreshController",
 					"when": "viewItem == bigDataClusters.itemType.controllerNode",
-					"group": "navigation@1"
+					"group": "navigation@3"
 				}
 			]
 		},
@@ -83,8 +92,11 @@
 			},
 			{
 				"command": "bigDataClusters.command.deleteController",
-				"title": "%command.deleteController.title%",
-				"when": "viewItem == bigDataClusters.itemType.controllerNode"
+				"title": "%command.deleteController.title%"
+			},
+			{
+				"command": "bigDataClusters.command.manage",
+				"title": "%command.manage.title%"
 			},
 			{
 				"command": "bigDataClusters.command.refreshController",

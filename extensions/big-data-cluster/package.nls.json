@@ -3,5 +3,6 @@
 	"text.sqlServerBigDataClusters": "SQL Server big data clusters",
 	"command.addController.title": "Connect to Controller",
 	"command.deleteController.title" : "Delete",
-	"command.refreshController.title" : "Refresh"
+	"command.refreshController.title" : "Refresh",
+	"command.manage.title" : "Manage"
 }

@@ -33,15 +33,8 @@ export class AddControllerDialogModel {
 	}
 
 	public async onComplete(clusterName: string, url: string, username: string, password: string, rememberPassword: boolean): Promise<void> {
-		let response = await getEndPoints(clusterName, url, username, password, true);
-		if (response && response.endPoints) {
-			let masterInstance: IEndPoint = undefined;
-			if (response.endPoints) {
-				masterInstance = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
-			}
-			this.treeDataProvider.addController(clusterName, url, username, password, rememberPassword, masterInstance);
-			await this.treeDataProvider.saveControllers();
-		}
+		this.treeDataProvider.addController(clusterName, url, username, password, rememberPassword);
+		await this.treeDataProvider.saveControllers();
 	}
 
 	public async onError(error: IControllerError): Promise<void> {
