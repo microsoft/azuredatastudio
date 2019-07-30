@@ -169,6 +169,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				isFile: false
 			}).component();
 		this.openButton.onDidClick(e => {
+			console.log(e);
 			let queryContent = e;
 			this.commandTextBox.value = queryContent;
 		});

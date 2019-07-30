@@ -19,6 +19,7 @@ import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 import { JobData } from './data/jobData';
 import { AgentUtils } from './agentUtils';
+import { NotebookDialog } from './dialogs/notebookDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -33,6 +34,7 @@ export class MainController {
 	private alertDialog: AlertDialog;
 	private operatorDialog: OperatorDialog;
 	private proxyDialog: ProxyDialog;
+	private notebookDialog: NotebookDialog;
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public constructor(context: vscode.ExtensionContext) {
@@ -103,11 +105,11 @@ export class MainController {
 			await azdata.nb.showNotebookDocument(uri);
 		});
 		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo) => {
-			if (!this.jobDialog || (this.jobDialog && !this.jobDialog.isOpen)) {
-				this.jobDialog = new JobDialog(ownerUri, notebookInfo);
+			if (!this.notebookDialog || (this.notebookDialog && !this.notebookDialog.isOpen)) {
+				this.notebookDialog = new NotebookDialog(ownerUri, notebookInfo);
 			}
-			if (!this.jobDialog.isOpen) {
-				this.jobDialog.dialogName ? await this.jobDialog.openDialog(this.jobDialog.dialogName) : await this.jobDialog.openDialog();
+			if (!this.notebookDialog.isOpen) {
+				this.notebookDialog.dialogName ? await this.notebookDialog.openDialog(this.notebookDialog.dialogName) : await this.notebookDialog.openDialog();
 			}
 		});
 	}

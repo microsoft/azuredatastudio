@@ -959,8 +959,8 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		return undefined;
 	}
 
-	public async openCreateJobDialog() {
+	public async openCreateNotebookDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		await this._commandService.executeCommand('agent.openJobDialog', ownerUri);
+		await this._commandService.executeCommand('agent.openNotebookDialog', ownerUri);
 	}
 }

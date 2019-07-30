@@ -39,6 +39,12 @@ export class PickScheduleDialog {
 	}
 
 	public async showDialog() {
+		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
+		this.initializeContent();
+		this.dialog.okButton.onClick(async () => await this.execute());
+		this.dialog.cancelButton.onClick(async () => await this.cancel());
+		this.dialog.okButton.label = this.OkButtonText;
+		this.dialog.cancelButton.label = this.CancelButtonText;
 		this.model.initialize().then((result) => {
 			this.loadingComponent.loading = false;
 			if (this.model.schedules) {
@@ -50,12 +56,6 @@ export class PickScheduleDialog {
 				this.schedulesTable.data = data;
 			}
 		});
-		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
-		this.initializeContent();
-		this.dialog.okButton.onClick(async () => await this.execute());
-		this.dialog.cancelButton.onClick(async () => await this.cancel());
-		this.dialog.okButton.label = this.OkButtonText;
-		this.dialog.cancelButton.label = this.CancelButtonText;
 		azdata.window.openDialog(this.dialog);
 	}
 

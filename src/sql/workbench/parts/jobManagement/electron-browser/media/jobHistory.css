@@ -375,23 +375,39 @@ notebookhistory-component
 }
 
 .notebook-grid-item > .img-success {
-	content: url(./notebook.svg);
-	background: #00ff00
+	background-image: url(./notebook.svg), url(./status_success.svg);
+	background-position: center, bottom right;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 50px;
+	height: 50px;
+	background-size: 45px 45px, 30px 30px;
+	background-repeat: no-repeat, no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-success {
-	content: url(./notebook_inverse.svg);
-	background: #00ff00
+	background-image: url(./notebook_inverse.svg), url(./status_success.svg);
+	background-position: center, bottom left;
 }
 
 .notebook-grid-item > .img-failure {
-	content: url(./notebook.svg);
-	background: #ff0000
+	background-image: url(./notebook.svg), url(./status_error.svg);
+	background-position: center, bottom right;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 50px;
+	height: 50px;
+	background-size: 45px 45px, 30px 30px;
+	background-repeat: no-repeat, no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-failure {
-	content: url(./notebook_inverse.svg);
-	background: #ff0000
+	background-image: url(./notebook_inverse.svg), url(./status_error.svg);
+	background-position: center, bottom left;
 }
 
 .notebook-grid-item > p {

@@ -100,8 +100,8 @@
 		</label>
 		<div class="notebook-grid">
 			<div *ngFor="let history of notebookHistories" class="notebook-grid-item" (click)="openNotebook(history)">
-				<img *ngIf = "history.runStatus === 1" class="img-success">
-				<img *ngIf = "history.runStatus === 0" class="img-failure">
+				<div *ngIf = "history.runStatus === 1" class="img-success"></div>
+				<div *ngIf = "history.runStatus === 0" class="img-failure"></div>
 				<p>
 					{{formatTimeToVisibleString(history.runDate)}}
 				</p>

@@ -565,10 +565,10 @@ export class NewNotebookJobAction extends Action {
 	}
 
 	public run(context: IJobActionInfo): Promise<boolean> {
-		let component = context.component as JobsViewComponent;
+		let component = context.component as NotebooksViewComponent;
 		return new Promise<boolean>(async (resolve, reject) => {
 			try {
-				await component.openCreateJobDialog();
+				await component.openCreateNotebookDialog();
 				resolve(true);
 			} catch (e) {
 				reject(e);
