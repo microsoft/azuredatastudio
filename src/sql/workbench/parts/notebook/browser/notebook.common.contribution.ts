@@ -19,7 +19,6 @@ import { GridOutputComponent } from 'sql/workbench/parts/notebook/browser/output
 import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/plotlyOutput.component';
 import { registerComponentType } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
 import { MimeRendererComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRenderer.component';
-import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/markdownOutput.component';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
@@ -173,17 +172,6 @@ registerComponentType({
 	safe: true,
 	ctor: MimeRendererComponent,
 	selector: MimeRendererComponent.SELECTOR
-});
-
-/**
- * A mime renderer component for Markdown.
- */
-registerComponentType({
-	mimeTypes: ['text/markdown'],
-	rank: 60,
-	safe: true,
-	ctor: MarkdownOutputComponent,
-	selector: MarkdownOutputComponent.SELECTOR
 });
 
 /**

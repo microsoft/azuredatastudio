@@ -3,80 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
-import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IProgressService } from 'vs/platform/progress/common/progress';
-import { ScriptCreateAction, BaseActionContext, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/common/actions';
-import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
+import { BaseActionContext } from 'sql/workbench/common/actions';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { ScriptCreateAction, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/electron-browser/scriptingActions';
 
-export const PROFILER_COMMAND_ID = 'dataExplorer.profiler';
-export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
-export const PROPERTIES_COMMAND_ID = 'dataExplorer.properties';
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';
 export const SCRIPT_AS_DELETE_COMMAND_ID = 'dataExplorer.scriptAsDelete';
 export const SCRIPT_AS_SELECT_COMMAND_ID = 'dataExplorer.scriptAsSelect';
 export const SCRIPT_AS_EXECUTE_COMMAND_ID = 'dataExplorer.scriptAsExecute';
 export const SCRIPT_AS_ALTER_COMMAND_ID = 'dataExplorer.scriptAsAlter';
 export const EDIT_DATA_COMMAND_ID = 'dataExplorer.scriptAsAlter';
-
-// Profiler
-CommandsRegistry.registerCommand({
-	id: PROFILER_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		const oeShimService = accessor.get(IOEShimService);
-		const objectExplorerContext: azdata.ObjectExplorerContext = {
-			connectionProfile: args.$treeItem.payload,
-			isConnectionNode: true,
-			nodeInfo: oeShimService.getNodeInfoForTreeItem(args.$treeItem)
-		};
-		return commandService.executeCommand('profiler.newProfiler', objectExplorerContext);
-	}
-});
-
-// Generate Scripts
-CommandsRegistry.registerCommand({
-	id: GENERATE_SCRIPTS_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		const oeShimService = accessor.get(IOEShimService);
-		const objectExplorerContext: azdata.ObjectExplorerContext = {
-			connectionProfile: args.$treeItem.payload,
-			isConnectionNode: true,
-			nodeInfo: oeShimService.getNodeInfoForTreeItem(args.$treeItem)
-		};
-		return commandService.executeCommand('adminToolExtWin.launchSsmsMinGswDialog', objectExplorerContext);
-	}
-});
-
-// Properties
-CommandsRegistry.registerCommand({
-	id: PROPERTIES_COMMAND_ID,
-	handler: async (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		const capabilitiesService = accessor.get(ICapabilitiesService);
-		const connectionManagementService = accessor.get(IConnectionManagementService);
-		const oeShimService = accessor.get(IOEShimService);
-		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
-		await connectionManagementService.connectIfNotConnected(profile);
-		const objectExplorerContext: azdata.ObjectExplorerContext = {
-			connectionProfile: args.$treeItem.payload,
-			isConnectionNode: true,
-			nodeInfo: oeShimService.getNodeInfoForTreeItem(args.$treeItem)
-		};
-		return commandService.executeCommand('adminToolExtWin.launchSsmsMinPropertiesDialog', objectExplorerContext);
-	}
-});
-
-//////////////// Scripting Actions /////////////////
 
 // Script as Create
 CommandsRegistry.registerCommand({

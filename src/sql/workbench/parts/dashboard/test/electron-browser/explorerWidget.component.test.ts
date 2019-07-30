@@ -3,10 +3,10 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTree';
 import { MetadataType } from 'sql/platform/connection/common/connectionManagement';
 
 import * as assert from 'assert';
+import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 
 suite('Explorer Widget Tests', () => {
 	test('Sorting dashboard search objects works correctly', () => {

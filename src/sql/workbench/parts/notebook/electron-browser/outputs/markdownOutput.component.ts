@@ -15,7 +15,7 @@ import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mim
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/browser/outputs/notebookMarkdown';
+import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/electron-browser/outputs/notebookMarkdown';
 import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
 import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/common/models/notebookUtils';

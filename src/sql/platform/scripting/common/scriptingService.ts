@@ -6,12 +6,22 @@
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ScriptOperation } from 'sql/workbench/common/taskUtilities';
 import * as azdata from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
+
 export const SERVICE_ID = 'scriptingService';
 
 export const IScriptingService = createDecorator<IScriptingService>(SERVICE_ID);
+
+export enum ScriptOperation {
+	Select = 0,
+	Create = 1,
+	Insert = 2,
+	Update = 3,
+	Delete = 4,
+	Execute = 5,
+	Alter = 6
+}
 
 export interface IScriptingService {
 	_serviceBrand: any;

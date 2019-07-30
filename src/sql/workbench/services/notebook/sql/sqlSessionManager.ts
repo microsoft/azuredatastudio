@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
 import { nb, QueryExecuteSubsetResult, IDbColumn, BatchSummary, IResultMessage, ResultSetSummary } from 'azdata';
 import { localize } from 'vs/nls';
 import { FutureInternal, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
@@ -23,6 +22,8 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ILogService } from 'vs/platform/log/common/log';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILanguageMagic } from 'sql/workbench/services/notebook/common/notebookService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { URI } from 'vs/base/common/uri';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -168,7 +169,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
 		this.initMagics();
@@ -275,7 +277,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 
 	private getCodeWithoutCellMagic(content: nb.IExecuteRequest): string {
 		let code = Array.isArray(content.code) ? content.code.join('') : content.code;
-		let firstLineEnd = code.indexOf(os.EOL);
+		let firstLineEnd = code.indexOf(this.textResourcePropertiesService.getEOL(URI.file(this._path)));
 		let firstLine = code.substring(0, (firstLineEnd >= 0) ? firstLineEnd : 0).trimLeft();
 		if (firstLine.startsWith('%%')) {
 			// Strip out the line

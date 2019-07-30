@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

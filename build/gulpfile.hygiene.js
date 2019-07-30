@@ -151,7 +151,7 @@ const copyrightFilter = [
 	'!src/sql/workbench/parts/notebook/common/models/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
-	'!src/sql/parts/modelComponents/highlight.css',
+	'!src/sql/workbench/parts/notebook/electron-browser/cellViews/media/highlight.css',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',

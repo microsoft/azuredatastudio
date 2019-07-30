@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
 
 import { DashboardWidget, IDashboardWidget, WidgetConfig, WIDGET_CONFIG } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ObjectMetadataWrapper, ExplorerModel } from './explorerTree';
+import { ExplorerFilter, ExplorerRenderer, ExplorerDataSource, ExplorerController, ExplorerModel } from './explorerTree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
@@ -22,12 +22,12 @@ import * as nls from 'vs/nls';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { getContentHeight } from 'vs/base/browser/dom';
 import { Delayer } from 'vs/base/common/async';
-import { IContextViewService, IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { subscriptionToDisposable } from 'sql/base/browser/lifecycle';
+import { ObjectMetadataWrapper } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/objectMetadataWrapper';
 
 @Component({
 	selector: 'explorer-widget',
@@ -37,14 +37,11 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	private _input: InputBox;
 	private _tree: Tree;
 	private _filterDelayer = new Delayer<void>(200);
-	private _treeController = new ExplorerController(
+	private _treeController = this.instantiationService.createInstance(ExplorerController,
 		this._bootstrap.getUnderlyingUri(),
 		this._bootstrap.connectionManagementService,
 		this._router,
-		this.contextMenuService,
-		this.capabilitiesService,
-		this.instantiationService,
-		this.progressService
+		this._bootstrap
 	);
 	private _treeRenderer = new ExplorerRenderer();
 	private _treeDataSource = new ExplorerDataSource();
@@ -56,16 +53,14 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	@ViewChild('table') private _tableContainer: ElementRef;
 
 	constructor(
-		@Inject(forwardRef(() => CommonServiceInterface)) private _bootstrap: CommonServiceInterface,
-		@Inject(forwardRef(() => Router)) private _router: Router,
+		@Inject(forwardRef(() => CommonServiceInterface)) private readonly _bootstrap: CommonServiceInterface,
+		@Inject(forwardRef(() => Router)) private readonly _router: Router,
 		@Inject(WIDGET_CONFIG) protected _config: WidgetConfig,
-		@Inject(forwardRef(() => ElementRef)) private _el: ElementRef,
-		@Inject(IWorkbenchThemeService) private themeService: IWorkbenchThemeService,
-		@Inject(IContextViewService) private contextViewService: IContextViewService,
-		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
-		@Inject(IContextMenuService) private contextMenuService: IContextMenuService,
-		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
-		@Inject(IEditorProgressService) private progressService: IEditorProgressService
+		@Inject(forwardRef(() => ElementRef)) private readonly _el: ElementRef,
+		@Inject(IWorkbenchThemeService) private readonly themeService: IWorkbenchThemeService,
+		@Inject(IContextViewService) private readonly contextViewService: IContextViewService,
+		@Inject(IInstantiationService) private readonly instantiationService: IInstantiationService,
+		@Inject(ICapabilitiesService) private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super();
 		this.init();

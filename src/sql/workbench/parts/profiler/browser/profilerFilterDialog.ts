@@ -25,6 +25,7 @@ import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { ProfilerFilter, ProfilerFilterClause, ProfilerFilterClauseOperator, IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 
 const ClearText: string = localize('profilerFilterDialog.clear', "Clear all");
@@ -77,9 +78,10 @@ export class ProfilerFilterDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
 		@IContextViewService private contextViewService: IContextViewService,
-		@IProfilerService private profilerService: IProfilerService
+		@IProfilerService private profilerService: IProfilerService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.ProfilerFilter, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 	}
 
 	public open(input: ProfilerInput) {

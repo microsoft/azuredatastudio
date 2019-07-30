@@ -17,8 +17,6 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
-const fs = require('fs');
-
 ////// Exported public functions/vars
 
 // prefix for untitled sql editors
@@ -53,9 +51,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			//QueryPlanInput
 			uri = getQueryPlanEditorUri(input);
 			if (uri) {
-				let queryPlanXml: string = fs.readFileSync(uri.fsPath);
-				let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
-				return queryPlanInput;
+				return instantiationService.createInstance(QueryPlanInput, uri, undefined);
 			}
 		}
 
