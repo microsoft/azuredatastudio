@@ -7,7 +7,7 @@ import 'vs/css!sql/media/icons/common-icons';
 import 'vs/css!./media/errorMessageDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler, attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 
 import Severity from 'vs/base/common/severity';
@@ -50,8 +50,8 @@ export class ErrorMessageDialog extends Modal {
 		@ILogService logService: ILogService
 	) {
 		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
-		this._okLabel = localize('errorMessageDialog.ok', 'OK');
-		this._closeLabel = localize('errorMessageDialog.close', 'Close');
+		this._okLabel = localize('errorMessageDialog.ok', "OK");
+		this._closeLabel = localize('errorMessageDialog.close', "Close");
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -71,7 +71,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createCopyButton() {
-		let copyButtonLabel = localize('copyDetails', 'Copy details');
+		let copyButtonLabel = localize('copyDetails', "Copy details");
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
 		this._copyButton.icon = 'icon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;

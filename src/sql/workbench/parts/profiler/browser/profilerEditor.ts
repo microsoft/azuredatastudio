@@ -228,7 +228,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._clearFilterAction.enabled = true;
 		this._viewTemplates = this._profilerService.getViewTemplates();
 		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
-		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', 'Select View'));
+		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
@@ -241,7 +241,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._sessionsList = [''];
 		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
-		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', 'Select Session'));
+		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', "Select Session"));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionName = e.selected;
@@ -259,7 +259,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._actionBar.setContent([
 			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', 'Select Session:')) },
+			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', "Select Session:")) },
 			{ element: sessionsContainer },
 			{ action: this._startAction },
 			{ action: this._stopAction },
@@ -268,7 +268,7 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._filterAction },
 			{ action: this._clearFilterAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
+			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', "Select View:")) },
 			{ element: viewTemplateContainer },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }

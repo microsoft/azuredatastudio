@@ -23,14 +23,14 @@ export class ClipboardService implements IClipboardService {
 		clipboard.writeImage(image);
 	}
 
-	writeText(text: string): void {
-		this._vsClipboardService.writeText(text);
+	writeText(text: string): Promise<void> {
+		return this._vsClipboardService.writeText(text);
 	}
 
 	/**
 	 * Reads the content of the clipboard in plain text
 	 */
-	readText(): string {
+	readText(): Promise<string> {
 		return this._vsClipboardService.readText();
 	}
 	/**
@@ -66,5 +66,9 @@ export class ClipboardService implements IClipboardService {
 	 */
 	hasResources(): boolean {
 		return this._vsClipboardService.hasResources();
+	}
+
+	readTextSync(): string | undefined {
+		return this._vsClipboardService.readTextSync();
 	}
 }

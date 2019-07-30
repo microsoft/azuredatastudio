@@ -8,10 +8,10 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { RemoteAgentConnectionContext } from 'vs/platform/remote/common/remoteAgentEnvironment';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { VSBuffer } from 'vs/base/common/buffer';
-import * as platform from 'vs/base/common/platform';
 import { Emitter } from 'vs/base/common/event';
 import { RemoteAuthorityResolverError } from 'vs/platform/remote/common/remoteAuthorityResolver';
 import { isPromiseCanceledError } from 'vs/base/common/errors';
+import { ISignService } from 'vs/platform/sign/common/sign';
 
 export const enum ConnectionType {
 	Management = 1,
@@ -58,6 +58,7 @@ interface ISimpleConnectionOptions {
 	reconnectionToken: string;
 	reconnectionProtocol: PersistentProtocol | null;
 	webSocketFactory: IWebSocketFactory;
+	signService: ISignService;
 }
 
 export interface IConnectCallback {
@@ -92,7 +93,7 @@ async function connectToRemoteExtensionHostAgent(options: ISimpleConnectionOptio
 
 	return new Promise<PersistentProtocol>((c, e) => {
 
-		const messageRegistration = protocol.onControlMessage(raw => {
+		const messageRegistration = protocol.onControlMessage(async raw => {
 			const msg = <HandshakeMessage>JSON.parse(raw.toString());
 			// Stop listening for further events
 			messageRegistration.dispose();
@@ -104,21 +105,7 @@ async function connectToRemoteExtensionHostAgent(options: ISimpleConnectionOptio
 
 			if (msg.type === 'sign') {
 
-				let signed = msg.data;
-				if (platform.isNative) {
-					try {
-						const vsda = <any>require.__$__nodeRequire('vsda');
-						const signer = new vsda.signer();
-						if (signer) {
-							signed = signer.sign(msg.data);
-						}
-					} catch (e) {
-						console.error('signer.sign: ' + e);
-					}
-				} else {
-					signed = (<any>self).CONNECTION_AUTH_TOKEN;
-				}
-
+				const signed = await options.signService.sign(msg.data);
 				const connTypeRequest: ConnectionTypeRequest = {
 					type: 'connectionType',
 					commit: options.commit,
@@ -176,6 +163,7 @@ export interface IRemoteExtensionHostStartParams {
 	debugId?: string;
 	break?: boolean;
 	port?: number | null;
+	env?: { [key: string]: string | null };
 }
 
 interface IExtensionHostConnectionResult {
@@ -216,6 +204,7 @@ export interface IConnectionOptions {
 	commit: string | undefined;
 	webSocketFactory: IWebSocketFactory;
 	addressProvider: IAddressProvider;
+	signService: ISignService;
 }
 
 async function resolveConnectionOptions(options: IConnectionOptions, reconnectionToken: string, reconnectionProtocol: PersistentProtocol | null): Promise<ISimpleConnectionOptions> {
@@ -228,6 +217,7 @@ async function resolveConnectionOptions(options: IConnectionOptions, reconnectio
 		reconnectionToken: reconnectionToken,
 		reconnectionProtocol: reconnectionProtocol,
 		webSocketFactory: options.webSocketFactory,
+		signService: options.signService
 	};
 }
 
@@ -266,7 +256,7 @@ function sleep(seconds: number): Promise<void> {
 	});
 }
 
-export const enum PersistenConnectionEventType {
+export const enum PersistentConnectionEventType {
 	ConnectionLost,
 	ReconnectionWait,
 	ReconnectionRunning,
@@ -274,24 +264,24 @@ export const enum PersistenConnectionEventType {
 	ConnectionGain
 }
 export class ConnectionLostEvent {
-	public readonly type = PersistenConnectionEventType.ConnectionLost;
+	public readonly type = PersistentConnectionEventType.ConnectionLost;
 }
 export class ReconnectionWaitEvent {
-	public readonly type = PersistenConnectionEventType.ReconnectionWait;
+	public readonly type = PersistentConnectionEventType.ReconnectionWait;
 	constructor(
 		public readonly durationSeconds: number
 	) { }
 }
 export class ReconnectionRunningEvent {
-	public readonly type = PersistenConnectionEventType.ReconnectionRunning;
+	public readonly type = PersistentConnectionEventType.ReconnectionRunning;
 }
 export class ConnectionGainEvent {
-	public readonly type = PersistenConnectionEventType.ConnectionGain;
+	public readonly type = PersistentConnectionEventType.ConnectionGain;
 }
 export class ReconnectionPermanentFailureEvent {
-	public readonly type = PersistenConnectionEventType.ReconnectionPermanentFailure;
+	public readonly type = PersistentConnectionEventType.ReconnectionPermanentFailure;
 }
-export type PersistenConnectionEvent = ConnectionLostEvent | ReconnectionWaitEvent | ReconnectionRunningEvent | ConnectionGainEvent | ReconnectionPermanentFailureEvent;
+export type PersistenConnectionEvent = ConnectionGainEvent | ConnectionLostEvent | ReconnectionWaitEvent | ReconnectionRunningEvent | ReconnectionPermanentFailureEvent;
 
 abstract class PersistentConnection extends Disposable {
 
@@ -312,6 +302,8 @@ abstract class PersistentConnection extends Disposable {
 		this.protocol = protocol;
 		this._isReconnecting = false;
 		this._permanentFailure = false;
+
+		this._onDidStateChange.fire(new ConnectionGainEvent());
 
 		this._register(protocol.onSocketClose(() => this._beginReconnecting()));
 		this._register(protocol.onSocketTimeout(() => this._beginReconnecting()));

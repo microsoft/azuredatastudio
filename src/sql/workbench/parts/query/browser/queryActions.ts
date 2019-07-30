@@ -110,7 +110,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
-		this.label = nls.localize('runQueryLabel', 'Run');
+		this.label = nls.localize('runQueryLabel', "Run");
 	}
 
 	public run(): Promise<void> {
@@ -181,7 +181,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	) {
 		super(connectionManagementService, editor, CancelQueryAction.ID, CancelQueryAction.EnabledClass);
 		this.enabled = false;
-		this.label = nls.localize('cancelQueryLabel', 'Cancel');
+		this.label = nls.localize('cancelQueryLabel', "Cancel");
 	}
 
 	public run(): Promise<void> {
@@ -205,7 +205,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, EstimatedQueryPlanAction.ID, EstimatedQueryPlanAction.EnabledClass);
-		this.label = nls.localize('estimatedQueryPlan', 'Explain');
+		this.label = nls.localize('estimatedQueryPlan', "Explain");
 	}
 
 	public run(): Promise<void> {
@@ -291,7 +291,7 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, DisconnectDatabaseAction.ID, DisconnectDatabaseAction.EnabledClass);
-		this.label = nls.localize('disconnectDatabaseLabel', 'Disconnect');
+		this.label = nls.localize('disconnectDatabaseLabel', "Disconnect");
 	}
 
 	public run(): Promise<void> {
@@ -321,10 +321,10 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 
 		if (isChangeConnectionAction) {
 			enabledClass = ConnectDatabaseAction.EnabledChangeClass;
-			label = nls.localize('changeConnectionDatabaseLabel', 'Change Connection');
+			label = nls.localize('changeConnectionDatabaseLabel', "Change Connection");
 		} else {
 			enabledClass = ConnectDatabaseAction.EnabledDefaultClass;
-			label = nls.localize('connectDatabaseLabel', 'Connect');
+			label = nls.localize('connectDatabaseLabel', "Connect");
 		}
 
 		super(connectionManagementService, editor, ConnectDatabaseAction.ID, enabledClass);
@@ -348,8 +348,8 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	public static DisconnectClass = 'disconnect';
 	public static ID = 'toggleConnectDatabaseAction';
 
-	private _connectLabel = nls.localize('connectDatabaseLabel', 'Connect');
-	private _disconnectLabel = nls.localize('disconnectDatabaseLabel', 'Disconnect');
+	private _connectLabel = nls.localize('connectDatabaseLabel', "Connect");
+	private _disconnectLabel = nls.localize('disconnectDatabaseLabel', "Disconnect");
 	constructor(
 		editor: QueryEditor,
 		private _connected: boolean,
@@ -454,7 +454,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 				strictSelection: true,
 				placeholder: this._selectDatabaseString,
 				ariaLabel: this._selectDatabaseString,
-				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			});
 			this._dropdown.onValueChange(s => this.databaseSelected(s));
 			this._toDispose.push(this._dropdown.onFocus(() => this.onDropdownFocus()));

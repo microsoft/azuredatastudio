@@ -28,7 +28,7 @@ type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
 
-	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.rootPath || '');
+	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.rootPath || '', extensionContext);
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider));
 	extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(bookTreeViewProvider));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));

@@ -16,8 +16,8 @@ import { IContextKeyService, RawContextKey, IContextKey } from 'vs/platform/cont
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 import { Button } from 'sql/base/browser/ui/button/button';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
 import * as os from 'os';
@@ -28,12 +28,12 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
-const INFO_ALT_TEXT = localize('infoAltText', 'Information');
-const WARNING_ALT_TEXT = localize('warningAltText', 'Warning');
-const ERROR_ALT_TEXT = localize('errorAltText', 'Error');
-const SHOW_DETAILS_TEXT = localize('showMessageDetails', 'Show Details');
-const COPY_TEXT = localize('copyMessage', 'Copy');
-const CLOSE_TEXT = localize('closeMessage', 'Close');
+const INFO_ALT_TEXT = localize('infoAltText', "Information");
+const WARNING_ALT_TEXT = localize('warningAltText', "Warning");
+const ERROR_ALT_TEXT = localize('errorAltText', "Error");
+const SHOW_DETAILS_TEXT = localize('showMessageDetails', "Show Details");
+const COPY_TEXT = localize('copyMessage', "Copy");
+const CLOSE_TEXT = localize('closeMessage', "Close");
 const MESSAGE_EXPANDED_MODE_CLASS = 'expanded';
 
 export interface IModalDialogStyles {
@@ -300,7 +300,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private toggleMessageDetail() {
 		const isExpanded = DOM.hasClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS);
 		DOM.toggleClass(this._messageSummary, MESSAGE_EXPANDED_MODE_CLASS, !isExpanded);
-		this._toggleMessageDetailButton.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', 'Hide Details');
+		this._toggleMessageDetailButton.label = isExpanded ? SHOW_DETAILS_TEXT : localize('hideMessageDetails', "Hide Details");
 
 		if (this._messageDetailText) {
 			if (isExpanded) {

@@ -8,7 +8,7 @@ import 'vs/css!./media/profiler';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachModalDialogStyler } from 'sql/platform/theme/common/styler';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -318,7 +318,7 @@ export class ProfilerColumnEditorDialog extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService
 	) {
-		super(nls.localize('profilerColumnDialog.profiler', 'Profiler'), TelemetryKeys.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
+		super(nls.localize('profilerColumnDialog.profiler', "Profiler"), TelemetryKeys.Profiler, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
 	}
 
 	public render(): void {

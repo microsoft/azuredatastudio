@@ -7,7 +7,7 @@ import { OptionsDialog } from 'sql/workbench/browser/modal/optionsDialog';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { localize } from 'vs/nls';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 export class AdvancedPropertiesController {
 	private _advancedDialog: OptionsDialog;
@@ -32,7 +32,7 @@ export class AdvancedPropertiesController {
 	public get advancedDialog() {
 		if (!this._advancedDialog) {
 			this._advancedDialog = this._instantiationService.createInstance(
-				OptionsDialog, localize('connectionAdvancedProperties', 'Advanced Properties'), TelemetryKeys.ConnectionAdvancedProperties, { hasBackButton: true, cancelLabel: localize('advancedProperties.discard', 'Discard') });
+				OptionsDialog, localize('connectionAdvancedProperties', "Advanced Properties"), TelemetryKeys.ConnectionAdvancedProperties, { hasBackButton: true, cancelLabel: localize('advancedProperties.discard', "Discard") });
 			this._advancedDialog.onCloseEvent(() => this._onCloseAdvancedProperties());
 			this._advancedDialog.onOk(() => this.handleOnOk());
 			this._advancedDialog.render();

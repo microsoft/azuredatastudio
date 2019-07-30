@@ -13,7 +13,7 @@ import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/c
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 import { ScriptCreateAction, BaseActionContext, ScriptDeleteAction, ScriptSelectAction, ScriptExecuteAction, ScriptAlterAction, EditDataAction } from 'sql/workbench/common/actions';
 import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 
@@ -88,7 +88,7 @@ CommandsRegistry.registerCommand({
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const scriptingService = accessor.get(IScriptingService);
 		const errorMessageService = accessor.get(IErrorMessageService);
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
@@ -110,7 +110,7 @@ CommandsRegistry.registerCommand({
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const scriptingService = accessor.get(IScriptingService);
 		const errorMessageService = accessor.get(IErrorMessageService);
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
@@ -131,7 +131,7 @@ CommandsRegistry.registerCommand({
 		const queryEditorService = accessor.get(IQueryEditorService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,
@@ -152,7 +152,7 @@ CommandsRegistry.registerCommand({
 		const queryEditorService = accessor.get(IQueryEditorService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		const errorMessageService = accessor.get(IErrorMessageService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
@@ -174,7 +174,7 @@ CommandsRegistry.registerCommand({
 		const queryEditorService = accessor.get(IQueryEditorService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		const errorMessageService = accessor.get(IErrorMessageService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
@@ -196,7 +196,7 @@ CommandsRegistry.registerCommand({
 		const queryEditorService = accessor.get(IQueryEditorService);
 		const connectionManagementService = accessor.get(IConnectionManagementService);
 		const scriptingService = accessor.get(IScriptingService);
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		const profile = new ConnectionProfile(capabilitiesService, args.$treeItem.payload);
 		const baseContext: BaseActionContext = {
 			profile: profile,

@@ -16,8 +16,8 @@
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 
-	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server Big Data Cluster",
-	"title.bigDataCluster": "SQL Server Big Data Cluster",
+	"tab.bigDataClusterDescription": "Tasks and information about your SQL Server big data cluster",
+	"title.bigDataCluster": "SQL Server big data cluster",
 	"title.submitSparkJob": "Submit Spark Job",
 	"title.newSparkJob": "New Spark Job",
 	"title.openSparkHistory": "View Spark History",
@@ -31,6 +31,7 @@
 	"title.clearSearchServerResult": "Search: Clear Search Server Results",
 
 	"title.endpoints": "Service Endpoints",
+	"title.books": "Notebooks",
 
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",

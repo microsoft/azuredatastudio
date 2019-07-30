@@ -27,7 +27,7 @@ import { ITextResourcePropertiesService } from 'vs/editor/common/services/resour
 import { URI } from 'vs/base/common/uri';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
-import { getErrorMessage } from 'sql/workbench/parts/notebook/notebookUtils';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 export interface IEditSessionReadyEvent {
 	ownerUri: string;
@@ -467,7 +467,7 @@ export default class QueryRunner extends Disposable {
 				}
 				resolve(result);
 			}, error => {
-				// let errorMessage = nls.localize('query.moreRowsFailedError', 'Something went wrong getting more rows:');
+				// let errorMessage = nls.localize('query.moreRowsFailedError', "Something went wrong getting more rows:");
 				// self._notificationService.notify({
 				// 	severity: Severity.Error,
 				// 	message: `${errorMessage} ${error}`

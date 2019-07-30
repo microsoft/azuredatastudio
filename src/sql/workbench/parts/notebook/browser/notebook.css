@@ -1,0 +1,139 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+.notebookEditor .editor-toolbar {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+.notebookEditor .notebook-cell {
+	margin: 10px 20px 10px;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 3px;
+}
+
+.notebookEditor .notebook-info-label {
+	padding-right: 5px;
+	text-align: center;
+	display: flex;
+	align-items: center;
+}
+
+.notebookEditor .actionbar-container .monaco-action-bar > ul.actions-container {
+	padding-top: 4px;
+	padding-bottom: 4px;
+	min-height: 21px;
+}
+
+.notebookEditor .actions-container .action-item .notebook-button {
+	display: inline-block;
+	width: 100%;
+	padding: 0px;
+	text-align: center;
+	cursor: pointer;
+	padding-left: 18px;
+	background-size: 13px;
+	margin-right: 20px;
+	font-size: 13px;
+	height: 21px;
+}
+
+.notebookEditor .labelOnLeftContainer {
+	min-width: 100px;
+	max-width: 250px;
+	margin-right: 20px;
+	font-size: 13px;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+.notebookEditor .notebook-button.icon-add{
+	background-image: url("./media/light/add.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-add,
+.hc-black .notebookEditor .notebook-button.icon-add{
+	background-image: url("./media/dark/add_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-run-cells{
+	background-image: url("./media/light/run_cells.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-run-cells,
+.hc-black .notebookEditor .notebook-button.icon-run-cells{
+	background-image: url("./media/dark/run_cells_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-trusted{
+	background-image: url("./media/light/trusted.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-trusted,
+.hc-black .notebookEditor .notebook-button.icon-trusted{
+	background-image: url("./media/dark/trusted_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-notTrusted{
+	background-image: url("./media/light/nottrusted.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-notTrusted,
+.hc-black .notebookEditor .notebook-button.icon-notTrusted{
+	background-image: url("./media/dark/nottrusted_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-clear-results{
+	background-image: url("./media/light/clear_results.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-clear-results,
+.hc-black .notebookEditor .notebook-button.icon-clear-results{
+	background-image: url("./media/dark/clear_results_inverse.svg");
+}
+
+.moreActions .action-label.icon.toggle-more {
+	height: 20px;
+	width: 20px;
+}
+
+.moreActions.actionhidden {
+	visibility: hidden
+}
+
+.notebookEditor .notebook-cellTable {
+	margin-left: 20px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+.notebookEditor .notebook-cellTable .ui-widget-content.slick-row {
+	border-left: 1px silver dotted;
+}
+
+.notebookEditor .notebook-cellTable .slick-viewport {
+	min-height: 39px;
+}
+
+.monaco-workbench .notebook-action.new-notebook {
+	background: url('./media/light/new_notebook.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-workbench .notebook-action.new-notebook,
+.hc-black .monaco-workbench .notebook-action.new-notebook {
+	background: url('./media/dark/new_notebook_inverse.svg') center center no-repeat;
+}
+
+.notebookEditor .book-nav {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin: 25px;
+}
+
+.notebookEditor .book-nav .dialog-message-button {
+	min-width: 100px;
+	margin-right: 10px;
+}

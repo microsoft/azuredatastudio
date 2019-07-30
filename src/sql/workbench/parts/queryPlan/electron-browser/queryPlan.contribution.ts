@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryPlanEditor } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlanEditor';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { Registry } from 'vs/platform/registry/common/platform';
+import { QueryPlanEditor } from 'sql/workbench/parts/queryPlan/browser/queryPlanEditor';
 
 // Query Plan editor registration
 

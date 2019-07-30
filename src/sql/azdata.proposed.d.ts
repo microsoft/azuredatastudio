@@ -3236,11 +3236,18 @@ declare module 'azdata' {
 		customAction = 1
 	}
 
+	export enum ColumnSizingMode {
+		ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
+		AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+		DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+	}
+
 	export interface TableComponentProperties extends ComponentProperties {
 		data: any[][];
 		columns: string[] | TableColumn[];
 		fontSize?: number | string;
 		selectedRows?: number[];
+		forceFitColumns?: ColumnSizingMode;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -4515,6 +4522,11 @@ declare module 'azdata' {
 			 * Optional content used to give an initial notebook state
 			 */
 			initialContent?: nb.INotebookContents | string;
+
+			/**
+			 * A optional boolean value indicating the dirty state after the intial content is loaded, default value is true
+			 */
+			initialDirtyState?: boolean;
 		}
 
 		/**
@@ -4589,8 +4601,8 @@ declare module 'azdata' {
 		* }
 		* ```
 		 * @export
-		 * @param {NotebookProvider} provider
-		 * @returns {vscode.Disposable}
+		 * @param notebook provider
+		 * @returns disposable
 		 */
 		export function registerNotebookProvider(provider: NotebookProvider): vscode.Disposable;
 
@@ -5008,7 +5020,7 @@ declare module 'azdata' {
 		 * The contents of a requestExecute message sent to the server.
 		 */
 		export interface IExecuteRequest extends IExecuteOptions {
-			code: string;
+			code: string | string[];
 		}
 
 		/**
