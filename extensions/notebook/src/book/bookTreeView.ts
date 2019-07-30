@@ -33,7 +33,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 	}
 
-	private getTocFiles(dir: string): string[] {
+	public getTocFiles(dir: string): string[] {
 		let allFiles: string[] = [];
 		let files = fs.readdirSync(dir);
 		for (let i in files) {
@@ -119,7 +119,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections)) : acc.concat(val), []);
 	}
 
-	private getBooks(): BookTreeItem[] {
+	public getBooks(): BookTreeItem[] {
 		let books: BookTreeItem[] = [];
 		for (let i in this._tableOfContentsPath) {
 			let root = path.dirname(path.dirname(this._tableOfContentsPath[i]));
