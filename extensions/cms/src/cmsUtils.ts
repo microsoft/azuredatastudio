@@ -32,7 +32,9 @@ export interface CreateCmsResult {
  */
 export class CmsUtils {
 
-	constructor(private _memento: vscode.Memento) { }
+	constructor(private _memento: vscode.Memento) {
+		this._registeredCmsServers = this.getSavedServers();
+	}
 
 	private _credentialProvider: azdata.CredentialProvider;
 	private _cmsService: mssql.CmsService;
