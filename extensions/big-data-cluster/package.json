@@ -68,9 +68,6 @@
 			"type": "object",
 			"title": "%text.sqlServerBigDataClusters%",
 			"properties": {
-				"clusterControllers.controllers": {
-					"type": "array"
-				},
 				"bigDataClusters.enabled": {
 					"type": "boolean",
 					"default": false,
