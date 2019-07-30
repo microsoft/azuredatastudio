@@ -16,7 +16,6 @@ import { NotebookComponent } from 'sql/workbench/parts/notebook/browser/notebook
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { CodeComponent } from 'sql/workbench/parts/notebook/browser/cellViews/code.component';
 import { CodeCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/codeCell.component';
-import { TextCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/textCell.component';
 import { OutputAreaComponent } from 'sql/workbench/parts/notebook/browser/cellViews/outputArea.component';
 import { OutputComponent } from 'sql/workbench/parts/notebook/browser/cellViews/output.component';
 import { StdInComponent } from 'sql/workbench/parts/notebook/browser/cellViews/stdin.component';
@@ -29,12 +28,16 @@ import { IMimeComponentRegistry, Extensions } from 'sql/workbench/parts/notebook
 import { Registry } from 'vs/platform/registry/common/platform';
 import { LinkHandlerDirective } from 'sql/workbench/parts/notebook/browser/cellViews/linkHandler.directive';
 import { IBootstrapParams, ISelector } from 'sql/platform/bootstrap/common/bootstrapParams';
+import { ICellComponenetRegistry, Extensions as OutputComponentExtensions } from 'sql/platform/notebooks/common/outputRegistry';
+
+const outputComponentRegistry = Registry.as<ICellComponenetRegistry>(OutputComponentExtensions.CellComponentContributions);
 
 export const NotebookModule = (params, selector: string, instantiationService: IInstantiationService): any => {
 	let outputComponents = Registry.as<IMimeComponentRegistry>(Extensions.MimeComponentContribution).getAllCtors();
 
 	@NgModule({
 		declarations: [
+			...outputComponentRegistry.getComponents(),
 			Checkbox,
 			SelectBox,
 			EditableDropDown,
@@ -42,7 +45,6 @@ export const NotebookModule = (params, selector: string, instantiationService: I
 			LoadingSpinner,
 			CodeComponent,
 			CodeCellComponent,
-			TextCellComponent,
 			PlaceholderCellComponent,
 			NotebookComponent,
 			ComponentHostDirective,

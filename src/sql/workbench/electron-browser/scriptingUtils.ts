@@ -3,34 +3,18 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
-
-import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import {
-	IConnectableInput, IConnectionManagementService,
-	IConnectionCompletionOptions, ConnectionType,
-	RunQueryOnConnectionMode, IConnectionResult
-} from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
-import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
-import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
-
 import * as azdata from 'azdata';
-
-import Severity from 'vs/base/common/severity';
-import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
+import * as os from 'os';
+import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, IConnectableInput, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
+import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import * as nls from 'vs/nls';
+import Severity from 'vs/base/common/severity';
+import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
+import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -54,35 +38,6 @@ const targetDatabaseEngineEditionMap = {
 	6: 'SqlDatawarehouseEdition',
 	7: 'SqlServerStretchEdition'
 };
-
-export enum ScriptOperation {
-	Select = 0,
-	Create = 1,
-	Insert = 2,
-	Update = 3,
-	Delete = 4,
-	Execute = 5,
-	Alter = 6
-}
-
-export function GetScriptOperationName(operation: ScriptOperation) {
-	let defaultName: string = ScriptOperation[operation];
-	switch (operation) {
-		case ScriptOperation.Select:
-			return nls.localize('selectOperationName', "Select");
-		case ScriptOperation.Create:
-			return nls.localize('createOperationName', "Create");
-		case ScriptOperation.Insert:
-			return nls.localize('insertOperationName', "Insert");
-		case ScriptOperation.Update:
-			return nls.localize('updateOperationName', "Update");
-		case ScriptOperation.Delete:
-			return nls.localize('deleteOperationName', "Delete");
-		default:
-			// return the raw, non-localized string name
-			return defaultName;
-	}
-}
 
 /**
  * Select the top rows from an object
@@ -154,6 +109,27 @@ export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata
 	});
 }
 
+
+
+export function GetScriptOperationName(operation: ScriptOperation) {
+	let defaultName: string = ScriptOperation[operation];
+	switch (operation) {
+		case ScriptOperation.Select:
+			return nls.localize('selectOperationName', "Select");
+		case ScriptOperation.Create:
+			return nls.localize('createOperationName', "Create");
+		case ScriptOperation.Insert:
+			return nls.localize('insertOperationName', "Insert");
+		case ScriptOperation.Update:
+			return nls.localize('updateOperationName', "Update");
+		case ScriptOperation.Delete:
+			return nls.localize('deleteOperationName', "Delete");
+		default:
+			// return the raw, non-localized string name
+			return defaultName;
+	}
+}
+
 /**
  * Script the object as a statement based on the provided action (except Select)
  */
@@ -214,134 +190,6 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 	});
 }
 
-export function newQuery(
-	connectionProfile: IConnectionProfile,
-	connectionService: IConnectionManagementService,
-	queryEditorService: IQueryEditorService,
-	objectExplorerService: IObjectExplorerService,
-	workbenchEditorService: IEditorService,
-	sqlContent?: string,
-	executeOnOpen: RunQueryOnConnectionMode = RunQueryOnConnectionMode.none
-): Promise<void> {
-	return new Promise<void>((resolve) => {
-		if (!connectionProfile) {
-			connectionProfile = getCurrentGlobalConnection(objectExplorerService, connectionService, workbenchEditorService);
-		}
-		queryEditorService.newSqlEditor(sqlContent).then((owner: IConnectableInput) => {
-			// Connect our editor to the input connection
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: executeOnOpen, input: owner },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			if (connectionProfile) {
-				connectionService.connect(connectionProfile, owner.uri, options).then(() => {
-					resolve();
-				});
-			} else {
-				resolve();
-			}
-		});
-	});
-}
-
-export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
-	return new Promise<IConnectionResult>((resolve, reject) => {
-		let defaultResult: IConnectionResult = {
-			connected: false,
-			errorMessage: undefined,
-			errorCode: undefined,
-			callStack: undefined
-		};
-		if (connectionService) {
-			let connectionProfile = connectionService.getConnectionProfile(oldUri);
-			if (connectionProfile) {
-				let options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: true,
-					showFirewallRuleOnError: true
-				};
-				connectionService.disconnect(oldUri).then(() => {
-					connectionService.connect(connectionProfile, newUri, options).then(result => {
-						resolve(result);
-					}, connectError => {
-						reject(connectError);
-					});
-				}, disconnectError => {
-					reject(disconnectError);
-				});
-
-			} else {
-				resolve(defaultResult);
-			}
-		} else {
-			resolve(defaultResult);
-		}
-	});
-}
-
-export function showBackup(connection: IConnectionProfile, backupUiService: IBackupUiService): Promise<void> {
-	return new Promise<void>((resolve) => {
-		backupUiService.showBackup(connection).then(() => {
-			resolve(void 0);
-		});
-	});
-}
-
-export function showRestore(connection: IConnectionProfile, restoreDialogService: IRestoreDialogController): Promise<void> {
-	return new Promise<void>((resolve) => {
-		restoreDialogService.showDialog(connection).then(() => {
-			resolve(void 0);
-		});
-	});
-}
-
-export function openInsight(query: IInsightsConfig, profile: IConnectionProfile, insightDialogService: IInsightsDialogService) {
-	insightDialogService.show(query, profile);
-}
-
-/**
- * Get the current global connection, which is the connection from the active editor, unless OE
- * is focused or there is no such editor, in which case it comes from the OE selection. Returns
- * undefined when there is no such connection.
- *
- * @param topLevelOnly If true, only return top-level (i.e. connected) Object Explorer connections instead of database connections when appropriate
-*/
-export function getCurrentGlobalConnection(objectExplorerService: IObjectExplorerService, connectionManagementService: IConnectionManagementService, workbenchEditorService: IEditorService, topLevelOnly: boolean = false): IConnectionProfile {
-	let connection: IConnectionProfile;
-
-	let objectExplorerSelection = objectExplorerService.getSelectedProfileAndDatabase();
-	if (objectExplorerSelection) {
-		let objectExplorerProfile = objectExplorerSelection.profile;
-		if (connectionManagementService.isProfileConnected(objectExplorerProfile)) {
-			if (objectExplorerSelection.databaseName && !topLevelOnly) {
-				connection = objectExplorerProfile.cloneWithDatabase(objectExplorerSelection.databaseName);
-			} else {
-				connection = objectExplorerProfile;
-			}
-		}
-		if (objectExplorerService.isFocused()) {
-			return connection;
-		}
-	}
-
-	let activeInput = workbenchEditorService.activeEditor;
-	if (activeInput) {
-		if (activeInput instanceof QueryInput || activeInput instanceof EditDataInput || activeInput instanceof DashboardInput) {
-			connection = connectionManagementService.getConnectionProfile(activeInput.uri);
-		}
-		else if (activeInput instanceof ProfilerInput) {
-			connection = activeInput.connection;
-		}
-	}
-
-	return connection;
-}
-
 function getScriptingParamDetails(connectionService: IConnectionManagementService, ownerUri: string, metadata: azdata.ObjectMetadata): azdata.ScriptingParamDetails {
 	let serverInfo: azdata.ServerInfo = getServerInfo(connectionService, ownerUri);
 	let paramDetails: azdata.ScriptingParamDetails = {
@@ -353,6 +201,11 @@ function getScriptingParamDetails(connectionService: IConnectionManagementServic
 	return paramDetails;
 }
 
+function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo {
+	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
+	return connection.serverInfo;
+}
+
 function getFilePath(metadata: azdata.ObjectMetadata): string {
 	let schemaName: string = metadata.schema;
 	let objectName: string = metadata.name;
@@ -362,9 +215,4 @@ function getFilePath(metadata: azdata.ObjectMetadata): string {
 	} else {
 		return path.join(os.tmpdir(), `${objectName}_${timestamp}.txt`);
 	}
-}
-
-function getServerInfo(connectionService: IConnectionManagementService, ownerUri: string): azdata.ServerInfo {
-	let connection: ConnectionManagementInfo = connectionService.getConnectionInfo(ownerUri);
-	return connection.serverInfo;
 }

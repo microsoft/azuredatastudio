@@ -29,6 +29,7 @@ import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicke
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 // TODO: Make the help link 1) extensible (01/08/2018, https://github.com/Microsoft/azuredatastudio/issues/450)
 // in case that other non-Azure sign in is to be used
@@ -71,7 +72,8 @@ export class FirewallRuleDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IWindowsService private _windowsService: IWindowsService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
 			localize('createNewFirewallRule', "Create new firewall rule"),
@@ -81,6 +83,7 @@ export class FirewallRuleDialog extends Modal {
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{
 				isFlyout: true,
