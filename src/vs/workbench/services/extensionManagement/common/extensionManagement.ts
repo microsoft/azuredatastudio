@@ -106,6 +106,10 @@ export interface IExtensionTipsService {
 	toggleIgnoredRecommendation(extensionId: string, shouldIgnore: boolean): void;
 	getAllIgnoredRecommendations(): { global: string[], workspace: string[] };
 	onRecommendationChange: Event<RecommendationChangeNotification>;
+	// {{SQL CARBON EDIT}}
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>;
+	promptRecommendedExtensionsByScenario(scenarioType: string): void;
+	// {{SQL CARBON EDIT}} - End
 }
 
 export const enum ExtensionRecommendationReason {

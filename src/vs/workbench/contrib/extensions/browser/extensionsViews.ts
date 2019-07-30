@@ -47,6 +47,9 @@ import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async
 import { isUIExtension } from 'vs/workbench/services/extensions/common/extensionsUtil';
 import { IProductService } from 'vs/platform/product/common/product';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
+// {{SQL CARBON EDIT}}
+import product from 'vs/platform/product/node/product';
+
 
 class ExtensionsViewState extends Disposable implements IExtensionsViewState {
 
@@ -424,6 +427,19 @@ export class ExtensionsListView extends ViewletPanel {
 			options.sortBy = SortBy.InstallCount;
 		}
 
+		// {{SQL CARBON EDIT}}
+		let promiseRecommendedExtensionsByScenario;
+		Object.keys(product.recommendedExtensionsByScenario).forEach(scenarioType => {
+			let re = new RegExp('@' + scenarioType, 'i');
+			if (re.test(query.value)) {
+				promiseRecommendedExtensionsByScenario = this.getRecommendedExtensionsByScenario(token, scenarioType);
+			}
+		});
+		if (promiseRecommendedExtensionsByScenario) {
+			return promiseRecommendedExtensionsByScenario;
+		}
+		// {{SQL CARBON EDIT}} - End
+
 		if (ExtensionsListView.isWorkspaceRecommendedExtensionsQuery(query.value)) {
 			return this.getWorkspaceRecommendationsModel(query, options, token);
 		} else if (ExtensionsListView.isKeymapsRecommendedExtensionsQuery(query.value)) {
@@ -649,6 +665,31 @@ export class ExtensionsListView extends ViewletPanel {
 				});
 			});
 	}
+
+	// {{SQL CARBON EDIT}}
+	private getRecommendedExtensionsByScenario(token: CancellationToken, scenarioType: string): Promise<IPagedModel<IExtension>> {
+		if (!scenarioType) {
+			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
+		}
+		return this.extensionsWorkbenchService.queryLocal()
+			.then(result => result.filter(e => e.type === ExtensionType.User))
+			.then(local => {
+				return this.tipsService.getRecommendedExtensionsByScenario(scenarioType).then((recommmended) => {
+					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
+					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
+						// filter out installed extensions and the extensions not in the recommended list
+						pager.firstPage = pager.firstPage.filter((p) => {
+							const extensionId = `${p.publisher}.${p.name}`;
+							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
+						});
+						pager.total = pager.firstPage.length;
+						pager.pageSize = pager.firstPage.length;
+						return this.getPagedModel(pager);
+					});
+				});
+			});
+	}
+	// {{SQL CARBON EDIT}} - End
 
 	// Given all recommendations, trims and returns recommendations in the relevant order after filtering out installed extensions
 	private getTrimmedRecommendations(installedExtensions: IExtension[], value: string, fileBasedRecommendations: IExtensionRecommendation[], otherRecommendations: IExtensionRecommendation[], workpsaceRecommendations: IExtensionRecommendation[]): string[] {

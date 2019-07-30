@@ -11,7 +11,7 @@ import { ScrollableSplitView, IView } from 'sql/base/browser/ui/scrollableSplitv
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
-import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction } from 'sql/workbench/parts/query/browser/actions';
+import { IGridActionContext, SaveResultAction, CopyResultAction, SelectAllGridAction, MaximizeTableAction, RestoreTableAction, ChartDataAction, VisualizerDataAction } from 'sql/workbench/parts/query/browser/actions';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
@@ -24,6 +24,7 @@ import * as azdata from 'azdata';
 
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
@@ -723,17 +724,18 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 class GridTable<T> extends GridTableBase<T> {
 	private _gridDataProvider: IGridDataProvider;
 	constructor(
-		runner: QueryRunner,
+		private _runner: QueryRunner,
 		resultSet: azdata.ResultSetSummary,
 		state: GridTableState,
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService instantiationService: IInstantiationService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		super(state, resultSet, contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
-		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, runner, resultSet.batchId, resultSet.id);
+		this._gridDataProvider = this.instantiationService.createInstance(QueryGridDataProvider, this._runner, resultSet.batchId, resultSet.id);
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -759,6 +761,10 @@ class GridTable<T> extends GridTableBase<T> {
 			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
 			this.instantiationService.createInstance(ChartDataAction)
 		);
+
+		if (this.contextKeyService.getContextKeyValue('showVisualizer')) {
+			actions.push(this.instantiationService.createInstance(VisualizerDataAction, this._runner));
+		}
 
 		return actions;
 	}

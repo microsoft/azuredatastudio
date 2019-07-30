@@ -27,6 +27,7 @@ import { joinPath } from 'vs/base/common/resources';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IProductService } from 'vs/platform/product/common/product';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { optional } from 'vs/platform/instantiation/common/instantiation';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -389,7 +390,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IFileService private readonly fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
-		@IStorageService private readonly storageService: IStorageService,
+		@optional(IStorageService) private readonly storageService: IStorageService,
 	) {
 		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
