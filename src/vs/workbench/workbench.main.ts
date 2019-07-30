@@ -528,3 +528,5 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardContainer.cont
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
+
+import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';

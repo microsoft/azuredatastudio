@@ -47,9 +47,10 @@ class AccountPanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IThemeService private themeService: IThemeService
+		@IThemeService private themeService: IThemeService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -122,7 +123,7 @@ export class AccountDialog extends Modal {
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
 		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
@@ -293,7 +294,8 @@ export class AccountDialog extends Modal {
 			this._contextMenuService,
 			this._configurationService,
 			this._instantiationService,
-			this._themeService
+			this._themeService,
+			this.contextKeyService
 		);
 
 		attachPanelStyler(providerView, this._themeService);
