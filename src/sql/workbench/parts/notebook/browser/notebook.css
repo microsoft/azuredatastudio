@@ -138,23 +138,41 @@
 	margin-right: 10px;
 }
 
-.hoverButtonsContainer {
+.notebookEditor .hoverButtonsContainer {
 	display: flex;
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	padding-top: 10px;
-	padding-bottom: 10px;
-	background-color: gray;
 }
 
-.hoverButtonsContainer:hover {
-	background-color: white;
+.notebookEditor .hoverButton {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	margin-left: 10px;
+	margin-right: 10px;
+	padding: 5px 10px 5px 10px;
 }
 
-.hoverButton {
-	margin-left: 20px;
-	margin-right: 20px;
-	padding: 10px 20px 10px 20px;
+.notebookEditor .hoverButton .hoverButtonIcon {
+	display: inline-block;
+	background-position: center center;
+	background-image: url("./media/light/add.svg");
+	background-repeat: no-repeat;
+	width: 15px;
+	height: 15px;
+	margin-right: 5px;
+}
+
+.vs-dark .notebookEditor .hoverButton .hoverButtonIcon,
+.hc-black .notebookEditor .hoverButton .hoverButtonIcon{
+	display: inline-block;
+	background-position: center center;
+	background-image: url("./media/dark/add_inverse.svg");
+	background-repeat: no-repeat;
+	width: 15px;
+	height: 15px;
+	margin-right: 5px;
 }
