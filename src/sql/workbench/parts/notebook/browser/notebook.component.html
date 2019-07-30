@@ -9,7 +9,7 @@
 	</div>
 	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
 		<loading-spinner [loading]="isLoading"></loading-spinner>
-		<div class="hoverButtonsContainer">
+		<div class="hoverButtonsContainer" *ngIf="(cells && cells.length > 0) && !isLoading">
 			<button class="hoverButton" (click)="addCell('code', 0)">
 				<div class="hoverButtonIcon"></div>
 				<span>Code</span>
