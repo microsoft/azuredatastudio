@@ -48,8 +48,6 @@ import { IProductService } from 'vs/platform/product/common/product';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
-import product from 'vs/platform/product/node/product'; // {{SQL CARBON EDIT}}
-
 
 class ExtensionsViewState extends Disposable implements IExtensionsViewState {
 
@@ -430,7 +428,7 @@ export class ExtensionsListView extends ViewletPanel {
 
 		// {{SQL CARBON EDIT}}
 		let promiseRecommendedExtensionsByScenario;
-		Object.keys(product.recommendedExtensionsByScenario).forEach(scenarioType => {
+		this.productService.recommendedExtensionsByScenario.forEach(scenarioType => {
 			let re = new RegExp('@' + scenarioType, 'i');
 			if (re.test(query.value)) {
 				promiseRecommendedExtensionsByScenario = this.getRecommendedExtensionsByScenario(token, scenarioType);

@@ -18,8 +18,8 @@ import product from 'vs/platform/product/node/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 // {{SQL CARBON EDIT}}
 import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
-import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/extensionsActions';
-import * as Constants from 'sql/workbench/contrib/extensions/constants';
+import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/common/extensionsActions';
+import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 // {{SQL CARBON EDIT}} - End
 import Severity from 'vs/base/common/severity';
 import { IWorkspaceContextService, IWorkspaceFolder, IWorkspace, IWorkspaceFoldersChangeEvent, WorkbenchState } from 'vs/platform/workspace/common/workspace';

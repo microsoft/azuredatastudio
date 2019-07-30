@@ -237,8 +237,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
-import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -462,6 +462,7 @@ import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/cont
 // {{SQL CARBON EDIT}}
 // SQL
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
+import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';

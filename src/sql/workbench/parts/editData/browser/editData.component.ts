@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/workbench/parts/grid/media/flexbox';
-import 'vs/css!sql/workbench/parts/grid/media/styles';
 import 'vs/css!./media/editData';
 
 import { ElementRef, ChangeDetectorRef, OnInit, OnDestroy, Component, Inject, forwardRef, EventEmitter } from '@angular/core';
@@ -13,8 +11,8 @@ import { VirtualizedCollection } from 'angular2-slickgrid';
 import { IGridDataSet } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Services from 'sql/base/browser/ui/table/formatters';
 import { IEditDataComponentParams, IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
-import { GridParentComponent } from 'sql/workbench/parts/grid/views/gridParentComponent';
-import { EditDataGridActionProvider } from 'sql/workbench/parts/grid/views/editData/editDataGridActions';
+import { GridParentComponent } from 'sql/workbench/parts/editData/browser/gridParentComponent';
+import { EditDataGridActionProvider } from 'sql/workbench/parts/editData/browser/editDataGridActions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { AutoColumnSize } from 'sql/base/browser/ui/table/plugins/autoSizeColumns.plugin';

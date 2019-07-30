@@ -12,6 +12,7 @@ export interface IProductService {
 
 	readonly version: string;
 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
+	readonly recommendedExtensionsByScenario: Array<string>; // {{SQL CARBON EDIT}} add getter
 	readonly commit?: string;
 
 	readonly nameLong: string;
