@@ -1,0 +1,12 @@
+How to update the Swagger-generated API to contact the controller
+
+1. You need to get the API specification. Long-term you should be able to get from the server,
+but for now go to the internal repository and find the checked in SwaggerClient.yaml there.
+
+2. Copy the content from there, and add into https://editor.swagger.io/
+3. Choose Generate Client, and choose Typescript-Node as the client to generate
+4. This will download a zip file. Open it and copy contents of api.ts
+5. Copy this content to apiGenerated.ts
+- keep the copyright header and everything above the let defaultBasePath = xyz line,
+- Override the rest of the file
+6. Format the apiGenerated.ts file so it passes gulp hygiene

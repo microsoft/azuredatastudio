@@ -79,7 +79,7 @@ export class QueryResultsInput extends EditorInput {
 	}
 
 	getName(): string {
-		return localize('extensionsInputName', 'Extension');
+		return localize('extensionsInputName', "Extension");
 	}
 
 	matches(other: any): boolean {

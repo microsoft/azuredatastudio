@@ -225,7 +225,7 @@ export class ServerTreeRenderer implements IRenderer {
 
 		let label = connection.title;
 		if (!connection.isConnectionOptionsValid) {
-			label = localize('loading', 'Loading...');
+			label = localize('loading', "Loading...");
 		}
 
 		templateData.label.textContent = label;

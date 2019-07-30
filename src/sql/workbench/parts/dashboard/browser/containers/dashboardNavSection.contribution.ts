@@ -26,7 +26,7 @@ const navSectionContainerSchema: IJSONSchema = {
 			description: nls.localize('dashboard.container.left-nav-bar.id', "Unique identifier for this nav section. Will be passed to the extension for any requests.")
 		},
 		icon: {
-			description: nls.localize('dashboard.container.left-nav-bar.icon', '(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration'),
+			description: nls.localize('dashboard.container.left-nav-bar.icon', "(Optional) Icon which is used to represent this nav section in the UI. Either a file path or a themeable configuration"),
 			anyOf: [{
 				type: 'string'
 			},
@@ -34,11 +34,11 @@ const navSectionContainerSchema: IJSONSchema = {
 				type: 'object',
 				properties: {
 					light: {
-						description: nls.localize('dashboard.container.left-nav-bar.icon.light', 'Icon path when a light theme is used'),
+						description: nls.localize('dashboard.container.left-nav-bar.icon.light', "Icon path when a light theme is used"),
 						type: 'string'
 					},
 					dark: {
-						description: nls.localize('dashboard.container.left-nav-bar.icon.dark', 'Icon path when a dark theme is used'),
+						description: nls.localize('dashboard.container.left-nav-bar.icon.dark', "Icon path when a dark theme is used"),
 						type: 'string'
 					}
 				}
@@ -101,17 +101,17 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 	navSectionConfigs.forEach(section => {
 		if (!section.title) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingTitle_error', 'No title in nav section specified for extension.'));
+			extension.collector.error(nls.localize('navSection.missingTitle_error', "No title in nav section specified for extension."));
 		}
 
 		if (!section.container) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.missingContainer_error', 'No container in nav section specified for extension.'));
+			extension.collector.error(nls.localize('navSection.missingContainer_error', "No container in nav section specified for extension."));
 		}
 
 		if (Object.keys(section.container).length !== 1) {
 			result = false;
-			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space.'));
+			extension.collector.error(nls.localize('navSection.moreThanOneDashboardContainersError', "Exactly 1 dashboard container must be defined per space."));
 		}
 
 		if (isValidIcon(section.icon, extension)) {
@@ -130,7 +130,7 @@ export function validateNavSectionContributionAndRegisterIcon(extension: IExtens
 				break;
 			case NAV_SECTION:
 				result = false;
-				extension.collector.error(nls.localize('navSection.invalidContainer_error', 'NAV_SECTION within NAV_SECTION is an invalid container for extension.'));
+				extension.collector.error(nls.localize('navSection.invalidContainer_error', "NAV_SECTION within NAV_SECTION is an invalid container for extension."));
 				break;
 		}
 

@@ -57,7 +57,7 @@ export class ServerGroupDialog extends Modal {
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService
 	) {
-		super(localize('ServerGroupsDialogTitle', 'Server Groups'), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
+		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
 	}
 
 	public render() {

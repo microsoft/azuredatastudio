@@ -74,7 +74,7 @@ export class ExplorerWidget extends DashboardWidget implements IDashboardWidget,
 	ngOnInit() {
 		this._inited = true;
 
-		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', 'Search by name of type (a:, t:, v:, f:, or sp:)') : nls.localize('searchDatabases', 'Search databases');
+		const placeholderLabel = this._config.context === 'database' ? nls.localize('seachObjects', "Search by name of type (a:, t:, v:, f:, or sp:)") : nls.localize('searchDatabases', "Search databases");
 
 		const inputOptions: IInputOptions = {
 			placeholder: placeholderLabel,

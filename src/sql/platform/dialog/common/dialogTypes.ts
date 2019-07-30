@@ -37,8 +37,8 @@ export class DialogTab extends ModelViewPane {
 }
 
 export class Dialog extends ModelViewPane {
-	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', 'Done');
-	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', 'Cancel');
+	private static readonly DONE_BUTTON_LABEL = localize('dialogModalDoneButtonLabel', "Done");
+	private static readonly CANCEL_BUTTON_LABEL = localize('dialogModalCancelButtonLabel', "Cancel");
 
 	public content: string | DialogTab[];
 	public isWide: boolean;

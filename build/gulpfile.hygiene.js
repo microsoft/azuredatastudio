@@ -97,7 +97,8 @@ const indentationFilter = [
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
-	'!extensions/mssql/notebooks/**'
+	'!extensions/mssql/notebooks/**',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
 ];
 
 const copyrightFilter = [
@@ -127,6 +128,7 @@ const copyrightFilter = [
 	'!extensions/markdown-language-features/media/highlight.css',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
 	'!extensions/*/server/bin/*',
+	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
@@ -135,17 +137,17 @@ const copyrightFilter = [
 	'!src/sql/workbench/parts/notebook/common/models/renderMimeInterfaces.ts',
 	'!src/sql/workbench/parts/notebook/common/models/outputProcessor.ts',
 	'!src/sql/workbench/parts/notebook/common/models/mimemodel.ts',
-	'!src/sql/workbench/parts/notebook/electron-browser/cellViews/media/*.css',
+	'!src/sql/workbench/parts/notebook/browser/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
 	'!src/sql/base/browser/ui/table/plugins/headerFilter.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/cellSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/autoSizeColumns.plugin.ts',
-	'!src/sql/workbench/parts/notebook/electron-browser/outputs/sanitizer.ts',
-	'!src/sql/workbench/parts/notebook/electron-browser/outputs/renderers.ts',
-	'!src/sql/workbench/parts/notebook/electron-browser/outputs/registry.ts',
-	'!src/sql/workbench/parts/notebook/electron-browser/outputs/factories.ts',
+	'!src/sql/workbench/parts/notebook/browser/outputs/sanitizer.ts',
+	'!src/sql/workbench/parts/notebook/browser/outputs/renderers.ts',
+	'!src/sql/workbench/parts/notebook/browser/outputs/registry.ts',
+	'!src/sql/workbench/parts/notebook/browser/outputs/factories.ts',
 	'!src/sql/workbench/parts/notebook/common/models/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
@@ -184,12 +186,18 @@ const tslintFilter = [
 	'!extensions/vscode-api-tests/testWorkspace/**',
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
-	'!extensions/html-language-features/server/lib/jquery.d.ts'
+	'!extensions/html-language-features/server/lib/jquery.d.ts',
+	// {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
 ];
 
 // {{SQL CARBON EDIT}}
 const useStrictFilter = [
 	'src/**'
+];
+
+const sqlFilter = [
+	'src/sql/**'
 ];
 
 // {{SQL CARBON EDIT}}
@@ -281,6 +289,19 @@ function hygiene(some) {
 
 		this.emit('data', file);
 	});
+
+	const localizeDoubleQuotes = es.through(function (file) {
+		const lines = file.__lines;
+		lines.forEach((line, i) => {
+			if (/localize\(['"].*['"],\s'.*'\)/.test(line)) {
+				console.error(file.relative + '(' + (i + 1) + ',1): Message parameter to localize calls should be double-quotes');
+				errorCount++;
+			}
+		});
+
+		this.emit('data', file);
+	});
+
 	// {{SQL CARBON EDIT}} END
 
 	const formatting = es.map(function (file, cb) {
@@ -349,7 +370,10 @@ function hygiene(some) {
 		.pipe(tsl)
 		// {{SQL CARBON EDIT}}
 		.pipe(filter(useStrictFilter))
-		.pipe(useStrict);
+		.pipe(useStrict)
+		// Only look at files under the sql folder since we don't want to cause conflicts with VS code
+		.pipe(filter(sqlFilter))
+		.pipe(localizeDoubleQuotes);
 
 	const javascript = result
 		.pipe(filter(eslintFilter))

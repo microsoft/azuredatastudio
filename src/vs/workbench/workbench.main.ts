@@ -54,7 +54,7 @@ import { IMarkerDecorationsService } from 'vs/editor/common/services/markersDeco
 import { IMarkerService } from 'vs/platform/markers/common/markers';
 import { MarkerService } from 'vs/platform/markers/common/markerService';
 import { IDownloadService } from 'vs/platform/download/common/download';
-import { DownloadService } from 'vs/platform/download/node/downloadService';
+import { DownloadService } from 'vs/platform/download/common/downloadService';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ClipboardService } from 'vs/platform/clipboard/electron-browser/clipboardService';
 import { ContextKeyService } from 'vs/platform/contextkey/browser/contextKeyService';
@@ -168,6 +168,7 @@ registerSingleton(IMenubarService, MenubarService);
 registerSingleton(IURLService, RelayURLService);
 registerSingleton(ITunnelService, TunnelService, true);
 registerSingleton(ICredentialsService, KeytarCredentialsService, true);
+registerSingleton(IWorkspaceStatsService, WorkspaceStatsService, true);
 
 //#endregion
 
@@ -456,6 +457,7 @@ import 'vs/workbench/contrib/experiments/electron-browser/experiments.contributi
 
 // Issues
 import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
+import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/contrib/stats/electron-browser/workspaceStatsService';
 
 // {{SQL CARBON EDIT}}
 // SQL
@@ -506,16 +508,16 @@ import 'sql/workbench/common/actions.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
-import 'sql/workbench/parts/dashboard/electron-browser/widgets/webview/webviewWidget.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboardConfig.contribution';
 /* Model-based Views */
 import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
+import 'sql/workbench/parts/notebook/browser/notebook.contribution';
 /* Containers */
-import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
@@ -523,3 +525,5 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardContainer.cont
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
+
+import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';

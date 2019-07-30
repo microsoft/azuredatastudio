@@ -101,10 +101,6 @@ export class CachedExtensionScanner {
 			development.forEach(developedExtension => {
 				log.info('', nls.localize('extensionUnderDevelopment', "Loading development extension at {0}", developedExtension.extensionLocation.fsPath));
 				const extensionKey = ExtensionIdentifier.toKey(developedExtension.identifier);
-				const extension = result.get(extensionKey);
-				if (extension) {
-					log.warn(developedExtension.extensionLocation.fsPath, nls.localize('overwritingExtension', "Overwriting extension {0} with {1}.", extension.extensionLocation.fsPath, developedExtension.extensionLocation.fsPath));
-				}
 				result.set(extensionKey, developedExtension);
 			});
 			let r: IExtensionDescription[] = [];
@@ -264,7 +260,10 @@ export class CachedExtensionScanner {
 		let finalBuiltinExtensions: Promise<IExtensionDescription[]> = builtinExtensions;
 
 		if (devMode) {
-			const builtInExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', 'builtInExtensions.json'));
+			// {{SQL CARBON EDIT}}
+			let builtInFilename = product.quality === 'stable' ? 'builtInExtensions.json' : 'builtInExtensions-insiders.json';
+			const builtInExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', builtInFilename));
+			// {{SQL CARBON EDIT}} - END
 			const builtInExtensions = pfs.readFile(builtInExtensionsFilePath, 'utf8')
 				.then<IBuiltInExtension[]>(raw => JSON.parse(raw));
 

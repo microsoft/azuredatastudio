@@ -232,7 +232,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 					title += `${profile.serverName}.${profile.databaseName} (${profile.authenticationType})`;
 				}
 			} else {
-				title += localize('disconnected', 'disconnected');
+				title += localize('disconnected', "disconnected");
 			}
 			return this._sql.getName() + (longForm ? (' - ' + title) : ` - ${trimTitle(title)}`);
 		} else {

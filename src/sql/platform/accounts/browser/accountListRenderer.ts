@@ -115,7 +115,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 	public renderElement(account: azdata.Account, index: number, templateData: AccountListTemplate): void {
 		super.renderElement(account, index, templateData);
 		if (account.isStale) {
-			templateData.content.innerText = localize('refreshCredentials', 'You need to refresh the credentials for this account.');
+			templateData.content.innerText = localize('refreshCredentials', "You need to refresh the credentials for this account.");
 		} else {
 			templateData.content.innerText = '';
 		}

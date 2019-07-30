@@ -64,7 +64,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 	public readonly editEnabled: Event<boolean> = this._editEnabled.event;
 
 	// tslint:disable:no-unused-variable
-	private readonly homeTabTitle: string = nls.localize('home', 'Home');
+	private readonly homeTabTitle: string = nls.localize('home', "Home");
 
 	// a set of config modifiers
 	private readonly _configModifiers: Array<(item: Array<WidgetConfig>, collection: IConfigModifierCollection, context: string) => Array<WidgetConfig>> = [
@@ -109,7 +109,7 @@ export abstract class DashboardPage extends AngularDisposable implements IConfig
 		if (!this.dashboardService.connectionManagementService.connectionInfo) {
 			this.notificationService.notify({
 				severity: Severity.Error,
-				message: nls.localize('missingConnectionInfo', 'No connection information could be found for this dashboard')
+				message: nls.localize('missingConnectionInfo', "No connection information could be found for this dashboard")
 			});
 		} else {
 			let tempWidgets = this.dashboardService.getSettings<Array<WidgetConfig>>([this.context, 'widgets'].join('.'));

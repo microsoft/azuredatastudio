@@ -113,7 +113,7 @@ const dashboardPropertyFlavorContrib: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			description: nls.localize('dashboard.properties.flavor.id', 'Id of the flavor'),
+			description: nls.localize('dashboard.properties.flavor.id', "Id of the flavor"),
 			type: 'string'
 		},
 		condition: {

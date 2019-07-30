@@ -105,7 +105,7 @@ export class JobStepsViewComponent extends JobManagementView implements OnInit, 
 			renderer: this._treeRenderer
 		}, { verticalScrollMode: ScrollbarVisibility.Visible, horizontalScrollMode: ScrollbarVisibility.Visible });
 		this._register(attachListStyler(this._tree, this.themeService));
-		const stepsTooltip = nls.localize('agent.steps', 'Steps');
+		const stepsTooltip = nls.localize('agent.steps', "Steps");
 		jQuery('.steps-header > .steps-icon').attr('title', stepsTooltip);
 		this._telemetryService.publicLog(TelemetryKeys.JobStepsView);
 	}
