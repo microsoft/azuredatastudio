@@ -151,9 +151,9 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	margin-left: 10px;
-	margin-right: 10px;
-	padding: 5px 10px 5px 10px;
+	margin: 10px;
+	padding: 5px;
+	font-size: 13px;
 }
 
 .notebookEditor .hoverButton .hoverButtonIcon {
@@ -161,8 +161,8 @@
 	background-position: center center;
 	background-image: url("./media/light/add.svg");
 	background-repeat: no-repeat;
-	width: 15px;
-	height: 15px;
+	width: 13px;
+	height: 13px;
 	margin-right: 5px;
 }
 
