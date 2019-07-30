@@ -42,8 +42,7 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder } from 'vs/platform/history/common/history';
 import { CancellationToken } from 'vs/base/common/cancellation';
-// {{SQL CARBON EDIT}}
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment'; // {{SQL CARBON EDIT}}
 
 used();
 
@@ -267,8 +266,7 @@ class WelcomePage extends Disposable {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		// {{SQL CARBON EDIT}}
-		@IEnvironmentService private readonly environmentService: IEnvironmentService
+		@IEnvironmentService private readonly environmentService: IEnvironmentService // {{SQL CARBON EDIT}}
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
