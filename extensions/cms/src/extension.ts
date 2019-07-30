@@ -18,7 +18,7 @@ let controllers: ControllerBase[] = [];
 // your extension is activated the very first time the command is executed
 export function activate(extensionContext: vscode.ExtensionContext) {
 	const apiWrapper = new ApiWrapper();
-	const cmsUtils = new CmsUtils();
+	const cmsUtils = new CmsUtils(extensionContext.globalState);
 	let appContext = new AppContext(extensionContext, apiWrapper, cmsUtils);
 	let activations: Thenable<boolean>[] = [];
 
