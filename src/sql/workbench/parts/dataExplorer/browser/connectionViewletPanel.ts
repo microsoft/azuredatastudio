@@ -19,6 +19,7 @@ import {
 	AddServerAction, AddServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class ConnectionViewletPanel extends ViewletPanel {
 
@@ -34,9 +35,10 @@ export class ConnectionViewletPanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private readonly objectExplorerService: IObjectExplorerService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
+		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this._addServerAction = this.instantiationService.createInstance(AddServerAction,
 			AddServerAction.ID,
 			AddServerAction.LABEL);

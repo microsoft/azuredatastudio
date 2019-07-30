@@ -34,7 +34,7 @@ interface CapabilitiesMomento {
 
 /**
  * Capabilities service implementation class.  This class provides the ability
- * to discover the DMP capabilties that a DMP provider offers.
+ * to discover the DMP capabilities that a DMP provider offers.
  */
 export class CapabilitiesService extends Disposable implements ICapabilitiesService {
 	_serviceBrand: any;
@@ -50,7 +50,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 	constructor(
 		@IStorageService private _storageService: IStorageService,
 		@IExtensionService extensionService: IExtensionService,
-		@IExtensionManagementService extentionManagementService: IExtensionManagementService
+		@IExtensionManagementService extensionManagementService: IExtensionManagementService
 	) {
 		super();
 
@@ -78,7 +78,7 @@ export class CapabilitiesService extends Disposable implements ICapabilitiesServ
 
 		_storageService.onWillSaveState(() => this.shutdown());
 
-		this._register(extentionManagementService.onDidUninstallExtension(({ identifier }) => {
+		this._register(extensionManagementService.onDidUninstallExtension(({ identifier }) => {
 			const connectionProvider = 'connectionProvider';
 			extensionService.getExtensions().then(i => {
 				let extension = i.find(c => c.identifier.value.toLowerCase() === identifier.id.toLowerCase());
