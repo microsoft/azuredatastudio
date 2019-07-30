@@ -20,7 +20,7 @@ export function handleCopyRequest(clipboardService: IClipboardService, textResou
 			}
 
 			if (i !== range.toRow) {
-				results += textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled, path: '1' }));
+				results += textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
 			}
 		}
 		clipboardService.writeText(results);

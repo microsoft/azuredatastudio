@@ -160,7 +160,9 @@ export class SaveImageAction extends Action {
 			}
 			if (filePath) {
 				let buffer = this.decodeBase64Image(data);
-				this.fileService.writeFile(filePath, buffer).then(undefined, (err) => {
+				try {
+					await this.fileService.writeFile(filePath, buffer);
+				} catch (err) {
 					if (err) {
 						this.notificationService.error(err.message);
 					} else {
@@ -170,7 +172,7 @@ export class SaveImageAction extends Action {
 							message: localize('chartSaved', 'Saved Chart to path: {0}', filePath.toString())
 						});
 					}
-				});
+				}
 			}
 			return true;
 		}

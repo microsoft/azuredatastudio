@@ -287,7 +287,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private getTextForClipboard(): string {
-		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled, path: '1' }));
+		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
 		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
 	}
 
