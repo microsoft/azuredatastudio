@@ -4,9 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as platform from 'vs/platform/registry/common/platform';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 import { Event, Emitter } from 'vs/base/common/event';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -17,7 +14,6 @@ import { Memento } from 'vs/workbench/common/memento';
 import AccountStore from 'sql/platform/accounts/common/accountStore';
 import { AccountDialogController } from 'sql/platform/accounts/browser/accountDialogController';
 import { AutoOAuthDialogController } from 'sql/platform/accounts/browser/autoOAuthDialogController';
-import { AccountListStatusbarItem } from 'sql/platform/accounts/browser/accountListStatusbarItem';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { Deferred } from 'sql/base/common/promise';
@@ -65,14 +61,6 @@ export class AccountManagementService implements IAccountManagementService {
 		this._updateAccountListEmitter = new Emitter<UpdateAccountListEventParams>();
 
 		_storageService.onWillSaveState(() => this.shutdown());
-
-		// Register status bar item
-		let statusbarDescriptor = new statusbar.StatusbarItemDescriptor(
-			AccountListStatusbarItem,
-			StatusbarAlignment.LEFT,
-			15000 /* Highest Priority */
-		);
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(statusbarDescriptor);
 	}
 
 	private get autoOAuthDialogController(): AutoOAuthDialogController {
@@ -163,7 +151,7 @@ export class AccountManagementService implements IAccountManagementService {
 			let refreshedAccount = await provider.provider.refresh(account);
 			if (self.isCanceledResult(refreshedAccount)) {
 				// Pattern here is to throw if this fails. Handled upstream.
-				throw new Error(localize('refreshFailed', 'Refresh account was canceled by the user'));
+				throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
 			} else {
 				account = refreshedAccount;
 			}

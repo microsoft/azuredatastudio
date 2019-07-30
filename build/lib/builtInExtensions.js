@@ -18,7 +18,9 @@ const fancyLog = require('fancy-log');
 const ansiColors = require('ansi-colors');
 
 const root = path.dirname(path.dirname(__dirname));
-const builtInExtensions = require('../builtInExtensions.json');
+// {{SQL CARBON EDIT}}
+const builtInExtensions = require('../builtInExtensions-insiders.json');
+// {{SQL CARBON EDIT}} - END
 const controlFilePath = path.join(os.homedir(), '.vscode-oss-dev', 'extensions', 'control.json');
 
 function getExtensionPath(extension) {

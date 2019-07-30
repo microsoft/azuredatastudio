@@ -47,7 +47,7 @@ export enum ToolType {
 	AzCli,
 	KubeCtl,
 	Docker,
-	MSSQLCtl
+	Azdata
 }
 
 export interface ITool {

@@ -13,10 +13,10 @@ import { ICustomViewDescriptor, TreeViewItemHandleArg } from 'sql/workbench/comm
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
-import { IProgressService2 } from 'vs/platform/progress/common/progress';
+import { IProgressService } from 'vs/platform/progress/common/progress';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/notebookActions';
 import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 export const MANAGE_COMMAND_ID = 'dataExplorer.manage';
@@ -41,7 +41,8 @@ CommandsRegistry.registerCommand({
 			return oeService.disconnectNode(args.$treeViewId, args.$treeItem).then(() => {
 				const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 				// we need to collapse it then refresh it so that the tree doesn't try and use it's cache next time the user expands the node
-				return treeView.collapse(args.$treeItem).then(() => treeView.refresh([args.$treeItem]).then(() => true));
+				treeView.collapse(args.$treeItem);
+				treeView.refresh([args.$treeItem]).then(() => true);
 			});
 		}
 		return Promise.resolve(true);
@@ -98,7 +99,7 @@ CommandsRegistry.registerCommand({
 CommandsRegistry.registerCommand({
 	id: REFRESH_COMMAND_ID,
 	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const progressService = accessor.get(IProgressService2);
+		const progressService = accessor.get(IProgressService);
 		if (args.$treeItem) {
 			const { treeView } = (<ICustomViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(args.$treeViewId));
 			if (args.$treeContainerId) {

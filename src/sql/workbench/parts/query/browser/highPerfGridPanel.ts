@@ -10,7 +10,6 @@ import * as azdata from 'azdata';
 import { ITableRenderer } from 'sql/base/browser/ui/table/highPerf/table';
 import { Table } from 'sql/base/browser/ui/table/highPerf/tableWidget';
 import { IView, Orientation } from 'sql/base/browser/ui/scrollableSplitview/scrollableSplitview';
-import { GridTableState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
 import { VirtualizedWindow } from 'sql/base/browser/ui/table/highPerf/virtualizedWindow';
 import { IColumn } from 'sql/base/browser/ui/table/highPerf/tableView';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
@@ -23,6 +22,7 @@ import { generateUuid } from 'vs/base/common/uuid';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
+import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 type ICellTemplate = HTMLElement;
 

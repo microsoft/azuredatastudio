@@ -16,7 +16,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel';
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/parts/connection/browser/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/common/connectionActions';
 import * as Constants from 'sql/platform/connection/common/constants';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
@@ -321,10 +321,14 @@ export class ConnectionDialogWidget extends Modal {
 		const actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
-			this.open(this._connectionManagementService.getRecentConnections().length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0);
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
-			this.open(this._connectionManagementService.getRecentConnections().length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0);
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
 
@@ -449,10 +453,6 @@ export class ConnectionDialogWidget extends Modal {
 		this._providerTypeSelectBox.selectWithOptionName(providerDisplayName);
 
 		this.onProviderTypeSelected(providerDisplayName);
-	}
-
-	public dispose(): void {
-		this._toDispose.forEach(obj => obj.dispose());
 	}
 
 	public set databaseDropdownExpanded(val: boolean) {

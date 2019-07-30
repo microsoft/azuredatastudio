@@ -59,11 +59,11 @@
         <target state="translated">打开笔记本</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+        <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
         <target state="translated">有关 SQL Server 大数据群集的任务和信息</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <source xml:lang="en">SQL Server big data cluster</source>
         <target state="translated">SQL SERVER 大数据群集</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
@@ -655,7 +655,7 @@
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
+        <source xml:lang="en">Please select SQL Server with big data cluster. </source>
         <target state="translated">请选择具有大数据群集的 SQL Server。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
@@ -1023,7 +1023,7 @@
         <target state="translated">本地文件 {0} 不存在。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
+        <source xml:lang="en">No Sql Server big data cluster found.</source>
         <target state="translated">未找到 Sql Server 大数据群集。</target>
       </trans-unit>
     </body>

@@ -15,12 +15,11 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
-import { IInsightsConfig } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import { IInsightsDialogService } from 'sql/workbench/services/insights/common/insightsDialogService';
+import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -31,6 +30,7 @@ import Severity from 'vs/base/common/severity';
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -69,15 +69,15 @@ export function GetScriptOperationName(operation: ScriptOperation) {
 	let defaultName: string = ScriptOperation[operation];
 	switch (operation) {
 		case ScriptOperation.Select:
-			return nls.localize('selectOperationName', 'Select');
+			return nls.localize('selectOperationName', "Select");
 		case ScriptOperation.Create:
-			return nls.localize('createOperationName', 'Create');
+			return nls.localize('createOperationName', "Create");
 		case ScriptOperation.Insert:
-			return nls.localize('insertOperationName', 'Insert');
+			return nls.localize('insertOperationName', "Insert");
 		case ScriptOperation.Update:
-			return nls.localize('updateOperationName', 'Update');
+			return nls.localize('updateOperationName', "Update");
 		case ScriptOperation.Delete:
-			return nls.localize('deleteOperationName', 'Delete');
+			return nls.localize('deleteOperationName', "Delete");
 		default:
 			// return the raw, non-localized string name
 			return defaultName;
@@ -109,7 +109,7 @@ export function scriptSelect(connectionProfile: IConnectionProfile, metadata: az
 						reject(editorError);
 					});
 				} else {
-					let errMsg: string = nls.localize('scriptSelectNotFound', 'No script was returned when calling select script on object ');
+					let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
 					reject(errMsg.concat(metadata.metadataTypeName));
 				}
 			}, scriptError => {
@@ -144,7 +144,7 @@ export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata
 						reject(editorError);
 					});
 				} else {
-					let errMsg: string = nls.localize('scriptSelectNotFound', 'No script was returned when calling select script on object ');
+					let errMsg: string = nls.localize('scriptSelectNotFound', "No script was returned when calling select script on object ");
 					reject(errMsg.concat(metadata.metadataTypeName));
 				}
 			}, scriptError => {
@@ -197,7 +197,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 							messageDetail = operationResult.errorDetails;
 						}
 						if (errorMessageService) {
-							let title = nls.localize('scriptingFailed', 'Scripting Failed');
+							let title = nls.localize('scriptingFailed', "Scripting Failed");
 							errorMessageService.showDialog(Severity.Error, title, scriptNotFoundMsg, messageDetail);
 						}
 						reject(scriptNotFoundMsg);

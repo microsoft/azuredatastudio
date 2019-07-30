@@ -87,7 +87,7 @@ export class ProfilerResourceEditor extends BaseTextEditor {
 	}
 
 	protected getAriaLabel(): string {
-		return nls.localize('profilerTextEditorAriaLabel', 'Profiler editor for event text. Readonly');
+		return nls.localize('profilerTextEditorAriaLabel', "Profiler editor for event text. Readonly");
 	}
 
 	public layout(dimension: DOM.Dimension) {

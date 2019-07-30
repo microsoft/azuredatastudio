@@ -664,7 +664,7 @@ export interface IEditorOptions {
 	 * Enable rendering of whitespace.
 	 * Defaults to none.
 	 */
-	renderWhitespace?: 'none' | 'boundary' | 'all';
+	renderWhitespace?: 'none' | 'boundary' | 'selection' | 'all';
 	/**
 	 * Enable rendering of control characters.
 	 * Defaults to false.
@@ -1005,7 +1005,7 @@ export interface InternalEditorViewOptions {
 	readonly scrollBeyondLastColumn: number;
 	readonly smoothScrolling: boolean;
 	readonly stopRenderingLineAfter: number;
-	readonly renderWhitespace: 'none' | 'boundary' | 'all';
+	readonly renderWhitespace: 'none' | 'boundary' | 'selection' | 'all';
 	readonly renderControlCharacters: boolean;
 	readonly fontLigatures: boolean;
 	readonly renderIndentGuides: boolean;
@@ -2023,7 +2023,7 @@ export class EditorOptionsValidator {
 			} else if (<any>renderWhitespace === false) {
 				renderWhitespace = 'none';
 			}
-			renderWhitespace = _stringSet<'none' | 'boundary' | 'all'>(renderWhitespace, defaults.renderWhitespace, ['none', 'boundary', 'all']);
+			renderWhitespace = _stringSet<'none' | 'boundary' | 'selection' | 'all'>(renderWhitespace, defaults.renderWhitespace, ['none', 'boundary', 'selection', 'all']);
 		}
 
 		let renderLineHighlight = opts.renderLineHighlight;

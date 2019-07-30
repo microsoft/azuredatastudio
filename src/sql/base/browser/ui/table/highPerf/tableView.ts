@@ -311,7 +311,7 @@ export class TableView<T> implements IDisposable {
 		// const onDidReset = Event.map(sash.onDidEnd, () => firstIndex(this.columnSashs, item => item.sash === sash));
 		// const onDidResetDisposable = onDidReset(this.onDidSashReset, this);
 
-		const disposable = combinedDisposable([onStartDisposable, onChangeDisposable, /*onEndDisposable, onDidResetDisposable, */sash]);
+		const disposable = combinedDisposable(onStartDisposable, onChangeDisposable, /*onEndDisposable, onDidResetDisposable, */sash);
 		const sashItem: ISashItem = { sash, disposable };
 		this.columnSashs.push(sashItem);
 		if (!column.resizeable) {

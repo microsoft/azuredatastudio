@@ -37,7 +37,7 @@ const defaultOptions: ICheckboxSelectColumnOptions = {
 	columnId: '_checkbox_selector',
 	cssClass: undefined,
 	headerCssClass: undefined,
-	toolTip: nls.localize('selectDeselectAll', 'Select/Deselect All'),
+	toolTip: nls.localize('selectDeselectAll', "Select/Deselect All"),
 	width: 30
 };
 

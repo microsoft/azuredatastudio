@@ -17,7 +17,7 @@ const localize = nls.loadMessageBundle();
 export function activate(context: vscode.ExtensionContext) {
 	const platformService = new PlatformService();
 	const toolsService = new ToolsService();
-	const notebookService = new NotebookService(platformService);
+	const notebookService = new NotebookService(platformService, context.extensionPath);
 	const resourceTypeService = new ResourceTypeService(platformService, toolsService);
 
 	const resourceTypes = resourceTypeService.getResourceTypes();

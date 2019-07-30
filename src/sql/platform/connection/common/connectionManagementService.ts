@@ -18,10 +18,10 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
@@ -43,7 +43,6 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -68,7 +67,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
-	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
+	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 
 	private _mementoContext: Memento;
 	private _mementoObj: any;
@@ -85,14 +84,13 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@IStatusbarService private _statusBarService: IStatusbarService,
+		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
 		@IStorageService private _storageService: IStorageService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@INotificationService private _notificationService: INotificationService
+		@IEnvironmentService private _environmentService: IEnvironmentService
 	) {
 		super();
 
@@ -448,7 +446,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
 			if (!tokenFillSuccess) {
-				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
+				throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -487,7 +485,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					});
 				} else {
 					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', 'Connection Not Accepted'));
+						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 					}
 					resolve(connectionResult);
 				}
@@ -502,7 +500,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private handleConnectionError(connection: IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', 'Connection Not Accepted');
+			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 			if (options.showFirewallRuleOnError && connectionResult.errorCode) {
 				this.handleFirewallRuleError(connection, connectionResult).then(success => {
 					if (success) {
@@ -693,7 +691,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public hasRegisteredServers(): boolean {
-		return this.doHasRegisteredServers(this.getConnectionGroups());
+		const groups: ConnectionProfileGroup[] = this.getConnectionGroups();
+		const hasRegisteredServers: boolean = this.doHasRegisteredServers(groups);
+		groups.forEach(cpg => cpg.dispose());
+		return hasRegisteredServers;
 	}
 
 	private doHasRegisteredServers(root: ConnectionProfileGroup[]): boolean {
@@ -1070,11 +1071,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			// Setup our cancellation choices
 			let choices: { key, value }[] = [
-				{ key: nls.localize('connectionService.yes', 'Yes'), value: true },
-				{ key: nls.localize('connectionService.no', 'No'), value: false }
+				{ key: nls.localize('connectionService.yes', "Yes"), value: true },
+				{ key: nls.localize('connectionService.no', "No"), value: false }
 			];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});

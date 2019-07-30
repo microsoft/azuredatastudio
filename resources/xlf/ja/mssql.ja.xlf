@@ -59,11 +59,11 @@
         <target state="translated">ノートブックを開く</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
-        <target state="translated">SQL Server Big Data Cluster に関するタスクと情報</target>
+        <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
+        <target state="translated">SQL Server big data cluster に関するタスクと情報</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <source xml:lang="en">SQL Server big data cluster</source>
         <target state="translated">SQL Server のビッグ データ クラスター</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
@@ -655,8 +655,8 @@
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
-        <target state="translated">Big Data Cluster が含まれる SQL Server を選択してください。</target>
+        <source xml:lang="en">Please select SQL Server with big data cluster. </source>
+        <target state="translated">big data cluster が含まれる SQL Server を選択してください。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server is selected.</source>
@@ -1023,8 +1023,8 @@
         <target state="translated">ローカル ファイル {0} が存在しません。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
-        <target state="translated">SQL Server Big Data Cluster が見つかりません。</target>
+        <source xml:lang="en">No Sql Server big data cluster found.</source>
+        <target state="translated">SQL Server big data cluster が見つかりません。</target>
       </trans-unit>
     </body>
   </file>

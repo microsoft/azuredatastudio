@@ -27,6 +27,11 @@
   "contributes": {
     "commands": [
       {
+        "command": "azdata.resource.sql-image.deploy",
+        "title": "%deploy-sql-image-command-name%",
+        "category": "%deploy-resource-command-category%"
+      },
+      {
         "command": "azdata.resource.sql-bdc.deploy",
         "title": "%deploy-sql-bdc-command-name%",
         "category": "%deploy-resource-command-category%"
@@ -46,6 +51,10 @@
       ],
       "dataExplorer/action": [
         {
+          "command": "azdata.resource.sql-image.deploy",
+          "group": "secondary"
+        },
+        {
           "command": "azdata.resource.sql-bdc.deploy",
           "group": "secondary"
         }
@@ -53,6 +62,56 @@
     }
   },
   "resourceTypes": [
+    {
+      "name": "sql-image",
+      "displayName": "%resource-type-sql-image-display-name%",
+      "description": "%resource-type-sql-image-description%",
+      "platforms": [
+        "darwin",
+        "win32",
+        "linux"
+      ],
+      "icon": {
+        "light": "./images/sql_server.svg",
+        "dark": "./images/sql_server_inverse.svg"
+      },
+      "options": [
+        {
+          "name": "version",
+          "displayName": "%version-display-name%",
+          "values": [
+            {
+              "name": "sql2017",
+              "displayName": "%sql-2017-display-name%"
+            },
+            {
+              "name": "sql2019",
+              "displayName": "%sql-2019-display-name%"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "notebook": "%sql-2017-docker-notebook%",
+          "requiredTools": [
+            {
+              "name": "docker"
+            }
+          ],
+          "when": "version=sql2017"
+        },
+        {
+          "notebook": "%sql-2019-docker-notebook%",
+          "requiredTools": [
+            {
+              "name": "docker"
+            }
+          ],
+          "when": "version=sql2019"
+        }
+      ]
+    },
     {
       "name": "sql-bdc",
       "displayName": "%resource-type-sql-bdc-display-name%",
@@ -72,8 +131,8 @@
           "displayName": "%version-display-name%",
           "values": [
             {
-              "name": "ctp3.1",
-              "displayName": "%sql-2019ctp31-display-name%"
+              "name": "bdc2019",
+              "displayName": "%bdc-2019-display-name%"
             }
           ]
         },
@@ -94,7 +153,7 @@
       ],
       "providers": [
         {
-          "notebook": "%bdc-ctp31-aks-notebook%",
+          "notebook": "%bdc-2019-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -103,28 +162,28 @@
               "name": "azcli"
             },
             {
-              "name": "mssqlctl"
+              "name": "azdata"
             }
           ],
-          "when": "target=aks&&version=ctp3.1"
+          "when": "target=aks&&version=bdc2019"
         },
         {
-          "notebook": "%bdc-ctp31-existing-cluster-notebook%",
+          "notebook": "%bdc-2019-existing-cluster-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
             },
             {
-              "name": "mssqlctl"
+              "name": "azdata"
             }
           ],
-          "when": "target=existingCluster&&version=ctp3.1"
+          "when": "target=existingCluster&&version=bdc2019"
         }
       ]
     }
   ],
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "typemoq": "^2.1.0",

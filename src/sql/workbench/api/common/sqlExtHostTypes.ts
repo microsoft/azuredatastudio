@@ -169,6 +169,12 @@ export enum ModelComponentTypes {
 	Hyperlink
 }
 
+export enum ColumnSizingMode {
+	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
+	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+}
+
 export enum AgentSubSystem {
 	TransactSql = 1,
 	ActiveScripting = 2,
