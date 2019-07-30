@@ -6,6 +6,6 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { CommandLineWorkbenchContribution } from 'sql/workbench/parts/commandLine/electron-main/commandLine';
+import { CommandLineWorkbenchContribution } from 'sql/workbench/parts/commandLine/electron-browser/commandLine';
 
 Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(CommandLineWorkbenchContribution, LifecyclePhase.Restored);
