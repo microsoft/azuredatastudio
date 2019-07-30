@@ -16,7 +16,7 @@ export class ProductService implements IProductService {
 
 	get vscodeVersion(): string { return '1.35.0'; } // {{SQL CARBON EDIT}} add vscodeversion
 
-	get recommendedExtensionsByScenario(): Array<string> { return product.recommendedExtensionsByScenario; }// {{SQL CARBON EDIT}} add getter
+	get recommendedExtensionsByScenario(): { [area: string]: Array<string> } { return product.recommendedExtensionsByScenario; }// {{SQL CARBON EDIT}} add getter
 
 	get commit(): string | undefined { return product.commit; }
 

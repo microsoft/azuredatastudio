@@ -428,7 +428,7 @@ export class ExtensionsListView extends ViewletPanel {
 
 		// {{SQL CARBON EDIT}}
 		let promiseRecommendedExtensionsByScenario;
-		this.productService.recommendedExtensionsByScenario.forEach(scenarioType => {
+		Object.keys(this.productService.recommendedExtensionsByScenario).forEach(scenarioType => {
 			let re = new RegExp('@' + scenarioType, 'i');
 			if (re.test(query.value)) {
 				promiseRecommendedExtensionsByScenario = this.getRecommendedExtensionsByScenario(token, scenarioType);
