@@ -42,7 +42,6 @@ import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder } from 'vs/platform/history/common/history';
 import { CancellationToken } from 'vs/base/common/cancellation';
-
 // {{SQL CARBON EDIT}}
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
