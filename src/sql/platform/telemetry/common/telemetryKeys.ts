@@ -50,8 +50,6 @@ export const ProfilerFilter = 'ProfilerFilter';
 export const JobsView = 'JobsViewOpened';
 export const JobHistoryView = 'JobHistoryViewOpened';
 export const JobStepsView = 'JobStepsViewOpened';
-export const ExtensionRecommendationDialog = 'ExtensionRecommendationDialog';
-export const ResultsPanel = 'ResultsPanel';
 
 // Actions
 export const RunAgentJob = 'RunAgentJob';
@@ -61,11 +59,16 @@ export const DeleteAgentJobStep = 'DeleteAgentJobStep';
 export const DeleteAgentAlert = 'DeleteAgentAlert';
 export const DeleteAgentOperator = 'DeleteAgentOperator';
 export const DeleteAgentProxy = 'DeleteAgentProxy';
-export const Click = 'Click';
 
 // Notebook Events:
 export const NotebookMarkdownRendered = 'NotebookMarkdownRendered';
 
 export enum TelemetryView {
-	Shell = 'Shell'
+	Shell = 'Shell',
+	ExtensionRecommendationDialog = 'ExtensionRecommendationDialog',
+	ResultsPanel = 'ResultsPanel'
+}
+
+export enum TelemetryAction {
+	Click = 'Click'
 }

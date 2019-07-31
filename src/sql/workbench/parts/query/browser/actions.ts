@@ -235,8 +235,8 @@ export class VisualizerDataAction extends Action {
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		this.adsTelemetryService.sendActionEvent(
-			TelemetryKeys.ResultsPanel,
-			TelemetryKeys.Click,
+			TelemetryKeys.TelemetryView.ResultsPanel,
+			TelemetryKeys.TelemetryAction.Click,
 			'VisualizerButton',
 			'VisualizerDataAction'
 		);

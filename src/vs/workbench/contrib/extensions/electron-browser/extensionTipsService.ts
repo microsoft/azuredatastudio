@@ -1170,6 +1170,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		let localExtensions: ILocalExtension[];
 		const getRecommendationPromise = this.getRecommendedExtensionsByScenario(scenarioType).then(recs => { recommendations = recs; });
 		const getLocalExtensionPromise = this.extensionsService.getInstalled(ExtensionType.User).then(local => { localExtensions = local; });
+		const visualizerExtensionNotificationService = 'VisualizerExtensionNotificationService';
 
 		let recommendationMessage = localize('ExtensionsRecommended', "Azure Data Studio has extension recommendations.");
 		if (scenarioType === Constants.visualizerExtensions) {
@@ -1185,10 +1186,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							label: localize('installAll', "Install All"),
 							run: () => {
 								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.ExtensionRecommendationDialog,
-									TelemetryKeys.Click,
+									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+									TelemetryKeys.TelemetryAction.Click,
 									'InstallButton',
-									'VisualizerExtensionNotificationService'
+									visualizerExtensionNotificationService
 								);
 								const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
 								installAllAction.run();
@@ -1198,10 +1199,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							label: localize('showRecommendations', "Show Recommendations"),
 							run: () => {
 								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.ExtensionRecommendationDialog,
-									TelemetryKeys.Click,
+									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+									TelemetryKeys.TelemetryAction.Click,
 									'ShowRecommendationsButton',
-									'VisualizerExtensionNotificationService'
+									visualizerExtensionNotificationService
 								);
 								const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
 								showAction.run();
@@ -1213,10 +1214,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							isSecondary: true,
 							run: () => {
 								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.ExtensionRecommendationDialog,
-									TelemetryKeys.Click,
+									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+									TelemetryKeys.TelemetryAction.Click,
 									'NeverShowAgainButton',
-									'VisualizerExtensionNotificationService'
+									visualizerExtensionNotificationService
 								);
 								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
 								c(undefined);
@@ -1226,10 +1227,10 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							sticky: true,
 							onCancel: () => {
 								this.adsTelemetryService.sendActionEvent(
-									TelemetryKeys.ExtensionRecommendationDialog,
-									TelemetryKeys.Click,
+									TelemetryKeys.TelemetryView.ExtensionRecommendationDialog,
+									TelemetryKeys.TelemetryAction.Click,
 									'CancelButton',
-									'VisualizerExtensionNotificationService'
+									visualizerExtensionNotificationService
 								);
 								c(undefined);
 							}
