@@ -47,6 +47,25 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return allFiles;
 	}
 
+	async openBook(resource: string, context: vscode.ExtensionContext): Promise<void> {
+		try {
+			let bookTreeProvider = new BookTreeViewProvider(resource, context);
+			let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: bookTreeProvider });
+			vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(res => {
+				let books = bookTreeProvider.getBooks();
+				bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
+				const readmePath: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
+				if (fs.existsSync(readmePath)) {
+					vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmePath));
+				}
+			});
+		} catch (e) {
+			vscode.window.showErrorMessage(localize('openBook', 'Open book {0} failed: {1}',
+				resource,
+				e instanceof Error ? e.message : e));
+		}
+	}
+
 	async openNotebook(resource: string): Promise<void> {
 		try {
 			let doc = await vscode.workspace.openTextDocument(resource);
@@ -131,7 +150,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					root: root,
 					tableOfContents: this.flattenArray(tableOfContents),
 					page: tableOfContents,
-					type: BookTreeItemType.Book
+					type: BookTreeItemType.Book,
+					collapsibleState: vscode.TreeItemCollapsibleState.Expanded
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
@@ -158,7 +178,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						root: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
-						type: BookTreeItemType.ExternalLink
+						type: BookTreeItemType.ExternalLink,
+						collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -178,7 +199,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							root: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
-							type: BookTreeItemType.Notebook
+							type: BookTreeItemType.Notebook,
+							collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -193,7 +215,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							root: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
-							type: BookTreeItemType.Markdown
+							type: BookTreeItemType.Markdown,
+							collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -230,5 +253,4 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 		return Promise.resolve(result);
 	}
-
 }

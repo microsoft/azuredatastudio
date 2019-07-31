@@ -89,7 +89,7 @@ async function promptForFolder(bookContribution: BookContribution): Promise<void
 			let pickedFolder = uris[0];
 			let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, bookContribution.name));
 			await saveBooksToFolder(destinationUri, bookContribution);
-			await promptToReloadWindow(destinationUri);
+			openBookViewlet(destinationUri);
 		}
 		return;
 	} catch (error) {
@@ -107,22 +107,6 @@ async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookCo
 		await fs.copy(bookContribution.path, folderUri.fsPath);
 	}
 }
-function promptToReloadWindow(folderUri: vscode.Uri): void {
-	const actionReload = localize('prompt.reloadInstance', "Reload");
-	const actionOpenNew = localize('prompt.openNewInstance', "Open new instance");
-	vscode.window.showInformationMessage(localize('prompt.reloadDescription', "Reload and view the Jupyter Books in the Files view."), actionReload, actionOpenNew)
-		.then(selectedAction => {
-			if (selectedAction === actionReload) {
-				vscode.commands.executeCommand('workbench.action.setWorkspaceAndOpen', {
-					forceNewWindow: false,
-					folderPath: folderUri
-				});
-			}
-			if (selectedAction === actionOpenNew) {
-				vscode.commands.executeCommand('workbench.action.setWorkspaceAndOpen', {
-					forceNewWindow: true,
-					folderPath: folderUri
-				});
-			}
-		});
+function openBookViewlet(folderUri: vscode.Uri): void {
+	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath);
 }
