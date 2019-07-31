@@ -20,6 +20,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/common/webview';
 import { generateUuid } from 'vs/base/common/uuid';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class WebViewDialog extends Modal {
 
@@ -47,9 +48,10 @@ export class WebViewDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@ILogService logService: ILogService,
-		@IWebviewService private readonly webviewService: IWebviewService
+		@IWebviewService private readonly webviewService: IWebviewService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		super('', TelemetryKeys.WebView, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
 		this._okLabel = localize('webViewDialog.ok', "OK");
 		this._closeLabel = localize('webViewDialog.close', "Close");
 	}

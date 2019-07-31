@@ -28,6 +28,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Color } from 'vs/base/common/color';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class ServerGroupDialog extends Modal {
 	private _addServerButton: Button;
@@ -56,9 +57,10 @@ export class ServerGroupDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
+		super(localize('ServerGroupsDialogTitle', "Server Groups"), TelemetryKeys.ServerGroups, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 	}
 
 	public render() {

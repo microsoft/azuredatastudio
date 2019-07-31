@@ -44,7 +44,7 @@
     "service-downloader": "github:anthonydresser/service-downloader#0.1.5",
     "typescript": "3.5.2",
     "vsce": "1.48.0",
-    "vscode-telemetry-extractor": "^1.5.1",
+    "vscode-telemetry-extractor": "1.5.3",
     "xml2js": "^0.4.17"
   },
   "scripts": {

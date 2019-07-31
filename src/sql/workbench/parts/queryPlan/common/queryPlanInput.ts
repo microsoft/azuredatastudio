@@ -7,6 +7,8 @@ import { EditorInput, EditorModel } from 'vs/workbench/common/editor';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
+import { IFileService } from 'vs/platform/files/common/files';
+import { URI } from 'vs/base/common/uri';
 
 export class QueryPlanInput extends EditorInput {
 
@@ -14,8 +16,12 @@ export class QueryPlanInput extends EditorInput {
 	public static SCHEMA: string = 'queryplan';
 
 	private _uniqueSelector: string;
+	private _xml: string;
 
-	constructor(private _xml: string, private _uri: string, private _connection: ConnectionManagementInfo) {
+	constructor(
+		private _uri: URI, private _connection: ConnectionManagementInfo,
+		@IFileService private readonly fileService: IFileService
+	) {
 		super();
 	}
 
@@ -36,7 +42,7 @@ export class QueryPlanInput extends EditorInput {
 	}
 
 	public getUri(): string {
-		return this._uri;
+		return this._uri.toString();
 	}
 
 	public supportsSplitEditor(): boolean {
@@ -48,7 +54,10 @@ export class QueryPlanInput extends EditorInput {
 		return undefined;
 	}
 
-	public resolve(refresh?: boolean): Promise<EditorModel> {
+	public async resolve(refresh?: boolean): Promise<EditorModel> {
+		if (!this._xml) {
+			this._xml = (await this.fileService.readFile(this._uri)).value.toString();
+		}
 		return undefined;
 	}
 
