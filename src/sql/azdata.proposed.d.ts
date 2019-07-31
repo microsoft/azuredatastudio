@@ -8,4 +8,22 @@
 import * as vscode from 'vscode';
 
 declare module 'azdata' {
+	/**
+	 * Namespace for connection management
+	 */
+	export namespace connection {
+		export type ConnectionEventType =
+			| 'onConnect'
+			| 'onDisconnect'
+			| 'onConnectionChanged';
+
+		export interface ConnectionEventListener {
+			onConnectionEvent(type: ConnectionEventType, ownerUri: string, args: IConnectionProfile): void;
+		}
+
+		/**
+		 * Register a connection event listener
+		 */
+		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+	}
 }
