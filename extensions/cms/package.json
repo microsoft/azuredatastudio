@@ -2,7 +2,7 @@
 	"name": "cms",
 	"displayName": "%cms.displayName%",
 	"description": "%cms.description%",
-	"version": "0.3.0",
+	"version": "0.4.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",

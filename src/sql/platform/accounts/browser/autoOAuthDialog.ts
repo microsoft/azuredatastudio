@@ -23,6 +23,7 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class AutoOAuthDialog extends Modal {
 	private _copyAndOpenButton: Button;
@@ -49,7 +50,8 @@ export class AutoOAuthDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
 			'',
@@ -59,6 +61,7 @@ export class AutoOAuthDialog extends Modal {
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{
 				isFlyout: true,

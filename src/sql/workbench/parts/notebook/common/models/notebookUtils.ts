@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { nb } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';

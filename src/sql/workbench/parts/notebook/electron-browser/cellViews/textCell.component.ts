@@ -7,7 +7,6 @@ import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
-import * as path from 'path';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -22,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/browser/outputs/notebookMarkdown';
+import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/electron-browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';

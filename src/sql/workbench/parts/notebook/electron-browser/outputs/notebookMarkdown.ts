@@ -2,17 +2,17 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
+import * as fs from 'fs';
 
 import { URI } from 'vs/base/common/uri';
 
 import { RenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
-import marked = require('vs/base/common/marked/marked');
+import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
-import * as fs from 'fs';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {

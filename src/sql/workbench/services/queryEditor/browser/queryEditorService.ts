@@ -10,7 +10,7 @@ import { IConnectableInput, IConnectionManagementService } from 'sql/platform/co
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
 import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/common/customInputConverter';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
 import { ITextModel } from 'vs/editor/common/model';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -30,8 +30,7 @@ import { ILanguageSelection } from 'vs/editor/common/services/modeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-
-const fs = require('fs');
+import { IFileService } from 'vs/platform/files/common/files';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -61,7 +60,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IFileService private readonly fileService: IFileService
 	) {
 		QueryEditorService.editorService = _editorService;
 		QueryEditorService.instantiationService = _instantiationService;
@@ -77,7 +77,7 @@ export class QueryEditorService implements IQueryEditorService {
 		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
-				let filePath = this.createUntitledSqlFilePath();
+				let filePath = await this.createUntitledSqlFilePath();
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
@@ -105,26 +105,16 @@ export class QueryEditorService implements IQueryEditorService {
 		});
 	}
 
-	// Creates a new query plan document
-	public newQueryPlanEditor(xmlShowPlan: string): Promise<any> {
-		const self = this;
-		return new Promise<any>((resolve, reject) => {
-			let queryPlanInput: QueryPlanInput = self._instantiationService.createInstance(QueryPlanInput, xmlShowPlan, 'aaa', undefined);
-			self._editorService.openEditor(queryPlanInput, { pinned: true }, ACTIVE_GROUP);
-			resolve(true);
-		});
-	}
-
 	/**
 	 * Creates new edit data session
 	 */
 	public newEditDataEditor(schemaName: string, tableName: string, sqlContent: string): Promise<IConnectableInput> {
 
-		return new Promise<IConnectableInput>((resolve, reject) => {
+		return new Promise<IConnectableInput>(async (resolve, reject) => {
 			try {
 				// Create file path and file URI
 				let objectName = schemaName ? schemaName + '.' + tableName : tableName;
-				let filePath = this.createPrefixedSqlFilePath(objectName);
+				let filePath = await this.createPrefixedSqlFilePath(objectName);
 				let docUri: URI = URI.from({ scheme: Schemas.untitled, path: filePath });
 
 				// Create a sql document pane with accoutrements
@@ -258,11 +248,11 @@ export class QueryEditorService implements IQueryEditorService {
 
 	////// Private functions
 
-	private createUntitledSqlFilePath(): string {
+	private createUntitledSqlFilePath(): Promise<string> {
 		return this.createPrefixedSqlFilePath(untitledFilePrefix);
 	}
 
-	private createPrefixedSqlFilePath(prefix: string): string {
+	private async createPrefixedSqlFilePath(prefix: string): Promise<string> {
 		let prefixFileName = (counter: number): string => {
 			return `${prefix}_${counter}`;
 		};
@@ -270,7 +260,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let counter = 1;
 		// Get document name and check if it exists
 		let filePath = prefixFileName(counter);
-		while (fs.existsSync(filePath)) {
+		while (await this.fileService.exists(URI.file(filePath))) {
 			counter++;
 			filePath = prefixFileName(counter);
 		}
