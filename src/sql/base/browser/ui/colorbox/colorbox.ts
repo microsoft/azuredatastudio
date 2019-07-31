@@ -2,13 +2,14 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
+import 'vs/css!./media/colorbox';
 
 import { Color } from 'vs/base/common/color';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Widget } from 'vs/base/browser/ui/widget';
-import * as dom from 'vs/base/browser/dom';
 
 export interface ColorboxOptions {
+	name: string;
 	class?: string[];
 }
 
@@ -17,50 +18,64 @@ export interface ColorboxStyle {
 }
 
 export class Colorbox extends Widget {
-	private _el: HTMLDivElement;
+	readonly domNode: HTMLInputElement;
 	private backgroundColor?: Color;
 
-	private _onChange = new Emitter<boolean>();
-	public readonly onChange: Event<boolean> = this._onChange.event;
+	private _onSelect = new Emitter<void>();
+	public readonly onSelect: Event<void> = this._onSelect.event;
+
+	private _checked: boolean;
 
 	constructor(container: HTMLElement, opts: ColorboxOptions) {
 		super();
 
-		this._el = document.createElement('div');
+		this.domNode = document.createElement('input');
+		this.domNode.type = 'radio';
+		this.domNode.name = opts.name;
+		this._checked = false;
 
+		this.domNode.classList.add('colorbox');
 		if (opts.class) {
-			this._el.classList.add(...opts.class);
+			this.domNode.classList.add(...opts.class);
 		}
 
-		container.appendChild(this._el);
+		container.appendChild(this.domNode);
 
-		this._register(dom.addDisposableListener(this._el, dom.EventType.CLICK, (e) => {
-			console.log('click');
-		}));
+		this.onfocus(this.domNode, () => {
+			this._onSelect.fire();
+		});
+
 	}
 
 	public style(styles: ColorboxStyle): void {
-		this.backgroundColor = styles.backgroundColor;
+		if (styles.backgroundColor) {
+			this.backgroundColor = styles.backgroundColor;
+		}
 		this.updateStyle();
 	}
 
 	private updateStyle(): void {
-		this._el.style.background = this.backgroundColor ? this.backgroundColor.toString() : this._el.style.backgroundColor;
-	}
+		this.domNode.style.setProperty('--colorbox-bg', this.backgroundColor ? this.backgroundColor.toString() : '');
+		//this.domNode.style.setProperty('--colorbox-bg-border', this.backgroundColor ? this.backgroundColor.darken(0.2).toString() : '');
 
-	public set checked(val: boolean) {
-		//
+		console.log(this.domNode.style.getPropertyValue('--colorbox-bg'));
 	}
 
 	public get checked(): boolean {
-		return true;
+		return this._checked;
 	}
 
-	public focus(): boolean {
-		return true;
+	public set checked(checked: boolean) {
+		this._checked = checked;
+		this.domNode.setAttribute('sql-colorbox-checked', String(this.checked));
+		if (this._checked) {
+			this.domNode.classList.add('checked');
+		} else {
+			this.domNode.classList.remove('checked');
+		}
 	}
 
-	public get domNode(): Element {
-		return this._el;
+	public focus() {
+		this.domNode.focus();
 	}
 }
