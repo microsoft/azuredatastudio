@@ -56,9 +56,6 @@ export class Colorbox extends Widget {
 
 	private updateStyle(): void {
 		this.domNode.style.setProperty('--colorbox-bg', this.backgroundColor ? this.backgroundColor.toString() : '');
-		//this.domNode.style.setProperty('--colorbox-bg-border', this.backgroundColor ? this.backgroundColor.darken(0.2).toString() : '');
-
-		console.log(this.domNode.style.getPropertyValue('--colorbox-bg'));
 	}
 
 	public get checked(): boolean {
