@@ -50,7 +50,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
 export const NEW_FILE_COMMAND_ID = 'explorer.newFile';
 export const NEW_FILE_LABEL = nls.localize('newFile', "New File");

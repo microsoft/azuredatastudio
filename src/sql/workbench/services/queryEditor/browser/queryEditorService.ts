@@ -8,12 +8,10 @@ import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorIn
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
 import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
 
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
-import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
 import * as paths from 'vs/base/common/extpath';
@@ -21,7 +19,8 @@ import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { exists } from 'vs/base/node/pfs';
+import { IFileService } from 'vs/platform/files/common/files';
+import { replaceConnection } from 'sql/workbench/browser/taskUtilities';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -35,7 +34,8 @@ export class QueryEditorService implements IQueryEditorService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IFileService private readonly fileService: IFileService
 	) {
 	}
 
@@ -73,16 +73,6 @@ export class QueryEditorService implements IQueryEditorService {
 			} catch (error) {
 				reject(error);
 			}
-		});
-	}
-
-	// Creates a new query plan document
-	public newQueryPlanEditor(xmlShowPlan: string): Promise<any> {
-		const self = this;
-		return new Promise<any>((resolve, reject) => {
-			let queryPlanInput: QueryPlanInput = self._instantiationService.createInstance(QueryPlanInput, xmlShowPlan, 'aaa', undefined);
-			self._editorService.openEditor(queryPlanInput, { pinned: true }, ACTIVE_GROUP);
-			resolve(true);
 		});
 	}
 
@@ -135,7 +125,7 @@ export class QueryEditorService implements IQueryEditorService {
 				// Note: must check the new file name for this since this method is called after the rename is completed
 				if (paths.isEqualOrParent(resource.fsPath, newResource.fsPath, !isLinux /* ignorecase */)) {
 					// In this case, we know that this is a straight rename so support this as a rename / replace operation
-					TaskUtilities.replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
+					replaceConnection(oldResourceString, newResource.toString(), this._connectionManagementService).then(result => {
 						if (result && result.connected) {
 							input.onConnectSuccess();
 						} else {
@@ -161,7 +151,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let counter = 1;
 		// Get document name and check if it exists
 		let filePath = prefixFileName(counter);
-		while (await exists(filePath)) {
+		while (await this.fileService.exists(URI.file(filePath))) {
 			counter++;
 			filePath = prefixFileName(counter);
 		}

@@ -24,6 +24,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -53,9 +54,10 @@ export class WizardModal extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
+		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 

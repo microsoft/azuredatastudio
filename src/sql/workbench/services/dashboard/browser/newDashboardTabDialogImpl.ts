@@ -27,6 +27,7 @@ import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry'
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
@@ -112,7 +113,8 @@ export class NewDashboardTabDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
 			localize('newDashboardTab.openDashboardExtensions', "Open dashboard extensions"),
@@ -122,6 +124,7 @@ export class NewDashboardTabDialog extends Modal {
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
