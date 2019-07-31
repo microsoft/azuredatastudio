@@ -4716,6 +4716,7 @@ declare module 'azdata' {
 		export interface INotebookMetadata {
 			kernelspec: IKernelInfo;
 			language_info?: ILanguageInfo;
+			tags?: string[];
 		}
 
 		export interface IKernelInfo {

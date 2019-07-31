@@ -59,6 +59,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
+	private _tags: string[];
 	private _language: string;
 	private _onErrorEmitter = new Emitter<INotification>();
 	private _savedKernelInfo: nb.IKernelInfo;
@@ -550,6 +551,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
+	public get tags(): string[] {
+		return this._tags;
+	}
 
 	public get languageInfo(): nb.ILanguageInfo {
 		return this._defaultLanguageInfo;
@@ -984,6 +988,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
+		metadata.tags = this._tags;
 		return {
 			metadata,
 			nbformat_minor: this._nbformatMinor,

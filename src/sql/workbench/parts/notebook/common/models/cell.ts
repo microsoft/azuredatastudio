@@ -43,7 +43,9 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; };
+	private _metadata: { language?: string; tags?: string[]; };
+	private _isHidden: boolean;
+	private _onToggleStateChanged = new Emitter<boolean>();
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -71,6 +73,10 @@ export class CellModel implements ICellModel {
 		return other && other.id === this.id;
 	}
 
+	public get onToggleStateChanged(): Event<boolean> {
+		return this._onToggleStateChanged.event;
+	}
+
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
 		return this._onOutputsChanged.event;
 	}
@@ -85,6 +91,15 @@ export class CellModel implements ICellModel {
 
 	public get future(): FutureInternal {
 		return this._future;
+	}
+
+	public get isHidden() {
+		return this._isHidden;
+	}
+
+	public set isHidden(isHidden: boolean) {
+		this._isHidden = isHidden;
+		this._onToggleStateChanged.fire(this._isHidden);
 	}
 
 	public set isEditMode(isEditMode: boolean) {
