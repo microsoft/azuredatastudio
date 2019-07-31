@@ -309,7 +309,7 @@ export class ServerGroupDialog extends Modal {
 	private updateView(): void {
 		// check the color buttons and if their checked state does not match the view model state then correct it
 		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
-			let { colorbox: colorbox, color } = this._color	esMap[i];
+			let { colorbox: colorbox, color } = this._colorColorBoxesMap[i];
 			if ((this._viewModel.groupColor === color) && (colorbox.checked === false)) {
 				colorbox.checked = true;
 				this._selectedColorOption = i;
