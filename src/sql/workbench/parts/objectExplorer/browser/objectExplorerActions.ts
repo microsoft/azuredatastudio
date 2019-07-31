@@ -12,10 +12,6 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as azdata from 'azdata';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
-import {
-	ScriptSelectAction, EditDataAction, ScriptCreateAction,
-	ScriptExecuteAction, ScriptDeleteAction, ScriptAlterAction
-} from 'sql/workbench/common/actions';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
@@ -28,6 +24,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
+import { ScriptSelectAction, EditDataAction, ScriptCreateAction, ScriptExecuteAction, ScriptAlterAction, ScriptDeleteAction } from 'sql/workbench/electron-browser/scriptingActions';
 
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {

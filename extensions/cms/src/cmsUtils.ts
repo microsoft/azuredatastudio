@@ -32,6 +32,10 @@ export interface CreateCmsResult {
  */
 export class CmsUtils {
 
+	constructor(private _memento: vscode.Memento) {
+		this._registeredCmsServers = this.getSavedServers();
+	}
+
 	private _credentialProvider: azdata.CredentialProvider;
 	private _cmsService: mssql.CmsService;
 	private _registeredCmsServers: ICmsResourceNodeInfo[] = [];
@@ -52,17 +56,12 @@ export class CmsUtils {
 		return vscode.window.showErrorMessage(message, ...items);
 	}
 
-	/**
-	 * Get the configuration for a extensionName
-	 * @param extensionName The string name of the extension to get the configuration for
-	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
-	 */
-	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration('centralManagementServers');
+	public getSavedServers(): ICmsResourceNodeInfo[] {
+		return this._memento.get('centralManagementServers') || [];
 	}
 
-	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('centralManagementServers').update('servers', value, true);
+	public async saveServers(servers: ICmsResourceNodeInfo[]): Promise<void> {
+		await this._memento.update('centralManagementServers', servers);
 	}
 
 	// Connection APIs
@@ -128,12 +127,12 @@ export class CmsUtils {
 	}
 
 	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
-		let config = this.getConfiguration();
-		if (config && config.servers) {
-			let newServers = config.servers.filter((cachedServer) => {
+		const servers: ICmsResourceNodeInfo[] = this._memento.get('servers');
+		if (servers) {
+			const newServers: ICmsResourceNodeInfo[] = servers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServerName;
 			});
-			await this.setConfiguration(newServers);
+			await this.saveServers(newServers);
 			this._registeredCmsServers = this._registeredCmsServers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServerName;
 			});
@@ -164,7 +163,7 @@ export class CmsUtils {
 			// don't save password in config
 			server.connection.options.password = '';
 		});
-		await this.setConfiguration(toSaveCmsServers);
+		await this.saveServers(toSaveCmsServers);
 	}
 
 	public async addRegisteredServer(relativePath: string, ownerUri: string,

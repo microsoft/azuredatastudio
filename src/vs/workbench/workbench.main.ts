@@ -467,6 +467,7 @@ import 'sql/workbench/parts/tasks/browser/tasks.contribution';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
+import 'sql/workbench/parts/dataExplorer/common/nodeActions.common.contribution';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
@@ -506,7 +507,8 @@ import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.common.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboardConfig.contribution';
@@ -515,7 +517,8 @@ import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/workbench/parts/notebook/browser/notebook.contribution';
+import 'sql/workbench/parts/notebook/browser/notebook.common.contribution';
+import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
 /* Containers */
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
@@ -525,3 +528,5 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardContainer.cont
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
+
+import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';

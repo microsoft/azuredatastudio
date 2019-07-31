@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as azdata from 'azdata';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 
 export interface ConnectionProviderProperties {
