@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorForeground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -33,6 +33,15 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					color: ${buttonBackgroundColor} !important;
 					border-width: 1px;
 					border-style: solid;
+				}
+			`);
+		}
+
+		const textColor = theme.getColor(editorForeground);
+		if (textColor) {
+			collector.addRule(`
+				.notebookEditor .hoverButtonsContainer .hoverButton {
+					color: ${textColor};
 				}
 			`);
 		}
