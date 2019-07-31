@@ -17,7 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { Range } from 'vs/editor/common/core/range';
+import { Range, IRange } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileService, ISaveOptions, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
@@ -27,11 +27,13 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { Deferred } from 'sql/base/common/promise';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
 export class NotebookEditorModel extends EditorModel {
 	private dirty: boolean;
+	private changeEventsHookedUp: boolean = false;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: TextFileEditorModel | UntitledEditorModel,
@@ -39,12 +41,16 @@ export class NotebookEditorModel extends EditorModel {
 		@ITextFileService private textFileService: ITextFileService
 	) {
 		super();
+		console.log('notebook URI: ' + notebookUri);
 		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
-				notebook.modelReady.then(() => {
-					this._register(notebook.model.kernelChanged(e => this.updateModel()));
-					this._register(notebook.model.contentChanged(e => this.updateModel(e, NotebookChangeType.CellSourceUpdated)));
+				notebook.modelReady.then((model) => {
+					if (!this.changeEventsHookedUp) {
+						this.changeEventsHookedUp = true;
+						this._register(model.kernelChanged(e => this.updateModel()));
+						this._register(model.contentChanged(e => this.updateModel(e, NotebookChangeType.CellSourceUpdated)));
+					}
 				}, err => undefined);
 			}
 		}));
@@ -109,8 +115,8 @@ export class NotebookEditorModel extends EditorModel {
 
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
 				if (type === NotebookChangeType.CellSourceUpdated && contentChange) {
-					let sourceMap = new Map<string, jsonc.Node>();
-					let lastNode: jsonc.Node;
+					let sourceMap = new Map<string, jsonc.Node[]>();
+					let lastNode: jsonc.Node[] = [];
 					let lastPropertySource = false;
 					let lastPropertyGuid = false;
 					let content = this.textEditorModel.textEditorModel.getValue();
@@ -127,28 +133,53 @@ export class NotebookEditorModel extends EditorModel {
 						},
 						onLiteralValue: (value, offset, length) => {
 							if (lastPropertySource) {
-								lastNode = jsonc.getLocation(content, offset).previousNode;
+								lastNode.push(jsonc.getLocation(content, offset).previousNode);
 							} else if (lastPropertyGuid) {
 								sourceMap.set(value, lastNode);
+								lastNode = [];
 							}
 						}
 					});
-					let node = sourceMap.get(contentChange.cells[0].cellGuid);
-					if (node) {
-						let startPosition = this.textEditorModel.textEditorModel.getPositionAt(node.offset + 1);
-						let endPosition = this.textEditorModel.textEditorModel.getPositionAt(node.offset + node.length - 1);
-						console.log('fast edit');
-						this.textEditorModel.textEditorModel.applyEdits([{
-							range: new Range(startPosition.lineNumber, startPosition.column, endPosition.lineNumber, endPosition.column),
-							text: contentChange.cells[0].source
-						}]);
+					let node;
+					if (contentChange && contentChange.cells && contentChange.cells[0]) {
+						node = sourceMap.get(contentChange.cells[0].cellGuid);
+
+						if (node) {
+							// starting "
+							let startNodePosition = this.textEditorModel.textEditorModel.getPositionAt(node[0].offset);
+							// ending " for last line in source
+							// let endNodePosition = this.textEditorModel.textEditorModel.getPositionAt(node[node.length - 1].offset + node.length);
+
+							// now, convert the range to leverage offsets in the json
+							if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
+								contentChange.modelContentChangedEvent.changes.forEach(change => {
+									let convertedRange: IRange = {
+										startLineNumber: change.range.startLineNumber + startNodePosition.lineNumber - 1,
+										endLineNumber: change.range.endLineNumber + startNodePosition.lineNumber - 1,
+										startColumn: change.range.startColumn + startNodePosition.column,
+										endColumn: change.range.endColumn + startNodePosition.column
+									};
+
+									// Need to subtract one because the first " takes up one character
+									let startSpaces: string = ' '.repeat(startNodePosition.column - 1);
+									console.log('fast edit');
+									this.textEditorModel.textEditorModel.applyEdits([{
+										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
+										text: change.text.replace('\n', '\\n\",\n'.concat(startSpaces).concat('\"'))
+									}]);
+								});
+							} else {
+								console.log('slow edit3');
+								this.replaceEntireTextEditorModel(notebookModel, type);
+							}
+						} else {
+							console.log('slow edit1');
+							this.replaceEntireTextEditorModel(notebookModel, type);
+						}
 					} else {
-						console.log('slow edit1');
+						console.log('slow edit2');
 						this.replaceEntireTextEditorModel(notebookModel, type);
 					}
-				} else {
-					console.log('slow edit2');
-					this.replaceEntireTextEditorModel(notebookModel, type);
 				}
 			}
 		}
@@ -206,6 +237,8 @@ export class NotebookInput extends EditorInput {
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
 	private _notebookEditorOpenedTimestamp: number;
+	private _modelResolveInProgress: boolean = false;
+	private _modelResolved: Deferred<void> = new Deferred<void>();
 
 	constructor(private _title: string,
 		private resource: URI,
@@ -328,6 +361,12 @@ export class NotebookInput extends EditorInput {
 	}
 
 	async resolve(): Promise<NotebookEditorModel> {
+		if (!this._modelResolveInProgress) {
+			this._modelResolveInProgress = true;
+		} else {
+			await this._modelResolved;
+			return this._model;
+		}
 		if (this._model) {
 			return Promise.resolve(this._model);
 		} else {
@@ -341,6 +380,7 @@ export class NotebookInput extends EditorInput {
 			}
 			this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel);
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());
+			this._modelResolved.resolve();
 			return this._model;
 		}
 	}

@@ -1013,6 +1013,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			case NotebookChangeType.CellSourceUpdated:
 				changeInfo.changeType = NotebookChangeType.DirtyStateChanged;
 				changeInfo.isDirty = true;
+				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;
 			default:
 			// Do nothing for now

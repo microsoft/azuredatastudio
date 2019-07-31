@@ -22,6 +22,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -426,6 +427,11 @@ export interface NotebookContentChange {
 	 * Optional value indicating if the notebook is in a dirty or clean state after this change
 	 */
 	isDirty?: boolean;
+
+	/**
+	 * Text content changed event for cell edits
+	 */
+	modelContentChangedEvent?: IModelContentChangedEvent;
 }
 
 export interface ICellModelOptions {
@@ -471,6 +477,7 @@ export interface ICellModel {
 	loaded: boolean;
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
+	modelContentChangedEvent: IModelContentChangedEvent;
 }
 
 export interface FutureInternal extends nb.IFuture {

@@ -21,6 +21,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { generateUuid } from 'vs/base/common/uuid';
+import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 let modelId = 0;
 
 export class CellModel implements ICellModel {
@@ -46,6 +47,7 @@ export class CellModel implements ICellModel {
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
 	private _metadata: { language?: string, cellGuid?: string; };
+	private _modelContentChangedEvent: IModelContentChangedEvent;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -167,6 +169,15 @@ export class CellModel implements ICellModel {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 		}
+		this._modelContentChangedEvent = undefined;
+	}
+
+	public get modelContentChangedEvent(): IModelContentChangedEvent {
+		return this._modelContentChangedEvent;
+	}
+
+	public set modelContentChangedEvent(e: IModelContentChangedEvent) {
+		this._modelContentChangedEvent = e;
 	}
 
 	public get language(): string {
@@ -547,7 +558,7 @@ export class CellModel implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
-		this._cellGuid = cell.metadata.cellGuid ? cell.metadata.cellGuid : generateUuid();
+		this._cellGuid = cell.metadata && cell.metadata.cellGuid ? cell.metadata.cellGuid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
@@ -611,7 +622,9 @@ export class CellModel implements ICellModel {
 		if (typeof source === 'string') {
 			let sourceMultiline = source.split('\n');
 			// If source is one line (i.e. no '\n'), return it immediately
-			if (sourceMultiline.length <= 1) {
+			if (sourceMultiline.length === 1) {
+				return [source];
+			} else if (sourceMultiline.length === 0) {
 				return source;
 			}
 			// Otherwise, add back all of the newlines here
