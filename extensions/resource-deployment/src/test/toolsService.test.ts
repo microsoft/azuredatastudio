@@ -20,7 +20,7 @@ suite('Tools Service Tests', function (): void {
 			{ name: 'azcli', type: ToolType.AzCli },
 			{ name: 'docker', type: ToolType.Docker },
 			{ name: 'kubectl', type: ToolType.KubeCtl },
-			{ name: 'mssqlctl', type: ToolType.MSSQLCtl }];
+			{ name: 'azdata', type: ToolType.Azdata }];
 
 		const missingTypes: string[] = [];
 

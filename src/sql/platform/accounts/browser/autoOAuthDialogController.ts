@@ -32,7 +32,7 @@ export class AutoOAuthDialogController {
 	public openAutoOAuthDialog(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
 		if (this._providerId !== null) {
 			// If a oauth flyout is already open, return an error
-			const errorMessage = localize('oauthFlyoutIsAlreadyOpen', 'Cannot start auto OAuth. An auto OAuth is already in progress.');
+			const errorMessage = localize('oauthFlyoutIsAlreadyOpen', "Cannot start auto OAuth. An auto OAuth is already in progress.");
 			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
 			return Promise.reject(new Error('Auto OAuth dialog already open'));
 		}

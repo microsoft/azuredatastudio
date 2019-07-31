@@ -7,7 +7,7 @@
 
 import * as TypeMoq from 'typemoq';
 import 'mocha';
-import { NotebookService } from '../services/NotebookService';
+import { NotebookService } from '../services/notebookService';
 import assert = require('assert');
 import { NotebookInfo } from '../interfaces';
 import { IPlatformService } from '../services/platformService';
@@ -16,7 +16,7 @@ suite('Notebook Service Tests', function (): void {
 
 	test('getNotebook with string parameter', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object);
+		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookInput = 'test-notebook.ipynb';
 		mockPlatformService.setup((service) => service.platform()).returns(() => { return 'win32'; });
 		let returnValue = notebookService.getNotebook(notebookInput);
@@ -32,7 +32,7 @@ suite('Notebook Service Tests', function (): void {
 
 	test('getNotebook with NotebookInfo parameter', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object);
+		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookWin32 = 'test-notebook-win32.ipynb';
 		const notebookDarwin = 'test-notebook-darwin.ipynb';
 		const notebookLinux = 'test-notebook-linux.ipynb';
@@ -62,7 +62,7 @@ suite('Notebook Service Tests', function (): void {
 
 	test('findNextUntitledEditorName with no name conflict', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object);
+		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookFileName = 'mynotebook.ipynb';
 		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
 
@@ -76,7 +76,7 @@ suite('Notebook Service Tests', function (): void {
 
 	test('findNextUntitledEditorName with name conflicts', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const notebookService = new NotebookService(mockPlatformService.object);
+		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const notebookFileName = 'mynotebook.ipynb';
 		const sourceNotebookPath = `./notebooks/${notebookFileName}`;
 		const expectedFileName = 'mynotebook-2';

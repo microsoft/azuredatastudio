@@ -11,7 +11,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { deepClone } from 'vs/base/common/objects';
 
 import * as azdata from 'azdata';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 
 export interface ConnectionProviderProperties {
@@ -69,7 +69,7 @@ const ConnectionProviderContrib: IJSONSchema = {
 			description: localize('schema.displayName', "Display Name for the provider")
 		},
 		iconPath: {
-			description: localize('schema.iconPath', 'Icon path for the server type'),
+			description: localize('schema.iconPath', "Icon path for the server type"),
 			oneOf: [
 				{
 					type: 'array',

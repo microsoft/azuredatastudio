@@ -37,14 +37,14 @@ import { DashboardComponent } from 'sql/workbench/parts/dashboard/browser/dashbo
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/browser/contents/dashboardWidgetWrapper.component';
 import { DashboardWidgetContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.component';
 import { DashboardGridContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.component';
-import { DashboardWebviewContainer } from 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.component';
+import { DashboardWebviewContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.component';
 import { DashboardModelViewContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.component';
 import { DashboardErrorContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardErrorContainer.component';
 import { DashboardNavSection } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.component';
 import { WidgetContent } from 'sql/workbench/parts/dashboard/browser/contents/widgetContent.component';
 import { ModelViewContent } from 'sql/workbench/browser/modelComponents/modelViewContent.component';
 import { ModelComponentWrapper } from 'sql/workbench/browser/modelComponents/modelComponentWrapper.component';
-import { WebviewContent } from 'sql/workbench/parts/dashboard/electron-browser/contents/webviewContent.component';
+import { WebviewContent } from 'sql/workbench/parts/dashboard/browser/contents/webviewContent.component';
 import { BreadcrumbComponent } from 'sql/base/browser/ui/breadcrumb/breadcrumb.component';
 import { IBreadcrumbService } from 'sql/base/browser/ui/breadcrumb/interfaces';
 import { DashboardHomeContainer } from 'sql/workbench/parts/dashboard/browser/containers/dashboardHomeContainer.component';
@@ -84,7 +84,7 @@ import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/browser
 import { ExplorerWidget } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.component';
 import { TasksWidget } from 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.component';
-import { WebviewWidget } from 'sql/workbench/parts/dashboard/electron-browser/widgets/webview/webviewWidget.component';
+import { WebviewWidget } from 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.component';
 import { JobStepsViewComponent } from 'sql/workbench/parts/jobManagement/browser/jobStepsView.component';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 import { ILogService } from 'vs/platform/log/common/log';

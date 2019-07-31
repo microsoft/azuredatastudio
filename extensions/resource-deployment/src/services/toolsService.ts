@@ -14,11 +14,11 @@ export interface IToolsService {
 }
 
 export class ToolsService implements IToolsService {
+	private supportedTools: ITool[];
+
 	constructor() {
 		this.supportedTools = [new DockerTool(), new AzCliTool(), new AzdataTool(), new KubeCtlTool()];
 	}
-
-	private supportedTools: ITool[];
 
 	getToolByName(toolName: string): ITool | undefined {
 		return this.supportedTools.find(t => t.name === toolName);

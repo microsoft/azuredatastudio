@@ -10,7 +10,7 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, ConnectionType } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { isUndefinedOrNull } from 'vs/base/common/types';

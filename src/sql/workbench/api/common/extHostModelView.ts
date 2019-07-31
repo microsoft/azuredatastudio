@@ -13,7 +13,7 @@ import * as vscode from 'vscode';
 import * as azdata from 'azdata';
 
 import { SqlMainContext, ExtHostModelViewShape, MainThreadModelViewShape, ExtHostModelViewTreeViewsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IItemConfig, ModelComponentTypes, IComponentShape, IComponentEventArgs, ComponentEventType, ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 
 class ModelBuilderImpl implements azdata.ModelBuilder {
@@ -578,7 +578,7 @@ class ComponentWrapper implements azdata.Component {
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
 		let itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
-			throw new Error(nls.localize('unknownComponentType', 'Unkown component type. Must use ModelBuilder to create objects'));
+			throw new Error(nls.localize('unknownComponentType', "Unkown component type. Must use ModelBuilder to create objects"));
 		}
 		let config = new InternalItemConfig(itemImpl, itemLayout);
 		if (index !== undefined && index >= 0 && index < this.items.length) {
@@ -586,7 +586,7 @@ class ComponentWrapper implements azdata.Component {
 		} else if (!index) {
 			this.itemConfigs.push(config);
 		} else {
-			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
+			throw new Error(nls.localize('invalidIndex', "The index is invalid."));
 		}
 		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
@@ -1126,6 +1126,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('selectedRows', v);
 	}
 
+	public get forceFitColumns(): ColumnSizingMode {
+		return this.properties['forceFitColumns'];
+	}
+	public set forceFitColunms(v: ColumnSizingMode) {
+		this.setProperty('forceFitColumns', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1458,7 +1465,7 @@ class ModelViewImpl implements azdata.ModelView {
 		this._component = component;
 		let componentImpl = <any>component as ComponentWrapper;
 		if (!componentImpl) {
-			return Promise.reject(nls.localize('unknownConfig', 'Unkown component configuration, must use ModelBuilder to create a configuration object'));
+			return Promise.reject(nls.localize('unknownConfig', "Unkown component configuration, must use ModelBuilder to create a configuration object"));
 		}
 		return this._proxy.$initializeModel(this._handle, componentImpl.toComponentShape());
 	}

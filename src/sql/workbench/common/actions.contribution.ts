@@ -24,26 +24,26 @@ Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
 	'id': 'previewFeatures',
-	'title': nls.localize('previewFeatures.configTitle', 'Preview Features'),
+	'title': nls.localize('previewFeatures.configTitle', "Preview Features"),
 	'type': 'object',
 	'properties': {
 		'workbench.enablePreviewFeatures': {
 			'type': 'boolean',
 			'default': undefined,
-			'description': nls.localize('previewFeatures.configEnable', 'Enable unreleased preview features')
+			'description': nls.localize('previewFeatures.configEnable', "Enable unreleased preview features")
 		}
 	}
 });
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
 	'id': 'showConnectDialogOnStartup',
-	'title': nls.localize('showConnectDialogOnStartup', 'Show connect dialog on startup'),
+	'title': nls.localize('showConnectDialogOnStartup', "Show connect dialog on startup"),
 	'type': 'object',
 	'properties': {
 		'workbench.showConnectDialogOnStartup': {
 			'type': 'boolean',
 			'default': true,
-			'description': nls.localize('showConnectDialogOnStartup', 'Show connect dialog on startup')
+			'description': nls.localize('showConnectDialogOnStartup', "Show connect dialog on startup")
 		}
 	}
 });

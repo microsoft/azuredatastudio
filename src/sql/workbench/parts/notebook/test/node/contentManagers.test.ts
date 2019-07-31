@@ -5,12 +5,18 @@
 
 import * as should from 'should';
 import { nb } from 'azdata';
+import * as typemoq from 'typemoq';
 
 import { URI } from 'vs/base/common/uri';
 import * as tempWrite from 'temp-write';
-import { LocalContentManager } from 'sql/workbench/services/notebook/node/localContentManager';
+import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
 import * as testUtils from '../../../../../../sqltest/utils/testUtils';
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
+import { TestFileService } from 'vs/workbench/test/workbenchTestServices';
+import { IFileService, IReadFileOptions, IFileContent, IWriteFileOptions, IFileStatWithMetadata } from 'vs/platform/files/common/files';
+import * as pfs from 'vs/base/node/pfs';
+import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
 
 let expectedNotebookContent: nb.INotebookContents = {
 	cells: [{
@@ -40,7 +46,23 @@ function verifyMatchesExpectedNotebook(notebook: nb.INotebookContents): void {
 }
 
 suite('Local Content Manager', function (): void {
-	let contentManager = new LocalContentManager();
+	let contentManager: LocalContentManager;
+
+	setup(() => {
+		const instantiationService = new TestInstantiationService();
+		const fileService = new class extends TestFileService {
+			async readFile(resource: URI, options?: IReadFileOptions | undefined): Promise<IFileContent> {
+				const content = await pfs.readFile(resource.fsPath);
+				return { name: ',', size: 0, etag: '', mtime: 0, value: VSBuffer.fromString(content.toString()), resource };
+			}
+			async writeFile(resource: URI, bufferOrReadable: VSBuffer | VSBufferReadable, options?: IWriteFileOptions): Promise<IFileStatWithMetadata> {
+				await pfs.writeFile(resource.fsPath, bufferOrReadable.toString());
+				return { resource: resource, mtime: 0, etag: '', size: 0, name: '', isDirectory: false };
+			}
+		};
+		instantiationService.set(IFileService, fileService);
+		contentManager = instantiationService.createInstance(LocalContentManager);
+	});
 
 	test('Should return undefined if path is undefined', async function (): Promise<void> {
 		let content = await contentManager.getNotebookContents(undefined);

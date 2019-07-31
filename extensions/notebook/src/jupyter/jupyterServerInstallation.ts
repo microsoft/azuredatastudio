@@ -425,17 +425,19 @@ export class JupyterServerInstallation {
 	}
 
 	private async installOfflinePipDependencies(): Promise<void> {
-		let installJupyterCommand: string;
-		if (process.platform === constants.winPlatform) {
-			let cmdOptions = this._usingExistingPython ? '--user' : '';
-			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
-			installJupyterCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
-		}
-
-		if (installJupyterCommand) {
+		// Skip this step if using existing python, since this is for our provided package
+		if (!this._usingExistingPython && process.platform === constants.winPlatform) {
 			this.outputChannel.show(true);
 			this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
+
+			let requirements = path.join(this._pythonPackageDir, 'requirements.txt');
+			let installJupyterCommand = `"${this._pythonExecutable}" -m pip install --no-index -r "${requirements}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			await this.executeStreamedCommand(installJupyterCommand);
+
+			// Force reinstall pip to update shebangs in pip*.exe files
+			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --force-reinstall --no-index pip --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
+			await this.executeStreamedCommand(installJupyterCommand);
+
 			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
 			return Promise.resolve();

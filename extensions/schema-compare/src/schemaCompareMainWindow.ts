@@ -266,6 +266,10 @@ export class SchemaCompareMainWindow {
 		return this.deploymentOptions;
 	}
 
+	public setDeploymentOptions(deploymentOptions: azdata.DeploymentOptions): void {
+		this.deploymentOptions = deploymentOptions;
+	}
+
 	public async execute(): Promise<void> {
 		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
 		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
@@ -649,7 +653,6 @@ export class SchemaCompareMainWindow {
 			// create fresh every time
 			this.schemaCompareOptionDialog = new SchemaCompareOptionsDialog(this.deploymentOptions, this);
 			await this.schemaCompareOptionDialog.openDialog();
-			this.deploymentOptions = this.schemaCompareOptionDialog.deploymentOptions;
 		});
 	}
 
@@ -915,7 +918,7 @@ export class SchemaCompareMainWindow {
 			}
 
 			this.updateSourceAndTarget();
-			this.deploymentOptions = result.deploymentOptions;
+			this.setDeploymentOptions(result.deploymentOptions);
 			this.scmpSourceExcludes = result.excludedSourceElements;
 			this.scmpTargetExcludes = result.excludedTargetElements;
 			this.sourceTargetSwitched = result.originalTargetName !== this.targetEndpointInfo.databaseName;
@@ -1014,7 +1017,7 @@ export class SchemaCompareMainWindow {
 		// Same as dacfx default options
 		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
 		let result = await service.schemaCompareGetDefaultOptions();
-		this.deploymentOptions = result.defaultDeploymentOptions;
+		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}
 }
 

@@ -16,7 +16,7 @@ import ButtonComponent from './button.component';
 import CheckBoxComponent from './checkbox.component';
 import TreeComponent from './tree.component';
 import RadioButtonComponent from './radioButton.component';
-import WebViewComponent from '../../electron-browser/modelComponents/webview.component';
+import WebViewComponent from './webview.component';
 import TableComponent from './table.component';
 import TextComponent from './text.component';
 import LoadingComponent from './loadingComponent.component';

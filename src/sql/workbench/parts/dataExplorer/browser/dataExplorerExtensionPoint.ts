@@ -31,15 +31,15 @@ const viewDescriptor: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			description: localize('vscode.extension.contributes.view.id', 'Identifier of the view. Use this to register a data provider through `vscode.window.registerTreeDataProviderForView` API. Also to trigger activating your extension by registering `onView:${id}` event to `activationEvents`.'),
+			description: localize('vscode.extension.contributes.view.id', "Identifier of the view. Use this to register a data provider through `vscode.window.registerTreeDataProviderForView` API. Also to trigger activating your extension by registering `onView:${id}` event to `activationEvents`."),
 			type: 'string'
 		},
 		name: {
-			description: localize('vscode.extension.contributes.view.name', 'The human-readable name of the view. Will be shown'),
+			description: localize('vscode.extension.contributes.view.name', "The human-readable name of the view. Will be shown"),
 			type: 'string'
 		},
 		when: {
-			description: localize('vscode.extension.contributes.view.when', 'Condition which must be true to show this view'),
+			description: localize('vscode.extension.contributes.view.when', "Condition which must be true to show this view"),
 			type: 'string'
 		},
 	}
@@ -133,15 +133,15 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 		for (let descriptor of viewDescriptors) {
 			if (typeof descriptor.id !== 'string') {
-				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'id'));
+				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", "id"));
 				return false;
 			}
 			if (typeof descriptor.name !== 'string') {
-				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'name'));
+				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", "name"));
 				return false;
 			}
 			if (descriptor.when && typeof descriptor.when !== 'string') {
-				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'when'));
+				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", "when"));
 				return false;
 			}
 		}

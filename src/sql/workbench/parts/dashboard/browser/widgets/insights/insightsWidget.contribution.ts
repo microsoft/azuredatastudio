@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { join } from 'path';
+import { join } from 'vs/base/common/path';
 
 import { registerDashboardWidget, registerNonCustomDashboardWidget } from 'sql/platform/dashboard/browser/widgetRegistry';
 import { Extensions as InsightExtensions, IInsightRegistry } from 'sql/platform/dashboard/browser/insightRegistry';

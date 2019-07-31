@@ -15,7 +15,7 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { DashboardServiceInterface } from 'sql/workbench/parts/dashboard/browser/services/dashboardServiceInterface.service';
 import { WIDGETS_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
 import { GRID_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
-import { WEBVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
+import { WEBVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import { MODELVIEW_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.contribution';
 import { CONTROLHOST_CONTAINER } from 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import { NAV_SECTION } from 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';

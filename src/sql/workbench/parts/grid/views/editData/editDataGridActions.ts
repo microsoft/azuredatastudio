@@ -33,7 +33,7 @@ export class EditDataGridActionProvider extends GridActionProvider {
 
 export class DeleteRowAction extends Action {
 	public static ID = 'grid.deleteRow';
-	public static LABEL = localize('deleteRow', 'Delete Row');
+	public static LABEL = localize('deleteRow', "Delete Row");
 
 	constructor(
 		id: string,
@@ -51,7 +51,7 @@ export class DeleteRowAction extends Action {
 
 export class RevertRowAction extends Action {
 	public static ID = 'grid.revertRow';
-	public static LABEL = localize('revertRow', 'Revert Current Row');
+	public static LABEL = localize('revertRow', "Revert Current Row");
 
 	constructor(
 		id: string,

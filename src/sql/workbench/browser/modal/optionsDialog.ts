@@ -33,6 +33,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class CategoryView extends ViewletPanel {
 
@@ -42,9 +43,10 @@ export class CategoryView extends ViewletPanel {
 		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
 	}
 
 	// we want a fixed size, so when we render to will measure our content and set that to be our
@@ -94,9 +96,10 @@ export class OptionsDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
+		super(title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
 	public render() {
@@ -106,8 +109,8 @@ export class OptionsDialog extends Modal {
 			this.backButton.onDidClick(() => this.cancel());
 			attachButtonStyler(this.backButton, this._themeService, { buttonBackground: SIDE_BAR_BACKGROUND, buttonHoverBackground: SIDE_BAR_BACKGROUND });
 		}
-		let okButton = this.addFooterButton(localize('optionsDialog.ok', 'OK'), () => this.ok());
-		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', 'Cancel'), () => this.cancel());
+		let okButton = this.addFooterButton(localize('optionsDialog.ok', "OK"), () => this.ok());
+		let closeButton = this.addFooterButton(this.options.cancelLabel || localize('optionsDialog.cancel', "Cancel"), () => this.cancel());
 		// Theme styler
 		attachButtonStyler(okButton, this._themeService);
 		attachButtonStyler(closeButton, this._themeService);
