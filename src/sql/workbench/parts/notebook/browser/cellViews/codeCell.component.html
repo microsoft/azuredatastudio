@@ -6,7 +6,8 @@
 -->
 <div style="width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div style="flex: 0 0 auto;">
-		<code-component [cellModel]="cellModel" [model]="model" [activeCellId]="activeCellId"></code-component>
+		<code-component *ngIf="isVisible" [cellModel]="cellModel" [model]="model" [activeCellId]="activeCellId"></code-component>
+		<hidden-component [cellModel]="cellModel"></hidden-component>
 	</div>
 	<div style="flex: 0 0 auto; width: 100%; height: 100%; display: block">
 		<output-area-component *ngIf="cellModel.outputs && cellModel.outputs.length > 0" [cellModel]="cellModel" [activeCellId]="activeCellId">

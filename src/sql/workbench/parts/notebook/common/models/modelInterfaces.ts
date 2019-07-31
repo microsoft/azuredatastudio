@@ -470,6 +470,8 @@ export interface ICellModel {
 	loaded: boolean;
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
+	isHidden: boolean;
+	readonly onToggleStateChanged: Event<boolean>;
 }
 
 export interface FutureInternal extends nb.IFuture {
