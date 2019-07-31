@@ -427,15 +427,17 @@ export class ExtensionsListView extends ViewletPanel {
 		}
 
 		// {{SQL CARBON EDIT}}
-		let promiseRecommendedExtensionsByScenario;
-		Object.keys(this.productService.recommendedExtensionsByScenario).forEach(scenarioType => {
-			let re = new RegExp('@' + scenarioType, 'i');
-			if (re.test(query.value)) {
-				promiseRecommendedExtensionsByScenario = this.getRecommendedExtensionsByScenario(token, scenarioType);
+		if (this.productService) {
+			let promiseRecommendedExtensionsByScenario: Promise<IPagedModel<IExtension>> | undefined;
+			Object.keys(this.productService.recommendedExtensionsByScenario).forEach(scenarioType => {
+				let re = new RegExp('@' + scenarioType, 'i');
+				if (re.test(query.value)) {
+					promiseRecommendedExtensionsByScenario = this.getRecommendedExtensionsByScenario(token, scenarioType);
+				}
+			});
+			if (promiseRecommendedExtensionsByScenario) {
+				return promiseRecommendedExtensionsByScenario;
 			}
-		});
-		if (promiseRecommendedExtensionsByScenario) {
-			return promiseRecommendedExtensionsByScenario;
 		}
 		// {{SQL CARBON EDIT}} - End
 
