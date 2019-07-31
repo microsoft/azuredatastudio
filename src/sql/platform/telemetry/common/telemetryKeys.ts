@@ -51,6 +51,7 @@ export const JobsView = 'JobsViewOpened';
 export const JobHistoryView = 'JobHistoryViewOpened';
 export const JobStepsView = 'JobStepsViewOpened';
 export const ExtensionRecommendationDialog = 'ExtensionRecommendationDialog';
+export const ResultsPanel = 'ResultsPanel';
 
 // Actions
 export const RunAgentJob = 'RunAgentJob';
