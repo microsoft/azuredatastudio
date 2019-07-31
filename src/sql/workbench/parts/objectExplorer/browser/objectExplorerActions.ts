@@ -12,18 +12,13 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import * as azdata from 'azdata';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
-import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
 	public connectionProfile: azdata.IConnectionProfile;

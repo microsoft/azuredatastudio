@@ -489,6 +489,7 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
+import 'sql/workbench/parts/objectExplorer/electron-browser/objectExplorerScripting.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard
