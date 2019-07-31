@@ -64,7 +64,6 @@ export class Colorbox extends Widget {
 
 	public set checked(checked: boolean) {
 		this._checked = checked;
-		this.domNode.setAttribute('sql-colorbox-checked', String(this.checked));
 		if (this._checked) {
 			this.domNode.classList.add('checked');
 		} else {
