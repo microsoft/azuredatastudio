@@ -46,6 +46,12 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					border-width: 1px;
 				}
 			`);
+
+			collector.addRule(`
+				.notebookEditor .hoverButton:active {
+					border-color: ${activeBorder};
+				}
+			`);
 		}
 
 		// Box shadow handling
@@ -111,6 +117,13 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					{
 						background-color: ${codeBackground};
 					}`);
+
+				collector.addRule(`
+					.notebookEditor .hoverButtonsContainer .hoverButton {
+						background-color: ${codeBackground};
+					}
+				`);
+
 				// Margin background will be the same (may override some styles)
 				collector.addRule(`.notebook-cell:not(.active) code-component .monaco-editor .margin { background-color: ${codeBackground}; }`);
 				addBorderToInactiveCodeCells = false;
@@ -160,6 +173,13 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				`);
 			}
 
+			collector.addRule(`
+				.notebookEditor .hoverButtonsContainer .hoverButton {
+					border-color: ${inactiveBorder};
+					border-width: 1px;
+					border-style: solid;
+				}
+			`);
 		}
 
 		// Sidebar and cell outline toolbar color set only when active

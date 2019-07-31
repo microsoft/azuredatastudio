@@ -154,8 +154,6 @@
 	margin: 2px;
 	padding: 6px 10px 6px 10px;
 	font-size: 12px;
-	background-color: #FFFFFF;
-	border: 1px solid #0078D4;
 	box-sizing: border-box;
 	visibility: hidden;
 }
@@ -165,7 +163,6 @@
 }
 
 .notebookEditor .hoverButton:active {
-	background-color: #DDDDDD;
 	transform:scale(1.05);
 }
 
