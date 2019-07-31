@@ -56,6 +56,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onProviderIdChanged = new Emitter<string>();
 	private _activeContexts: IDefaultConnection;
 	private _trustedMode: boolean;
+	private _onActiveCellChanged = new Emitter<ICellModel>();
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
@@ -269,6 +270,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._onValidConnectionSelected.event;
 	}
 
+	public get onActiveCellChanged(): Event<ICellModel> {
+		return this._onActiveCellChanged.event;
+	}
+
 	public get standardKernels(): notebookUtils.IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
@@ -360,12 +365,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	private updateActiveCell(cell: ICellModel) {
+	public updateActiveCell(cell: ICellModel) {
 		if (this._activeCell) {
 			this._activeCell.active = false;
 		}
 		this._activeCell = cell;
-		this._activeCell.active = true;
+		if (cell) {
+			this._activeCell.active = true;
+		}
+		this._onActiveCellChanged.fire(cell);
 	}
 
 	private createCell(cellType: CellType): ICellModel {

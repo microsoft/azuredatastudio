@@ -340,6 +340,12 @@ export interface INotebookModel {
 	readonly onProviderIdChange: Event<string>;
 
 	/**
+	 * Event fired on active cell change
+	 */
+	readonly onActiveCellChanged: Event<ICellModel>;
+
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
@@ -407,6 +413,12 @@ export interface INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void;
 
 	standardKernels: IStandardKernelWithProvider[];
+
+	/**
+	 * Updates the model's view of an active cell to the new active cell
+	 * @param cell New active cell
+	 */
+	updateActiveCell(cell: ICellModel);
 }
 
 export interface NotebookContentChange {

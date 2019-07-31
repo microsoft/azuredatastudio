@@ -167,14 +167,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		if (cell !== this.model.activeCell) {
-			if (this.model.activeCell) {
-				this.model.activeCell.active = false;
-			}
-			this._model.activeCell = cell;
-			this._model.activeCell.active = true;
-			this.detectChanges();
-		}
+		this.model.updateActiveCell(cell);
+		this.detectChanges();
 	}
 
 	//Saves scrollTop value on scroll change
@@ -183,10 +177,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public unselectActiveCell() {
-		if (this.model && this.model.activeCell) {
-			this.model.activeCell.active = false;
-			this.model.activeCell = undefined;
-		}
+		this.model.updateActiveCell(undefined);
 		this.detectChanges();
 	}
 
