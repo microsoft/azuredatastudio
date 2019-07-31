@@ -552,6 +552,11 @@ export class CellModel implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
+		if (this._metadata.tags && this._metadata.tags.includes('hide_input')) {
+			this._isHidden = true;
+		} else {
+			this._isHidden = false;
+		}
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {

@@ -4748,6 +4748,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				tags?: string[];
 			};
 			execution_count?: number;
 			outputs?: ICellOutput[];
