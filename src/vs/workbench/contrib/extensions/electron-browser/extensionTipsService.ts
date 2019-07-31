@@ -50,6 +50,8 @@ import { extname } from 'vs/base/common/resources';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { IExeBasedExtensionTip } from 'vs/platform/product/common/product';
 import { timeout } from 'vs/base/common/async';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -115,7 +117,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 		@IExtensionsWorkbenchService private readonly extensionWorkbenchService: IExtensionsWorkbenchService,
 		@IExperimentService private readonly experimentService: IExperimentService,
-		@ITextFileService private readonly textFileService: ITextFileService
+		@ITextFileService private readonly textFileService: ITextFileService,
+		@IAdsTelemetryService private readonly adsTelemetryService: IAdsTelemetryService
 	) {
 		super();
 
@@ -1181,7 +1184,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						[{
 							label: localize('installAll', "Install All"),
 							run: () => {
-								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'install' });
+								this.adsTelemetryService.sendActionEvent(
+									TelemetryKeys.ExtensionRecommendationDialog,
+									TelemetryKeys.Click,
+									'InstallButton',
+									'VisualizerExtensionNotificationService'
+								);
 								const installAllAction = this.instantiationService.createInstance(InstallRecommendedExtensionsByScenarioAction, scenarioType, recommendations);
 								installAllAction.run();
 								installAllAction.dispose();
@@ -1189,7 +1197,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						}, {
 							label: localize('showRecommendations', "Show Recommendations"),
 							run: () => {
-								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'show' });
+								this.adsTelemetryService.sendActionEvent(
+									TelemetryKeys.ExtensionRecommendationDialog,
+									TelemetryKeys.Click,
+									'ShowRecommendationsButton',
+									'VisualizerExtensionNotificationService'
+								);
 								const showAction = this.instantiationService.createInstance(ShowRecommendedExtensionsByScenarioAction, scenarioType);
 								showAction.run();
 								showAction.dispose();
@@ -1199,7 +1212,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							label: choiceNever,
 							isSecondary: true,
 							run: () => {
-								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'neverShowAgain' });
+								this.adsTelemetryService.sendActionEvent(
+									TelemetryKeys.ExtensionRecommendationDialog,
+									TelemetryKeys.Click,
+									'NeverShowAgainButton',
+									'VisualizerExtensionNotificationService'
+								);
 								this.storageService.store(storageKey, true, StorageScope.GLOBAL);
 								c(undefined);
 							}
@@ -1207,7 +1225,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						{
 							sticky: true,
 							onCancel: () => {
-								this.telemetryService.publicLog(scenarioType + 'Recommendations:popup', { userReaction: 'cancelled' });
+								this.adsTelemetryService.sendActionEvent(
+									TelemetryKeys.ExtensionRecommendationDialog,
+									TelemetryKeys.Click,
+									'CancelButton',
+									'VisualizerExtensionNotificationService'
+								);
 								c(undefined);
 							}
 						}
