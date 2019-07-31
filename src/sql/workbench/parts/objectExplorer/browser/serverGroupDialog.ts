@@ -126,8 +126,8 @@ export class ServerGroupDialog extends Modal {
 
 	private isFocusOnColors(): boolean {
 		let result = false;
-		this._colorColorBoxesMap.forEach(({ colorbox: checkbox }) => {
-			if (document.activeElement === checkbox.domNode) {
+		this._colorColorBoxesMap.forEach(({ colorbox: colorbox }) => {
+			if (document.activeElement === colorbox.domNode) {
 				result = true;
 			}
 		});
@@ -220,22 +220,22 @@ export class ServerGroupDialog extends Modal {
 		for (let i = 0; i < this._viewModel.colors.length; i++) {
 			const color = this._viewModel.colors[i];
 
-			const colorCheckBox = new Colorbox(container, {
+			const colorColorBox = new Colorbox(container, {
 				name: 'server-group-color',
 				class: ['server-group-color'],
 			});
-			this._register(colorCheckBox.onSelect((viaKeyboard) => {
+			this._register(colorColorBox.onSelect((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorCheckBox.style({
+			colorColorBox.style({
 				backgroundColor: Color.fromHex(color)
 			});
 
 			// Theme styler
-			this._register(attachCheckboxStyler(colorCheckBox, this._themeService));
+			this._register(attachCheckboxStyler(colorColorBox, this._themeService));
 
-			// add the new checkbox to the color map
-			this._colorColorBoxesMap[i] = { color, colorbox: colorCheckBox };
+			// add the new colorbox to the color map
+			this._colorColorBoxesMap[i] = { color, colorbox: colorColorBox };
 		}
 	}
 
@@ -309,12 +309,12 @@ export class ServerGroupDialog extends Modal {
 	private updateView(): void {
 		// check the color buttons and if their checked state does not match the view model state then correct it
 		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
-			let { colorbox: checkbox, color } = this._colorColorBoxesMap[i];
-			if ((this._viewModel.groupColor === color) && (checkbox.checked === false)) {
-				checkbox.checked = true;
+			let { colorbox: colorbox, color } = this._color	esMap[i];
+			if ((this._viewModel.groupColor === color) && (colorbox.checked === false)) {
+				colorbox.checked = true;
 				this._selectedColorOption = i;
-			} else if ((this._viewModel.groupColor !== color) && (checkbox.checked === true)) {
-				checkbox.checked = false;
+			} else if ((this._viewModel.groupColor !== color) && (colorbox.checked === true)) {
+				colorbox.checked = false;
 			}
 		}
 
