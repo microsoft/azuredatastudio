@@ -88,19 +88,6 @@ export class ApiWrapper {
 	}
 
 	/**
-	 * Get the configuration for a extensionName
-	 * @param extensionName The string name of the extension to get the configuration for
-	 * @param resource The optional URI, as a URI object or a string, to use to get resource-scoped configurations
-	 */
-	public getConfiguration(): vscode.WorkspaceConfiguration {
-		return vscode.workspace.getConfiguration('centralManagementServers');
-	}
-
-	public async setConfiguration(value: any): Promise<void> {
-		await vscode.workspace.getConfiguration('centralManagementServers').update('servers', value, true);
-	}
-
-	/**
 	 * Parse uri
 	 */
 	public parseUri(uri: string): vscode.Uri {

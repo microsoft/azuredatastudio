@@ -932,8 +932,10 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 
 export interface ExtHostExtensionManagementShape {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }
 
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }
