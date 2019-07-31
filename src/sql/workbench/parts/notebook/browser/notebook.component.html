@@ -12,11 +12,11 @@
 		<div class="hoverButtonsContainer" *ngIf="(cells && cells.length > 0) && !isLoading">
 			<button class="hoverButton" (click)="addCell('code', 0)">
 				<div class="hoverButtonIcon"></div>
-				<span>Code</span>
+				<span>Add code</span>
 			</button>
 			<button class="hoverButton" (click)="addCell('markdown', 0)">
 				<div class="hoverButtonIcon"></div>
-				<span>Markdown</span>
+				<span>Add text</span>
 			</button>
 		</div>
 		<div *ngFor="let cell of cells">
@@ -27,11 +27,11 @@
 			<div class="hoverButtonsContainer">
 				<button class="hoverButton" (click)="addCell('code', findCellIndex(cell) + 1)">
 					<div class="hoverButtonIcon"></div>
-					<span>Code</span>
+					<span>Add code</span>
 				</button>
 				<button class="hoverButton" (click)="addCell('markdown', findCellIndex(cell) + 1)">
 					<div class="hoverButtonIcon"></div>
-					<span>Markdown</span>
+					<span>Add text</span>
 				</button>
 			</div>
 		</div>
