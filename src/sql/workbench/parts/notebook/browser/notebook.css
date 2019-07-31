@@ -164,12 +164,20 @@
 	transform:scale(1.05);
 }
 
-.notebookEditor .hoverButton .hoverButtonIcon {
+.notebookEditor .hoverButton .addCodeIcon,
+.notebookEditor .hoverButton .addTextIcon {
 	display: inline-block;
 	background-position: center center;
-	background-image: url("./media/light/add_code_icon.svg");
 	background-repeat: no-repeat;
 	width: 12px;
 	height: 12px;
 	margin-right: 7px;
+}
+
+.notebookEditor .hoverButton .addCodeIcon {
+	background-image: url("./media/light/add_code_icon.svg");
+}
+
+.notebookEditor .hoverButton .addTextIcon {
+	background-image: url("./media/light/add_text_icon.svg");
 }
