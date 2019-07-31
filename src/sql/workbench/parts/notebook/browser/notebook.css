@@ -159,6 +159,11 @@
 	box-sizing: border-box;
 }
 
+.notebookEditor .hoverButton:active {
+	background-color: #DDDDDD;
+	transform:scale(1.05);
+}
+
 .notebookEditor .hoverButton .hoverButtonIcon {
 	display: inline-block;
 	background-position: center center;
