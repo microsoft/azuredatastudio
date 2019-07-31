@@ -40,10 +40,12 @@ export interface IQueryEditorStateChange {
 	resultsVisibleChange?: boolean;
 	executingChange?: boolean;
 	connectingChange?: boolean;
+	sqlCmdModeChanged?: boolean;
 }
 
 export class QueryEditorState extends Disposable {
 	private _connected = false;
+	private _isSqlCmdMode = false;
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
@@ -93,6 +95,17 @@ export class QueryEditorState extends Disposable {
 
 	public get executing(): boolean {
 		return this._executing;
+	}
+
+	public set isSqlCmdMode(val: boolean) {
+		if (val !== this._isSqlCmdMode) {
+			this._isSqlCmdMode = val;
+			this._onChange.fire({ sqlCmdModeChanged: true });
+		}
+	}
+
+	public get isSqlCmdMode(): boolean {
+		return this._isSqlCmdMode;
 	}
 }
 

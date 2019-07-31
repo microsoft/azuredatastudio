@@ -14,7 +14,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
-import { ISelectionData } from 'azdata';
+import { ISelectionData, QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
@@ -27,6 +27,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -155,7 +156,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			} else {
 				// get the selection again this time with trimming
 				selection = editor.getSelection();
-				editor.input.runQuery(selection);
+				editor.input.runQuery(selection, undefined);
 			}
 		}
 	}
@@ -409,6 +410,66 @@ export class ListDatabasesAction extends QueryTaskbarAction {
 	}
 
 	public run(): Promise<void> {
+		return Promise.resolve(null);
+	}
+}
+
+/**
+ * Action class that toggles SQLCMD mode for the editor
+ */
+export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
+
+	public static EnableSqlcmdClass = 'enablesqlcmd';
+	public static DisableSqlcmdClass = 'disablesqlcmd';
+	public static ID = 'ToggleSqlCmdModeAction';
+
+	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', 'Enable SQLCMD Mode');
+	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', 'Disable SQLCMD Mode');
+	constructor(
+		editor: QueryEditor,
+		private _isSqlCmdMode: boolean,
+		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
+		@IConfigurationService protected readonly configurationService: IConfigurationService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+	) {
+		super(connectionManagementService, editor, ToggleSqlCmdModeAction.ID, undefined);
+	}
+
+	public get isSqlCmdMode(): boolean {
+		return this._isSqlCmdMode;
+	}
+
+	public set isSqlCmdMode(value: boolean) {
+		// intentionally always updating, since parent class handles skipping if values
+		this._isSqlCmdMode = value;
+		this.updateLabelAndIcon();
+	}
+
+	private updateLabelAndIcon(): void {
+		if (this._isSqlCmdMode) {
+			// We are connected, so show option to disconnect
+			this.label = this._disablesqlcmdLabel;
+			this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass);
+		} else {
+			this.label = this._enablesqlcmdLabel;
+			this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
+		}
+	}
+
+	public run(): Promise<void> {
+		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
+		if (this.isSqlCmdMode) {
+			// disable sql cmd mode if already enabled
+			this.editor.input.state.isSqlCmdMode = false;
+			queryoptions.options['IsSqlCmdMode'] = false;
+			this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions); // to set query options
+			this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL'); // to set intellisense options
+		} else {
+			this.editor.input.state.isSqlCmdMode = true;
+			queryoptions.options['IsSqlCmdMode'] = true;
+			this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
+			this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL');
+		}
 		return Promise.resolve(null);
 	}
 }

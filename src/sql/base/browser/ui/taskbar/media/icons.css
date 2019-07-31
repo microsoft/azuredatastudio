@@ -104,3 +104,23 @@
 .hc-black .icon.saveAsImage {
 	background-image: url('save_as_image_inverse.svg');
 }
+
+.vs .icon.enablesqlcmd {
+	background-image: url('connect.svg');
+}
+
+.vs-dark .icon.enablesqlcmd,
+.hc-black .icon.enablesqlcmd {
+	background-image: url('connect_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .icon.disablesqlcmd {
+	background-image: url('disconnect.svg');
+}
+
+.vs-dark .icon.disablesqlcmd,
+.hc-black .icon.disablesqlcmd {
+	background-image: url('disconnect_inverse.svg');
+	background-repeat: no-repeat;
+}
