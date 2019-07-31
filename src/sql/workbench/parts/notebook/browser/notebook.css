@@ -151,28 +151,20 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	margin: 10px;
-	padding: 5px;
+	margin: 2px 5px 2px 5px;
+	padding: 6px 10px 6px 10px;
 	font-size: 12px;
+	background-color: #FFFFFF;
+	border: 1px solid #0078D4;
+	box-sizing: border-box;
 }
 
 .notebookEditor .hoverButton .hoverButtonIcon {
 	display: inline-block;
 	background-position: center center;
-	background-image: url("./media/light/add.svg");
+	background-image: url("./media/light/add_code_icon.svg");
 	background-repeat: no-repeat;
 	width: 12px;
 	height: 12px;
-	margin-right: 5px;
-}
-
-.vs-dark .notebookEditor .hoverButton .hoverButtonIcon,
-.hc-black .notebookEditor .hoverButton .hoverButtonIcon{
-	display: inline-block;
-	background-position: center center;
-	background-image: url("./media/dark/add_inverse.svg");
-	background-repeat: no-repeat;
-	width: 15px;
-	height: 15px;
-	margin-right: 5px;
+	margin-right: 7px;
 }
