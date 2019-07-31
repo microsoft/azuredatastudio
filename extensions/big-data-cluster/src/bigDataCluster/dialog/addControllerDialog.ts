@@ -36,6 +36,7 @@ export class AddControllerDialogModel {
 
 	public async onComplete(clusterName: string, url: string, username: string, password: string, rememberPassword: boolean): Promise<void> {
 		try {
+			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
 			let response = await getEndPoints(clusterName, url, username, password, true);
 			if (response && response.endPoints) {
 				let masterInstance: IEndPoint = undefined;
