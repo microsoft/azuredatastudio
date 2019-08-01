@@ -153,7 +153,7 @@
 	align-items: center;
 	justify-content: center;
 	margin: 3px;
-	padding: 4px 10px;
+	padding: 4px 6px;
 	font-size: 10px;
 	box-sizing: border-box;
 	visibility: hidden;
@@ -175,7 +175,7 @@
 	width: 10px;
 	height: 10px;
 	background-size: contain;
-	margin-right: 5px;
+	margin-right: 4px;
 }
 
 .notebookEditor .hoverButton .addCodeIcon {
