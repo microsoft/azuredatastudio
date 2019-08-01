@@ -131,10 +131,9 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this._updateSelection = new Emitter<ISelectionData>();
 
 		this._runner = this._register(instantiationService.createInstance(QueryRunner, this.uri));
-		this._results = instantiationService.createInstance(QueryResultsInput, this.uri, this.runner);
+		this._results = this._register(instantiationService.createInstance(QueryResultsInput, this.uri, this.runner));
 
 		this._register(this._sql);
-		this._register(this._results);
 
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
