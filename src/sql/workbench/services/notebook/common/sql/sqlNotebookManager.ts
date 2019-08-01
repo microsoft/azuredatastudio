@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { SQL_NOTEBOOK_PROVIDER } from 'sql/workbench/services/notebook/common/notebookService';
 import { LocalContentManager } from 'sql/workbench/services/notebook/common/localContentManager';
-import { SqlSessionManager } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
+import { SqlSessionManager } from 'sql/workbench/services/notebook/common/sql/sqlSessionManager';
 
 export class SqlNotebookManager implements nb.NotebookProvider {
 	private _contentManager: nb.ContentManager;

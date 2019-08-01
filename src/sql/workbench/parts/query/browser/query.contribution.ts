@@ -25,8 +25,8 @@ import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/workbench/parts/query/browser/keyboardQueryActions';
-import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
-import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
+import * as gridActions from 'sql/workbench/parts/editData/common/gridActions';
+import * as gridCommands from 'sql/workbench/parts/editData/browser/gridCommands';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
