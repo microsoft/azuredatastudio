@@ -156,6 +156,7 @@
 	padding: 4px 6px;
 	font-size: 10px;
 	box-sizing: border-box;
+	border-style: solid;
 	border-radius: 3px;
 	visibility: hidden;
 }
