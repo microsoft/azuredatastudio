@@ -166,6 +166,14 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					border-color: ${inactiveBorder};
 					border-width: 1px;
 				}
+
+				.notebookEditor .hoverButtonsContainer .hoverButton {
+					border-color: transparent;
+					border-width: 1px;
+				}
+				.notebookEditor .hoverButtonsContainer .hoverButton:active {
+					border-width: 1px;
+				}
 			`);
 
 			// Ensure there's always a line between editor and output
@@ -193,14 +201,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					}
 				`);
 			}
-
-			collector.addRule(`
-				.notebookEditor .hoverButtonsContainer .hoverButton {
-					border-color: ${inactiveBorder};
-					border-width: 1px;
-					border-style: solid;
-				}
-			`);
 		}
 
 		// Sidebar and cell outline toolbar color set only when active
