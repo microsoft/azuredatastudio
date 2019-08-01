@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 .colorbox {
-	background: var(--colorbox-bg);
 	cursor: pointer;
 	-webkit-appearance: none;
 	opacity: 0.3;
@@ -12,4 +11,5 @@
 
 .colorbox.checked {
 	opacity: 1;
+	outline: none;
 }
