@@ -92,6 +92,18 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			.hc-black .notebookEditor .notebook-cell:hover:not(.active) {
 				box-shadow: 0;
 			}
+
+			.notebookEditor .hoverButtonsContainer .hoverButton:hover:not(.active) {
+				box-shadow: ${lightBoxShadow};
+			}
+
+			.notebookEditor .hoverButtonsContainer .hoverButton:hover:not(.active) {
+				box-shadow: ${darkBoxShadow};
+			}
+
+			.notebookEditor .hoverButtonsContainer .hoverButton:hover:not(.active) {
+				box-shadow: 0;
+			}
 		`);
 
 		const inactiveBorder = theme.getColor(SIDE_BAR_BACKGROUND);

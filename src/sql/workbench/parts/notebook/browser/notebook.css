@@ -8,7 +8,7 @@
 }
 
 .notebookEditor .notebook-cell {
-	margin: 0px 20px;
+	margin: 10px 20px;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
@@ -143,8 +143,11 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	width: 100%;
-	padding: 10px 0px;
+	width: 40%;
+	margin: 0px auto;
+	position: relative;
+	top: -23px;
+	z-index: 1;
 }
 
 .notebookEditor .hoverButtonsContainer .hoverButton {
@@ -153,8 +156,8 @@
 	align-items: center;
 	justify-content: center;
 	margin: 2px;
-	padding: 6px 10px 6px 10px;
-	font-size: 12px;
+	padding: 4px 10px;
+	font-size: 10px;
 	box-sizing: border-box;
 	visibility: hidden;
 }
@@ -172,9 +175,9 @@
 	display: inline-block;
 	background-position: center center;
 	background-repeat: no-repeat;
-	width: 12px;
-	height: 12px;
-	margin-right: 7px;
+	width: 10px;
+	height: 10px;
+	margin-right: 5px;
 }
 
 .notebookEditor .hoverButton .addCodeIcon {
