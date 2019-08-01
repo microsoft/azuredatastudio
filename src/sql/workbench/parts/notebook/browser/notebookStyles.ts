@@ -93,15 +93,15 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				box-shadow: 0;
 			}
 
-			.notebookEditor .hoverButtonsContainer .hoverButton:hover:not(.active) {
+			.notebookEditor .hoverButtonsContainer .hoverButton:hover {
 				box-shadow: ${lightBoxShadow};
 			}
 
-			.notebookEditor .hoverButtonsContainer .hoverButton:hover:not(.active) {
+			.vs-dark .notebookEditor .hoverButtonsContainer .hoverButton:hover {
 				box-shadow: ${darkBoxShadow};
 			}
 
-			.notebookEditor .hoverButtonsContainer .hoverButton:hover:not(.active) {
+			.hc-black .notebookEditor .hoverButtonsContainer .hoverButton:hover {
 				box-shadow: 0;
 			}
 		`);
