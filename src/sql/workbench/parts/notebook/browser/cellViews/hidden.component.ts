@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import 'vs/css!./placeholder';
+import 'vs/css!./code';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
@@ -50,6 +50,10 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 		this.cellModel.isHidden = !this.cellModel.isHidden;
 
 		// this._model.addCell(<CellType>cellType);
+	}
+
+	get isVisible(): boolean {
+		return !this.cellModel.isHidden;
 	}
 
 	public layout() {

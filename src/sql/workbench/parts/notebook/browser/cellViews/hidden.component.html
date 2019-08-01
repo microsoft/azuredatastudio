@@ -6,8 +6,7 @@
 -->
 <div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
 	<div class="hidden-component" style="flex: 0 0 auto;">
-		<div class="hidden-component text">
-			<p><a href="#" (click)="toggleVisibility($event)">👁</a></p>
-		</div>
+		<button *ngIf="isVisible" href="#" (click)="toggleVisibility($event)" class="hidden-component toggle-button icon-hide-cell"></button>
+		<button *ngIf="!isVisible" href="#" (click)="toggleVisibility($event)" class="hidden-component toggle-button icon-show-cell"></button>
 	</div>
 </div>

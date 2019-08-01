@@ -90,3 +90,29 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 {
 	padding-left: 10px
 }
+
+.toggle-button{
+	height: 20px;
+	width: 20px;
+	text-align: center;
+	background-size: 18px;
+}
+
+hidden-component .toggle-button.icon-hide-cell{
+	background-image: url("./media/light/minus.svg");
+}
+
+hidden-component .toggle-button.icon-show-cell{
+	background-image: url("./media/light/plus.svg");
+}
+
+.vs-dark hidden-component .toggle-button.icon-hide-cell,
+.hc-black hidden-component .toggle-button.icon-hide-cell{
+	background-image: url("./media/light/minus_inverse.svg");
+}
+
+
+.vs-dark hidden-component .toggle-button.icon-show-cell,
+.hc-black hidden-component .toggle-button.icon-show-cell{
+	background-image: url("./media/light/plus_inverse.svg");
+}
