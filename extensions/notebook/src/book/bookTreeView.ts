@@ -25,12 +25,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 
 	constructor(private workspaceRoot: string, extensionContext: vscode.ExtensionContext) {
-		if (workspaceRoot !== '') {
+		this.initialze(workspaceRoot, extensionContext);
+	}
+
+	private initialze(resource: string, context: vscode.ExtensionContext): void {
+		if (resource !== '') {
+			this.workspaceRoot = resource;
 			this._tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
 			let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
 			vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		}
-		this._extensionContext = extensionContext;
+		this._extensionContext = context;
 	}
 
 	private getTocFiles(dir: string): string[] {
@@ -49,10 +54,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openBook(resource: string, context: vscode.ExtensionContext): Promise<void> {
 		try {
-			let bookTreeProvider = new BookTreeViewProvider(resource, context);
-			let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: bookTreeProvider });
+			this.initialze(resource, context);
+			let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 			vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(res => {
-				let books = bookTreeProvider.getBooks();
+				let books = this.getBooks();
 				bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
 				const readmePath: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
 				if (fs.existsSync(readmePath)) {
@@ -151,7 +156,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					tableOfContents: this.flattenArray(tableOfContents),
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
-					collapsibleState: vscode.TreeItemCollapsibleState.Expanded
+					collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
