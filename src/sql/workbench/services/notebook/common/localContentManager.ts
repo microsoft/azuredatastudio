@@ -7,7 +7,6 @@
 
 import { nb } from 'azdata';
 
-import * as json from 'vs/base/common/json';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -25,8 +24,12 @@ export class LocalContentManager implements nb.ContentManager {
 	constructor(@IFileService private readonly fileService: IFileService) { }
 
 	public async loadFromContentString(contentString: string): Promise<nb.INotebookContents> {
-		let contents: JSONObject = json.parse(contentString);
-
+		let contents: JSONObject;
+		if (contentString === '' || contentString === undefined) {
+			return v4.createEmptyNotebook();
+		} else {
+			contents = JSON.parse(contentString);
+		}
 		if (contents) {
 			if (contents.nbformat === 4) {
 				return v4.readNotebook(<any>contents);
@@ -36,9 +39,6 @@ export class LocalContentManager implements nb.ContentManager {
 			if (contents.nbformat) {
 				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
 			}
-		} else if (contentString === '' || contentString === undefined) {
-			// Empty?
-			return v4.createEmptyNotebook();
 		}
 
 		// else, fallthrough condition
@@ -53,7 +53,13 @@ export class LocalContentManager implements nb.ContentManager {
 		// Note: intentionally letting caller handle exceptions
 		let notebookFileBuffer = await this.fileService.readFile(notebookUri);
 		let stringContents = notebookFileBuffer.value.toString();
-		let contents: JSONObject = json.parse(stringContents);
+		let contents: JSONObject;
+		if (stringContents === '' || stringContents === undefined) {
+			// Empty?
+			return v4.createEmptyNotebook();
+		} else {
+			contents = JSON.parse(stringContents);
+		}
 
 		if (contents) {
 			if (contents.nbformat === 4) {
@@ -64,9 +70,6 @@ export class LocalContentManager implements nb.ContentManager {
 			if (contents.nbformat) {
 				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
 			}
-		} else if (stringContents === '' || stringContents === undefined) {
-			// Empty?
-			return v4.createEmptyNotebook();
 		}
 
 		// else, fallthrough condition
