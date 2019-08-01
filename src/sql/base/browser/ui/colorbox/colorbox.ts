@@ -11,6 +11,7 @@ import { Widget } from 'vs/base/browser/ui/widget';
 export interface ColorboxOptions {
 	name: string;
 	class?: string[];
+	label?: string;
 }
 
 export interface ColorboxStyle {
@@ -37,6 +38,9 @@ export class Colorbox extends Widget {
 		this.domNode.classList.add('colorbox');
 		if (opts.class) {
 			this.domNode.classList.add(...opts.class);
+		}
+		if (opts.label) {
+			this.domNode.setAttribute('aria-label', opts.label);
 		}
 
 		container.appendChild(this.domNode);
