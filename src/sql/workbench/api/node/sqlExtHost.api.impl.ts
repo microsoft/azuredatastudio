@@ -101,6 +101,9 @@ export function createApiFactory(
 				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
 				},
+				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
+					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
+				},
 
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
