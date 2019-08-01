@@ -8,7 +8,7 @@
 }
 
 .notebookEditor .notebook-cell {
-	margin: 10px 20px 10px;
+	margin: 0px 20px;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
@@ -144,6 +144,7 @@
 	align-items: center;
 	justify-content: center;
 	width: 100%;
+	padding: 10px 0px;
 }
 
 .notebookEditor .hoverButtonsContainer .hoverButton {
