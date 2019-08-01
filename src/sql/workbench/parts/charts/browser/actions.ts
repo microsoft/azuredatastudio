@@ -3,24 +3,23 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsight } from './interfaces';
-import { Graph } from './graphInsight';
+import { IInsight } from 'sql/workbench/parts/charts/browser/interfaces';
+import { Graph } from 'sql/workbench/parts/charts/browser/graphInsight';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import { resolveCurrentDirectory, getRootPath } from 'sql/platform/common/pathUtilities';
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { join, normalize } from 'vs/base/common/path';
-import { writeFile } from 'vs/base/node/pfs';
-import { IWindowsService, IWindowService } from 'vs/platform/windows/common/windows';
+import { IWindowsService } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
-import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 import { IInsightOptions } from 'sql/workbench/parts/charts/common/interfaces';
+import { IFileService } from 'vs/platform/files/common/files';
+import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { VSBuffer } from 'vs/base/common/buffer';
 
 export interface IChartActionContext {
 	options: IInsightOptions;
@@ -143,70 +142,52 @@ export class SaveImageAction extends Action {
 	public static ICON = 'saveAsImage';
 
 	constructor(
-		@IWindowsService private windowsService: IWindowsService,
-		@IWindowService private windowService: IWindowService,
-		@INotificationService private notificationService: INotificationService,
-		@IEditorService private editorService: IEditorService,
-		@IWorkspaceContextService private workspaceContextService: IWorkspaceContextService
+		@IWindowsService private readonly windowsService: IWindowsService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IFileService private readonly fileService: IFileService,
+		@IFileDialogService private readonly fileDialogService: IFileDialogService
 	) {
 		super(SaveImageAction.ID, SaveImageAction.LABEL, SaveImageAction.ICON);
 	}
 
-	public run(context: IChartActionContext): Promise<boolean> {
+	public async run(context: IChartActionContext): Promise<boolean> {
 		if (context.insight instanceof Graph) {
-			return this.promptForFilepath().then(filePath => {
-				let data = (<Graph>context.insight).getCanvasData();
-				if (!data) {
-					this.showError(localize('chartNotFound', "Could not find chart to save"));
-					return false;
+			const filePath = await this.fileDialogService.pickFileToSave({});
+			const data = (<Graph>context.insight).getCanvasData();
+			if (!data) {
+				this.notificationService.error(localize('chartNotFound', "Could not find chart to save"));
+				return false;
+			}
+			if (filePath) {
+				let buffer = this.decodeBase64Image(data);
+				try {
+					await this.fileService.writeFile(filePath, buffer);
+				} catch (err) {
+					if (err) {
+						this.notificationService.error(err.message);
+					} else {
+						this.windowsService.openExternal(filePath.toString());
+						this.notificationService.notify({
+							severity: Severity.Error,
+							message: localize('chartSaved', 'Saved Chart to path: {0}', filePath.toString())
+						});
+					}
 				}
-				if (filePath) {
-					let buffer = this.decodeBase64Image(data);
-					writeFile(filePath, buffer).then(undefined, (err) => {
-						if (err) {
-							this.showError(err.message);
-						} else {
-							let fileUri = URI.file(filePath);
-							this.windowsService.openExternal(fileUri.toString());
-							this.notificationService.notify({
-								severity: Severity.Error,
-								message: localize('chartSaved', 'Saved Chart to path: {0}', filePath)
-							});
-						}
-					});
-				}
-				return true;
-			});
+			}
+			return true;
 		}
 		return Promise.resolve(false);
 	}
 
-	private decodeBase64Image(data: string): Buffer {
-		let matches = data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
-		return Buffer.from(matches[2], 'base64');
-	}
-
-	private promptForFilepath(): Promise<string> {
-		let filepathPlaceHolder = resolveCurrentDirectory(this.getActiveUriString(), getRootPath(this.workspaceContextService));
-		filepathPlaceHolder = join(filepathPlaceHolder, 'chart.png');
-		return this.windowService.showSaveDialog({
-			title: localize('chartViewer.saveAsFileTitle', "Choose Results File"),
-			defaultPath: normalize(filepathPlaceHolder)
-		});
-	}
-
-	private showError(errorMsg: string) {
-		this.notificationService.notify({
-			severity: Severity.Error,
-			message: errorMsg
-		});
-	}
-
-	private getActiveUriString(): string {
-		let editor = this.editorService.activeEditor;
-		if (editor instanceof QueryInput) {
-			return editor.uri;
+	private decodeBase64Image(data: string): VSBuffer {
+		const marker = ';base64,';
+		const raw = atob(data.substring(data.indexOf(marker) + marker.length));
+		const n = raw.length;
+		const a = new Uint8Array(new ArrayBuffer(n));
+		for (let i = 0; i < n; i++) {
+			a[i] = raw.charCodeAt(i);
 		}
-		return undefined;
+		return VSBuffer.wrap(a);
 	}
+
 }

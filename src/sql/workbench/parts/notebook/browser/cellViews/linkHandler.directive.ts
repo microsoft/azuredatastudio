@@ -5,14 +5,12 @@
 
 import { Directive, Inject, HostListener, Input } from '@angular/core';
 
-import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import product from 'vs/platform/product/node/product';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 
-const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', `${product.urlProtocol}`, 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
+const knownSchemes = new Set(['http', 'https', 'file', 'mailto', 'data', 'azuredatastudio', 'azuredatastudio-insiders', 'vscode', 'vscode-insiders', 'vscode-resource']);
 @Directive({
 	selector: '[link-handler]',
 })

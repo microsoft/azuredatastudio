@@ -14,7 +14,7 @@ import {
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import {
-	ObjectExplorerActionUtilities, ManageConnectionAction, OEAction
+	ManageConnectionAction, OEAction
 } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
@@ -172,8 +172,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			}
 		}
 
-		this.addScriptingActions(context, actions);
-
 		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
 		let isCloud = serverInfo && serverInfo.isCloud;
 
@@ -205,19 +203,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private addRestoreAction(context: ObjectExplorerContext, actions: IAction[]): void {
 		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
 			actions.push(this._instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL));
-		}
-	}
-
-	private addScriptingActions(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._scriptingService.isProviderRegistered(context.profile.providerName)) {
-			let scriptMap: Map<NodeType, any[]> = ObjectExplorerActionUtilities.getScriptMap(context.treeNode);
-			let supportedActions = scriptMap.get(context.treeNode.nodeTypeId);
-			let self = this;
-			if (supportedActions !== null && supportedActions !== undefined) {
-				supportedActions.forEach(action => {
-					actions.push(self._instantiationService.createInstance(action, action.ID, action.LABEL));
-				});
-			}
 		}
 	}
 }

@@ -35,6 +35,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
@@ -124,7 +125,8 @@ export class AccountDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
 			localize('linkedAccounts', "Linked accounts"),
@@ -134,6 +136,7 @@ export class AccountDialog extends Modal {
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);

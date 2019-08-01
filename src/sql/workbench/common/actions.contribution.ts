@@ -7,20 +7,13 @@ import * as Actions from './actions';
 
 import * as nls from 'vs/nls';
 
-import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
-import { ShowCurrentReleaseNotesAction } from 'sql/workbench/update/releaseNotes';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 
 new Actions.BackupAction().registerTask();
 new Actions.RestoreAction().registerTask();
 new Actions.NewQueryAction().registerTask();
 new Actions.ConfigureDashboardAction().registerTask();
-
-// add product update and release notes contributions
-Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions)
-	.registerWorkbenchAction(new SyncActionDescriptor(ShowCurrentReleaseNotesAction, ShowCurrentReleaseNotesAction.ID, ShowCurrentReleaseNotesAction.LABEL), 'Show Getting Started');
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
 	'id': 'previewFeatures',
@@ -44,6 +37,19 @@ Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConf
 			'type': 'boolean',
 			'default': true,
 			'description': nls.localize('showConnectDialogOnStartup', "Show connect dialog on startup")
+		}
+	}
+});
+
+Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
+	'id': 'enableObsoleteApiUsageNotification',
+	'title': nls.localize('enableObsoleteApiUsageNotificationTitle', "Obsolete API Notification"),
+	'type': 'object',
+	'properties': {
+		'workbench.enableObsoleteApiUsageNotification': {
+			'type': 'boolean',
+			'default': true,
+			'description': nls.localize('enableObsoleteApiUsageNotification', "Enable/disable obsolete API usage notification")
 		}
 	}
 });

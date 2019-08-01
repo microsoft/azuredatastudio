@@ -6,7 +6,7 @@
 import { Action } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { RunQueryOnConnectionMode, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { InsightActionContext } from 'sql/workbench/common/actions';
