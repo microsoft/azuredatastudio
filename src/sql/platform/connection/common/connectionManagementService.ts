@@ -630,7 +630,18 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public closeDashboard(uri: string): void {
+		let profile = this.getConnectionProfile(uri);
 
+		this._editorService.editors.forEach(editor => {
+			if (editor instanceof DashboardInput) {
+				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
+					if (!this._editorService.isOpen(editor)) {
+						return;
+					}
+					this._editorService.closeEditor(editor);
+				}
+			}
+		});
 	}
 
 	public getConnectionGroups(providers?: string[]): ConnectionProfileGroup[] {
@@ -1088,6 +1099,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			let disconnectParams = new ConnectionContracts.DisconnectParams();
 			disconnectParams.ownerUri = fileUri;
+			this.closeDashboard(fileUri);
 
 			// Send a disconnection request for the input URI
 			self.sendDisconnectRequest(fileUri).then((result) => {

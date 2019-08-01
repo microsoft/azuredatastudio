@@ -108,6 +108,8 @@ export interface IEditorService {
 	 */
 	readonly editors: ReadonlyArray<IEditorInput>;
 
+	closeEditor(editor: IEditorInput);
+
 	/**
 	 * Open an editor in an editor group.
 	 *

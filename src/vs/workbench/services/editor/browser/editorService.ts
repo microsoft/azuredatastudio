@@ -218,6 +218,14 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 
 	//#endregion
 
+	// {{SQL CARBON EDIT}}
+	//#region closeEditor()
+	closeEditor(editor: IEditorInput) {
+		const targetGroup = this.findTargetGroup(editor);
+		targetGroup.closeEditor(editor);
+	}
+	//#endregion
+
 	//#region openEditor()
 
 	openEditor(editor: IEditorInput, options?: IEditorOptions | ITextEditorOptions, group?: IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE): Promise<IEditor | null>;

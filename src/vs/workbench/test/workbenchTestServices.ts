@@ -867,6 +867,10 @@ export class TestEditorService implements EditorServiceImpl {
 		return toDisposable(() => undefined);
 	}
 
+	closeEditor(_editor: IEditorInput) {
+		throw new Error('not implemented');
+	}
+
 	openEditor(_editor: any, _options?: any, _group?: any): Promise<any> {
 		throw new Error('not implemented');
 	}
