@@ -158,7 +158,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 			} else {
 				// get the selection again this time with trimming
 				selection = editor.getSelection();
-				editor.input.runQuery(selection, undefined);
+				editor.input.runQuery(selection);
 			}
 		}
 	}
@@ -442,14 +442,13 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 	}
 
 	public set isSqlCmdMode(value: boolean) {
-		// intentionally always updating, since parent class handles skipping if values
 		this._isSqlCmdMode = value;
 		this.updateLabelAndIcon();
 	}
 
 	private updateLabelAndIcon(): void {
-		if (this._isSqlCmdMode) {
-			// We are connected, so show option to disconnect
+		if (this.isSqlCmdMode) {
+			// show option to disable sql cmd mode if already enabled
 			this.label = this._disablesqlcmdLabel;
 			this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass);
 		} else {
@@ -463,12 +462,12 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		if (this.isSqlCmdMode) {
 			// disable sql cmd mode if already enabled
 			this.editor.input.state.isSqlCmdMode = false;
-			queryoptions.options['IsSqlCmdMode'] = false;
+			queryoptions.options['isSqlCmdMode'] = false;
 			this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions); // to set query options
 			this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL'); // to set intellisense options
 		} else {
 			this.editor.input.state.isSqlCmdMode = true;
-			queryoptions.options['IsSqlCmdMode'] = true;
+			queryoptions.options['isSqlCmdMode'] = true;
 			this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
 			this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL');
 		}
