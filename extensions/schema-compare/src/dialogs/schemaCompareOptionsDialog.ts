@@ -448,6 +448,7 @@ export class SchemaCompareOptionsDialog {
 		if (this.optionsChanged) {
 			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.YesButtonText, SchemaCompareOptionsDialog.NoButtonText).then((result) => {
 				if (result === SchemaCompareOptionsDialog.YesButtonText) {
+					this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
 					this.schemaComparison.startCompare();
 				}
 			});

@@ -20,6 +20,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export interface IGridActionContext {
@@ -227,13 +229,18 @@ export class VisualizerDataAction extends Action {
 
 	constructor(
 		private runner: QueryRunner,
-		@IEditorService private editorService: IEditorService,
-
+		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
 	) {
 		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
+		this.adsTelemetryService.sendActionEvent(
+			TelemetryKeys.TelemetryView.ResultsPanel,
+			TelemetryKeys.TelemetryAction.Click,
+			'VisualizerButton',
+			'VisualizerDataAction'
+		);
 		this.runner.notifyVisualizeRequested(context.batchId, context.resultId);
 		return Promise.resolve(true);
 	}
