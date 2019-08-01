@@ -35,7 +35,7 @@ export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 export class NotebookEditorModel extends EditorModel {
 	private dirty: boolean;
 	private changeEventsHookedUp: boolean = false;
-	private notebookTextFileModel: NotebookTextFileModel;
+	private notebookTextFileModel: NotebookTextFileModel = new NotebookTextFileModel();
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: TextFileEditorModel | UntitledEditorModel,
@@ -50,18 +50,15 @@ export class NotebookEditorModel extends EditorModel {
 				notebook.modelReady.then((model) => {
 					if (!this.changeEventsHookedUp) {
 						this.changeEventsHookedUp = true;
-						this._register(model.kernelChanged(e => this.updateModel()));
-						this._register(model.contentChanged(e => this.updateModel(e, NotebookChangeType.CellSourceUpdated)));
+						this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
+						this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
+						this._register(notebook.model.onActiveCellChanged((cell) => {
+							if (cell) {
+								this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
+							}
+						}));
 					}
 				}, err => undefined);
-				notebook.model.onActiveCellChanged((cell) => {
-					if (cell) {
-						if (!this.notebookTextFileModel) {
-							this.notebookTextFileModel = new NotebookTextFileModel();
-						}
-						this.notebookTextFileModel.updateSourceMap(this.textEditorModel);
-					}
-				});
 			}
 		}));
 
@@ -125,42 +122,35 @@ export class NotebookEditorModel extends EditorModel {
 
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
 				if (type === NotebookChangeType.CellSourceUpdated && contentChange && contentChange.cells && contentChange.cells[0]) {
+					// starting "
 					let node = this.notebookTextFileModel.getCellNodeByGuid(contentChange.cells[0].cellGuid);
 					if (node) {
-						// starting "
-						let startNodePosition = this.textEditorModel.textEditorModel.getPositionAt(node[0].offset);
-						// ending " for last line in source
-						// let endNodePosition = this.textEditorModel.textEditorModel.getPositionAt(node[node.length - 1].offset + node.length);
-
 						// now, convert the range to leverage offsets in the json
 						if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
 							contentChange.modelContentChangedEvent.changes.forEach(change => {
 								let convertedRange: IRange = {
-									startLineNumber: change.range.startLineNumber + startNodePosition.lineNumber - 1,
-									endLineNumber: change.range.endLineNumber + startNodePosition.lineNumber - 1,
-									startColumn: change.range.startColumn + startNodePosition.column,
-									endColumn: change.range.endColumn + startNodePosition.column
+									startLineNumber: change.range.startLineNumber + node.startLineNumber - 1,
+									endLineNumber: change.range.endLineNumber + node.startLineNumber - 1,
+									startColumn: change.range.startColumn + node.startColumn,
+									endColumn: change.range.endColumn + node.startColumn
 								};
-
 								// Need to subtract one because the first " takes up one character
-								let startSpaces: string = ' '.repeat(startNodePosition.column - 1);
+								let startSpaces: string = ' '.repeat(node.startColumn - 1);
 								console.log('fast edit');
 								this.textEditorModel.textEditorModel.applyEdits([{
 									range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
 									text: change.text.replace('\n', '\\n\",\n'.concat(startSpaces).concat('\"'))
 								}]);
 							});
-						} else {
-							console.log('slow edit3');
-							this.replaceEntireTextEditorModel(notebookModel, type);
+							return;
 						}
-					} else {
-						console.log('slow edit1');
-						this.replaceEntireTextEditorModel(notebookModel, type);
 					}
-				} else {
-					console.log('slow edit2');
-					this.replaceEntireTextEditorModel(notebookModel, type);
+				}
+				console.log('slow edit');
+				this.replaceEntireTextEditorModel(notebookModel, type);
+				// If cells were added or removed, after we replace all of the text editor model, attempt calculation again for active cell source
+				if (type === NotebookChangeType.CellsModified) {
+					this.notebookTextFileModel.updateSourceMap(this.textEditorModel, contentChange.cells[0].cellGuid);
 				}
 			}
 		}

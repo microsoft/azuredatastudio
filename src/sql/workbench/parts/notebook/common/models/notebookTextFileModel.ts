@@ -7,40 +7,27 @@ import { Range, IRange } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 
-import * as jsonc from 'jsonc-parser';
+// import * as jsonc from 'jsonc-parser';
 
 export class NotebookTextFileModel {
-	private sourceMap: Map<string, jsonc.Node[]>;
+	private sourceMap: Map<string, Range>;
 
 	constructor() {
-		this.sourceMap = new Map<string, jsonc.Node[]>();
+		this.sourceMap = new Map<string, Range>();
 	}
 
-	public updateSourceMap(textEditorModel: TextFileEditorModel | UntitledEditorModel) {
-		let lastNode: jsonc.Node[] = [];
-		let lastPropertySource = false;
-		let lastPropertyGuid = false;
-		let content = textEditorModel.textEditorModel.getValue();
-		jsonc.visit(content, {
-			onObjectProperty: (property, offset, length, startLine, startChracter) => {
-				lastPropertyGuid = false;
-				lastPropertySource = false;
-
-				if (property === 'source') {
-					lastPropertySource = true;
-				} else if (property === 'cellGuid') {
-					lastPropertyGuid = true;
-				}
-			},
-			onLiteralValue: (value, offset, length) => {
-				if (lastPropertySource) {
-					lastNode.push(jsonc.getLocation(content, offset).previousNode);
-				} else if (lastPropertyGuid) {
-					this.sourceMap.set(value, lastNode);
-					lastNode = [];
-				}
-			}
-		});
+	public updateSourceMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
+		if (!cellGuid) {
+			return;
+		}
+		this.sourceMap.clear();
+		let matches = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
+		if (!matches || matches.length < 1) {
+			return;
+		}
+		let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: matches[0].range.startLineNumber, column: matches[0].range.startColumn }, false, true, undefined, true);
+		let firstQuoteOfSource = textEditorModel.textEditorModel.findNextMatch('"', { lineNumber: sourceBefore.range.startLineNumber, column: sourceBefore.range.endColumn }, false, true, undefined, true);
+		this.sourceMap.set(cellGuid, firstQuoteOfSource.range);
 	}
 
 	public getCellNodeByGuid(guid: string) {

@@ -78,7 +78,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
-	private _nbSerializedContents: INotebookContentsEditable;
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -988,27 +987,17 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Serialize the model to JSON.
 	 */
 	toJSON(type?: NotebookChangeType): nb.INotebookContents {
-		if (!this._nbSerializedContents) {
-			this._nbSerializedContents = {
-				cells: undefined,
-				metadata: undefined,
-				nbformat: this._nbformat,
-				nbformat_minor: this._nbformatMinor
-			};
-		}
-		if (type === NotebookChangeType.CellSourceUpdated && this._nbSerializedContents.cells) {
-			this._nbSerializedContents.cells.forEach(cell => {
-				cell.source = this.cells.find((c) => c.cellGuid === cell.metadata.cellGuid).source;
-			});
-		} else {
-			this._nbSerializedContents.cells = this.cells.map(c => c.toJSON());
-		}
+		let cells: nb.ICellContents[] = this.cells.map(c => c.toJSON());
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
 		metadata.kernelspec = this._savedKernelInfo;
 		metadata.language_info = this.languageInfo;
-		this._nbSerializedContents.metadata = metadata;
-		return this._nbSerializedContents;
+		return {
+			metadata,
+			nbformat_minor: this._nbformatMinor,
+			nbformat: this._nbformat,
+			cells
+		};
 	}
 
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void {
@@ -1019,7 +1008,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		switch (change) {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
-				changeInfo.changeType = NotebookChangeType.DirtyStateChanged;
 				changeInfo.isDirty = true;
 				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;
