@@ -627,6 +627,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
+			case NotebookChangeType.CellInputVisibilityChanged:
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
 			case NotebookChangeType.TrustChanged:

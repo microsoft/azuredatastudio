@@ -20,6 +20,7 @@ import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { isNullOrUndefined } from 'util';
 let modelId = 0;
 
 export class CellModel implements ICellModel {
@@ -99,7 +100,25 @@ export class CellModel implements ICellModel {
 
 	public set isHidden(isHidden: boolean) {
 		this._isHidden = isHidden;
+		let index;
+		if (this._metadata && Array.isArray(this._metadata.tags)) {
+			index = this._metadata.tags.findIndex(tag => tag === 'hide_input');
+		}
+		if (this._isHidden) {
+			if (index > -1) {
+				this._metadata.tags.splice(index, 1);
+			} else {
+				this._metadata.tags.push('hide_input');
+			}
+		} else {
+			if (isNullOrUndefined(index)) {
+				this._metadata.tags = ['hide_input'];
+			} else if (index > -1) {
+				this._metadata.tags.splice(index, 1);
+			}
+		}
 		this._onToggleStateChanged.fire(this._isHidden);
+		this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
 	}
 
 	public set isEditMode(isEditMode: boolean) {
@@ -537,8 +556,9 @@ export class CellModel implements ICellModel {
 			metadata: this._metadata || {}
 		};
 		if (this._cellType === CellTypes.Code) {
-			cellJson.metadata.language = this._language,
-				cellJson.outputs = this._outputs;
+			cellJson.metadata.language = this._language;
+			cellJson.metadata.tags = this._metadata.tags;
+			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
 		}
 		return cellJson as nb.ICellContents;
