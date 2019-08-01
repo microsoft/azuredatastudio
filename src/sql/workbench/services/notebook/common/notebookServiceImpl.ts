@@ -32,7 +32,7 @@ import { registerNotebookThemes } from 'sql/workbench/parts/notebook/browser/not
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
+import { SqlNotebookProvider } from 'sql/workbench/services/notebook/common/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';

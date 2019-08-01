@@ -18,11 +18,11 @@ import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import product from 'vs/platform/product/node/product';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
-import * as Constants from 'sql/workbench/contrib/extensions/constants';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
+import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -206,14 +206,15 @@ export class ChartDataAction extends Action {
 
 	constructor(
 		@IEditorService private editorService: IEditorService,
-		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
-		if (product.quality !== 'stable') {
+		if (this.environmentService.appQuality !== 'stable') {
 			this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
 		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
