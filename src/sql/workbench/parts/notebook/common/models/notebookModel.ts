@@ -1005,6 +1005,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		switch (change) {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
+			case NotebookChangeType.CellInputVisibilityChanged:
 				changeInfo.changeType = NotebookChangeType.DirtyStateChanged;
 				changeInfo.isDirty = true;
 				break;
