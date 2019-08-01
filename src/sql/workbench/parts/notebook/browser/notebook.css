@@ -178,9 +178,19 @@
 }
 
 .notebookEditor .hoverButton .addCodeIcon {
-	background-image: url("./media/light/add_code_icon.svg");
+	background-image: url("./media/light/add_code.svg");
+}
+
+.vs-dark .notebookEditor .hoverButton .addCodeIcon,
+.hc-black .notebookEditor .hoverButton .addCodeIcon {
+	background-image: url("./media/dark/add_code_inverse.svg");
 }
 
 .notebookEditor .hoverButton .addTextIcon {
-	background-image: url("./media/light/add_text_icon.svg");
+	background-image: url("./media/light/add_text.svg");
+}
+
+.vs-dark .notebookEditor .hoverButton .addTextIcon,
+.hc-black .notebookEditor .hoverButton .addTextIcon {
+	background-image: url("./media/dark/add_text_inverse.svg");
 }
