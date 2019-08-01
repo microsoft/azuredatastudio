@@ -115,8 +115,7 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/router',
 		'rxjs/Observable',
 		'rxjs/Subject',
-		'rxjs/Observer',
-		'jsonc-parser'
+		'rxjs/Observer'
 	]);
 	// {{SQL CARBON EDIT}} - End
 

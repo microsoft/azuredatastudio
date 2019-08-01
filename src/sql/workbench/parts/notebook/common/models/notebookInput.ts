@@ -9,7 +9,6 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import * as resources from 'vs/base/common/resources';
 import * as azdata from 'azdata';
-import * as jsonc from 'jsonc-parser';
 
 import { IStandardKernelWithProvider, getProvidersForFileName, getStandardKernelsForProvider } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
 import { INotebookService, DEFAULT_NOTEBOOK_PROVIDER, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
@@ -43,7 +42,6 @@ export class NotebookEditorModel extends EditorModel {
 		@ITextFileService private textFileService: ITextFileService
 	) {
 		super();
-		console.log('notebook URI: ' + notebookUri);
 		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
