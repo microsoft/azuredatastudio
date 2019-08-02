@@ -15,8 +15,8 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _clicks: Map<any, number> = new Map();
-	private _doubleClickTimeoutTimer: Map<any, NodeJS.Timer> = new Map();
+	private _lastClicked: any;
+	private _clickTimer: NodeJS.Timer = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -42,6 +42,13 @@ export class TreeSelectionHandler {
 	 * Handle selection of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
+		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean) => {
+			let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
+			if (!TreeUpdateUtils.isInDragAndDrop) {
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
+			}
+		});
+
 		let selection = tree.getSelection();
 
 		if (!selection || selection.length === 0) {
@@ -50,34 +57,17 @@ export class TreeSelectionHandler {
 		let specificSelection = selection[0];
 
 		if (this.isMouseEvent(event)) {
-			let val = this._clicks.get(specificSelection);
-			if (!val) {
-				val = 0;
+			if (this._lastClicked === specificSelection) {
+				clearTimeout(this._clickTimer);
+				sendSelectionEvent(event, selection, true);
+				return;
 			}
-			val++;
-			this._clicks.set(selection, val);
+			this._lastClicked = specificSelection;
 		}
 
-		// clear pending click timeouts to avoid sending multiple events on double-click
-		let selectionTimer = this._doubleClickTimeoutTimer.get(specificSelection);
-		if (selectionTimer) {
-			clearTimeout(selectionTimer);
-		}
-
-		let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
-
-		this._doubleClickTimeoutTimer.set(selection, setTimeout(() => {
-			// don't send tree update events while dragging
-			if (!TreeUpdateUtils.isInDragAndDrop) {
-				let isDoubleClick = this._clicks.get(specificSelection) > 1;
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
-			}
-			this._clicks.delete(specificSelection);
-
-			process.nextTick(() => {
-				this._doubleClickTimeoutTimer.delete(specificSelection);
-			});
-		}, 300));
+		this._clickTimer = setTimeout(() => {
+			sendSelectionEvent(event, selection, false);
+		}, 300);
 	}
 
 	/**
