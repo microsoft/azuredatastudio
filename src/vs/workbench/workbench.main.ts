@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 //#region --- workbench/editor core
-
+import 'sql/setup';
 import 'vs/editor/editor.all';
 
 import 'vs/workbench/api/browser/extensionHost.contribution';

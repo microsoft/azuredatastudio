@@ -93,8 +93,6 @@ pty.js/build/**
 jquery-ui/external/**
 jquery-ui/demos/**
 
-core-js/**/**
-
 slickgrid/node_modules/**
 slickgrid/examples/**
 
