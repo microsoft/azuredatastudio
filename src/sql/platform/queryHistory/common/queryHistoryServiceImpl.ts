@@ -75,6 +75,9 @@ export class QueryHistoryService implements IQueryHistoryService {
 		this._onInfosUpdated.fire(this._infos);
 	}
 
+	/**
+	 * Method to force initialization of the service so that it can start tracking query events
+	 */
 	public startup(): void {
 
 	}
