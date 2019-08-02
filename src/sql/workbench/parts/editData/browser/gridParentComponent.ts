@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!sql/workbench/parts/grid/media/flexbox';
-import 'vs/css!sql/workbench/parts/grid/media/styles';
+import 'vs/css!./media/flexbox';
+import 'vs/css!./media/styles';
 
 import { Subscription, Subject } from 'rxjs/Rx';
 import { ElementRef, QueryList, ChangeDetectorRef, ViewChildren } from '@angular/core';
@@ -13,8 +13,8 @@ import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import { IGridInfo, IGridDataSet, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
-import * as actions from 'sql/workbench/parts/grid/views/gridActions';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
+import * as actions from 'sql/workbench/parts/editData/common/gridActions';
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import { ResultsVisibleContext, ResultsGridFocussedContext, ResultsMessagesFocussedContext, QueryEditorVisibleContext } from 'sql/workbench/parts/query/common/queryContext';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';

@@ -38,7 +38,7 @@ export abstract class ExtHostAccountManagementShape {
 }
 
 export abstract class ExtHostConnectionManagementShape {
-	$onConnectionOpened(handleId: string, connection: azdata.connection.Connection): void { throw ni; }
+	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void { throw ni(); }
 }
 
 export abstract class ExtHostDataProtocolShape {
@@ -606,6 +606,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
+	$registerConnectionEventListener(handle: number, providerId: string): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
@@ -931,8 +932,10 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 
 export interface ExtHostExtensionManagementShape {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }
 
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }

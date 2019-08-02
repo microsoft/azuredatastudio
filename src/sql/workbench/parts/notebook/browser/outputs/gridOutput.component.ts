@@ -13,7 +13,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
-import { IDataResource } from 'sql/workbench/services/notebook/sql/sqlSessionManager';
+import { IDataResource } from 'sql/workbench/services/notebook/common/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/platform/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
