@@ -105,7 +105,7 @@ export class QueryHistoryView extends Disposable {
 		}
 
 		// Set the tree input - root node is just an empty container node
-		const rootNode: QueryHistoryNode = new QueryHistoryNode(undefined);
+		const rootNode = new QueryHistoryNode(undefined);
 		rootNode.children = nodes;
 		rootNode.hasChildren = true;
 
