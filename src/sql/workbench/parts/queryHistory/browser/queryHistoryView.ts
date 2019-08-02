@@ -70,10 +70,6 @@ export class QueryHistoryView extends Disposable {
 
 				// expand as required
 				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date(), undefined, QueryStatus.Succeeded);
-				newNode.hasChildren = true;
-				if (text.length > 100) {
-					newNode.children = [new QueryHistoryNode(text, undefined, undefined, undefined, QueryStatus.Nothing)];
-				}
 
 				// icon as required (for now logic is if any message has error query has error)
 				let error: boolean = false;
