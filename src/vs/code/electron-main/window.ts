@@ -509,7 +509,6 @@ export class CodeWindow extends Disposable implements ICodeWindow {
 		// Load URL
 		perf.mark('main:loadWindow');
 		this._win.loadURL(this.getUrl(configuration));
-		this._win.webContents.openDevTools();
 
 		// Make window visible if it did not open in N seconds because this indicates an error
 		// Only do this when running out of sources and not when running tests
