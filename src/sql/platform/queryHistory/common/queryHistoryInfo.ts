@@ -11,30 +11,24 @@ export enum QueryStatus {
 	Failed = 1,
 	Nothing = 2
 }
-export class QueryHistoryNode {
 
-	/**
-	 * Does this node have children
-	 */
-	public hasChildren: boolean = false;
-
-	/**
-	 * Children of this node
-	 */
-	public children: QueryHistoryNode[];
+/**
+ * Contains information about a query that was ran
+ */
+export class QueryHistoryInfo {
 
 	public database: string;
 
 	public status: QueryStatus;
 
+	public readonly id = generateUuid();
+
 	constructor(
 		public queryText: string,
 		public connectionProfile: IConnectionProfile,
 		public startTime: Date,
-		public id: string = undefined,
 		status?: QueryStatus) {
 		this.database = connectionProfile ? connectionProfile.databaseName : '';
-		this.id = this.id || generateUuid();
 		this.status = status;
 	}
 }

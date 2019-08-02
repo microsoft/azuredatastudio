@@ -5,7 +5,7 @@
 
 
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/parts/queryHistory/common/constants';
-import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionManagementService, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
@@ -16,8 +16,8 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { TogglePanelAction } from 'vs/workbench/browser/panel';
 import { localize } from 'vs/nls';
-import { QueryHistoryController } from 'sql/workbench/parts/queryHistory/browser/queryHistoryController';
-import { QueryHistoryView } from 'sql/workbench/parts/queryHistory/browser/queryHistoryView';
+import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
 
 export class ToggleQueryHistoryAction extends TogglePanelAction {
 
@@ -40,14 +40,14 @@ export class DeleteAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _queryHistoryView: QueryHistoryView
+		@IQueryHistoryService private _queryHistoryService: IQueryHistoryService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<boolean> {
 		if (element instanceof QueryHistoryNode) {
-			this._queryHistoryView.deleteNode(element);
+			this._queryHistoryService.deleteQueryHistoryInfo(element.info);
 		}
 		return true;
 	}
@@ -69,8 +69,8 @@ export class OpenQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<boolean> {
-		if (element instanceof QueryHistoryNode) {
+	public async run(element: QueryHistoryInfo): Promise<boolean> {
+		if (element instanceof QueryHistoryInfo) {
 			TaskUtilities.newQuery(
 				element.connectionProfile,
 				this._connectionManagementService,
@@ -98,8 +98,8 @@ export class RunQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<boolean> {
-		if (element instanceof QueryHistoryNode) {
+	public async run(element: QueryHistoryInfo): Promise<boolean> {
+		if (element instanceof QueryHistoryInfo) {
 			TaskUtilities.newQuery(
 				element.connectionProfile,
 				this._connectionManagementService,

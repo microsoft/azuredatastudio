@@ -17,27 +17,21 @@ import { QueryHistoryRenderer } from 'sql/workbench/parts/queryHistory/browser/q
 import { QueryHistoryDataSource } from 'sql/workbench/parts/queryHistory/browser/queryHistoryDataSource';
 import { QueryHistoryController } from 'sql/workbench/parts/queryHistory/browser/queryHistoryController';
 import { QueryHistoryActionProvider } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActionProvider';
-import { QueryHistoryNode, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryNode';
 import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
-import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
-import { URI } from 'vs/base/common/uri';
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IModelService } from 'vs/editor/common/services/modelService';
-import { Range } from 'vs/editor/common/core/range';
+import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
+import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 /**
  * QueryHistoryView implements the dynamic tree view for displaying Query History
  */
 export class QueryHistoryView extends Disposable {
 	private _messages: HTMLElement;
 	private _tree: ITree;
-	private _nodes: QueryHistoryNode[] = [];
 
 	constructor(
-		@IQueryModelService private _queryModelService: IQueryModelService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IThemeService private _themeService: IThemeService,
-		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
-		@IModelService private readonly _modelService: IModelService
+		@IQueryHistoryService private readonly _queryHistoryService: IQueryHistoryService
 	) {
 		super();
 	}
@@ -57,34 +51,11 @@ export class QueryHistoryView extends Disposable {
 		// Theme styler
 		this._register(attachListStyler(this._tree, this._themeService));
 
-		this._register(this._queryModelService.onQueryEvent((e: IQueryEvent) => {
-			if (e.type === 'queryStop') {
-				const uri: URI = URI.parse(e.uri);
-				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
-				// by 1 from the original input range sent in as well so take that into account and don't modify
-				const text: string = this._modelService.getModel(uri).getValueInRange(new Range(
-					e.queryInfo.selection[0].startLine + 1,
-					e.queryInfo.selection[0].startColumn + 1,
-					e.queryInfo.selection[0].endLine,
-					e.queryInfo.selection[0].endColumn + 1));
+		this._queryHistoryService.onInfosUpdated((nodes: QueryHistoryInfo[]) => {
+			this.refreshTree();
+		});
 
-				const newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date(), undefined, QueryStatus.Succeeded);
-
-				// icon as required (for now logic is if any message has error query has error)
-				let error: boolean = false;
-				e.queryInfo.queryRunner.messages.forEach(x => error = error || x.isError);
-				if (error) {
-					newNode.status = QueryStatus.Failed;
-				}
-
-				this._nodes = [newNode].concat(this._nodes);
-				this.refreshTree();
-			}
-		}));
-	}
-
-	public deleteNode(node: QueryHistoryNode) {
-		this._nodes = this._nodes.filter(n => n.id !== node.id);
+		// Refresh the tree so we correctly update if there were already existing history items
 		this.refreshTree();
 	}
 
@@ -93,7 +64,7 @@ export class QueryHistoryView extends Disposable {
 	 */
 	public createQueryHistoryTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
 		const dataSource = instantiationService.createInstance(QueryHistoryDataSource);
-		const actionProvider = instantiationService.createInstance(QueryHistoryActionProvider, this);
+		const actionProvider = instantiationService.createInstance(QueryHistoryActionProvider);
 		const renderer = instantiationService.createInstance(QueryHistoryRenderer);
 		const controller = instantiationService.createInstance(QueryHistoryController, actionProvider);
 		const dnd = new DefaultDragAndDrop();
@@ -127,27 +98,26 @@ export class QueryHistoryView extends Disposable {
 			targetsToExpand = expandableTree.getExpandedElements();
 		}
 
-		if (this._nodes.length > 0) {
+		const nodes: QueryHistoryNode[] = this._queryHistoryService.getQueryHistoryInfos().map(i => new QueryHistoryNode(i));
+		if (nodes.length > 0) {
 			hide(this._messages);
 		}
 
 		// Set the tree input - root node is just an empty container node
-		let node: QueryHistoryNode = new QueryHistoryNode('', undefined, undefined);
-		node.children = this._nodes;
-		node.hasChildren = true;
-		const treeInput: QueryHistoryNode = node;
-		if (treeInput) {
-			this._tree.setInput(treeInput).then(() => {
-				// Make sure to expand all folders that were expanded in the previous session
-				if (targetsToExpand) {
-					this._tree.expandAll(targetsToExpand);
-				}
-				if (selectedElement) {
-					this._tree.select(selectedElement);
-				}
-				this._tree.getFocus();
-			}, errors.onUnexpectedError);
-		}
+		const rootNode: QueryHistoryNode = new QueryHistoryNode(undefined);
+		rootNode.children = nodes;
+		rootNode.hasChildren = true;
+
+		this._tree.setInput(rootNode).then(() => {
+			// Make sure to expand all folders that were expanded in the previous session
+			if (targetsToExpand) {
+				this._tree.expandAll(targetsToExpand);
+			}
+			if (selectedElement) {
+				this._tree.select(selectedElement);
+			}
+			this._tree.getFocus();
+		}, errors.onUnexpectedError);
 	}
 
 	/**
