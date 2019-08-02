@@ -13,6 +13,8 @@ import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/browser/modelViewTab/queryModelViewTab';
+import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
+import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -20,8 +22,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
-import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
+import { Event } from 'vs/base/common/event';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -220,15 +221,8 @@ export class QueryResultsView extends Disposable {
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
-		let showResults = true;
-		this.runnerDisposables.push(runner.onResultSet(() => {
-			if (showResults) {
-				this.showResults(true);
-				showResults = false;
-			}
-		}));
 		this.runnerDisposables.push(runner.onQueryStart(e => {
-			showResults = true;
+			Event.once(runner.onResultSet)(() => this.showResults(true));
 			this.hideResults();
 			this.hideChart();
 			this.hidePlan();
