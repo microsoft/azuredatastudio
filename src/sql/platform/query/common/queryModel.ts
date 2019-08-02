@@ -16,10 +16,10 @@ import {
 	EditSubsetResult,
 	EditCreateRowResult,
 	EditRevertCellResult,
-	ExecutionPlanOptions
+	ExecutionPlanOptions,
+	queryeditor
 } from 'azdata';
 import { QueryInfo } from 'sql/platform/query/common/queryModelService';
-import { QueryEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 export const SERVICE_ID = 'queryModelService';
 
@@ -32,7 +32,7 @@ export interface IQueryPlanInfo {
 }
 
 export interface IQueryEvent {
-	type: QueryEventType;
+	type: queryeditor.QueryEventType;
 	uri: string;
 	queryInfo: QueryInfo;
 	params?: any;

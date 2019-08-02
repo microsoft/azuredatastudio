@@ -19,7 +19,6 @@ import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { QueryEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 const selectionSnippetMaxLen = 100;
 
