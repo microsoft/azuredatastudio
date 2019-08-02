@@ -15,8 +15,8 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _clicks: number = 0;
-	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
+	private _clicks: Map<any, number> = new Map();
+	private _doubleClickTimeoutTimer: Map<any, NodeJS.Timer> = new Map();
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -42,29 +42,42 @@ export class TreeSelectionHandler {
 	 * Handle selection of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
+		let selection = tree.getSelection();
+
+		if (!selection || selection.length === 0) {
+			return;
+		}
+		let specificSelection = selection[0];
+
 		if (this.isMouseEvent(event)) {
-			this._clicks++;
+			let val = this._clicks.get(specificSelection);
+			if (!val) {
+				val = 0;
+			}
+			val++;
+			this._clicks.set(selection, val);
 		}
 
 		// clear pending click timeouts to avoid sending multiple events on double-click
-		if (this._doubleClickTimeoutTimer) {
-			clearTimeout(this._doubleClickTimeoutTimer);
+		let selectionTimer = this._doubleClickTimeoutTimer.get(specificSelection);
+		if (selectionTimer) {
+			clearTimeout(selectionTimer);
 		}
 
 		let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
 
-		// grab the current selection for use later
-		let selection = tree.getSelection();
-
-		this._doubleClickTimeoutTimer = setTimeout(() => {
+		this._doubleClickTimeoutTimer.set(selection, setTimeout(() => {
 			// don't send tree update events while dragging
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				let isDoubleClick = this._clicks > 1;
+				let isDoubleClick = this._clicks.get(specificSelection) > 1;
 				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
 			}
-			this._clicks = 0;
-			this._doubleClickTimeoutTimer = undefined;
-		}, 300);
+			this._clicks.delete(specificSelection);
+
+			process.nextTick(() => {
+				this._doubleClickTimeoutTimer.delete(specificSelection);
+			});
+		}, 300));
 	}
 
 	/**
