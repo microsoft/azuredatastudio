@@ -239,6 +239,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { QueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryServiceImpl';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -280,6 +282,7 @@ registerSingleton(IProfilerService, ProfilerService);
 registerSingleton(IDacFxService, DacFxService);
 registerSingleton(ISchemaCompareService, SchemaCompareService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
+registerSingleton(IQueryHistoryService, QueryHistoryService);
 // {{SQL CARBON EDIT}} - End
 
 //#region --- workbench parts
@@ -535,3 +538,4 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewConta
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
 
 import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
+

@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { QueryHistoryNode, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import { QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
 
 const $ = dom.$;
 
@@ -40,7 +41,7 @@ export class QueryHistoryRenderer implements IRenderer {
 	 * Returns a template ID for a given element.
 	 */
 	public getTemplateId(tree: ITree, element: QueryHistoryNode): string {
-		return element.id;
+		return element.info.id;
 	}
 
 	/**
@@ -61,30 +62,28 @@ export class QueryHistoryRenderer implements IRenderer {
 	 * Render a element, given an object bag returned by the template
 	 */
 	public renderElement(tree: ITree, element: QueryHistoryNode, templateId: string, templateData: IQueryHistoryItemTemplateData): void {
-
 		let taskStatus;
-		if (element) {
-
+		if (element && element.info) {
 			templateData.icon.className = 'query-history-icon';
-			if (element.status === QueryStatus.Succeeded) {
+			if (element.info.status === QueryStatus.Succeeded) {
 				dom.addClass(templateData.icon, QueryHistoryRenderer.SUCCESS_CLASS);
 				taskStatus = localize('succeeded', "succeeded");
 			}
-			else if (element.status === QueryStatus.Failed) {
+			else if (element.info.status === QueryStatus.Failed) {
 				dom.addClass(templateData.icon, QueryHistoryRenderer.FAIL_CLASS);
 				taskStatus = localize('failed', "failed");
 			}
 
 			templateData.icon.title = taskStatus;
 
-			templateData.label.textContent = element.queryText;
+			templateData.label.textContent = element.info.queryText;
 			templateData.label.title = templateData.label.textContent;
 
 			// Determine the target name and set hover text equal to that
-			const connectionInfo = `${element.connectionProfile.serverName}|${element.database}`;
+			const connectionInfo = `${element.info.connectionProfile.serverName}|${element.info.database}`;
 			templateData.connectionInfo.textContent = connectionInfo;
 			templateData.connectionInfo.title = templateData.connectionInfo.textContent;
-			templateData.time.textContent = element.startTime.toLocaleString();
+			templateData.time.textContent = element.info.startTime.toLocaleString();
 			templateData.time.title = templateData.time.textContent;
 
 		}

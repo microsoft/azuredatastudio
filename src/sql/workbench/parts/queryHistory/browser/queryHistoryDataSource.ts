@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
-import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
 
 /**
- * Implements the DataSource(that returns a parent/children of an element) for the query history
+ * Implements the DataSource (that returns a parent/children of an element) for the query history
  */
 export class QueryHistoryDataSource implements IDataSource {
 
@@ -16,8 +16,8 @@ export class QueryHistoryDataSource implements IDataSource {
 	 * No more than one element may use a given identifier.
 	 */
 	public getId(tree: ITree, element: any): string {
-		if (element instanceof QueryHistoryNode) {
-			return element.id;
+		if (element instanceof QueryHistoryNode && element.info) {
+			return element.info.id;
 		}
 		return undefined;
 	}
