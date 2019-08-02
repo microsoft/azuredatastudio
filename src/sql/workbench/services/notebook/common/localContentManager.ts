@@ -7,6 +7,7 @@
 
 import { nb } from 'azdata';
 
+import * as json from 'vs/base/common/json';
 import { URI } from 'vs/base/common/uri';
 import { localize } from 'vs/nls';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -28,7 +29,7 @@ export class LocalContentManager implements nb.ContentManager {
 		if (contentString === '' || contentString === undefined) {
 			return v4.createEmptyNotebook();
 		} else {
-			contents = JSON.parse(contentString);
+			contents = this.parseFromJson(contentString);
 		}
 		if (contents) {
 			if (contents.nbformat === 4) {
@@ -58,7 +59,7 @@ export class LocalContentManager implements nb.ContentManager {
 			// Empty?
 			return v4.createEmptyNotebook();
 		} else {
-			contents = JSON.parse(stringContents);
+			contents = this.parseFromJson(stringContents);
 		}
 
 		if (contents) {
@@ -84,6 +85,15 @@ export class LocalContentManager implements nb.ContentManager {
 		return notebook;
 	}
 
+	private parseFromJson(contentString: string): JSONObject {
+		let contents: JSONObject;
+		try {
+			contents = JSON.parse(contentString);
+		} catch {
+			contents = json.parse(contentString);
+		}
+		return contents;
+	}
 }
 
 namespace v4 {
