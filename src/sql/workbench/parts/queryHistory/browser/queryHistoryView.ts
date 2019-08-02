@@ -99,6 +99,7 @@ export class QueryHistoryView extends Disposable {
 		}
 
 		const nodes: QueryHistoryNode[] = this._queryHistoryService.getQueryHistoryInfos().map(i => new QueryHistoryNode(i));
+
 		if (nodes.length > 0) {
 			hide(this._messages);
 		}

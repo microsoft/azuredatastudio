@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ITree, IRenderer } from 'vs/base/parts/tree/browser/tree';
-import { QueryHistoryInfo, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryInfo';
+import { QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 import * as dom from 'vs/base/browser/dom';
 import { localize } from 'vs/nls';
 import { IDisposable, dispose } from 'vs/base/common/lifecycle';
@@ -33,15 +33,15 @@ export class QueryHistoryRenderer implements IRenderer {
 	/**
 	 * Returns the element's height in the tree, in pixels.
 	 */
-	public getHeight(tree: ITree, element: QueryHistoryInfo): number {
+	public getHeight(tree: ITree, element: QueryHistoryNode): number {
 		return QueryHistoryRenderer.QUERYHISTORYOBJECT_HEIGHT;
 	}
 
 	/**
 	 * Returns a template ID for a given element.
 	 */
-	public getTemplateId(tree: ITree, element: QueryHistoryInfo): string {
-		return element.id;
+	public getTemplateId(tree: ITree, element: QueryHistoryNode): string {
+		return element.info.id;
 	}
 
 	/**

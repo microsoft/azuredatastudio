@@ -5,7 +5,6 @@
 
 
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/parts/queryHistory/common/constants';
-import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionManagementService, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
@@ -46,7 +45,7 @@ export class DeleteAction extends Action {
 	}
 
 	public async run(element: QueryHistoryNode): Promise<boolean> {
-		if (element instanceof QueryHistoryNode) {
+		if (element instanceof QueryHistoryNode && element.info) {
 			this._queryHistoryService.deleteQueryHistoryInfo(element.info);
 		}
 		return true;
@@ -69,15 +68,15 @@ export class OpenQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryInfo): Promise<boolean> {
-		if (element instanceof QueryHistoryInfo) {
+	public async run(element: QueryHistoryNode): Promise<boolean> {
+		if (element instanceof QueryHistoryNode && element.info) {
 			TaskUtilities.newQuery(
-				element.connectionProfile,
+				element.info.connectionProfile,
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._objectExplorerService,
 				this._editorService,
-				element.queryText);
+				element.info.queryText);
 		}
 		return true;
 	}
@@ -98,15 +97,15 @@ export class RunQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryInfo): Promise<boolean> {
-		if (element instanceof QueryHistoryInfo) {
+	public async run(element: QueryHistoryNode): Promise<boolean> {
+		if (element instanceof QueryHistoryNode && element.info) {
 			TaskUtilities.newQuery(
-				element.connectionProfile,
+				element.info.connectionProfile,
 				this._connectionManagementService,
 				this._queryEditorService,
 				this._objectExplorerService,
 				this._editorService,
-				element.queryText,
+				element.info.queryText,
 				RunQueryOnConnectionMode.executeQuery);
 		}
 		return true;

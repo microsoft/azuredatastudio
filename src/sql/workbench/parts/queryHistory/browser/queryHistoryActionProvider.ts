@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { QueryHistoryInfo } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
