@@ -7,7 +7,7 @@ import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
 
 /**
- * Implements the DataSource(that returns a parent/children of an element) for the task history
+ * Implements the DataSource(that returns a parent/children of an element) for the query history
  */
 export class QueryHistoryDataSource implements IDataSource {
 

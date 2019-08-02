@@ -13,7 +13,6 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
 import { hide, $, append } from 'vs/base/browser/dom';
-import { QueryEventType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { QueryHistoryRenderer } from 'sql/workbench/parts/queryHistory/browser/queryHistoryRenderer';
 import { QueryHistoryDataSource } from 'sql/workbench/parts/queryHistory/browser/queryHistoryDataSource';
 import { QueryHistoryController } from 'sql/workbench/parts/queryHistory/browser/queryHistoryController';
@@ -50,18 +49,16 @@ export class QueryHistoryView extends Disposable {
 		// Add div to display no task executed message
 		this._messages = append(container, $('div.no-queries-message'));
 
-		const noQueriesMessage = localize('noQueriesMessage', 'No queries to display.');
+		const noQueriesMessage = localize('noQueriesMessage', "No queries to display.");
 		append(this._messages, $('span')).innerText = noQueriesMessage;
 
 		this._tree = this._register(this.createQueryHistoryTree(container, this._instantiationService));
-		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 
 		// Theme styler
 		this._register(attachListStyler(this._tree, this._themeService));
 
 		this._register(this._queryModelService.onQueryEvent((e: IQueryEvent) => {
-
-			if (e.type === QueryEventType.QueryStop) {
+			if (e.type === 'queryStop') {
 				const uri: URI = URI.parse(e.uri);
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
 				// by 1 from the original input range sent in as well so take that into account and don't modify
@@ -71,7 +68,7 @@ export class QueryHistoryView extends Disposable {
 					e.queryInfo.selection[0].endLine,
 					e.queryInfo.selection[0].endColumn + 1));
 
-				// exapnd as required
+				// expand as required
 				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date(), undefined, QueryStatus.Succeeded);
 				newNode.hasChildren = true;
 				if (text.length > 100) {
@@ -150,24 +147,6 @@ export class QueryHistoryView extends Disposable {
 				}
 				this._tree.getFocus();
 			}, errors.onUnexpectedError);
-		}
-	}
-
-	private onSelected(event: any) {
-		let selection = this._tree.getSelection();
-
-		if (selection && selection.length > 0 && (selection[0] instanceof QueryHistoryNode)) {
-			//let task = <TaskNode>selection[0];
-			let isMouseOrigin = event.payload && (event.payload.origin === 'mouse');
-			let isDoubleClick = isMouseOrigin && event.payload.originalEvent && event.payload.originalEvent.detail === 2;
-			if (isDoubleClick) {
-				/*
-				if (task.status === TaskStatus.Failed) {
-					let err = task.taskName + ': ' + task.message;
-					this._errorMessageService.showDialog(Severity.Error, localize('taskError', 'Task error'), err);
-				}
-				*/
-			}
 		}
 	}
 

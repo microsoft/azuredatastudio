@@ -1,6 +1,6 @@
 # Query History *(preview)*
 
-
+Adds a Query History panel for viewing and running past executed queries.
 
 ### How do I launch these experiences?
 

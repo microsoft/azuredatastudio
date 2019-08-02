@@ -1,4 +1,3 @@
-out/test/**
 src/**
 .gitignore
 tsconfig.json

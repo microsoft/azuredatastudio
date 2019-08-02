@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionManagementService, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
@@ -15,7 +15,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 
 export class DeleteAction extends Action {
 	public static ID = 'queryHistory.delete';
-	public static LABEL = localize('queryHistory.delete', 'Delete');
+	public static LABEL = localize('queryHistory.delete', "Delete");
 
 	constructor(
 		id: string,
@@ -31,7 +31,7 @@ export class DeleteAction extends Action {
 
 				let result = await this._taskService.cancelTask(element.providerName, element.id);
 				if (!result) {
-					let error = localize('errorMsgFromDeleteTask', 'Failed to delete Query History item.');
+					let error = localize('errorMsgFromDeleteTask', "Failed to delete Query History item.");
 					this.showError(error);
 				}
 			}
@@ -89,7 +89,7 @@ export class RunQueryAction extends Action {
 		super(id, label);
 	}
 
-	public run(element: QueryHistoryNode): Promise<boolean> {
+	public async run(element: QueryHistoryNode): Promise<boolean> {
 		if (element instanceof QueryHistoryNode) {
 			TaskUtilities.newQuery(
 				element.connectionProfile,
