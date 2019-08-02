@@ -12,12 +12,10 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
-import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-
-const fs = require('fs');
 
 ////// Exported public functions/vars
 
@@ -53,9 +51,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			//QueryPlanInput
 			uri = getQueryPlanEditorUri(input);
 			if (uri) {
-				let queryPlanXml: string = fs.readFileSync(uri.fsPath);
-				let queryPlanInput: QueryPlanInput = instantiationService.createInstance(QueryPlanInput, queryPlanXml, 'aaa', undefined);
-				return queryPlanInput;
+				return instantiationService.createInstance(QueryPlanInput, uri, undefined);
 			}
 		}
 

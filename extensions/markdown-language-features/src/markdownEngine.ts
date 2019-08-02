@@ -234,7 +234,6 @@ export class MarkdownEngine {
 					return normalizeLink(externalSchemeUri.toString(true));
 				}
 
-
 				// Assume it must be an relative or absolute file path
 				// Use a fake scheme to avoid parse warnings
 				let uri = vscode.Uri.parse(`vscode-resource:${link}`);
@@ -271,7 +270,7 @@ export class MarkdownEngine {
 		const validateLink = md.validateLink;
 		md.validateLink = (link: string) => {
 			// support file:// links
-			return validateLink(link) || link.indexOf('file:') === 0;
+			return validateLink(link) || link.startsWith('file:') || /^data:image\/.*?;/.test(link);
 		};
 	}
 

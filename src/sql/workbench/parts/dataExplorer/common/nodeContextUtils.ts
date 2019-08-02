@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as os from 'os';
 import { INodeContextValue } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { Disposable } from 'vs/base/common/lifecycle';
@@ -13,6 +12,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { ExtensionNodeType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { isWindows } from 'vs/base/common/platform';
 
 export class NodeContextUtils extends Disposable {
 
@@ -28,7 +28,7 @@ export class NodeContextUtils extends Disposable {
 	// General node context keys
 	static NodeProvider = new RawContextKey<string>('nodeProvider', undefined);
 	static IsDatabaseOrServer = new RawContextKey<boolean>('isDatabaseOrServer', false);
-	static IsWindows = new RawContextKey<boolean>('isWindows', os.platform() === 'win32');
+	static IsWindows = new RawContextKey<boolean>('isWindows', isWindows);
 	static IsCloud = new RawContextKey<boolean>('isCloud', false);
 	static NodeType = new RawContextKey<string>('nodeType', undefined);
 	static NodeLabel = new RawContextKey<string>('nodeLabel', undefined);

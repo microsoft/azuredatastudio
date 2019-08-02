@@ -32,7 +32,7 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import * as DialogHelper from 'sql/workbench/browser/modal/dialogHelper';
 import { Modal } from 'sql/workbench/browser/modal/modal';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachInputBoxStyler, attachSelectBoxStyler, attachEditableDropdownStyler, attachCheckboxStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import * as BackupConstants from 'sql/workbench/parts/backup/common/constants';
 import { RestoreViewModel, RestoreOptionParam, SouceDatabaseNamesParam } from 'sql/workbench/parts/restore/browser/restoreViewModel';
 import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/common/fileValidationServiceConstants';
@@ -43,6 +43,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -53,7 +54,7 @@ interface FileListElement {
 
 const LocalizedStrings = {
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
-	TARGETDATABASE: localize('targetDatabase', 'Target database')
+	TARGETDATABASE: localize('targetDatabase', "Target database")
 };
 
 export class RestoreDialog extends Modal {
@@ -136,9 +137,10 @@ export class RestoreDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
+		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', "Restore database");
 		this._databaseTitle = localize('restoreDialog.database', "Database");
 		this._backupFileTitle = localize('restoreDialog.backupFile', "Backup file");
@@ -161,8 +163,8 @@ export class RestoreDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let cancelLabel = localize('restoreDialog.cancel', 'Cancel');
-		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', 'Script'), () => this.restore(true));
+		let cancelLabel = localize('restoreDialog.cancel', "Cancel");
+		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', "Script"), () => this.restore(true));
 		this._restoreButton = this.addFooterButton(this._restoreLabel, () => this.restore(false));
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
@@ -217,7 +219,7 @@ export class RestoreDialog extends Modal {
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE,
-				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			}
 		);
 		this._databaseDropdown.onValueChange(s => {
@@ -331,7 +333,7 @@ export class RestoreDialog extends Modal {
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._generalTabId = this._panel.pushTab({
 			identifier: 'general',
-			title: localize('generalTitle', 'General'),
+			title: localize('generalTitle', "General"),
 			view: {
 				render: c => {
 					DOM.append(c, generalTab);
@@ -343,7 +345,7 @@ export class RestoreDialog extends Modal {
 
 		const fileTab = this._panel.pushTab({
 			identifier: 'fileContent',
-			title: localize('filesTitle', 'Files'),
+			title: localize('filesTitle', "Files"),
 			view: {
 				layout: () => { },
 				render: c => {
@@ -355,7 +357,7 @@ export class RestoreDialog extends Modal {
 
 		this._panel.pushTab({
 			identifier: 'options',
-			title: localize('optionsTitle', 'Options'),
+			title: localize('optionsTitle', "Options"),
 			view: {
 				layout: () => { },
 				render: c => {

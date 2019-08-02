@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IInsight, InsightType } from './interfaces';
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
+import { IInsight, IInsightData } from './interfaces';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
@@ -13,6 +12,7 @@ import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelect
 import { $, Dimension } from 'vs/base/browser/dom';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
+import { InsightType } from 'sql/workbench/parts/charts/common/interfaces';
 
 export class TableInsight extends Disposable implements IInsight {
 	public static readonly types = [InsightType.Table];

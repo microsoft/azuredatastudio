@@ -26,11 +26,11 @@ let notebookProviderType: IJSONSchema = {
 	default: { provider: '', fileExtensions: [], standardKernels: [] },
 	properties: {
 		provider: {
-			description: localize('carbon.extension.contributes.notebook.provider', 'Identifier of the notebook provider.'),
+			description: localize('carbon.extension.contributes.notebook.provider', "Identifier of the notebook provider."),
 			type: 'string'
 		},
 		fileExtensions: {
-			description: localize('carbon.extension.contributes.notebook.fileExtensions', 'What file extensions should be registered to this notebook provider'),
+			description: localize('carbon.extension.contributes.notebook.fileExtensions', "What file extensions should be registered to this notebook provider"),
 			oneOf: [
 				{ type: 'string' },
 				{
@@ -42,7 +42,7 @@ let notebookProviderType: IJSONSchema = {
 			]
 		},
 		standardKernels: {
-			description: localize('carbon.extension.contributes.notebook.standardKernels', 'What kernels should be standard with this notebook provider'),
+			description: localize('carbon.extension.contributes.notebook.standardKernels', "What kernels should be standard with this notebook provider"),
 			oneOf: [
 				{
 					type: 'object',
@@ -101,19 +101,19 @@ let notebookLanguageMagicType: IJSONSchema = {
 	default: { magic: '', language: '', kernels: [], executionTarget: null },
 	properties: {
 		magic: {
-			description: localize('carbon.extension.contributes.notebook.magic', 'Name of the cell magic, such as "%%sql".'),
+			description: localize('carbon.extension.contributes.notebook.magic', "Name of the cell magic, such as '%%sql'."),
 			type: 'string'
 		},
 		language: {
-			description: localize('carbon.extension.contributes.notebook.language', 'The cell language to be used if this cell magic is included in the cell'),
+			description: localize('carbon.extension.contributes.notebook.language', "The cell language to be used if this cell magic is included in the cell"),
 			type: 'string'
 		},
 		executionTarget: {
-			description: localize('carbon.extension.contributes.notebook.executionTarget', 'Optional execution target this magic indicates, for example Spark vs SQL'),
+			description: localize('carbon.extension.contributes.notebook.executionTarget', "Optional execution target this magic indicates, for example Spark vs SQL"),
 			type: 'string'
 		},
 		kernels: {
-			description: localize('carbon.extension.contributes.notebook.kernels', 'Optional set of kernels this is valid for, e.g. python3, pyspark3, sql'),
+			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, pyspark3, sql"),
 			oneOf: [
 				{ type: 'string' },
 				{

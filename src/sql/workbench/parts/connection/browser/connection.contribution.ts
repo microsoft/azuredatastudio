@@ -11,24 +11,19 @@ import * as azdata from 'azdata';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { ConnectionStatusbarItem } from 'sql/workbench/parts/connection/browser/connectionStatus';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { INotificationService } from 'vs/platform/notification/common/notification';
 import { integrated, azureMFA } from 'sql/platform/connection/common/constants';
 import { AuthenticationType } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 
+const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
 
-// Register Statusbar item
-(<statusbar.IStatusbarRegistry>Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-	ConnectionStatusbarItem,
-	StatusbarAlignment.RIGHT,
-	100 /* High Priority */
-));
+workbenchRegistry.registerWorkbenchContribution(ConnectionStatusbarItem, LifecyclePhase.Restored);
 
 // Connection Dashboard registration
 
@@ -124,17 +119,17 @@ configurationRegistry.registerConfiguration({
 		'sql.maxRecentConnections': {
 			'type': 'number',
 			'default': 25,
-			'description': localize('sql.maxRecentConnectionsDescription', 'The maximum number of recently used connections to store in the connection list.')
+			'description': localize('sql.maxRecentConnectionsDescription', "The maximum number of recently used connections to store in the connection list.")
 		},
 		'sql.defaultEngine': {
 			'type': 'string',
-			'description': localize('sql.defaultEngineDescription', 'Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL'),
+			'description': localize('sql.defaultEngineDescription', "Default SQL Engine to use. This drives default language provider in .sql files and the default to use when creating a new connection. Valid option is currently MSSQL"),
 			'default': 'MSSQL'
 		},
 		'connection.parseClipboardForConnectionString': {
 			'type': 'boolean',
 			'default': true,
-			'description': localize('connection.parseClipboardForConnectionStringDescription', 'Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.')
+			'description': localize('connection.parseClipboardForConnectionStringDescription', "Attempt to parse the contents of the clipboard when the connection dialog is opened or a paste is performed.")
 		}
 	}
 });

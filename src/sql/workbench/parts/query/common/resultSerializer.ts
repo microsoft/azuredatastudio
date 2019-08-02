@@ -95,7 +95,7 @@ export class ResultSerializer {
 		}
 
 		return this.fileDialogService.showSaveDialog({
-			title: nls.localize('resultsSerializer.saveAsFileTitle', 'Choose Results File'),
+			title: nls.localize('resultsSerializer.saveAsFileTitle', "Choose Results File"),
 			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(saveRequest)
 		}).then(filePath => {
@@ -131,23 +131,23 @@ export class ResultSerializer {
 
 		switch (saveRequest.format) {
 			case SaveFormat.CSV:
-				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionCSVTitle', 'CSV (Comma delimited)');
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionCSVTitle', "CSV (Comma delimited)");
 				fileFilter.extensions = ['csv'];
 				break;
 			case SaveFormat.JSON:
-				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', 'JSON');
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionJSONTitle', "JSON");
 				fileFilter.extensions = ['json'];
 				break;
 			case SaveFormat.EXCEL:
-				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', 'Excel Workbook');
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionExcelTitle', "Excel Workbook");
 				fileFilter.extensions = ['xlsx'];
 				break;
 			case SaveFormat.XML:
-				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionXMLTitle', 'XML');
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionXMLTitle', "XML");
 				fileFilter.extensions = ['xml'];
 				break;
 			default:
-				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionTXTTitle', 'Plain Text');
+				fileFilter.name = nls.localize('resultsSerializer.saveAsFileExtensionTXTTitle', "Plain Text");
 				fileFilter.extensions = ['txt'];
 		}
 

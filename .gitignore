@@ -18,7 +18,14 @@ out-vscode-min/
 out-vscode-reh/
 out-vscode-reh-min/
 out-vscode-reh-pkg/
-**/node_modules
+out-vscode-reh-web/
+out-vscode-reh-web-min/
+out-vscode-reh-web-pkg/
+out-vscode-web/
+out-vscode-web-min/
+src/vs/server
+resources/server
+build/node_modules
 coverage/
 test_data/
 test-results/

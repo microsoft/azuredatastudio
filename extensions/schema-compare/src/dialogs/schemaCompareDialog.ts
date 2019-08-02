@@ -8,7 +8,7 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
-import { SchemaCompareResult } from '../schemaCompareResult';
+import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { isNullOrUndefined } from 'util';
 import { existsSync } from 'fs';
 import { Telemetry } from '../telemetry';
@@ -63,7 +63,7 @@ export class SchemaCompareDialog {
 	private previousSource: azdata.SchemaCompareEndpointInfo;
 	private previousTarget: azdata.SchemaCompareEndpointInfo;
 
-	constructor(private schemaCompareResult: SchemaCompareResult) {
+	constructor(private schemaCompareResult: SchemaCompareMainWindow) {
 		this.previousSource = schemaCompareResult.sourceEndpointInfo;
 		this.previousTarget = schemaCompareResult.targetEndpointInfo;
 	}
