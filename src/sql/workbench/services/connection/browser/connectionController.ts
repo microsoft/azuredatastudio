@@ -117,22 +117,22 @@ export class ConnectionController implements IConnectionComponentController {
 		this._connectionWidget.createConnectionWidget(container);
 	}
 
-	private getServerGroupHelper(group: ConnectionProfileGroup, groupNames: IConnectionProfileGroup[]): void {
+	private flattenGroups(group: ConnectionProfileGroup, allGroups: IConnectionProfileGroup[]): void {
 		if (group) {
 			if (group.fullName !== '') {
-				groupNames.push(group);
+				allGroups.push(group);
 			}
 			if (group.hasChildren()) {
-				group.children.forEach((child) => this.getServerGroupHelper(child, groupNames));
+				group.children.forEach((child) => this.flattenGroups(child, allGroups));
 			}
 		}
 	}
 
 	private getAllServerGroups(providers?: string[]): IConnectionProfileGroup[] {
 		let connectionGroupRoot = this._connectionManagementService.getConnectionGroups(providers);
-		let connectionGroupNames: IConnectionProfileGroup[] = [];
+		let allGroups: IConnectionProfileGroup[] = [];
 		if (connectionGroupRoot && connectionGroupRoot.length > 0) {
-			this.getServerGroupHelper(connectionGroupRoot[0], connectionGroupNames);
+			this.flattenGroups(connectionGroupRoot[0], allGroups);
 		}
 		let defaultGroupId: string;
 		if (connectionGroupRoot && connectionGroupRoot.length > 0 && ConnectionProfileGroup.isRoot(connectionGroupRoot[0].name)) {
@@ -140,9 +140,10 @@ export class ConnectionController implements IConnectionComponentController {
 		} else {
 			defaultGroupId = Utils.defaultGroupId;
 		}
-		connectionGroupNames.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
-		connectionGroupNames.push(this._connectionWidget.NoneServerGroup);
-		return connectionGroupNames;
+		allGroups.push(Object.assign({}, this._connectionWidget.DefaultServerGroup, { id: defaultGroupId }));
+		allGroups.push(this._connectionWidget.NoneServerGroup);
+		connectionGroupRoot.forEach(cpg => cpg.dispose());
+		return allGroups;
 	}
 
 	public initDialog(providers: string[], connectionInfo: IConnectionProfile): void {

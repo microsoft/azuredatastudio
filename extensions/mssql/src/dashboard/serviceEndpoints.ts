@@ -15,7 +15,6 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 
 		const endpointsArray: Array<Utils.IEndpoint> = Object.assign([], view.serverInfo.options['clusterEndpoints']);
 		endpointsArray.forEach(endpointInfo => {
-			endpointInfo.isHyperlink = true;
 			endpointInfo.hyperlink = 'https://' + endpointInfo.ipAddress + ':' + endpointInfo.port;
 
 		});

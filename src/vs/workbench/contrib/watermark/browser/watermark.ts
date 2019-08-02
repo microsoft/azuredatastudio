@@ -31,7 +31,7 @@ import { IDimension } from 'vs/platform/layout/browser/layoutService';
 
 // {{SQL CARBON EDIT}}
 import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/electron-browser/notebookActions';
+import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 
 const $ = dom.$;
 
@@ -191,7 +191,7 @@ export class WatermarkContribution extends Disposable implements IWorkbenchContr
 		dom.prepend(container.firstElementChild as HTMLElement, this.watermark);
 		this._register(this.keybindingService.onDidUpdateKeybindings(update));
 		this._register(this.editorGroupsService.onDidLayout(dimension => this.handleEditorPartSize(container, dimension)));
-		this.handleEditorPartSize(container, this.editorGroupsService.dimension);
+		this.handleEditorPartSize(container, this.editorGroupsService.contentDimension);
 	}
 
 	private handleEditorPartSize(container: HTMLElement, dimension: IDimension): void {

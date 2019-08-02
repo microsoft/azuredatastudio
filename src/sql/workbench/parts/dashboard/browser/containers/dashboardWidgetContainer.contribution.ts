@@ -28,7 +28,7 @@ export function validateWidgetContainerContribution(extension: IExtensionPointUs
 		const widgetKey = allKeys.find(key => key === 'widget');
 		if (!widgetKey) {
 			result = false;
-			extension.collector.error(nls.localize('widgetContainer.invalidInputs', 'The list of widgets is expected inside widgets-container for extension.'));
+			extension.collector.error(nls.localize('widgetContainer.invalidInputs', "The list of widgets is expected inside widgets-container for extension."));
 		}
 	});
 	return result;

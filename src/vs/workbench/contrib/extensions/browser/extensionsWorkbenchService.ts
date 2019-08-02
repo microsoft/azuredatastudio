@@ -15,7 +15,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 // {{SQL CARBON EDIT}}
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, INSTALL_ERROR_INCOMPATIBLE
+	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
@@ -40,8 +40,6 @@ import { IProductService } from 'vs/platform/product/common/product';
 import { asDomUri } from 'vs/base/browser/dom';
 
 // {{SQL CARBON EDIT}}
-import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import pkg from 'vs/platform/product/node/package';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 
 interface IExtensionStateProvider<T> {
@@ -555,6 +553,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this.resetIgnoreAutoUpdateExtensions();
 			this.eventuallySyncWithGallery(true);
 		});
+
+		this._register(this.onChange(() => this.updateActivity()));
 	}
 
 	get local(): IExtension[] {
@@ -833,8 +833,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// Check both the vscode version and azure data studio version
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion)
-			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, pkg.version)))) {
-			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version)))) {
+			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.version, gallery.version)));
 		}
 
 		return this.installWithProgress(async () => {
@@ -1080,6 +1080,21 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this._extensionAllowedBadgeProviders = (this.productService.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
 		}
 		return this._extensionAllowedBadgeProviders;
+	}
+
+	private _activityCallBack: (() => void) | null = null;
+	private updateActivity(): void {
+		if ((this.localExtensions && this.localExtensions.local.some(e => e.state === ExtensionState.Installing || e.state === ExtensionState.Uninstalling))
+			|| (this.remoteExtensions && this.remoteExtensions.local.some(e => e.state === ExtensionState.Installing || e.state === ExtensionState.Uninstalling))) {
+			if (!this._activityCallBack) {
+				this.progressService.withProgress({ location: ProgressLocation.Extensions }, () => new Promise(c => this._activityCallBack = c));
+			}
+		} else {
+			if (this._activityCallBack) {
+				this._activityCallBack();
+			}
+			this._activityCallBack = null;
+		}
 	}
 
 	private onError(err: any): void {

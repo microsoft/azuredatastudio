@@ -43,7 +43,7 @@ export interface IGridDataProvider {
 }
 
 export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
-	let copyString = '';
+	let copyTable: string[][] = [];
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
@@ -52,13 +52,13 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 			const result = await provider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
 			// If there was a previous selection separate it with a line break. Currently
 			// when there are multiple selections they are never on the same line
-			if (i > 0) {
-				copyString += eol;
-			}
 			if (provider.shouldIncludeHeaders(includeHeaders)) {
 				let columnHeaders = provider.getColumnHeaders(range);
 				if (columnHeaders !== undefined) {
-					copyString += columnHeaders.join('\t') + eol;
+					if (copyTable[0] === undefined) {
+						copyTable[0] = [];
+					}
+					copyTable[0].push(...columnHeaders);
 				}
 			}
 			// Iterate over the rows to paste into the copy string
@@ -69,10 +69,12 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 				let cells = provider.shouldRemoveNewLines()
 					? cellObjects.map(x => removeNewLines(x.displayValue))
 					: cellObjects.map(x => x.displayValue);
-				copyString += cells.join('\t');
-				if (rowIndex < result.resultSubset.rows.length - 1) {
-					copyString += eol;
+
+				let idx = rowIndex + 1;
+				if (copyTable[idx] === undefined) {
+					copyTable[idx] = [];
 				}
+				copyTable[idx].push(...cells);
 			}
 		};
 	});
@@ -84,6 +86,15 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		}
 		await p;
 	}
+
+	let copyString = '';
+	copyTable.forEach((row) => {
+		if (row === undefined) {
+			return;
+		}
+		copyString = copyString.concat(row.join('\t').concat(eol));
+	});
+
 	return copyString;
 }
 

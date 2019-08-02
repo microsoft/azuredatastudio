@@ -8,12 +8,12 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/electron-browser/outputs/registry';
-import { ModelFactory } from 'sql/workbench/parts/notebook/node/models/modelFactory';
+import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/browser/outputs/registry';
+import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookInput } from 'sql/workbench/parts/notebook/node/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 

@@ -7,7 +7,6 @@ import 'vs/css!./media/markdown';
 import 'vs/css!./media/highlight';
 
 import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, OnChanges, SimpleChange, HostListener } from '@angular/core';
-import * as path from 'path';
 
 import { localize } from 'vs/nls';
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
@@ -22,14 +21,14 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/outputs/notebookMarkdown';
-import { CellView } from 'sql/workbench/parts/notebook/electron-browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/parts/notebook/node/models/notebookModel';
-import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/electron-browser/outputs/sanitizer';
-import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/electron-browser/cellToggleMoreActions';
+import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/electron-browser/outputs/notebookMarkdown';
+import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
+import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/node/models/notebookUtils';
+import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';
@@ -69,7 +68,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		this._model.activeCell = undefined;
 	}
 
-	private _content: string;
+	private _content: string | string[];
 	private _lastTrustedMode: boolean;
 	private isEditMode: boolean;
 	private _sanitizer: ISanitizer;
@@ -169,7 +168,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if (!this.cellModel.source && !this.isEditMode) {
-				this._content = localize('doubleClickEdit', 'Double-click to edit');
+				this._content = localize('doubleClickEdit', "Double-click to edit");
 			} else {
 				this._content = this.cellModel.source;
 			}
@@ -178,7 +177,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 				this.markdownRenderer.setNotebookURI(this.cellModel.notebookModel.notebookUri);
 				this.markdownResult = this.markdownRenderer.render({
 					isTrusted: true,
-					value: this._content
+					value: Array.isArray(this._content) ? this._content.join('') : this._content
 				});
 				this.markdownResult.element.innerHTML = this.sanitizeContent(this.markdownResult.element.innerHTML);
 				this.setLoading(false);

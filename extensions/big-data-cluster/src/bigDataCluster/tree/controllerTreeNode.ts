@@ -333,7 +333,7 @@ export class SqlMasterNode extends ControllerTreeNode {
 		let item = super.getTreeItem();
 		let connectionProfile: azdata.IConnectionProfile = {
 			id: this.id,
-			connectionName: this.id,
+			connectionName: '',
 			serverName: this._endPointAddress,
 			databaseName: '',
 			userName: this._username,
@@ -346,7 +346,11 @@ export class SqlMasterNode extends ControllerTreeNode {
 			saveProfile: false,
 			options: {}
 		};
-		return Object.assign(item, { payload: connectionProfile, childProvider: 'MSSQL' });
+		return Object.assign(item, {
+			payload: connectionProfile,
+			childProvider: 'MSSQL',
+			type: 'Server'
+		});
 	}
 
 	public get role() {

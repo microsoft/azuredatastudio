@@ -79,34 +79,34 @@ interface MssqlBackupInfo {
 }
 
 const LocalizedStrings = {
-	BACKUP_NAME: localize('backup.backupName', 'Backup name'),
-	RECOVERY_MODEL: localize('backup.recoveryModel', 'Recovery model'),
-	BACKUP_TYPE: localize('backup.backupType', 'Backup type'),
-	BACKUP_DEVICE: localize('backup.backupDevice', 'Backup files'),
-	ALGORITHM: localize('backup.algorithm', 'Algorithm'),
-	CERTIFICATE_OR_ASYMMETRIC_KEY: localize('backup.certificateOrAsymmetricKey', 'Certificate or Asymmetric key'),
-	MEDIA: localize('backup.media', 'Media'),
-	MEDIA_OPTION: localize('backup.mediaOption', 'Backup to the existing media set'),
-	MEDIA_OPTION_FORMAT: localize('backup.mediaOptionFormat', 'Backup to a new media set'),
-	EXISTING_MEDIA_APPEND: localize('backup.existingMediaAppend', 'Append to the existing backup set'),
-	EXISTING_MEDIA_OVERWRITE: localize('backup.existingMediaOverwrite', 'Overwrite all existing backup sets'),
-	NEW_MEDIA_SET_NAME: localize('backup.newMediaSetName', 'New media set name'),
-	NEW_MEDIA_SET_DESCRIPTION: localize('backup.newMediaSetDescription', 'New media set description'),
-	CHECKSUM_CONTAINER: localize('backup.checksumContainer', 'Perform checksum before writing to media'),
-	VERIFY_CONTAINER: localize('backup.verifyContainer', 'Verify backup when finished'),
-	CONTINUE_ON_ERROR_CONTAINER: localize('backup.continueOnErrorContainer', 'Continue on error'),
-	EXPIRATION: localize('backup.expiration', 'Expiration'),
-	SET_BACKUP_RETAIN_DAYS: localize('backup.setBackupRetainDays', 'Set backup retain days'),
-	COPY_ONLY: localize('backup.copyOnly', 'Copy-only backup'),
-	ADVANCED_CONFIGURATION: localize('backup.advancedConfiguration', 'Advanced Configuration'),
-	COMPRESSION: localize('backup.compression', 'Compression'),
-	SET_BACKUP_COMPRESSION: localize('backup.setBackupCompression', 'Set backup compression'),
-	ENCRYPTION: localize('backup.encryption', 'Encryption'),
-	TRANSACTION_LOG: localize('backup.transactionLog', 'Transaction log'),
-	TRUNCATE_TRANSACTION_LOG: localize('backup.truncateTransactionLog', 'Truncate the transaction log'),
-	BACKUP_TAIL: localize('backup.backupTail', 'Backup the tail of the log'),
-	RELIABILITY: localize('backup.reliability', 'Reliability'),
-	MEDIA_NAME_REQUIRED_ERROR: localize('backup.mediaNameRequired', 'Media name is required'),
+	BACKUP_NAME: localize('backup.backupName', "Backup name"),
+	RECOVERY_MODEL: localize('backup.recoveryModel', "Recovery model"),
+	BACKUP_TYPE: localize('backup.backupType', "Backup type"),
+	BACKUP_DEVICE: localize('backup.backupDevice', "Backup files"),
+	ALGORITHM: localize('backup.algorithm', "Algorithm"),
+	CERTIFICATE_OR_ASYMMETRIC_KEY: localize('backup.certificateOrAsymmetricKey', "Certificate or Asymmetric key"),
+	MEDIA: localize('backup.media', "Media"),
+	MEDIA_OPTION: localize('backup.mediaOption', "Backup to the existing media set"),
+	MEDIA_OPTION_FORMAT: localize('backup.mediaOptionFormat', "Backup to a new media set"),
+	EXISTING_MEDIA_APPEND: localize('backup.existingMediaAppend', "Append to the existing backup set"),
+	EXISTING_MEDIA_OVERWRITE: localize('backup.existingMediaOverwrite', "Overwrite all existing backup sets"),
+	NEW_MEDIA_SET_NAME: localize('backup.newMediaSetName', "New media set name"),
+	NEW_MEDIA_SET_DESCRIPTION: localize('backup.newMediaSetDescription', "New media set description"),
+	CHECKSUM_CONTAINER: localize('backup.checksumContainer', "Perform checksum before writing to media"),
+	VERIFY_CONTAINER: localize('backup.verifyContainer', "Verify backup when finished"),
+	CONTINUE_ON_ERROR_CONTAINER: localize('backup.continueOnErrorContainer', "Continue on error"),
+	EXPIRATION: localize('backup.expiration', "Expiration"),
+	SET_BACKUP_RETAIN_DAYS: localize('backup.setBackupRetainDays', "Set backup retain days"),
+	COPY_ONLY: localize('backup.copyOnly', "Copy-only backup"),
+	ADVANCED_CONFIGURATION: localize('backup.advancedConfiguration', "Advanced Configuration"),
+	COMPRESSION: localize('backup.compression', "Compression"),
+	SET_BACKUP_COMPRESSION: localize('backup.setBackupCompression', "Set backup compression"),
+	ENCRYPTION: localize('backup.encryption', "Encryption"),
+	TRANSACTION_LOG: localize('backup.transactionLog', "Transaction log"),
+	TRUNCATE_TRANSACTION_LOG: localize('backup.truncateTransactionLog', "Truncate the transaction log"),
+	BACKUP_TAIL: localize('backup.backupTail', "Backup the tail of the log"),
+	RELIABILITY: localize('backup.reliability', "Reliability"),
+	MEDIA_NAME_REQUIRED_ERROR: localize('backup.mediaNameRequired', "Media name is required"),
 	NO_ENCRYPTOR_WARNING: localize('backup.noEncryptorWarning', "No certificate or asymmetric key is available")
 };
 
@@ -293,11 +293,11 @@ export class BackupComponent {
 		// Set backup path add/remove buttons
 		this.addPathButton = new Button(this.addPathElement.nativeElement);
 		this.addPathButton.label = '+';
-		this.addPathButton.title = localize('addFile', 'Add a file');
+		this.addPathButton.title = localize('addFile', "Add a file");
 
 		this.removePathButton = new Button(this.removePathElement.nativeElement);
 		this.removePathButton.label = '-';
-		this.removePathButton.title = localize('removeFile', 'Remove files');
+		this.removePathButton.title = localize('removeFile', "Remove files");
 
 		// Set compression
 		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION });
@@ -325,7 +325,7 @@ export class BackupComponent {
 		});
 
 		// Set backup retain days
-		let invalidInputMessage = localize('backupComponent.invalidInput', 'Invalid input. Value must be greater than or equal 0.');
+		let invalidInputMessage = localize('backupComponent.invalidInput', "Invalid input. Value must be greater than or equal 0.");
 		this.backupRetainDaysBox = new InputBox(this.backupDaysElement.nativeElement,
 			this.contextViewService,
 			{
@@ -401,21 +401,21 @@ export class BackupComponent {
 	private addFooterButtons(): void {
 		// Set script footer button
 		this.scriptButton = new Button(this.scriptButtonElement.nativeElement);
-		this.scriptButton.label = localize('backupComponent.script', 'Script');
+		this.scriptButton.label = localize('backupComponent.script', "Script");
 		this.addButtonClickHandler(this.scriptButton, () => this.onScript());
 		this._toDispose.push(attachButtonStyler(this.scriptButton, this.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
 		this.backupButton = new Button(this.backupButtonElement.nativeElement);
-		this.backupButton.label = localize('backupComponent.backup', 'Backup');
+		this.backupButton.label = localize('backupComponent.backup', "Backup");
 		this.addButtonClickHandler(this.backupButton, () => this.onOk());
 		this._toDispose.push(attachButtonStyler(this.backupButton, this.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
 		this.cancelButton = new Button(this.cancelButtonElement.nativeElement);
-		this.cancelButton.label = localize('backupComponent.cancel', 'Cancel');
+		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
 		this.addButtonClickHandler(this.cancelButton, () => this.onCancel());
 		this._toDispose.push(attachButtonStyler(this.cancelButton, this.themeService));
 	}
@@ -481,7 +481,7 @@ export class BackupComponent {
 
 			// show warning message if latest backup file path contains url
 			if (this.containsBackupToUrl) {
-				this.pathListBox.setValidation(false, { content: localize('backup.containsBackupToUrlError', 'Only backup to file is supported'), type: MessageType.WARNING });
+				this.pathListBox.setValidation(false, { content: localize('backup.containsBackupToUrlError', "Only backup to file is supported"), type: MessageType.WARNING });
 				this.pathListBox.focus();
 			}
 		}
@@ -695,7 +695,7 @@ export class BackupComponent {
 			this.backupEnabled = false;
 
 			// show input validation error
-			this.pathListBox.setValidation(false, { content: localize('backup.backupFileRequired', 'Backup file path is required'), type: MessageType.ERROR });
+			this.pathListBox.setValidation(false, { content: localize('backup.backupFileRequired', "Backup file path is required"), type: MessageType.ERROR });
 			this.pathListBox.focus();
 		}
 

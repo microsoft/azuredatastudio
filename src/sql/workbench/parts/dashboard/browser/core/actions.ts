@@ -54,7 +54,7 @@ export class EditDashboardAction extends Action {
 export class RefreshWidgetAction extends Action {
 
 	private static readonly ID = 'refreshWidget';
-	private static readonly LABEL = nls.localize('refreshWidget', 'Refresh');
+	private static readonly LABEL = nls.localize('refreshWidget', "Refresh");
 	private static readonly ICON = 'refresh';
 
 	constructor(
@@ -77,7 +77,7 @@ export class RefreshWidgetAction extends Action {
 export class ToggleMoreWidgetAction extends Action {
 
 	private static readonly ID = 'toggleMore';
-	private static readonly LABEL = nls.localize('toggleMore', 'Toggle More');
+	private static readonly LABEL = nls.localize('toggleMore', "Toggle More");
 	private static readonly ICON = 'toggle-more';
 
 	constructor(

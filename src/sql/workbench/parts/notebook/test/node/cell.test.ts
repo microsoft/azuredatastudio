@@ -10,10 +10,10 @@ import { nb } from 'azdata';
 import * as objects from 'vs/base/common/objects';
 
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ModelFactory } from 'sql/workbench/parts/notebook/node/models/modelFactory';
+import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
 import { NotebookModelStub } from './common';
 import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
-import { ICellModel } from 'sql/workbench/parts/notebook/node/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Deferred } from 'sql/base/common/promise';
 import { ServiceCollection } from 'vs/platform/instantiation/common/serviceCollection';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -128,6 +128,121 @@ suite('Cell Model', function (): void {
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
 		should(cell.language).equal('python');
+	});
+
+	test('Should allow source of type string[] with length 1', async function (): Promise<void> {
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ['print(1)'],
+			metadata: { language: 'sql' },
+			execution_count: 1
+		};
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+		should(Array.isArray(cell.source)).equal(true);
+		should(cell.source.length).equal(1);
+		should(cell.source[0]).equal('print(1)');
+	});
+
+	test('Should allow source of type string', async function (): Promise<void> {
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: 'print(1)',
+			metadata: { language: 'sql' },
+			execution_count: 1
+		};
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+		should(Array.isArray(cell.source)).equal(false);
+		should(cell.source).equal('print(1)');
+	});
+
+	test('Should allow source of type string with newline and split it', async function (): Promise<void> {
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: 'print(1)\nprint(2)',
+			metadata: { language: 'sql' },
+			execution_count: 1
+		};
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+		should(Array.isArray(cell.source)).equal(true);
+		should(cell.source.length).equal(2);
+		should(cell.source[0]).equal('print(1)\n');
+		should(cell.source[1]).equal('print(2)');
+	});
+
+	test('Should allow source of type string with Windows style newline and split it', async function (): Promise<void> {
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: 'print(1)\r\nprint(2)',
+			metadata: { language: 'sql' },
+			execution_count: 1
+		};
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+		should(Array.isArray(cell.source)).equal(true);
+		should(cell.source.length).equal(2);
+		should(cell.source[0]).equal('print(1)\r\n');
+		should(cell.source[1]).equal('print(2)');
+	});
+
+	test('Should allow source of type string[] with length 2', async function (): Promise<void> {
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ['print(1)\n', 'print(2)'],
+			metadata: { language: 'sql' },
+			execution_count: 1
+		};
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+		should(Array.isArray(cell.source)).equal(true);
+		should(cell.source.length).equal(2);
+		should(cell.source[0]).equal('print(1)\n');
+		should(cell.source[1]).equal('print(2)');
+	});
+
+	test('Should allow empty string source', async function (): Promise<void> {
+		let cellData: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: '',
+			metadata: { language: 'sql' },
+			execution_count: 1
+		};
+
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
+		should(Array.isArray(cell.source)).equal(false);
+		should(cell.source).equal('');
 	});
 
 	suite('Model Future handling', function (): void {

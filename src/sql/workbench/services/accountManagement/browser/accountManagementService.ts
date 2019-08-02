@@ -151,7 +151,7 @@ export class AccountManagementService implements IAccountManagementService {
 			let refreshedAccount = await provider.provider.refresh(account);
 			if (self.isCanceledResult(refreshedAccount)) {
 				// Pattern here is to throw if this fails. Handled upstream.
-				throw new Error(localize('refreshFailed', 'Refresh account was canceled by the user'));
+				throw new Error(localize('refreshFailed', "Refresh account was canceled by the user"));
 			} else {
 				account = refreshedAccount;
 			}

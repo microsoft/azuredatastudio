@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
@@ -44,7 +44,7 @@ export interface ManageActionContext extends BaseActionContext {
 // --- actions
 export class NewQueryAction extends Task {
 	public static ID = 'newQuery';
-	public static LABEL = nls.localize('newQueryAction.newQuery', 'New Query');
+	public static LABEL = nls.localize('newQueryAction.newQuery', "New Query");
 	public static ICON = 'new-query';
 
 	constructor() {
@@ -67,167 +67,11 @@ export class NewQueryAction extends Task {
 	}
 }
 
-export class ScriptSelectAction extends Action {
-	public static ID = 'selectTop';
-	public static LABEL = nls.localize('scriptSelect', 'Select Top 1000');
-
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return TaskUtilities.scriptSelect(
-			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService
-		).then(() => true);
-	}
-}
-
-export class ScriptExecuteAction extends Action {
-	public static ID = 'scriptExecute';
-	public static LABEL = nls.localize('scriptExecute', 'Script as Execute');
-
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return TaskUtilities.script(
-			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			TaskUtilities.ScriptOperation.Execute,
-			this._errorMessageService
-		).then(() => true);
-	}
-}
-
-export class ScriptAlterAction extends Action {
-	public static ID = 'scriptAlter';
-	public static LABEL = nls.localize('scriptAlter', 'Script as Alter');
-
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return TaskUtilities.script(
-			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			TaskUtilities.ScriptOperation.Alter,
-			this._errorMessageService
-		).then(() => true);
-	}
-}
-
-export class EditDataAction extends Action {
-	public static ID = 'editData';
-	public static LABEL = nls.localize('editData', 'Edit Data');
-
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return TaskUtilities.scriptEditSelect(
-			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService
-		).then(() => true);
-	}
-}
-
-export class ScriptCreateAction extends Action {
-	public static ID = 'scriptCreate';
-	public static LABEL = nls.localize('scriptCreate', "Script as Create");
-
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return TaskUtilities.script(
-			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			TaskUtilities.ScriptOperation.Create,
-			this._errorMessageService
-		).then(() => true);
-	}
-}
-
-export class ScriptDeleteAction extends Action {
-	public static ID = 'scriptDelete';
-	public static LABEL = nls.localize('scriptDelete', 'Script as Drop');
-
-	constructor(
-		id: string, label: string,
-		@IQueryEditorService protected _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService protected _connectionManagementService: IConnectionManagementService,
-		@IScriptingService protected _scriptingService: IScriptingService,
-		@IErrorMessageService protected _errorMessageService: IErrorMessageService
-	) {
-		super(id, label);
-	}
-
-	public run(actionContext: BaseActionContext): Promise<boolean> {
-		return TaskUtilities.script(
-			actionContext.profile,
-			actionContext.object,
-			this._connectionManagementService,
-			this._queryEditorService,
-			this._scriptingService,
-			TaskUtilities.ScriptOperation.Delete,
-			this._errorMessageService
-		).then(() => true);
-	}
-}
-
 export const BackupFeatureName = 'backup';
 
 export class BackupAction extends Task {
 	public static readonly ID = BackupFeatureName;
-	public static readonly LABEL = nls.localize('backupAction.backup', 'Backup');
+	public static readonly LABEL = nls.localize('backupAction.backup', "Backup");
 	public static readonly ICON = BackupFeatureName;
 
 	constructor() {
@@ -243,7 +87,7 @@ export class BackupAction extends Task {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', 'You must enable preview features in order to use backup'));
+			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', "You must enable preview features in order to use backup"));
 		}
 
 		const connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -255,11 +99,11 @@ export class BackupAction extends Task {
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
 			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', 'Backup command is not supported for Azure SQL databases.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', "Backup command is not supported for Azure SQL databases."));
 			}
 
 			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', 'Backup command is not supported in Server Context. Please select a Database and try again.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', "Backup command is not supported in Server Context. Please select a Database and try again."));
 			}
 		}
 
@@ -274,7 +118,7 @@ export const RestoreFeatureName = 'restore';
 
 export class RestoreAction extends Task {
 	public static readonly ID = RestoreFeatureName;
-	public static readonly LABEL = nls.localize('restoreAction.restore', 'Restore');
+	public static readonly LABEL = nls.localize('restoreAction.restore', "Restore");
 	public static readonly ICON = RestoreFeatureName;
 
 	constructor() {
@@ -290,7 +134,7 @@ export class RestoreAction extends Task {
 		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
 		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', 'You must enable preview features in order to use restore'));
+			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', "You must enable preview features in order to use restore"));
 		}
 
 		let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
@@ -302,11 +146,11 @@ export class RestoreAction extends Task {
 		if (profile) {
 			const serverInfo = connectionManagementService.getServerInfo(profile.id);
 			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', 'Restore command is not supported for Azure SQL databases.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', "Restore command is not supported for Azure SQL databases."));
 			}
 
 			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', 'Restore command is not supported in Server Context. Please select a Database and try again.'));
+				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', "Restore command is not supported in Server Context. Please select a Database and try again."));
 			}
 		}
 
@@ -319,7 +163,7 @@ export class RestoreAction extends Task {
 
 export class ManageAction extends Action {
 	public static ID = 'manage';
-	public static LABEL = nls.localize('manage', 'Manage');
+	public static LABEL = nls.localize('manage', "Manage");
 
 	constructor(
 		id: string, label: string,
@@ -341,7 +185,7 @@ export class ManageAction extends Action {
 
 export class InsightAction extends Action {
 	public static ID = 'showInsight';
-	public static LABEL = nls.localize('showDetails', 'Show Details');
+	public static LABEL = nls.localize('showDetails', "Show Details");
 
 	constructor(
 		id: string, label: string,
@@ -358,7 +202,7 @@ export class InsightAction extends Action {
 
 export class ConfigureDashboardAction extends Task {
 	public static readonly ID = 'configureDashboard';
-	public static readonly LABEL = nls.localize('configureDashboard', 'Learn How To Configure The Dashboard');
+	public static readonly LABEL = nls.localize('configureDashboard', "Learn How To Configure The Dashboard");
 	public static readonly ICON = 'configure-dashboard';
 	private static readonly configHelpUri = 'https://aka.ms/sqldashboardconfig';
 
