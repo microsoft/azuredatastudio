@@ -19,11 +19,11 @@ export class NotebookTextFileModel {
 			return;
 		}
 		this.sourceMap.clear();
-		let matches = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
-		if (!matches || matches.length < 1) {
+		let cellGuidMatch = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
+		if (!cellGuidMatch || cellGuidMatch.length < 1) {
 			return;
 		}
-		let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: matches[0].range.startLineNumber, column: matches[0].range.startColumn }, false, true, undefined, true);
+		let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: cellGuidMatch[0].range.startLineNumber, column: cellGuidMatch[0].range.startColumn }, false, true, undefined, true);
 		if (!sourceBefore || !sourceBefore.range) {
 			return;
 		}
@@ -31,15 +31,15 @@ export class NotebookTextFileModel {
 		this.sourceMap.set(cellGuid, firstQuoteOfSource.range);
 	}
 
-	public updateOutputMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): IRange {
+	public getNextOutputRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): IRange {
 		if (!cellGuid) {
 			return undefined;
 		}
-		let matches = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
-		if (!matches || matches.length < 1) {
+		let cellGuidMatch = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
+		if (!cellGuidMatch || cellGuidMatch.length < 1) {
 			return undefined;
 		}
-		let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: matches[0].range.endLineNumber, column: matches[0].range.endColumn }, false, true, undefined, true);
+		let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: cellGuidMatch[0].range.endLineNumber, column: cellGuidMatch[0].range.endColumn }, false, true, undefined, true);
 		if (!outputsBegin || !outputsBegin.range) {
 			return undefined;
 		}
@@ -47,8 +47,8 @@ export class NotebookTextFileModel {
 			return {
 				startColumn: outputsBegin.range.endColumn,
 				startLineNumber: outputsBegin.range.endLineNumber,
-				endColumn: undefined,
-				endLineNumber: undefined
+				endColumn: outputsBegin.range.endColumn,
+				endLineNumber: outputsBegin.range.endLineNumber
 			};
 		}
 		let isMultiLineOutput = false;
@@ -56,9 +56,10 @@ export class NotebookTextFileModel {
 		let hypotheticalLastOutputCurlyBraceLineNumber;
 
 		while (!isMultiLineOutput) {
-			// Last 2 lines in multi-line output will look like the following:
+			// Last 2 lines in multi-line output will look like the following. Execution count is directly after.
 			// "                }"
 			// "            ],"
+			// "            "execution_count": 1"
 			let hypotheticalLastOutputCurlyBraceLineNumber = executionCountAfter.range.startLineNumber - 2;
 			isMultiLineOutput = textEditorModel.textEditorModel.getLineContent(hypotheticalLastOutputCurlyBraceLineNumber).trim() === '}';
 

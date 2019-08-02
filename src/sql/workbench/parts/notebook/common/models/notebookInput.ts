@@ -154,7 +154,7 @@ export class NotebookEditorModel extends EditorModel {
 							} else {
 								newOutput = '\n'.concat(newOutput).concat('\n');
 							}
-							let range = this.notebookTextFileModel.updateOutputMap(this.textEditorModel, contentChange.cells[0].cellGuid);
+							let range = this.notebookTextFileModel.getNextOutputRange(this.textEditorModel, contentChange.cells[0].cellGuid);
 							if (range) {
 								this.textEditorModel.textEditorModel.applyEdits([{
 									range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),

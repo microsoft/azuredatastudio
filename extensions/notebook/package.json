@@ -139,7 +139,8 @@
 				],
 				"aliases": [
 					"Notebook"
-				]
+				],
+				"configuration": "./language-configuration.json"
 			}
 		],
 		"menus": {
