@@ -13,7 +13,7 @@ import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from '
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
 import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
-import { Extensions, IInsightRegistry, IInsightsConfig, IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
+import { Extensions, IInsightRegistry, IInsightsConfig, IInsightsView, getWidgetAutoRefreshState } from 'sql/platform/dashboard/browser/insightRegistry';
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
 
 import { RunInsightQueryAction } from './actions';
@@ -138,7 +138,12 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (this.insightConfig.autoRefreshInterval) {
 			this._intervalTimer = new IntervalTimer();
 			this._register(this._intervalTimer);
-			this._intervalTimer.cancelAndSet(() => this.refresh(), this.insightConfig.autoRefreshInterval * 60 * 1000);
+			this._intervalTimer.cancelAndSet(() => {
+				if (!getWidgetAutoRefreshState(this.insightConfig.id, this.actionsContext.profile.id)) {
+					return;
+				}
+				this.refresh();
+			}, this.insightConfig.autoRefreshInterval * 60 * 1000);
 		}
 	}
 
