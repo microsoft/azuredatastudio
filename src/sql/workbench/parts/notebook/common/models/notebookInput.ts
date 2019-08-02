@@ -119,35 +119,58 @@ export class NotebookEditorModel extends EditorModel {
 			let notebookModel = this.getNotebookModel();
 
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
-				if (type === NotebookChangeType.CellSourceUpdated && contentChange && contentChange.cells && contentChange.cells[0]) {
-					// starting "
-					let node = this.notebookTextFileModel.getCellNodeByGuid(contentChange.cells[0].cellGuid);
-					if (node) {
-						// now, convert the range to leverage offsets in the json
-						if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
-							contentChange.modelContentChangedEvent.changes.forEach(change => {
-								let convertedRange: IRange = {
-									startLineNumber: change.range.startLineNumber + node.startLineNumber - 1,
-									endLineNumber: change.range.endLineNumber + node.startLineNumber - 1,
-									startColumn: change.range.startColumn + node.startColumn,
-									endColumn: change.range.endColumn + node.startColumn
-								};
-								// Need to subtract one because the first " takes up one character
-								let startSpaces: string = ' '.repeat(node.startColumn - 1);
-								console.log('fast edit');
+				if (contentChange && contentChange.cells && contentChange.cells[0]) {
+					if (type === NotebookChangeType.CellSourceUpdated) {
+						// starting "
+						let node = this.notebookTextFileModel.getCellNodeByGuid(contentChange.cells[0].cellGuid);
+						if (node) {
+							// now, convert the range to leverage offsets in the json
+							if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
+								contentChange.modelContentChangedEvent.changes.forEach(change => {
+									let convertedRange: IRange = {
+										startLineNumber: change.range.startLineNumber + node.startLineNumber - 1,
+										endLineNumber: change.range.endLineNumber + node.startLineNumber - 1,
+										startColumn: change.range.startColumn + node.startColumn,
+										endColumn: change.range.endColumn + node.startColumn
+									};
+									// Need to subtract one because the first " takes up one character
+									let startSpaces: string = ' '.repeat(node.startColumn - 1);
+									console.log('fast edit');
+									this.textEditorModel.textEditorModel.applyEdits([{
+										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
+										text: change.text.replace('\n', '\\n\",\n'.concat(startSpaces).concat('\"'))
+									}]);
+								});
+								return;
+							}
+						}
+					} else if (type === NotebookChangeType.CellOutputUpdated) {
+						let start = Date.now();
+						console.log('cell output updated');
+						if (Array.isArray(contentChange.cells[0].outputs) && contentChange.cells[0].outputs.length > 0) {
+							let newOutput = JSON.stringify(contentChange.cells[0].outputs[contentChange.cells[0].outputs.length - 1], undefined, '    ');
+							if (contentChange.cells[0].outputs.length > 1) {
+								newOutput = ', '.concat(newOutput);
+							} else {
+								newOutput = '\n'.concat(newOutput).concat('\n');
+							}
+							let range = this.notebookTextFileModel.updateOutputMap(this.textEditorModel, contentChange.cells[0].cellGuid);
+							if (range) {
 								this.textEditorModel.textEditorModel.applyEdits([{
-									range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-									text: change.text.replace('\n', '\\n\",\n'.concat(startSpaces).concat('\"'))
+									range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
+									text: newOutput
 								}]);
-							});
-							return;
+								console.log('fast cell updated in ' + (Date.now() - start) + 'ms');
+								return;
+							}
 						}
 					}
 				}
 				console.log('slow edit');
 				this.replaceEntireTextEditorModel(notebookModel, type);
-				// If cells were added or removed, after we replace all of the text editor model, attempt calculation again for active cell source
-				if (type === NotebookChangeType.CellsModified) {
+				// After we replace all of the text editor model, attempt calculation again for active cell source to prevent
+				// future unnecessary use of the "slow" form of editing
+				if (type === NotebookChangeType.CellsModified || type === NotebookChangeType.CellSourceUpdated) {
 					this.notebookTextFileModel.updateSourceMap(this.textEditorModel, contentChange.cells[0].cellGuid);
 				}
 			}

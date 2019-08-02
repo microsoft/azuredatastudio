@@ -376,8 +376,11 @@ export class CellModel implements ICellModel {
 	}
 
 	public clearOutputs(): void {
+		let originalOutputLength = this._outputs.length;
 		this._outputs = [];
-		this.fireOutputsChanged();
+		if (originalOutputLength !== 0) {
+			this.fireOutputsChanged();
+		}
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {
