@@ -1,5 +1,4 @@
 {
 	"queryHistory.displayName": "Query History",
-	"queryHistory.description": "Easily view and run past queries executed",
-	"queryHistory.openQueryHistory": "Open Query History"
+	"queryHistory.description": "View and run past queries executed"
 }

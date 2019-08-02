@@ -21,45 +21,8 @@
 		"url": "https://github.com/Microsoft/azuredatastudio.git"
 	},
 	"extensionDependencies": [
-		"Microsoft.mssql"
 	],
-	"contributes": {
-		"viewsContainers": {
-			"activitybar": [
-                {
-                    "id": "query-history",
-                    "title": "%queryHistory.displayName%",
-                    "icon": "resources/icons/dark/query-history.svg"
-                }
-            ]
-		},
-		"views": {
-            "query-history": [
-                {
-                    "id": "query-history-view",
-                    "name": "%queryHistory.displayName%"
-                }
-            ]
-        },
-		"commands": [
-			{
-				"command": "queryHistory.openQueryHistory",
-				"title": "%queryHistory.openQueryHistory%",
-				"category": "QueryHistory"
-			}
-		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "queryHistory.openQueryHistory",
-					"when": "false"
-				}
-			]
-		}
-	},
 	"dependencies": {
-		"ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
-		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
 		"vscode": "1.0.1"

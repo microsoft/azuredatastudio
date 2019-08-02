@@ -484,7 +484,10 @@ import 'sql/workbench/parts/editData/browser/editData.contribution';
 // query plan editor
 import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
 
-//acounts
+// query history
+import 'sql/workbench/parts/queryHistory/browser/queryHistory.contribution';
+
+//accounts
 import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';

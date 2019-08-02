@@ -472,10 +472,7 @@ export function createApiFactory(
 
 				getQueryDocument(fileUri: string): Thenable<azdata.queryeditor.QueryDocument> {
 					return extHostQueryEditor.$getQueryDocument(fileUri);
-				},
-
-				QueryEventType: sqlExtHostTypes.QueryEventType
-
+				}
 			};
 
 			const extensions: typeof azdata.extensions = {

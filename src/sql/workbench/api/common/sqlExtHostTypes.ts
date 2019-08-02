@@ -688,8 +688,8 @@ export enum NotebookChangeKind {
 	CellExecuted = 3
 }
 
-export enum QueryEventType {
-	QueryStart = 'queryStart',
-	QueryStop = 'queryStop',
-	ExecutionPlan = 'executionPlan'
-}
+export type QueryEventType =
+	| 'queryStart'
+	| 'queryStop'
+	| 'executionPlan'
+	| 'visualize';

@@ -3,15 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
+import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
-import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
 
 /**
- *  Provides actions for the history tasks
+ *  Provides query history actions
  */
 export class QueryHistoryActionProvider extends ContributableActionProvider {
 

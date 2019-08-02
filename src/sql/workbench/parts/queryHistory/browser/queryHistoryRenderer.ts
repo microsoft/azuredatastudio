@@ -27,7 +27,6 @@ export interface IQueryHistoryItemTemplateData {
 export class QueryHistoryRenderer implements IRenderer {
 
 	public static readonly QUERYHISTORYOBJECT_HEIGHT = 22;
-	private static readonly QUERYHISTORYOBJECT_TEMPLATE_ID = 'carbonQueryHistoryItem';
 	private static readonly FAIL_CLASS = 'error';
 	private static readonly SUCCESS_CLASS = 'success';
 	/**
