@@ -105,6 +105,12 @@ export interface AgentNotebookMaterializedParams {
 	notebookMaterializedId: number;
 }
 
+export interface CreateAgentNotebookParams {
+	ownerUri: string;
+	notebook: azdata.AgentNotebookInfo;
+	templateFilePath: string;
+}
+
 // Alert management parameters
 export interface AgentAlertsParams {
 	ownerUri: string;
@@ -247,6 +253,10 @@ export namespace AgentNotebookHistoryRequest {
 
 export namespace AgentNotebookMaterializedRequest {
 	export const type = new RequestType<AgentNotebookMaterializedParams, azdata.AgentNotebookMaterializedResult, void, void>('agent/notebookmaterialized');
+}
+
+export namespace CreateAgentNotebookRequest {
+	export const type = new RequestType<CreateAgentNotebookParams, azdata.CreateAgentNotebookResult, void, void>('agent/createnotebook');
 }
 
 // Alerts requests

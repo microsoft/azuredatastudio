@@ -599,6 +599,26 @@ export class EditNotebookJobAction extends Action {
 	}
 }
 
+
+export class ChangeNotebookHistoryType extends Action {
+	public static ID = 'notebookaction.editJob';
+	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(EditNotebookJobAction.ID, EditNotebookJobAction.LABEL, 'edit');
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		this._commandService.executeCommand(
+			'agent.openJobDialog',
+			actionInfo.ownerUri,
+			actionInfo.targetObject.job);
+		return Promise.resolve(true);
+	}
+}
+
 export class OpenNotebookAction extends Action {
 	public static ID = 'notebookaction.openNotebook';
 	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Materialized Notebook");

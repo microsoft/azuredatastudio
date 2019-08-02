@@ -123,8 +123,21 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 				.withProperties({
 					label: this.TemplateNotebookTextBoxLabel,
 					title: this.TemplateNotebookTextBoxLabel,
-					width: '80px',
-					isFile: true
+					width: '130px',
+					isFile: true,
+					fileType: '.ipynb'
+				}).component();
+			this.TemplateFilePathBox.required = true;
+			this.openTemplateFileButton.onDidClick(e => {
+				if (e) {
+					this.TemplateFilePathBox.value = e.filePath;
+				}
+			});
+			let databases = await AgentUtils.getDatabases(this.ownerUri);
+			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: databases[0],
+					values: databases
 				}).component();
 			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
 				multiline: true,
@@ -267,28 +280,22 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	}
 
 	protected updateModel() {
+		console.log(this);
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.enabled = this.enabledCheckBox.checked;
 		this.model.description = this.descriptionTextBox.value;
 		this.model.templatePath = this.TemplateFilePathBox.value;
-		if (!this.model.jobSteps) {
-			this.model.jobSteps = [];
-		}
-		this.model.jobSteps = this.steps;
-		// Change the last step's success action to quit because the
-		// default is "Go To Next Step"
-		if (this.model.jobSteps.length > 0) {
-			this.model.jobSteps[this.model.jobSteps.length - 1].successAction = azdata.StepCompletionAction.QuitWithSuccess;
-		}
+		this.model.targetDatabase = this.targetDatabaseDropDown.value as string;
 		if (!this.model.jobSchedules) {
 			this.model.jobSchedules = [];
 		}
+		this.model.alerts = [];
+		this.model.jobSteps = [];
 		this.model.jobSchedules = this.schedules;
-		if (!this.model.alerts) {
-			this.model.alerts = [];
-		}
-		this.model.alerts = this.alerts;
-		this.model.categoryId = +this.model.jobCategoryIdsMap.find(cat => cat.name === this.model.category).id;
+		this.model.category = '[Uncategorized (Local)]';
+		this.model.categoryId = 0;
+		this.model.eventLogLevel = 0;
+
 	}
 }

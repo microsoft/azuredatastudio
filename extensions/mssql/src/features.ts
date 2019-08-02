@@ -526,6 +526,27 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
+		let createNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.CreateAgentNotebookResult> => {
+			let params: contracts.CreateAgentNotebookParams = {
+				ownerUri: ownerUri,
+				notebook: notebookInfo,
+				templateFilePath: templateFilePath
+			};
+			let requestType = contracts.CreateAgentNotebookRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => {
+					fireOnUpdated();
+					return r;
+				},
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+
+
 		// Alert management methods
 		let getAlerts = (ownerUri: string): Thenable<azdata.AgentAlertsResult> => {
 			let params: contracts.AgentAlertsParams = {
@@ -837,6 +858,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			getNotebooks,
 			getNotebookHistory,
 			getMaterializedNotebook,
+			createNotebook,
 			getAlerts,
 			createAlert,
 			updateAlert,

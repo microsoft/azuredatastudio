@@ -8,7 +8,7 @@ import 'vs/css!./media/jobHistory';
 import * as azdata from 'azdata';
 import * as nls from 'vs/nls';
 import * as dom from 'vs/base/browser/dom';
-import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable } from '@angular/core';
+import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, ChangeDetectionStrategy, Injectable, PipeTransform, Pipe } from '@angular/core';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
@@ -183,9 +183,9 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
 				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
-				self._stepRows[0].stepId = nls.localize('stepRow.stepID', 'Step ID');
-				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
-				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID', "Step ID");
+				self._stepRows[0].stepName = nls.localize('stepRow.stepName', "Step Name");
+				self._stepRows[0].message = nls.localize('stepRow.message', "Message");
 				this._showSteps = self._stepRows.length > 1;
 			} else {
 				self._showSteps = false;
@@ -218,16 +218,12 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		} else if (arrow.className === 'resultsViewCollapsible collapsed' && checkbox.checked === true) {
 			arrow.className = 'resultsViewCollapsible';
 		}
+
 	}
 
-	private toggleCollapse2(): void {
-		let arrow: HTMLElement = jQuery('.notebooksgridViewCollapsible').get(0);
-		let checkbox: any = document.getElementById('accordion2');
-		if (arrow.className === 'notebooksgridViewCollapsible' && checkbox.checked === false) {
-			arrow.className = 'notebooksgridViewCollapsible collapsed';
-		} else if (arrow.className === 'notebooksgridViewCollapsible collapsed' && checkbox.checked === true) {
-			arrow.className = 'notebooksgridViewCollapsible';
-		}
+	private toggleHistoryDisplay(event): void {
+		let header = event.srcElement.attributes;
+		console.log(header);
 	}
 
 	private goToJobs(): void {
@@ -245,35 +241,18 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	}
 
 	private formatTime(time: string): string {
+
 		return time.replace('T', ' ');
 	}
 
-	private formatTimeToVisibleString(time: string) {
-		time = time.replace('T', ' ');
-		let datetime = new Date(time);
-		let difference = (new Date().getTime() - datetime.getTime()) / 1000;
-		let interval = Math.floor(difference / 31536000);
-		if (interval > 1) {
-			return interval + ' years ago';
-		}
-		interval = Math.floor(difference / 2592000);
-		if (interval > 1) {
-			return interval + ' months ago';
-		}
-		interval = Math.floor(difference / 86400);
-		if (interval > 1) {
-			return interval + ' days ago';
-		}
-		interval = Math.floor(difference / 3600);
-		if (interval > 1) {
-			return interval + ' hours ago';
-		}
-		interval = Math.floor(difference / 60);
-		if (interval > 1) {
-			return interval + ' minutes ago';
-		}
-		return Math.floor(difference) + ' seconds ago';
-		return difference;
+	private formatDateTimetoLocaleDate(time: string) {
+		let dateInstance = new Date(time);
+		return dateInstance.toLocaleDateString();
+	}
+
+	private formatDateTimetoLocaleTime(time: string) {
+		let dateInstance = new Date(time);
+		return dateInstance.toLocaleTimeString();
 	}
 
 
@@ -361,7 +340,9 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	}
 
 	public openNotebook(history: azdata.AgentNotebookHistoryInfo) {
-		console.log(history.materializedNotebookId);
+		if (history.runStatus === 0) {
+			return;
+		}
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, history.materializedNotebookId).then(async (result) => {
@@ -372,6 +353,14 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterializedJson);
 			}
 		});
+	}
+
+
+
+	public historyFilter(histories: azdata.AgentNotebookHistoryInfo[], minTime: number, maxTime: number) {
+		let resultHistory: azdata.AgentNotebookHistoryInfo[] = [];
+
+		return resultHistory;
 	}
 
 
@@ -399,5 +388,21 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		this._showSteps = value;
 		this._cd.detectChanges();
 	}
+}
 
+/** Filtering Pipe */
+@Pipe({
+	name: 'historyFilter'
+})
+export class NotebookHistoryFilterPipe implements PipeTransform {
+	transform(histories: azdata.AgentNotebookHistoryInfo[], minTime: number, maxTime: number, jobType: number): azdata.AgentNotebookHistoryInfo[] {
+		let resultHistory: azdata.AgentNotebookHistoryInfo[] = histories.filter(function (h) {
+			let historyDateTime = (new Date().getTime() - new Date(h.runDate.replace('T', ' ')).getTime()) / 1000;
+			if (historyDateTime >= minTime && historyDateTime <= maxTime) {
+				return true;
+			}
+			return false;
+		});
+		return (resultHistory.length > 0) ? resultHistory : null;
+	}
 }

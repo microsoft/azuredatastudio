@@ -86,25 +86,97 @@
 		</div>
 	</div>
 </div>
-
 <!-- Overview  -->
-<div class="overview-container">
-	<div class="overview-tab" tabindex="1">
-		<input id="accordion2" type="checkbox" />
-		<label for="accordion2">
-			<div
-				class="notebooksgridViewCollapsible"
-				(click)="toggleCollapse2()"
-			></div>
-			Notebook Executions
-		</label>
-		<div class="notebook-grid">
-			<div *ngFor="let history of notebookHistories" class="notebook-grid-item" (click)="openNotebook(history)">
-				<div *ngIf = "history.runStatus === 1" class="img-success"></div>
-				<div *ngIf = "history.runStatus === 0" class="img-failure"></div>
-				<p>
-					{{formatTimeToVisibleString(history.runDate)}}
-				</p>
+<div class="notebook-history-container">
+	<div class="notebook-grid-container">
+		<div
+			class="container"
+			*ngIf="notebookHistories | historyFilter: 0:604800:1 as currentHistory"
+		>
+			<div class="grid-title"><span>This Week</span></div>
+			<div class="notebook-grid">
+				<div
+					*ngFor="let history of currentHistory"
+					class="notebook-grid-item"
+					(click)="openNotebook(history)"
+				>
+					<div *ngIf="history.runStatus === 1" class="img-success"></div>
+					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
+					<p>
+						{{ formatDateTimetoLocaleDate(history.runDate) }}
+						<br />
+						{{ formatDateTimetoLocaleTime(history.runDate) }}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div
+			class="container"
+			*ngIf="
+				notebookHistories | historyFilter: 604801:1209600:1 as currentHistory
+			"
+		>
+			<div class="grid-title"><span>Last Week</span></div>
+			<div class="notebook-grid">
+				<div
+					*ngFor="let history of currentHistory"
+					class="notebook-grid-item"
+					(click)="openNotebook(history)"
+				>
+					<div *ngIf="history.runStatus === 1" class="img-success"></div>
+					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
+					<p>
+							{{ formatDateTimetoLocaleDate(history.runDate) }}
+							<br />
+							{{ formatDateTimetoLocaleTime(history.runDate) }}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div
+			class="container"
+			*ngIf="
+				notebookHistories | historyFilter: 1209601:2592000:0 as currentHistory
+			"
+		>
+			<div class="grid-title"><span>Last Month</span></div>
+			<div class="notebook-grid">
+				<div
+					*ngFor="let history of currentHistory"
+					class="notebook-grid-item"
+					(click)="openNotebook(history)"
+				>
+					<div *ngIf="history.runStatus === 1" class="img-success"></div>
+					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
+					<p>
+							{{ formatDateTimetoLocaleDate(history.runDate) }}
+							<br />
+							{{ formatDateTimetoLocaleTime(history.runDate) }}
+					</p>
+				</div>
+			</div>
+		</div>
+		<div
+			class="container"
+			*ngIf="
+				notebookHistories | historyFilter: 2592001:31557600:0 as currentHistory
+			"
+		>
+			<div class="grid-title"><span>All Past Runs</span></div>
+			<div class="notebook-grid">
+				<div
+					*ngFor="let history of currentHistory"
+					class="notebook-grid-item"
+					(click)="openNotebook(history)"
+				>
+					<div *ngIf="history.runStatus === 1" class="img-success"></div>
+					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
+					<p>
+							{{ formatDateTimetoLocaleDate(history.runDate) }}
+							<br />
+							{{ formatDateTimetoLocaleTime(history.runDate) }}
+					</p>
+				</div>
 			</div>
 		</div>
 	</div>

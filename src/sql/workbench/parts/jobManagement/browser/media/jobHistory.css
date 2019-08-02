@@ -367,47 +367,47 @@ notebookhistory-component
 }
 
 .notebook-grid-item:hover {
-	background:#dcdcdc !important;
+	background: #dcdcdc !important;
 }
 
 .vs-dark .notebook-grid-item:hover {
-	background:#444444 !important;
+	background: #444444 !important;
 }
 
 .notebook-grid-item > .img-success {
-	background-image: url(./notebook.svg), url(./status_success.svg);
-	background-position: center, bottom right;
+	background-image: url(./NotebookSuccess_16x.svg);
+	background-position: center;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 10px;
-	width: 50px;
-	height: 50px;
+	width: 40px;
+	height: 40px;
 	background-size: 45px 45px, 30px 30px;
-	background-repeat: no-repeat, no-repeat;
+	background-repeat: no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-success {
-	background-image: url(./notebook_inverse.svg), url(./status_success.svg);
-	background-position: center, bottom left;
+	background-image: url(./notebook_inverse.svg);
+	background-position: center;
 }
 
 .notebook-grid-item > .img-failure {
-	background-image: url(./notebook.svg), url(./status_error.svg);
-	background-position: center, bottom right;
+	background-image: url(./NotebookFail_16x.svg);
+	background-position: center;
 	display: block;
 	margin-left: auto;
 	margin-right: auto;
 	margin-top: 10px;
-	width: 50px;
-	height: 50px;
+	width: 40px;
+	height: 40px;
 	background-size: 45px 45px, 30px 30px;
-	background-repeat: no-repeat, no-repeat;
+	background-repeat: no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-failure {
-	background-image: url(./notebook_inverse.svg), url(./status_error.svg);
-	background-position: center, bottom left;
+	background-image: url(./NotebookFail_16x.svg);
+	background-position: center;
 }
 
 .notebook-grid-item > p {
@@ -417,4 +417,21 @@ notebookhistory-component
 	margin-top: 10px;
 	width: 100%;
 	text-align: center;
+}
+
+.notebook-history-container {
+	flex: 1 1 auto;
+	position: relative;
+	overflow-y: auto;
+}
+
+.grid-title {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #f4f4f4;
+	font-weight: bold;
+	line-height: 3;
+	cursor: pointer;
+	width: auto;
 }

@@ -624,6 +624,7 @@ declare module 'sqlops' {
 		isFile?: boolean;
 		fileContent?: string;
 		title?: string;
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties {

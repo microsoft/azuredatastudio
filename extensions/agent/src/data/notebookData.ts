@@ -19,7 +19,7 @@ export class NotebookData implements IAgentDialogData {
 	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', 'When the job succeeds');
 
 	// Error Messages
-	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', 'Job name must be provided');
+	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', 'Notebook name must be provided');
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
@@ -127,9 +127,9 @@ export class NotebookData implements IAgentDialogData {
 	}
 
 	public async save() {
-		let jobInfo: azdata.AgentJobInfo = this.toAgentJobInfo();
+		let jobInfo: azdata.AgentNotebookInfo = this.toAgentJobInfo();
 		let result = this.dialogMode === AgentDialogMode.CREATE
-			? await this._agentService.createJob(this.ownerUri, jobInfo)
+			? await this._agentService.createNotebook(this.ownerUri, jobInfo, this.templatePath)
 			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
 		if (!result || !result.success) {
 			if (this.dialogMode === AgentDialogMode.EDIT) {

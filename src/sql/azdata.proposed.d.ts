@@ -1568,6 +1568,10 @@ declare module 'azdata' {
 		notebookMaterializedJson: string;
 	}
 
+	export interface CreateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
 	export interface CreateAgentJobResult extends ResultStatus {
 		job: AgentJobInfo;
 	}
@@ -1668,7 +1672,8 @@ declare module 'azdata' {
 		// Notebook management methods
 		getNotebooks(ownerUri: string): Thenable<AgentNotebooksResult>;
 		getNotebookHistory(ownerUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<AgentNotebookHistoryResult>;
-		getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
+		getMaterializedNotebook(ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
+		createNotebook(ownerUri: string, job: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
 
 		// Alert management methods
 		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;
@@ -3364,6 +3369,7 @@ declare module 'azdata' {
 		isFile?: boolean;
 		fileContent?: string;
 		title?: string;
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties {
