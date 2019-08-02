@@ -170,14 +170,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					border-color: ${inactiveBorder};
 					border-width: 1px;
 				}
-
-				.notebookEditor .hoverButtonsContainer .hoverButton {
-					border-color: transparent;
-					border-width: 1px;
-				}
-				.notebookEditor .hoverButtonsContainer .hoverButton:active {
-					border-width: 1px;
-				}
 			`);
 
 			// Ensure there's always a line between editor and output
@@ -235,6 +227,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					outline-color: ${outline};
 					outline-width: 1px;
 					outline-style: solid;
+				}
+				.hc-black .notebookEditor .hoverButton:not(:active) {
+					border-color: ${hcOutline};
+					border-radius: 0px;
 				}
 			`);
 		}

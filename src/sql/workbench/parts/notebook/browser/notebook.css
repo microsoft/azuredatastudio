@@ -165,6 +165,8 @@
 	padding: 4px 6px;
 	font-size: 10px;
 	box-sizing: border-box;
+	border-color: transparent;
+	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
 	z-index: 1;
