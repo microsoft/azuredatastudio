@@ -60,6 +60,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .hoverButton:active {
 					border-color: ${activeBorder};
 				}
+
+				.notebookEditor .hoverButtonsContainer .containerBackground {
+					background-color: ${activeBorder};
+				}
 			`);
 		}
 

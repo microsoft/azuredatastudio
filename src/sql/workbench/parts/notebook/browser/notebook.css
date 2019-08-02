@@ -143,8 +143,17 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	width: 50%;
+	width: 40%;
 	margin: 1px auto;
+}
+
+.notebookEditor .hoverButtonsContainer .containerBackground {
+	position: absolute;
+	width: inherit;
+	height: 2px;
+	border-radius: 3px;
+	opacity: 0.4;
+	z-index: 0;
 }
 
 .notebookEditor .hoverButtonsContainer .hoverButton {
@@ -158,6 +167,7 @@
 	box-sizing: border-box;
 	border-style: solid;
 	border-radius: 3px;
+	z-index: 1;
 	visibility: hidden;
 }
 
