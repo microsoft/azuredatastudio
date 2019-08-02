@@ -29,11 +29,7 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
-// {{SQL CARBON EDIT}}
-const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-const platformInfo = require('service-downloader/out/platform').PlatformInformation;
-const ext = require('./lib/extensions');
-// {{SQL CARBON EDIT}} - End
+const ext = require('./lib/extensions'); // {{SQL CARBON EDIT}}
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
 const createAsar = require('./lib/asar').createAsar;
@@ -41,9 +37,6 @@ const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
-// @ts-ignore
-// {{SQL CARBON EDIT}}
-var del = require('del');
 
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
 // {{SQL CARBON EDIT}}
@@ -53,7 +46,12 @@ const nodeModules = [
 	'rxjs/Observable',
 	'rxjs/Subject',
 	'rxjs/Observer',
-	'ng2-charts']
+	'slickgrid/lib/jquery.event.drag-2.3.0',
+	'slickgrid/lib/jquery-ui-1.9.2',
+	'slickgrid/slick.core',
+	'slickgrid/slick.grid',
+	'slickgrid/slick.editors',
+	'slickgrid/slick.dataview']
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
@@ -115,6 +113,7 @@ const vscodeResources = [
 	'out-build/sql/media/objectTypes/*.svg',
 	'out-build/sql/media/icons/*.svg',
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
+	'out-build/sql/setup.js',
 	'!**/test/**'
 ];
 
@@ -321,30 +320,13 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(util.cleanNodeModules(path.join(__dirname, '.nativeignore')))
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*'], 'app/node_modules.asar'));
 
-		// {{SQL CARBON EDIT}}
-		let copiedModules = gulp.src([
-			'node_modules/jquery/**/*.*',
-			'node_modules/reflect-metadata/**/*.*',
-			'node_modules/slickgrid/**/*.*',
-			'node_modules/underscore/**/*.*',
-			'node_modules/zone.js/**/*.*',
-			'node_modules/chart.js/**/*.*',
-			'node_modules/chartjs-color/**/*.*',
-			'node_modules/chartjs-color-string/**/*.*',
-			'node_modules/color-convert/**/*.*',
-			'node_modules/color-name/**/*.*',
-			'node_modules/moment/**/*.*'
-		], { base: '.', dot: true });
-
 		let all = es.merge(
 			packageJsonStream,
 			productJsonStream,
 			license,
 			api,
-			// {{SQL CARBON EDIT}}
-			copiedModules,
 			dataApi,
-			sqlopsAPI,
+			sqlopsAPI, // {{SQL CARBON EDIT}}
 			telemetry,
 			sources,
 			deps
@@ -624,51 +606,3 @@ function getSettingsSearchBuildId(packageJson) {
 		throw new Error('Could not determine build number: ' + e.toString());
 	}
 }
-
-// {{SQL CARBON EDIT}}
-// Install service locally before building carbon
-
-function installService() {
-	let config = require('../extensions/mssql/src/config.json');
-	return platformInfo.getCurrent().then(p => {
-		let runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
-		var installer = new serviceDownloader(config);
-		let serviceInstallFolder = installer.getInstallDirectory(runtime);
-		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-		return del(serviceInstallFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
-	});
-}
-
-gulp.task('install-sqltoolsservice', () => {
-	return installService();
-});
-
-function installSsmsMin() {
-	const config = require('../extensions/admin-tool-ext-win/src/config.json');
-	return platformInfo.getCurrent().then(p => {
-		const runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
-		var installer = new serviceDownloader(config);
-		const serviceInstallFolder = installer.getInstallDirectory(runtime);
-		const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
-		console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
-		return del(serviceCleanupFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
-	});
-}
-
-gulp.task('install-ssmsmin', () => {
-	return installSsmsMin();
-});
