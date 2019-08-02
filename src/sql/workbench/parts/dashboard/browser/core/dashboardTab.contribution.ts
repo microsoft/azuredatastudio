@@ -42,11 +42,11 @@ const tabSchema: IJSONSchema = {
 			type: 'string'
 		},
 		when: {
-			description: localize('azdata.extension.contributes.tab.when', 'Condition which must be true to show this item'),
+			description: localize('azdata.extension.contributes.tab.when', "Condition which must be true to show this item"),
 			type: 'string'
 		},
 		provider: {
-			description: localize('azdata.extension.contributes.tab.provider', 'Defines the connection types this tab is compatible with. Defaults to "MSSQL" if not set'),
+			description: localize('azdata.extension.contributes.tab.provider', "Defines the connection types this tab is compatible with. Defaults to 'MSSQL' if not set"),
 			type: ['string', 'array']
 
 		},
@@ -88,16 +88,16 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 		const publisher = extension.description.publisher;
 		if (!title) {
-			extension.collector.error(localize('dashboardTab.contribution.noTitleError', 'No title specified for extension.'));
+			extension.collector.error(localize('dashboardTab.contribution.noTitleError', "No title specified for extension."));
 			return;
 		}
 
 		if (!description) {
-			extension.collector.warn(localize('dashboardTab.contribution.noDescriptionWarning', 'No description specified to show.'));
+			extension.collector.warn(localize('dashboardTab.contribution.noDescriptionWarning', "No description specified to show."));
 		}
 
 		if (!container) {
-			extension.collector.error(localize('dashboardTab.contribution.noContainerError', 'No container specified for extension.'));
+			extension.collector.error(localize('dashboardTab.contribution.noContainerError', "No container specified for extension."));
 			return;
 		}
 
@@ -109,7 +109,7 @@ ExtensionsRegistry.registerExtensionPoint<IDashboardTabContrib | IDashboardTabCo
 		}
 
 		if (Object.keys(container).length !== 1) {
-			extension.collector.error(localize('dashboardTab.contribution.moreThanOneDashboardContainersError', 'Exactly 1 dashboard container must be defined per space'));
+			extension.collector.error(localize('dashboardTab.contribution.moreThanOneDashboardContainersError', "Exactly 1 dashboard container must be defined per space"));
 			return;
 		}
 

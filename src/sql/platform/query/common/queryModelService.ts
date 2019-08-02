@@ -6,7 +6,7 @@
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
@@ -165,7 +165,7 @@ export class QueryModelService implements IQueryModelService {
 	public showCommitError(error: string): void {
 		this._notificationService.notify({
 			severity: Severity.Error,
-			message: nls.localize('commitEditFailed', 'Commit row failed: ') + error
+			message: nls.localize('commitEditFailed', "Commit row failed: ") + error
 		});
 	}
 
@@ -310,6 +310,15 @@ export class QueryModelService implements IQueryModelService {
 				uri: planInfo.fileUri,
 				queryInfo: info,
 				params: planInfo
+			};
+			this._onQueryEvent.fire(event);
+		});
+
+		queryRunner.onVisualize(resultSetInfo => {
+			let event: IQueryEvent = {
+				type: 'visualize',
+				uri: uri,
+				params: resultSetInfo
 			};
 			this._onQueryEvent.fire(event);
 		});
@@ -486,7 +495,7 @@ export class QueryModelService implements IQueryModelService {
 			return queryRunner.updateCell(ownerUri, rowId, columnId, newValue).then((result) => result, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('updateCellFailed', 'Update cell failed: ') + error.message
+					message: nls.localize('updateCellFailed', "Update cell failed: ") + error.message
 				});
 				return Promise.reject(error);
 			});
@@ -501,7 +510,7 @@ export class QueryModelService implements IQueryModelService {
 			return queryRunner.commitEdit(ownerUri).then(() => { }, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('commitEditFailed', 'Commit row failed: ') + error.message
+					message: nls.localize('commitEditFailed', "Commit row failed: ") + error.message
 				});
 				return Promise.reject(error);
 			});

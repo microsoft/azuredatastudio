@@ -17,25 +17,25 @@ import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { TopOperationsState } from 'sql/workbench/parts/queryPlan/common/topOperationsState';
 
 const topOperationColumns: Array<Slick.Column<any>> = [
-	{ name: localize('topOperations.operation', 'Operation'), field: 'operation', sortable: true },
-	{ name: localize('topOperations.object', 'Object'), field: 'object', sortable: true },
-	{ name: localize('topOperations.estCost', 'Est Cost'), field: 'estCost', sortable: true },
-	{ name: localize('topOperations.estSubtreeCost', 'Est Subtree Cost'), field: 'estSubtreeCost', sortable: true },
-	{ name: localize('topOperations.actualRows', 'Actual Rows'), field: 'actualRows', sortable: true },
-	{ name: localize('topOperations.estRows', 'Est Rows'), field: 'estRows', sortable: true },
-	{ name: localize('topOperations.actualExecutions', 'Actual Executions'), field: 'actualExecutions', sortable: true },
-	{ name: localize('topOperations.estCPUCost', 'Est CPU Cost'), field: 'estCPUCost', sortable: true },
-	{ name: localize('topOperations.estIOCost', 'Est IO Cost'), field: 'estIOCost', sortable: true },
-	{ name: localize('topOperations.parallel', 'Parallel'), field: 'parallel', sortable: true },
-	{ name: localize('topOperations.actualRebinds', 'Actual Rebinds'), field: 'actualRebinds', sortable: true },
-	{ name: localize('topOperations.estRebinds', 'Est Rebinds'), field: 'estRebinds', sortable: true },
-	{ name: localize('topOperations.actualRewinds', 'Actual Rewinds'), field: 'actualRewinds', sortable: true },
-	{ name: localize('topOperations.estRewinds', 'Est Rewinds'), field: 'estRewinds', sortable: true },
-	{ name: localize('topOperations.partitioned', 'Partitioned'), field: 'partitioned', sortable: true }
+	{ name: localize('topOperations.operation', "Operation"), field: 'operation', sortable: true },
+	{ name: localize('topOperations.object', "Object"), field: 'object', sortable: true },
+	{ name: localize('topOperations.estCost', "Est Cost"), field: 'estCost', sortable: true },
+	{ name: localize('topOperations.estSubtreeCost', "Est Subtree Cost"), field: 'estSubtreeCost', sortable: true },
+	{ name: localize('topOperations.actualRows', "Actual Rows"), field: 'actualRows', sortable: true },
+	{ name: localize('topOperations.estRows', "Est Rows"), field: 'estRows', sortable: true },
+	{ name: localize('topOperations.actualExecutions', "Actual Executions"), field: 'actualExecutions', sortable: true },
+	{ name: localize('topOperations.estCPUCost', "Est CPU Cost"), field: 'estCPUCost', sortable: true },
+	{ name: localize('topOperations.estIOCost', "Est IO Cost"), field: 'estIOCost', sortable: true },
+	{ name: localize('topOperations.parallel', "Parallel"), field: 'parallel', sortable: true },
+	{ name: localize('topOperations.actualRebinds', "Actual Rebinds"), field: 'actualRebinds', sortable: true },
+	{ name: localize('topOperations.estRebinds', "Est Rebinds"), field: 'estRebinds', sortable: true },
+	{ name: localize('topOperations.actualRewinds', "Actual Rewinds"), field: 'actualRewinds', sortable: true },
+	{ name: localize('topOperations.estRewinds', "Est Rewinds"), field: 'estRewinds', sortable: true },
+	{ name: localize('topOperations.partitioned', "Partitioned"), field: 'partitioned', sortable: true }
 ];
 
 export class TopOperationsTab implements IPanelTab {
-	public readonly title = localize('topOperationsTitle', 'Top Operations');
+	public readonly title = localize('topOperationsTitle', "Top Operations");
 	public readonly identifier = 'TopOperationsTab';
 	public readonly view: TopOperationsView;
 

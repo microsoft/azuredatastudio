@@ -13,7 +13,7 @@ const File = require("vinyl");
 const vsce = require("vsce");
 const stats_1 = require("./stats");
 const util2 = require("./util");
-const remote = require("gulp-remote-src");
+const remote = require("gulp-remote-retry-src");
 const vzip = require('gulp-vinyl-zip');
 const filter = require("gulp-filter");
 const rename = require("gulp-rename");
@@ -193,7 +193,8 @@ const sqlBuiltInExtensions = [
     'admin-pack',
     'dacpac',
     'schema-compare',
-    'cms'
+    'cms',
+    'query-history'
 ];
 // make resource deployment and BDC extension only available in insiders
 if (process.env['VSCODE_QUALITY'] === 'stable') {

@@ -1,0 +1,6 @@
+out/test/**
+src/**
+.gitignore
+tsconfig.json
+cgmanifest.json
+.vscode

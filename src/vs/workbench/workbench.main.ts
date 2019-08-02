@@ -237,8 +237,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
-import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -462,10 +462,13 @@ import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/cont
 // {{SQL CARBON EDIT}}
 // SQL
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
+import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
+
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
+import 'sql/workbench/parts/dataExplorer/common/nodeActions.common.contribution';
 import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
@@ -474,9 +477,6 @@ import 'sql/workbench/parts/connection/browser/connection.contribution';
 // query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
 import 'sql/workbench/parts/query/common/resultsGridContribution';
-
-// query history
-import 'sql/workbench/parts/queryHistory/browser/queryHistory.contribution';
 
 // edit data editor
 import 'sql/workbench/parts/editData/browser/editData.contribution';
@@ -490,6 +490,7 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
+import 'sql/workbench/parts/objectExplorer/electron-browser/objectExplorerScripting.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard
@@ -508,18 +509,20 @@ import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
 import 'sql/workbench/common/actions.contribution';
 /* Widgets */
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.common.contribution';
+import 'sql/workbench/parts/dashboard/electron-browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
-import 'sql/workbench/parts/dashboard/electron-browser/widgets/webview/webviewWidget.contribution';
+import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboardConfig.contribution';
 /* Model-based Views */
 import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
+import 'sql/workbench/parts/notebook/browser/notebook.common.contribution';
 import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
 /* Containers */
-import 'sql/workbench/parts/dashboard/electron-browser/containers/dashboardWebviewContainer.contribution';
+import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardGridContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWidgetContainer.contribution';
@@ -527,3 +530,5 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardContainer.cont
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardNavSection.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
+
+import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';

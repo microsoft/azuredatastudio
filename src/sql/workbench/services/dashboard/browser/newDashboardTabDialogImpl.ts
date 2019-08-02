@@ -27,6 +27,7 @@ import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry'
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class ExtensionListDelegate implements IListVirtualDelegate<IDashboardUITab> {
 
@@ -112,16 +113,18 @@ export class NewDashboardTabDialog extends Modal {
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
-			localize('newDashboardTab.openDashboardExtensions', 'Open dashboard extensions'),
+			localize('newDashboardTab.openDashboardExtensions', "Open dashboard extensions"),
 			TelemetryKeys.AddNewDashboardTab,
 			telemetryService,
 			layoutService,
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
@@ -143,8 +146,8 @@ export class NewDashboardTabDialog extends Modal {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
 
-		this._addNewTabButton = this.addFooterButton(localize('newDashboardTab.ok', 'OK'), () => this.addNewTabs());
-		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', 'Cancel'), () => this.cancel());
+		this._addNewTabButton = this.addFooterButton(localize('newDashboardTab.ok', "OK"), () => this.addNewTabs());
+		this._cancelButton = this.addFooterButton(localize('newDashboardTab.cancel', "Cancel"), () => this.cancel());
 		this.registerListeners();
 	}
 
@@ -155,7 +158,7 @@ export class NewDashboardTabDialog extends Modal {
 		this.createExtensionList(this._extensionViewContainer);
 		this._noExtensionViewContainer = DOM.$('.no-extension-view');
 		let noExtensionTitle = DOM.append(this._noExtensionViewContainer, DOM.$('.no-extensionTab-label'));
-		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', 'No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.');
+		let noExtensionLabel = localize('newdashboardTabDialog.noExtensionLabel', "No dashboard extensions are installed at this time. Go to Extension Manager to explore recommended extensions.");
 		noExtensionTitle.textContent = noExtensionLabel;
 
 		DOM.append(container, this._noExtensionViewContainer);

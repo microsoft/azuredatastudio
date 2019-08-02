@@ -1,0 +1,21 @@
+{
+	"compileOnSave": true,
+	"compilerOptions": {
+		"module": "commonjs",
+		"target": "es6",
+		"outDir": "./out",
+		"lib": [
+			"es6", "es2015.promise"
+		],
+		"typeRoots": [
+			"./node_modules/@types"
+		],
+		"sourceMap": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"moduleResolution": "node"
+	},
+	"exclude": [
+		"node_modules"
+	]
+}

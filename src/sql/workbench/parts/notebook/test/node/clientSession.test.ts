@@ -11,7 +11,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { URI } from 'vs/base/common/uri';
 
-import { ClientSession } from 'sql/workbench/parts/notebook/node/models/clientSession';
+import { ClientSession } from 'sql/workbench/parts/notebook/common/models/clientSession';
 import { SessionManager, EmptySession } from 'sql/workbench/services/notebook/common/sessionManager';
 import { NotebookManagerStub, ServerManagerStub } from './common';
 

@@ -279,7 +279,7 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		} else if (!index) {
 			this.items.push(new ItemDescriptor(componentDescriptor, config));
 		} else {
-			throw new Error(nls.localize('invalidIndex', 'The index is invalid.'));
+			throw new Error(nls.localize('invalidIndex', "The index is invalid."));
 		}
 		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {

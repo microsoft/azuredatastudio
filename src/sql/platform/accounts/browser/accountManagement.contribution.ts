@@ -6,7 +6,7 @@
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
-import { join } from 'path';
+import { join } from 'vs/base/common/path';
 import { createCSSRule } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
 
@@ -21,11 +21,11 @@ const account: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			description: localize('carbon.extension.contributes.account.id', 'Identifier of the account type'),
+			description: localize('carbon.extension.contributes.account.id', "Identifier of the account type"),
 			type: 'string'
 		},
 		icon: {
-			description: localize('carbon.extension.contributes.account.icon', '(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration'),
+			description: localize('carbon.extension.contributes.account.icon', "(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration"),
 			anyOf: [{
 				type: 'string'
 			},
@@ -33,11 +33,11 @@ const account: IJSONSchema = {
 				type: 'object',
 				properties: {
 					light: {
-						description: localize('carbon.extension.contributes.account.icon.light', 'Icon path when a light theme is used'),
+						description: localize('carbon.extension.contributes.account.icon.light', "Icon path when a light theme is used"),
 						type: 'string'
 					},
 					dark: {
-						description: localize('carbon.extension.contributes.account.icon.dark', 'Icon path when a dark theme is used'),
+						description: localize('carbon.extension.contributes.account.icon.dark', "Icon path when a dark theme is used"),
 						type: 'string'
 					}
 				}

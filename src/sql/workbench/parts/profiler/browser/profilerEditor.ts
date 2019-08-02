@@ -50,6 +50,7 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -161,7 +162,8 @@ export class ProfilerEditor extends BaseEditor {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -228,7 +230,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._clearFilterAction.enabled = true;
 		this._viewTemplates = this._profilerService.getViewTemplates();
 		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
-		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', 'Select View'));
+		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
@@ -241,7 +243,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._sessionsList = [''];
 		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
-		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', 'Select Session'));
+		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', "Select Session"));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionName = e.selected;
@@ -259,7 +261,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._actionBar.setContent([
 			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', 'Select Session:')) },
+			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', "Select Session:")) },
 			{ element: sessionsContainer },
 			{ action: this._startAction },
 			{ action: this._stopAction },
@@ -268,7 +270,7 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._filterAction },
 			{ action: this._clearFilterAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
+			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', "Select View:")) },
 			{ element: viewTemplateContainer },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
@@ -392,7 +394,7 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
-				handleCopyRequest(this._clipboardService, ranges[0], (row, cell) => {
+				handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, ranges[0], (row, cell) => {
 					const item = this._detailTableData.getItem(row);
 					// only 2 columns in this table
 					return cell === 0 ? item.label : item.value;
