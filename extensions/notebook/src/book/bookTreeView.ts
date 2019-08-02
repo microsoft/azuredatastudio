@@ -58,10 +58,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 			vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(res => {
 				let books = this.getBooks();
-				bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
-				const readmePath: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
-				if (fs.existsSync(readmePath)) {
-					vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmePath));
+				if (books && books.length > 0) {
+					bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
+					const readmePath: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
+					if (fs.existsSync(readmePath)) {
+						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmePath));
+					}
 				}
 			});
 		} catch (e) {
