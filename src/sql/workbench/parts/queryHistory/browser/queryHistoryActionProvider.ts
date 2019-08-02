@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryHistoryNode } from 'sql/platform/queryHistory/common/queryHistoryNode';
-import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/common/queryHistoryActions';
+import { DeleteAction, OpenQueryAction, RunQueryAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { QueryHistoryView } from 'sql/workbench/parts/queryHistory/browser/queryHistoryView';
 
 /**
  *  Provides query history actions
@@ -16,6 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 export class QueryHistoryActionProvider extends ContributableActionProvider {
 
 	constructor(
+		private _queryHistoryView: QueryHistoryView,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		super();
@@ -48,7 +50,7 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 			actions.push(this._instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL));
 			actions.push(this._instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL));
 		}
-		actions.push(this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL));
+		actions.push(this._instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL, this._queryHistoryView));
 		return actions;
 	}
 }

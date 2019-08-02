@@ -68,8 +68,7 @@ export class QueryHistoryView extends Disposable {
 					e.queryInfo.selection[0].endLine,
 					e.queryInfo.selection[0].endColumn + 1));
 
-				// expand as required
-				let newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date(), undefined, QueryStatus.Succeeded);
+				const newNode = new QueryHistoryNode(text, this._connectionManagementService.getConnectionProfile(e.uri), new Date(), undefined, QueryStatus.Succeeded);
 
 				// icon as required (for now logic is if any message has error query has error)
 				let error: boolean = false;
@@ -84,12 +83,17 @@ export class QueryHistoryView extends Disposable {
 		}));
 	}
 
+	public deleteNode(node: QueryHistoryNode) {
+		this._nodes = this._nodes.filter(n => n.id !== node.id);
+		this.refreshTree();
+	}
+
 	/**
 	 * Create a task history tree
 	 */
 	public createQueryHistoryTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
 		const dataSource = instantiationService.createInstance(QueryHistoryDataSource);
-		const actionProvider = instantiationService.createInstance(QueryHistoryActionProvider);
+		const actionProvider = instantiationService.createInstance(QueryHistoryActionProvider, this);
 		const renderer = instantiationService.createInstance(QueryHistoryRenderer);
 		const controller = instantiationService.createInstance(QueryHistoryController, actionProvider);
 		const dnd = new DefaultDragAndDrop();
