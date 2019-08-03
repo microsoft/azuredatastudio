@@ -148,6 +148,9 @@ export class Dropdown extends Disposable {
 				case KeyCode.Enter:
 					if (this._input.validate()) {
 						this._onValueChange.fire(this._input.value);
+
+						//todo move cursor back to editor
+
 					}
 					e.stopPropagation();
 					break;
@@ -290,8 +293,10 @@ export class Dropdown extends Disposable {
 	}
 
 	public focusAndOpen() {
-		this._input.focus();
 		this._showList();
+		this._input.focus();
+		let fullRange = this._input.width - 1;
+		this._input.select({ start: 0, end: fullRange });
 	}
 
 	public blur() {
