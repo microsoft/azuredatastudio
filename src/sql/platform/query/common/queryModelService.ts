@@ -58,14 +58,12 @@ export class QueryModelService implements IQueryModelService {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _queryInfoMap: Map<string, QueryInfo>;
 	private _onRunQueryStart: Emitter<string>;
-	private _onRunQueryUpdate: Emitter<string>;
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
-	public get onRunQueryUpdate(): Event<string> { return this._onRunQueryUpdate.event; }
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
@@ -77,7 +75,6 @@ export class QueryModelService implements IQueryModelService {
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
-		this._onRunQueryUpdate = new Emitter<string>();
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
@@ -301,17 +298,6 @@ export class QueryModelService implements IQueryModelService {
 			this._onQueryEvent.fire(event);
 
 			this._fireQueryEvent(uri, 'start');
-		});
-		queryRunner.onResultSetUpdate(() => {
-			this._onRunQueryUpdate.fire(uri);
-
-			let event: IQueryEvent = {
-				type: 'queryUpdate',
-				uri: uri
-			};
-			this._onQueryEvent.fire(event);
-
-			this._fireQueryEvent(uri, 'update');
 		});
 
 		queryRunner.onQueryPlanAvailable(planInfo => {

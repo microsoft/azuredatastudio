@@ -4004,7 +4004,6 @@ declare module 'azdata' {
 	export namespace queryeditor {
 		export type QueryEvent =
 			| 'queryStart'
-			| 'queryUpdate'
 			| 'queryStop'
 			| 'executionPlan'
 			| 'visualize';
