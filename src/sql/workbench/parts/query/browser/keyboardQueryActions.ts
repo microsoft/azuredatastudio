@@ -13,7 +13,6 @@ import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
@@ -239,7 +238,6 @@ export class RunQueryShortcutAction extends Action {
 
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
-		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IQueryManagementService private readonly queryManagementService: IQueryManagementService,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
