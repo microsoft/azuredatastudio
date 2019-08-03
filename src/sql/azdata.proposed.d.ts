@@ -1572,6 +1572,10 @@ declare module 'azdata' {
 		notebook: AgentNotebookInfo;
 	}
 
+	export interface UpdateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
 	export interface CreateAgentJobResult extends ResultStatus {
 		job: AgentJobInfo;
 	}
@@ -1673,7 +1677,9 @@ declare module 'azdata' {
 		getNotebooks(ownerUri: string): Thenable<AgentNotebooksResult>;
 		getNotebookHistory(ownerUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<AgentNotebookHistoryResult>;
 		getMaterializedNotebook(ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
-		createNotebook(ownerUri: string, job: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
+		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
+		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
+		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
 
 		// Alert management methods
 		getAlerts(ownerUri: string): Thenable<AgentAlertsResult>;

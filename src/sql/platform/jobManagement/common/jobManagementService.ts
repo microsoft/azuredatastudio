@@ -81,6 +81,12 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.deleteNotebook(connectionUri, notebook);
+		});
+	}
+
 	// Alerts
 	public getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 		return this._runAction(connectionUri, (runner) => {

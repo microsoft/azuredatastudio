@@ -73,6 +73,7 @@ export class NotebookData implements IAgentDialogData {
 			this.startStepId = notebookInfo.startStepId;
 			this.categoryId = notebookInfo.categoryId;
 			this.categoryType = notebookInfo.categoryType;
+			this.targetDatabase = notebookInfo.targetDatabase;
 		}
 	}
 
@@ -130,7 +131,7 @@ export class NotebookData implements IAgentDialogData {
 		let jobInfo: azdata.AgentNotebookInfo = this.toAgentJobInfo();
 		let result = this.dialogMode === AgentDialogMode.CREATE
 			? await this._agentService.createNotebook(this.ownerUri, jobInfo, this.templatePath)
-			: await this._agentService.updateJob(this.ownerUri, this.originalName, jobInfo);
+			: await this._agentService.updateNotebook(this.ownerUri, this.originalName, jobInfo, this.templatePath);
 		if (!result || !result.success) {
 			if (this.dialogMode === AgentDialogMode.EDIT) {
 				vscode.window.showErrorMessage(

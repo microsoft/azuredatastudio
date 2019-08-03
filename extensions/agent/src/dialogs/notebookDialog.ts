@@ -128,6 +128,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					fileType: '.ipynb'
 				}).component();
 			this.TemplateFilePathBox.required = true;
+			this.TemplateFilePathBox.enabled = false;
 			this.openTemplateFileButton.onDidClick(e => {
 				if (e) {
 					this.TemplateFilePathBox.value = e.filePath;
@@ -174,7 +175,11 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			this.nameTextBox.value = this.model.name;
 			this.ownerTextBox.value = this.model.owner;
 			//this.categoryDropdown.values = this.model.jobCategories;
-
+			this.targetDatabaseDropDown.value = this.model.targetDatabase;
+			this.targetDatabaseDropDown.enabled = false;
+			if (this.model.dialogMode === 2) {
+				this.TemplateFilePathBox.required = false;
+			}
 			let idx: number = undefined;
 			if (this.model.category && this.model.category !== '') {
 				idx = this.model.jobCategories.indexOf(this.model.category);

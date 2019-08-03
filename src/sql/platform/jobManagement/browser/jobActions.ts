@@ -581,7 +581,7 @@ export class NewNotebookJobAction extends Action {
 
 
 export class EditNotebookJobAction extends Action {
-	public static ID = 'notebookaction.editJob';
+	public static ID = 'notebookaction.editNotebook';
 	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook");
 
 	constructor(
@@ -592,7 +592,7 @@ export class EditNotebookJobAction extends Action {
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		this._commandService.executeCommand(
-			'agent.openJobDialog',
+			'agent.openNotebookDialog',
 			actionInfo.ownerUri,
 			actionInfo.targetObject.job);
 		return Promise.resolve(true);
@@ -637,5 +637,48 @@ export class OpenNotebookAction extends Action {
 				reject(false);
 			}
 		});
+	}
+}
+
+export class DeleteNotebookAction extends Action {
+	public static ID = 'jobaction.deleteNotebook';
+	public static LABEL = nls.localize('jobaction.deleteNotebook', "Delete Notebook");
+
+	constructor(
+		@INotificationService private _notificationService: INotificationService,
+		@IErrorMessageService private _errorMessageService: IErrorMessageService,
+		@IJobManagementService private _jobService: IJobManagementService,
+		@ITelemetryService private _telemetryService: ITelemetryService
+	) {
+		super(DeleteNotebookAction.ID, DeleteNotebookAction.LABEL);
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		let self = this;
+		let notebook = actionInfo.targetObject.job as azdata.AgentNotebookInfo;
+		self._notificationService.prompt(
+			Severity.Info,
+			nls.localize('jobaction.deleteNotebookConfirm', "Are you sure you'd like to delete the notebook '{0}'?", notebook.name),
+			[{
+				label: DeleteNotebookAction.LABEL,
+				run: () => {
+					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
+					self._jobService.deleteNotebook(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
+						if (!result || !result.success) {
+							let errorMessage = nls.localize("jobaction.failedToDeleteNotebook", "Could not delete notebook '{0}'.\nError: {1}",
+								notebook.name, result.errorMessage ? result.errorMessage : 'Unknown error');
+							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
+						} else {
+							let successMessage = nls.localize('jobaction.deletedNotebook', "The notebook was successfully deleted");
+							self._notificationService.info(successMessage);
+						}
+					});
+				}
+			}, {
+				label: DeleteAlertAction.CancelLabel,
+				run: () => { }
+			}]
+		);
+		return Promise.resolve(true);
 	}
 }

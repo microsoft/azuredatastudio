@@ -28,6 +28,7 @@ export interface IJobManagementService {
 	getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult>;
 	getNotebookHistory(connectionUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult>;
 	getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult>;
+	deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus>;
 
 	getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult>;
 	deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus>;

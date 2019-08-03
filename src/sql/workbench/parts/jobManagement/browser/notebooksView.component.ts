@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, RunJobAction, NewNotebookJobAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { EditJobAction, DeleteJobAction, RunJobAction, NewNotebookJobAction, EditNotebookJobAction, DeleteNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -52,21 +52,21 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 
 	private columns: Array<Slick.Column<any>> = [
 		{
-			name: nls.localize('jobColumns.name', 'Name'),
+			name: nls.localize('jobColumns.name', "Name"),
 			field: 'name',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
 			width: 150,
 			id: 'name'
 		},
-		{ name: nls.localize('jobColumns.TargetDatabase', 'Target Database'), field: 'targetDatabase', width: 80, id: 'targetDatabase' },
-		{ name: nls.localize('jobColumns.lastRun', 'Last Run'), field: 'lastRun', width: 80, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun', 'Next Run'), field: 'nextRun', width: 80, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled', 'Enabled'), field: 'enabled', width: 60, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status', 'Status'), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.schedule', 'Schedule'), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.TargetDatabase', "Target Database"), field: 'targetDatabase', width: 80, id: 'targetDatabase' },
+		{ name: nls.localize('jobColumns.lastRun', "Last Run"), field: 'lastRun', width: 80, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun', "Next Run"), field: 'nextRun', width: 80, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled', "Enabled"), field: 'enabled', width: 60, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status', "Status"), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.schedule', "Schedule"), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', "Last Run Outcome"), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
 		{
-			name: nls.localize('jobColumns.previousRuns', 'Previous Runs'),
+			name: nls.localize('jobColumns.previousRuns', "Previous Runs"),
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderChartsPostHistory(row, cell, value, columnDef, dataContext),
 			field: 'previousRuns',
 			width: 100,
@@ -607,10 +607,10 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				if (self._agentViewComponent.expanded.has(notebook.jobId)) {
 					let lastJobHistory = notebookHistories[notebookHistories.length - 1];
 					let item = self.dataView.getItemById(notebook.jobId + '.error');
-					let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+					let noStepsMessage = nls.localize('jobsView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
 					if (item) {
-						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+						item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
 						self._agentViewComponent.setExpanded(notebook.jobId, item['name']);
 						self.dataView.updateItem(notebook.jobId + '.error', item);
 					}
@@ -867,7 +867,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
-		const editAction = this._instantiationService.createInstance(EditJobAction);
+		const editAction = this._instantiationService.createInstance(EditNotebookJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
 		if (!targetObject.canEdit) {
 			editAction.enabled = false;
@@ -875,7 +875,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		return [
 			runJobAction,
 			editAction,
-			this._instantiationService.createInstance(DeleteJobAction)
+			this._instantiationService.createInstance(DeleteNotebookAction)
 		];
 	}
 

@@ -111,6 +111,18 @@ export interface CreateAgentNotebookParams {
 	templateFilePath: string;
 }
 
+export interface UpdateAgentNotebookParams {
+	ownerUri: string;
+	originalNotebookName: string;
+	notebook: azdata.AgentJobInfo;
+	templateFilePath: string;
+}
+
+export interface DeleteAgentNotebookParams {
+	ownerUri: string;
+	notebook: azdata.AgentNotebookInfo;
+}
+
 // Alert management parameters
 export interface AgentAlertsParams {
 	ownerUri: string;
@@ -257,6 +269,14 @@ export namespace AgentNotebookMaterializedRequest {
 
 export namespace CreateAgentNotebookRequest {
 	export const type = new RequestType<CreateAgentNotebookParams, azdata.CreateAgentNotebookResult, void, void>('agent/createnotebook');
+}
+
+export namespace DeleteAgentNotebookRequest {
+	export const type = new RequestType<DeleteAgentNotebookParams, azdata.ResultStatus, void, void>('agent/deletenotebook');
+}
+
+export namespace UpdateAgentNotebookRequest {
+	export const type = new RequestType<UpdateAgentNotebookParams, azdata.UpdateAgentNotebookResult, void, void>('agent/updatenotebook');
 }
 
 // Alerts requests
