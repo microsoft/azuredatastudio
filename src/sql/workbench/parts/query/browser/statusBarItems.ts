@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { IntervalTimer } from 'vs/base/common/async';
 import { IStatusbarService, StatusbarAlignment, IStatusbarEntryAccessor } from 'vs/platform/statusbar/common/statusbar';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
@@ -27,7 +26,6 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
 		@IEditorService private readonly editorService: IEditorService,
-		@IQueryModelService private readonly queryModelService: IQueryModelService
 	) {
 		super();
 		this.statusItem = this._register(
@@ -57,30 +55,16 @@ export class TimeElapsedStatusBarContributions extends Disposable implements IWo
 		this.hide();
 		const activeInput = this.editorService.activeEditor;
 		if (activeInput && activeInput instanceof QueryInput && activeInput.uri) {
-			const uri = activeInput.uri;
-			const runner = this.queryModelService.getQueryRunner(uri);
-			if (runner) {
-				if (runner.hasCompleted || runner.isExecuting) {
-					this._displayValue(runner);
-				}
-				this.disposable.add(runner.onQueryStart(e => {
-					this._displayValue(runner);
-				}));
-				this.disposable.add(runner.onQueryEnd(e => {
-					this._displayValue(runner);
-				}));
-			} else {
-				this.disposable.add(this.queryModelService.onRunQueryStart(e => {
-					if (e === uri) {
-						this._displayValue(this.queryModelService.getQueryRunner(uri));
-					}
-				}));
-				this.disposable.add(this.queryModelService.onRunQueryComplete(e => {
-					if (e === uri) {
-						this._displayValue(this.queryModelService.getQueryRunner(uri));
-					}
-				}));
+			const runner = activeInput.runner;
+			if (runner.hasCompleted || runner.isExecuting) {
+				this._displayValue(runner);
 			}
+			this.disposable.add(runner.onQueryStart(e => {
+				this._displayValue(runner);
+			}));
+			this.disposable.add(runner.onQueryEnd(e => {
+				this._displayValue(runner);
+			}));
 		}
 	}
 
@@ -119,8 +103,7 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IQueryModelService private readonly queryModelService: IQueryModelService
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		this.statusItem = this._register(
@@ -150,29 +133,16 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 		const activeInput = this.editorService.activeEditor;
 		if (activeInput && activeInput instanceof QueryInput && activeInput.uri) {
 			const uri = activeInput.uri;
-			const runner = this.queryModelService.getQueryRunner(uri);
-			if (runner) {
-				if (runner.hasCompleted || runner.isExecuting) {
-					this._displayValue(runner);
-				}
-				this.disposable.add(runner.onQueryStart(e => {
-					this._displayValue(runner);
-				}));
-				this.disposable.add(runner.onQueryEnd(e => {
-					this._displayValue(runner);
-				}));
-			} else {
-				this.disposable.add(this.queryModelService.onRunQueryStart(e => {
-					if (e === uri) {
-						this._displayValue(this.queryModelService.getQueryRunner(uri));
-					}
-				}));
-				this.disposable.add(this.queryModelService.onRunQueryComplete(e => {
-					if (e === uri) {
-						this._displayValue(this.queryModelService.getQueryRunner(uri));
-					}
-				}));
+			const runner = activeInput.runner;
+			if (runner.hasCompleted || runner.isExecuting) {
+				this._displayValue(runner);
 			}
+			this.disposable.add(runner.onQueryStart(e => {
+				this._displayValue(runner);
+			}));
+			this.disposable.add(runner.onQueryEnd(e => {
+				this._displayValue(runner);
+			}));
 		}
 	}
 
@@ -191,13 +161,11 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 export class QueryStatusStatusBarContributions extends Disposable implements IWorkbenchContribution {
 
 	private static readonly ID = 'status.query.status';
-
-	private visisbleUri: string | undefined;
+	private runnerDisposables = new DisposableStore();
 
 	constructor(
 		@IStatusbarService private readonly statusbarService: IStatusbarService,
-		@IEditorService private readonly editorService: IEditorService,
-		@IQueryModelService private readonly queryModelService: IQueryModelService
+		@IEditorService private readonly editorService: IEditorService
 	) {
 		super();
 		this._register(
@@ -209,22 +177,21 @@ export class QueryStatusStatusBarContributions extends Disposable implements IWo
 				StatusbarAlignment.RIGHT, 100)
 		);
 
-		this._register(Event.filter(this.queryModelService.onRunQueryStart, uri => uri === this.visisbleUri)(this.update, this));
-		this._register(Event.filter(this.queryModelService.onRunQueryComplete, uri => uri === this.visisbleUri)(this.update, this));
 		this._register(this.editorService.onDidActiveEditorChange(this.update, this));
 		this.update();
 	}
 
 	private update() {
 		this.hide();
-		this.visisbleUri = undefined;
+		this.runnerDisposables.clear();
 		const activeInput = this.editorService.activeEditor;
 		if (activeInput && activeInput instanceof QueryInput && activeInput.uri) {
-			this.visisbleUri = activeInput.uri;
-			const runner = this.queryModelService.getQueryRunner(this.visisbleUri);
+			const runner = activeInput.runner;
 			if (runner && runner.isExecuting) {
 				this.show();
 			}
+			this.runnerDisposables.add(runner.onQueryStart(() => this.show()));
+			this.runnerDisposables.add(runner.onQueryEnd(() => this.hide()));
 		}
 	}
 
