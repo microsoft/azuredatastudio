@@ -59,11 +59,11 @@
         <target state="translated">Открыть Notebook</target>
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
-        <source xml:lang="en">Tasks and information about your SQL Server Big Data Cluster</source>
+        <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
         <target state="translated">Задачи и сведения о вашем кластере больших данных SQL Server</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
-        <source xml:lang="en">SQL Server Big Data Cluster</source>
+        <source xml:lang="en">SQL Server big data cluster</source>
         <target state="translated">КЛАСТЕР БОЛЬШИХ ДАННЫХ SQL SERVER</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
@@ -655,7 +655,7 @@
   <file original="extensions/mssql/out/sparkFeature/dialog/dialogCommands" source-language="en" target-language="ru" datatype="plaintext">
     <body>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">Please select SQL Server with Big Data Cluster. </source>
+        <source xml:lang="en">Please select SQL Server with big data cluster. </source>
         <target state="translated">Выберите SQL Server с кластером больших данных.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
@@ -677,18 +677,6 @@
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with code {0}</source>
         <target state="translated">Процесс завершил работу с кодом {0}</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/out/prompts/confirm" source-language="en" target-language="ru" datatype="plaintext">
-    <body>
-      <trans-unit id="msgYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Да</target>
-      </trans-unit>
-      <trans-unit id="msgNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">Нет</target>
       </trans-unit>
     </body>
   </file>
@@ -908,6 +896,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/mssql/out/prompts/confirm" source-language="en" target-language="ru" datatype="plaintext">
+    <body>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Да</target>
+      </trans-unit>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">Нет</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/out/main" source-language="en" target-language="ru" datatype="plaintext">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
@@ -966,6 +966,34 @@
         <source xml:lang="en">Unable to find the file specified</source>
         <target state="translated">Не удалось найти указанный файл</target>
       </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} service to {1}</source>
+        <target state="translated">Установка службы {0} в {1}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing Service</source>
+        <target state="translated">Установка службы</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">УСТАНОВЛЕН</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Загрузка {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} КБ)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading Service</source>
+        <target state="translated">Скачивание службы</target>
+      </trans-unit>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Done!</source>
+        <target state="translated">Готово!</target>
+      </trans-unit>
     </body>
   </file>
   <file original="extensions/mssql/out/localizedConstants" source-language="en" target-language="ru" datatype="plaintext">
@@ -1023,7 +1051,7 @@
         <target state="translated">Локальный файл {0} не существует.</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
-        <source xml:lang="en">No Sql Server Big Data Cluster found.</source>
+        <source xml:lang="en">No Sql Server big data cluster found.</source>
         <target state="translated">Кластер больших данных Sql Server не найден.</target>
       </trans-unit>
     </body>

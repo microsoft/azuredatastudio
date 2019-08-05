@@ -3,11 +3,11 @@
   <file original="extensions/big-data-cluster/package" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
       <trans-unit id="description">
-        <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
+        <source xml:lang="en">Support for managing SQL Server big data clusters</source>
         <target state="translated">支持管理 SQL Server 大数据集群</target>
       </trans-unit>
       <trans-unit id="text.sqlServerBigDataClusters">
-        <source xml:lang="en">SQL Server Big Data Clusters</source>
+        <source xml:lang="en">SQL Server big data clusters</source>
         <target state="translated">SQL Server 大数据集群</target>
       </trans-unit>
       <trans-unit id="command.addController.title">
@@ -35,7 +35,7 @@
   <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" target-language="zh-Hans" datatype="plaintext">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
-        <source xml:lang="en">Add Big Data Cluster Controller...</source>
+        <source xml:lang="en">Add big data cluster controller...</source>
         <target state="translated">添加大数据群集控制器...</target>
       </trans-unit>
       <trans-unit id="textConnectToController">

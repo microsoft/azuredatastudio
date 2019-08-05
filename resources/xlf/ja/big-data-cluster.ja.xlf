@@ -3,16 +3,16 @@
   <file original="extensions/big-data-cluster/package" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="description">
-        <source xml:lang="en">Support for managing SQL Server Big Data Clusters</source>
-        <target state="new">Support for managing SQL Server Big Data Clusters</target>
+        <source xml:lang="en">Support for managing SQL Server big data clusters</source>
+        <target state="translated">SQL Server ビッグ データ クラスターの管理をサポート</target>
       </trans-unit>
       <trans-unit id="text.sqlServerBigDataClusters">
-        <source xml:lang="en">SQL Server Big Data Clusters</source>
-        <target state="new">SQL Server Big Data Clusters</target>
+        <source xml:lang="en">SQL Server big data clusters</source>
+        <target state="translated">SQL Server ビッグ データ クラスター</target>
       </trans-unit>
       <trans-unit id="command.addController.title">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="new">Connect to Controller</target>
+        <target state="translated">コントローラーに接続する</target>
       </trans-unit>
       <trans-unit id="command.deleteController.title">
         <source xml:lang="en">Delete</source>
@@ -35,12 +35,12 @@
   <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
-        <source xml:lang="en">Add Big Data Cluster Controller...</source>
-        <target state="new">Add Big Data Cluster Controller...</target>
+        <source xml:lang="en">Add big data cluster controller...</source>
+        <target state="translated">ビッグ データ クラスター コントローラーを追加...</target>
       </trans-unit>
       <trans-unit id="textConnectToController">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="new">Connect to Controller</target>
+        <target state="translated">コントローラーに接続する</target>
       </trans-unit>
     </body>
   </file>
@@ -48,7 +48,7 @@
     <body>
       <trans-unit id="textAddNewController">
         <source xml:lang="en">Add New Controller</source>
-        <target state="new">Add New Controller</target>
+        <target state="translated">新しいコントローラーを追加する</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>
