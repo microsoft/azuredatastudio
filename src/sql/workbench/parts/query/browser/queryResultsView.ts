@@ -19,7 +19,7 @@ import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState'
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { Event } from 'vs/base/common/event';
@@ -174,7 +174,7 @@ export class QueryResultsView extends Disposable {
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
 
-	private runnerDisposables: IDisposable[];
+	private runnerDisposables = new DisposableStore();
 
 	constructor(
 		container: HTMLElement,
@@ -216,13 +216,16 @@ export class QueryResultsView extends Disposable {
 		if (this.hasResults(runner)) {
 			this.showResults();
 		} else {
+			if (runner.isExecuting) { // in case we don't have results yet, but we also have already started executing
+				this.runnerDisposables.add(Event.once(runner.onResultSet)(() => this.showResults()));
+			}
 			this.hideResults();
 		}
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
-		this.runnerDisposables.push(runner.onQueryStart(e => {
-			Event.once(runner.onResultSet)(() => this.showResults(true));
+		this.runnerDisposables.add(runner.onQueryStart(e => {
+			this.runnerDisposables.add(Event.once(runner.onResultSet)(() => this.showResults()));
 			this.hideResults();
 			this.hideChart();
 			this.hidePlan();
@@ -230,7 +233,7 @@ export class QueryResultsView extends Disposable {
 			this.input.state.visibleTabs = new Set();
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
-		this.runnerDisposables.push(runner.onQueryEnd(() => {
+		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.messages.find(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
 			}
@@ -277,7 +280,7 @@ export class QueryResultsView extends Disposable {
 			}
 		});
 
-		this.runnerDisposables.push(runner.onQueryEnd(() => {
+		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
 					this.showPlan(e);
@@ -293,8 +296,8 @@ export class QueryResultsView extends Disposable {
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
 
 		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 		this.dynamicModelViewTabs.forEach(t => t.clear());
@@ -319,14 +322,14 @@ export class QueryResultsView extends Disposable {
 					disposable.dispose();
 				}
 			});
-			this.runnerDisposables.push(disposable);
+			this.runnerDisposables.add(disposable);
 		}
 	}
 
 	clearInput() {
 		this._input = undefined;
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
 		this.resultsTab.clear();
 		this.messagesTab.clear();
 		this.qpTab.clear();
@@ -365,13 +368,11 @@ export class QueryResultsView extends Disposable {
 		}
 	}
 
-	public showResults(show: boolean = true) {
+	public showResults() {
 		if (!this._panelView.contains(this.resultsTab)) {
 			this._panelView.pushTab(this.resultsTab, 0);
 		}
-		if (show) {
-			this._panelView.showTab(this.resultsTab.identifier);
-		}
+		this._panelView.showTab(this.resultsTab.identifier);
 	}
 
 	public showPlan(xml: string) {
@@ -410,8 +411,8 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public dispose() {
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
 		super.dispose();
 	}
 
