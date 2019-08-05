@@ -158,6 +158,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._model ? this._model.cells : [];
 	}
 
+	public get addCodeLabel(): string {
+		return localize('addCodeLabel', "Add code");
+	}
+
+	public get addTextLabel(): string {
+		return localize('addTextLabel', "Add text");
+	}
+
 	private updateTheme(theme: IColorTheme): void {
 		let toolbarEl = <HTMLElement>this.toolbar.nativeElement;
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();

@@ -13,11 +13,11 @@
 			<span class="containerBackground"></span>
 			<button class="hoverButton" (click)="addCell('code', 0)">
 				<div class="addCodeIcon"></div>
-				<span>Add code</span>
+				<span>{{addCodeLabel}}</span>
 			</button>
 			<button class="hoverButton" (click)="addCell('markdown', 0)">
 				<div class="addTextIcon"></div>
-				<span>Add text</span>
+				<span>{{addTextLabel}}</span>
 			</button>
 		</div>
 		<div *ngFor="let cell of cells">
@@ -31,11 +31,11 @@
 				<span class="containerBackground"></span>
 				<button class="hoverButton" (click)="addCell('code', findCellIndex(cell) + 1)">
 					<div class="addCodeIcon"></div>
-					<span>Add code</span>
+					<span>{{addCodeLabel}}</span>
 				</button>
 				<button class="hoverButton" (click)="addCell('markdown', findCellIndex(cell) + 1)">
 					<div class="addTextIcon"></div>
-					<span>Add text</span>
+					<span>{{addTextLabel}}</span>
 				</button>
 			</div>
 		</div>
