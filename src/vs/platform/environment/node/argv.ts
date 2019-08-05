@@ -142,6 +142,10 @@ export function parseArgs(args: string[], isOptionSupported = (_: Option) => tru
 			delete parsedArgs[o.deprecates];
 		}
 	}
+
+	// https://github.com/microsoft/vscode/issues/58177
+	parsedArgs._ = parsedArgs._.filter(arg => arg.length > 0);
+
 	return parsedArgs;
 }
 
