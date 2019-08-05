@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { localize } from 'vs/nls';
-import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -13,13 +13,11 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 const MAX_SIZE = 13;
 
@@ -112,56 +110,63 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	private _updateSelection: Emitter<ISelectionData>;
 
-	private _runner: QueryRunner;
-	public get runner(): QueryRunner {
-		return this._runner;
-	}
-
-	private _results: QueryResultsInput;
-
 	constructor(
 		private _description: string,
 		private _sql: UntitledEditorInput,
+		private _results: QueryResultsInput,
 		private _connectionProviderName: string,
-		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IInstantiationService instantiationService: IInstantiationService
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@IQueryModelService private _queryModelService: IQueryModelService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
 
-		this._runner = this._register(instantiationService.createInstance(QueryRunner, this.uri));
-		this._results = this._register(instantiationService.createInstance(QueryResultsInput, this.uri, this.runner));
-
 		this._register(this._sql);
+		this._register(this._results);
 
 		// re-emit sql editor events through this editor if it exists
 		if (this._sql) {
 			this._register(this._sql.onDidChangeDirty(() => this._onDidChangeDirty.fire()));
 		}
 
-		// Register callbacks for the Actions
-		this.runner.onQueryStart(() => this.onRunQuery());
+		// Attach to event callbacks
+		if (this._queryModelService) {
+			// Register callbacks for the Actions
+			this._register(
+				this._queryModelService.onRunQueryStart(uri => {
+					if (this.uri === uri) {
+						this.onRunQuery();
+					}
+				})
+			);
 
-		this.runner.onQueryEnd(() => this.onQueryComplete());
+			this._register(
+				this._queryModelService.onRunQueryComplete(uri => {
+					if (this.uri === uri) {
+						this.onQueryComplete();
+					}
+				})
+			);
+		}
 
-		if (this.connectionManagementService) {
-			this._register(this.connectionManagementService.onDisconnect(result => {
+		if (this._connectionManagementService) {
+			this._register(this._connectionManagementService.onDisconnect(result => {
 				if (result.connectionUri === this.uri) {
 					this.onDisconnect();
 				}
 			}));
 			if (this.uri) {
 				if (this._connectionProviderName) {
-					this.connectionManagementService.doChangeLanguageFlavor(this.uri, 'sql', this._connectionProviderName);
+					this._connectionManagementService.doChangeLanguageFlavor(this.uri, 'sql', this._connectionProviderName);
 				} else {
-					this.connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
+					this._connectionManagementService.ensureDefaultLanguageFlavor(this.uri);
 				}
 			}
 		}
 
-		if (this.configurationService) {
-			this._register(this.configurationService.onDidChangeConfiguration(e => {
+		if (this._configurationService) {
+			this._register(this._configurationService.onDidChangeConfiguration(e => {
 				if (e.affectedKeys.includes('sql.showConnectionInfoInTitle')) {
 					this._onDidChangeLabel.fire();
 				}
@@ -214,8 +219,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public getName(longForm?: boolean): string {
-		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {
-			let profile = this.connectionManagementService.getConnectionProfile(this.uri);
+		if (this._configurationService.getValue('sql.showConnectionInfoInTitle')) {
+			let profile = this._connectionManagementService.getConnectionProfile(this.uri);
 			let title = '';
 			if (this._description && this._description !== '') {
 				title = this._description + ' ';
@@ -248,17 +253,17 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	// State update funtions
 	public runQuery(selection: ISelectionData, executePlanOptions?: ExecutionPlanOptions): void {
-		this.runner.runQuery(selection, executePlanOptions);
+		this._queryModelService.runQuery(this.uri, selection, this, executePlanOptions);
 		this.state.executing = true;
 	}
 
 	public runQueryStatement(selection: ISelectionData): void {
-		this.runner.runQueryStatement(selection);
+		this._queryModelService.runQueryStatement(this.uri, selection, this);
 		this.state.executing = true;
 	}
 
 	public runQueryString(text: string): void {
-		this.runner.runQuery(text);
+		this._queryModelService.runQueryString(this.uri, text, this);
 		this.state.executing = true;
 	}
 
@@ -281,7 +286,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this.state.connected = true;
 		this.state.connecting = false;
 
-		let isRunningQuery = this.runner.isExecuting;
+		let isRunningQuery = this._queryModelService.isRunningQuery(this.uri);
 		if (!isRunningQuery && params && params.runQueryOnCompletion) {
 			let selection: ISelectionData = params ? params.querySelection : undefined;
 			if (params.runQueryOnCompletion === RunQueryOnConnectionMode.executeCurrentQuery) {
@@ -312,7 +317,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	public close(): void {
-		this.connectionManagementService.disconnectEditor(this, true);
+		this._queryModelService.disposeQuery(this.uri);
+		this._connectionManagementService.disconnectEditor(this, true);
 
 		this._sql.close();
 		this._results.close();
@@ -323,6 +329,6 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	 * Get the color that should be displayed
 	 */
 	public get tabColor(): string {
-		return this.connectionManagementService.getTabColorForUri(this.uri);
+		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
 }
