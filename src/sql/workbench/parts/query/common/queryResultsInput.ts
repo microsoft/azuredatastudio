@@ -13,7 +13,6 @@ import { QueryPlanState } from 'sql/workbench/parts/queryPlan/common/queryPlanSt
 import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
 import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
 import { QueryModelViewState } from 'sql/workbench/parts/query/common/modelViewTab/modelViewState';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();
@@ -63,11 +62,7 @@ export class QueryResultsInput extends EditorInput {
 		return this._state;
 	}
 
-	public get runner(): QueryRunner {
-		return this._runner;
-	}
-
-	constructor(private _uri: string, private _runner: QueryRunner) {
+	constructor(private _uri: string) {
 		super();
 		this._visible = false;
 		this._hasBootstrapped = false;
