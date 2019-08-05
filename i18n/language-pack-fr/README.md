@@ -4,7 +4,7 @@ Le module linguistique français fournit une expérience d'interface utilisateur
 
 ## Utilisation
 
-Une fois installé, définissez `"locale": "fr"` dans `locale.json` pour charger le module linguistique français. Pour modifier `locale.json`, appuyez sur `Ctrl+Alt+P` pour afficher la **Palette de commandes**, commencez à taper "config" pour filtrer la liste des commandes disponibles, puis sélectionnez la commande **Configurer la langue**. Consultez la [documentation](https://go.microsoft.com/fwlink/?LinkId=761051) pour plus d'informations.
+Une fois installé, définissez `"locale": "fr"` dans `locale.json` pour charger le module linguistique français. Pour modifier `locale.json`, appuyez sur `Ctrl+Shift+P` pour afficher la **Palette de commandes**, commencez à taper "config" pour filtrer la liste des commandes disponibles, puis sélectionnez la commande **Configurer la langue**. Consultez la [documentation](https://go.microsoft.com/fwlink/?LinkId=761051) pour plus d'informations.
 
 ## Contribution
 
