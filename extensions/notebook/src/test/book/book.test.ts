@@ -3,119 +3,83 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-// import * as should from 'should';
+import * as vscode from 'vscode';
+import * as should from 'should';
 import * as TypeMoq from 'typemoq';
+import * as path from 'path';
+import * as fs from 'fs';
+import * as rimraf from 'rimraf';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
-import { BookTreeItem, BookTreeItemType } from '../../book/bookTreeItem';
-// import { IContextKeyService } from '../../../../../src/vs/platform/contextkey/common/contextkey';
-// import { MockContextKeyService } from '../../../../../src/vs/platform/keybinding/test/common/mockKeybindingService';
-
-// const mockTableOfContents = [
-// 	{
-// 		title: '1_Notebook',
-// 		url: '/path/to/notebook'
-// 	},
-// 	{
-// 		title: '2_Markdown',
-// 		url: '/path/to/markdown'
-// 	},
-// 	{
-// 		title: '3_External_Link',
-// 		url: '/path/to/external_link'
-// 	}
-// ];
-
-// const mockConfig = {
-// 	title: 'Title of Book'
-// }
-
-const mockBookTreeItem = new BookTreeItem({
-	title: 'mock_title',
-	root: 'mock/root/path',
-	tableOfContents: [''],
-	page: [''],
-	type: BookTreeItemType.Book
-},
-	{
-		light: 'path/to/book.svg',
-		dark: 'path/to/book_inverse.svg'
-	}
-);
-
-const mockNotebookTreeItem = new BookTreeItem({
-	title: 'mock_title',
-	root: 'mock/root/path',
-	tableOfContents: [''],
-	page: [''],
-	type: BookTreeItemType.Notebook
-},
-	{
-		light: 'path/to/notebook.svg',
-		dark: 'path/to/notebook_inverse.svg'
-	}
-);
-
-const mockMarkdownTreeItem = new BookTreeItem({
-	title: 'mock_title',
-	root: 'mock/root/path',
-	tableOfContents: [''],
-	page: [''],
-	type: BookTreeItemType.Markdown
-},
-	{
-		light: 'path/to/markdown.svg',
-		dark: 'path/to/markdown_inverse.svg'
-	}
-);
-
-const mockExternalLinkTreeItem = new BookTreeItem({
-	title: 'mock_title',
-	root: 'mock/root/path',
-	tableOfContents: [''],
-	page: [''],
-	type: BookTreeItemType.ExternalLink
-},
-	{
-		light: 'path/to/link.svg',
-		dark: 'path/to/link_inverse.svg'
-	}
-);
-
-describe('BookTreeViewProvider', function (): void {
-	let mockBookTreeViewProvider: TypeMoq.IMock<BookTreeViewProvider>;
-	// let mockIContextKeyService: TypeMoq.IMock<IContextKeyService>;
-
-	this.beforeEach(() => {
-		mockBookTreeViewProvider = TypeMoq.Mock.ofType<BookTreeViewProvider>();
-		// mockIContextKeyService = TypeMoq.Mock.ofType<IContextKeyService>();
-	});
-
-	it('bookOpened should be false if there are no toc.yml files in folder', async function (): Promise<void> {
-		mockBookTreeViewProvider.setup(x => x.getTocFiles('')).returns(() => []);
-		// should.equal(mockIContextKeyService.object.getContextKeyValue('bookOpened'), false);
-	});
-
-	it('bookOpened should be true if there are toc.yml files in folder', async function (): Promise<void> {
-		mockBookTreeViewProvider.setup(x => x.getTocFiles('')).returns(() => ['path/to/toc.yml']);
-		// should.equal(mockIContextKeyService.object.getContextKeyValue('bookOpened'), false);
-	});
-
-});
+import { BookTreeItem } from '../../book/bookTreeItem';
 
 describe('BookTreeViewProvider.getChildren', function (): void {
-	// let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
-	let mockBookTreeViewProvider: TypeMoq.IMock<BookTreeViewProvider>;
+	const rootFolderPath = path.join(__dirname, 'testBook');
+	const dataFolderPath = path.join(rootFolderPath, '_data');
+	const contentFolderPath = path.join(rootFolderPath, 'content');
+	const configFile = path.join(rootFolderPath, '_config.yml');
+	const tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+	const notebookFile = path.join(contentFolderPath, 'notebook.ipynb');
+	const markdownFile = path.join(contentFolderPath, 'markdown.md');
+	const expectedNotebook = {
+		title: 'Notebook',
+		url: '/notebook'
+	};
+	const expectedMarkdown = {
+		title: 'Markdown',
+		url: '/markdown'
+	};
+	const expectedExternalLink = {
+		title: 'GitHub',
+		url: 'https://github.com/',
+		external: true
+	};
+	const expectedBook = {
+		sections: [expectedNotebook, expectedMarkdown, expectedExternalLink],
+		title: 'Test Book'
+	};
 
-	this.beforeEach(() => {
-		// mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		mockBookTreeViewProvider = TypeMoq.Mock.ofType<BookTreeViewProvider>();
-		mockBookTreeViewProvider.setup(x => x.getBooks()).returns(() => [mockBookTreeItem]);
-		mockBookTreeViewProvider.setup(x => x.getChildren(mockBookTreeItem)).returns(() => Promise.resolve([mockNotebookTreeItem, mockMarkdownTreeItem, mockExternalLinkTreeItem]));
+	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
+	let bookTreeViewProvider: BookTreeViewProvider;
+	let book: BookTreeItem;
+
+	this.beforeAll(async () => {
+		fs.mkdirSync(rootFolderPath);
+		fs.mkdirSync(dataFolderPath);
+		fs.mkdirSync(contentFolderPath);
+		fs.writeFileSync(configFile, 'title: Test Book');
+		fs.writeFileSync(tableOfContentsFile, '- title: Notebook\n  url: /notebook\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
+		fs.writeFileSync(notebookFile, '');
+		fs.writeFileSync(markdownFile, '');
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		bookTreeViewProvider = new BookTreeViewProvider(rootFolderPath, mockExtensionContext.object);
 	});
 
-	it('should get all pages in book', async function (): Promise<void> {
-
+	it('should return all book nodes when element is undefined', async function (): Promise<void> {
+		const children = await bookTreeViewProvider.getChildren();
+		should(children).Array();
+		should(children.length).equal(1);
+		book = children[0];
+		should(book.title).equal(expectedBook.title);
 	});
 
+	it('should return all page nodes when element is a book', async function (): Promise<void> {
+		const children = await bookTreeViewProvider.getChildren(book);
+		should(children).Array();
+		should(children.length).equal(3);
+		const notebook = children[0];
+		const markdown = children[1];
+		const externalLink = children[2];
+		should(notebook.title).equal(expectedNotebook.title);
+		should(notebook.uri).equal(expectedNotebook.url);
+		should(markdown.title).equal(expectedMarkdown.title);
+		should(markdown.uri).equal(expectedMarkdown.url);
+		should(externalLink.title).equal(expectedExternalLink.title);
+		should(externalLink.uri).equal(expectedExternalLink.url);
+	});
 
+	after(async function () {
+		if (fs.existsSync(rootFolderPath)) {
+			rimraf.sync(rootFolderPath);
+		}
+	});
 });
