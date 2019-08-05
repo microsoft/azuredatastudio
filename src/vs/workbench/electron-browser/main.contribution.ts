@@ -519,7 +519,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 				'default': true,
 				'description': nls.localize('window.nativeFullScreen', "Controls if native full-screen should be used on macOS. Disable this option to prevent macOS from creating a new space when going full-screen."),
 				'scope': ConfigurationScope.APPLICATION,
-				'included': false /* isMacintosh */
+				'included': isMacintosh
 			},
 			'window.clickThroughInactive': {
 				'type': 'boolean',
