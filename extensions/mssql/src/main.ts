@@ -53,13 +53,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		return undefined;
 	}
 
+	console.log('using log path', context.logPath);
+
+	if (!(await Utils.pfs.exists(context.logPath))) {
+		await Utils.pfs.mkdir(context.logPath);
+	}
+
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
 	config.installDirectory = path.join(__dirname, config.installDirectory);
 	config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 	config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
-	const credentialsStore = new CredentialStore(config);
-	const resourceProvider = new AzureResourceProvider(config);
+	const credentialsStore = new CredentialStore(context.logPath, config);
+	const resourceProvider = new AzureResourceProvider(context.logPath, config);
 	let languageClient: SqlOpsDataClient;
 	let cmsService: CmsService;
 
@@ -75,7 +81,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	const installationStart = Date.now();
 	let serverPromise = serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
-		let serverOptions = generateServerOptions(e);
+		let serverOptions = generateServerOptions(context.logPath, e);
 		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 		const processStart = Date.now();
 		languageClient.onReady().then(() => {
@@ -286,8 +292,8 @@ async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionPr
 		});
 	}
 }
-function generateServerOptions(executablePath: string): ServerOptions {
-	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
+function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
+	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 
