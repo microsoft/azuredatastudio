@@ -53,8 +53,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		return undefined;
 	}
 
-	console.log('using log path', context.logPath);
-
 	if (!(await Utils.pfs.exists(context.logPath))) {
 		await Utils.pfs.mkdir(context.logPath);
 	}
