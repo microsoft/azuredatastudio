@@ -6,7 +6,7 @@
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
@@ -306,6 +306,15 @@ export class QueryModelService implements IQueryModelService {
 				type: 'executionPlan',
 				uri: planInfo.fileUri,
 				params: planInfo
+			};
+			this._onQueryEvent.fire(event);
+		});
+
+		queryRunner.onVisualize(resultSetInfo => {
+			let event: IQueryEvent = {
+				type: 'visualize',
+				uri: uri,
+				params: resultSetInfo
 			};
 			this._onQueryEvent.fire(event);
 		});

@@ -128,6 +128,7 @@ const copyrightFilter = [
 	'!extensions/markdown-language-features/media/highlight.css',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
 	'!extensions/*/server/bin/*',
+	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
@@ -150,7 +151,7 @@ const copyrightFilter = [
 	'!src/sql/workbench/parts/notebook/common/models/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
-	'!src/sql/parts/modelComponents/highlight.css',
+	'!src/sql/workbench/parts/notebook/electron-browser/cellViews/media/highlight.css',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',

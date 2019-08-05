@@ -14,25 +14,6 @@ const bootstrapWindow = require('../../../../bootstrap-window');
 // Setup shell environment
 process['lazyEnv'] = getLazyEnv();
 
-// {{SQL CARBON EDIT}}
-
-/* eslint-disable */
-
-// SQL global imports
-const jQuery = require('jquery');
-const $ = jQuery;
-require('slickgrid/lib/jquery.event.drag-2.3.0');
-require('slickgrid/lib/jquery-ui-1.9.2');
-const _ = require('underscore')._;
-require('slickgrid/slick.core');
-const Slick = window.Slick;
-require('slickgrid/slick.grid');
-require('slickgrid/slick.editors');
-require('slickgrid/slick.dataview');
-require('reflect-metadata');
-require('zone.js');
-// {{SQL CARBON EDIT}} - End
-
 // Load workbench main
 bootstrapWindow.load([
 	'vs/workbench/workbench.main',

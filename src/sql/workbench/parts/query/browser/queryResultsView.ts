@@ -5,7 +5,6 @@
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { TabbedPanel, IPanelTab, IPanelView } from 'sql/base/browser/ui/panel/panel';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { MessagePanel } from 'sql/workbench/parts/query/browser/messagePanel';
 import { GridPanel } from 'sql/workbench/parts/query/browser/gridPanel';
@@ -119,7 +118,6 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.state = val;
 	}
 }
-
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', "Results");
 	public readonly identifier = 'resultsTab';
@@ -180,7 +178,6 @@ export class QueryResultsView extends Disposable {
 		container: HTMLElement,
 		@IThemeService themeService: IThemeService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IQueryModelService private queryModelService: IQueryModelService
 	) {
 		super();
 		this.resultsTab = this._register(new ResultsTab(instantiationService));
@@ -310,19 +307,7 @@ export class QueryResultsView extends Disposable {
 			dynamicTab.captureState(this.input.state.dynamicModelViewTabsState);
 		});
 
-		let info = this.queryModelService._getQueryInfo(input.uri);
-		if (info) {
-			this.setQueryRunner(info.queryRunner);
-		} else {
-			let disposable = this.queryModelService.onRunQueryStart(c => {
-				if (c === input.uri) {
-					let info = this.queryModelService._getQueryInfo(input.uri);
-					this.setQueryRunner(info.queryRunner);
-					disposable.dispose();
-				}
-			});
-			this.runnerDisposables.push(disposable);
-		}
+		this.setQueryRunner(input.runner);
 	}
 
 	clearInput() {

@@ -11,6 +11,7 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
@@ -23,7 +24,6 @@ import {
 	RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
-import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
@@ -106,7 +106,6 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IQueryModelService protected readonly queryModelService: IQueryModelService,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
@@ -176,8 +175,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 	) {
 		super(connectionManagementService, editor, CancelQueryAction.ID, CancelQueryAction.EnabledClass);
 		this.enabled = false;
@@ -186,7 +184,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
-			this.queryModelService.cancelQuery(this.editor.input.uri);
+			this.editor.input.runner.cancelQuery();
 		}
 		return Promise.resolve(null);
 	}

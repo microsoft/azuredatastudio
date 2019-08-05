@@ -19,4 +19,8 @@ export class ExtHostExtensionManagement implements ExtHostExtensionManagementSha
 	$install(vsixPath: string): Thenable<string> {
 		return this._proxy.$install(vsixPath);
 	}
+
+	$showObsoleteExtensionApiUsageNotification(message: string): void {
+		return this._proxy.$showObsoleteExtensionApiUsageNotification(message);
+	}
 }

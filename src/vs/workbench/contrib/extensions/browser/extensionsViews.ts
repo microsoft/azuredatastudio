@@ -10,7 +10,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { isPromiseCanceledError, getErrorMessage } from 'vs/base/common/errors';
 import { PagedModel, IPagedModel, IPager, DelayedPagedModel } from 'vs/base/common/paging';
 import { SortBy, SortOrder, IQueryOptions } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { IExtensionManagementServer, IExtensionManagementServerService, IExtensionTipsService, IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { IExtensionManagementServer, IExtensionManagementServerService, IExtensionTipsService, IExtensionRecommendation, EnablementState } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { areSameExtensions } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
@@ -44,9 +44,10 @@ import { IAction } from 'vs/base/common/actions';
 import { ExtensionType, ExtensionIdentifier, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
-import { isUIExtension } from 'vs/workbench/services/extensions/common/extensionsUtil';
 import { IProductService } from 'vs/platform/product/common/product';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+
 
 class ExtensionsViewState extends Disposable implements IExtensionsViewState {
 
@@ -101,8 +102,9 @@ export class ExtensionsListView extends ViewletPanel {
 		@IWorkbenchThemeService private readonly workbenchThemeService: IWorkbenchThemeService,
 		@IExtensionManagementServerService protected readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService protected readonly productService: IProductService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 	) {
-		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService);
+		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this.server = options.server;
 	}
 
@@ -424,6 +426,21 @@ export class ExtensionsListView extends ViewletPanel {
 			options.sortBy = SortBy.InstallCount;
 		}
 
+		// {{SQL CARBON EDIT}}
+		if (this.productService) {
+			let promiseRecommendedExtensionsByScenario: Promise<IPagedModel<IExtension>> | undefined;
+			Object.keys(this.productService.recommendedExtensionsByScenario).forEach(scenarioType => {
+				let re = new RegExp('@' + scenarioType, 'i');
+				if (re.test(query.value)) {
+					promiseRecommendedExtensionsByScenario = this.getRecommendedExtensionsByScenario(token, scenarioType);
+				}
+			});
+			if (promiseRecommendedExtensionsByScenario) {
+				return promiseRecommendedExtensionsByScenario;
+			}
+		}
+		// {{SQL CARBON EDIT}} - End
+
 		if (ExtensionsListView.isWorkspaceRecommendedExtensionsQuery(query.value)) {
 			return this.getWorkspaceRecommendationsModel(query, options, token);
 		} else if (ExtensionsListView.isKeymapsRecommendedExtensionsQuery(query.value)) {
@@ -649,6 +666,31 @@ export class ExtensionsListView extends ViewletPanel {
 				});
 			});
 	}
+
+	// {{SQL CARBON EDIT}}
+	private getRecommendedExtensionsByScenario(token: CancellationToken, scenarioType: string): Promise<IPagedModel<IExtension>> {
+		if (!scenarioType) {
+			return Promise.reject(new Error(localize('scenarioTypeUndefined', 'The scenario type for extension recommendations must be provided.')));
+		}
+		return this.extensionsWorkbenchService.queryLocal()
+			.then(result => result.filter(e => e.type === ExtensionType.User))
+			.then(local => {
+				return this.tipsService.getRecommendedExtensionsByScenario(scenarioType).then((recommmended) => {
+					const installedExtensions = local.map(x => `${x.publisher}.${x.name}`);
+					return this.extensionsWorkbenchService.queryGallery(token).then((pager) => {
+						// filter out installed extensions and the extensions not in the recommended list
+						pager.firstPage = pager.firstPage.filter((p) => {
+							const extensionId = `${p.publisher}.${p.name}`;
+							return installedExtensions.indexOf(extensionId) === -1 && recommmended.findIndex(ext => ext.extensionId === extensionId) !== -1;
+						});
+						pager.total = pager.firstPage.length;
+						pager.pageSize = pager.firstPage.length;
+						return this.getPagedModel(pager);
+					});
+				});
+			});
+	}
+	// {{SQL CARBON EDIT}} - End
 
 	// Given all recommendations, trims and returns recommendations in the relevant order after filtering out installed extensions
 	private getTrimmedRecommendations(installedExtensions: IExtension[], value: string, fileBasedRecommendations: IExtensionRecommendation[], otherRecommendations: IExtensionRecommendation[], workpsaceRecommendations: IExtensionRecommendation[]): string[] {
@@ -893,9 +935,10 @@ export class ServerExtensionsView extends ExtensionsListView {
 		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionManagementServerService extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService productService: IProductService,
+		@IContextKeyService contextKeyService: IContextKeyService,
 	) {
 		options.server = server;
-		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService);
+		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService, contextKeyService);
 		this._register(onDidChangeTitle(title => this.updateTitle(title)));
 	}
 
@@ -1039,10 +1082,14 @@ export class WorkspaceRecommendedExtensionsView extends ExtensionsListView {
 		return this.tipsService.getWorkspaceRecommendations()
 			.then(recommendations => recommendations.filter(({ extensionId }) => {
 				const extension = this.extensionsWorkbenchService.local.filter(i => areSameExtensions({ id: extensionId }, i.identifier))[0];
-				if (!extension || !extension.local || extension.state !== ExtensionState.Installed) {
+				if (!extension
+					|| !extension.local
+					|| extension.state !== ExtensionState.Installed
+					|| extension.enablementState === EnablementState.DisabledByExtensionKind
+				) {
 					return true;
 				}
-				return isUIExtension(extension.local.manifest, this.productService, this.configurationService) ? extension.server !== this.extensionManagementServerService.localExtensionManagementServer : extension.server !== this.extensionManagementServerService.remoteExtensionManagementServer;
+				return false;
 			}));
 	}
 }

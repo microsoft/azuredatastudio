@@ -8,7 +8,7 @@ import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-
+import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
@@ -17,7 +17,12 @@ import { isWindows } from 'vs/base/common/platform';
 import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
+import QueryRunner from 'sql/platform/query/common/queryRunner';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
+import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -199,13 +204,44 @@ export class ChartDataAction extends Action {
 	public static LABEL = localize('chart', "Chart");
 	public static ICON = 'viewChart';
 
-	constructor(@IEditorService private editorService: IEditorService) {
+	constructor(
+		@IEditorService private editorService: IEditorService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService
+	) {
 		super(ChartDataAction.ID, ChartDataAction.LABEL, ChartDataAction.ICON);
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
 		const activeEditor = this.editorService.activeControl as QueryEditor;
+		if (this.environmentService.appQuality !== 'stable') {
+			this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
+		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
+		return Promise.resolve(true);
+	}
+}
+
+export class VisualizerDataAction extends Action {
+	public static ID = 'grid.visualizer';
+	public static LABEL = localize("visualizer", "Visualizer");
+	public static ICON = 'viewVisualizer';
+
+	constructor(
+		private runner: QueryRunner,
+		@IAdsTelemetryService private adsTelemetryService: IAdsTelemetryService
+	) {
+		super(VisualizerDataAction.ID, VisualizerDataAction.LABEL, VisualizerDataAction.ICON);
+	}
+
+	public run(context: IGridActionContext): Promise<boolean> {
+		this.adsTelemetryService.sendActionEvent(
+			TelemetryKeys.TelemetryView.ResultsPanel,
+			TelemetryKeys.TelemetryAction.Click,
+			'VisualizerButton',
+			'VisualizerDataAction'
+		);
+		this.runner.notifyVisualizeRequested(context.batchId, context.resultId);
 		return Promise.resolve(true);
 	}
 }

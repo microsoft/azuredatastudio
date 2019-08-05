@@ -32,6 +32,7 @@ import { localize } from 'vs/nls';
 import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -66,7 +67,8 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
 		@IStatusbarService private _statusbarService: IStatusbarService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -98,7 +100,7 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 			// in context of this table, the selection mode is row selection, copy the whole row will get a lot of unwanted data
 			// ignore the passed in range and create a range so that it only copies the currently selected cell value.
 			const activeCell = this._profilerTable.activeCell;
-			handleCopyRequest(this._clipboardService, new Slick.Range(activeCell.row, activeCell.cell), (row, cell) => {
+			handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, new Slick.Range(activeCell.row, activeCell.cell), (row, cell) => {
 				const fieldName = this._input.columns[cell].field;
 				return this._input.data.getItem(row)[fieldName];
 			});

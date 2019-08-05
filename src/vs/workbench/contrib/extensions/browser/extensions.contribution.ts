@@ -44,6 +44,7 @@ import { ExtensionDependencyChecker } from 'vs/workbench/contrib/extensions/brow
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { RemoteExtensionsInstaller } from 'vs/workbench/contrib/extensions/browser/remoteExtensionsInstaller';
 
 // Singletons
 registerSingleton(IExtensionsWorkbenchService, ExtensionsWorkbenchService);
@@ -188,12 +189,16 @@ Registry.as<IConfigurationRegistry>(ConfigurationExtensions.Configuration)
 				description: localize('extensionsCloseExtensionDetailsOnViewChange', "When enabled, editors with extension details will be automatically closed upon navigating away from the Extensions View."),
 				default: false
 			},
-			// {{SQL CARBON EDIT}}
-			'extensions.extensionsPolicy': {
+			'extensions.extensionsPolicy': { // {{SQL CARBON EDIT}}
 				type: 'string',
 				description: localize('extensionsPolicy', "Sets the security policy for downloading extensions."),
 				scope: ConfigurationScope.APPLICATION,
 				default: ExtensionsPolicy.allowAll
+			},
+			'extensions.confirmedUriHandlerExtensionIds': {
+				type: 'array',
+				description: localize('handleUriConfirmedExtensions', "When an extension is listed here, a confirmation prompt will not be shown when that extension handles a URI."),
+				default: []
 			}
 		}
 	});
@@ -379,3 +384,4 @@ workbenchRegistry.registerWorkbenchContribution(KeymapExtensions, LifecyclePhase
 workbenchRegistry.registerWorkbenchContribution(ExtensionsViewletViewsContribution, LifecyclePhase.Starting);
 workbenchRegistry.registerWorkbenchContribution(ExtensionActivationProgress, LifecyclePhase.Eventually);
 workbenchRegistry.registerWorkbenchContribution(ExtensionDependencyChecker, LifecyclePhase.Eventually);
+workbenchRegistry.registerWorkbenchContribution(RemoteExtensionsInstaller, LifecyclePhase.Eventually);

@@ -8,7 +8,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IStatusbarEntryAccessor, IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { localize } from 'vs/nls';

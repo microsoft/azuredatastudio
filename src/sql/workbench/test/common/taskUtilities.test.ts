@@ -5,7 +5,7 @@
 
 import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -14,6 +14,7 @@ import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { TestEditorService } from 'vs/workbench/test/workbenchTestServices';
+import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 
 suite('TaskUtilities', function () {
 	test('getCurrentGlobalConnection returns the selected OE server if a server or one of its children is selected', () => {
@@ -76,7 +77,8 @@ suite('TaskUtilities', function () {
 		// Mock the workbench service to return the active tab connection
 		let tabConnectionUri = 'file://test_uri';
 		let editorInput = new UntitledEditorInput(URI.parse(tabConnectionUri), false, undefined, undefined, undefined, undefined, undefined, undefined);
-		let queryInput = new QueryInput(undefined, editorInput, undefined, undefined, undefined, undefined, undefined);
+		const instantiationService = new TestInstantiationService();
+		let queryInput = new QueryInput(undefined, editorInput, undefined, undefined, undefined, instantiationService);
 		mockConnectionManagementService.setup(x => x.getConnectionProfile(tabConnectionUri)).returns(() => tabProfile);
 
 		// If I call getCurrentGlobalConnection, it should return the expected profile from the active tab

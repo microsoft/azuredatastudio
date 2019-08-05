@@ -5,15 +5,20 @@
 
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
-import product from 'vs/platform/product/node/product';
 
 export function used() {
+}
+
+let productQuality: string;
+
+export function setProductQuality(quality: string): void {
+	productQuality = quality;
 }
 
 function showDeploySection(): boolean {
 	// only show the deploy section for insider build and dev environment for now until the feature is stable
 	// tracking issue: https://github.com/microsoft/azuredatastudio/issues/5987
-	return product.quality !== 'stable';
+	return productQuality !== 'stable';
 }
 
 

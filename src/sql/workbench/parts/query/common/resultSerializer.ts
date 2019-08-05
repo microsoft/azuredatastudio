@@ -6,7 +6,6 @@
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
@@ -30,6 +29,19 @@ import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
 
 let prevSavePath: string;
 
+interface ICsvConfig {
+	includeHeaders: boolean;
+	delimiter: string;
+	lineSeperator: string;
+	textIdentifier: string;
+	encoding: string;
+}
+
+interface IXmlConfig {
+	formatted: boolean;
+	encoding: string;
+}
+
 /**
  *  Handles save results request from the context menu of slickGrid
  */
@@ -42,7 +54,7 @@ export class ResultSerializer {
 	constructor(
 		@IOutputService private _outputService: IOutputService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IConfigurationService private _workspaceConfigurationService: IConfigurationService,
+		@IConfigurationService private _configurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
 		@IWindowsService private _windowsService: IWindowsService,
@@ -159,7 +171,7 @@ export class ResultSerializer {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.CSV as string };
 
 		// get save results config from vscode config
-		let saveConfig = WorkbenchUtils.getSqlConfigSection(this._workspaceConfigurationService, Constants.configSaveAsCsv);
+		let saveConfig = this._configurationService.getValue<ICsvConfig>('sql.saveAsCsv');
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.includeHeaders !== undefined) {
@@ -205,7 +217,7 @@ export class ResultSerializer {
 		let saveResultsParams = <SaveResultsRequestParams>{ resultFormat: SaveFormat.XML as string };
 
 		// get save results config from vscode config
-		let saveConfig = WorkbenchUtils.getSqlConfigSection(this._workspaceConfigurationService, Constants.configSaveAsXml);
+		let saveConfig = this._configurationService.getValue<IXmlConfig>('sql.saveAsXml');
 		// if user entered config, set options
 		if (saveConfig) {
 			if (saveConfig.formatted !== undefined) {

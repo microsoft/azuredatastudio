@@ -5,8 +5,6 @@
 
 import * as azdata from 'azdata';
 
-import * as Constants from 'sql/workbench/parts/query/common/constants';
-import * as WorkbenchUtils from 'sql/workbench/common/sqlWorkbenchUtils';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as Utils from 'sql/platform/connection/common/utils';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
@@ -84,6 +82,9 @@ export default class QueryRunner extends Disposable {
 
 	private _onQueryPlanAvailable = this._register(new Emitter<IQueryPlanInfo>());
 	public readonly onQueryPlanAvailable = this._onQueryPlanAvailable.event;
+
+	private _onVisualize = this._register(new Emitter<azdata.ResultSetSummary>());
+	public readonly onVisualize = this._onVisualize.event;
 
 	private _queryStartTime: Date;
 	public get queryStartTime(): Date {
@@ -558,7 +559,7 @@ export default class QueryRunner extends Disposable {
 
 	private sendBatchTimeMessage(batchId: number, executionTime: string): void {
 		// get config copyRemoveNewLine option from vscode config
-		let showBatchTime: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(this._configurationService, Constants.configShowBatchTime);
+		let showBatchTime = this._configurationService.getValue<boolean>('sql.showBatchTime');
 		if (showBatchTime) {
 			let message: IQueryMessage = {
 				batchId: batchId,
@@ -578,6 +579,17 @@ export default class QueryRunner extends Disposable {
 
 	public getGridDataProvider(batchId: number, resultSetId: number): IGridDataProvider {
 		return this.instantiationService.createInstance(QueryGridDataProvider, this, batchId, resultSetId);
+	}
+
+	public notifyVisualizeRequested(batchId: number, resultSetId: number): void {
+		let result: azdata.ResultSetSummary = {
+			batchId: batchId,
+			id: resultSetId,
+			columnInfo: this.batchSets[batchId].resultSetSummaries[resultSetId].columnInfo,
+			complete: true,
+			rowCount: this.batchSets[batchId].resultSetSummaries[resultSetId].rowCount
+		};
+		this._onVisualize.fire(result);
 	}
 }
 
@@ -643,12 +655,12 @@ export function shouldIncludeHeaders(includeHeaders: boolean, configurationServi
 		return includeHeaders;
 	}
 	// else get config option from vscode config
-	includeHeaders = WorkbenchUtils.getSqlConfigValue<boolean>(configurationService, Constants.copyIncludeHeaders);
+	includeHeaders = configurationService.getValue<boolean>('sql.copyIncludeHeaders');
 	return !!includeHeaders;
 }
 
 export function shouldRemoveNewLines(configurationService: IConfigurationService): boolean {
 	// get config copyRemoveNewLine option from vscode config
-	let removeNewLines: boolean = WorkbenchUtils.getSqlConfigValue<boolean>(configurationService, Constants.configCopyRemoveNewLine);
+	let removeNewLines = configurationService.getValue<boolean>('sql.copyRemoveNewLine');
 	return !!removeNewLines;
 }

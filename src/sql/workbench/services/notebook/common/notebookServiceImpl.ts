@@ -32,7 +32,7 @@ import { registerNotebookThemes } from 'sql/workbench/parts/notebook/browser/not
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
-import { SqlNotebookProvider } from 'sql/workbench/services/notebook/sql/sqlNotebookProvider';
+import { SqlNotebookProvider } from 'sql/workbench/services/notebook/common/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { keys } from 'vs/base/common/map';
 import { IFileService, IFileStatWithMetadata } from 'vs/platform/files/common/files';
@@ -41,7 +41,7 @@ import { Schemas } from 'vs/base/common/network';
 import { ILogService } from 'vs/platform/log/common/log';
 import { toErrorMessage } from 'vs/base/common/errorMessage';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import product from 'vs/platform/product/node/product';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 export interface NotebookProviderProperties {
 	provider: string;
@@ -127,7 +127,8 @@ export class NotebookService extends Disposable implements INotebookService {
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@IFileService private readonly _fileService: IFileService,
 		@ILogService private readonly _logService: ILogService,
-		@IQueryManagementService private readonly _queryManagementService
+		@IQueryManagementService private readonly _queryManagementService: IQueryManagementService,
+		@IEnvironmentService environmentService: IEnvironmentService
 	) {
 		super();
 		this._providersMemento = new Memento('notebookProviders', this._storageService);
@@ -152,7 +153,7 @@ export class NotebookService extends Disposable implements INotebookService {
 				this.cleanupProviders();
 
 				// If providers have already registered by this point, add them now (since onHandlerAdded will never fire)
-				if (this._queryManagementService.registeredProviders && this._queryManagementService.registeredProviders.length > 0) {
+				if (this._queryManagementService.getRegisteredProviders().length > 0) {
 					this.updateSQLRegistrationWithConnectionProviders();
 				}
 
@@ -169,7 +170,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		this.hookContextKeyListeners();
 		this.hookNotebookThemesAndConfigListener();
 		// Temporary (issue #6427 will remove): Add a product quality key so we can only show books on Insiders
-		this._contextKeyService.createKey<string>('notebookQuality', product.quality);
+		this._contextKeyService.createKey<string>('notebookQuality', environmentService.appQuality);
 
 	}
 

@@ -86,7 +86,7 @@ export class Main {
 			await this.setInstallSource(argv['install-source']);
 
 		} else if (argv['list-extensions']) {
-			await this.listExtensions(!!argv['show-versions']);
+			await this.listExtensions(!!argv['show-versions'], argv['category']);
 
 		} else if (argv['install-extension']) {
 			const arg = argv['install-extension'];
@@ -110,8 +110,29 @@ export class Main {
 		return writeFile(this.environmentService.installSourcePath, installSource.slice(0, 30));
 	}
 
-	private async listExtensions(showVersions: boolean): Promise<void> {
-		const extensions = await this.extensionManagementService.getInstalled(ExtensionType.User);
+	private async listExtensions(showVersions: boolean, category?: string): Promise<void> {
+		let extensions = await this.extensionManagementService.getInstalled(ExtensionType.User);
+		// TODO: we should save this array in a common place so that the command and extensionQuery can use it that way changing it is easier
+		const categories = ['"programming languages"', 'snippets', 'linters', 'themes', 'debuggers', 'formatters', 'keymaps', '"scm providers"', 'other', '"extension packs"', '"language packs"'];
+		if (category && category !== '') {
+			if (categories.indexOf(category.toLowerCase()) < 0) {
+				console.log('Invalid category please enter a valid category. To list valid categories run --category without a category specified');
+				return;
+			}
+			extensions = extensions.filter(e => {
+				if (e.manifest.categories) {
+					const lowerCaseCategories: string[] = e.manifest.categories.map(c => c.toLowerCase());
+					return lowerCaseCategories.indexOf(category.toLowerCase()) > -1;
+				}
+				return false;
+			});
+		} else if (category === '') {
+			console.log('Possible Categories: ');
+			categories.forEach(category => {
+				console.log(category);
+			});
+			return;
+		}
 		extensions.forEach(e => console.log(getId(e.manifest, showVersions)));
 	}
 
@@ -345,8 +366,6 @@ export async function main(argv: ParsedArgs): Promise<void> {
 
 			services.set(ITelemetryService, new SyncDescriptor(TelemetryService, [config]));
 
-			// Dispose the AI adapter so that remaining data gets flushed.
-			disposables.add(combinedAppender(...appenders));
 		} else {
 			services.set(ITelemetryService, NullTelemetryService);
 		}
@@ -356,6 +375,8 @@ export async function main(argv: ParsedArgs): Promise<void> {
 
 		try {
 			await main.run(argv);
+			// Flush the remaining data in AI adapter.
+			await combinedAppender(...appenders).flush();
 		} finally {
 			disposables.dispose();
 		}
