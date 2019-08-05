@@ -257,7 +257,7 @@ export class QueryModelService implements IQueryModelService {
 				if (info.selectionSnippet) {
 					// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 					// executed query text
-					messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+					messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 				} else {
 					link = {
 						text: strings.format(LocalizedConstants.runQueryBatchStartLine, b.selection.startLine + 1)
@@ -419,7 +419,7 @@ export class QueryModelService implements IQueryModelService {
 					if (info.selectionSnippet) {
 						// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 						// executed query text
-						messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+						messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 					} else {
 						link = {
 							text: strings.format(LocalizedConstants.runQueryBatchStartLine, batch.selection.startLine + 1)

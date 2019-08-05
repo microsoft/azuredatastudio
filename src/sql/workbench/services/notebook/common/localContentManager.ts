@@ -34,7 +34,7 @@ export class LocalContentManager implements nb.ContentManager {
 				return v3.readNotebook(<any>contents);
 			}
 			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
+				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", contents.nbformat as any, contents.nbformat_minor as any));
 			}
 		} else if (contentString === '' || contentString === undefined) {
 			// Empty?
@@ -62,7 +62,7 @@ export class LocalContentManager implements nb.ContentManager {
 				return v3.readNotebook(<any>contents);
 			}
 			if (contents.nbformat) {
-				throw new TypeError(localize('nbformatNotRecognized', 'nbformat v{0}.{1} not recognized', contents.nbformat as any, contents.nbformat_minor as any));
+				throw new TypeError(localize('nbformatNotRecognized', "nbformat v{0}.{1} not recognized", contents.nbformat as any, contents.nbformat_minor as any));
 			}
 		} else if (stringContents === '' || stringContents === undefined) {
 			// Empty?
@@ -118,7 +118,7 @@ namespace v4 {
 			case 'code':
 				return createCodeCell(cell);
 			default:
-				throw new TypeError(localize('unknownCellType', 'Cell type {0} unknown', cell.cell_type));
+				throw new TypeError(localize('unknownCellType', "Cell type {0} unknown", cell.cell_type));
 		}
 	}
 
@@ -177,7 +177,7 @@ namespace v4 {
 				};
 			default:
 				// Should never get here
-				throw new TypeError(localize('unrecognizedOutput', 'Output type {0} not recognized', (<any>output).output_type));
+				throw new TypeError(localize('unrecognizedOutput', "Output type {0} not recognized", (<any>output).output_type));
 		}
 	}
 
@@ -209,7 +209,7 @@ namespace v4 {
 			return demultiline(data);
 		}
 
-		throw new TypeError(localize('invalidMimeData', 'Data for {0} is expected to be a string or an Array of strings', key));
+		throw new TypeError(localize('invalidMimeData', "Data for {0} is expected to be a string or an Array of strings", key));
 	}
 
 	export function demultiline(value: nb.MultilineString): string {
@@ -301,7 +301,7 @@ namespace v3 {
 					traceback: output.traceback
 				};
 			default:
-				throw new TypeError(localize('unrecognizedOutputType', 'Output type {0} not recognized', output.output_type));
+				throw new TypeError(localize('unrecognizedOutputType', "Output type {0} not recognized", output.output_type));
 		}
 	};
 

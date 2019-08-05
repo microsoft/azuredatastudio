@@ -506,7 +506,7 @@ for (let i = 0; i < 9; i++) {
 		'type': 'string',
 		'default': defaultVal,
 		'description': localize('queryShortcutDescription',
-			'Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter',
+			"Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter",
 			queryIndex)
 	};
 }
