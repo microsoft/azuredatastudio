@@ -5454,7 +5454,7 @@ declare module 'vscode' {
 		 * from `tasks.json` files as well as tasks from task providers
 		 * contributed through extensions.
 		 *
-		 * @param filter Optional filter to select tasks of a certain type or version.
+		 * @param filter a filter to filter the return tasks.
 		 */
 		export function fetchTasks(filter?: TaskFilter): Thenable<Task[]>;
 

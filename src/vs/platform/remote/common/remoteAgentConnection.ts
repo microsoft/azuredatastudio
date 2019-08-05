@@ -35,6 +35,7 @@ export interface ConnectionTypeRequest {
 	signedData?: string;
 	desiredConnectionType?: ConnectionType;
 	args?: any;
+	isBuilt: boolean;
 }
 
 export interface ErrorMessage {
@@ -50,6 +51,7 @@ export type HandshakeMessage = AuthRequest | SignRequest | ConnectionTypeRequest
 
 
 interface ISimpleConnectionOptions {
+	isBuilt: boolean;
 	commit: string | undefined;
 	host: string;
 	port: number;
@@ -108,7 +110,8 @@ async function connectToRemoteExtensionHostAgent(options: ISimpleConnectionOptio
 					type: 'connectionType',
 					commit: options.commit,
 					signedData: signed,
-					desiredConnectionType: connectionType
+					desiredConnectionType: connectionType,
+					isBuilt: options.isBuilt
 				};
 				if (args) {
 					connTypeRequest.args = args;
@@ -197,6 +200,7 @@ async function doConnectRemoteAgentTunnel(options: ISimpleConnectionOptions, sta
 }
 
 export interface IConnectionOptions {
+	isBuilt: boolean;
 	commit: string | undefined;
 	socketFactory: ISocketFactory;
 	addressProvider: IAddressProvider;
@@ -206,6 +210,7 @@ export interface IConnectionOptions {
 async function resolveConnectionOptions(options: IConnectionOptions, reconnectionToken: string, reconnectionProtocol: PersistentProtocol | null): Promise<ISimpleConnectionOptions> {
 	const { host, port } = await options.addressProvider.getAddress();
 	return {
+		isBuilt: options.isBuilt,
 		commit: options.commit,
 		host: host,
 		port: port,

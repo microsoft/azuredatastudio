@@ -244,7 +244,7 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 
 	private _renderIndentGuides: RenderIndentGuides = RenderIndentGuides.None;
 	private renderedIndentGuides = new SetMap<ITreeNode<T, TFilterData>, HTMLDivElement>();
-	private activeIndentNodes = new Set<ITreeNode<T, TFilterData>>();
+	private activeParentNodes = new Set<ITreeNode<T, TFilterData>>();
 	private indentGuidesDisposable: IDisposable = Disposable.None;
 
 	private disposables: IDisposable[] = [];
@@ -353,7 +353,6 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 		}
 
 		this.renderTwistie(node, data.templateData);
-		this._onDidChangeActiveNodes(this.activeNodes.elements);
 		this.renderIndentGuides(node, data.templateData);
 	}
 
@@ -387,7 +386,7 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 			const parent = node.parent;
 			const guide = $<HTMLDivElement>('.indent-guide', { style: `width: ${this.indent}px` });
 
-			if (this.activeIndentNodes.has(parent)) {
+			if (this.activeParentNodes.has(parent)) {
 				addClass(guide, 'active');
 			}
 
@@ -414,26 +413,24 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 		const set = new Set<ITreeNode<T, TFilterData>>();
 
 		nodes.forEach(node => {
-			if (node.collapsible && node.children.length > 0 && !node.collapsed) {
-				set.add(node);
-			} else if (node.parent) {
+			if (node.parent) {
 				set.add(node.parent);
 			}
 		});
 
-		this.activeIndentNodes.forEach(node => {
+		this.activeParentNodes.forEach(node => {
 			if (!set.has(node)) {
 				this.renderedIndentGuides.forEach(node, line => removeClass(line, 'active'));
 			}
 		});
 
 		set.forEach(node => {
-			if (!this.activeIndentNodes.has(node)) {
+			if (!this.activeParentNodes.has(node)) {
 				this.renderedIndentGuides.forEach(node, line => addClass(line, 'active'));
 			}
 		});
 
-		this.activeIndentNodes = set;
+		this.activeParentNodes = set;
 	}
 
 	dispose(): void {

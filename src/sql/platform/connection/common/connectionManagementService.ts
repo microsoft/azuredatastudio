@@ -612,7 +612,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._editorService.editors.map(editor => {
 			if (editor instanceof DashboardInput) {
 				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
-					editor.connectionProfile.connectionName = profile.connectionName;
 					editor.connectionProfile.databaseName = profile.databaseName;
 					this._editorService.openEditor(editor)
 						.then(() => {

@@ -26,9 +26,6 @@ import { QueryInput, QueryEditorState } from 'sql/workbench/parts/query/common/q
 import { URI } from 'vs/base/common/uri';
 import { ILogService, NullLogService } from 'vs/platform/log/common/log';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
-import { TestEditorInput } from 'vs/workbench/services/editor/test/browser/editorGroupsService.test';
-import { Schemas } from 'vs/base/common/network';
 
 class TestParsedArgs implements ParsedArgs {
 	[arg: string]: any;
@@ -375,9 +372,7 @@ suite('commandLineService tests', () => {
 			}).verifiable(TypeMoq.Times.once());
 		connectionManagementService.setup(c => c.getConnectionProfileById(TypeMoq.It.isAnyString())).returns(() => originalProfile);
 		const configurationService = getConfigurationServiceMock(true);
-		const instantiationService = new TestInstantiationService();
-		const fileInput = new TestEditorInput(URI.from({ scheme: Schemas.untitled }));
-		const queryInput: TypeMoq.Mock<QueryInput> = TypeMoq.Mock.ofType<QueryInput>(QueryInput, TypeMoq.MockBehavior.Loose, undefined, fileInput, undefined, undefined, undefined, instantiationService);
+		const queryInput: TypeMoq.Mock<QueryInput> = TypeMoq.Mock.ofType<QueryInput>(QueryInput);
 		let uri = URI.file(args._[0]);
 		const queryState = new QueryEditorState();
 		queryState.connected = true;

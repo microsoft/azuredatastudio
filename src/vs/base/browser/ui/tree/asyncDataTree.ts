@@ -477,7 +477,7 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 	// View
 
 	rerender(element?: T): void {
-		if (element === undefined || element === this.root.element) {
+		if (element === undefined) {
 			this.tree.rerender();
 			return;
 		}
@@ -602,9 +602,9 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 		return nodes.map(n => n!.element as T);
 	}
 
-	open(elements: T[], browserEvent?: UIEvent): void {
+	open(elements: T[]): void {
 		const nodes = elements.map(e => this.getDataNode(e));
-		this.tree.open(nodes, browserEvent);
+		this.tree.open(nodes);
 	}
 
 	reveal(element: T, relativeTop?: number): void {

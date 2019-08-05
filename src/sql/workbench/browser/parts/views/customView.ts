@@ -79,8 +79,8 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		this.treeView.show(container);
 	}
 
-	layoutBody(height: number, width: number): void {
-		this.treeView.layout(height, width);
+	layoutBody(size: number): void {
+		this.treeView.layout(size);
 	}
 
 	getActions(): IAction[] {

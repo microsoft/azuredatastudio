@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/serverGroupDialog';
 
-import { Colorbox } from 'sql/base/browser/ui/colorbox/colorbox';
+import { Checkbox } from 'vs/base/browser/ui/checkbox/checkbox';
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as DOM from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -27,13 +27,12 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
-import { Color } from 'vs/base/common/color';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class ServerGroupDialog extends Modal {
 	private _addServerButton: Button;
 	private _closeButton: Button;
-	private _colorColorBoxesMap: Array<{ color: string, colorbox: Colorbox }> = [];
+	private _colorCheckBoxesMap: Array<{ color: string, checkbox: Checkbox }> = [];
 	private _selectedColorOption: number;
 	private _groupNameInputBox: InputBox;
 	private _groupDescriptionInputBox: InputBox;
@@ -128,8 +127,8 @@ export class ServerGroupDialog extends Modal {
 
 	private isFocusOnColors(): boolean {
 		let result = false;
-		this._colorColorBoxesMap.forEach(({ colorbox: colorbox }) => {
-			if (document.activeElement === colorbox.domNode) {
+		this._colorCheckBoxesMap.forEach(({ checkbox }) => {
+			if (document.activeElement === checkbox.domNode) {
 				result = true;
 			}
 		});
@@ -141,7 +140,7 @@ export class ServerGroupDialog extends Modal {
 		if (this._groupNameInputBox.hasFocus()) {
 			this._groupDescriptionInputBox.focus();
 		} else if (this._groupDescriptionInputBox.hasFocus()) {
-			this._colorColorBoxesMap[this._selectedColorOption].colorbox.focus();
+			this._colorCheckBoxesMap[this._selectedColorOption].checkbox.focus();
 		} else if (this.isFocusOnColors()) {
 			this._addServerButton.enabled ? this._addServerButton.focus() : this._closeButton.focus();
 		} else if (document.activeElement === this._addServerButton.element) {
@@ -154,9 +153,9 @@ export class ServerGroupDialog extends Modal {
 
 	private focusPrevious(): void {
 		if (document.activeElement === this._closeButton.element) {
-			this._addServerButton.enabled ? this._addServerButton.focus() : this._colorColorBoxesMap[this._selectedColorOption].colorbox.focus();
+			this._addServerButton.enabled ? this._addServerButton.focus() : this._colorCheckBoxesMap[this._selectedColorOption].checkbox.focus();
 		} else if (document.activeElement === this._addServerButton.element) {
-			this._colorColorBoxesMap[this._selectedColorOption].colorbox.focus();
+			this._colorCheckBoxesMap[this._selectedColorOption].checkbox.focus();
 		} else if (this.isFocusOnColors()) {
 			this._groupDescriptionInputBox.focus();
 		} else if (this._groupDescriptionInputBox.hasFocus()) {
@@ -168,8 +167,8 @@ export class ServerGroupDialog extends Modal {
 
 	private focusNextColor(moveRight: boolean): void {
 		let focusIndex: number = -1;
-		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
-			if (document.activeElement === this._colorColorBoxesMap[i].colorbox.domNode) {
+		for (let i = 0; i < this._colorCheckBoxesMap.length; i++) {
+			if (document.activeElement === this._colorCheckBoxesMap[i].checkbox.domNode) {
 				focusIndex = i;
 				break;
 			}
@@ -185,12 +184,12 @@ export class ServerGroupDialog extends Modal {
 
 			// check for wraps
 			if (focusIndex < 0) {
-				focusIndex = this._colorColorBoxesMap.length - 1;
-			} else if (focusIndex >= this._colorColorBoxesMap.length) {
+				focusIndex = this._colorCheckBoxesMap.length - 1;
+			} else if (focusIndex >= this._colorCheckBoxesMap.length) {
 				focusIndex = 0;
 			}
 
-			this._colorColorBoxesMap[focusIndex].colorbox.focus();
+			this._colorCheckBoxesMap[focusIndex].checkbox.focus();
 		}
 	}
 
@@ -222,24 +221,22 @@ export class ServerGroupDialog extends Modal {
 		for (let i = 0; i < this._viewModel.colors.length; i++) {
 			const color = this._viewModel.colors[i];
 
-			const colorColorBox = new Colorbox(container, {
-				name: 'server-group-color',
-				class: ['server-group-color'],
-				label: `Colobox Color: ${color}`,
+			const colorCheckBox = new Checkbox({
+				actionClassName: 'server-group-color',
+				title: color,
+				isChecked: false
 			});
-
-			this._register(colorColorBox.onSelect((viaKeyboard) => {
+			this._register(colorCheckBox.onChange((viaKeyboard) => {
 				this.onSelectGroupColor(color);
 			}));
-			colorColorBox.style({
-				backgroundColor: Color.fromHex(color)
-			});
+			colorCheckBox.domNode.style.backgroundColor = color;
+			container.appendChild(colorCheckBox.domNode);
 
 			// Theme styler
-			this._register(attachCheckboxStyler(colorColorBox, this._themeService));
+			this._register(attachCheckboxStyler(colorCheckBox, this._themeService));
 
-			// add the new colorbox to the color map
-			this._colorColorBoxesMap[i] = { color, colorbox: colorColorBox };
+			// add the new checkbox to the color map
+			this._colorCheckBoxesMap[i] = { color, checkbox: colorCheckBox };
 		}
 	}
 
@@ -262,7 +259,7 @@ export class ServerGroupDialog extends Modal {
 	}
 
 	public get selectedColor(): string {
-		return this._colorColorBoxesMap[this._selectedColorOption].color;
+		return this._colorCheckBoxesMap[this._selectedColorOption].color;
 	}
 
 	public get viewModel(): ServerGroupViewModel {
@@ -312,13 +309,13 @@ export class ServerGroupDialog extends Modal {
 	// update UI elements that have derivative behaviors based on other state changes
 	private updateView(): void {
 		// check the color buttons and if their checked state does not match the view model state then correct it
-		for (let i = 0; i < this._colorColorBoxesMap.length; i++) {
-			let { colorbox: colorbox, color } = this._colorColorBoxesMap[i];
-			if ((this._viewModel.groupColor === color) && (colorbox.checked === false)) {
-				colorbox.checked = true;
+		for (let i = 0; i < this._colorCheckBoxesMap.length; i++) {
+			let { checkbox, color } = this._colorCheckBoxesMap[i];
+			if ((this._viewModel.groupColor === color) && (checkbox.checked === false)) {
+				checkbox.checked = true;
 				this._selectedColorOption = i;
-			} else if ((this._viewModel.groupColor !== color) && (colorbox.checked === true)) {
-				colorbox.checked = false;
+			} else if ((this._viewModel.groupColor !== color) && (checkbox.checked === true)) {
+				checkbox.checked = false;
 			}
 		}
 

@@ -24,6 +24,7 @@ import {
 	RunQueryOnConnectionMode
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
+import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
@@ -106,7 +107,9 @@ export class RunQueryAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+		@IQueryModelService protected readonly queryModelService: IQueryModelService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -175,7 +178,8 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	constructor(
 		editor: QueryEditor,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
+		@IQueryModelService private readonly queryModelService: IQueryModelService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, CancelQueryAction.ID, CancelQueryAction.EnabledClass);
 		this.enabled = false;
@@ -184,7 +188,7 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
-			this.editor.input.runner.cancelQuery();
+			this.queryModelService.cancelQuery(this.editor.input.uri);
 		}
 		return Promise.resolve(null);
 	}

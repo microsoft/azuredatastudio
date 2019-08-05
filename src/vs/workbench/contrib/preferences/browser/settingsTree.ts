@@ -698,45 +698,31 @@ export class SettingArrayRenderer extends AbstractSettingRenderer implements ITr
 
 	private onDidChangeList(template: ISettingListItemTemplate, e: IListChangeEvent): void {
 		if (template.context) {
-			let newValue: any[] = [];
-			if (isArray(template.context.scopeValue)) {
-				newValue = [...template.context.scopeValue];
-			} else if (isArray(template.context.value)) {
-				newValue = [...template.context.value];
-			}
+			const newValue: any[] | undefined = isArray(template.context.scopeValue)
+				? [...template.context.scopeValue]
+				: [...template.context.value];
 
-			if (e.targetIndex !== undefined) {
-				// Delete value
-				if (!e.value && e.originalValue && e.targetIndex > -1) {
-					newValue.splice(e.targetIndex, 1);
+			// Delete value
+			if (e.removeIndex) {
+				if (!e.value && e.originalValue && e.removeIndex > -1) {
+					newValue.splice(e.removeIndex, 1);
 				}
-				// Update value
-				else if (e.value && e.originalValue) {
-					if (e.targetIndex > -1) {
-						newValue[e.targetIndex] = e.value;
-					}
-					// For some reason, we are updating and cannot find original value
-					// Just append the value in this case
-					else {
-						newValue.push(e.value);
-					}
+			}
+			// Add value
+			else if (e.value && !e.originalValue) {
+				newValue.push(e.value);
+			}
+			// Update value
+			else if (e.value && e.originalValue) {
+				const valueIndex = newValue.indexOf(e.originalValue);
+				if (valueIndex > -1) {
+					newValue[valueIndex] = e.value;
 				}
-				// Add value
-				else if (e.value && !e.originalValue && e.targetIndex >= newValue.length) {
+				// For some reason, we are updating and cannot find original value
+				// Just append the value in this case
+				else {
 					newValue.push(e.value);
 				}
-			}
-			if (
-				template.context.defaultValue &&
-				isArray(template.context.defaultValue) &&
-				template.context.defaultValue.length === newValue.length &&
-				template.context.defaultValue.join() === newValue.join()
-			) {
-				return this._onDidChangeSetting.fire({
-					key: template.context.setting.key,
-					value: undefined, // reset setting
-					type: template.context.valueType
-				});
 			}
 
 			this._onDidChangeSetting.fire({

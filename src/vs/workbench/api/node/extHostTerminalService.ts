@@ -371,8 +371,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 			process.env.hasOwnProperty('PROCESSOR_ARCHITEW6432'),
 			process.env.windir,
 			this._lastActiveWorkspace,
-			this._variableResolver,
-			this._logService
+			this._variableResolver
 		);
 	}
 
@@ -384,7 +383,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 			return this._apiInspectConfigToPlain<string | string[]>(setting);
 		};
 
-		return terminalEnvironment.getDefaultShellArgs(fetchSetting, this._isWorkspaceShellAllowed, this._lastActiveWorkspace, this._variableResolver, this._logService);
+		return terminalEnvironment.getDefaultShellArgs(fetchSetting, this._isWorkspaceShellAllowed, this._lastActiveWorkspace, this._variableResolver);
 	}
 
 	public async resolveTerminalRenderer(id: number): Promise<vscode.TerminalRenderer> {

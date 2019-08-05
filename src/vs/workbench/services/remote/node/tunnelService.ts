@@ -100,6 +100,7 @@ export class TunnelService implements ITunnelService {
 		}
 
 		const options: IConnectionOptions = {
+			isBuilt: this.environmentService.isBuilt,
 			commit: product.commit,
 			socketFactory: nodeSocketFactory,
 			addressProvider: {

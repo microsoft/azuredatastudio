@@ -235,17 +235,6 @@ var AMDLoader;
  *--------------------------------------------------------------------------------------------*/
 var AMDLoader;
 (function (AMDLoader) {
-    function ensureError(err) {
-        if (err instanceof Error) {
-            return err;
-        }
-        var result = new Error(err.message || String(err) || 'Unknown Error');
-        if (err.stack) {
-            result.stack = err.stack;
-        }
-        return result;
-    }
-    AMDLoader.ensureError = ensureError;
     ;
     var ConfigurationOptionsUtil = /** @class */ (function () {
         function ConfigurationOptionsUtil() {
@@ -255,16 +244,22 @@ var AMDLoader;
          */
         ConfigurationOptionsUtil.validateConfigurationOptions = function (options) {
             function defaultOnError(err) {
-                if (err.phase === 'loading') {
+                if (err.errorCode === 'load') {
                     console.error('Loading "' + err.moduleId + '" failed');
-                    console.error(err);
+                    console.error('Detail: ', err.detail);
+                    if (err.detail && err.detail.stack) {
+                        console.error(err.detail.stack);
+                    }
                     console.error('Here are the modules that depend on it:');
                     console.error(err.neededBy);
                     return;
                 }
-                if (err.phase === 'factory') {
+                if (err.errorCode === 'factory') {
                     console.error('The factory method of "' + err.moduleId + '" has thrown an exception');
-                    console.error(err);
+                    console.error(err.detail);
+                    if (err.detail && err.detail.stack) {
+                        console.error(err.detail.stack);
+                    }
                     return;
                 }
             }
@@ -307,7 +302,7 @@ var AMDLoader;
             if (!Array.isArray(options.nodeModules)) {
                 options.nodeModules = [];
             }
-            if (options.nodeCachedData && typeof options.nodeCachedData === 'object') {
+            if (typeof options.nodeCachedData === 'object') {
                 if (typeof options.nodeCachedData.seed !== 'string') {
                     options.nodeCachedData.seed = 'seed';
                 }
@@ -315,9 +310,7 @@ var AMDLoader;
                     options.nodeCachedData.writeDelay = 1000 * 7;
                 }
                 if (!options.nodeCachedData.path || typeof options.nodeCachedData.path !== 'string') {
-                    var err = ensureError(new Error('INVALID cached data configuration, \'path\' MUST be set'));
-                    err.phase = 'configuration';
-                    options.onError(err);
+                    options.onError('INVALID cached data configuration, \'path\' MUST be set');
                     options.nodeCachedData = undefined;
                 }
             }
@@ -963,7 +956,6 @@ var AMDLoader;
             this._errorback = errorback;
             this.moduleIdResolver = moduleIdResolver;
             this.exports = {};
-            this.error = null;
             this.exportsPassedIn = false;
             this.unresolvedDependenciesCount = this.dependencies.length;
             this._isComplete = false;
@@ -1015,11 +1007,11 @@ var AMDLoader;
                 }
             }
             if (producedError) {
-                var err = AMDLoader.ensureError(producedError);
-                err.phase = 'factory';
-                err.moduleId = this.strId;
-                this.error = err;
-                config.onError(err);
+                config.onError({
+                    errorCode: 'factory',
+                    moduleId: this.strId,
+                    detail: producedError
+                });
             }
             this.dependencies = null;
             this._callback = null;
@@ -1030,8 +1022,6 @@ var AMDLoader;
          * One of the direct dependencies or a transitive dependency has failed to load.
          */
         Module.prototype.onDependencyError = function (err) {
-            this._isComplete = true;
-            this.error = err;
             if (this._errorback) {
                 this._errorback(err);
                 return true;
@@ -1282,9 +1272,6 @@ var AMDLoader;
             if (!m.isComplete()) {
                 throw new Error('Check dependency list! Synchronous require cannot resolve module \'' + _strModuleId + '\'. This module has not been resolved completely yet.');
             }
-            if (m.error) {
-                throw m.error;
-            }
             return m.exports;
         };
         ModuleManager.prototype.configure = function (params, shouldOverwrite) {
@@ -1314,15 +1301,16 @@ var AMDLoader;
                 this.defineModule(this._moduleIdProvider.getStrModuleId(moduleId), defineCall.dependencies, defineCall.callback, null, defineCall.stack);
             }
         };
-        ModuleManager.prototype._createLoadError = function (moduleId, _err) {
+        ModuleManager.prototype._createLoadError = function (moduleId, err) {
             var _this = this;
             var strModuleId = this._moduleIdProvider.getStrModuleId(moduleId);
             var neededBy = (this._inverseDependencies2[moduleId] || []).map(function (intModuleId) { return _this._moduleIdProvider.getStrModuleId(intModuleId); });
-            var err = AMDLoader.ensureError(_err);
-            err.phase = 'loading';
-            err.moduleId = strModuleId;
-            err.neededBy = neededBy;
-            return err;
+            return {
+                errorCode: 'load',
+                moduleId: strModuleId,
+                neededBy: neededBy,
+                detail: err
+            };
         };
         /**
          * Callback from the scriptLoader when a module hasn't been loaded.
@@ -1330,9 +1318,6 @@ var AMDLoader;
          */
         ModuleManager.prototype._onLoadError = function (moduleId, err) {
             var error = this._createLoadError(moduleId, err);
-            if (!this._modules2[moduleId]) {
-                this._modules2[moduleId] = new Module(moduleId, this._moduleIdProvider.getStrModuleId(moduleId), [], function () { }, function () { }, null);
-            }
             // Find any 'local' error handlers, walk the entire chain of inverse dependencies if necessary.
             var seenModuleId = [];
             for (var i = 0, len = this._moduleIdProvider.getMaxModuleId(); i < len; i++) {
@@ -1540,10 +1525,6 @@ var AMDLoader;
                     }
                     var dependencyModule = this._modules2[dependency.id];
                     if (dependencyModule && dependencyModule.isComplete()) {
-                        if (dependencyModule.error) {
-                            module.onDependencyError(dependencyModule.error);
-                            return;
-                        }
                         module.unresolvedDependenciesCount--;
                         continue;
                     }

@@ -79,25 +79,11 @@ export class Workbench extends Layout {
 		setUnexpectedErrorHandler(error => this.handleUnexpectedError(error, logService));
 
 		// Inform user about loading issues from the loader
-		interface AnnotatedLoadingError extends Error {
-			phase: 'loading';
-			moduleId: string;
-			neededBy: string[];
-		}
-		interface AnnotatedFactoryError extends Error {
-			phase: 'factory';
-			moduleId: string;
-		}
-		interface AnnotatedValidationError extends Error {
-			phase: 'configuration';
-		}
-		type AnnotatedError = AnnotatedLoadingError | AnnotatedFactoryError | AnnotatedValidationError;
 		(<any>window).require.config({
-			onError: (err: AnnotatedError) => {
-				if (err.phase === 'loading') {
+			onError: (err: { errorCode: string; }) => {
+				if (err.errorCode === 'load') {
 					onUnexpectedError(new Error(localize('loaderErrorNative', "Failed to load a required file. Please restart the application to try again. Details: {0}", JSON.stringify(err))));
 				}
-				console.error(err);
 			}
 		});
 	}

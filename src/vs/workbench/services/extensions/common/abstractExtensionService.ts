@@ -263,11 +263,6 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 		return 0;
 	}
 
-	public async setRemoteEnvironment(env: { [key: string]: string | null }): Promise<void> {
-		await this._extensionHostProcessManagers
-			.map(manager => manager.setRemoteEnvironment(env));
-	}
-
 	//#endregion
 
 	// --- impl

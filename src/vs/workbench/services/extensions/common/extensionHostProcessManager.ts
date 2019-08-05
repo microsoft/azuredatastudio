@@ -290,15 +290,6 @@ export class ExtensionHostProcessManager extends Disposable {
 		}
 		return proxy.$deltaExtensions(toAdd, toRemove);
 	}
-
-	public async setRemoteEnvironment(env: { [key: string]: string | null }): Promise<void> {
-		const proxy = await this._getExtensionHostProcessProxy();
-		if (!proxy) {
-			return;
-		}
-
-		return proxy.$setRemoteEnvironment(env);
-	}
 }
 
 const colorTables = [
