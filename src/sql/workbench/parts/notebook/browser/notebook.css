@@ -143,7 +143,7 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	width: 40%;
+	width: 60%;
 	margin: 1px auto;
 }
 
@@ -154,6 +154,11 @@
 	border-radius: 3px;
 	opacity: 0.4;
 	z-index: 0;
+	visibility: hidden;
+}
+
+.notebookEditor .hoverButtonsContainer:hover .containerBackground {
+	visibility: visible;
 }
 
 .notebookEditor .hoverButtonsContainer .hoverButton {
