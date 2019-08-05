@@ -255,7 +255,7 @@ export class ExtHostTreeView<T> extends Disposable {
 				.then(treeNode => this.proxy.$reveal(this.viewId, treeNode.item, parentChain.map(p => p.item), { select, focus, expand })), error => this.logService.error(error));
 	}
 
-	private _message: string | MarkdownString;
+	private _message: string | MarkdownString = '';
 	get message(): string | MarkdownString {
 		return this._message;
 	}
@@ -583,9 +583,9 @@ export class ExtHostTreeView<T> extends Disposable {
 			if (node) {
 				if (node.children) {
 					for (const child of node.children) {
-						const childEleement = this.elements.get(child.item.handle);
-						if (childEleement) {
-							this.clear(childEleement);
+						const childElement = this.elements.get(child.item.handle);
+						if (childElement) {
+							this.clear(childElement);
 						}
 					}
 				}
@@ -601,9 +601,9 @@ export class ExtHostTreeView<T> extends Disposable {
 		if (node) {
 			if (node.children) {
 				for (const child of node.children) {
-					const childEleement = this.elements.get(child.item.handle);
-					if (childEleement) {
-						this.clear(childEleement);
+					const childElement = this.elements.get(child.item.handle);
+					if (childElement) {
+						this.clear(childElement);
 					}
 				}
 			}
