@@ -409,7 +409,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	 * Replace the line breaks with space.
 	 */
 	private spacefyLinebreaks(inputStr: string): string {
-		return inputStr.replace(/(\r\n|\n|\r)/g, ' ');
+		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
 	private refreshGrid(): Thenable<void> {
@@ -510,7 +510,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
 
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue);
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue.replace('\u0000', String.fromCharCode(13)));
 			}).then(
 				result => {
 					self.currentEditCellValue = undefined;
