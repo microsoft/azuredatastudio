@@ -27,7 +27,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	constructor(
 		mainContext: IMainContext,
-		private uriTransformer: IURITransformer
+		private uriTransformer: IURITransformer | null
 	) {
 		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
@@ -188,8 +188,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Connection Management handlers
 	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> {
-		const transformedUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString();
-		return this._resolveProvider<azdata.ConnectionProvider>(handle).connect(transformedUri, connection);
+		if (this.uriTransformer) {
+			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString();
+		}
+		return this._resolveProvider<azdata.ConnectionProvider>(handle).connect(connectionUri, connection);
 	}
 
 	$disconnect(handle: number, connectionUri: string): Thenable<boolean> {
@@ -226,7 +228,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
-		connectionInfoSummary.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(connectionInfoSummary.ownerUri))).toString();
+		if (this.uriTransformer) {
+			connectionInfoSummary.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(connectionInfoSummary.ownerUri))).toString();
+		}
 		this._proxy.$onConnectionComplete(handle, connectionInfoSummary);
 	}
 
@@ -250,8 +254,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
-		const transformedUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString();
-		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(transformedUri, selection, runOptions);
+		if (this.uriTransformer) {
+			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString();
+		}
+		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
 	$runQueryStatement(handle: number, ownerUri: string, line: number, column: number): Thenable<void> {
@@ -279,37 +285,53 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
-		rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString();
+		if (this.uriTransformer) {
+			rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString();
+		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).getQueryRows(rowData);
 	}
 
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> {
-		const transformedUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString();
-		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(transformedUri);
+		if (this.uriTransformer) {
+			ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString();
+		}
+		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
 	}
 
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
-		result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString();
+		if (this.uriTransformer) {
+			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString();
+		}
 		this._proxy.$onQueryComplete(handle, result);
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
-		batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString();
+		if (this.uriTransformer) {
+			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString();
+		}
 		this._proxy.$onBatchStart(handle, batchInfo);
 	}
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
-		batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString();
+		if (this.uriTransformer) {
+			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString();
+		}
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
-		resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString();
+		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString();
+		}
 		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
 	}
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
-		resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString();
+		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString();
+		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
 	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
-		message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString();
+		if (this.uriTransformer) {
+			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString();
+		}
 		this._proxy.$onQueryMessage(handle, message);
 	}
 
