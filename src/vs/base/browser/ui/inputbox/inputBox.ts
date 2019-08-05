@@ -93,7 +93,7 @@ export class InputBox extends Widget {
 	private contextViewProvider?: IContextViewProvider;
 	element: HTMLElement;
 	private input: HTMLInputElement;
-	private mirror: HTMLElement;
+	private mirror: HTMLElement | undefined;
 	private actionbar?: ActionBar;
 	private options: IInputOptions;
 	private message: IMessage | null;
@@ -254,7 +254,7 @@ export class InputBox extends Widget {
 		}
 	}
 
-	public get mirrorElement(): HTMLElement {
+	public get mirrorElement(): HTMLElement | undefined {
 		return this.mirror;
 	}
 
