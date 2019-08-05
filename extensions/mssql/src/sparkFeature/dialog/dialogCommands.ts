@@ -65,15 +65,13 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 		}
 		// Prompt choice if we have active connections
 		if (connectionList && connectionList.length > 0) {
-			let selectConnectionMsg = localize('selectOtherServer', 'Select other SQL Server');
+			let selectConnectionMsg = localize('selectOtherServer', "Select other SQL Server");
 			let displayList: string[] = [];
-			if (connectionList && connectionList.length > 0) {
-				connectionList.forEach(conn => {
-					let options: MssqlOptions = <any>conn.options;
-					displayList.push(options.server);
-					connectionMap.set(options.server, conn);
-				});
-			}
+			connectionList.forEach(conn => {
+				let options: MssqlOptions = <any>conn.options;
+				displayList.push(options.server);
+				connectionMap.set(options.server, conn);
+			});
 			displayList.push(selectConnectionMsg);
 
 			selectedHost = await vscode.window.showQuickPick(displayList, {
@@ -109,7 +107,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnection(sqlConnection);
 		if (!sqlClusterConnection) {
-			throw new Error(localize('errorNotSqlBigDataCluster', 'The selected server is not a SQL Server big data cluster'));
+			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server big data cluster"));
 		}
 
 		return new SqlClusterConnection(sqlClusterConnection);
