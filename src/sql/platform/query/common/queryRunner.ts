@@ -218,7 +218,7 @@ export default class QueryRunner extends Disposable {
 		if (error instanceof Error) {
 			error = error.message;
 		}
-		let message = nls.localize('query.ExecutionFailedError', 'Execution failed due to an unexpected error: {0}\t{1}', eol, error);
+		let message = nls.localize('query.ExecutionFailedError', "Execution failed due to an unexpected error: {0}\t{1}", eol, error);
 		this.handleMessage(<azdata.QueryExecuteMessageParams>{
 			ownerUri: this.uri,
 			message: {
@@ -252,7 +252,7 @@ export default class QueryRunner extends Disposable {
 		// We're done with this query so shut down any waiting mechanisms
 
 		let message = {
-			message: nls.localize('query.message.executionTime', 'Total execution time: {0}', timeStamp),
+			message: nls.localize('query.message.executionTime', "Total execution time: {0}", timeStamp),
 			isError: false,
 			time: undefined
 		};
@@ -282,7 +282,7 @@ export default class QueryRunner extends Disposable {
 
 		let message = {
 			// account for index by 1
-			message: nls.localize('query.message.startQuery', 'Started executing query at Line {0}', batch.selection.startLine + 1),
+			message: nls.localize('query.message.startQuery', "Started executing query at Line {0}", batch.selection.startLine + 1),
 			time: new Date(batch.executionStart).toLocaleTimeString(),
 			selection: batch.selection,
 			isError: false
@@ -563,7 +563,7 @@ export default class QueryRunner extends Disposable {
 		if (showBatchTime) {
 			let message: IQueryMessage = {
 				batchId: batchId,
-				message: nls.localize('elapsedBatchTime', 'Batch execution time: {0}', executionTime),
+				message: nls.localize('elapsedBatchTime', "Batch execution time: {0}", executionTime),
 				time: undefined,
 				isError: false
 			};
