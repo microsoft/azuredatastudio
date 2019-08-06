@@ -11,6 +11,15 @@ import * as azdata from 'azdata';
 
 const localize = nls.loadMessageBundle();
 
+export interface IDisposable {
+	dispose(): void;
+}
+
+export function dispose<T extends IDisposable>(disposables: T[]): T[] {
+	disposables.forEach(d => d.dispose());
+	return [];
+}
+
 export function getKnoxUrl(host: string, port: string): string {
 	return `https://${host}:${port}/gateway`;
 }
