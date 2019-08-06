@@ -52,7 +52,12 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		fs.writeFileSync(notebookFile, '');
 		fs.writeFileSync(markdownFile, '');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		bookTreeViewProvider = new BookTreeViewProvider(rootFolderPath, mockExtensionContext.object);
+		let folder: vscode.WorkspaceFolder = {
+			uri: vscode.Uri.parse(rootFolderPath),
+			name: '',
+			index: 0
+		};
+		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
