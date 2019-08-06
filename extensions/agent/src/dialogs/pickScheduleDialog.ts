@@ -39,7 +39,7 @@ export class PickScheduleDialog {
 	}
 
 	public async showDialog() {
-		setTimeout(() => this.model.initialize().then((result) => {
+		this.model.initialize().then((result) => {
 			if (this.loadingComponent) {
 				this.loadingComponent.loading = false;
 			}
@@ -51,7 +51,7 @@ export class PickScheduleDialog {
 				}
 				this.schedulesTable.data = data;
 			}
-		}), 5000);
+		});
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 		this.initializeContent();
 		this.dialog.okButton.onClick(async () => await this.execute());
