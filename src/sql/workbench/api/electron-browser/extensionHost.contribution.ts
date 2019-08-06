@@ -13,7 +13,6 @@ import 'sql/workbench/api/browser/mainThreadCredentialManagement';
 import 'sql/workbench/api/browser/mainThreadDataProtocol';
 import 'sql/workbench/api/browser/mainThreadObjectExplorer';
 import 'sql/workbench/api/browser/mainThreadBackgroundTaskManagement';
-import 'sql/workbench/api/browser/mainThreadSerializationProvider';
 import 'sql/workbench/api/browser/mainThreadResourceProvider';
 import 'sql/workbench/api/browser/mainThreadTasks';
 import 'sql/workbench/api/browser/mainThreadDashboard';

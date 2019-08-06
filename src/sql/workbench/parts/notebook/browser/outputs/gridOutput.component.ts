@@ -29,6 +29,9 @@ import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel'
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
+import { SaveResultAction } from 'sql/workbench/parts/query/browser/actions';
+import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/parts/query/common/resultSerializer';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
@@ -110,7 +113,8 @@ class DataResourceTable extends GridTableBase<any> {
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@ISerializationService private _serializationService: ISerializationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
@@ -125,7 +129,15 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		return [];
+		if (!this._serializationService.hasProvider()) {
+			return [];
+		}
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+		];
 	}
 
 	public get maximumSize(): number {
@@ -143,7 +155,9 @@ class DataResourceDataProvider implements IGridDataProvider {
 		@INotificationService private _notificationService: INotificationService,
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService
+		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
+		@ISerializationService private _serializationService: ISerializationService,
+		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this.transformSource(source);
 	}
@@ -210,11 +224,37 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	get canSerialize(): boolean {
-		return false;
+		return this._serializationService.hasProvider();
 	}
 
+
 	serializeResults(format: SaveFormat, selection: Slick.Range[]): Thenable<void> {
-		throw new Error('Method not implemented.');
+		let serializer = this._instantiationService.createInstance(ResultSerializer);
+		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
+	}
+
+	private async doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse> {
+		// TODO implement selection support
+		let getRows: ((index: number, rowCount: number) => azdata.DbCellValue[][]) = (index, rowCount) => {
+			if (this.rows.length === 0 || index < 0 || index >= this.rows.length) {
+				return [];
+			}
+			let endIndex = index + rowCount;
+			if (endIndex > this.rows.length) {
+				endIndex = this.rows.length;
+			}
+			return this.rows.slice(index, endIndex);
+		};
+
+		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
+			saveFormat: format,
+			columns: this.resultSet.columnInfo,
+			filePath: filePath,
+			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
+			rowCount: this.rows.length
+		});
+		let result = await this._serializationService.serializeResults(serializeRequestParams);
+		return result;
 	}
 }
 

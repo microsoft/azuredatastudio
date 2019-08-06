@@ -75,13 +75,6 @@ declare module 'azdata' {
 	}
 
 	/**
-	 * Namespace for serialization management global methods
-	 */
-	export namespace serialization {
-		export function registerProvider(provider: SerializationProvider): vscode.Disposable;
-	}
-
-	/**
 	 * Namespace for connection management
 	 */
 	export namespace connection {
@@ -759,10 +752,6 @@ declare module 'azdata' {
 		deleteCredential(credentialId: string): Thenable<boolean>;
 	}
 
-	export interface SerializationProvider {
-		handle: number;
-		saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<SaveResultRequestResult>;
-	}
 
 
 	export interface DidChangeLanguageFlavorParams {
@@ -4123,7 +4112,8 @@ declare module 'azdata' {
 		DacFxServicesProvider = 'DacFxServicesProvider',
 		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
-		IconProvider = 'IconProvider'
+		IconProvider = 'IconProvider',
+		SerializationProvider = 'SerializationProvider'
 	}
 
 	export namespace dataprotocol {

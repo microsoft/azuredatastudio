@@ -21,7 +21,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature, SchemaCompareServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature, SchemaCompareServicesFeature, SerializationFeature } from './features';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
@@ -155,7 +155,8 @@ function getClientOptions(): ClientOptions {
 			TelemetryFeature,
 			AgentServicesFeature,
 			DacFxServicesFeature,
-			SchemaCompareServicesFeature
+			SchemaCompareServicesFeature,
+			SerializationFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};
