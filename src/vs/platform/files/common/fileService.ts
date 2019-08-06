@@ -21,7 +21,7 @@ import { Schemas } from 'vs/base/common/network';
 
 export class FileService extends Disposable implements IFileService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand!: ServiceIdentifier<any>;
 
 	private readonly BUFFER_SIZE = 64 * 1024;
 
@@ -253,8 +253,12 @@ export class FileService extends Disposable implements IFileService {
 	}
 
 	async exists(resource: URI): Promise<boolean> {
+		const provider = await this.withProvider(resource);
+
 		try {
-			return !!(await this.resolve(resource));
+			const stat = await provider.stat(resource);
+
+			return !!stat;
 		} catch (error) {
 			return false;
 		}

@@ -42,7 +42,7 @@ export class DebugSession implements IDebugSession {
 	private sources = new Map<string, Source>();
 	private threads = new Map<number, Thread>();
 	private rawListeners: IDisposable[] = [];
-	private fetchThreadsScheduler: RunOnceScheduler;
+	private fetchThreadsScheduler: RunOnceScheduler | undefined;
 	private repl: ReplModel;
 
 	private readonly _onDidChangeState = new Emitter<void>();
@@ -674,7 +674,10 @@ export class DebugSession implements IDebugSession {
 								if (this.configurationService.getValue<IDebugConfiguration>('debug').openDebug === 'openOnDebugBreak') {
 									this.viewletService.openViewlet(VIEWLET_ID);
 								}
-								this.windowService.focusWindow();
+
+								if (this.configurationService.getValue<IDebugConfiguration>('debug').focusWindowOnBreak) {
+									this.windowService.focusWindow();
+								}
 							}
 						}
 					};

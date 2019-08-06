@@ -69,6 +69,7 @@ export const options: Option[] = [
 	{ id: 'locate-extension', type: 'string' },
 	{ id: 'extensionDevelopmentPath', type: 'string' },
 	{ id: 'extensionTestsPath', type: 'string' },
+	{ id: 'extension-development-confirm-save', type: 'boolean' },
 	{ id: 'debugId', type: 'string' },
 	{ id: 'inspect-search', type: 'string', deprecates: 'debugSearch' },
 	{ id: 'inspect-brk-search', type: 'string', deprecates: 'debugBrkSearch' },
@@ -141,6 +142,10 @@ export function parseArgs(args: string[], isOptionSupported = (_: Option) => tru
 			delete parsedArgs[o.deprecates];
 		}
 	}
+
+	// https://github.com/microsoft/vscode/issues/58177
+	parsedArgs._ = parsedArgs._.filter(arg => arg.length > 0);
+
 	return parsedArgs;
 }
 

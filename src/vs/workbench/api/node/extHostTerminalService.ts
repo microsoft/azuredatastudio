@@ -10,7 +10,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import * as platform from 'vs/base/common/platform';
 import * as terminalEnvironment from 'vs/workbench/contrib/terminal/common/terminalEnvironment';
 import { Event, Emitter } from 'vs/base/common/event';
-import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, IMainContext, ShellLaunchConfigDto, IShellDefinitionDto, IShellAndArgsDto, ITerminalDimensionsDto } from 'vs/workbench/api/common/extHost.protocol';
+import { ExtHostTerminalServiceShape, MainContext, MainThreadTerminalServiceShape, IMainContext, IShellLaunchConfigDto, IShellDefinitionDto, IShellAndArgsDto, ITerminalDimensionsDto } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration, ExtHostConfigProvider } from 'vs/workbench/api/common/extHostConfiguration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { EXT_HOST_CREATION_DELAY, IShellLaunchConfig, ITerminalEnvironment, ITerminalChildProcess, ITerminalDimensions } from 'vs/workbench/contrib/terminal/common/terminal';
@@ -27,9 +27,9 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 const RENDERER_NO_PROCESS_ID = -1;
 
 export class BaseExtHostTerminal {
-	public _id: number;
+	public _id: number | undefined;
 	protected _idPromise: Promise<number>;
-	private _idPromiseComplete: (value: number) => any;
+	private _idPromiseComplete: ((value: number) => any) | undefined;
 	private _disposed: boolean = false;
 	private _queuedRequests: ApiRequest[] = [];
 
@@ -71,9 +71,12 @@ export class BaseExtHostTerminal {
 
 	public _runQueuedRequests(id: number): void {
 		this._id = id;
-		this._idPromiseComplete(id);
+		if (this._idPromiseComplete) {
+			this._idPromiseComplete(id);
+			this._idPromiseComplete = undefined;
+		}
 		this._queuedRequests.forEach((r) => {
-			r.run(this._proxy, this._id);
+			r.run(this._proxy, id);
 		});
 		this._queuedRequests.length = 0;
 	}
@@ -82,14 +85,14 @@ export class BaseExtHostTerminal {
 export class ExtHostTerminal extends BaseExtHostTerminal implements vscode.Terminal {
 	private _pidPromise: Promise<number | undefined>;
 	private _cols: number | undefined;
-	private _pidPromiseComplete: ((value: number | undefined) => any) | null;
+	private _pidPromiseComplete: ((value: number | undefined) => any) | undefined;
 	private _rows: number | undefined;
 
 	private readonly _onData = new Emitter<string>();
 	public get onDidWriteData(): Event<string> {
 		// Tell the main side to start sending data if it's not already
-		this._idPromise.then(c => {
-			this._proxy.$registerOnDataListener(this._id);
+		this._idPromise.then(id => {
+			this._proxy.$registerOnDataListener(id);
 		});
 		return this._onData.event;
 	}
@@ -124,10 +127,11 @@ export class ExtHostTerminal extends BaseExtHostTerminal implements vscode.Termi
 		this._runQueuedRequests(terminal.id);
 	}
 
-	public async createExtensionTerminal(): Promise<void> {
+	public async createExtensionTerminal(): Promise<number> {
 		const terminal = await this._proxy.$createTerminal({ name: this._name, isExtensionTerminal: true });
 		this._name = terminal.name;
 		this._runQueuedRequests(terminal.id);
+		return terminal.id;
 	}
 
 	public get name(): string {
@@ -181,7 +185,7 @@ export class ExtHostTerminal extends BaseExtHostTerminal implements vscode.Termi
 		// The event may fire 2 times when the panel is restored
 		if (this._pidPromiseComplete) {
 			this._pidPromiseComplete(processId);
-			this._pidPromiseComplete = null;
+			this._pidPromiseComplete = undefined;
 		} else {
 			// Recreate the promise if this is the nth processId set (e.g. reused task terminals)
 			this._pidPromise.then(pid => {
@@ -332,7 +336,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 	public createExtensionTerminal(options: vscode.ExtensionTerminalOptions): vscode.Terminal {
 		const terminal = new ExtHostTerminal(this._proxy, options.name);
 		const p = new ExtHostPseudoterminal(options.pty);
-		terminal.createExtensionTerminal().then(() => this._setupExtHostProcessListeners(terminal._id, p));
+		terminal.createExtensionTerminal().then(id => this._setupExtHostProcessListeners(id, p));
 		this._terminals.push(terminal);
 		return terminal;
 	}
@@ -551,7 +555,7 @@ export class ExtHostTerminalService implements ExtHostTerminalServiceShape {
 		this._variableResolver = new ExtHostVariableResolverService(workspaceFolders || [], this._extHostDocumentsAndEditors, configProvider);
 	}
 
-	public async $spawnExtHostProcess(id: number, shellLaunchConfigDto: ShellLaunchConfigDto, activeWorkspaceRootUriComponents: UriComponents, cols: number, rows: number, isWorkspaceShellAllowed: boolean): Promise<void> {
+	public async $spawnExtHostProcess(id: number, shellLaunchConfigDto: IShellLaunchConfigDto, activeWorkspaceRootUriComponents: UriComponents, cols: number, rows: number, isWorkspaceShellAllowed: boolean): Promise<void> {
 		const shellLaunchConfig: IShellLaunchConfig = {
 			name: shellLaunchConfigDto.name,
 			executable: shellLaunchConfigDto.executable,

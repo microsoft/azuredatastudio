@@ -133,7 +133,7 @@ export function getStateLabel(state: State): string {
 	}
 }
 
-export class AdapterEndEvent {
+export interface AdapterEndEvent {
 	error?: Error;
 	sessionLengthInSeconds: number;
 	emittedStopped: boolean;
@@ -440,6 +440,7 @@ export interface IDebugConfiguration {
 		lineHeight: number;
 		wordWrap: boolean;
 	};
+	focusWindowOnBreak: boolean;
 }
 
 export interface IGlobalConfig {
