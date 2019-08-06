@@ -39,8 +39,10 @@ export class PickScheduleDialog {
 	}
 
 	public async showDialog() {
-		this.model.initialize().then((result) => {
-			this.loadingComponent.loading = false;
+		setTimeout(() => this.model.initialize().then((result) => {
+			if (this.loadingComponent) {
+				this.loadingComponent.loading = false;
+			}
 			if (this.model.schedules) {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
@@ -49,7 +51,7 @@ export class PickScheduleDialog {
 				}
 				this.schedulesTable.data = data;
 			}
-		});
+		}), 5000);
 		this.dialog = azdata.window.createModelViewDialog(this.DialogTitle);
 		this.initializeContent();
 		this.dialog.okButton.onClick(async () => await this.execute());
@@ -80,7 +82,7 @@ export class PickScheduleDialog {
 				}]).withLayout({ width: '100%' }).component();
 
 			this.loadingComponent = view.modelBuilder.loadingComponent().withItem(formModel).component();
-			this.loadingComponent.loading = true;
+			this.loadingComponent.loading = !this.model.isInitialized();
 			await view.initializeModel(this.loadingComponent);
 		});
 	}
