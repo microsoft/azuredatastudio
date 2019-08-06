@@ -798,7 +798,8 @@ export class RestoreDialog extends Modal {
 			DOM.show(this._fileListTableContainer);
 			this._fileListData.push(data);
 
-			// Select the first row for the table by default
+			// Set data and Select the first row for the table by default
+			this._fileListTable.setData(this._fileListData);
 			this._fileListTable.setSelectedRows([0]);
 			this._fileListTable.setActiveCell(0, 0);
 		}
