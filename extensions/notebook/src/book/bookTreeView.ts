@@ -25,16 +25,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		if (workspaceFolders !== []) {
-			let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
-			this._tableOfContentsPath = this.getTableOfContentFiles(workspacePaths);
-			let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
-			vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
-		}
+		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
+		this._tableOfContentsPath = this.getTableOfContentFiles(workspacePaths);
+		let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
+		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		this._extensionContext = extensionContext;
 	}
 
-	private getTableOfContentFiles(directories?: string[]): string[] {
+	private getTableOfContentFiles(directories: string[]): string[] {
 		let tableOfContentPaths: string[] = [];
 		let paths: string[];
 		directories.forEach(dir => {
