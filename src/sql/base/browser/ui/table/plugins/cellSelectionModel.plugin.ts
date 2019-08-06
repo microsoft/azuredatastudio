@@ -145,7 +145,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			}
 			let newRange: Slick.Range;
 
-			//if the ranges are the same.
+			// if the ranges are the same.
 			if (current.fromRow === range.fromRow &&
 				current.fromCell === range.fromCell &&
 				current.toRow === range.toRow &&
