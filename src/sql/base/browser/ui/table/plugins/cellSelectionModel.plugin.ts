@@ -36,12 +36,14 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 
 	public init(grid: Slick.Grid<T>) {
 		this.grid = grid;
-		this._handler.subscribe(this.grid.onActiveCellChanged, (e: Event, args: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e, args));
+		this._handler.subscribe(this.grid.onClick, (e: MouseEvent, args: Slick.OnActiveCellChangedEventArgs<T>) => this.handleActiveCellChange(e, args));
 		this._handler.subscribe(this.grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
 		this._handler.subscribe(this.grid.onClick, (e: MouseEvent, args: Slick.OnClickEventArgs<T>) => this.handleIndividualCellSelection(e, args));
 		this._handler.subscribe(this.grid.onHeaderClick, (e: MouseEvent, args: Slick.OnHeaderClickEventArgs<T>) => this.handleHeaderClick(e, args));
 		this.grid.registerPlugin(this.selector);
-		this._handler.subscribe(this.selector.onCellRangeSelected, (e: Event, range: Slick.Range) => this.handleCellRangeSelected(e, range));
+		this._handler.subscribe(this.selector.onCellRangeSelected, (e: Event, range: Slick.Range) => this.handleCellRangeSelected(e, range, false));
+		this._handler.subscribe(this.selector.onAppendCellRangeSelected, (e: Event, range: Slick.Range) => this.handleCellRangeSelected(e, range, true));
+
 		this._handler.subscribe(this.selector.onBeforeCellRangeSelected, (e: Event, cell: Slick.Cell) => this.handleBeforeCellRangeSelected(e, cell));
 	}
 
@@ -88,13 +90,18 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		return true;
 	}
 
-	private handleCellRangeSelected(e: Event, range: Slick.Range) {
+	private handleCellRangeSelected(e: Event, range: Slick.Range, append: boolean) {
 		this.grid.setActiveCell(range.fromRow, range.fromCell, false, false, true);
-		this.setSelectedRanges([range]);
+
+		if (append) {
+			this.setSelectedRanges(this.insertIntoSelections(this.getSelectedRanges(), range));
+		} else {
+			this.setSelectedRanges([range]);
+		}
 	}
 
-	private handleActiveCellChange(e: Event, args: Slick.OnActiveCellChangedEventArgs<T>) {
-		if (this.options.selectActiveCell && !isUndefinedOrNull(args.row) && !isUndefinedOrNull(args.cell)) {
+	private handleActiveCellChange(e: MouseEvent, args: Slick.OnActiveCellChangedEventArgs<T>) {
+		if (this.options.selectActiveCell && !isUndefinedOrNull(args.row) && !isUndefinedOrNull(args.cell) && !e.ctrlKey) {
 			this.setSelectedRanges([new Slick.Range(args.row, args.cell)]);
 		} else if (!this.options.selectActiveCell) {
 			// clear the previous selection once the cell changes
@@ -119,6 +126,11 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		}
 	}
 
+
+	/**
+	 * DO NOT CALL THIS DIRECTLY - GO THROUGH INSERT INTO SELECTIONS
+	 *
+	 */
 	private mergeSelections(ranges: Array<Slick.Range>, range: Slick.Range) {
 		// New ranges selection
 		let newRanges: Array<Slick.Range> = [];
@@ -171,39 +183,40 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		};
 	}
 
+	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range) {
+		let result = this.mergeSelections(ranges, range);
+		let newRanges = result.newRanges;
+
+		// Keep merging the rows until we stop having changes
+		while (true) {
+			let shouldContinue = false;
+			for (let current of newRanges) {
+				result = this.mergeSelections(newRanges, current);
+				if (result.handled) {
+					shouldContinue = true;
+					newRanges = result.newRanges;
+					break;
+				}
+			}
+
+			if (shouldContinue) {
+				continue;
+			}
+			break;
+		}
+
+		return newRanges;
+	}
+
 	private handleIndividualCellSelection(e: MouseEvent, args: Slick.OnClickEventArgs<T>) {
 		if (!e.ctrlKey) {
 			return;
 		}
 
-		const insertIntoSelections = (ranges: Array<Slick.Range>, range: Slick.Range) => {
-			let result = this.mergeSelections(ranges, range);
-			let newRanges = result.newRanges;
-
-			// Keep merging the rows until we stop having changes
-			while (true) {
-				let shouldContinue = false;
-				for (let current of newRanges) {
-					result = this.mergeSelections(newRanges, current);
-					if (result.handled) {
-						shouldContinue = true;
-						newRanges = result.newRanges;
-						break;
-					}
-				}
-
-				if (shouldContinue) {
-					continue;
-				}
-				break;
-			}
-
-			return newRanges;
-		};
 		let ranges: Array<Slick.Range>;
 
 		ranges = this.getSelectedRanges();
-		ranges = insertIntoSelections(ranges, new Slick.Range(args.row, args.cell));
+		ranges = this.insertIntoSelections(ranges, new Slick.Range(args.row, args.cell));
 
 		this.grid.setActiveCell(args.row, args.cell);
 		this.setSelectedRanges(ranges);
