@@ -13,11 +13,5 @@ module.exports = withDefaults({
 	context: __dirname,
 	entry: {
 		main: './src/main.ts'
-	},
-	externals: {
-		'dataprotocol-client': 'commonjs dataprotocol-client',
-		'vscode-languageclient': 'commonjs vscode-languageclient',
-		'vscode-extension-telemetry': 'commonjs vscode-extension-telemetry',
-		'request': 'commonjs request',
 	}
 });
