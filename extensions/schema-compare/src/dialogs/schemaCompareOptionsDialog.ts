@@ -12,7 +12,7 @@ import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareOptionsDialog {
-	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'Ok');
+	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'OK');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
 	private static readonly YesButtonText: string = localize('SchemaCompareOptionsDialog.Yes', 'Yes');
