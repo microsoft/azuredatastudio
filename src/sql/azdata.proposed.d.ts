@@ -1374,6 +1374,7 @@ declare module 'azdata' {
 	export interface AgentNotebookInfo extends AgentJobInfo {
 		templateId: number;
 		targetDatabase: string;
+		lastRunNotebookError: string;
 	}
 
 	export interface AgentJobScheduleInfo {

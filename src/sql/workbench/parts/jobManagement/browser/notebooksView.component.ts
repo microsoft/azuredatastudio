@@ -32,6 +32,7 @@ import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/t
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
+import { expand } from 'rxjs/operator/expand';
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
 export const ROW_HEIGHT: number = 45;
@@ -243,7 +244,8 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					category: job.category,
 					runnable: JobManagementUtilities.convertToResponse(job.runnable),
 					hasSchedule: JobManagementUtilities.convertToResponse(job.hasSchedule),
-					lastRunOutcome: JobManagementUtilities.convertToStatusString(job.lastRunOutcome)
+					lastRunOutcome: JobManagementUtilities.convertToStatusString(job.lastRunOutcome),
+					notebookError: job.lastRunNotebookError
 				};
 			});
 		}
@@ -293,6 +295,17 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 									seenJobs++;
 									i++;
 								}
+								if (item.LastRunNotebookError !== '') {
+									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
+									if (this.filterStack.indexOf(args.column.name) < 0) {
+										this.filterStack.push(args.column.name);
+										this.filterValueMap[args.column.name] = [filterValues];
+									}
+									// one expansion for the row and one for
+									// the error detail
+									seenJobs++;
+									i++;
+								}
 								seenJobs++;
 							}
 							this.dataView.refresh();
@@ -313,6 +326,17 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
+									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
+									if (this.filterStack.indexOf(args.column.name) < 0) {
+										this.filterStack.push(args.column.name);
+										this.filterValueMap[args.column.name] = [filterValues];
+									}
+									// one expansion for the row and one for
+									// the error detail
+									seenJobs++;
+									i++;
+								}
+								if (item.LastRunNotebookError !== '') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
 									if (this.filterStack.indexOf(args.column.name) < 0) {
 										this.filterStack.push(args.column.name);
@@ -475,6 +499,30 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
 	}
 
+	private notebookErrorStyleHash(row: number, start: boolean, map: any, columnName: string) {
+		let hash: {
+			[index: number]: {
+				[id: string]: string;
+			}
+		} = {};
+		hash = this.setRowWithErrorClass(hash, row, 'job-with-error');
+		hash = this.setRowWithErrorClass(hash, row + 1, 'notebook-error-row');
+		if (start) {
+			if (map['start']) {
+				map['start'].push(['notebook-error-row' + row.toString(), hash]);
+			} else {
+				map['start'] = [['notebook-error-row' + row.toString(), hash]];
+			}
+		} else {
+			if (map[columnName]) {
+				map[columnName].push(['notebook-error-row' + row.toString(), hash]);
+			} else {
+				map[columnName] = [['notebook-error-row' + row.toString(), hash]];
+			}
+		}
+		this._table.grid.setCellCssStyles('notebook-error-row' + row.toString(), hash);
+	}
+
 	private renderName(row, cell, value, columnDef, dataContext) {
 		let resultIndicatorClass: string;
 		switch (dataContext.lastRunOutcome) {
@@ -609,8 +657,16 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					let item = self.dataView.getItemById(notebook.jobId + '.error');
 					let noStepsMessage = nls.localize('jobsView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
+					if (notebook.lastRunNotebookError !== '') {
+						errorMessage = notebook.lastRunNotebookError;
+					}
 					if (item) {
-						item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
+						if (notebook.lastRunNotebookError !== '') {
+							item['name'] = nls.localize('jobsView.notebookError', "Notebook Error: ") + errorMessage;
+						}
+						else {
+							item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
+						}
 						self._agentViewComponent.setExpanded(notebook.jobId, item['name']);
 						self.dataView.updateItem(notebook.jobId + '.error', item);
 					}
@@ -684,14 +740,22 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		let expansions = 0;
 		for (let i = 0; i < this.notebooks.length; i++) {
 			let job = this.notebooks[i];
-			console.log(this.notebookHistories);
+			console.log(job);
+			console.log(job.lastRunNotebookError);
+			let notebookError = job.lastRunNotebookError;
 			let history = this.notebookHistories[job.jobId];
-			console.log(history);
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i + expandedJobs.size);
 				this.addToStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);
 				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
 			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
+				this.addToStyleHash(i + expansions, start, this.filterStylingMap, undefined);
+				expansions++;
+			} else if (notebookError !== '' && !expandedJobs.get(job.jobId)) {
+				this.expandJobRowDetails(i + expandedJobs.size);
+				this.addToStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);
+				this._agentViewComponent.setExpanded(job.jobId, job.lastRunNotebookError);
+			} else if (notebookError !== '' && expandedJobs.get(job.jobId)) {
 				this.addToStyleHash(i + expansions, start, this.filterStylingMap, undefined);
 				expansions++;
 			}

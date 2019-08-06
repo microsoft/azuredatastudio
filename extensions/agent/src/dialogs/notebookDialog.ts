@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as nls from 'vscode-nls';
+import * as fs from 'fs';
 import * as azdata from 'azdata';
 import { JobData } from '../data/jobData';
 import { JobStepDialog } from './jobStepDialog';
@@ -13,6 +14,7 @@ import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { JobStepData } from '../data/jobStepData';
 import { NotebookData } from '../data/notebookData';
+
 
 const localize = nls.loadMessageBundle();
 
@@ -118,7 +120,16 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			});
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown().component();
+			this.dialog.okButton.enabled = false;
 			this.TemplateFilePathBox = view.modelBuilder.inputBox().component();
+			this.TemplateFilePathBox.onTextChanged(() => {
+				if (this.TemplateFilePathBox.value && this.TemplateFilePathBox.value.length > 0) {
+					this.dialog.okButton.enabled = true;
+				}
+				else {
+					this.dialog.okButton.enabled = false;
+				}
+			});
 			this.openTemplateFileButton = view.modelBuilder.button()
 				.withProperties({
 					label: this.TemplateNotebookTextBoxLabel,

@@ -383,12 +383,12 @@ notebookhistory-component
 	margin-top: 10px;
 	width: 40px;
 	height: 40px;
-	background-size: 45px 45px, 30px 30px;
+	background-size: 40px 40px;
 	background-repeat: no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-success {
-	background-image: url(./notebook_inverse.svg);
+	background-image: url(./NotebookSuccess_16x_white.svg);
 	background-position: center;
 }
 
@@ -401,12 +401,12 @@ notebookhistory-component
 	margin-top: 10px;
 	width: 40px;
 	height: 40px;
-	background-size: 45px 45px, 30px 30px;
+	background-size: 40px 40px;
 	background-repeat: no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-failure {
-	background-image: url(./NotebookFail_16x.svg);
+	background-image: url(./NotebookFail_16x_white.svg);
 	background-position: center;
 }
 
@@ -419,12 +419,12 @@ notebookhistory-component
 	margin-top: 10px;
 	width: 40px;
 	height: 40px;
-	background-size: 45px 45px, 30px 30px;
+	background-size: 40px 40px;
 	background-repeat: no-repeat;
 }
 
 .vs-dark .notebook-grid-item > .img-error {
-	background-image: url(./NotebookFail_16x.svg);
+	background-image: url(./NotebookError_16x_white.svg);
 	background-position: center;
 }
 
@@ -452,4 +452,8 @@ notebookhistory-component
 	line-height: 3;
 	cursor: pointer;
 	width: auto;
+}
+
+.vs-dark .grid-title {
+	background: #333333;
 }

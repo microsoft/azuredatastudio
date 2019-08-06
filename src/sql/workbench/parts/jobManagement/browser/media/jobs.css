@@ -90,7 +90,8 @@ notebooksview-component {
 	background: grey;
 }
 
-#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext {
+#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext,
+#jobsDiv .jobview-grid .slick-cell.l1.r1.notebook-error-row .jobview-jobnametext {
 	width: 100%;
 }
 
@@ -123,7 +124,15 @@ notebooksview-component {
 	color: orangered;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.notebook-error-row {
+	width: 100%;
+	opacity: 1;
+	font-weight: 700;
+	color: orange;
+}
+
+.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row,
+.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.notebook-error-row {
 	opacity: 1;
 }
 
@@ -242,7 +251,8 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
 	padding-left: 15px;
 }
 
-#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure {
+#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure,
+#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.notebook-error-row td.jobview-jobnameindicatorfailure {
 	width: 0;
 	background: none;
 }
@@ -330,7 +340,8 @@ table.jobprevruns > tbody {
 }
 
 jobsview-component .jobview-grid .slick-cell.error-row,
-notebooksview-component .jobview-grid .slick-cell.error-row {
+notebooksview-component .jobview-grid .slick-cell.error-row,
+notebooksview-component .jobview-grid .slick-cell.notebook-error-row {
 	opacity: 0;
 }
 

@@ -45,17 +45,6 @@ export class PickScheduleDialog {
 		this.dialog.cancelButton.onClick(async () => await this.cancel());
 		this.dialog.okButton.label = this.OkButtonText;
 		this.dialog.cancelButton.label = this.CancelButtonText;
-		this.model.initialize().then((result) => {
-			this.loadingComponent.loading = false;
-			if (this.model.schedules) {
-				let data: any[][] = [];
-				for (let i = 0; i < this.model.schedules.length; ++i) {
-					let schedule = this.model.schedules[i];
-					data[i] = [schedule.id, schedule.name, schedule.description];
-				}
-				this.schedulesTable.data = data;
-			}
-		});
 		azdata.window.openDialog(this.dialog);
 	}
 
@@ -81,8 +70,20 @@ export class PickScheduleDialog {
 
 			this.loadingComponent = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			this.loadingComponent.loading = true;
+			this.model.initialize().then((result) => {
+				this.loadingComponent.loading = false;
+				if (this.model.schedules) {
+					let data: any[][] = [];
+					for (let i = 0; i < this.model.schedules.length; ++i) {
+						let schedule = this.model.schedules[i];
+						data[i] = [schedule.id, schedule.name, schedule.description];
+					}
+					this.schedulesTable.data = data;
+				}
+			});
 			await view.initializeModel(this.loadingComponent);
 		});
+
 	}
 
 	private async execute() {

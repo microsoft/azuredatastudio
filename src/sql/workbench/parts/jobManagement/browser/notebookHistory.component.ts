@@ -125,7 +125,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
 			if (result && result.histories) {
-				console.log(result.histories);
 				this.notebookHistories = result.histories.reverse();
 				self._notebookCacheObject.setNotebookHistory(jobId, result.histories);
 				self._notebookCacheObject.setJobSchedules(jobId, result.schedules);
@@ -224,7 +223,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 	private toggleHistoryDisplay(event): void {
 		let header = event.srcElement.attributes;
-		console.log(header);
 	}
 
 	private goToJobs(): void {
