@@ -619,7 +619,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	private createJobChart(jobId: string, jobHistories: azdata.AgentJobHistoryInfo[]): void {
+	private createJobChart(jobId: string, jobHistories: azdata.AgentNotebookHistoryInfo[]): void {
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
@@ -627,6 +627,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			if (runGraph.length > 0) {
 				runGraph.css('height', chartHeights[i]);
 				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
+				if (jobHistories[i].materializedNotebookErrorInfo) {
+					bgColor = 'orange';
+				}
 				runGraph.css('background', bgColor);
 				runGraph.hover((e) => {
 					let currentTarget = e.currentTarget;
@@ -681,6 +684,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		let expansions = 0;
 		for (let i = 0; i < this.notebooks.length; i++) {
 			let job = this.notebooks[i];
+			console.log(this.notebookHistories);
+			let history = this.notebookHistories[job.jobId];
+			console.log(history);
 			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
 				this.expandJobRowDetails(i + expandedJobs.size);
 				this.addToStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);

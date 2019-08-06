@@ -99,9 +99,11 @@
 					*ngFor="let history of currentHistory"
 					class="notebook-grid-item"
 					(click)="openNotebook(history)"
+					title="{{history.materializedNotebookErrorInfo}}"
 				>
-					<div *ngIf="history.runStatus === 1" class="img-success"></div>
-					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
+					<div *ngIf="history.materializedNotebookErrorInfo" class="img-error" ></div>
+					<div *ngIf="history.runStatus === 1 && !history.materializedNotebookErrorInfo" class="img-success"></div>
+					<div *ngIf="history.runStatus === 0 && !history.materializedNotebookErrorInfo" class="img-failure"></div>
 					<p>
 						{{ formatDateTimetoLocaleDate(history.runDate) }}
 						<br />

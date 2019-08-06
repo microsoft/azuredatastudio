@@ -410,6 +410,24 @@ notebookhistory-component
 	background-position: center;
 }
 
+.notebook-grid-item > .img-error {
+	background-image: url(./NotebookError_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 45px 45px, 30px 30px;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .notebook-grid-item > .img-error {
+	background-image: url(./NotebookFail_16x.svg);
+	background-position: center;
+}
+
 .notebook-grid-item > p {
 	display: absolute;
 	margin-left: auto;

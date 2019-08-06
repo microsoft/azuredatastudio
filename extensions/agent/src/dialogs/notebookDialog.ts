@@ -175,10 +175,10 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			this.nameTextBox.value = this.model.name;
 			this.ownerTextBox.value = this.model.owner;
 			//this.categoryDropdown.values = this.model.jobCategories;
-			this.targetDatabaseDropDown.value = this.model.targetDatabase;
-			this.targetDatabaseDropDown.enabled = false;
-			if (this.model.dialogMode === 2) {
+			if (this.isEdit) {
 				this.TemplateFilePathBox.required = false;
+				this.targetDatabaseDropDown.value = this.model.targetDatabase;
+				this.targetDatabaseDropDown.enabled = false;
 			}
 			let idx: number = undefined;
 			if (this.model.category && this.model.category !== '') {
