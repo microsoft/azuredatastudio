@@ -33,18 +33,21 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 	}
 
-	public getTocFiles(dir: string): string[] {
-		let allFiles: string[] = [];
-		let files = fs.readdirSync(dir);
-		for (let i in files) {
-			let name = path.join(dir, files[i]);
-			if (fs.statSync(name).isDirectory()) {
-				allFiles = allFiles.concat(this.getTocFiles(name));
-			} else if (files[i] === 'toc.yml') {
-				allFiles.push(name);
-			}
-		}
-		return allFiles;
+	private getTableOfContentFiles(directories: string[]): string[] {
+		let tableOfContentPaths: string[] = [];
+		let paths: string[];
+		directories.forEach(dir => {
+			paths = fs.readdirSync(dir);
+			paths.forEach(filename => {
+				let fullPath = path.join(dir, filename);
+				if (fs.statSync(fullPath).isDirectory()) {
+					tableOfContentPaths = tableOfContentPaths.concat(this.getTableOfContentFiles([fullPath]));
+				} else if (filename === 'toc.yml') {
+					tableOfContentPaths.push(fullPath);
+				}
+			});
+		});
+		return tableOfContentPaths;
 	}
 
 	async openNotebook(resource: string): Promise<void> {
