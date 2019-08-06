@@ -77,7 +77,7 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 		return this.currentlySelectedRange;
 	}
 
-	private handleDragInit(e: Event) {
+	private handleDragInit(e: DOMEvent) {
 		// prevent the grid from cancelling drag'n'drop by default
 		e.stopImmediatePropagation();
 	}
