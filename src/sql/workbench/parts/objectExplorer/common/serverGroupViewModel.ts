@@ -17,8 +17,8 @@ export class ServerGroupViewModel {
 
 	private _domainModel: IConnectionProfileGroup;
 	private _editMode: boolean;
-	private readonly _addServerGroupTitle: string = localize('serverGroup.addServerGroup', 'Add server group');
-	private readonly _editServerGroupTitle: string = localize('serverGroup.editServerGroup', 'Edit server group');
+	private readonly _addServerGroupTitle: string = localize('serverGroup.addServerGroup', "Add server group");
+	private readonly _editServerGroupTitle: string = localize('serverGroup.editServerGroup', "Edit server group");
 	private readonly _defaultColor: string = '#515151';
 
 	constructor(domainModel?: IConnectionProfileGroup, colors?: string[]) {

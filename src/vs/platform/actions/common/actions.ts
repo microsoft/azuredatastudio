@@ -95,11 +95,11 @@ export const enum MenuId {
 	TouchBarContext,
 	ViewItemContext,
 	ViewTitle,
-	// {{SQL CARBON EDIT}}
-	ObjectExplorerItemContext,
-	NotebookToolbar,
-	DataExplorerContext,
-	DataExplorerAction,
+	ObjectExplorerItemContext, // {{SQL CARBON EDIT}}
+	NotebookToolbar, // {{SQL CARBON EDIT}}
+	DataExplorerContext, // {{SQL CARBON EDIT}}
+	DataExplorerAction, // {{SQL CARBON EDIT}}
+	ExplorerWidgetContext,  // {{SQL CARBON EDIT}}
 	CommentThreadTitle,
 	CommentThreadActions,
 	CommentTitle,

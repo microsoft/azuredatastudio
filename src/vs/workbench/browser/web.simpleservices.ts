@@ -8,13 +8,10 @@ import * as browser from 'vs/base/browser/browser';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
-// tslint:disable-next-line: import-patterns no-standalone-editor
-import { IDownloadService } from 'vs/platform/download/common/download';
-import { CancellationToken } from 'vs/base/common/cancellation';
-import { IGalleryExtension, IExtensionIdentifier, IReportedExtension, IExtensionManagementService, ILocalExtension, IGalleryMetadata, IExtensionTipsService, ExtensionRecommendationReason, IExtensionRecommendation, IExtensionEnablementService, EnablementState } from 'vs/platform/extensionManagement/common/extensionManagement';
-import { ExtensionType, ExtensionIdentifier, IExtension } from 'vs/platform/extensions/common/extensions';
+import { IGalleryExtension, IExtensionIdentifier, IReportedExtension, IExtensionManagementService, ILocalExtension, IGalleryMetadata } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionTipsService, ExtensionRecommendationReason, IExtensionRecommendation } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
+import { ExtensionType, ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { IURLHandler, IURLService } from 'vs/platform/url/common/url';
-import { ITelemetryService, ITelemetryData, ITelemetryInfo } from 'vs/platform/telemetry/common/telemetry';
 import { ConsoleLogService, ILogService } from 'vs/platform/log/common/log';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
@@ -25,94 +22,22 @@ import { IRecentlyOpened, IRecent, isRecentFile, isRecentFolder } from 'vs/platf
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
 import { ITunnelService } from 'vs/platform/remote/common/tunnel';
-import { IReloadSessionEvent, IExtensionHostDebugService, ICloseSessionEvent, IAttachSessionEvent, ILogToSessionEvent, ITerminateSessionEvent } from 'vs/workbench/services/extensions/common/extensionHostDebug';
-import { IRemoteConsoleLog } from 'vs/base/common/console';
+import { IExtensionHostDebugService } from 'vs/platform/debug/common/extensionHostDebug';
 // tslint:disable-next-line: import-patterns
-import { IExtensionsWorkbenchService, IExtension as IExtension2 } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { addDisposableListener, EventType } from 'vs/base/browser/dom';
 import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/common/editorService';
 import { pathsToEditors } from 'vs/workbench/common/editor';
 import { IFileService } from 'vs/platform/files/common/files';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { ParsedArgs } from 'vs/platform/environment/common/environment';
-import { ClassifiedEvent, StrictPropertyCheck, GDPRClassification } from 'vs/platform/telemetry/common/gdprTypings';
+import { ParsedArgs, IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IProcessEnvironment } from 'vs/base/common/platform';
 import { toStoreData, restoreRecentlyOpened } from 'vs/platform/history/common/historyStorage';
+import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteAgentService';
 // tslint:disable-next-line: import-patterns
 import { IExperimentService, IExperiment, ExperimentActionType, ExperimentState } from 'vs/workbench/contrib/experiments/common/experimentService';
-
-//#region Download
-
-export class SimpleDownloadService implements IDownloadService {
-
-	_serviceBrand: any;
-
-	download(uri: URI, to?: string, cancellationToken?: CancellationToken): Promise<string> {
-		// @ts-ignore
-		return Promise.resolve(undefined);
-	}
-}
-
-registerSingleton(IDownloadService, SimpleDownloadService, true);
-
-//#endregion
-
-//#endregion IExtensionsWorkbenchService
-export class SimpleExtensionsWorkbenchService implements IExtensionsWorkbenchService {
-	_serviceBrand: any;
-	onChange: Event<IExtension2 | undefined>;
-	local: IExtension2[];
-	installed: IExtension2[];
-	outdated: IExtension2[];
-	queryLocal: any;
-	queryGallery: any;
-	canInstall: any;
-	install: any;
-	uninstall: any;
-	installVersion: any;
-	reinstall: any;
-	setEnablement: any;
-	open: any;
-	checkForUpdates: any;
-	allowedBadgeProviders: string[];
-}
-registerSingleton(IExtensionsWorkbenchService, SimpleExtensionsWorkbenchService, true);
-//#endregion
-
-//#region Extension Management
-
-//#region Extension Enablement
-
-export class SimpleExtensionEnablementService implements IExtensionEnablementService {
-
-	_serviceBrand: any;
-
-	readonly onEnablementChanged = Event.None;
-
-	readonly allUserExtensionsDisabled = false;
-
-	getEnablementState(extension: IExtension): EnablementState {
-		return EnablementState.Enabled;
-	}
-
-	canChangeEnablement(extension: IExtension): boolean {
-		return false;
-	}
-
-	setEnablement(extensions: IExtension[], newState: EnablementState): Promise<boolean[]> {
-		throw new Error('not implemented');
-	}
-
-	isEnabled(extension: IExtension): boolean {
-		return true;
-	}
-
-}
-
-registerSingleton(IExtensionEnablementService, SimpleExtensionEnablementService, true);
-
-//#endregion
+import { ExtensionHostDebugChannelClient, ExtensionHostDebugBroadcastChannel } from 'vs/platform/debug/common/extensionHostDebugIpc';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 //#region Extension Tips
 
@@ -145,8 +70,18 @@ export class SimpleExtensionTipsService implements IExtensionTipsService {
 	}
 
 	getAllIgnoredRecommendations(): { global: string[]; workspace: string[]; } {
-		return Object.create(null);
+		return { global: [], workspace: [] };
 	}
+
+	// {{SQL CARBON EDIT}}
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]> {
+		return Promise.resolve([]);
+	}
+
+	promptRecommendedExtensionsByScenario(scenarioType: string): void {
+		return;
+	}
+	// {{SQL CARBON EDIT}} - End
 }
 
 registerSingleton(IExtensionTipsService, SimpleExtensionTipsService, true);
@@ -296,38 +231,6 @@ export class SimpleMultiExtensionsManagementService implements IExtensionManagem
 
 //#endregion
 
-//#region Telemetry
-
-export class SimpleTelemetryService implements ITelemetryService {
-
-	_serviceBrand: undefined;
-
-	isOptedIn: true;
-
-	publicLog(eventName: string, data?: ITelemetryData) {
-		return Promise.resolve(undefined);
-	}
-
-	publicLog2<E extends ClassifiedEvent<T> = never, T extends GDPRClassification<T> = never>(eventName: string, data?: StrictPropertyCheck<T, E>) {
-		return this.publicLog(eventName, data as ITelemetryData);
-	}
-
-	setEnabled(value: boolean): void {
-	}
-
-	getTelemetryInfo(): Promise<ITelemetryInfo> {
-		return Promise.resolve({
-			instanceId: 'someValue.instanceId',
-			sessionId: 'someValue.sessionId',
-			machineId: 'someValue.machineId'
-		});
-	}
-}
-
-registerSingleton(ITelemetryService, SimpleTelemetryService);
-
-//#endregion
-
 //#region Update
 
 export class SimpleUpdateService implements IUpdateService {
@@ -401,7 +304,8 @@ export class SimpleWindowService extends Disposable implements IWindowService {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IWorkspaceContextService private readonly workspaceService: IWorkspaceContextService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 
@@ -597,7 +501,7 @@ export class SimpleWindowService extends Disposable implements IWindowService {
 		for (let i = 0; i < _uris.length; i++) {
 			const uri = _uris[i];
 			if ('folderUri' in uri) {
-				const newAddress = `${document.location.origin}/?folder=${uri.folderUri.path}`;
+				const newAddress = `${document.location.origin}/?folder=${uri.folderUri.path}${this.workbenchEnvironmentService.configuration.connectionToken ? `&tkn=${this.workbenchEnvironmentService.configuration.connectionToken}` : ''}`;
 				if (openFolderInNewWindow) {
 					window.open(newAddress);
 				} else {
@@ -669,23 +573,34 @@ registerSingleton(IWindowService, SimpleWindowService);
 
 //#region ExtensionHostDebugService
 
-export class SimpleExtensionHostDebugService implements IExtensionHostDebugService {
-	_serviceBrand: any;
+export class SimpleExtensionHostDebugService extends ExtensionHostDebugChannelClient {
 
-	reload(sessionId: string): void { }
-	onReload: Event<IReloadSessionEvent> = Event.None;
+	constructor(
+		@IRemoteAgentService remoteAgentService: IRemoteAgentService,
+		//@IWindowService windowService: IWindowService,
+		@IEnvironmentService environmentService: IEnvironmentService
+	) {
+		const connection = remoteAgentService.getConnection();
 
-	close(sessionId: string): void { }
-	onClose: Event<ICloseSessionEvent> = Event.None;
+		if (!connection) {
+			throw new Error('Missing agent connection');
+		}
 
-	attachSession(sessionId: string, port: number, subId?: string): void { }
-	onAttachSession: Event<IAttachSessionEvent> = Event.None;
+		super(connection.getChannel(ExtensionHostDebugBroadcastChannel.ChannelName));
 
-	logToSession(sessionId: string, log: IRemoteConsoleLog): void { }
-	onLogToSession: Event<ILogToSessionEvent> = Event.None;
-
-	terminateSession(sessionId: string, subId?: string): void { }
-	onTerminateSession: Event<ITerminateSessionEvent> = Event.None;
+		this._register(this.onReload(event => {
+			if (environmentService.isExtensionDevelopment && environmentService.debugExtensionHost.debugId === event.sessionId) {
+				//windowService.reloadWindow();
+				window.location.reload();
+			}
+		}));
+		this._register(this.onClose(event => {
+			if (environmentService.isExtensionDevelopment && environmentService.debugExtensionHost.debugId === event.sessionId) {
+				//this._windowService.closeWindow();
+				window.close();
+			}
+		}));
+	}
 }
 registerSingleton(IExtensionHostDebugService, SimpleExtensionHostDebugService);
 
@@ -705,6 +620,10 @@ export class SimpleWindowsService implements IWindowsService {
 	readonly onWindowUnmaximize: Event<number> = Event.None;
 	readonly onRecentlyOpenedChange: Event<void> = Event.None;
 
+	constructor(
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
+	) {
+	}
 	isFocused(_windowId: number): Promise<boolean> {
 		return Promise.resolve(true);
 	}
@@ -830,6 +749,56 @@ export class SimpleWindowsService implements IWindowsService {
 	}
 
 	openExtensionDevelopmentHostWindow(args: ParsedArgs, env: IProcessEnvironment): Promise<void> {
+
+		// we pass the "ParsedArgs" as query parameters of the URL
+
+		let newAddress = `${document.location.origin}/?`;
+
+		const f = args['folder-uri'];
+		if (f) {
+			let u: URI | undefined;
+			if (Array.isArray(f)) {
+				if (f.length > 0) {
+					u = URI.parse(f[0]);
+				}
+			} else {
+				u = URI.parse(f);
+			}
+			if (u) {
+				newAddress += `folder=${encodeURIComponent(u.path)}`;
+			}
+		}
+
+		const ep = args['extensionDevelopmentPath'];
+		if (ep) {
+			let u: string | undefined;
+			if (Array.isArray(ep)) {
+				if (ep.length > 0) {
+					u = ep[0];
+				}
+			} else {
+				u = ep;
+			}
+			if (u) {
+				newAddress += `&edp=${encodeURIComponent(u)}`;
+			}
+		}
+
+		const di = args['debugId'];
+		if (di) {
+			newAddress += `&di=${encodeURIComponent(di)}`;
+		}
+
+		const ibe = args['inspect-brk-extensions'];
+		if (ibe) {
+			newAddress += `&ibe=${encodeURIComponent(ibe)}`;
+		}
+
+		// add connection token
+		newAddress += `${this.workbenchEnvironmentService.configuration.connectionToken ? `tkn=${this.workbenchEnvironmentService.configuration.connectionToken}` : ''}`;
+
+		window.open(newAddress);
+
 		return Promise.resolve();
 	}
 
@@ -841,7 +810,7 @@ export class SimpleWindowsService implements IWindowsService {
 		return Promise.resolve(this.windowCount);
 	}
 
-	log(_severity: string, ..._messages: string[]): Promise<void> {
+	log(_severity: string, _args: string[]): Promise<void> {
 		return Promise.resolve();
 	}
 

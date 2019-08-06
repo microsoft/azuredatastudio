@@ -8,8 +8,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import * as azdata from 'azdata';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { Event, Emitter } from 'vs/base/common/event';
 import { keys } from 'vs/base/common/map';
@@ -21,6 +21,8 @@ export const IQueryManagementService = createDecorator<IQueryManagementService>(
 
 export interface IQueryManagementService {
 	_serviceBrand: any;
+
+	onHandlerAdded: Event<string>;
 
 	addQueryRequestHandler(queryType: string, runner: IQueryRequestHandler): IDisposable;
 	isProviderRegistered(providerId: string): boolean;

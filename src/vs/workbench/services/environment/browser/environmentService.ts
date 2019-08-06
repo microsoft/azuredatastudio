@@ -61,6 +61,7 @@ export interface IBrowserWindowConfiguration {
 	workspaceId: string;
 	remoteAuthority?: string;
 	webviewEndpoint?: string;
+	connectionToken?: string;
 }
 
 export class BrowserWorkbenchEnvironmentService implements IEnvironmentService {
@@ -81,6 +82,7 @@ export class BrowserWorkbenchEnvironmentService implements IEnvironmentService {
 		this.localeResource = joinPath(this.userRoamingDataHome, 'locale.json');
 		this.backupHome = joinPath(this.userRoamingDataHome, BACKUPS);
 		this.configuration.backupWorkspaceResource = joinPath(this.backupHome, configuration.workspaceId);
+		this.configuration.connectionToken = configuration.connectionToken || this.getConnectionTokenFromLocation();
 
 		this.logsPath = '/web/logs';
 
@@ -91,6 +93,36 @@ export class BrowserWorkbenchEnvironmentService implements IEnvironmentService {
 
 		this.webviewEndpoint = configuration.webviewEndpoint;
 		this.untitledWorkspacesHome = URI.from({ scheme: Schemas.untitled, path: 'Workspaces' });
+
+		if (document && document.location && document.location.search) {
+
+			const map = new Map<string, string>();
+			const query = document.location.search.substring(1);
+			const vars = query.split('&');
+			for (let p of vars) {
+				const pair = p.split('=');
+				if (pair.length >= 2) {
+					map.set(decodeURIComponent(pair[0]), decodeURIComponent(pair[1]));
+				}
+			}
+
+			const edp = map.get('edp');
+			if (edp) {
+				this.extensionDevelopmentLocationURI = [URI.parse(edp)];
+				this.isExtensionDevelopment = true;
+			}
+
+			const di = map.get('di');
+			if (di) {
+				this.debugExtensionHost.debugId = di;
+			}
+
+			const ibe = map.get('ibe');
+			if (ibe) {
+				this.debugExtensionHost.port = parseInt(ibe);
+				this.debugExtensionHost.break = false;
+			}
+		}
 	}
 
 	untitledWorkspacesHome: URI;
@@ -119,7 +151,7 @@ export class BrowserWorkbenchEnvironmentService implements IEnvironmentService {
 	isExtensionDevelopment: boolean;
 	disableExtensions: boolean | string[];
 	builtinExtensionsPath: string;
-	extensionsPath: string;
+	extensionsPath?: string;
 	extensionDevelopmentLocationURI?: URI[];
 	extensionTestsPath?: string;
 	debugExtensionHost: IExtensionHostDebugParams;
@@ -143,6 +175,7 @@ export class BrowserWorkbenchEnvironmentService implements IEnvironmentService {
 	driverHandle?: string;
 	driverVerbose: boolean;
 	webviewEndpoint?: string;
+	galleryMachineIdResource?: URI;
 
 	get webviewResourceRoot(): string {
 		return this.webviewEndpoint ? this.webviewEndpoint + '/vscode-resource{{resource}}' : 'vscode-resource:{{resource}}';
@@ -150,5 +183,22 @@ export class BrowserWorkbenchEnvironmentService implements IEnvironmentService {
 
 	get webviewCspSource(): string {
 		return this.webviewEndpoint ? this.webviewEndpoint : 'vscode-resource:';
+	}
+
+	private getConnectionTokenFromLocation(): string | undefined {
+		// TODO: Check with @alexd where the token will be: search or hash?
+		let connectionToken: string | undefined = undefined;
+		if (document.location.search) {
+			connectionToken = this.getConnectionToken(document.location.search);
+		}
+		if (!connectionToken && document.location.hash) {
+			connectionToken = this.getConnectionToken(document.location.hash);
+		}
+		return connectionToken;
+	}
+
+	private getConnectionToken(str: string): string | undefined {
+		const m = str.match(/[#&]tkn=([^&]+)/);
+		return m ? m[1] : undefined;
 	}
 }

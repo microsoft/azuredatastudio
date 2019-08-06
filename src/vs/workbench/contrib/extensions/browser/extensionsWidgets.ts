@@ -5,17 +5,15 @@
 
 import 'vs/css!./media/extensionsWidgets';
 import { Disposable, toDisposable, DisposableStore, MutableDisposable } from 'vs/base/common/lifecycle';
-import { IExtension, IExtensionsWorkbenchService, IExtensionContainer, ExtensionState } from '../common/extensions';
+import { IExtension, IExtensionsWorkbenchService, IExtensionContainer } from 'vs/workbench/contrib/extensions/common/extensions';
 import { append, $, addClass } from 'vs/base/browser/dom';
 import * as platform from 'vs/base/common/platform';
 import { localize } from 'vs/nls';
-import { IExtensionManagementServerService, IExtensionTipsService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionTipsService, IExtensionManagementServerService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ILabelService } from 'vs/platform/label/common/label';
-import { extensionButtonProminentBackground, extensionButtonProminentForeground, DisabledLabelAction, ReloadAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
+import { extensionButtonProminentBackground, extensionButtonProminentForeground, ExtensionToolTipAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { EXTENSION_BADGE_REMOTE_BACKGROUND, EXTENSION_BADGE_REMOTE_FOREGROUND } from 'vs/workbench/common/theme';
-import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { Emitter, Event } from 'vs/base/common/event';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
@@ -147,17 +145,13 @@ export class TooltipWidget extends ExtensionWidget {
 
 	constructor(
 		private readonly parent: HTMLElement,
-		private readonly disabledLabelAction: DisabledLabelAction,
+		private readonly tooltipAction: ExtensionToolTipAction,
 		private readonly recommendationWidget: RecommendationWidget,
-		private readonly reloadAction: ReloadAction,
-		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
-		@ILabelService private readonly labelService: ILabelService,
-		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
+		@ILabelService private readonly labelService: ILabelService
 	) {
 		super();
 		this._register(Event.any<any>(
-			this.disabledLabelAction.onDidChange,
-			this.reloadAction.onDidChange,
+			this.tooltipAction.onDidChange,
 			this.recommendationWidget.onDidChangeTooltip,
 			this.labelService.onDidChangeFormatters
 		)(() => this.render()));
@@ -176,17 +170,8 @@ export class TooltipWidget extends ExtensionWidget {
 		if (!this.extension) {
 			return '';
 		}
-		if (this.reloadAction.enabled) {
-			return this.reloadAction.tooltip;
-		}
-		if (this.disabledLabelAction.label) {
-			return this.disabledLabelAction.label;
-		}
-		if (this.extension.local && this.extension.state === ExtensionState.Installed) {
-			if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer) {
-				return localize('extension enabled on remote', "Extension is enabled on '{0}'", this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.workbenchEnvironmentService.configuration.remoteAuthority));
-			}
-			return localize('extension enabled locally', "Extension is enabled locally.");
+		if (this.tooltipAction.tooltip) {
+			return this.tooltipAction.tooltip;
 		}
 		return this.recommendationWidget.tooltip;
 	}
@@ -281,13 +266,11 @@ export class RemoteBadgeWidget extends ExtensionWidget {
 
 	render(): void {
 		this.clear();
-		if (!this.extension || !this.extension.local || !this.extension.server) {
+		if (!this.extension || !this.extension.local || !this.extension.server || !(this.extensionManagementServerService.localExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer) || this.extension.server !== this.extensionManagementServerService.remoteExtensionManagementServer) {
 			return;
 		}
-		if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer) {
-			this.remoteBadge.value = this.instantiationService.createInstance(RemoteBadge, this.tooltip);
-			append(this.element, this.remoteBadge.value.element);
-		}
+		this.remoteBadge.value = this.instantiationService.createInstance(RemoteBadge, this.tooltip);
+		append(this.element, this.remoteBadge.value.element);
 	}
 }
 
@@ -299,7 +282,7 @@ class RemoteBadge extends Disposable {
 		private readonly tooltip: boolean,
 		@ILabelService private readonly labelService: ILabelService,
 		@IThemeService private readonly themeService: IThemeService,
-		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
 	) {
 		super();
 		this.element = $('div.extension-remote-badge');
@@ -323,8 +306,8 @@ class RemoteBadge extends Disposable {
 
 		if (this.tooltip) {
 			const updateTitle = () => {
-				if (this.element) {
-					this.element.title = localize('remote extension title', "Extension in {0}", this.labelService.getHostLabel(REMOTE_HOST_SCHEME, this.environmentService.configuration.remoteAuthority));
+				if (this.element && this.extensionManagementServerService.remoteExtensionManagementServer) {
+					this.element.title = localize('remote extension title', "Extension in {0}", this.extensionManagementServerService.remoteExtensionManagementServer.label);
 				}
 			};
 			this._register(this.labelService.onDidChangeFormatters(() => updateTitle()));

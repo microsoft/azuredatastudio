@@ -5,10 +5,8 @@
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import * as Utils from 'sql/platform/connection/common/utils';
-import { IInsightsDialogModel } from 'sql/workbench/services/insights/common/insightsDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { resolveQueryFilePath } from './insightsUtils';
 
@@ -22,6 +20,8 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { ILogService } from 'vs/platform/log/common/log';
 import { IFileService } from 'vs/platform/files/common/files';
 import { URI } from 'vs/base/common/uri';
+import { IInsightsDialogModel } from 'sql/workbench/services/insights/browser/insightsDialogService';
+import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export class InsightsDialogController {
 	private _queryRunner: QueryRunner;

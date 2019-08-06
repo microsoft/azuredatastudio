@@ -13,7 +13,7 @@ import * as File from 'vinyl';
 import * as vsce from 'vsce';
 import { createStatsStream } from './stats';
 import * as util2 from './util';
-import remote = require('gulp-remote-src');
+import remote = require('gulp-remote-retry-src');
 const vzip = require('gulp-vinyl-zip');
 import filter = require('gulp-filter');
 import rename = require('gulp-rename');
@@ -179,8 +179,9 @@ const baseHeaders = {
 };
 
 export function fromMarketplace(extensionName: string, version: string, metadata: any): Stream {
-	const [publisher, name] = extensionName.split('.');
-	const url = `https://marketplace.visualstudio.com/_apis/public/gallery/publishers/${publisher}/vsextensions/${name}/${version}/vspackage`;
+	// {{SQL CARBON EDIT}}
+	const [, name] = extensionName.split('.');
+	const url = `https://sqlopsextensions.blob.core.windows.net/extensions/${name}/${name}-${version}.vsix`;
 
 	fancyLog('Downloading extension:', ansiColors.yellow(`${extensionName}@${version}`), '...');
 
@@ -223,19 +224,17 @@ const sqlBuiltInExtensions = [
 	'import',
 	'profiler',
 	'admin-pack',
-	'big-data-cluster',
 	'dacpac',
 	'schema-compare',
 	'cms'
 ];
 
-// make resource deployment extension only available in insiders
+// make resource deployment and BDC extension only available in insiders
 if (process.env['VSCODE_QUALITY'] === 'stable') {
 	sqlBuiltInExtensions.push('resource-deployment');
+	sqlBuiltInExtensions.push('big-data-cluster');
 }
 
-
-// {{SQL CARBON EDIT}} - End
 
 interface IBuiltInExtension {
 	name: string;
@@ -244,7 +243,10 @@ interface IBuiltInExtension {
 	metadata: any;
 }
 
-const builtInExtensions: IBuiltInExtension[] = require('../builtInExtensions.json');
+const builtInExtensions: IBuiltInExtension[] = process.env['VSCODE_QUALITY'] === 'stable' ? require('../builtInExtensions.json') : require('../builtInExtensions-insiders.json');
+
+// {{SQL CARBON EDIT}} - End
+
 
 export function packageLocalExtensionsStream(): NodeJS.ReadWriteStream {
 	const localExtensionDescriptions = (<string[]>glob.sync('extensions/*/package.json'))

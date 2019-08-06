@@ -4,25 +4,38 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Dimension } from 'vs/base/browser/dom';
+import { mixin } from 'sql/base/common/objects';
+import * as types from 'vs/base/common/types';
+import { Color } from 'vs/base/common/color';
+import { IInsightOptions, InsightType, ChartType } from 'sql/workbench/parts/charts/common/interfaces';
 
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import { DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
+export interface IPointDataSet {
+	data: Array<{ x: number | string, y: number }>;
+	label?: string;
+	fill: boolean;
+	backgroundColor?: Color;
+}
 
-export interface IInsightOptions {
-	type: InsightType | ChartType;
-	dataDirection?: DataDirection;
-	dataType?: DataType;
-	labelFirstColumn?: boolean;
-	columnsAsLabels?: boolean;
-	legendPosition?: LegendPosition;
-	yAxisLabel?: string;
-	yAxisMin?: number;
-	yAxisMax?: number;
-	xAxisLabel?: string;
-	xAxisMin?: number;
-	xAxisMax?: number;
-	encoding?: string;
-	imageFormat?: string;
+export function customMixin(destination: any, source: any, overwrite?: boolean): any {
+	if (types.isObject(source)) {
+		mixin(destination, source, overwrite, customMixin);
+	} else if (types.isArray(source)) {
+		for (let i = 0; i < source.length; i++) {
+			if (destination[i]) {
+				mixin(destination[i], source[i], overwrite, customMixin);
+			} else {
+				destination[i] = source[i];
+			}
+		}
+	} else {
+		destination = source;
+	}
+	return destination;
+}
+
+export interface IInsightData {
+	columns: Array<string>;
+	rows: Array<Array<string>>;
 }
 
 export interface IInsight {
@@ -36,10 +49,4 @@ export interface IInsight {
 export interface IInsightCtor {
 	new(container: HTMLElement, options: IInsightOptions, ...services: { _serviceBrand: any; }[]): IInsight;
 	readonly types: Array<InsightType | ChartType>;
-}
-
-export enum InsightType {
-	Image = 'image',
-	Table = 'table',
-	Count = 'count'
 }

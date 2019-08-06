@@ -18,10 +18,10 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
@@ -446,7 +446,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
 			if (!tokenFillSuccess) {
-				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
+				throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -485,7 +485,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					});
 				} else {
 					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', 'Connection Not Accepted'));
+						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 					}
 					resolve(connectionResult);
 				}
@@ -500,7 +500,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private handleConnectionError(connection: IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', 'Connection Not Accepted');
+			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 			if (options.showFirewallRuleOnError && connectionResult.errorCode) {
 				this.handleFirewallRuleError(connection, connectionResult).then(success => {
 					if (success) {
@@ -612,6 +612,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._editorService.editors.map(editor => {
 			if (editor instanceof DashboardInput) {
 				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
+					editor.connectionProfile.connectionName = profile.connectionName;
 					editor.connectionProfile.databaseName = profile.databaseName;
 					this._editorService.openEditor(editor)
 						.then(() => {
@@ -691,7 +692,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public hasRegisteredServers(): boolean {
-		return this.doHasRegisteredServers(this.getConnectionGroups());
+		const groups: ConnectionProfileGroup[] = this.getConnectionGroups();
+		const hasRegisteredServers: boolean = this.doHasRegisteredServers(groups);
+		groups.forEach(cpg => cpg.dispose());
+		return hasRegisteredServers;
 	}
 
 	private doHasRegisteredServers(root: ConnectionProfileGroup[]): boolean {
@@ -1068,11 +1072,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			// Setup our cancellation choices
 			let choices: { key, value }[] = [
-				{ key: nls.localize('connectionService.yes', 'Yes'), value: true },
-				{ key: nls.localize('connectionService.no', 'No'), value: false }
+				{ key: nls.localize('connectionService.yes', "Yes"), value: true },
+				{ key: nls.localize('connectionService.no', "No"), value: false }
 			];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});

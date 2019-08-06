@@ -5,8 +5,8 @@
 
 import 'vs/css!sql/media/icons/common-icons';
 
-import { WebViewDialog } from 'sql/workbench/parts/webview/electron-browser/webViewDialog';
-import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/node/sqlExtHost.protocol';
+import { WebViewDialog } from 'sql/workbench/parts/webview/browser/webViewDialog';
+import { MainThreadModalDialogShape, SqlMainContext, SqlExtHostContext, ExtHostModalDialogsShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';

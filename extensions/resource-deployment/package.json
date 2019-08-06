@@ -93,6 +93,47 @@
       ],
       "providers": [
         {
+          "dialog": {
+            "title": "%docker-sql-2017-title%",
+            "name": "docker-sql-2017-dialog",
+            "tabs": [
+              {
+                "title": "",
+                "sections": [
+                  {
+                    "title": "",
+                    "fields": [
+                      {
+                        "label": "%docker-container-name-field%",
+                        "variableName": "AZDATA_NB_VAR_DOCKER_CONTAINER_NAME",
+                        "type": "datetime_text",
+                        "defaultValue": "SQL2017-",
+                        "required": true
+                      },
+                      {
+                        "label": "%docker-sql-password-field%",
+                        "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
+                        "type": "password",
+                        "confirmationRequired": true,
+                        "confirmationLabel": "%docker-confirm-sql-password-field%",
+                        "defaultValue": "",
+                        "required": true
+                      },
+                      {
+                        "label": "%docker-sql-port-field%",
+                        "variableName": "AZDATA_NB_VAR_DOCKER_PORT",
+                        "type": "number",
+                        "defaultValue": "1433",
+                        "required": true,
+                        "min": 1,
+                        "max": 65535
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
           "notebook": "%sql-2017-docker-notebook%",
           "requiredTools": [
             {
@@ -102,6 +143,47 @@
           "when": "version=sql2017"
         },
         {
+          "dialog": {
+            "title": "%docker-sql-2019-title%",
+            "name": "docker-sql-2019-dialog",
+            "tabs": [
+              {
+                "title": "",
+                "sections": [
+                  {
+                    "title": "",
+                    "fields": [
+                      {
+                        "label": "%docker-container-name-field%",
+                        "variableName": "AZDATA_NB_VAR_DOCKER_CONTAINER_NAME",
+                        "type": "datetime_text",
+                        "defaultValue": "SQL2019-",
+                        "required": true
+                      },
+                      {
+                        "label": "%docker-sql-password-field%",
+                        "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
+                        "type": "password",
+                        "confirmationRequired": true,
+                        "confirmationLabel": "%docker-confirm-sql-password-field%",
+                        "defaultValue": "",
+                        "required": true
+                      },
+                      {
+                        "label": "%docker-sql-port-field%",
+                        "variableName": "AZDATA_NB_VAR_DOCKER_PORT",
+                        "type": "number",
+                        "defaultValue": "1433",
+                        "required": true,
+                        "min": 1,
+                        "max": 65535
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
           "notebook": "%sql-2019-docker-notebook%",
           "requiredTools": [
             {
@@ -131,8 +213,8 @@
           "displayName": "%version-display-name%",
           "values": [
             {
-              "name": "ctp3.1",
-              "displayName": "%sql-2019ctp31-display-name%"
+              "name": "bdc2019",
+              "displayName": "%bdc-2019-display-name%"
             }
           ]
         },
@@ -145,15 +227,104 @@
               "displayName": "%bdc-deployment-target-aks%"
             },
             {
-              "name": "existingCluster",
-              "displayName": "%bdc-deployment-target-existing-cluster%"
+              "name": "existingAks",
+              "displayName": "%bdc-deployment-target-existing-aks%"
             }
           ]
         }
       ],
       "providers": [
         {
-          "notebook": "%bdc-ctp31-aks-notebook%",
+          "dialog": {
+            "title": "%bdc-new-aks-dialog-title%",
+            "name": "bdc-new-aks-dialog",
+            "tabs": [
+              {
+                "title": "",
+                "sections": [
+                  {
+                    "title": "%bdc-cluster-settings-section-title%",
+                    "fields": [
+                      {
+                        "label": "%bdc-cluster-name-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_NAME",
+                        "type": "text",
+                        "defaultValue": "mssql-cluster",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-controller-username-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_USERNAME",
+                        "type": "text",
+                        "defaultValue": "admin",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-password-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
+                        "type": "password",
+                        "confirmationRequired": true,
+                        "confirmationLabel": "%bdc-confirm-password-field%",
+                        "defaultValue": "",
+                        "required": true
+                      }
+                    ]
+                  },
+                  {
+                    "title": "%bdc-azure-settings-section-title%",
+                    "fields": [
+                      {
+                        "label": "%bdc-azure-subscription-id-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_AZURE_SUBSCRIPTION",
+                        "type": "text",
+                        "defaultValue": "",
+                        "required": false,
+                        "placeHolder": "%bdc-azure-subscription-id-placeholder%"
+                      },
+                      {
+                        "label": "%bdc-azure-resource-group-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_RESOURCEGROUP_NAME",
+                        "type": "datetime_text",
+                        "defaultValue": "mssql-",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-azure-region-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_AZURE_REGION",
+                        "type": "text",
+                        "defaultValue": "eastus",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-azure-aks-name-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_AKS_NAME",
+                        "type": "datetime_text",
+                        "defaultValue": "mssql-",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-azure-vm-size-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_AZURE_VM_SIZE",
+                        "type": "text",
+                        "defaultValue": "Standard_E4s_v3",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-azure-vm-count-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_VM_COUNT",
+                        "type": "number",
+                        "defaultValue": "5",
+                        "min": 1,
+                        "max": 999,
+                        "required": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "notebook": "%bdc-2019-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -162,28 +333,67 @@
               "name": "azcli"
             },
             {
-              "name": "mssqlctl"
+              "name": "azdata"
             }
           ],
-          "when": "target=aks&&version=ctp3.1"
+          "when": "target=aks&&version=bdc2019"
         },
         {
-          "notebook": "%bdc-ctp31-existing-cluster-notebook%",
+          "dialog": {
+            "title": "%bdc-existing-aks-dialog-title%",
+            "name": "bdc-existing-aks-dialog",
+            "tabs": [
+              {
+                "title": "",
+                "sections": [
+                  {
+                    "title": "%bdc-cluster-settings-section-title%",
+                    "fields": [
+                      {
+                        "label": "%bdc-cluster-name-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_NAME",
+                        "type": "text",
+                        "defaultValue": "mssql-cluster",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-controller-username-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_USERNAME",
+                        "type": "text",
+                        "defaultValue": "admin",
+                        "required": true
+                      },
+                      {
+                        "label": "%bdc-password-field%",
+                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
+                        "type": "password",
+                        "confirmationRequired": true,
+                        "confirmationLabel": "%bdc-confirm-password-field%",
+                        "defaultValue": "",
+                        "required": true
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "notebook": "%bdc-2019-existing-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
             },
             {
-              "name": "mssqlctl"
+              "name": "azdata"
             }
           ],
-          "when": "target=existingCluster&&version=ctp3.1"
+          "when": "target=existingAks&&version=bdc2019"
         }
       ]
     }
   ],
   "dependencies": {
-    "vscode-nls": "^3.2.1"
+    "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
     "typemoq": "^2.1.0",

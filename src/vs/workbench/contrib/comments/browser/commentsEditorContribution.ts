@@ -36,6 +36,7 @@ import { ICommentInfo, ICommentService } from 'vs/workbench/contrib/comments/bro
 import { COMMENTEDITOR_DECORATION_KEY, ReviewZoneWidget } from 'vs/workbench/contrib/comments/browser/commentThreadWidget';
 import { ctxCommentEditorFocused, SimpleCommentEditor } from 'vs/workbench/contrib/comments/browser/simpleCommentEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { EmbeddedCodeEditorWidget } from 'vs/editor/browser/widget/embeddedCodeEditorWidget';
 
 export const ID = 'editor.contrib.review';
 
@@ -173,13 +174,18 @@ export class ReviewController implements IEditorContribution {
 		@IContextMenuService readonly contextMenuService: IContextMenuService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService
 	) {
-		this.editor = editor;
 		this.globalToDispose = [];
 		this.localToDispose = [];
 		this._commentInfos = [];
 		this._commentWidgets = [];
 		this._pendingCommentCache = {};
 		this._computePromise = null;
+
+		if (editor instanceof EmbeddedCodeEditorWidget) {
+			return;
+		}
+
+		this.editor = editor;
 
 		this._commentingRangeDecorator = new CommentingRangeDecorator();
 
@@ -247,18 +253,18 @@ export class ReviewController implements IEditorContribution {
 		return editor.getContribution<ReviewController>(ID);
 	}
 
-	public revealCommentThread(threadId: string, commentId: string, fetchOnceIfNotExist: boolean): void {
+	public revealCommentThread(threadId: string, commentUniqueId: number, fetchOnceIfNotExist: boolean): void {
 		const commentThreadWidget = this._commentWidgets.filter(widget => widget.commentThread.threadId === threadId);
 		if (commentThreadWidget.length === 1) {
-			commentThreadWidget[0].reveal(commentId);
+			commentThreadWidget[0].reveal(commentUniqueId);
 		} else if (fetchOnceIfNotExist) {
 			if (this._computePromise) {
 				this._computePromise.then(_ => {
-					this.revealCommentThread(threadId, commentId, false);
+					this.revealCommentThread(threadId, commentUniqueId, false);
 				});
 			} else {
 				this.beginCompute().then(_ => {
-					this.revealCommentThread(threadId, commentId, false);
+					this.revealCommentThread(threadId, commentUniqueId, false);
 				});
 			}
 		}

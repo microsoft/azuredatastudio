@@ -416,13 +416,24 @@
             },
             {
               "name": "%title.endpoints%",
-              "row": 0,
-              "col": 2,
+              "row": 1,
+              "col": 0,
               "rowspan": 1.5,
               "colspan": 2,
               "widget": {
                 "modelview": {
                   "id": "bdc-endpoints"
+                }
+              }
+            },
+            {
+              "name": "%title.books%",
+              "row": 0,
+              "col": 2,
+              "colspan": 1,
+              "widget": {
+                "modelview": {
+                  "id": "books-widget"
                 }
               }
             }

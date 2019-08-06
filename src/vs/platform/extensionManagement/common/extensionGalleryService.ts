@@ -9,7 +9,7 @@ import { getGalleryExtensionId, getGalleryExtensionTelemetryData, adoptToGallery
 import { assign, getOrDefault } from 'vs/base/common/objects';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IPager } from 'vs/base/common/paging';
-import { IRequestService, IRequestOptions, IRequestContext, asJson, asText } from 'vs/platform/request/common/request';
+import { IRequestService, IRequestOptions, IRequestContext, asJson, asText, IHeaders } from 'vs/platform/request/common/request';
 import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { generateUuid, isUUID } from 'vs/base/common/uuid';
@@ -26,6 +26,8 @@ import { URI } from 'vs/base/common/uri';
 import { joinPath } from 'vs/base/common/resources';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { IProductService } from 'vs/platform/product/common/product';
+import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
+import { optional } from 'vs/platform/instantiation/common/instantiation';
 
 interface IRawGalleryExtensionFile {
 	assetType: string;
@@ -388,11 +390,12 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IFileService private readonly fileService: IFileService,
 		@IProductService private readonly productService: IProductService,
+		@optional(IStorageService) private readonly storageService: IStorageService,
 	) {
 		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
 		this.extensionsControlUrl = config && config.controlUrl;
-		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, this.environmentService, this.fileService);
+		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, this.environmentService, this.fileService, this.storageService);
 	}
 
 	private api(path = ''): string {
@@ -467,13 +470,15 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		let text = options.text || '';
 		const pageSize = getOrDefault(options, o => o.pageSize, 50);
 
-		/* __GDPR__
-			"galleryService:query" : {
-				"type" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
-				"text": { "classification": "CustomerContent", "purpose": "FeatureInsight" }
-			}
-		*/
-		this.telemetryService.publicLog('galleryService:query', { type, text });
+		type GalleryServiceQueryClassification = {
+			type: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+			text: { classification: 'CustomerContent', purpose: 'FeatureInsight' };
+		};
+		type GalleryServiceQueryEvent = {
+			type: string;
+			text: string;
+		};
+		this.telemetryService.publicLog2<GalleryServiceQueryEvent, GalleryServiceQueryClassification>('galleryService:query', { type, text });
 
 		let query = new Query()
 			.withFlags(Flags.IncludeLatestVersionOnly, Flags.IncludeAssetUri, Flags.IncludeStatistics, Flags.IncludeFiles, Flags.IncludeVersionProperties)
@@ -942,30 +947,43 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 	}
 }
 
-export async function resolveMarketplaceHeaders(version: string, environmentService: IEnvironmentService, fileService: IFileService): Promise<{ [key: string]: string; }> {
-	const marketplaceMachineIdFile = joinPath(URI.file(environmentService.userDataPath), 'machineid');
-
+export async function resolveMarketplaceHeaders(version: string, environmentService: IEnvironmentService, fileService: IFileService, storageService?: IStorageService): Promise<{ [key: string]: string; }> {
+	const headers: IHeaders = {
+		'X-Market-Client-Id': `VSCode ${version}`,
+		'User-Agent': `VSCode ${version}`
+	};
 	let uuid: string | null = null;
-
-	try {
-		const contents = await fileService.readFile(marketplaceMachineIdFile);
-		const value = contents.value.toString();
-		uuid = isUUID(value) ? value : null;
-	} catch (e) {
-		uuid = null;
-	}
-
-	if (!uuid) {
-		uuid = generateUuid();
+	if (environmentService.galleryMachineIdResource) {
 		try {
-			await fileService.writeFile(marketplaceMachineIdFile, VSBuffer.fromString(uuid));
-		} catch (error) {
-			//noop
+			const contents = await fileService.readFile(environmentService.galleryMachineIdResource);
+			const value = contents.value.toString();
+			uuid = isUUID(value) ? value : null;
+		} catch (e) {
+			uuid = null;
+		}
+
+		if (!uuid) {
+			uuid = generateUuid();
+			try {
+				await fileService.writeFile(environmentService.galleryMachineIdResource, VSBuffer.fromString(uuid));
+			} catch (error) {
+				//noop
+			}
 		}
 	}
-	return {
-		'X-Market-Client-Id': `VSCode ${version}`,
-		'User-Agent': `VSCode ${version}`,
-		'X-Market-User-Id': uuid
-	};
+
+	if (storageService) {
+		uuid = storageService.get('marketplace.userid', StorageScope.GLOBAL) || null;
+		if (!uuid) {
+			uuid = generateUuid();
+			storageService.store('marketplace.userid', uuid, StorageScope.GLOBAL);
+		}
+	}
+
+	if (uuid) {
+		headers['X-Market-User-Id'] = uuid;
+	}
+
+	return headers;
+
 }

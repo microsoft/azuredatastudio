@@ -18,20 +18,21 @@ import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { IExtensionsWorkbenchService, IExtensionsViewlet, VIEWLET_ID, ExtensionState, AutoUpdateConfigurationKey, ShowRecommendationsOnlyOnDemandKey, CloseExtensionDetailsOnViewChangeKey, VIEW_CONTAINER } from '../common/extensions';
+import { IExtensionsWorkbenchService, IExtensionsViewlet, VIEWLET_ID, AutoUpdateConfigurationKey, ShowRecommendationsOnlyOnDemandKey, CloseExtensionDetailsOnViewChangeKey, VIEW_CONTAINER } from '../common/extensions';
 import {
 	ShowEnabledExtensionsAction, ShowInstalledExtensionsAction, ShowRecommendedExtensionsAction, ShowPopularExtensionsAction, ShowDisabledExtensionsAction,
 	ShowOutdatedExtensionsAction, ClearExtensionsInputAction, ChangeSortAction, UpdateAllAction, CheckForUpdatesAction, DisableAllAction, EnableAllAction,
-	EnableAutoUpdateAction, DisableAutoUpdateAction, ShowBuiltInExtensionsAction, InstallVSIXAction
+	EnableAutoUpdateAction, DisableAutoUpdateAction, ShowBuiltInExtensionsAction, InstallVSIXAction, InstallLocalExtensionsInRemoteAction
 } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
-import { IExtensionManagementService, IExtensionManagementServerService, IExtensionManagementServer, IExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionManagementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionEnablementService, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { ExtensionsInput } from 'vs/workbench/contrib/extensions/common/extensionsInput';
 import { ExtensionsListView, EnabledExtensionsView, DisabledExtensionsView, RecommendedExtensionsView, WorkspaceRecommendedExtensionsView, BuiltInExtensionsView, BuiltInThemesExtensionsView, BuiltInBasicsExtensionsView, ServerExtensionsView, DefaultRecommendedExtensionsView } from 'vs/workbench/contrib/extensions/browser/extensionsViews';
 import { OpenGlobalSettingsAction } from 'vs/workbench/contrib/preferences/browser/preferencesActions';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import Severity from 'vs/base/common/severity';
-import { IActivityService, ProgressBadge, NumberBadge } from 'vs/workbench/services/activity/common/activity';
+import { IActivityService, NumberBadge } from 'vs/workbench/services/activity/common/activity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IViewsRegistry, IViewDescriptor, Extensions } from 'vs/workbench/common/views';
@@ -54,9 +55,7 @@ import { IEnvironmentService } from 'vs/platform/environment/common/environment'
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ViewContainerViewlet } from 'vs/workbench/browser/parts/views/viewsViewlet';
-import { RemoteAuthorityContext } from 'vs/workbench/browser/contextkeys';
-import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
-import { REMOTE_HOST_SCHEME } from 'vs/platform/remote/common/remoteHosts';
+import { RemoteNameContext } from 'vs/workbench/browser/contextkeys';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { MementoObject } from 'vs/workbench/common/memento';
 
@@ -97,7 +96,6 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 	constructor(
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@ILabelService private readonly labelService: ILabelService,
-		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
 	) {
 		this.registerViews();
 	}
@@ -118,7 +116,9 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 		viewDescriptors.push(this.createOtherRecommendedExtensionsListViewDescriptor());
 		viewDescriptors.push(this.createWorkspaceRecommendedExtensionsListViewDescriptor());
 
-		viewDescriptors.push(...this.createExtensionsViewDescriptorsForServer(this.extensionManagementServerService.localExtensionManagementServer));
+		if (this.extensionManagementServerService.localExtensionManagementServer) {
+			viewDescriptors.push(...this.createExtensionsViewDescriptorsForServer(this.extensionManagementServerService.localExtensionManagementServer));
+		}
 		if (this.extensionManagementServerService.remoteExtensionManagementServer) {
 			viewDescriptors.push(...this.createExtensionsViewDescriptorsForServer(this.extensionManagementServerService.remoteExtensionManagementServer));
 		}
@@ -146,7 +146,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			id,
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: EnabledExtensionsView },
-			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.isEqualTo('')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteNameContext.isEqualTo('')),
 			weight: 40,
 			canToggleVisibility: true,
 			order: 1
@@ -161,7 +161,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			id,
 			name: viewIdNameMappings[id],
 			ctorDescriptor: { ctor: DisabledExtensionsView },
-			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.isEqualTo('')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteNameContext.isEqualTo('')),
 			weight: 10,
 			canToggleVisibility: true,
 			order: 3,
@@ -187,15 +187,15 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 
 	private createExtensionsViewDescriptorsForServer(server: IExtensionManagementServer): IViewDescriptor[] {
 		const getViewName = (viewTitle: string, server: IExtensionManagementServer): string => {
-			const serverLabel = this.workbenchEnvironmentService.configuration.remoteAuthority === server.authority ? this.labelService.getHostLabel(REMOTE_HOST_SCHEME, server.authority) || server.label : server.label;
-			if (viewTitle && this.workbenchEnvironmentService.configuration.remoteAuthority) {
+			const serverLabel = server.label;
+			if (viewTitle && this.extensionManagementServerService.localExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer) {
 				return `${serverLabel} - ${viewTitle}`;
 			}
 			return viewTitle ? viewTitle : serverLabel;
 		};
 		const getInstalledViewName = (): string => getViewName(localize('installed', "Installed"), server);
 		const getOutdatedViewName = (): string => getViewName(localize('outdated', "Outdated"), server);
-		const onDidChangeServerLabel: EventOf<void> = this.workbenchEnvironmentService.configuration.remoteAuthority ? EventOf.map(this.labelService.onDidChangeFormatters, () => undefined) : EventOf.None;
+		const onDidChangeServerLabel: EventOf<void> = EventOf.map(this.labelService.onDidChangeFormatters, () => undefined);
 		return [{
 			id: `extensions.${server.authority}.installed`,
 			get name() { return getInstalledViewName(); },
@@ -212,7 +212,7 @@ export class ExtensionsViewletViewsContribution implements IWorkbenchContributio
 			id: `extensions.${server.authority}.default`,
 			get name() { return getInstalledViewName(); },
 			ctorDescriptor: { ctor: ServerExtensionsView, arguments: [server, EventOf.map<void, string>(onDidChangeServerLabel, () => getInstalledViewName())] },
-			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteAuthorityContext.notEqualsTo('')),
+			when: ContextKeyExpr.and(ContextKeyExpr.has('defaultExtensionViews'), ContextKeyExpr.has('hasInstalledExtensions'), RemoteNameContext.notEqualsTo('')),
 			weight: 40,
 			order: 1
 		}];
@@ -352,6 +352,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 		@IInstantiationService instantiationService: IInstantiationService,
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
+		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@INotificationService private readonly notificationService: INotificationService,
 		@IViewletService private readonly viewletService: IViewletService,
 		@IThemeService themeService: IThemeService,
@@ -408,7 +409,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 			triggerCharacters: ['@'],
 			sortKey: (item: string) => {
 				if (item.indexOf(':') === -1) { return 'a'; }
-				else if (/ext:/.test(item) || /tag:/.test(item)) { return 'b'; }
+				else if (/ext:/.test(item) || /id:/.test(item) || /tag:/.test(item)) { return 'b'; }
 				else if (/sort:/.test(item)) { return 'c'; }
 				else { return 'd'; }
 			},
@@ -483,6 +484,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 				this.instantiationService.createInstance(CheckForUpdatesAction, CheckForUpdatesAction.ID, CheckForUpdatesAction.LABEL),
 				...(this.configurationService.getValue(AutoUpdateConfigurationKey) ? [this.instantiationService.createInstance(DisableAutoUpdateAction, DisableAutoUpdateAction.ID, DisableAutoUpdateAction.LABEL)] : [this.instantiationService.createInstance(UpdateAllAction, UpdateAllAction.ID, UpdateAllAction.LABEL), this.instantiationService.createInstance(EnableAutoUpdateAction, EnableAutoUpdateAction.ID, EnableAutoUpdateAction.LABEL)]),
 				this.instantiationService.createInstance(InstallVSIXAction, InstallVSIXAction.ID, InstallVSIXAction.LABEL),
+				...(this.extensionManagementServerService.localExtensionManagementServer && this.extensionManagementServerService.remoteExtensionManagementServer ? [this.instantiationService.createInstance(InstallLocalExtensionsInRemoteAction)] : []),
 				new Separator(),
 				this.instantiationService.createInstance(DisableAllAction, DisableAllAction.ID, DisableAllAction.LABEL),
 				this.instantiationService.createInstance(EnableAllAction, EnableAllAction.ID, EnableAllAction.LABEL)
@@ -634,11 +636,6 @@ export class StatusUpdater extends Disposable implements IWorkbenchContribution 
 
 	private onServiceChange(): void {
 		this.badgeHandle.clear();
-
-		if (this.extensionsWorkbenchService.local.some(e => e.state === ExtensionState.Installing)) {
-			this.badgeHandle.value = this.activityService.showActivity(VIEWLET_ID, new ProgressBadge(() => localize('extensions', "Extensions")), 'extensions-badge progress-badge');
-			return;
-		}
 
 		const outdated = this.extensionsWorkbenchService.outdated.reduce((r, e) => r + (this.extensionEnablementService.isEnabled(e.local!) ? 1 : 0), 0);
 		if (outdated > 0) {

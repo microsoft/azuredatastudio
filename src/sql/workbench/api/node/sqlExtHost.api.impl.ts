@@ -11,29 +11,29 @@ import { URI } from 'vs/base/common/uri';
 import * as azdata from 'azdata';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
-import { SqlExtHostContext } from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { ExtHostAccountManagement } from 'sql/workbench/api/node/extHostAccountManagement';
-import { ExtHostCredentialManagement } from 'sql/workbench/api/node/extHostCredentialManagement';
-import { ExtHostDataProtocol } from 'sql/workbench/api/node/extHostDataProtocol';
-import { ExtHostSerializationProvider } from 'sql/workbench/api/node/extHostSerializationProvider';
-import { ExtHostResourceProvider } from 'sql/workbench/api/node/extHostResourceProvider';
+import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
+import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
+import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
+import { ExtHostSerializationProvider } from 'sql/workbench/api/common/extHostSerializationProvider';
+import { ExtHostResourceProvider } from 'sql/workbench/api/common/extHostResourceProvider';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ExtHostModalDialogs } from 'sql/workbench/api/node/extHostModalDialog';
-import { ExtHostTasks } from 'sql/workbench/api/node/extHostTasks';
-import { ExtHostDashboardWebviews } from 'sql/workbench/api/node/extHostDashboardWebview';
-import { ExtHostModelView } from 'sql/workbench/api/node/extHostModelView';
-import { ExtHostConnectionManagement } from 'sql/workbench/api/node/extHostConnectionManagement';
-import { ExtHostDashboard } from 'sql/workbench/api/node/extHostDashboard';
-import { ExtHostObjectExplorer } from 'sql/workbench/api/node/extHostObjectExplorer';
+import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog';
+import { ExtHostTasks } from 'sql/workbench/api/common/extHostTasks';
+import { ExtHostDashboardWebviews } from 'sql/workbench/api/common/extHostDashboardWebview';
+import { ExtHostModelView } from 'sql/workbench/api/common/extHostModelView';
+import { ExtHostConnectionManagement } from 'sql/workbench/api/common/extHostConnectionManagement';
+import { ExtHostDashboard } from 'sql/workbench/api/common/extHostDashboard';
+import { ExtHostObjectExplorer } from 'sql/workbench/api/common/extHostObjectExplorer';
 import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
-import { ExtHostModelViewDialog } from 'sql/workbench/api/node/extHostModelViewDialog';
-import { ExtHostModelViewTreeViews } from 'sql/workbench/api/node/extHostModelViewTree';
-import { ExtHostQueryEditor } from 'sql/workbench/api/node/extHostQueryEditor';
-import { ExtHostBackgroundTaskManagement } from './extHostBackgroundTaskManagement';
-import { ExtHostNotebook } from 'sql/workbench/api/node/extHostNotebook';
-import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/node/extHostNotebookDocumentsAndEditors';
+import { ExtHostModelViewDialog } from 'sql/workbench/api/common/extHostModelViewDialog';
+import { ExtHostModelViewTreeViews } from 'sql/workbench/api/common/extHostModelViewTree';
+import { ExtHostQueryEditor } from 'sql/workbench/api/common/extHostQueryEditor';
+import { ExtHostBackgroundTaskManagement } from 'sql/workbench/api/common/extHostBackgroundTaskManagement';
+import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
+import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
-import { ExtHostExtensionManagement } from 'sql/workbench/api/node/extHostExtensionManagement';
+import { ExtHostExtensionManagement } from 'sql/workbench/api/common/extHostExtensionManagement';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { TernarySearchTree } from 'vs/base/common/map';
 import { ExtHostWorkspace } from 'vs/workbench/api/common/extHostWorkspace';
@@ -42,6 +42,7 @@ import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { localize } from 'vs/nls';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -68,7 +69,7 @@ export function createApiFactory(
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
-	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol));
+	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
 	const extHostSerializationProvider = rpcProtocol.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(rpcProtocol));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
@@ -99,6 +100,9 @@ export function createApiFactory(
 				},
 				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+				},
+				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
+					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
 				},
 
 				// "sqlops" back-compat APIs
@@ -554,13 +558,15 @@ export function createApiFactory(
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,
 				AgentSubSystem: sqlExtHostTypes.AgentSubSystem,
-				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType
+				ExtensionNodeType: sqlExtHostTypes.ExtensionNodeType,
+				ColumnSizingMode: sqlExtHostTypes.ColumnSizingMode
 			};
 		},
 
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
 
+			extHostExtensionManagement.$showObsoleteExtensionApiUsageNotification(localize('ObsoleteApiModuleMessage', "The extension \"{0}\" is using sqlops module which has been replaced by azdata module, the sqlops module will be removed in a future release.", extension.identifier.value));
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
 				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {

@@ -15,7 +15,7 @@ import { originalFSPath } from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import * as pfs from 'vs/base/node/pfs';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IExtensionEnablementService } from 'vs/platform/extensionManagement/common/extensionManagement';
+import { IExtensionEnablementService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { BUILTIN_MANIFEST_CACHE_FILE, MANIFEST_CACHE_FOLDER, USER_MANIFEST_CACHE_FILE, ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import pkg from 'vs/platform/product/node/package';
 import product from 'vs/platform/product/node/product';
@@ -101,10 +101,6 @@ export class CachedExtensionScanner {
 			development.forEach(developedExtension => {
 				log.info('', nls.localize('extensionUnderDevelopment', "Loading development extension at {0}", developedExtension.extensionLocation.fsPath));
 				const extensionKey = ExtensionIdentifier.toKey(developedExtension.identifier);
-				const extension = result.get(extensionKey);
-				if (extension) {
-					log.warn(developedExtension.extensionLocation.fsPath, nls.localize('overwritingExtension', "Overwriting extension {0} with {1}.", extension.extensionLocation.fsPath, developedExtension.extensionLocation.fsPath));
-				}
 				result.set(extensionKey, developedExtension);
 			});
 			let r: IExtensionDescription[] = [];
@@ -264,7 +260,10 @@ export class CachedExtensionScanner {
 		let finalBuiltinExtensions: Promise<IExtensionDescription[]> = builtinExtensions;
 
 		if (devMode) {
-			const builtInExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', 'builtInExtensions.json'));
+			// {{SQL CARBON EDIT}}
+			let builtInFilename = product.quality === 'stable' ? 'builtInExtensions.json' : 'builtInExtensions-insiders.json';
+			const builtInExtensionsFilePath = path.normalize(path.join(getPathFromAmdModule(require, ''), '..', 'build', builtInFilename));
+			// {{SQL CARBON EDIT}} - END
 			const builtInExtensions = pfs.readFile(builtInExtensionsFilePath, 'utf8')
 				.then<IBuiltInExtension[]>(raw => JSON.parse(raw));
 

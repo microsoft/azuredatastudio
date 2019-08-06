@@ -6,7 +6,7 @@
 import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
 import { IProfilerController } from 'sql/workbench/parts/profiler/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
-import { Task } from 'sql/platform/tasks/common/tasks';
+import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -20,8 +20,8 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import { INotificationService } from 'vs/platform/notification/common/notification';
 
 export class ProfilerConnect extends Action {
-	private static readonly ConnectText = nls.localize('profilerAction.connect', 'Connect');
-	private static readonly DisconnectText = nls.localize('profilerAction.disconnect', 'Disconnect');
+	private static readonly ConnectText = nls.localize('profilerAction.connect', "Connect");
+	private static readonly DisconnectText = nls.localize('profilerAction.disconnect', "Disconnect");
 
 	public static ID = 'profiler.connect';
 	public static LABEL = ProfilerConnect.ConnectText;
@@ -103,8 +103,8 @@ export class ProfilerCreate extends Action {
 }
 
 export class ProfilerPause extends Action {
-	private static readonly PauseText = nls.localize('profilerAction.pauseCapture', 'Pause');
-	private static readonly ResumeText = nls.localize('profilerAction.resumeCapture', 'Resume');
+	private static readonly PauseText = nls.localize('profilerAction.pauseCapture', "Pause");
+	private static readonly ResumeText = nls.localize('profilerAction.resumeCapture', "Resume");
 	private static readonly PauseCssClass = 'sql pause';
 	private static readonly ResumeCssClass = 'sql continue';
 
@@ -170,8 +170,8 @@ export class ProfilerClear extends Action {
 }
 
 export class ProfilerAutoScroll extends Action {
-	private static readonly AutoScrollOnText = nls.localize('profilerAction.autoscrollOn', 'Auto Scroll: On');
-	private static readonly AutoScrollOffText = nls.localize('profilerAction.autoscrollOff', 'Auto Scroll: Off');
+	private static readonly AutoScrollOnText = nls.localize('profilerAction.autoscrollOn', "Auto Scroll: On");
+	private static readonly AutoScrollOffText = nls.localize('profilerAction.autoscrollOff', "Auto Scroll: Off");
 	private static readonly CheckedCssClass = 'sql checked';
 
 	public static ID = 'profiler.autoscroll';
@@ -268,7 +268,7 @@ export class ProfilerFindPrevious implements IEditorAction {
 
 export class NewProfilerAction extends Task {
 	public static readonly ID = 'profiler.newProfiler';
-	public static readonly LABEL = nls.localize('profilerAction.newProfiler', 'Launch Profiler');
+	public static readonly LABEL = nls.localize('profilerAction.newProfiler', "Launch Profiler");
 	public static readonly ICON = 'profile';
 
 	private _connectionProfile: ConnectionProfile;

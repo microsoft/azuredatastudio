@@ -103,9 +103,6 @@ exports.load = function (modulePaths, resultCallback, options) {
 		nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
 	};
 
-	// {{SQL CARBON EDIT}}
-	require('reflect-metadata');
-	require('chart.js');
 	loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
 		'@angular/common',
 		'@angular/core',
@@ -113,16 +110,15 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/platform-browser',
 		'@angular/platform-browser-dynamic',
 		'@angular/router',
-		'angular2-grid',
-		'ansi_up',
-		'html-query-plan',
-		'ng2-charts',
 		'rxjs/Observable',
 		'rxjs/Subject',
 		'rxjs/Observer',
-		'htmlparser2',
-		'sanitize',
-		'plotly.js-dist'
+		'slickgrid/lib/jquery.event.drag-2.3.0',
+		'slickgrid/lib/jquery-ui-1.9.2',
+		'slickgrid/slick.core',
+		'slickgrid/slick.grid',
+		'slickgrid/slick.editors',
+		'slickgrid/slick.dataview'
 	]);
 	// {{SQL CARBON EDIT}} - End
 

@@ -11,16 +11,19 @@ import { AppContext } from './appContext';
 import ControllerBase from './controllers/controllerBase';
 import { ApiWrapper } from './apiWrapper';
 import { CmsUtils } from './cmsUtils';
+import { ICmsResourceNodeInfo } from './cmsResource/tree/baseTreeNodes';
 
 let controllers: ControllerBase[] = [];
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(extensionContext: vscode.ExtensionContext) {
+export async function activate(extensionContext: vscode.ExtensionContext): Promise<void> {
 	const apiWrapper = new ApiWrapper();
-	const cmsUtils = new CmsUtils();
-	let appContext = new AppContext(extensionContext, apiWrapper, cmsUtils);
-	let activations: Thenable<boolean>[] = [];
+	const cmsUtils = new CmsUtils(extensionContext.globalState);
+	const appContext = new AppContext(extensionContext, apiWrapper, cmsUtils);
+	const activations: Thenable<boolean>[] = [];
+
+	await portSavedConfigServers(appContext);
 
 	const cmsResourceController = new CmsResourceController(appContext);
 	controllers.push(cmsResourceController);
@@ -29,8 +32,25 @@ export function activate(extensionContext: vscode.ExtensionContext) {
 }
 
 // this method is called when your extension is deactivated
-export function deactivate() {
+export function deactivate(): void {
 	for (let controller of controllers) {
 		controller.deactivate();
+	}
+}
+
+/**
+ * Helper method to port over servers that were previously saved in the configuration (in versions <= 0.3.0 of the extension)
+ * @param appContext The context to use to store the new saved servers
+ */
+async function portSavedConfigServers(appContext: AppContext): Promise<void> {
+	const config: vscode.WorkspaceConfiguration = vscode.workspace.getConfiguration('centralManagementServers');
+	if (config) {
+		const oldServers = config.get<ICmsResourceNodeInfo[]>('servers');
+		if (oldServers) {
+			oldServers.forEach(s => appContext.cmsUtils.cacheRegisteredCmsServer(s.name, s.description, s.ownerUri, s.connection));
+			// Now delete the config value since we don't need it anymore
+			await config.update('servers', undefined, true);
+		}
+
 	}
 }

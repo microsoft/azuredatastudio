@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as path from 'path';
+import * as path from 'vs/base/common/path';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
@@ -20,13 +20,13 @@ import * as types from 'vs/base/common/types';
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
-} from 'sql/workbench/api/node/sqlExtHost.protocol';
-import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+} from 'sql/workbench/api/common/sqlExtHost.protocol';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/models/contracts';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';

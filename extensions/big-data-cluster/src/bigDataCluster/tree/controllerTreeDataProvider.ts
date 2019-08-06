@@ -18,6 +18,7 @@ import { LoadingControllerNode } from './loadingControllerNode';
 const CredentialNamespace = 'clusterControllerCredentials';
 
 interface IControllerInfoSlim {
+	clusterName: string;
 	url: string;
 	username: string;
 	password?: string;
@@ -57,6 +58,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public addController(
+		clusterName: string,
 		url: string,
 		username: string,
 		password: string,
@@ -64,7 +66,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		masterInstance?: IEndPoint
 	): void {
 		this.removeNonControllerNodes();
-		this.root.addControllerNode(url, username, password, rememberPassword, masterInstance);
+		this.root.addControllerNode(clusterName, url, username, password, rememberPassword, masterInstance);
 		this.notifyNodeChanged();
 	}
 
@@ -118,7 +120,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 					password = await this.getPassword(c.url, c.username);
 				}
 				this.root.addChild(new ControllerNode(
-					c.url, c.username, password, c.rememberPassword,
+					c.clusterName, c.url, c.username, password, c.rememberPassword,
 					undefined, this.root, this, undefined
 				));
 			}
@@ -136,6 +138,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		let controllers = this.root.children.map(e => {
 			let controller = e as ControllerNode;
 			return <IControllerInfoSlim>{
+				clusterName: controller.clusterName,
 				url: controller.url,
 				username: controller.username,
 				password: controller.password,
@@ -145,6 +148,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 
 		let controllersWithoutPassword = controllers.map(e => {
 			return <IControllerInfoSlim>{
+				clusterName: e.clusterName,
 				url: e.url,
 				username: e.username,
 				rememberPassword: e.rememberPassword
