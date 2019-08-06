@@ -12,6 +12,7 @@ export interface IProductService {
 
 	readonly version: string;
 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
+	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}} add getter
 	readonly commit?: string;
 
 	readonly nameLong: string;
@@ -74,7 +75,7 @@ export interface IProductConfiguration {
 	};
 	extensionTips: { [id: string]: string; };
 	recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
-	recommendedExtensionsByScenario: string[]; // {{SQL CARBON EDIT}}
+	recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
 	readonly exeBasedExtensionTips: { [id: string]: IExeBasedExtensionTip; };
 	readonly extensionKeywords: { [extension: string]: readonly string[]; };
