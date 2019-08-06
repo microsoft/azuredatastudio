@@ -545,9 +545,6 @@ export function createApiFactory(
 				}
 				return extHostTerminalService.createTerminal(<string>nameOrOptions, shellPath, shellArgs);
 			},
-			createTerminalRenderer(name: string): vscode.TerminalRenderer {
-				return extHostTerminalService.createTerminalRenderer(name);
-			},
 			registerTreeDataProvider(viewId: string, treeDataProvider: vscode.TreeDataProvider<any>): vscode.Disposable {
 				return extHostTreeViews.registerTreeDataProvider(viewId, treeDataProvider, extension);
 			},
@@ -855,7 +852,6 @@ export function createApiFactory(
 			EventEmitter: Emitter,
 			ExtensionExecutionContext: extHostTypes.ExtensionExecutionContext,
 			ExtensionKind: extHostTypes.ExtensionKind,
-			CustomExecution: extHostTypes.CustomExecution,
 			CustomExecution2: extHostTypes.CustomExecution2,
 			FileChangeType: extHostTypes.FileChangeType,
 			FileSystemError: extHostTypes.FileSystemError,

@@ -172,7 +172,7 @@ export class TerminalInstance implements ITerminalInstance {
 	private static _lastKnownGridDimensions: IGridDimensions | undefined;
 	private static _idCounter = 1;
 
-	private _processManager: ITerminalProcessManager | undefined;
+	private _processManager: ITerminalProcessManager;
 	private _pressAnyKeyToCloseListener: lifecycle.IDisposable | undefined;
 
 	private _id: number;
@@ -246,8 +246,6 @@ export class TerminalInstance implements ITerminalInstance {
 	public get onData(): Event<string> { return this._onData.event; }
 	private readonly _onLineData = new Emitter<string>();
 	public get onLineData(): Event<string> { return this._onLineData.event; }
-	private readonly _onRendererInput = new Emitter<string>();
-	public get onRendererInput(): Event<string> { return this._onRendererInput.event; }
 	private readonly _onRequestExtHostProcess = new Emitter<ITerminalInstance>();
 	public get onRequestExtHostProcess(): Event<ITerminalInstance> { return this._onRequestExtHostProcess.event; }
 	private readonly _onDimensionsChanged = new Emitter<void>();
@@ -293,11 +291,7 @@ export class TerminalInstance implements ITerminalInstance {
 		this._logService.trace(`terminalInstance#ctor (id: ${this.id})`, this._shellLaunchConfig);
 
 		this._initDimensions();
-		if (!this.shellLaunchConfig.isRendererOnly) {
-			this._createProcess();
-		} else {
-			this.setTitle(this._shellLaunchConfig.name, false);
-		}
+		this._createProcess();
 
 		this._xtermReadyPromise = this._createXterm();
 		this._xtermReadyPromise.then(() => {
@@ -488,39 +482,27 @@ export class TerminalInstance implements ITerminalInstance {
 		this._xterm.onLineFeed(() => this._onLineFeed());
 		this._xterm.onKey(e => this._onKey(e.key, e.domEvent));
 
-		if (this._processManager) {
-			this._processManager.onProcessData(data => this._onProcessData(data));
-			this._xterm.onData(data => this._processManager!.write(data));
-			// TODO: How does the cwd work on detached processes?
-			this.processReady.then(async () => {
-				this._linkHandler.processCwd = await this._processManager!.getInitialCwd();
-			});
-			// Init winpty compat and link handler after process creation as they rely on the
-			// underlying process OS
-			this._processManager.onProcessReady(() => {
-				if (!this._processManager) {
-					return;
-				}
-				if (this._processManager.os === platform.OperatingSystem.Windows) {
-					xterm.setOption('windowsMode', true);
-					// Force line data to be sent when the cursor is moved, the main purpose for
-					// this is because ConPTY will often not do a line feed but instead move the
-					// cursor, in which case we still want to send the current line's data to tasks.
-					xterm.addCsiHandler('H', () => {
-						this._onCursorMove();
-						return false;
-					});
-				}
-				this._linkHandler = this._instantiationService.createInstance(TerminalLinkHandler, this._xterm, this._processManager, this._configHelper);
-			});
-		} else if (this.shellLaunchConfig.isRendererOnly) {
-			this._linkHandler = this._instantiationService.createInstance(TerminalLinkHandler, this._xterm, undefined, this._configHelper);
-		}
-
-		// Register listener to trigger the onInput ext API if the terminal is a renderer only
-		if (this._shellLaunchConfig.isRendererOnly) {
-			this._xterm.onData(data => this._sendRendererInput(data));
-		}
+		this._processManager.onProcessData(data => this._onProcessData(data));
+		this._xterm.onData(data => this._processManager.write(data));
+		// TODO: How does the cwd work on detached processes?
+		this.processReady.then(async () => {
+			this._linkHandler.processCwd = await this._processManager.getInitialCwd();
+		});
+		// Init winpty compat and link handler after process creation as they rely on the
+		// underlying process OS
+		this._processManager.onProcessReady(() => {
+			if (this._processManager.os === platform.OperatingSystem.Windows) {
+				xterm.setOption('windowsMode', true);
+				// Force line data to be sent when the cursor is moved, the main purpose for
+				// this is because ConPTY will often not do a line feed but instead move the
+				// cursor, in which case we still want to send the current line's data to tasks.
+				xterm.addCsiHandler('H', () => {
+					this._onCursorMove();
+					return false;
+				});
+			}
+			this._linkHandler = this._instantiationService.createInstance(TerminalLinkHandler, this._xterm, this._processManager, this._configHelper);
+		});
 
 		this._commandTrackerAddon = new CommandTrackerAddon();
 		this._xterm.loadAddon(this._commandTrackerAddon);
@@ -659,13 +641,8 @@ export class TerminalInstance implements ITerminalInstance {
 			this._wrapperElement.appendChild(this._xtermElement);
 			this._container.appendChild(this._wrapperElement);
 
-			if (this._processManager) {
-				this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
-				this._processManager.onProcessReady(() => this._linkHandler.setWidgetManager(this._widgetManager));
-			} else if (this._shellLaunchConfig.isRendererOnly) {
-				this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
-				this._linkHandler.setWidgetManager(this._widgetManager);
-			}
+			this._widgetManager = new TerminalWidgetManager(this._wrapperElement);
+			this._processManager.onProcessReady(() => this._linkHandler.setWidgetManager(this._widgetManager));
 
 			const computedStyle = window.getComputedStyle(this._container);
 			const width = parseInt(computedStyle.getPropertyValue('width').replace('px', ''), 10);
@@ -828,30 +805,13 @@ export class TerminalInstance implements ITerminalInstance {
 			this._pressAnyKeyToCloseListener = undefined;
 		}
 
-		if (this._processManager) {
-			this._processManager.dispose(immediate);
-		} else {
-			// In cases where there is no associated process (for example executing an extension callback task)
-			// consumers still expect on onExit event to be fired. An example of this is terminating the extension callback
-			// task.
-			this._onExit.fire(0);
-		}
+		this._processManager.dispose(immediate);
 
 		if (!this._isDisposed) {
 			this._isDisposed = true;
 			this._onDisposed.fire(this);
 		}
 		this._disposables.dispose();
-	}
-
-	public rendererExit(exitCode: number): void {
-		// The use of this API is for cases where there is no backing process behind a terminal
-		// instance (e.g. a custom execution task).
-		if (!this.shellLaunchConfig.isRendererOnly) {
-			throw new Error('rendererExit is only expected to be called on a renderer only terminal');
-		}
-
-		return this._onProcessExit(exitCode);
 	}
 
 	public forceRedraw(): void {
@@ -902,10 +862,6 @@ export class TerminalInstance implements ITerminalInstance {
 				return;
 			}
 			this._xterm.write(text);
-			if (this._shellLaunchConfig.isRendererOnly) {
-				// Fire onData API in the extension host
-				this._onData.fire(text);
-			}
 		});
 	}
 
@@ -916,17 +872,8 @@ export class TerminalInstance implements ITerminalInstance {
 			text += '\r';
 		}
 
-		if (this._shellLaunchConfig.isRendererOnly) {
-			// If the terminal is a renderer only, fire the onInput ext API
-			this._sendRendererInput(text);
-		} else {
-			// If the terminal has a process, send it to the process
-			if (this._processManager) {
-				this._processManager.ptyProcessReady.then(() => {
-					this._processManager!.write(text);
-				});
-			}
-		}
+		// Send it to the process
+		this._processManager.ptyProcessReady.then(() => this._processManager.write(text));
 	}
 
 	public setVisible(visible: boolean): void {
@@ -1023,7 +970,7 @@ export class TerminalInstance implements ITerminalInstance {
 
 		if (platform.isWindows) {
 			this._processManager.ptyProcessReady.then(() => {
-				if (this._processManager!.remoteAuthority) {
+				if (this._processManager.remoteAuthority) {
 					return;
 				}
 				this._xtermReadyPromise.then(xterm => {
@@ -1037,7 +984,7 @@ export class TerminalInstance implements ITerminalInstance {
 		// Create the process asynchronously to allow the terminal's container
 		// to be created so dimensions are accurate
 		setTimeout(() => {
-			this._processManager!.createProcess(this._shellLaunchConfig, this._cols, this._rows, this._isScreenReaderOptimized());
+			this._processManager.createProcess(this._shellLaunchConfig, this._cols, this._rows, this._isScreenReaderOptimized());
 		}, 0);
 	}
 
@@ -1075,7 +1022,7 @@ export class TerminalInstance implements ITerminalInstance {
 				exitCodeMessage = nls.localize('terminal.integrated.exitedWithInvalidPathDirectory', 'The terminal shell path "{0}" is a directory', this._shellLaunchConfig.executable);
 			} else if (exitCode === SHELL_CWD_INVALID_EXIT_CODE && this._shellLaunchConfig.cwd) {
 				exitCodeMessage = nls.localize('terminal.integrated.exitedWithInvalidCWD', 'The terminal shell CWD "{0}" does not exist', this._shellLaunchConfig.cwd.toString());
-			} else if (this._processManager && this._processManager.processState === ProcessState.KILLED_DURING_LAUNCH) {
+			} else if (this._processManager.processState === ProcessState.KILLED_DURING_LAUNCH) {
 				let args = '';
 				if (typeof this._shellLaunchConfig.args === 'string') {
 					args = ` ${this._shellLaunchConfig.args}`;
@@ -1097,11 +1044,11 @@ export class TerminalInstance implements ITerminalInstance {
 			}
 		}
 
-		this._logService.debug(`Terminal process exit (id: ${this.id})${this._processManager ? ' state ' + this._processManager.processState : ''}`);
+		this._logService.debug(`Terminal process exit (id: ${this.id}) state ${this._processManager.processState}`);
 
 		// Only trigger wait on exit when the exit was *not* triggered by the
 		// user (via the `workbench.action.terminal.kill` command).
-		if (this._shellLaunchConfig.waitOnExit && (!this._processManager || this._processManager.processState !== ProcessState.KILLED_BY_USER)) {
+		if (this._shellLaunchConfig.waitOnExit && this._processManager.processState !== ProcessState.KILLED_BY_USER) {
 			this._xtermReadyPromise.then(xterm => {
 				if (exitCodeMessage) {
 					xterm.writeln(exitCodeMessage);
@@ -1121,7 +1068,7 @@ export class TerminalInstance implements ITerminalInstance {
 		} else {
 			this.dispose();
 			if (exitCodeMessage) {
-				if (this._processManager && this._processManager.processState === ProcessState.KILLED_DURING_LAUNCH) {
+				if (this._processManager.processState === ProcessState.KILLED_DURING_LAUNCH) {
 					this._notificationService.error(exitCodeMessage);
 				} else {
 					if (this._configHelper.config.showExitAlert) {
@@ -1157,10 +1104,7 @@ export class TerminalInstance implements ITerminalInstance {
 		}
 
 		// Kill and clear up the process, making the process manager ready for a new process
-		if (this._processManager) {
-			this._processManager.dispose();
-			this._processManager = undefined;
-		}
+		this._processManager.dispose();
 
 		if (this._xterm) {
 			// Ensure new processes' output starts at start of new line
@@ -1184,30 +1128,13 @@ export class TerminalInstance implements ITerminalInstance {
 		// Launch the process unless this is only a renderer.
 		// In the renderer only cases, we still need to set the title correctly.
 		const oldTitle = this._title;
-		if (!this._shellLaunchConfig.isRendererOnly) {
-			this._createProcess();
-		} else if (this._shellLaunchConfig.name) {
-			this.setTitle(this._shellLaunchConfig.name, false);
-		}
+		this._createProcess();
 
 		if (oldTitle !== this._title) {
 			this.setTitle(this._title, true);
 		}
 
-		if (this._processManager) {
-			// The "!" operator is required here because _processManager is set to undefiend earlier
-			// and TS does not know that createProcess sets it.
-			this._processManager!.onProcessData(data => this._onProcessData(data));
-		}
-	}
-
-	private _sendRendererInput(input: string): void {
-		if (this._processManager) {
-			throw new Error('onRendererInput attempted to be used on a regular terminal');
-		}
-
-		// For terminal renderers onData fires on keystrokes and when sendText is called.
-		this._onRendererInput.fire(input);
+		this._processManager.onProcessData(data => this._onProcessData(data));
 	}
 
 	private _onLineFeed(): void {
@@ -1392,9 +1319,7 @@ export class TerminalInstance implements ITerminalInstance {
 			}
 		}
 
-		if (this._processManager) {
-			this._processManager.ptyProcessReady.then(() => this._processManager!.setDimensions(cols, rows));
-		}
+		this._processManager.ptyProcessReady.then(() => this._processManager.setDimensions(cols, rows));
 	}
 
 	public setTitle(title: string | undefined, eventFromProcess: boolean): void {
@@ -1491,16 +1416,10 @@ export class TerminalInstance implements ITerminalInstance {
 	}
 
 	public getInitialCwd(): Promise<string> {
-		if (!this._processManager) {
-			return Promise.resolve('');
-		}
 		return this._processManager.getInitialCwd();
 	}
 
 	public getCwd(): Promise<string> {
-		if (!this._processManager) {
-			return Promise.resolve('');
-		}
 		return this._processManager.getCwd();
 	}
 }
