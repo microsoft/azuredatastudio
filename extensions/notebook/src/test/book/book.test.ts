@@ -9,11 +9,12 @@ import * as TypeMoq from 'typemoq';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as rimraf from 'rimraf';
+import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
 
 describe('BookTreeViewProvider.getChildren', function (): void {
-	const rootFolderPath = path.join(__dirname, 'testBook');
+	const rootFolderPath = path.join(os.tmpdir(), 'testBook');
 	const dataFolderPath = path.join(rootFolderPath, '_data');
 	const contentFolderPath = path.join(rootFolderPath, 'content');
 	const configFile = path.join(rootFolderPath, '_config.yml');
@@ -56,7 +57,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
 		const children = await bookTreeViewProvider.getChildren();
-		should(children).Array();
+		should(children).be.Array();
 		should(children.length).equal(1);
 		book = children[0];
 		should(book.title).equal(expectedBook.title);
@@ -64,7 +65,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
 		const children = await bookTreeViewProvider.getChildren(book);
-		should(children).Array();
+		should(children).be.Array();
 		should(children.length).equal(3);
 		const notebook = children[0];
 		const markdown = children[1];
