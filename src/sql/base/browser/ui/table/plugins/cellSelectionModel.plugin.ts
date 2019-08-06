@@ -146,18 +146,27 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 			let newRange: Slick.Range;
 
 			//if the ranges are the same.
-			if (current.fromRow === range.fromRow && current.fromCell === range.fromCell && current.toRow === range.toRow && current.toCell === range.toCell) {
+			if (current.fromRow === range.fromRow &&
+				current.fromCell === range.fromCell &&
+				current.toRow === range.toRow &&
+				current.toCell === range.toCell) {
+				// If we're actually not going to handle it during this loop
+				// this region will be added with the handled boolean check
 				continue;
 			}
 
+			// Rows are the same - horizontal merging of the selection area
 			if (current.fromRow === range.fromRow && current.toRow === range.toRow) {
+				// Check if the new region is adjacent to the old selection group
 				if (range.toCell + 1 === current.fromCell || range.fromCell - 1 === current.toCell) {
 					handled = true;
 					let fromCell = Math.min(range.fromCell, current.fromCell, range.toCell, current.toCell);
 					let toCell = Math.max(range.fromCell, current.fromCell, range.toCell, current.toCell);
 					newRange = new Slick.Range(range.fromRow, fromCell, range.toRow, toCell);
 				}
+				// Cells are the same - vertical merging of the selection area
 			} else if (current.fromCell === range.fromCell && current.toCell === range.toCell) {
+				// Check if the new region is adjacent to the old selection group
 				if (range.toRow + 1 === current.fromRow || range.fromRow - 1 === current.toRow) {
 					handled = true;
 					let fromRow = Math.min(range.fromRow, current.fromRow, range.fromRow, current.fromRow);
