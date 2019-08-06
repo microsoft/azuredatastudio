@@ -29,7 +29,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private initialze(resource: string, context: vscode.ExtensionContext): void {
-		if (resource !== '') {
+		if (resource !== '' && this.workspaceRoot === '') {
 			this.workspaceRoot = resource;
 			this._tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
 			let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
@@ -60,9 +60,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let books = this.getBooks();
 				if (books && books.length > 0) {
 					bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
-					const readmePath: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
-					if (fs.existsSync(readmePath)) {
-						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmePath));
+					const readmeMarkdown: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
+					const readmeNotebook: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
+					if (fs.existsSync(readmeMarkdown)) {
+						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
+					}
+					else if (fs.existsSync(readmeNotebook)) {
+						vscode.workspace.openTextDocument(readmeNotebook);
 					}
 				}
 			});
@@ -158,7 +162,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					tableOfContents: this.flattenArray(tableOfContents),
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
-					collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
+					collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
