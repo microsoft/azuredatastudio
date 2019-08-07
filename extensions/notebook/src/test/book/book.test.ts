@@ -12,16 +12,12 @@ import * as rimraf from 'rimraf';
 import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
-import * as assert from'assert';
+import * as assert from 'assert';
+
+const SEED = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 describe('BookTreeViewProvider.getChildren', function (): void {
-	const rootFolderPath = path.join(os.tmpdir(), 'testBook');
-	const dataFolderPath = path.join(rootFolderPath, '_data');
-	const contentFolderPath = path.join(rootFolderPath, 'content');
-	const configFile = path.join(rootFolderPath, '_config.yml');
-	const tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
-	const notebookFile = path.join(contentFolderPath, 'notebook.ipynb');
-	const markdownFile = path.join(contentFolderPath, 'markdown.md');
+	let rootFolderPath: string;
 	const expectedNotebook = {
 		title: 'Notebook',
 		url: '/notebook'
@@ -46,6 +42,17 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	this.beforeAll(async () => {
 		try {
+			let res = '';
+			for (let i = 0; i < 8; i++) {
+				res += SEED.charAt(Math.floor(Math.random() * SEED.length));
+			}
+			rootFolderPath =  path.join(os.tmpdir(), res);
+			let dataFolderPath = path.join(rootFolderPath, '_data');
+			let contentFolderPath = path.join(rootFolderPath, 'content');
+			let configFile = path.join(rootFolderPath, '_config.yml');
+			let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+			let notebookFile = path.join(contentFolderPath, 'notebook.ipynb');
+			let markdownFile = path.join(contentFolderPath, 'markdown.md');
 			await fs.mkdir(rootFolderPath);
 			await fs.mkdir(dataFolderPath);
 			await fs.mkdir(contentFolderPath);
@@ -88,7 +95,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		should(externalLink.uri).equal(expectedExternalLink.url);
 	});
 
-	after(async function () {
+	this.afterAll(async function () {
 		if (fs.existsSync(rootFolderPath)) {
 			rimraf.sync(rootFolderPath);
 		}
