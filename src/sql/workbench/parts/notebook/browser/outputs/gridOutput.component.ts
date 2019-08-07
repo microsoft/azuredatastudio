@@ -235,28 +235,55 @@ class DataResourceDataProvider implements IGridDataProvider {
 
 	private async doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse> {
 		// TODO implement selection support
+		let columns = this.resultSet.columnInfo;
+		let rowLength = this.rows.length;
+		let minRow = 0;
+		let maxRow = this.rows.length;
+		let singleSelection = selection && selection.length > 0 ? selection[0] : undefined;
+		if (singleSelection && this.isSelected(singleSelection)) {
+			rowLength = singleSelection.toRow - singleSelection.fromRow + 1;
+			minRow = singleSelection.fromRow;
+			maxRow = singleSelection.toRow + 1;
+			columns = columns.slice(singleSelection.fromCell, singleSelection.toCell + 1);
+		}
 		let getRows: ((index: number, rowCount: number) => azdata.DbCellValue[][]) = (index, rowCount) => {
-			if (this.rows.length === 0 || index < 0 || index >= this.rows.length) {
+			// Offset for selections by adding the selection startRow to the index
+			index = index + minRow;
+			if (rowLength === 0 || index < 0 || index >= maxRow) {
 				return [];
 			}
 			let endIndex = index + rowCount;
-			if (endIndex > this.rows.length) {
-				endIndex = this.rows.length;
+			if (endIndex > maxRow) {
+				endIndex = maxRow;
 			}
-			return this.rows.slice(index, endIndex);
+			let result = this.rows.slice(index, endIndex).map(row => {
+				if (this.isSelected(singleSelection)) {
+					return row.slice(singleSelection.fromCell, singleSelection.toCell + 1);
+				}
+				return row;
+			});
+			return result;
 		};
 
 		let serializeRequestParams: SerializeDataParams = <SerializeDataParams>Object.assign(serializer.getBasicSaveParameters(format), <Partial<SerializeDataParams>>{
 			saveFormat: format,
-			columns: this.resultSet.columnInfo,
+			columns: columns,
 			filePath: filePath,
 			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
-			rowCount: this.rows.length
+			rowCount: rowLength
 		});
 		let result = await this._serializationService.serializeResults(serializeRequestParams);
 		return result;
 	}
+
+	/**
+	 * Check if a range of cells were selected.
+	 */
+	private isSelected(selection: Slick.Range): boolean {
+		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
+	}
 }
+
 
 function createResultSet(source: IDataResource): azdata.ResultSetSummary {
 	let columnInfo: azdata.IDbColumn[] = source.schema.fields.map(field => {

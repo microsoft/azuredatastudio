@@ -19,12 +19,12 @@ const defaultBatchSize = 500;
 
 export interface SerializeDataParams {
 	/**
- * 'csv', 'json', 'excel', 'xml'
- */
+	 * 'csv', 'json', 'excel', 'xml'
+	 */
 	saveFormat: string;
 	filePath: string;
 	/**
-	 *
+	 * Gets an array of rows to be sent for serialization
 	 * @param rowStart Index in the array to start copying rows from
 	 * @param numberOfRows Total number of rows to copy. If 0 or undefined, will copy all
 	 */
