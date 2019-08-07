@@ -7,10 +7,11 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { IEndPoint, IControllerError, getEndPoints } from '../controller/clusterControllerApi';
+import { ControllerError, getEndPoints } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { TreeNode } from '../tree/treeNode';
 import { showErrorMessage } from '../utils';
+import { EndpointModel } from '../controller/apiGenerated';
 
 const localize = nls.loadMessageBundle();
 
@@ -39,7 +40,7 @@ export class AddControllerDialogModel {
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
 			let response = await getEndPoints(clusterName, url, username, password, true);
 			if (response && response.endPoints) {
-				let masterInstance: IEndPoint = undefined;
+				let masterInstance: EndpointModel = undefined;
 				if (response.endPoints) {
 					masterInstance = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
 				}
@@ -55,10 +56,9 @@ export class AddControllerDialogModel {
 				throw error;
 			}
 		}
-
 	}
 
-	public async onError(error: IControllerError): Promise<void> {
+	public async onError(error: ControllerError): Promise<void> {
 		// implement
 	}
 
@@ -171,7 +171,7 @@ export class AddControllerDialog {
 		} catch (error) {
 			showErrorMessage(error);
 			if (this.model && this.model.onError) {
-				await this.model.onError(error as IControllerError);
+				await this.model.onError(error as ControllerError);
 			}
 			return false;
 		}
