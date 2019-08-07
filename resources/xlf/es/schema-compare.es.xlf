@@ -948,7 +948,7 @@
       </trans-unit>
       <trans-unit id="schemaCompareDialog.fileTextBoxLabel">
         <source xml:lang="en">File</source>
-        <target state="translated">archivo</target>
+        <target state="translated">Archivo</target>
       </trans-unit>
       <trans-unit id="schemaCompare.dacpacRadioButtonLabel">
         <source xml:lang="en">Data-tier Application File (.dacpac)</source>

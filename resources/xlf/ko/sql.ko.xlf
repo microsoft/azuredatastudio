@@ -44,7 +44,7 @@
     <body>
       <trans-unit id="providerIdNotValidError">
         <source xml:lang="en">Connection is required in order to interact with SchemaCompareService</source>
-        <target state="new">Connection is required in order to interact with SchemaCompareService</target>
+        <target state="translated">SchemaCompareService와 상호 작용하려면 연결이 필요합니다.</target>
       </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No Handler Registered</source>
@@ -137,7 +137,7 @@
     <body>
       <trans-unit id="showDataExplorer">
         <source xml:lang="en">Show Connections</source>
-        <target state="new">Show Connections</target>
+        <target state="translated">연결 표시</target>
       </trans-unit>
       <trans-unit id="workbench.dataExplorer">
         <source xml:lang="en">Connections</source>
@@ -197,7 +197,7 @@
     <body>
       <trans-unit id="resultsGridConfigurationTitle">
         <source xml:lang="en">Results Grid and Messages</source>
-        <target state="new">Results Grid and Messages</target>
+        <target state="translated">결과 표 및 메시지</target>
       </trans-unit>
       <trans-unit id="fontFamily">
         <source xml:lang="en">Controls the font family.</source>
@@ -385,7 +385,7 @@
     <body>
       <trans-unit id="notebook.inProcMarkdown">
         <source xml:lang="en">Use in-process markdown viewer to render text cells more quickly (Experimental).</source>
-        <target state="new">Use in-process markdown viewer to render text cells more quickly (Experimental).</target>
+        <target state="translated">텍스트 셀을 더 빠르게 렌더링하려면 In-process Markdown 뷰어를 사용합니다(실험).</target>
       </trans-unit>
     </body>
   </file>
@@ -601,11 +601,11 @@
     <body>
       <trans-unit id="noProviderFound">
         <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
-        <target state="new">Cannot expand as the required connection provider '{0}' was not found</target>
+        <target state="translated">필요한 연결 공급자 '{0}'을(를) 찾을 수 없으므로 확장할 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="loginCanceled">
         <source xml:lang="en">User canceled</source>
-        <target state="new">User canceled</target>
+        <target state="translated">사용자가 취소함</target>
       </trans-unit>
     </body>
   </file>
@@ -633,7 +633,7 @@
       </trans-unit>
       <trans-unit id="dacFx">
         <source xml:lang="en">Data-tier Application Wizard</source>
-        <target state="new">Data-tier Application Wizard</target>
+        <target state="translated">데이터 계층 애플리케이션 마법사</target>
       </trans-unit>
       <trans-unit id="profiler">
         <source xml:lang="en">Launch Profiler</source>
@@ -641,7 +641,7 @@
       </trans-unit>
       <trans-unit id="flatFileImport">
         <source xml:lang="en">Import Wizard</source>
-        <target state="new">Import Wizard</target>
+        <target state="translated">가져오기 마법사</target>
       </trans-unit>
       <trans-unit id="schemaCompare">
         <source xml:lang="en">Schema Compare</source>
@@ -725,7 +725,7 @@
     <body>
       <trans-unit id="refreshFailed">
         <source xml:lang="en">Refresh account was canceled by the user</source>
-        <target state="new">Refresh account was canceled by the user</target>
+        <target state="translated">사용자가 계정 새로 고침을 취소했습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -825,91 +825,91 @@
       </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
-        <target state="new">Maximum number of rows to return before the server stops processing your query.</target>
+        <target state="translated">서버가 쿼리 처리를 중지하기 전에 반환할 최대 행 수입니다.</target>
       </trans-unit>
       <trans-unit id="mssql.query.textSize">
         <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
-        <target state="new">Maximum size of text and ntext data returned from a SELECT statement</target>
+        <target state="translated">SELECT 문에서 반환되는 text 및 ntext 데이터의 최대 크기</target>
       </trans-unit>
       <trans-unit id="mssql.query.executionTimeout">
         <source xml:lang="en">An execution time-out of 0 indicates an unlimited wait (no time-out)</source>
-        <target state="new">An execution time-out of 0 indicates an unlimited wait (no time-out)</target>
+        <target state="translated">실행 시간 제한이 0이면 무제한 대기(시간 제한 없음)를 나타냅니다.</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
-        <target state="new">Enable SET NOCOUNT option</target>
+        <target state="translated">SET NOCOUNT 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.noExec">
         <source xml:lang="en">Enable SET NOEXEC option</source>
-        <target state="new">Enable SET NOEXEC option</target>
+        <target state="translated">SET NOEXEC 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.parseOnly">
         <source xml:lang="en">Enable SET PARSEONLY option</source>
-        <target state="new">Enable SET PARSEONLY option</target>
+        <target state="translated">SET PARSEONLY 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.arithAbort">
         <source xml:lang="en">Enable SET ARITHABORT option</source>
-        <target state="new">Enable SET ARITHABORT option</target>
+        <target state="translated">SET ARITHABORT 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.statisticsTime">
         <source xml:lang="en">Enable SET STATISTICS TIME option</source>
-        <target state="new">Enable SET STATISTICS TIME option</target>
+        <target state="translated">SET STATISTICS TIME 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.statisticsIO">
         <source xml:lang="en">Enable SET STATISTICS IO option</source>
-        <target state="new">Enable SET STATISTICS IO option</target>
+        <target state="translated">SET STATISTICS IO 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
-        <target state="new">Enable SET XACT_ABORT ON option</target>
+        <target state="translated">SET XACT_ABORT ON 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.transactionIsolationLevel">
         <source xml:lang="en">Enable SET TRANSACTION ISOLATION LEVEL option</source>
-        <target state="new">Enable SET TRANSACTION ISOLATION LEVEL option</target>
+        <target state="translated">SET TRANSACTION ISOLATION LEVEL 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.deadlockPriority">
         <source xml:lang="en">Enable SET DEADLOCK_PRIORITY option</source>
-        <target state="new">Enable SET DEADLOCK_PRIORITY option</target>
+        <target state="translated">SET DEADLOCK_PRIORITY 옵션 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.lockTimeout">
         <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
-        <target state="new">Enable SET LOCK TIMEOUT option (in milliseconds)</target>
+        <target state="translated">SET LOCK TIMEOUT 옵션 사용(밀리초)</target>
       </trans-unit>
       <trans-unit id="mssql.query.queryGovernorCostLimit">
         <source xml:lang="en">Enable SET QUERY_GOVERNOR_COST_LIMIT</source>
-        <target state="new">Enable SET QUERY_GOVERNOR_COST_LIMIT</target>
+        <target state="translated">SET QUERY_GOVERNOR_COST_LIMIT 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiDefaults">
         <source xml:lang="en">Enable SET ANSI_DEFAULTS</source>
-        <target state="new">Enable SET ANSI_DEFAULTS</target>
+        <target state="translated">SET ANSI_DEFAULTS 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.quotedIdentifier">
         <source xml:lang="en">Enable SET QUOTED_IDENTIFIER</source>
-        <target state="new">Enable SET QUOTED_IDENTIFIER</target>
+        <target state="translated">SET QUOTED_IDENTIFIER 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiNullDefaultOn">
         <source xml:lang="en">Enable SET ANSI_NULL_DFLT_ON</source>
-        <target state="new">Enable SET ANSI_NULL_DFLT_ON</target>
+        <target state="translated">SET ANSI_NULL_DFLT_ON 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.implicitTransactions">
         <source xml:lang="en">Enable SET IMPLICIT_TRANSACTIONS</source>
-        <target state="new">Enable SET IMPLICIT_TRANSACTIONS</target>
+        <target state="translated">SET IMPLICIT_TRANSACTIONS 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.cursorCloseOnCommit">
         <source xml:lang="en">Enable SET CURSOR_CLOSE_ON_COMMIT</source>
-        <target state="new">Enable SET CURSOR_CLOSE_ON_COMMIT</target>
+        <target state="translated">SET CURSOR_CLOSE_ON_COMMIT 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiPadding">
         <source xml:lang="en">Enable SET ANSI_PADDING</source>
-        <target state="new">Enable SET ANSI_PADDING</target>
+        <target state="translated">SET ANSI_PADDING 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiWarnings">
         <source xml:lang="en">Enable SET ANSI_WARNINGS</source>
-        <target state="new">Enable SET ANSI_WARNINGS</target>
+        <target state="translated">SET ANSI_WARNINGS 사용</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiNulls">
         <source xml:lang="en">Enable SET ANSI_NULLS</source>
-        <target state="new">Enable SET ANSI_NULLS</target>
+        <target state="translated">SET ANSI_NULLS 사용</target>
       </trans-unit>
       <trans-unit id="queryShortcutDescription">
         <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter</source>
@@ -929,7 +929,7 @@
       </trans-unit>
       <trans-unit id="profiler.settings.Filters">
         <source xml:lang="en">Profiler Filters</source>
-        <target state="new">Profiler Filters</target>
+        <target state="translated">프로파일러 필터</target>
       </trans-unit>
     </body>
   </file>
@@ -1037,7 +1037,7 @@
     <body>
       <trans-unit id="toggleTasks">
         <source xml:lang="en">Toggle Tasks</source>
-        <target state="new">Toggle Tasks</target>
+        <target state="translated">작업 토글</target>
       </trans-unit>
     </body>
   </file>
@@ -1314,11 +1314,11 @@
     <body>
       <trans-unit id="noRendererFound">
         <source xml:lang="en">No {0} renderer could be found for output. It has the following MIME types: {1}</source>
-        <target state="new">No {0} renderer could be found for output. It has the following MIME types: {1}</target>
+        <target state="translated">출력의 {0} 렌더러를 찾을 수 없습니다. MIME 형식은 {1}입니다.</target>
       </trans-unit>
       <trans-unit id="safe">
         <source xml:lang="en">(safe) </source>
-        <target state="new">(safe) </target>
+        <target state="translated">(안전) </target>
       </trans-unit>
     </body>
   </file>
@@ -1326,7 +1326,7 @@
     <body>
       <trans-unit id="plotlyError">
         <source xml:lang="en">Error displaying Plotly graph: {0}</source>
-        <target state="new">Error displaying Plotly graph: {0}</target>
+        <target state="translated">플롯 그래프 표시 오류: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -1442,7 +1442,7 @@
       </trans-unit>
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
-        <target state="new">Icon path for the server type</target>
+        <target state="translated">서버 유형의 아이콘 경로</target>
       </trans-unit>
       <trans-unit id="schema.connectionOptions">
         <source xml:lang="en">Options for connection</source>
@@ -1630,7 +1630,7 @@
     <body>
       <trans-unit id="copyFailed">
         <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="new">Copy failed with error {0}</target>
+        <target state="translated">{0} 오류를 나타내며 복사 실패</target>
       </trans-unit>
     </body>
   </file>
@@ -1738,19 +1738,19 @@
       </trans-unit>
       <trans-unit id="profilerFilterDialog.remove">
         <source xml:lang="en">Remove this clause</source>
-        <target state="new">Remove this clause</target>
+        <target state="translated">이 절 제거</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.saveFilter">
         <source xml:lang="en">Save Filter</source>
-        <target state="new">Save Filter</target>
+        <target state="translated">필터 저장</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.loadFilter">
         <source xml:lang="en">Load Filter</source>
-        <target state="new">Load Filter</target>
+        <target state="translated">필터 로드</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.addClauseText">
         <source xml:lang="en">Add a clause</source>
-        <target state="new">Add a clause</target>
+        <target state="translated">절 추가</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.fieldColumn">
         <source xml:lang="en">Field</source>
@@ -1950,11 +1950,11 @@
       </trans-unit>
       <trans-unit id="backup.commandNotSupported">
         <source xml:lang="en">Backup command is not supported for Azure SQL databases.</source>
-        <target state="new">Backup command is not supported for Azure SQL databases.</target>
+        <target state="translated">Azure SQL Database에 대해 백업 명령이 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="backup.commandNotSupportedForServer">
         <source xml:lang="en">Backup command is not supported in Server Context. Please select a Database and try again.</source>
-        <target state="new">Backup command is not supported in Server Context. Please select a Database and try again.</target>
+        <target state="translated">서버 컨텍스트에서 백업 명령이 지원되지 않습니다. 데이터베이스를 선택하고 다시 시도하세요.</target>
       </trans-unit>
       <trans-unit id="restoreAction.restore">
         <source xml:lang="en">Restore</source>
@@ -1966,11 +1966,11 @@
       </trans-unit>
       <trans-unit id="restore.commandNotSupported">
         <source xml:lang="en">Restore command is not supported for Azure SQL databases.</source>
-        <target state="new">Restore command is not supported for Azure SQL databases.</target>
+        <target state="translated">Azure SQL Database에 대해 복원 명령이 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="restore.commandNotSupportedForServer">
         <source xml:lang="en">Restore command is not supported in Server Context. Please select a Database and try again.</source>
-        <target state="new">Restore command is not supported in Server Context. Please select a Database and try again.</target>
+        <target state="translated">복원 명령은 서버 컨텍스트에서 지원되지 않습니다. 데이터베이스를 선택하고 다시 시도하세요.</target>
       </trans-unit>
       <trans-unit id="manage">
         <source xml:lang="en">Manage</source>
@@ -2146,11 +2146,11 @@
     <body>
       <trans-unit id="runActiveCell">
         <source xml:lang="en">F5 shortcut key requires a code cell to be selected. Please select a code cell to run.</source>
-        <target state="new">F5 shortcut key requires a code cell to be selected. Please select a code cell to run.</target>
+        <target state="translated">F5 바로 가기 키를 사용하려면 코드 셀을 선택해야 합니다. 실행할 코드 셀을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="clearResultActiveCell">
         <source xml:lang="en">Clear result requires a code cell to be selected. Please select a code cell to run.</source>
-        <target state="new">Clear result requires a code cell to be selected. Please select a code cell to run.</target>
+        <target state="translated">명확한 결과를 얻으려면 코드 셀을 선택해야 합니다. 실행할 코드 셀을 선택하세요.</target>
       </trans-unit>
     </body>
   </file>
@@ -2556,7 +2556,7 @@
     <body>
       <trans-unit id="noTaskMessage">
         <source xml:lang="en">No task history to display.</source>
-        <target state="new">No task history to display.</target>
+        <target state="translated">표시할 작업 기록이 없습니다.</target>
       </trans-unit>
       <trans-unit id="taskHistory.regTreeAriaLabel">
         <source xml:lang="en">Task history</source>
@@ -2649,7 +2649,7 @@
       </trans-unit>
       <trans-unit id="query.initEditExecutionFailed">
         <source xml:lang="en">Initialize edit data session failed: </source>
-        <target state="new">Initialize edit data session failed: </target>
+        <target state="translated">편집 데이터 세션 초기화 실패:</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>
@@ -2657,7 +2657,7 @@
       </trans-unit>
       <trans-unit id="copyFailed">
         <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="new">Copy failed with error {0}</target>
+        <target state="translated">{0} 오류를 나타내며 복사 실패</target>
       </trans-unit>
     </body>
   </file>
@@ -2925,7 +2925,7 @@
     <body>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
-        <target state="new">No connections found.</target>
+        <target state="translated">연결이 없습니다.</target>
       </trans-unit>
       <trans-unit id="serverTree.addConnection">
         <source xml:lang="en">Add Connection</source>
@@ -2989,7 +2989,7 @@
     <body>
       <trans-unit id="serverDescription">
         <source xml:lang="en">Server Description (optional)</source>
-        <target state="new">Server Description (optional)</target>
+        <target state="translated">서버 설명(선택 사항)</target>
       </trans-unit>
     </body>
   </file>
@@ -3061,7 +3061,7 @@
       </trans-unit>
       <trans-unit id="noKernelInstalled">
         <source xml:lang="en">Please install the SQL Server 2019 extension to run cells.</source>
-        <target state="new">Please install the SQL Server 2019 extension to run cells.</target>
+        <target state="translated">셀을 실행하려면 SQL Server 2019 확장을 설치하세요.</target>
       </trans-unit>
       <trans-unit id="installSql2019Extension">
         <source xml:lang="en">Install Extension</source>
@@ -3089,7 +3089,7 @@
       </trans-unit>
       <trans-unit id="cellRunFailed">
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
-        <target state="new">Run Cells failed - See error in output of the currently selected cell for more information.</target>
+        <target state="translated">셀 실행 실패 - 자세한 내용은 현재 선택한 셀의 출력 오류를 참조하세요.</target>
       </trans-unit>
     </body>
   </file>
@@ -3205,7 +3205,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.gettingStarted">
         <source xml:lang="en">Getting started</source>
-        <target state="new">Getting started</target>
+        <target state="translated">시작</target>
       </trans-unit>
       <trans-unit id="welcomePage.productDocumentation">
         <source xml:lang="en">Documentation</source>
@@ -3213,7 +3213,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.reportIssue">
         <source xml:lang="en">Report issue or feature request</source>
-        <target state="new">Report issue or feature request</target>
+        <target state="translated">문제 또는 기능 요청 보고</target>
       </trans-unit>
       <trans-unit id="welcomePage.gitHubRepository">
         <source xml:lang="en">GitHub repository</source>
@@ -3237,7 +3237,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.extensionDescription">
         <source xml:lang="en">Download extensions that you need, including the SQL Server Admin pack and more</source>
-        <target state="new">Download extensions that you need, including the SQL Server Admin pack and more</target>
+        <target state="translated">SQL Server 관리자 팩 등을 포함하여 필요한 확장 다운로드</target>
       </trans-unit>
       <trans-unit id="welcomePage.keyboardShortcut">
         <source xml:lang="en">Keyboard Shortcuts</source>
@@ -3245,7 +3245,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.keyboardShortcutDescription">
         <source xml:lang="en">Find your favorite commands and customize them</source>
-        <target state="new">Find your favorite commands and customize them</target>
+        <target state="translated">즐겨찾는 명령을 찾아 사용자 지정</target>
       </trans-unit>
       <trans-unit id="welcomePage.colorTheme">
         <source xml:lang="en">Color theme</source>
@@ -3269,19 +3269,19 @@
       </trans-unit>
       <trans-unit id="welcomePage.azdataBlog">
         <source xml:lang="en">Discover what's new in the latest release</source>
-        <target state="new">Discover what's new in the latest release</target>
+        <target state="translated">최신 릴리스의 새로운 기능 알아보기</target>
       </trans-unit>
       <trans-unit id="welcomePage.azdataBlogDescription">
         <source xml:lang="en">New monthly blog posts each month showcasing our new features</source>
-        <target state="new">New monthly blog posts each month showcasing our new features</target>
+        <target state="translated">매월 새로운 기능을 보여주는 새로운 월간 블로그 게시물</target>
       </trans-unit>
       <trans-unit id="welcomePage.followTwitter">
         <source xml:lang="en">Follow us on Twitter</source>
-        <target state="new">Follow us on Twitter</target>
+        <target state="translated">Twitter에서 팔로우</target>
       </trans-unit>
       <trans-unit id="welcomePage.followTwitterDescription">
         <source xml:lang="en">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</source>
-        <target state="new">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</target>
+        <target state="translated">커뮤니티가 Azure Data Studio를 사용하고 엔지니어와 직접 대화하는 방법을 최신 상태로 유지할 수 있습니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -3397,7 +3397,7 @@
     <body>
       <trans-unit id="stdInLabel">
         <source xml:lang="en">StdIn:</source>
-        <target state="new">StdIn:</target>
+        <target state="translated">StdIn:</target>
       </trans-unit>
     </body>
   </file>
@@ -3485,7 +3485,7 @@
       </trans-unit>
       <trans-unit id="resultsErrorColor">
         <source xml:lang="en">Results messages error color.</source>
-        <target state="new">Results messages error color.</target>
+        <target state="translated">결과 메시지 오류 색입니다.</target>
       </trans-unit>
     </body>
   </file>
@@ -3657,7 +3657,7 @@
       </trans-unit>
       <trans-unit id="connectingQueryLabel">
         <source xml:lang="en">Connecting query file</source>
-        <target state="new">Connecting query file</target>
+        <target state="translated">쿼리 파일 연결 중</target>
       </trans-unit>
     </body>
   </file>
@@ -3805,19 +3805,19 @@
     <body>
       <trans-unit id="noMimeTypeFound">
         <source xml:lang="en">No {0}renderer could be found for output. It has the following MIME types: {1}</source>
-        <target state="new">No {0}renderer could be found for output. It has the following MIME types: {1}</target>
+        <target state="translated">출력의 {0} 렌더러를 찾을 수 없습니다. MIME 형식이 {1}입니다.</target>
       </trans-unit>
       <trans-unit id="safe">
         <source xml:lang="en">safe </source>
-        <target state="new">safe </target>
+        <target state="translated">안전</target>
       </trans-unit>
       <trans-unit id="noSelectorFound">
         <source xml:lang="en">No component could be found for selector {0}</source>
-        <target state="new">No component could be found for selector {0}</target>
+        <target state="translated">선택기 {0}에 대한 구성 요소를 찾을 수 없습니다.</target>
       </trans-unit>
       <trans-unit id="componentRenderError">
         <source xml:lang="en">Error rendering component: {0}</source>
-        <target state="new">Error rendering component: {0}</target>
+        <target state="translated">오류 렌더링 구성 요소: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -4137,7 +4137,7 @@
       </trans-unit>
       <trans-unit id="saveToFileNotSupported">
         <source xml:lang="en">Save to file is not supported by the backing data source</source>
-        <target state="new">Save to file is not supported by the backing data source</target>
+        <target state="translated">백업 데이터 소스에서는 파일로 저장이 지원되지 않습니다.</target>
       </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
@@ -4549,19 +4549,19 @@
       </trans-unit>
       <trans-unit id="markdownBefore">
         <source xml:lang="en">Insert Text Before</source>
-        <target state="new">Insert Text Before</target>
+        <target state="translated">앞에 텍스트 삽입</target>
       </trans-unit>
       <trans-unit id="markdownAfter">
         <source xml:lang="en">Insert Text After</source>
-        <target state="new">Insert Text After</target>
+        <target state="translated">뒤에 텍스트 삽입</target>
       </trans-unit>
       <trans-unit id="runAllBefore">
         <source xml:lang="en">Run Cells Before</source>
-        <target state="new">Run Cells Before</target>
+        <target state="translated">이전에 셀 실행</target>
       </trans-unit>
       <trans-unit id="runAllAfter">
         <source xml:lang="en">Run Cells After</source>
-        <target state="new">Run Cells After</target>
+        <target state="translated">다음 이후에 셀 실행</target>
       </trans-unit>
       <trans-unit id="clear">
         <source xml:lang="en">Clear Output</source>
@@ -4709,7 +4709,7 @@
       </trans-unit>
       <trans-unit id="notebook">
         <source xml:lang="en">Notebook</source>
-        <target state="new">Notebook</target>
+        <target state="translated">Notebook</target>
       </trans-unit>
       <trans-unit id="sql">
         <source xml:lang="en">SQL</source>
@@ -4733,7 +4733,7 @@
     <body>
       <trans-unit id="kernelRequiresConnection">
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
-        <target state="new">Please select a connection to run cells for this kernel</target>
+        <target state="translated">이 커널에 대해 셀을 실행하려면 연결을 선택하세요.</target>
       </trans-unit>
       <trans-unit id="deleteCellFailed">
         <source xml:lang="en">Failed to delete cell.</source>
@@ -4955,7 +4955,7 @@ Error: {1}</source>
     <body>
       <trans-unit id="runCellCancelled">
         <source xml:lang="en">Cell execution cancelled</source>
-        <target state="new">Cell execution cancelled</target>
+        <target state="translated">셀 실행이 취소됨</target>
       </trans-unit>
       <trans-unit id="executionCanceled">
         <source xml:lang="en">Query execution was canceled</source>
