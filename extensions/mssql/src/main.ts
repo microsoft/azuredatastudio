@@ -126,7 +126,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	registerBooksWidget(bookContributionProvider);
 
 	vscode.commands.registerCommand('books.SQL19Preview', async (context) => {
-		vscode.commands.executeCommand('bookTreeView.openBook', bookContributionProvider.contributions[0].path, false);
+		vscode.commands.executeCommand('bookTreeView.openBook', bookContributionProvider.contributions[0].path, true);
 	});
 
 	let api: MssqlExtensionApi = {
