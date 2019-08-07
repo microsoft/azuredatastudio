@@ -472,7 +472,7 @@
       </trans-unit>
       <trans-unit id="openExternalLinkError">
         <source xml:lang="en">Open link {0} failed: {1}</source>
-        <target state="new">Open link {0} failed: {1}</target>
+        <target state="translated">Fehler beim Öffnen von Link {0}: {1}</target>
       </trans-unit>
       <trans-unit id="openConfigFileError">
         <source xml:lang="en">Open file {0} failed: {1}</source>
@@ -480,15 +480,15 @@
       </trans-unit>
       <trans-unit id="openExternalLinkCommand">
         <source xml:lang="en">Open External Link</source>
-        <target state="new">Open External Link</target>
+        <target state="translated">Externen Link öffnen</target>
       </trans-unit>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">Notebook öffnen</target>
       </trans-unit>
       <trans-unit id="openMarkdownCommand">
         <source xml:lang="en">Open Markdown</source>
-        <target state="new">Open Markdown</target>
+        <target state="translated">Markdown öffnen</target>
       </trans-unit>
       <trans-unit id="missingFileError">
         <source xml:lang="en">Missing file : {0}</source>
