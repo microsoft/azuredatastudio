@@ -26,16 +26,16 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
-		this.getTableOfContentFiles(workspacePaths);
+		this.getTableOfContentFiles(workspaceFolders).then(() => undefined, (err) => { console.log(err); });
 		this._extensionContext = extensionContext;
 	}
 
-	async getTableOfContentFiles(directories?: string[]): Promise<void> {
+	async getTableOfContentFiles(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
 		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 		let maxDepth = notebookConfig[maxBookSearchDepth];
-		for (let i in directories) {
-			let tableOfContentPaths = await fg([directories[i] + '/**/_data/toc.yml'], { deep: maxDepth });
+		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
+		for (let path of workspacePaths) {
+			let tableOfContentPaths = await fg([path + '/**/_data/toc.yml'], { deep: maxDepth });
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 		}
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
