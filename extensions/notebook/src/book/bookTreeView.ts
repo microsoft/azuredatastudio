@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import * as fg from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
+import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -31,8 +32,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async getTableOfContentFiles(directories?: string[]): Promise<void> {
+		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
+		let maxDepth = notebookConfig[maxBookSearchDepth];
 		for (let i in directories) {
-			let tableOfContentPaths = await fg([directories[i] + '/**/_data/toc.yml']);
+			let tableOfContentPaths = await fg([directories[i] + '/**/_data/toc.yml'], { deep: maxDepth });
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 		}
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;

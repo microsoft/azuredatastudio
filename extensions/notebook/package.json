@@ -17,6 +17,11 @@
 			"type": "object",
 			"title": "%notebook.configuration.title%",
 			"properties": {
+				"notebook.maxBookSearchDepth": {
+					"type": "number",
+					"default": 5,
+					"description": "%notebook.maxBookSearchDepth.description%"
+				},
 				"notebook.pythonPath": {
 					"type": "string",
 					"default": "",
