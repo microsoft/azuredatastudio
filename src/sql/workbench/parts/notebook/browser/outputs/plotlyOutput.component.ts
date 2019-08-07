@@ -143,7 +143,7 @@ export class PlotlyOutputComponent extends AngularDisposable implements IMimeCom
 	}
 
 	private displayError(error: Error | string): void {
-		this.errorText = localize('plotlyError', 'Error displaying Plotly graph: {0}', getErrorMessage(error));
+		this.errorText = localize('plotlyError', "Error displaying Plotly graph: {0}", getErrorMessage(error));
 	}
 
 	layout(): void {

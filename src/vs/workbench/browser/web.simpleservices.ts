@@ -37,6 +37,7 @@ import { IRemoteAgentService } from 'vs/workbench/services/remote/common/remoteA
 // tslint:disable-next-line: import-patterns
 import { IExperimentService, IExperiment, ExperimentActionType, ExperimentState } from 'vs/workbench/contrib/experiments/common/experimentService';
 import { ExtensionHostDebugChannelClient, ExtensionHostDebugBroadcastChannel } from 'vs/platform/debug/common/extensionHostDebugIpc';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 //#region Extension Tips
 
@@ -303,7 +304,8 @@ export class SimpleWindowService extends Disposable implements IWindowService {
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IWorkspaceContextService private readonly workspaceService: IWorkspaceContextService,
-		@ILogService private readonly logService: ILogService
+		@ILogService private readonly logService: ILogService,
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
 	) {
 		super();
 
@@ -499,7 +501,7 @@ export class SimpleWindowService extends Disposable implements IWindowService {
 		for (let i = 0; i < _uris.length; i++) {
 			const uri = _uris[i];
 			if ('folderUri' in uri) {
-				const newAddress = `${document.location.origin}/?folder=${uri.folderUri.path}`;
+				const newAddress = `${document.location.origin}/?folder=${uri.folderUri.path}${this.workbenchEnvironmentService.configuration.connectionToken ? `&tkn=${this.workbenchEnvironmentService.configuration.connectionToken}` : ''}`;
 				if (openFolderInNewWindow) {
 					window.open(newAddress);
 				} else {
@@ -618,6 +620,10 @@ export class SimpleWindowsService implements IWindowsService {
 	readonly onWindowUnmaximize: Event<number> = Event.None;
 	readonly onRecentlyOpenedChange: Event<void> = Event.None;
 
+	constructor(
+		@IWorkbenchEnvironmentService private readonly workbenchEnvironmentService: IWorkbenchEnvironmentService
+	) {
+	}
 	isFocused(_windowId: number): Promise<boolean> {
 		return Promise.resolve(true);
 	}
@@ -787,6 +793,9 @@ export class SimpleWindowsService implements IWindowsService {
 		if (ibe) {
 			newAddress += `&ibe=${encodeURIComponent(ibe)}`;
 		}
+
+		// add connection token
+		newAddress += `${this.workbenchEnvironmentService.configuration.connectionToken ? `tkn=${this.workbenchEnvironmentService.configuration.connectionToken}` : ''}`;
 
 		window.open(newAddress);
 

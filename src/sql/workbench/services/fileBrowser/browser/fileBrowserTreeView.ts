@@ -78,7 +78,7 @@ export class FileBrowserTreeView implements IDisposable {
 		}, {
 				indentPixels: 10,
 				twistiePixels: 12,
-				ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, 'File browser tree')
+				ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, "File browser tree")
 			});
 	}
 

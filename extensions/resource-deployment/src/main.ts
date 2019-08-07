@@ -5,7 +5,7 @@
 'use strict';
 
 import vscode = require('vscode');
-import { ResourceDeploymentDialog } from './ui/resourceDeploymentDialog';
+import { ResourceTypePickerDialog } from './ui/resourceDeploymentDialog';
 import { ToolsService } from './services/toolsService';
 import { NotebookService } from './services/notebookService';
 import { ResourceTypeService } from './services/resourceTypeService';
@@ -33,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (filtered.length !== 1) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));
 		} else {
-			const dialog = new ResourceDeploymentDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
+			const dialog = new ResourceTypePickerDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
 			dialog.open();
 		}
 	};
