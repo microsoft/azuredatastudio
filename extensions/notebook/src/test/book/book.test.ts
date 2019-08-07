@@ -12,6 +12,7 @@ import * as rimraf from 'rimraf';
 import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
+import * as assert from'assert';
 
 describe('BookTreeViewProvider.getChildren', function (): void {
 	const rootFolderPath = path.join(os.tmpdir(), 'testBook');
@@ -60,7 +61,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			};
 			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		} catch (e) {
-			console.log(e);
+			assert.ok(false, e);
 		}
 	});
 
