@@ -115,11 +115,6 @@
       {
         "command": "mssql.clearSearchServerResult",
         "title": "%title.clearSearchServerResult%"
-      },
-      {
-        "command": "books.SQL19Preview",
-        "title": "%title.SQL19PreviewBook%",
-        "category": "%books-preview-category%"
       }
     ],
     "outputChannels": [

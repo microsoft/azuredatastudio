@@ -129,7 +129,12 @@
 			{
 				"command": "jupyter.reinstallDependencies",
 				"title": "%title.reinstallNotebookDependencies%"
-			}
+			},
+      {
+        "command": "books.SQL19Preview",
+        "title": "%title.SQL19PreviewBook%",
+        "category": "%books-preview-category%"
+      }
 		],
 		"languages": [
 			{

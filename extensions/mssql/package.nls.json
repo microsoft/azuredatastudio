@@ -32,9 +32,7 @@
 
 	"title.endpoints": "Service Endpoints",
 	"title.books": "Notebooks",
-	"title.SQL19PreviewBook": "SQL Server 2019 Guide",
 
-	"books-preview-category": "Jupyter Books",
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"mssql.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
