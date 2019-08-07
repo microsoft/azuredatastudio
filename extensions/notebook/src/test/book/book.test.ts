@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
@@ -44,20 +44,24 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let book: BookTreeItem;
 
 	this.beforeAll(async () => {
-		fs.mkdirSync(rootFolderPath);
-		fs.mkdirSync(dataFolderPath);
-		fs.mkdirSync(contentFolderPath);
-		fs.writeFileSync(configFile, 'title: Test Book');
-		fs.writeFileSync(tableOfContentsFile, '- title: Notebook\n  url: /notebook\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
-		fs.writeFileSync(notebookFile, '');
-		fs.writeFileSync(markdownFile, '');
-		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		let folder: vscode.WorkspaceFolder = {
-			uri: vscode.Uri.parse(rootFolderPath),
-			name: '',
-			index: 0
-		};
-		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+		try {
+			await fs.mkdir(rootFolderPath);
+			await fs.mkdir(dataFolderPath);
+			await fs.mkdir(contentFolderPath);
+			await fs.writeFile(configFile, 'title: Test Book');
+			await fs.writeFile(tableOfContentsFile, '- title: Notebook\n  url: /notebook\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
+			await fs.writeFile(notebookFile, '');
+			await fs.writeFile(markdownFile, '');
+			mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+			let folder: vscode.WorkspaceFolder = {
+				uri: vscode.Uri.parse(rootFolderPath),
+				name: '',
+				index: 0
+			};
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+		} catch (e) {
+			console.log(e);
+		}
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
