@@ -3382,7 +3382,6 @@ declare namespace monaco.editor {
 		readonly pixelRatio: number;
 		readonly editorClassName: string;
 		readonly lineHeight: number;
-		readonly scrollOff: number;
 		readonly readOnly: boolean;
 		readonly multiCursorModifier: 'altKey' | 'ctrlKey' | 'metaKey';
 		readonly multiCursorMergeOverlapping: boolean;
@@ -3524,7 +3523,6 @@ declare namespace monaco.editor {
 		readonly pixelRatio: boolean;
 		readonly editorClassName: boolean;
 		readonly lineHeight: boolean;
-		readonly scrollOff: boolean;
 		readonly readOnly: boolean;
 		readonly accessibilitySupport: boolean;
 		readonly multiCursorModifier: boolean;
