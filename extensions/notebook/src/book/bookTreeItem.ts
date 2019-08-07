@@ -33,7 +33,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	public command: vscode.Command;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
-		super(book.title, vscode.TreeItemCollapsibleState.Collapsed);
+		super(book.title, book.collapsibleState);
 
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.collapsibleState;

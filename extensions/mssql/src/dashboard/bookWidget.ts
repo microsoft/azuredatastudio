@@ -5,15 +5,10 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import {
-	BookContributionProvider, BookContribution
+	BookContributionProvider
 } from './bookExtensions';
-import * as Utils from '../utils';
 
-const localize = nls.loadMessageBundle();
 
 export function registerBooksWidget(bookContributionProvider: BookContributionProvider): void {
 	azdata.ui.registerModelViewProvider('books-widget', async (view) => {
@@ -40,7 +35,8 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 				title: contribution.name
 			}).component();
 			tsgbooklink.onDidClick(() => {
-				promptForFolder(contribution);
+				let uri: vscode.Uri = vscode.Uri.file(contribution.path);
+				openBookViewlet(uri);
 			});
 			bookRow.addItem(tsgbooklink, {
 				CSSStyles: {
@@ -73,40 +69,6 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 	});
 }
 
-async function promptForFolder(bookContribution: BookContribution): Promise<void> {
-	try {
-		const allFilesFilter = localize('allFiles', "All Files");
-		let filter = {};
-		filter[allFilesFilter] = '*';
-		let uris = await vscode.window.showOpenDialog({
-			filters: filter,
-			canSelectFiles: false,
-			canSelectMany: false,
-			canSelectFolders: true,
-			openLabel: localize('labelPickFolder', "Pick Folder")
-		});
-		if (uris && uris.length > 0) {
-			let pickedFolder = uris[0];
-			let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, bookContribution.name));
-			await saveBooksToFolder(destinationUri, bookContribution);
-			openBookViewlet(destinationUri);
-		}
-		return;
-	} catch (error) {
-		vscode.window.showErrorMessage(localize('FailedDuringSaveAndPrompt', 'Failed : {0}', Utils.getErrorMessage(error)));
-	}
-}
-
-async function saveBooksToFolder(folderUri: vscode.Uri, bookContribution: BookContribution): Promise<void> {
-	// Get book contributions
-	if (bookContribution && folderUri) {
-		//remove folder if exists
-		await fs.removeSync(folderUri.fsPath);
-		//make directory for each contribution book.
-		await fs.mkdirSync(folderUri.fsPath);
-		await fs.copy(bookContribution.path, folderUri.fsPath);
-	}
-}
 function openBookViewlet(folderUri: vscode.Uri): void {
-	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath);
+	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true);
 }

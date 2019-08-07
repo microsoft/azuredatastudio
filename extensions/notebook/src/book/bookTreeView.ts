@@ -10,6 +10,7 @@ import * as fs from 'fs';
 import * as yaml from 'js-yaml';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import * as nls from 'vscode-nls';
+
 const localize = nls.loadMessageBundle();
 
 
@@ -23,15 +24,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
+	private _openAsUntitled: boolean;
 
 	constructor(private workspaceRoot: string, extensionContext: vscode.ExtensionContext) {
 		this.initialze(workspaceRoot, extensionContext);
 	}
 
 	private initialze(resource: string, context: vscode.ExtensionContext): void {
-		if (resource !== '' && this.workspaceRoot === '') {
+		if (resource !== '' && this.workspaceRoot !== resource) {
 			this.workspaceRoot = resource;
 			this._tableOfContentsPath = this.getTocFiles(this.workspaceRoot);
+			this._openAsUntitled = false;
 			let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
 			vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		}
@@ -52,11 +55,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return allFiles;
 	}
 
-	async openBook(resource: string, context: vscode.ExtensionContext): Promise<void> {
+	async openBook(resource: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
 		try {
 			this.initialze(resource, context);
 			let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 			vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(res => {
+				this._openAsUntitled = openAsUntitled;
 				let books = this.getBooks();
 				if (books && books.length > 0) {
 					bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
@@ -79,8 +83,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openNotebook(resource: string): Promise<void> {
 		try {
-			let doc = await vscode.workspace.openTextDocument(resource);
-			vscode.window.showTextDocument(doc);
+			if (this._openAsUntitled) {
+				this.openNotebookAsUntitled(resource);
+			}
+			else {
+				let doc = await vscode.workspace.openTextDocument(resource);
+				vscode.window.showTextDocument(doc);
+			}
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openNotebookError', 'Open file {0} failed: {1}',
 				resource,
@@ -91,13 +100,38 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	openMarkdown(resource: string): void {
 		this.runThrottledAction(resource, () => {
 			try {
-				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+				if (this._openAsUntitled) {
+					this.openNotebookAsUntitled(resource);
+				}
+				else {
+					vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
+				}
 			} catch (e) {
 				vscode.window.showErrorMessage(localize('openMarkdownError', "Open file {0} failed: {1}",
 					resource,
 					e instanceof Error ? e.message : e));
 			}
 		});
+	}
+
+	async openNotebookAsUntitled(resource: string): Promise<void> {
+		try {
+			let title = this.findNextUntitledEditorName(resource);
+			let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
+			vscode.workspace.openTextDocument(resource).then((document) => {
+				let initialContent = document.getText();
+				azdata.nb.showNotebookDocument(untitledFileName, {
+					connectionProfile: null,
+					preview: true,
+					initialContent: initialContent,
+					initialDirtyState: false
+				});
+			});
+		} catch (e) {
+			vscode.window.showErrorMessage(localize('openUntitledNotebookError', 'Open file {0} as untitled failed: {1}',
+				resource,
+				e instanceof Error ? e.message : e));
+		}
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
@@ -263,5 +297,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			};
 		}
 		return Promise.resolve(result);
+	}
+
+	findNextUntitledEditorName(filePath: string): string {
+		const fileExtension = path.extname(filePath);
+		const baseName = path.basename(filePath, fileExtension);
+		let idx = 0;
+		let title = `${baseName}`;
+		do {
+			const suffix = idx === 0 ? '' : `-${idx}`;
+			title = `${baseName}${suffix}`;
+			idx++;
+		} while (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
+
+		return title;
 	}
 }
