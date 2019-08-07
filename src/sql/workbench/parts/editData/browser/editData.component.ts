@@ -177,9 +177,9 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 			// replace the line breaks with space since the edit text control cannot
 			// render line breaks and strips them, updating the value.
 			if (Services.DBCellValue.isDBCellValue(value)) {
-				returnVal = this.spacefyLinebreaks(value.displayValue);
+				returnVal = this.replaceLinebreaks(value.displayValue);
 			} else if (typeof value === 'string') {
-				returnVal = this.spacefyLinebreaks(value);
+				returnVal = this.replaceLinebreaks(value);
 			}
 			return returnVal;
 		};
@@ -408,7 +408,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	/**
 	 * Replace the line breaks with space.
 	 */
-	private spacefyLinebreaks(inputStr: string): string {
+	private replaceLinebreaks(inputStr: string): string {
 		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
