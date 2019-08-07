@@ -122,6 +122,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	registerHdfsCommands(context, prompter, appContext);
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
 
+	registerLogCommand(context);
+
 	registerServiceEndpoints(context);
 	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
 	const bookContributionProvider = getBookExtensionContributions(context);
@@ -143,6 +145,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		}
 	};
 	return api;
+}
+
+const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
+function registerLogCommand(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.showLogFile', async () => {
+		const choice = await vscode.window.showQuickPick(logFiles);
+		if (choice) {
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
+			if (document) {
+				vscode.window.showTextDocument(document);
+			}
+		}
+	}));
 }
 
 function getClientOptions(): ClientOptions {
@@ -291,7 +306,7 @@ async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionPr
 	}
 }
 function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
-	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools', executablePath);
+	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

@@ -70,7 +70,7 @@ export function copyFile(source: string, target: string): void {
 }
 
 export function removeOldLogFiles(logPath: string, prefix: string): JSON {
-	return findRemoveSync(logPath, { prefix: `${prefix}_`, age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
+	return findRemoveSync(logPath, { age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
@@ -111,16 +111,16 @@ export function getLogFileName(prefix: string, pid: number): string {
 	return `${prefix}_${pid}.log`;
 }
 
-export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, prefix: string, executablePath: string): string[] {
+export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
-	let logFile = path.join(logPath, getLogFileName(prefix, process.pid));
+	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
 	// Delete old log files
-	let deletedLogFiles = removeOldLogFiles(logPath, prefix);
+	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());

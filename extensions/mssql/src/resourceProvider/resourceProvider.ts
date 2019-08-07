@@ -102,7 +102,7 @@ export class AzureResourceProvider {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this.logPath, 'resourceprovider', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this.logPath, 'resourceprovider.log', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }
