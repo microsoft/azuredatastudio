@@ -164,8 +164,12 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected getRootPath(): string {
-		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
-		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		// use previous file location if there was one
+		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
+			return path.dirname(this.fileTextBox.value);
+		} else { // otherwise use the folder open in the Explorer or the home directory
+			return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		}
 	}
 
 	protected appendFileExtensionIfNeeded() {
