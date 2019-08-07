@@ -10,6 +10,7 @@ import { Memento } from 'vs/workbench/common/memento';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
+import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
@@ -22,8 +23,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 
 suite('SQL QueryEditor Tests', () => {
 	let instantiationService: TypeMoq.Mock<InstantiationService>;
@@ -55,7 +54,7 @@ suite('SQL QueryEditor Tests', () => {
 			return new Promise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined)));
+			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined, undefined)));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
@@ -65,7 +64,7 @@ suite('SQL QueryEditor Tests', () => {
 				}
 			}
 			// Default
-			return new RunQueryAction(undefined, undefined);
+			return new RunQueryAction(undefined, undefined, undefined, undefined);
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
@@ -248,6 +247,7 @@ suite('SQL QueryEditor Tests', () => {
 	suite('Action Tests', () => {
 		let queryActionInstantiationService: TypeMoq.Mock<InstantiationService>;
 		let queryConnectionService: TypeMoq.Mock<ConnectionManagementService>;
+		let queryModelService: TypeMoq.Mock<QueryModelService>;
 		let queryInput: QueryInput;
 		setup(() => {
 
@@ -262,7 +262,6 @@ suite('SQL QueryEditor Tests', () => {
 
 			// Mock InstantiationService to give us the actions
 			queryActionInstantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
-			instantiationService.setup(x => x.createInstance(TypeMoq.It.isValue(QueryRunner), TypeMoq.It.isAnyString())).returns(() => new QueryRunner('', undefined, undefined, undefined, undefined, undefined));
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 				return new Promise((resolve) => resolve(mockEditor));
@@ -270,7 +269,7 @@ suite('SQL QueryEditor Tests', () => {
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
 				// Default
-				return new RunQueryAction(undefined, undefined);
+				return new RunQueryAction(undefined, undefined, undefined, undefined);
 			});
 
 			// Setup hook to capture calls to create the listDatabase action
@@ -281,24 +280,27 @@ suite('SQL QueryEditor Tests', () => {
 						return item;
 					}
 					// Default
-					return new RunQueryAction(undefined, undefined);
+					return new RunQueryAction(undefined, undefined, undefined, undefined);
 				});
 
-			const mockInstantiationService = new TestInstantiationService();
-
 			let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
+			queryModelService = TypeMoq.Mock.ofType(QueryModelService, TypeMoq.MockBehavior.Loose, undefined, undefined);
+			queryModelService.callBase = true;
+			queryModelService.setup(x => x.disposeQuery(TypeMoq.It.isAny())).returns(() => void 0);
 			queryInput = new QueryInput(
 				'',
 				fileInput,
 				undefined,
-				connectionManagementService.object,
 				undefined,
-				mockInstantiationService
+				connectionManagementService.object,
+				queryModelService.object,
+				undefined
 			);
 		});
 
 		test('Taskbar buttons are set correctly upon standard load', () => {
 			queryConnectionService.setup(x => x.isConnected(TypeMoq.It.isAny())).returns(() => false);
+			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			// If I use the created QueryEditor with no changes since creation
 			// Buttons should be set as if disconnected
 			assert.equal(queryInput.state.connected, false, 'query state should be not connected');
@@ -309,14 +311,16 @@ suite('SQL QueryEditor Tests', () => {
 		test('Taskbar buttons are set correctly upon connect', () => {
 			let params: INewConnectionParams = { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none };
 			queryInput.onConnectSuccess(params);
+			queryModelService.setup(x => x.isRunningQuery(TypeMoq.It.isAny())).returns(() => false);
 			assert.equal(queryInput.state.connected, true, 'query state should be not connected');
 			assert.equal(queryInput.state.executing, false, 'query state should be not executing');
 			assert.equal(queryInput.state.connecting, false, 'query state should be not connecting');
 		});
 		test('Test that we attempt to dispose query when the queryInput is disposed', () => {
-			let queryResultsInput = new QueryResultsInput('testUri', undefined);
+			let queryResultsInput = new QueryResultsInput('testUri');
 			queryInput['_results'] = queryResultsInput;
 			queryInput.close();
+			queryModelService.verify(x => x.disposeQuery(TypeMoq.It.isAnyString()), TypeMoq.Times.once());
 		});
 	});
 });

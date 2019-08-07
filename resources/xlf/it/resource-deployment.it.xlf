@@ -36,7 +36,7 @@
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-display-name">
         <source xml:lang="en">SQL Server big data cluster</source>
-        <target state="translated">CLUSTER BIG DATA DI SQL SERVER</target>
+        <target state="translated">Cluster Big Data di SQL Server</target>
       </trans-unit>
       <trans-unit id="resource-type-sql-bdc-description">
         <source xml:lang="en">SQL Server big data cluster allows you to deploy scalable clusters of SQL Server, Spark, and HDFS containers running on Kubernetes</source>
