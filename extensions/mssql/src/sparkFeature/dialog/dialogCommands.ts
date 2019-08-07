@@ -21,6 +21,12 @@ import * as LocalizedConstants from '../../localizedConstants';
 import * as SqlClusterLookUp from '../../sqlClusterLookUp';
 import { SqlClusterConnection } from '../../objectExplorerNodeProvider/connection';
 
+interface MssqlOptions {
+	server: string;
+}
+
+const timeout = (millis: number) => new Promise(c => setTimeout(c, millis));
+
 export class OpenSparkJobSubmissionDialogCommand extends Command {
 	constructor(appContext: AppContext, private outputChannel: vscode.OutputChannel) {
 		super(constants.mssqlClusterLivySubmitSparkJobCommand, appContext);
@@ -49,23 +55,51 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 	private async selectConnection(): Promise<SqlClusterConnection> {
 		let connectionList: azdata.connection.Connection[] = await this.apiWrapper.getActiveConnections();
-		let displayList: string[] = new Array();
 		let connectionMap: Map<string, azdata.connection.Connection> = new Map();
+		let selectedHost: string = undefined;
+		let showConnectionDialog = false;
+
+		// Filter invalid connections
 		if (connectionList && connectionList.length > 0) {
+			connectionList = connectionList.filter(conn => conn.providerName === constants.sqlProviderName && (<MssqlOptions><any>conn.options).server);
+		}
+		// Prompt choice if we have active connections
+		if (connectionList && connectionList.length > 0) {
+			let selectConnectionMsg = localize('selectOtherServer', "Select other SQL Server");
+			let displayList: string[] = [];
 			connectionList.forEach(conn => {
-				if (conn.providerName === constants.sqlProviderName) {
-					displayList.push(conn.options.host);
-					connectionMap.set(conn.options.host, conn);
-				}
+				let options: MssqlOptions = <any>conn.options;
+				displayList.push(options.server);
+				connectionMap.set(options.server, conn);
 			});
+			displayList.push(selectConnectionMsg);
+
+			selectedHost = await vscode.window.showQuickPick(displayList, {
+				placeHolder:
+					localize('sparkJobSubmission_PleaseSelectSqlWithCluster',
+						"Please select SQL Server with big data cluster.")
+			});
+			if (selectedHost === selectConnectionMsg) {
+				showConnectionDialog = true;
+				selectedHost = undefined;
+			}
+		} else {
+			showConnectionDialog = true;
 		}
 
-		let selectedHost: string = await vscode.window.showQuickPick(displayList, {
-			placeHolder:
-				localize('sparkJobSubmission_PleaseSelectSqlWithCluster',
-					"Please select SQL Server with big data cluster.")
-		});
-		let errorMsg = localize('sparkJobSubmission_NoSqlSelected', 'No Sql Server is selected.');
+		// Show connection dialog if still don't have a server
+		if (showConnectionDialog) {
+			let connection = await azdata.connection.openConnectionDialog([constants.sqlProviderName]);
+			if (connection) {
+				let options: MssqlOptions = <any>connection.options;
+				connectionMap.set(options.server, connection);
+				selectedHost = options.server;
+				// Wait an appropriate timeout so that the serverInfo object can populate...
+				await timeout(150);
+			}
+		}
+
+		let errorMsg = localize('sparkJobSubmission_NoSqlSelected', 'No SQL Server is selected.');
 		if (!selectedHost) { throw new Error(errorMsg); }
 
 		let sqlConnection = connectionMap.get(selectedHost);
@@ -73,7 +107,7 @@ export class OpenSparkJobSubmissionDialogCommand extends Command {
 
 		let sqlClusterConnection = await SqlClusterLookUp.getSqlClusterConnection(sqlConnection);
 		if (!sqlClusterConnection) {
-			throw new Error(LocalizedConstants.sparkJobSubmissionNoSqlBigDataClusterFound);
+			throw new Error(localize('errorNotSqlBigDataCluster', "The selected server does not belong to a SQL Server big data cluster"));
 		}
 
 		return new SqlClusterConnection(sqlClusterConnection);

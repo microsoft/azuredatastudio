@@ -18,7 +18,7 @@ export const SCRIPT_AS_DELETE_COMMAND_ID = 'objectExplorer.scriptAsDelete';
 export const SCRIPT_AS_SELECT_COMMAND_ID = 'objectExplorer.scriptAsSelect';
 export const SCRIPT_AS_EXECUTE_COMMAND_ID = 'objectExplorer.scriptAsExecute';
 export const SCRIPT_AS_ALTER_COMMAND_ID = 'objectExplorer.scriptAsAlter';
-export const EDIT_DATA_COMMAND_ID = 'objectExplorer.scriptAsAlter';
+export const EDIT_DATA_COMMAND_ID = 'objectExplorer.scriptAsEdit';
 
 // Script as Create
 CommandsRegistry.registerCommand({

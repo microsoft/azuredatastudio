@@ -64,7 +64,7 @@
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
         <source xml:lang="en">SQL Server big data cluster</source>
-        <target state="translated">CLUSTER BIG DATA DI SQL SERVER</target>
+        <target state="translated">Cluster Big Data di SQL Server</target>
       </trans-unit>
       <trans-unit id="title.submitSparkJob">
         <source xml:lang="en">Submit Spark Job</source>
@@ -552,7 +552,7 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">GENERAL</source>
-        <target state="translated">Generale</target>
+        <target state="translated">GENERALE</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Enter a name ...</source>
@@ -624,7 +624,7 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">ADVANCED</source>
-        <target state="translated">Avanzate</target>
+        <target state="translated">AVANZATE</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Reference Jars</source>
@@ -680,18 +680,6 @@
       </trans-unit>
     </body>
   </file>
-  <file original="extensions/mssql/out/prompts/confirm" source-language="en" target-language="it" datatype="plaintext">
-    <body>
-      <trans-unit id="msgYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">Sì</target>
-      </trans-unit>
-      <trans-unit id="msgNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">No</target>
-      </trans-unit>
-    </body>
-  </file>
   <file original="extensions/mssql/out/objectExplorerNodeProvider/webhdfs" source-language="en" target-language="it" datatype="plaintext">
     <body>
       <trans-unit id="webhdfs.invalidDataStructure">
@@ -712,7 +700,7 @@
       </trans-unit>
       <trans-unit id="webhdfs.httpError401">
         <source xml:lang="en">Unauthorized</source>
-        <target state="translated">non autorizzato</target>
+        <target state="translated">Non autorizzato</target>
       </trans-unit>
       <trans-unit id="webhdfs.httpError403">
         <source xml:lang="en">Forbidden</source>
@@ -752,7 +740,7 @@
       </trans-unit>
       <trans-unit id="rootLabel">
         <source xml:lang="en">Root</source>
-        <target state="translated">radice</target>
+        <target state="translated">Radice</target>
       </trans-unit>
       <trans-unit id="hdfsFolder">
         <source xml:lang="en">HDFS</source>
@@ -908,6 +896,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/mssql/out/prompts/confirm" source-language="en" target-language="it" datatype="plaintext">
+    <body>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">Sì</target>
+      </trans-unit>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">No</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/out/main" source-language="en" target-language="it" datatype="plaintext">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
@@ -965,6 +965,34 @@
       <trans-unit id="fileNotFound">
         <source xml:lang="en">Unable to find the file specified</source>
         <target state="translated">Non è possibile trovare il file specificato</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} service to {1}</source>
+        <target state="translated">Installazione del servizio {0} in {1}</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing Service</source>
+        <target state="translated">Installazione del servizio</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">Installato</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">Download di {0}</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading Service</source>
+        <target state="translated">Download del servizio</target>
+      </trans-unit>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Done!</source>
+        <target state="translated">Operazione completata.</target>
       </trans-unit>
     </body>
   </file>
