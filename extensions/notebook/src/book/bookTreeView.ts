@@ -39,6 +39,9 @@ export class BookTreeViewProvider implements TreeDataProvider<BookTreeItem>, azd
 			let tableOfContentPaths = await fg([directories[i] + '/**/_data/toc.yml']);
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 		}
+		this._tableOfContentPaths = this._tableOfContentPaths.filter(function (elem, index, self) {
+			return index === self.indexOf(elem);
+		});
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
 		commands.executeCommand('setContext', 'bookOpened', bookOpened);
 	}
