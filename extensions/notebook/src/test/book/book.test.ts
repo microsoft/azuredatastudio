@@ -13,17 +13,40 @@ import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
 
+export interface NotebookBookItem {
+	title: string;
+	url: string;
+	previousUri: string | undefined;
+	nextUri: string | undefined;
+}
+
 describe('BookTreeViewProvider.getChildren', function (): void {
 	const rootFolderPath = path.join(os.tmpdir(), 'testBook');
 	const dataFolderPath = path.join(rootFolderPath, '_data');
 	const contentFolderPath = path.join(rootFolderPath, 'content');
 	const configFile = path.join(rootFolderPath, '_config.yml');
 	const tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
-	const notebookFile = path.join(contentFolderPath, 'notebook.ipynb');
+	const notebook1File = path.join(contentFolderPath, 'notebook1.ipynb');
+	const notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+	const notebook3File = path.join(contentFolderPath, 'notebook3.ipynb');
 	const markdownFile = path.join(contentFolderPath, 'markdown.md');
-	const expectedNotebook = {
-		title: 'Notebook',
-		url: '/notebook'
+	const expectedNotebook1: NotebookBookItem = {
+		title: 'Notebook1',
+		url: '/notebook1',
+		previousUri: undefined,
+		nextUri: notebook2File
+	};
+	const expectedNotebook2: NotebookBookItem = {
+		title: 'Notebook2',
+		url: '/notebook2',
+		previousUri: notebook1File,
+		nextUri: notebook3File
+	};
+	const expectedNotebook3: NotebookBookItem = {
+		title: 'Notebook3',
+		url: '/notebook3',
+		previousUri: notebook2File,
+		nextUri: undefined
 	};
 	const expectedMarkdown = {
 		title: 'Markdown',
@@ -35,21 +58,24 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		external: true
 	};
 	const expectedBook = {
-		sections: [expectedNotebook, expectedMarkdown, expectedExternalLink],
+		sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 		title: 'Test Book'
 	};
 
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let bookTreeViewProvider: BookTreeViewProvider;
 	let book: BookTreeItem;
+	let notebook1: BookTreeItem;
 
 	this.beforeAll(async () => {
 		fs.mkdirSync(rootFolderPath);
 		fs.mkdirSync(dataFolderPath);
 		fs.mkdirSync(contentFolderPath);
 		fs.writeFileSync(configFile, 'title: Test Book');
-		fs.writeFileSync(tableOfContentsFile, '- title: Notebook\n  url: /notebook\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
-		fs.writeFileSync(notebookFile, '');
+		fs.writeFileSync(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
+		fs.writeFileSync(notebook1File, '');
+		fs.writeFileSync(notebook2File, '');
+		fs.writeFileSync(notebook3File, '');
 		fs.writeFileSync(markdownFile, '');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		let folder: vscode.WorkspaceFolder = {
@@ -72,15 +98,33 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		const children = await bookTreeViewProvider.getChildren(book);
 		should(children).be.Array();
 		should(children.length).equal(3);
-		const notebook = children[0];
+		notebook1 = children[0];
 		const markdown = children[1];
 		const externalLink = children[2];
-		should(notebook.title).equal(expectedNotebook.title);
-		should(notebook.uri).equal(expectedNotebook.url);
+		should(notebook1.title).equal(expectedNotebook1.title);
+		should(notebook1.uri).equal(expectedNotebook1.url);
+		should(notebook1.previousUri).equal(expectedNotebook1.previousUri);
+		should(notebook1.nextUri).equal(expectedNotebook1.nextUri);
 		should(markdown.title).equal(expectedMarkdown.title);
 		should(markdown.uri).equal(expectedMarkdown.url);
 		should(externalLink.title).equal(expectedExternalLink.title);
 		should(externalLink.uri).equal(expectedExternalLink.url);
+	});
+
+	it('should return all sections when element is a notebook', async function (): Promise<void> {
+		const children = await bookTreeViewProvider.getChildren(notebook1);
+		should(children).be.Array();
+		should(children.length).equal(2);
+		const notebook2 = children[0];
+		const notebook3 = children[1];
+		should(notebook2.title).equal(expectedNotebook2.title);
+		should(notebook2.uri).equal(expectedNotebook2.url);
+		should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
+		should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
+		should(notebook3.title).equal(expectedNotebook3.title);
+		should(notebook3.uri).equal(expectedNotebook3.url);
+		should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
+		should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
 	});
 
 	after(async function () {
