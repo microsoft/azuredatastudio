@@ -18,6 +18,7 @@ import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { ISelectionData, ExecutionPlanOptions } from 'azdata';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
+import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 
 const MAX_SIZE = 13;
 
@@ -216,6 +217,11 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		}
 
 		return false;
+	}
+
+	// will change this to a better function but needed to know if its file or untitled for now
+	public isFileEditorInput(): boolean {
+		return (this._sql instanceof FileEditorInput);
 	}
 
 	public getName(longForm?: boolean): string {

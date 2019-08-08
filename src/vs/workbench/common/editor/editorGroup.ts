@@ -19,8 +19,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import * as path from 'vs/base/common/path';
-import * as os from 'os';
+import { IFileService } from 'vs/platform/files/common/files';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -112,7 +111,8 @@ export class EditorGroup extends Disposable {
 	constructor(
 		labelOrSerializedGroup: ISerializedEditorGroup,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IFileService protected readonly fileService: IFileService,
 	) {
 		super();
 
@@ -666,15 +666,6 @@ export class EditorGroup extends Disposable {
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
-				// Do not add generated files from Temp if file is not dirty
-				if (e instanceof FileEditorInput && !e.isDirty()) {
-					let filePath = e.getResource() ? e.getResource().fsPath : undefined;
-					let tempPath = os.tmpdir();
-					if (filePath && tempPath &&
-						filePath.toLocaleLowerCase().includes(path.join(tempPath.toLocaleLowerCase(), 'mssql_definition'))) {
-						return;
-					}
-				}
 				// {{SQL CARBON EDIT}} - End
 
 				const value = factory.serialize(e);
@@ -738,6 +729,34 @@ export class EditorGroup extends Disposable {
 		this.active = this.mru[0];
 		if (typeof data.preview === 'number') {
 			this.preview = this.editors[data.preview];
+		}
+	}
+
+	async removeNonExitingEditor(): Promise<void> {
+		let n = 0;
+		while (n < this.editors.length) {
+			let editor = this.editors[n] as QueryInput;
+			let exist: boolean = await this.fileService.exists(editor.getResource());
+			// Explanation of the 5 ifs : do this for
+			// editor !== undefined : only query editors (to check for actual inpput type)
+			// editor.isFileEditorInput() : which have been created from fileEditor input (not untitled)
+			// !editor.isDirty() : do not have changes
+			// exist === false : do not exist
+			// this.editors.length > 1: opened with atleast one more editor because single active editor scenario is handled by VS and if we do it here then welcome page doesn't come
+			if (editor !== undefined && editor.isFileEditorInput() && !editor.isDirty() && exist === false && this.editors.length > 1) {
+				//remove from editors list so that they do not get restored
+				this.editors.splice(n, 1);
+				let index = this.mru.findIndex(e => e.matches(editor));
+
+				// remove from MRU list other wise later if we try to close them it leaves a sticky active editor with no data
+				this.mru.splice(index, 1);
+				this.active = this.isActive(editor) ? this.editors[0] : this.active;
+				editor.close();
+			}
+			else {
+				n++;
+			}
+
 		}
 	}
 }
