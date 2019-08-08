@@ -107,12 +107,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	openMarkdown(resource: string): void {
 		this.runThrottledAction(resource, () => {
 			try {
-				if (this._openAsUntitled) {
-					this.openNotebookAsUntitled(resource);
-				}
-				else {
-					vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
-				}
+				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
 			} catch (e) {
 				vscode.window.showErrorMessage(localize('openMarkdownError', "Open file {0} failed: {1}",
 					resource,
