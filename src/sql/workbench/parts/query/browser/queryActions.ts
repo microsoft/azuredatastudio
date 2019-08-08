@@ -447,30 +447,26 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 	}
 
 	private updateLabelAndIcon(): void {
-		if (this.isSqlCmdMode) {
-			// show option to disable sql cmd mode if already enabled
-			this.label = this._disablesqlcmdLabel;
-			this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass);
-		} else {
-			this.label = this._enablesqlcmdLabel;
-			this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
-		}
+		// show option to disable sql cmd mode if already enabled
+		this.label = this.isSqlCmdMode ? this._disablesqlcmdLabel : this._enablesqlcmdLabel;
+		this.isSqlCmdMode ? this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass) : this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
+	}
+
+	private setSqlCmdModeFalse() {
+
 	}
 
 	public run(): Promise<void> {
+		const toSqlCmdState = !this.isSqlCmdMode; // input.state change triggers event that changes this.isSqlCmdMode, so store it before using
+		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
+
+		// set query options
 		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
-		if (this.isSqlCmdMode) {
-			// disable sql cmd mode if already enabled
-			this.editor.input.state.isSqlCmdMode = false;
-			queryoptions.options['isSqlCmdMode'] = false;
-			this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions); // to set query options
-			this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL'); // to set intellisense options
-		} else {
-			this.editor.input.state.isSqlCmdMode = true;
-			queryoptions.options['isSqlCmdMode'] = true;
-			this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
-			this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL');
-		}
+		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
+		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
+
+		// set intellisense options
+		toSqlCmdState ? this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL') : this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL');
 		return Promise.resolve(null);
 	}
 }
