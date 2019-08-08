@@ -9,40 +9,33 @@ import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/parts/notebook/browser/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
+import { ACTION_IDS, PROFILER_MAX_MATCHES, INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
-
-// TODO: change
-
-import { ACTION_IDS, PROFILER_MAX_MATCHES } from 'sql/workbench/parts/profiler/browser/profilerFindWidget';
 import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/notebook/browser/notebookActions';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+import { INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
-	protected _input: NotebookInput;
 	private _notebookContainer: HTMLElement;
 	private _currentDimensions: DOM.Dimension;
 	private _overlay: HTMLElement;
 	private _findState: FindReplaceState;
 	private _finder: FindWidget;
 	private _actionMap: { [x: string]: IEditorAction } = {};
-	private _notebookModel: NotebookModel;
 	private _onDidChangeConfiguration = new Emitter<IConfigurationChangedEvent>();
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 
@@ -65,6 +58,14 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public get notebookInput(): NotebookInput {
 		return this.input as NotebookInput;
+	}
+
+	public get notebookModel(): INotebookModel {
+		let model: INotebookModel;
+		this.notebookInput.resolve().then(m => {
+			model = m.getNotebookModel();
+		});
+		return model;
 	}
 
     /**
@@ -186,41 +187,42 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 
 		if (e.searchString) {
-			if (this._input && this._input.data) {
+			if (this.notebookInput && this.notebookInput.data) {
 				if (this._findState.searchString) {
-					this._input.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
+					this.notebookInput.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
 						if (p) {
-							this._notebookModel.activeCell = p;
+							// TODO: set active cell
+							// this.notebookModel.activeCell = p;
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
 						}
 					});
 				} else {
-					this._input.data.clearFind();
+					this.notebookInput.data.clearFind();
 				}
 			}
 		}
 	}
 
-	//TODO: get notebook model
-
 	public findNext(): void {
-		this._input.contentManager.loadContent.findNext().then(p => {
-			this._notebookModel.activeCell = p;
+		this.notebookModel.findNext().then(p => {
+			// TODO: set active cell
+			// this.notebookModel.activeCell = p;
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	public findPrevious(): void {
-		this._input.contentManager.loadContent.findPrevious().then(p => {
-			this._notebookModel.activeCell = p;
+		this.notebookModel.findPrevious().then(p => {
+			// TODO: set active cell
+			// this.notebookModel.activeCell = p;
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	private _updateFinderMatchState(): void {
-		if (this._input && this._input.data) {
-			this._findState.changeMatchInfo(this._input.data.findPosition, this._input.data.findCount, undefined);
+		if (this.notebookInput && this.notebookInput.data) {
+			this._findState.changeMatchInfo(this.notebookInput.data.findPosition, this.notebookInput.data.findCount, undefined);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}

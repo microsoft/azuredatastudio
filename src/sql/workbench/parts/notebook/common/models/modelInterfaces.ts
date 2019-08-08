@@ -406,6 +406,16 @@ export interface INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void;
 
 	standardKernels: IStandardKernelWithProvider[];
+
+	/**
+	 * Find next (number is cell index)
+	 */
+	findNext(): Thenable<number>;
+
+	/**
+	 * Find previous (number is cell index)
+	 */
+	findPrevious(): Thenable<number>;
 }
 
 export interface NotebookContentChange {

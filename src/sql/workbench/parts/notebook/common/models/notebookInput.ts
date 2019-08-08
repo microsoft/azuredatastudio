@@ -131,7 +131,7 @@ export class NotebookEditorModel extends EditorModel {
 		return this.getNotebookModel() !== undefined;
 	}
 
-	private getNotebookModel(): INotebookModel {
+	public getNotebookModel(): INotebookModel {
 		let editor = this.notebookService.findNotebookEditor(this.notebookUri);
 		if (editor) {
 			return editor.model;

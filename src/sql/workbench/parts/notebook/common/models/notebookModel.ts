@@ -1018,4 +1018,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
+	findNext(): Thenable<number> {
+		return undefined;
+	}
+
+	findPrevious(): Thenable<number> {
+		return undefined;
+	}
+
+
 }
