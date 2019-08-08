@@ -10,6 +10,7 @@ import { URI } from 'vs/base/common/uri';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { EditorInput, ConfirmResult, EncodingMode, IEncodingSupport } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IFileService } from 'vs/platform/files/common/files';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
@@ -118,7 +119,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		private _connectionProviderName: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private _queryModelService: IQueryModelService,
-		@IConfigurationService private _configurationService: IConfigurationService
+		@IConfigurationService private _configurationService: IConfigurationService,
+		@IFileService private _fileService: IFileService
 	) {
 		super();
 		this._updateSelection = new Emitter<ISelectionData>();
@@ -221,6 +223,10 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 
 	public matchInputInstanceType(inputType: any): boolean {
 		return (this._sql instanceof inputType);
+	}
+
+	public inputFileExists(): Promise<boolean> {
+		return this._fileService.exists(this.getResource());
 	}
 
 	public getName(longForm?: boolean): string {

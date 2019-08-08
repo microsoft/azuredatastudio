@@ -19,7 +19,6 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
 import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import { IFileService } from 'vs/platform/files/common/files';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -111,8 +110,7 @@ export class EditorGroup extends Disposable {
 	constructor(
 		labelOrSerializedGroup: ISerializedEditorGroup,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IFileService protected readonly fileService: IFileService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
 		super();
 
@@ -737,8 +735,7 @@ export class EditorGroup extends Disposable {
 		let n = 0;
 		while (n < this.editors.length) {
 			let editor = this.editors[n];
-			let exist: boolean = await this.fileService.exists(editor.getResource());
-			if (editor instanceof QueryInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && exist === false && this.editors.length > 1) {
+			if (editor instanceof QueryInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
 				// remove from editors list so that they do not get restored
 				this.editors.splice(n, 1);
 				let index = this.mru.findIndex(e => e.matches(editor));
