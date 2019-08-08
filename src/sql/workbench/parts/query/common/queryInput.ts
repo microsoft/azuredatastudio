@@ -219,9 +219,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		return false;
 	}
 
-	// will change this to a better function but needed to know if its file or untitled for now
-	public isFileEditorInput(): boolean {
-		return (this._sql instanceof FileEditorInput);
+	public matchInputInstanceType(inputType: any): boolean {
+		return (this._sql instanceof inputType);
 	}
 
 	public getName(longForm?: boolean): string {

@@ -426,9 +426,8 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	}
 
 	private async restoreEditors(from: IEditorGroupView | ISerializedEditorGroup): Promise<void> {
+		await this._group.removeNonExitingEditor(); // {{SQL CARBON EDIT}} @udeeshagautam perform async correction for non-existing files
 
-		// doing this here because doing this inside constructor with then was hanging intermittently (not sure why)
-		await this._group.removeNonExitingEditor();
 		if (this._group.count === 0) {
 			return; // nothing to show
 		}
