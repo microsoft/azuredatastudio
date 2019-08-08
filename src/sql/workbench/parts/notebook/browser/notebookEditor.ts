@@ -67,9 +67,9 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this.input as NotebookInput;
 	}
 
-	/**
-	 * Called to create the editor in the parent element.
-	 */
+    /**
+     * Called to create the editor in the parent element.
+     */
 	public createEditor(parent: HTMLElement): void {
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets';
@@ -90,16 +90,16 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		);
 	}
 
-	/**
-	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
-	 */
+    /**
+     * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
+     */
 	public focus(): void {
 	}
 
-	/**
-	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
-	 * To be called when the container of this editor changes size.
-	 */
+    /**
+     * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
+     * To be called when the container of this editor changes size.
+     */
 	public layout(dimension: DOM.Dimension): void {
 		this._currentDimensions = dimension;
 		if (this.notebookInput) {
@@ -131,9 +131,9 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 	}
 
-	/**
-	 * Load the angular components and record for this input that we have done so
-	 */
+    /**
+     * Load the angular components and record for this input that we have done so
+     */
 	private bootstrapAngular(input: NotebookInput): void {
 		// Get the bootstrap params and perform the bootstrap
 		input.hasBootstrapped = true;
@@ -190,7 +190,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 				if (this._findState.searchString) {
 					this._input.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
 						if (p) {
-							this._notebookModel.setActiveCell(p.row, p.col);
+							this._notebookModel.activeCell = p;
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
 						}
@@ -205,15 +205,15 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	//TODO: get notebook model
 
 	public findNext(): void {
-		this._input.data.findNext().then(p => {
-			this._notebookModel.setActiveCell(p.row, p.col);
+		this._input.contentManager.loadContent.findNext().then(p => {
+			this._notebookModel.activeCell = p;
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	public findPrevious(): void {
-		this._input.data.findPrevious().then(p => {
-			this._notebookModel.setActiveCell(p.row, p.col);
+		this._input.contentManager.loadContent.findPrevious().then(p => {
+			this._notebookModel.activeCell = p;
 			this._updateFinderMatchState();
 		}, er => { });
 	}
@@ -226,3 +226,4 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 	}
 }
+
