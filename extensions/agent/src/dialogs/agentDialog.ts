@@ -36,23 +36,24 @@ export abstract class AgentDialog<T extends IAgentDialogData> {
 	protected abstract async initializeDialog(dialog: azdata.window.Dialog);
 
 	public async openDialog(dialogName?: string) {
-		if (!this._isOpen) {
-			this._isOpen = true;
-			let event = dialogName ? dialogName : null;
-			this.dialog = azdata.window.createModelViewDialog(this.title, event);
+		vscode.window.withProgress({ location: vscode.ProgressLocation.Window }, async () => {
+			if (!this._isOpen) {
+				this._isOpen = true;
+				let event = dialogName ? dialogName : null;
+				this.dialog = azdata.window.createModelViewDialog(this.title, event);
 
-			await this.model.initialize();
+				await this.model.initialize();
 
-			await this.initializeDialog(this.dialog);
+				await this.initializeDialog(this.dialog);
 
-			this.dialog.okButton.label = AgentDialog.OkButtonText;
-			this.dialog.okButton.onClick(async () => await this.execute());
+				this.dialog.okButton.label = AgentDialog.OkButtonText;
+				this.dialog.okButton.onClick(async () => await this.execute());
 
-			this.dialog.cancelButton.label = AgentDialog.CancelButtonText;
-			this.dialog.cancelButton.onClick(async () => await this.cancel());
-
+				this.dialog.cancelButton.label = AgentDialog.CancelButtonText;
+				this.dialog.cancelButton.onClick(async () => await this.cancel());
+			}
 			azdata.window.openDialog(this.dialog);
-		}
+		});
 	}
 
 	protected async execute() {

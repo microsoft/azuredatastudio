@@ -441,7 +441,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						this.AlertTypeLabelString
 					],
 					data: data,
-					height: 750,
+					height: 500,
 					width: 400
 				}).component();
 
@@ -487,7 +487,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 						PickScheduleDialog.ScheduleDescription
 					],
 					data: [],
-					height: 750,
+					height: 500,
 					width: 420
 				}).component();
 
@@ -542,8 +542,7 @@ export class JobDialog extends AgentDialog<JobData>  {
 	private populateScheduleTable() {
 		let data = this.convertSchedulesToData(this.schedules);
 		this.schedulesTable.data = data;
-		this.schedulesTable.height = 750;
-
+		this.schedulesTable.height = 500;
 	}
 
 	private initializeNotificationsTab() {
