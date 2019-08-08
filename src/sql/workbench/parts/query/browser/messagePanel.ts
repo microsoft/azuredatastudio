@@ -146,6 +146,7 @@ export class MessagePanel extends Disposable {
 
 	private queryRunnerDisposables = new DisposableStore();
 	private _state: MessagePanelState | undefined;
+	private inital = false;
 
 	private list: WorkbenchList<IQueryMessage>;
 
@@ -218,7 +219,10 @@ export class MessagePanel extends Disposable {
 
 	public layout(size: Dimension): void {
 		this.list.layout(size.height, size.width);
-		this.refresh();
+		if (!this.inital && isInDOM(this.container)) {
+			this.inital = true;
+			this.refresh();
+		}
 	}
 
 	public focus(): void {
@@ -227,17 +231,21 @@ export class MessagePanel extends Disposable {
 
 	public set queryRunner(runner: QueryRunner) {
 		this._runner = runner;
-		this.queryRunnerDisposables.dispose();
-		this.queryRunnerDisposables = new DisposableStore();
-		this.reset();
-		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
-		const refreshInterval = this.queryRunnerDisposables.add(new IntervalTimer());
-		if (runner.isExecuting) {
-			refreshInterval.cancelAndSet(() => this.refresh(), 100);
+		this.inital = false;
+		if (isInDOM(this.container)) {
+			this.inital = true;
+			this.queryRunnerDisposables.dispose();
+			this.queryRunnerDisposables = new DisposableStore();
+			this.reset();
+			this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
+			const refreshInterval = this.queryRunnerDisposables.add(new IntervalTimer());
+			if (runner.isExecuting) {
+				refreshInterval.cancelAndSet(() => this.refresh(), 100);
+			}
+			this.queryRunnerDisposables.add(runner.onQueryEnd(() => refreshInterval.cancel()));
+			this.queryRunnerDisposables.add(runner.onQueryStart(() => refreshInterval.cancelAndSet(() => this.refresh(), 100)));
+			this.refresh();
 		}
-		this.queryRunnerDisposables.add(runner.onQueryEnd(() => refreshInterval.cancel()));
-		this.queryRunnerDisposables.add(runner.onQueryStart(() => refreshInterval.cancelAndSet(() => this.refresh(), 100)));
-		this.refresh();
 	}
 
 	private refresh() {

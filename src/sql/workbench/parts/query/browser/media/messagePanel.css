@@ -24,6 +24,7 @@
 
 .message-list .time-stamp {
 	width: 100px;
+	padding-left: 35px;
 	display: inline-block;
 }
 
