@@ -65,6 +65,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private rowIdMappings: { [gridRowId: number]: number } = {};
 	private dirtyCells: number[] = [];
 	protected plugins = new Array<Array<Slick.Plugin<any>>>();
+	private newlinePattern: string;
 
 	// Edit Data functions
 	public onActiveCellChanged: (event: Slick.OnActiveCellChangedEventArgs<any>) => void;
@@ -409,6 +410,10 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	 * Replace the line breaks with space.
 	 */
 	private replaceLinebreaks(inputStr: string): string {
+		let newlineMatches = inputStr.match(/(\r\n|\n|\r)/g);
+		if (newlineMatches && newlineMatches.length > 0) {
+			this.newlinePattern = newlineMatches[0];
+		}
 		return inputStr.replace(/(\r\n|\n|\r)/g, '\u0000');
 	}
 
@@ -510,7 +515,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 					? self.rowIdMappings[self.currentCell.row]
 					: self.currentCell.row;
 
-				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, self.currentEditCellValue.replace('\u0000', String.fromCharCode(13)));
+				return self.dataService.updateCell(sessionRowId, self.currentCell.column - 1, this.newlinePattern ? self.currentEditCellValue.replace('\u0000', this.newlinePattern) : self.currentEditCellValue);
 			}).then(
 				result => {
 					self.currentEditCellValue = undefined;
