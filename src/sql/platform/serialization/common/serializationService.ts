@@ -55,7 +55,7 @@ export interface ISerializationService {
 	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider;
 }
 
-function getRowCount(totalRows: number, currentIndex: number): number {
+function getBatchSize(totalRows: number, currentIndex: number): number {
 	let rowsAvailable = totalRows - currentIndex;
 	return (defaultBatchSize < rowsAvailable) ? defaultBatchSize : rowsAvailable;
 }
@@ -137,7 +137,7 @@ export class SerializationService implements ISerializationService {
 			// Continue to send additional data
 			while (index < serializationRequest.rowCount) {
 				let continueRequestParams = this.createContinueRequest(serializationRequest, index);
-				index = index + continueRequestParams.rows.length;
+				index += continueRequestParams.rows.length;
 				let continueResult = await provider.continueSerialization(continueRequestParams);
 				if (!continueResult.succeeded) {
 					return continueResult;
@@ -158,8 +158,8 @@ export class SerializationService implements ISerializationService {
 	}
 
 	private createStartRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataStartRequestParams {
-		let numberOfRows = getRowCount(serializationRequest.rowCount, index);
-		let rows = serializationRequest.getRowRange(index, numberOfRows);
+		let batchSize = getBatchSize(serializationRequest.rowCount, index);
+		let rows = serializationRequest.getRowRange(index, batchSize);
 		let columns: azdata.SimpleColumnInfo[] = serializationRequest.columns.map(c => {
 			// For now treat all as strings. In the future, would like to use the
 			// type info for correct data type mapping
@@ -187,7 +187,7 @@ export class SerializationService implements ISerializationService {
 	}
 
 	private createContinueRequest(serializationRequest: SerializeDataParams, index: number): azdata.SerializeDataContinueRequestParams {
-		let numberOfRows = getRowCount(serializationRequest.rowCount, index);
+		let numberOfRows = getBatchSize(serializationRequest.rowCount, index);
 		let rows = serializationRequest.getRowRange(index, numberOfRows);
 		let isLastBatch = index + rows.length >= serializationRequest.rowCount;
 		let continueSerializeRequest: azdata.SerializeDataContinueRequestParams = {

@@ -848,7 +848,7 @@ export class SerializationFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					client.logFailedRequest(contracts.GenerateDeployPlanRequest.type, e);
+					client.logFailedRequest(contracts.SerializeDataStartRequest.type, e);
 					return Promise.resolve(<azdata.SerializeDataResult>{
 						succeeded: false,
 						messages: Utils.getErrorMessage(e)
@@ -863,7 +863,7 @@ export class SerializationFeature extends SqlOpsFeature<undefined> {
 					return r;
 				},
 				e => {
-					client.logFailedRequest(contracts.GenerateDeployPlanRequest.type, e);
+					client.logFailedRequest(contracts.SerializeDataContinueRequest.type, e);
 					return Promise.resolve(<azdata.SerializeDataResult>{
 						succeeded: false,
 						messages: Utils.getErrorMessage(e)
