@@ -42,11 +42,11 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	this.beforeAll(async () => {
 		try {
-			let res = '';
+			let testFolder = '';
 			for (let i = 0; i < 8; i++) {
-				res += SEED.charAt(Math.floor(Math.random() * SEED.length));
+				testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
 			}
-			rootFolderPath =  path.join(os.tmpdir(), res);
+			rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
 			let dataFolderPath = path.join(rootFolderPath, '_data');
 			let contentFolderPath = path.join(rootFolderPath, 'content');
 			let configFile = path.join(rootFolderPath, '_config.yml');
