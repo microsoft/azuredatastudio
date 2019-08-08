@@ -18,8 +18,10 @@
 	"bdc-deployment-target": "Deployment target",
 	"bdc-deployment-target-aks": "New Azure Kubernetes Service Cluster",
 	"bdc-deployment-target-existing-aks": "Existing Azure Kubernetes Service Cluster",
+	"bdc-deployment-target-existing-kubeadm": "Existing kubeadm Cluster",
 	"bdc-2019-aks-notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb",
 	"bdc-2019-existing-aks-notebook": "./notebooks/bdc/2019/deploy-bdc-existing-aks.ipynb",
+	"bdc-2019-existing-kubeadm-notebook": "./notebooks/bdc/2019/deploy-bdc-existing-kubeadm.ipynb",
 	"docker-sql-2017-title": "Deploy SQL Server 2017 container images with Docker",
 	"docker-sql-2019-title": "Deploy SQL Server 2019 container images with Docker",
 	"docker-container-name-field": "Container name",
@@ -40,5 +42,9 @@
 	"bdc-azure-region-field": "Region",
 	"bdc-azure-aks-name-field": "AKS cluster name",
 	"bdc-azure-vm-size-field": "VM size",
-	"bdc-azure-vm-count-field": "VM count"
+	"bdc-azure-vm-count-field": "VM count",
+	"bdc-existing-kubeadm-dialog-title": "Deploy SQL Server big data cluster on existing kubeadm cluster",
+	"bdc-storage-class-field": "Storage class name",
+	"bdc-data-size-field": "Capacity for data (GB)",
+	"bdc-log-size-field": "Capacity for logs (GB)"
 }
