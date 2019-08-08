@@ -40,7 +40,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let bookTreeViewProvider: BookTreeViewProvider;
 	let book: BookTreeItem;
 
-	this.beforeAll(async (done) => {
+	this.beforeAll(async () => {
 		try {
 			let testFolder = '';
 			for (let i = 0; i < 8; i++) {
@@ -62,7 +62,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			await fs.writeFile(markdownFile, '');
 			mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 			let folder: vscode.WorkspaceFolder = {
-				uri: vscode.Uri.parse(rootFolderPath),
+				uri: vscode.Uri.file(rootFolderPath),
 				name: '',
 				index: 0
 			};
@@ -70,7 +70,6 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		} catch (e) {
 			assert.ok(false, e);
 		}
-		done();
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
