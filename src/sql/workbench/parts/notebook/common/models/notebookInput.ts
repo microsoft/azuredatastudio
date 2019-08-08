@@ -161,6 +161,8 @@ export class NotebookInput extends EditorInput {
 	private _providersLoaded: Promise<void>;
 	private _dirtyListener: IDisposable;
 	private _notebookEditorOpenedTimestamp: number;
+	// TODO: get notebook data for find widget
+	public data;
 
 	constructor(private _title: string,
 		private resource: URI,

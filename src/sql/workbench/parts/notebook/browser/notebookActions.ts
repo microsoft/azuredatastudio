@@ -25,6 +25,8 @@ import { CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { NotebookComponent } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { IEditorAction } from 'vs/editor/common/editorCommon';
+import { INotebookController } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
 
 const msgLoading = localize('loading', "Loading kernels...");
 const msgChanging = localize('changing', "Changing kernel...");
@@ -559,5 +561,38 @@ export class NewNotebookAction extends Action {
 	run(context?: azdata.ConnectedContext): Promise<void> {
 		return this.commandService.executeCommand(NewNotebookAction.INTERNAL_NEW_NOTEBOOK_CMD_ID, context);
 	}
+}
 
+export class NotebookFindNext implements IEditorAction {
+	public readonly id = 'notebook.findNext';
+	public readonly label = localize('notebook.findNext', "Find Next String");
+	public readonly alias = '';
+
+	constructor(private notebook: INotebookController) { }
+
+	run(): Promise<void> {
+		this.notebook.findNext();
+		return Promise.resolve(null);
+	}
+
+	isSupported(): boolean {
+		return true;
+	}
+}
+
+export class NotebookFindPrevious implements IEditorAction {
+	public readonly id = 'notebook.findPrevious';
+	public readonly label = localize('notebook.findPrevious', "Find Previous String");
+	public readonly alias = '';
+
+	constructor(private notebook: INotebookController) { }
+
+	run(): Promise<void> {
+		this.notebook.findPrevious();
+		return Promise.resolve(null);
+	}
+
+	isSupported(): boolean {
+		return true;
+	}
 }

@@ -16,19 +16,51 @@ import { NotebookModule } from 'sql/workbench/parts/notebook/browser/notebook.mo
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
+import { INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
+import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
+import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
+import { IEditorAction } from 'vs/editor/common/editorCommon';
+import { Event, Emitter } from 'vs/base/common/event';
+import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 
-export class NotebookEditor extends BaseEditor {
+// TODO: change
+
+import { ACTION_IDS, PROFILER_MAX_MATCHES } from 'sql/workbench/parts/profiler/browser/profilerFindWidget';
+import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/notebook/browser/notebookActions';
+import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
+
+export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
+	protected _input: NotebookInput;
 	private _notebookContainer: HTMLElement;
+	private _currentDimensions: DOM.Dimension;
+	private _overlay: HTMLElement;
+	private _findState: FindReplaceState;
+	private _finder: FindWidget;
+	private _actionMap: { [x: string]: IEditorAction } = {};
+	private _notebookModel: NotebookModel;
+	private _onDidChangeConfiguration = new Emitter<IConfigurationChangedEvent>();
+	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
+
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IThemeService themeService: IThemeService,
-		@IInstantiationService private instantiationService: IInstantiationService,
-		@IStorageService storageService: IStorageService
+		@IInstantiationService private _instantiationService: IInstantiationService,
+		@IStorageService storageService: IStorageService,
+		@IContextViewService private _contextViewService: IContextViewService,
+		@IKeybindingService private _keybindingService: IKeybindingService,
+		@IContextKeyService private _contextKeyService: IContextKeyService,
+		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
+
+		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
+		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPrevious, this);
 	}
 
 	public get notebookInput(): NotebookInput {
@@ -39,6 +71,23 @@ export class NotebookEditor extends BaseEditor {
 	 * Called to create the editor in the parent element.
 	 */
 	public createEditor(parent: HTMLElement): void {
+		this._overlay = document.createElement('div');
+		this._overlay.className = 'overlayWidgets';
+		this._overlay.style.width = '100%';
+		this._overlay.style.zIndex = '4';
+		parent.appendChild(this._overlay);
+
+		this._findState = new FindReplaceState();
+		this._findState.onFindReplaceStateChange(e => this._onFindStateChange(e));
+
+		this._finder = new FindWidget(
+			this,
+			this._findState,
+			this._contextViewService,
+			this._keybindingService,
+			this._contextKeyService,
+			this._themeService
+		);
 	}
 
 	/**
@@ -52,6 +101,7 @@ export class NotebookEditor extends BaseEditor {
 	 * To be called when the container of this editor changes size.
 	 */
 	public layout(dimension: DOM.Dimension): void {
+		this._currentDimensions = dimension;
 		if (this.notebookInput) {
 			this.notebookInput.doChangeLayout();
 		}
@@ -93,12 +143,86 @@ export class NotebookEditor extends BaseEditor {
 			providerInfo: input.getProviderInfo(),
 			profile: input.connectionProfile
 		};
-		bootstrapAngular(this.instantiationService,
+		bootstrapAngular(this._instantiationService,
 			NotebookModule,
 			this._notebookContainer,
 			NOTEBOOK_SELECTOR,
 			params,
 			input
 		);
+	}
+
+	public getConfiguration() {
+		return {
+			layoutInfo: {
+				width: this._currentDimensions ? this._currentDimensions.width : 0
+			}
+		};
+	}
+
+	public layoutOverlayWidget(widget: IOverlayWidget): void {
+		// no op
+	}
+
+	public addOverlayWidget(widget: IOverlayWidget): void {
+		let domNode = widget.getDomNode();
+		domNode.style.right = '28px';
+		this._overlay.appendChild(widget.getDomNode());
+		this._findState.change({ isRevealed: false }, false);
+	}
+
+	public getAction(id: string): IEditorAction {
+		return this._actionMap[id];
+	}
+
+	private _onFindStateChange(e: FindReplaceStateChangedEvent): void {
+		if (e.isRevealed) {
+			if (this._findState.isRevealed) {
+				this._finder.getDomNode().style.top = '0px';
+				this._updateFinderMatchState();
+			} else {
+				this._finder.getDomNode().style.top = '';
+			}
+		}
+
+		if (e.searchString) {
+			if (this._input && this._input.data) {
+				if (this._findState.searchString) {
+					this._input.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
+						if (p) {
+							this._notebookModel.setActiveCell(p.row, p.col);
+							this._updateFinderMatchState();
+							this._finder.focusFindInput();
+						}
+					});
+				} else {
+					this._input.data.clearFind();
+				}
+			}
+		}
+	}
+
+	//TODO: get notebook model
+
+	public findNext(): void {
+		this._input.data.findNext().then(p => {
+			this._notebookModel.setActiveCell(p.row, p.col);
+			this._updateFinderMatchState();
+		}, er => { });
+	}
+
+	public findPrevious(): void {
+		this._input.data.findPrevious().then(p => {
+			this._notebookModel.setActiveCell(p.row, p.col);
+			this._updateFinderMatchState();
+		}, er => { });
+	}
+
+	private _updateFinderMatchState(): void {
+		if (this._input && this._input.data) {
+			this._findState.changeMatchInfo(this._input.data.findPosition, this._input.data.findCount, undefined);
+		} else {
+			this._findState.changeMatchInfo(0, 0, undefined);
+		}
 	}
 }
