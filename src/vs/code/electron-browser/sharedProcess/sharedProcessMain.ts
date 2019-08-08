@@ -72,8 +72,7 @@ interface ISharedProcessInitData {
 	logLevel: LogLevel;
 }
 
-// {{SQL CARBON EDIT}} Use custom event prefix to differentiate from VS Code telemetry events
-const eventPrefix = 'adsworkbench';
+const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}} Use custom event prefix to differentiate from VS Code telemetry events
 
 class MainProcessService implements IMainProcessService {
 	constructor(private server: Server, private mainRouter: StaticRouter) { }

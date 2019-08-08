@@ -101,8 +101,7 @@ export class WebTelemetryAppender implements ITelemetryAppender {
 		data = validateTelemetryData(data);
 		this._logService.trace(`telemetry/${eventName}`, data);
 
-		// {{SQL CARBON EDIT}} Use custom event prefix to differentiate from VS Code telemetry events
-		this._aiClient.trackEvent('adsworkbench/' + eventName, data.properties, data.measurements);
+		this._aiClient.trackEvent('adsworkbench/' + eventName, data.properties, data.measurements); // {{SQL CARBON EDIT}} Use custom event prefix to differentiate from VS Code telemetry events
 	}
 
 	flush(): Promise<any> | undefined {
