@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 //#region --- workbench/editor core
-
+import 'sql/setup'; // {{SQL CARBON EDIT}}
 import 'vs/editor/editor.all';
 
 import 'vs/workbench/api/browser/extensionHost.contribution';
@@ -237,8 +237,8 @@ import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServic
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
-import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
+import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
+import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -392,9 +392,8 @@ import 'vs/workbench/contrib/relauncher/electron-browser/relauncher.contribution
 // registerSingleton(ITaskService, TaskService, true);
 
 // Remote
-// {{SQL CARBON EDIT}} @anthonydresser comment our remote
-// import 'vs/workbench/contrib/remote/common/remote.contribution';
-// import 'vs/workbench/contrib/remote/electron-browser/remote.contribution';
+import 'vs/workbench/contrib/remote/common/remote.contribution';
+import 'vs/workbench/contrib/remote/electron-browser/remote.contribution';
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our emmet
@@ -462,6 +461,7 @@ import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/cont
 // {{SQL CARBON EDIT}}
 // SQL
 import 'sql/workbench/parts/tasks/browser/tasks.contribution';
+import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
@@ -489,6 +489,7 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
+import 'sql/workbench/parts/objectExplorer/electron-browser/objectExplorerScripting.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard

@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
 import { SlickGrid } from 'angular2-slickgrid';
 
-import { EditDataComponent } from 'sql/workbench/parts/grid/views/editData/editData.component';
+import { EditDataComponent } from 'sql/workbench/parts/editData/browser/editData.component';
 import { providerIterator } from 'sql/platform/bootstrap/browser/bootstrapService';
 
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';

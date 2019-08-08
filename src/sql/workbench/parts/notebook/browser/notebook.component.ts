@@ -159,6 +159,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._model ? this._model.cells : [];
 	}
 
+	public get addCodeLabel(): string {
+		return localize('addCodeLabel', "Add code");
+	}
+
+	public get addTextLabel(): string {
+		return localize('addTextLabel', "Add text");
+	}
+
 	private updateTheme(theme: IColorTheme): void {
 		let toolbarEl = <HTMLElement>this.toolbar.nativeElement;
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
@@ -192,8 +200,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	// Add cell based on cell type
-	public addCell(cellType: CellType) {
-		this._model.addCell(cellType);
+	public addCell(cellType: CellType, index?: number) {
+		this._model.addCell(cellType, index);
 	}
 
 	public onKeyDown(event) {

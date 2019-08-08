@@ -42,6 +42,7 @@ import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { localize } from 'vs/nls';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -68,7 +69,7 @@ export function createApiFactory(
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
-	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol));
+	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
 	const extHostSerializationProvider = rpcProtocol.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(rpcProtocol));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
@@ -99,6 +100,9 @@ export function createApiFactory(
 				},
 				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+				},
+				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
+					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
 				},
 
 				// "sqlops" back-compat APIs
@@ -562,6 +566,7 @@ export function createApiFactory(
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
 
+			extHostExtensionManagement.$showObsoleteExtensionApiUsageNotification(localize('ObsoleteApiModuleMessage', "The extension \"{0}\" is using sqlops module which has been replaced by azdata module, the sqlops module will be removed in a future release.", extension.identifier.value));
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
 				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {

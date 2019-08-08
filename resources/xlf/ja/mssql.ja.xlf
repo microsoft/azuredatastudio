@@ -60,7 +60,7 @@
       </trans-unit>
       <trans-unit id="tab.bigDataClusterDescription">
         <source xml:lang="en">Tasks and information about your SQL Server big data cluster</source>
-        <target state="translated">SQL Server big data cluster に関するタスクと情報</target>
+        <target state="translated">SQL Server Big Data Cluster に関するタスクと情報</target>
       </trans-unit>
       <trans-unit id="title.bigDataCluster">
         <source xml:lang="en">SQL Server big data cluster</source>
@@ -140,15 +140,15 @@
       </trans-unit>
       <trans-unit id="mssql.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[オプション] コンソールへのデバッグ出力 ([表示] -&gt; [出力}) をログに記録し、ドロップダウンから適切な出力チャネルを選択します</target>
+        <target state="translated">[オプション] コンソールへのデバッグ出力 ([表示] -&gt; [出力]) をログに記録し、ドロップダウンから適切な出力チャネルを選択します</target>
       </trans-unit>
       <trans-unit id="mssql.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[省略可能] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel の場合、ログに記録される数が多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。重大を含むエラー、エラーを含む警告、警告を含む情報、情報を含む詳細です</target>
+        <target state="translated">[オプション] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel の場合、ログに記録される数が多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。重大を含むエラー、エラーを含む警告、警告を含む情報、情報を含む詳細です</target>
       </trans-unit>
       <trans-unit id="mssql.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="translated">バックエンド サービスのログ ファイルを保持する分数。既定値は 1 週間です。</target>
+        <target state="translated">バックエンド サービスのログ ファイルを保持する分数。既定は 1 週間です。</target>
       </trans-unit>
       <trans-unit id="mssql.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>
@@ -656,7 +656,7 @@
     <body>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">Please select SQL Server with big data cluster. </source>
-        <target state="translated">big data cluster が含まれる SQL Server を選択してください。</target>
+        <target state="translated">Big Data Cluster が含まれる SQL Server を選択してください。</target>
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server is selected.</source>
@@ -677,18 +677,6 @@
       <trans-unit id="executeCommandProcessExited">
         <source xml:lang="en">Process exited with code {0}</source>
         <target state="translated">プロセスがコード {0} で終了しました</target>
-      </trans-unit>
-    </body>
-  </file>
-  <file original="extensions/mssql/out/prompts/confirm" source-language="en" target-language="ja" datatype="plaintext">
-    <body>
-      <trans-unit id="msgYes">
-        <source xml:lang="en">Yes</source>
-        <target state="translated">はい</target>
-      </trans-unit>
-      <trans-unit id="msgNo">
-        <source xml:lang="en">No</source>
-        <target state="translated">いいえ</target>
       </trans-unit>
     </body>
   </file>
@@ -908,6 +896,18 @@
       </trans-unit>
     </body>
   </file>
+  <file original="extensions/mssql/out/prompts/confirm" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="msgYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+      <trans-unit id="msgNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+    </body>
+  </file>
   <file original="extensions/mssql/out/main" source-language="en" target-language="ja" datatype="plaintext">
     <body>
       <trans-unit id="msgSampleCodeDataFrame">
@@ -965,6 +965,34 @@
       <trans-unit id="fileNotFound">
         <source xml:lang="en">Unable to find the file specified</source>
         <target state="translated">指定されたファイルが見つかりません</target>
+      </trans-unit>
+      <trans-unit id="installingServiceChannelMsg">
+        <source xml:lang="en">Installing {0} service to {1}</source>
+        <target state="translated">{0} サービスを {1} にインストールしています</target>
+      </trans-unit>
+      <trans-unit id="installingServiceStatusMsg">
+        <source xml:lang="en">Installing Service</source>
+        <target state="translated">サービスをインストールしています</target>
+      </trans-unit>
+      <trans-unit id="installedServiceChannelMsg">
+        <source xml:lang="en">Installed</source>
+        <target state="translated">インストール済み</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceChannelMsg">
+        <source xml:lang="en">Downloading {0}</source>
+        <target state="translated">{0} をダウンロードしています</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceSizeChannelMsg">
+        <source xml:lang="en">({0} KB)</source>
+        <target state="translated">({0} KB)</target>
+      </trans-unit>
+      <trans-unit id="downloadingServiceStatusMsg">
+        <source xml:lang="en">Downloading Service</source>
+        <target state="translated">ダウンロード サービス</target>
+      </trans-unit>
+      <trans-unit id="downloadServiceDoneChannelMsg">
+        <source xml:lang="en">Done!</source>
+        <target state="translated">完了</target>
       </trans-unit>
     </body>
   </file>
@@ -1024,7 +1052,7 @@
       </trans-unit>
       <trans-unit id="sparkJobSubmission">
         <source xml:lang="en">No Sql Server big data cluster found.</source>
-        <target state="translated">SQL Server big data cluster が見つかりません。</target>
+        <target state="translated">SQL Server Big Data Cluster が見つかりません。</target>
       </trans-unit>
     </body>
   </file>

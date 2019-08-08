@@ -90,6 +90,18 @@ export abstract class BasePage {
 			this.deleteServerValues();
 		}
 
+		// only leave unique server connections
+		values = values.reduce((uniqueValues, conn) => {
+			let exists = uniqueValues.find(x => x.displayName === conn.displayName);
+			if (!exists) {
+				uniqueValues.push(conn);
+			}
+			return uniqueValues;
+		}, []);
+
+		// reverse list so that most recent connections show first
+		values.reverse();
+
 		return values;
 	}
 
