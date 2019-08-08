@@ -6,39 +6,26 @@
 import 'vs/css!./media/messagePanel';
 import { IMessagesActionContext, CopyMessagesAction, CopyAllMessagesAction } from './actions';
 import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
-import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 
 import { ISelectionData } from 'azdata';
 
-import { IDataSource, ITree, IRenderer, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
-import { generateUuid } from 'vs/base/common/uuid';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { OpenMode, ClickBehavior, ICancelableEvent, IControllerOptions } from 'vs/base/parts/tree/browser/treeDefaults';
-import { WorkbenchTreeController } from 'vs/platform/list/browser/listService';
-import { isArray } from 'vs/base/common/types';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { WorkbenchList } from 'vs/platform/list/browser/listService';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { $, Dimension, createStyleSheet } from 'vs/base/browser/dom';
-import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
+import { $, Dimension, createStyleSheet, isInDOM } from 'vs/base/browser/dom';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { resultsErrorColor } from 'sql/platform/theme/common/colors';
 import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
-import { ObjectTree } from 'vs/base/browser/ui/tree/objectTree';
-import { List } from 'vs/base/browser/ui/list/listWidget';
 import { IListVirtualDelegate, IListRenderer } from 'vs/base/browser/ui/list/list';
 import { Event } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
-import { Schemas } from 'vs/base/common/network';
-import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
-import { URI } from 'vs/base/common/uri';
+import { IntervalTimer } from 'vs/base/common/async';
 
 export interface IResultMessageIntern extends IQueryMessage {
 	id?: string;
@@ -67,10 +54,6 @@ const TemplateIds = {
 	BATCH: 'batch',
 	ERROR: 'error'
 };
-
-export class MessagePanelState extends Disposable {
-	public scrollTop: number;
-}
 
 class Delegate implements IListVirtualDelegate<IQueryMessage> {
 	private static readonly lineHeight = 22;
@@ -157,14 +140,14 @@ class ErrorMessageRenderer implements IListRenderer<IQueryMessage, IMessageTempl
 export class MessagePanel extends Disposable {
 	private container = $('.message-list');
 	private styleElement = createStyleSheet(this.container);
+	private _runner: QueryRunner;
 
-	private messages = new Array<IQueryMessage>();
 	private lastSelectedString: string = null;
 
-	private queryRunnerDisposables: IDisposable[] = [];
+	private queryRunnerDisposables = new DisposableStore();
 	private _state: MessagePanelState | undefined;
 
-	private list: List<IQueryMessage>;
+	private list: WorkbenchList<IQueryMessage>;
 
 	constructor(
 		@IInstantiationService instantiationService: IInstantiationService,
@@ -175,12 +158,14 @@ export class MessagePanel extends Disposable {
 	) {
 		super();
 		const renderers = [new ErrorMessageRenderer(), new MessageRenderer(), new BatchMessageRenderer()];
-		this.list = this._register(new List(this.container, new Delegate(), renderers, {
-			mouseSupport: false,
-			supportDynamicHeights: true,
-			horizontalScrolling: false,
-			setRowLineHeight: false
-		}));
+		this.list = this._register(instantiationService.createInstance(
+			WorkbenchList,
+			this.container, new Delegate(), renderers, {
+				mouseSupport: false,
+				supportDynamicHeights: true,
+				horizontalScrolling: false,
+				setRowLineHeight: false
+			}));
 		this._register(attachListStyler(this.list, this.themeService));
 		this._register(this.themeService.onThemeChange(this.applyStyles, this));
 		this.applyStyles(this.themeService.getTheme());
@@ -215,7 +200,7 @@ export class MessagePanel extends Disposable {
 				getActionsContext: () => {
 					return <IMessagesActionContext>{
 						selection: this.lastSelectedString,
-						messages: this.messages
+						messages: this._runner.messages
 					};
 				}
 			});
@@ -232,9 +217,8 @@ export class MessagePanel extends Disposable {
 	}
 
 	public layout(size: Dimension): void {
-		const previousScroll = this.state ? this.state.scrollTop || 0 : 0;
 		this.list.layout(size.height, size.width);
-		this.list.scrollTop = previousScroll;
+		this.refresh();
 	}
 
 	public focus(): void {
@@ -242,23 +226,22 @@ export class MessagePanel extends Disposable {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		dispose(this.queryRunnerDisposables);
-		this.queryRunnerDisposables = [];
+		this._runner = runner;
+		this.queryRunnerDisposables.dispose();
+		this.queryRunnerDisposables = new DisposableStore();
 		this.reset();
-		this.queryRunnerDisposables.push(runner.onQueryStart(() => this.reset()));
-		this.queryRunnerDisposables.push(runner.onMessage(e => this.onMessage(e)));
-		this.onMessage(runner.messages);
+		this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
+		const refreshInterval = this.queryRunnerDisposables.add(new IntervalTimer());
+		if (runner.isExecuting) {
+			refreshInterval.cancelAndSet(() => this.refresh(), 100);
+		}
+		this.queryRunnerDisposables.add(runner.onQueryEnd(() => refreshInterval.cancel()));
+		this.queryRunnerDisposables.add(runner.onQueryStart(() => refreshInterval.cancelAndSet(() => this.refresh(), 100)));
+		this.refresh();
 	}
 
-	private onMessage(message: IQueryMessage | IQueryMessage[]) {
-		if (isArray(message)) {
-			this.messages.push(...message);
-		} else {
-			this.messages.push(message);
-		}
-		const previousScroll = this.state ? this.state.scrollTop || 0 : 0;
-		this.list.splice(0, this.list.length, this.messages);
-		this.list.scrollTop = previousScroll;
+	private refresh() {
+		this.list.splice(this.list.length, 0, this._runner.messages.slice(this.list.length, this._runner.messages.length));
 	}
 
 	private applyStyles(theme: ITheme): void {
@@ -275,7 +258,6 @@ export class MessagePanel extends Disposable {
 	}
 
 	private reset() {
-		this.messages = [];
 		this.list.splice(0, this.list.length);
 	}
 
@@ -296,7 +278,7 @@ export class MessagePanel extends Disposable {
 	}
 
 	public dispose() {
-		dispose(this.queryRunnerDisposables);
+		this.queryRunnerDisposables.dispose();
 		if (this.container) {
 			this.container.remove();
 			this.container = undefined;

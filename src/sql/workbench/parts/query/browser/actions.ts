@@ -6,7 +6,6 @@
 import { Action } from 'vs/base/common/actions';
 import { localize } from 'vs/nls';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 
@@ -15,8 +14,6 @@ import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { QueryEditor } from './queryEditor';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
-import { isWindows } from 'vs/base/common/platform';
-import { removeAnsiEscapeCodes } from 'vs/base/common/strings';
 import { IGridDataProvider } from 'sql/platform/query/common/gridDataProvider';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';

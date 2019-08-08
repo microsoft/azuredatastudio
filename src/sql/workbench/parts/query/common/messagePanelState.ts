@@ -3,10 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-export class MessagePanelState {
-	public scrollPosition: number;
+import { Disposable } from 'vs/base/common/lifecycle';
 
-	dispose() {
-
-	}
+export class MessagePanelState extends Disposable {
+	public scrollTop: number;
 }
