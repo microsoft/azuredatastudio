@@ -24,7 +24,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
-	private _openAsUntitled: boolean;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
 		this.initialze(workspaceFolders, null, extensionContext);
@@ -39,7 +38,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			workspacePaths = workspaceFolders.map(a => a.uri.fsPath);
 		}
 		this._tableOfContentsPath = this.getTableOfContentFiles(workspacePaths);
-		this._openAsUntitled = false;
 		let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
 		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		this._extensionContext = context;
@@ -62,12 +60,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return tableOfContentPaths;
 	}
 
-	async openBook(resource: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
+	async openBook(resource: string, context: vscode.ExtensionContext): Promise<void> {
 		try {
 			this.initialze(null, resource, context);
 			let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 			vscode.commands.executeCommand('workbench.files.action.focusFilesExplorer').then(res => {
-				this._openAsUntitled = openAsUntitled;
 				let books = this.getBooks();
 				if (books && books.length > 0) {
 					bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
@@ -90,13 +87,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openNotebook(resource: string): Promise<void> {
 		try {
-			if (this._openAsUntitled) {
-				this.openNotebookAsUntitled(resource);
-			}
-			else {
-				let doc = await vscode.workspace.openTextDocument(resource);
-				vscode.window.showTextDocument(doc);
-			}
+			let doc = await vscode.workspace.openTextDocument(resource);
+			vscode.window.showTextDocument(doc);
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openNotebookError', 'Open file {0} failed: {1}',
 				resource,
