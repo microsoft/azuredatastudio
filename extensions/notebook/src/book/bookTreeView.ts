@@ -23,6 +23,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
+	// For testing
+	private _errorMessage: string;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
 		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
@@ -32,7 +34,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._extensionContext = extensionContext;
 	}
 
-	private getTableOfContentFiles(directories: string[]): string[] {
+	public getTableOfContentFiles(directories: string[]): string[] {
 		let tableOfContentPaths: string[] = [];
 		let paths: string[];
 		directories.forEach(dir => {
@@ -142,9 +144,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				);
 				books.push(book);
 			} catch (e) {
-				vscode.window.showErrorMessage(localize('openConfigFileError', 'Open file {0} failed: {1}',
-					path.join(root, '_config.yml'),
-					e instanceof Error ? e.message : e));
+				let error = e instanceof Error ? e.message : e;
+				this._errorMessage = error;
+				vscode.window.showErrorMessage(error);
 			}
 		}
 		return books;
@@ -204,7 +206,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						);
 						notebooks.push(markdown);
 					} else {
-						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sections[i].title));
+						let error = localize('missingFileError', 'Missing file : {0}', sections[i].title);
+						this._errorMessage = error;
+						vscode.window.showErrorMessage(error);
 					}
 				}
 			} else {
@@ -233,4 +237,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return Promise.resolve(result);
 	}
 
+	public get errorMessage() {
+		return this._errorMessage;
+	}
 }
