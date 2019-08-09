@@ -203,6 +203,11 @@
           "type": "boolean",
           "description": "%ignorePlatformWarning%",
           "default": false
+        },
+        "mssql.maxXmlCharsToStore": {
+          "type": "number",
+          "default": 2097152,
+          "description": "%mssql.maxXmlCharsToStore%"
         }
       }
     },

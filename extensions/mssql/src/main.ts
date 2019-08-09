@@ -81,6 +81,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		languageClient.onReady().then(() => {
 			const processEnd = Date.now();
 			statusView.text = 'Service Started';
+			setClientQueryExecutionOptions();
 			setTimeout(() => {
 				statusView.hide();
 			}, 1500);
@@ -139,6 +140,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		}
 	};
 	return api;
+}
+
+async function setClientQueryExecutionOptions() {
+	const provider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.ConnectionProvider) as azdata.ConnectionProvider;
+	return provider.registerOnConnectionComplete(async (conn) => {
+		const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
+		//const options: Map<string, any> = new Map();
+		try {
+			console.log('start');
+			const x = await queryProvider.setQueryExecutionOptions(conn.connectionId, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
+			console.log(x);
+		} catch (e) {
+			console.log(e);
+		}
+		return undefined;
+	});
 }
 
 function getClientOptions(): ClientOptions {

@@ -17,6 +17,7 @@ const configLogRetentionMinutes = 'logRetentionMinutes';
 const configLogFilesRemovalLimit = 'logFilesRemovalLimit';
 const extensionConfigSectionName = 'mssql';
 const configLogDebugInfo = 'logDebugInfo';
+const configMaxXmlCharsToStore = 'maxXmlCharsToStore';
 
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
@@ -72,6 +73,15 @@ export function getConfigLogFilesRemovalLimit(): number {
 	}
 	else {
 		return undefined;
+	}
+}
+
+export function getConfigMaxXmlCharsToStore(): number {
+	let config = getConfiguration();
+	if (config) {
+		return Number((config[configMaxXmlCharsToStore]).toFixed(0));
+	} else {
+		return 2097152;
 	}
 }
 
