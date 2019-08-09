@@ -15,7 +15,7 @@ import { BookTreeItem } from '../../book/bookTreeItem';
 
 const SEED = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
-export interface TestBookItem {
+export interface ExpectedBookItem {
 	title: string;
 	url?: string;
 	sections?: any[];
@@ -26,12 +26,12 @@ export interface TestBookItem {
 
 describe('BookTreeViewProvider.getChildren', function (): void {
 	let rootFolderPath: string;
-	let expectedNotebook1: TestBookItem;
-	let expectedNotebook2: TestBookItem;
-	let expectedNotebook3: TestBookItem;
-	let expectedMarkdown: TestBookItem;
-	let expectedExternalLink: TestBookItem;
-	let expectedBook: TestBookItem;
+	let expectedNotebook1: ExpectedBookItem;
+	let expectedNotebook2: ExpectedBookItem;
+	let expectedNotebook3: ExpectedBookItem;
+	let expectedMarkdown: ExpectedBookItem;
+	let expectedExternalLink: ExpectedBookItem;
+	let expectedBook: ExpectedBookItem;
 
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let bookTreeViewProvider: BookTreeViewProvider;
