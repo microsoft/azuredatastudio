@@ -303,7 +303,7 @@ export class Main {
 	}
 }
 
-const eventPrefix = 'adsworkbench'; // {{SQL CARBON EDIT}} Use custom event prefix to differentiate from VS Code telemetry events
+const eventPrefix = 'monacoworkbench';
 
 export async function main(argv: ParsedArgs): Promise<void> {
 	const services = new ServiceCollection();
