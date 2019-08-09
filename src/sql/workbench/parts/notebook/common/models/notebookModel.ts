@@ -77,6 +77,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
+	private _findArray: Array<number>;
+	private _findIndex: number;
+	private _onFindCountChange = new Emitter<number>();
+	get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -1019,12 +1023,79 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	findNext(): Thenable<number> {
-		return undefined;
+		if (this._findArray && this._findArray.length !== 0) {
+			if (this._findIndex === this._findArray.length - 1) {
+				this._findIndex = 0;
+			} else {
+				++this._findIndex;
+			}
+			return Promise.resolve(this._findArray[this._findIndex]);
+		} else {
+			return Promise.reject(new Error('no search running'));
+		}
 	}
 
 	findPrevious(): Thenable<number> {
-		return undefined;
+		if (this._findArray && this._findArray.length !== 0) {
+			if (this._findIndex === 0) {
+				this._findIndex = this._findArray.length - 1;
+			} else {
+				--this._findIndex;
+			}
+			return Promise.resolve(this._findArray[this._findIndex]);
+		} else {
+			return Promise.reject(new Error('no search running'));
+		}
 	}
 
+	find(exp: string, maxMatches?: number): Promise<number> {
+		this._findArray = new Array<number>();
+		this._findIndex = 0;
+		this._onFindCountChange.fire(this._findArray.length);
+		if (exp) {
+			return new Promise<number>((resolve) => {
+				const disp = this.onFindCountChange(e => {
+					resolve(this._findArray[e - 1]);
+					disp.dispose();
+				});
+				this._startSearch(exp, maxMatches);
+			});
+		} else {
+			return Promise.reject(new Error('no expression'));
+		}
+	}
 
+	private _startSearch(exp: string, maxMatches: number = 0): void {
+		let searchFn = (cell: ICellModel, exp: string): boolean => {
+			let cellVal = cell.source;
+			if (cellVal) {
+				if (typeof cellVal === 'string' && cellVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+					return true;
+				} else {
+					for (let j = 0; j < cellVal.length; j++) {
+						if (cellVal[j].toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+							return true;
+						}
+					}
+				}
+			}
+			return false;
+		};
+		for (let i = 0; i < this.cells.length; i++) {
+			const item = this.cells[i];
+			const result = searchFn!(item, exp);
+			let breakout = false;
+			if (result) {
+				this._findArray.push(i);
+				this._onFindCountChange.fire(this._findArray.length);
+				if (maxMatches > 0 && this._findArray.length === maxMatches) {
+					breakout = true;
+					break;
+				}
+			}
+			if (breakout) {
+				break;
+			}
+		}
+	}
 }

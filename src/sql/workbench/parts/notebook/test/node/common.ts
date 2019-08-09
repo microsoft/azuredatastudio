@@ -112,6 +112,9 @@ export class NotebookModelStub implements INotebookModel {
 	findPrevious(): Thenable<number> {
 		throw new Error('Method not implemented.');
 	}
+	find(exp: string, maxMatches?: number): Promise<number> {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

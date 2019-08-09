@@ -41,7 +41,7 @@ const FIND_INPUT_AREA_WIDTH = PART_WIDTH - 54;
 
 let MAX_MATCHES_COUNT_WIDTH = 69;
 
-export const PROFILER_MAX_MATCHES = 999;
+export const NOTEBOOK_MAX_MATCHES = 999;
 
 export const ACTION_IDS = {
 	FIND_NEXT: 'findNext',
@@ -214,7 +214,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _updateMatchesCount(): void {
 		this._matchesCount.style.minWidth = MAX_MATCHES_COUNT_WIDTH + 'px';
-		if (this._state.matchesCount >= PROFILER_MAX_MATCHES) {
+		if (this._state.matchesCount >= NOTEBOOK_MAX_MATCHES) {
 			this._matchesCount.title = NLS_MATCHES_COUNT_LIMIT_TITLE;
 		} else {
 			this._matchesCount.title = '';
@@ -228,8 +228,8 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		let label: string;
 		if (this._state.matchesCount > 0) {
 			let matchesCount: string = String(this._state.matchesCount);
-			if (this._state.matchesCount >= PROFILER_MAX_MATCHES) {
-				matchesCount = PROFILER_MAX_MATCHES + '+';
+			if (this._state.matchesCount >= NOTEBOOK_MAX_MATCHES) {
+				matchesCount = NOTEBOOK_MAX_MATCHES + '+';
 			}
 			let matchesPosition: string = String(this._state.matchesPosition);
 			if (matchesPosition === '0') {

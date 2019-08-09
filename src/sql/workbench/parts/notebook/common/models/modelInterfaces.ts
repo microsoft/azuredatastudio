@@ -416,6 +416,11 @@ export interface INotebookModel {
 	 * Find previous (number is cell index)
 	 */
 	findPrevious(): Thenable<number>;
+
+	/**
+	 * Find
+	 */
+	find(exp: string, maxMatches?: number): Promise<number>;
 }
 
 export interface NotebookContentChange {

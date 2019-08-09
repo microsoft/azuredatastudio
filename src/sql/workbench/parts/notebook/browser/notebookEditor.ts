@@ -8,14 +8,14 @@ import { BaseEditor } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { EditorOptions } from 'vs/workbench/common/editor';
 import * as DOM from 'vs/base/browser/dom';
 import { bootstrapAngular } from 'sql/platform/bootstrap/browser/bootstrapService';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { NotebookModule } from 'sql/workbench/parts/notebook/browser/notebook.module';
 import { NOTEBOOK_SELECTOR } from 'sql/workbench/parts/notebook/browser/notebook.component';
 import { INotebookParams } from 'sql/workbench/services/notebook/common/notebookService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
-import { ACTION_IDS, PROFILER_MAX_MATCHES, INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
+import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
 import { IEditorAction } from 'vs/editor/common/editorCommon';
@@ -23,9 +23,14 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
-import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { Command } from 'vs/editor/browser/editorExtensions';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
+import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
@@ -187,9 +192,11 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 
 		if (e.searchString) {
-			if (this.notebookInput && this.notebookInput.data) {
+			if (this.notebookModel) {
 				if (this._findState.searchString) {
-					this.notebookInput.data.find(this._findState.searchString, PROFILER_MAX_MATCHES).then(p => {
+					// let content = this.notebookModel.toJSON().cells;
+					// let contentString = content.map(a => a.source);
+					this.notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
 						if (p) {
 							// TODO: set active cell
 							// this.notebookModel.activeCell = p;
@@ -202,6 +209,13 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 				}
 			}
 		}
+	}
+
+	public toggleSearch(): void {
+		this._findState.change({
+			isRevealed: true
+		}, false);
+		this._finder.focusFindInput();
 	}
 
 	public findNext(): void {
@@ -229,3 +243,35 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 }
 
+abstract class SettingsCommand extends Command {
+
+	protected getNotebookEditor(accessor: ServicesAccessor): NotebookEditor {
+		const activeEditor = accessor.get(IEditorService).activeControl;
+		if (activeEditor instanceof NotebookEditor) {
+			return activeEditor;
+		}
+		return null;
+	}
+
+}
+
+class StartSearchNotebookCommand extends SettingsCommand {
+
+	public runCommand(accessor: ServicesAccessor, args: any): void {
+		const NotebookEditor = this.getNotebookEditor(accessor);
+		if (NotebookEditor) {
+			NotebookEditor.toggleSearch();
+		}
+	}
+
+}
+
+const command = new StartSearchNotebookCommand({
+	id: NOTEBOOK_COMMAND_SEARCH,
+	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
+	kbOpts: {
+		primary: KeyMod.CtrlCmd | KeyCode.KEY_F,
+		weight: KeybindingWeight.EditorContrib
+	}
+});
+command.register();
