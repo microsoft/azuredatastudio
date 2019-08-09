@@ -8,6 +8,7 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
+import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -445,10 +446,11 @@ export class SchemaCompareOptionsDialog {
 	protected async execute() {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
+		this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
+
 		if (this.optionsChanged) {
 			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.YesButtonText, SchemaCompareOptionsDialog.NoButtonText).then((result) => {
 				if (result === SchemaCompareOptionsDialog.YesButtonText) {
-					this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
 					this.schemaComparison.startCompare();
 				}
 			});
@@ -1107,7 +1109,7 @@ export class SchemaCompareOptionsDialog {
 	private GetSchemaCompareIncludedObjectsUtil(label): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Aggregates)) ? false : true;
+				return !isNullOrUndefined(this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Aggregates)) ? false : true;
 			case SchemaCompareOptionsDialog.ApplicationRoles:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ApplicationRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.Assemblies:
