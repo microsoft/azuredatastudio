@@ -216,7 +216,7 @@
       </trans-unit>
       <trans-unit id="createOperator.AlertEmailColumnLabel">
         <source xml:lang="en">E-mail</source>
-        <target state="translated">E-mail</target>
+        <target state="translated">Indirizzo di posta elettronica</target>
       </trans-unit>
       <trans-unit id="createOperator.AlertPagerColumnLabel">
         <source xml:lang="en">Pager</source>
@@ -756,7 +756,7 @@
       </trans-unit>
       <trans-unit id="alertDialog.OperatorEmail">
         <source xml:lang="en">E-mail</source>
-        <target state="translated">E-mail</target>
+        <target state="translated">Indirizzo di posta elettronica</target>
       </trans-unit>
       <trans-unit id="alertDialog.OperatorPager">
         <source xml:lang="en">Pager</source>

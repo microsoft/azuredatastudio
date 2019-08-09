@@ -7,60 +7,31 @@ import * as vscode from 'vscode';
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
 
-export interface NotebookBookItem {
+const SEED = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+export interface TestBookItem {
 	title: string;
-	url: string;
-	previousUri: string | undefined;
-	nextUri: string | undefined;
+	url?: string;
+	sections?: any[];
+	external?: boolean;
+	previousUri?: string | undefined;
+	nextUri?: string | undefined;
 }
 
 describe('BookTreeViewProvider.getChildren', function (): void {
-	const rootFolderPath = path.join(os.tmpdir(), 'testBook');
-	const dataFolderPath = path.join(rootFolderPath, '_data');
-	const contentFolderPath = path.join(rootFolderPath, 'content');
-	const configFile = path.join(rootFolderPath, '_config.yml');
-	const tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
-	const notebook1File = path.join(contentFolderPath, 'notebook1.ipynb');
-	const notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
-	const notebook3File = path.join(contentFolderPath, 'notebook3.ipynb');
-	const markdownFile = path.join(contentFolderPath, 'markdown.md');
-	const expectedNotebook1: NotebookBookItem = {
-		title: 'Notebook1',
-		url: '/notebook1',
-		previousUri: undefined,
-		nextUri: notebook2File
-	};
-	const expectedNotebook2: NotebookBookItem = {
-		title: 'Notebook2',
-		url: '/notebook2',
-		previousUri: notebook1File,
-		nextUri: notebook3File
-	};
-	const expectedNotebook3: NotebookBookItem = {
-		title: 'Notebook3',
-		url: '/notebook3',
-		previousUri: notebook2File,
-		nextUri: undefined
-	};
-	const expectedMarkdown = {
-		title: 'Markdown',
-		url: '/markdown'
-	};
-	const expectedExternalLink = {
-		title: 'GitHub',
-		url: 'https://github.com/',
-		external: true
-	};
-	const expectedBook = {
-		sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
-		title: 'Test Book'
-	};
+	let rootFolderPath: string;
+	let expectedNotebook1: TestBookItem;
+	let expectedNotebook2: TestBookItem;
+	let expectedNotebook3: TestBookItem;
+	let expectedMarkdown: TestBookItem;
+	let expectedExternalLink: TestBookItem;
+	let expectedBook: TestBookItem;
 
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let bookTreeViewProvider: BookTreeViewProvider;
@@ -68,6 +39,50 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let notebook1: BookTreeItem;
 
 	this.beforeAll(async () => {
+		let testFolder = '';
+		for (let i = 0; i < 8; i++) {
+			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
+		}
+		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		let dataFolderPath = path.join(rootFolderPath, '_data');
+		let contentFolderPath = path.join(rootFolderPath, 'content');
+		let configFile = path.join(rootFolderPath, '_config.yml');
+		let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+		let notebook1File = path.join(contentFolderPath, 'notebook1.ipynb');
+		let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+		let notebook3File = path.join(contentFolderPath, 'notebook3.ipynb');
+		let markdownFile = path.join(contentFolderPath, 'markdown.md');
+		expectedNotebook1 = {
+			title: 'Notebook1',
+			url: '/notebook1',
+			previousUri: undefined,
+			nextUri: notebook2File
+		};
+		expectedNotebook2 = {
+			title: 'Notebook2',
+			url: '/notebook2',
+			previousUri: notebook1File,
+			nextUri: notebook3File
+		};
+		expectedNotebook3 = {
+			title: 'Notebook3',
+			url: '/notebook3',
+			previousUri: notebook2File,
+			nextUri: undefined
+		};
+		expectedMarkdown = {
+			title: 'Markdown',
+			url: '/markdown'
+		};
+		expectedExternalLink = {
+			title: 'GitHub',
+			url: 'https://github.com/',
+			external: true
+		};
+		expectedBook = {
+			sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
+			title: 'Test Book'
+		};
 		fs.mkdirSync(rootFolderPath);
 		fs.mkdirSync(dataFolderPath);
 		fs.mkdirSync(contentFolderPath);
@@ -79,7 +94,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		fs.writeFileSync(markdownFile, '');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		let folder: vscode.WorkspaceFolder = {
-			uri: vscode.Uri.parse(rootFolderPath),
+			uri: vscode.Uri.file(rootFolderPath),
 			name: '',
 			index: 0
 		};
@@ -127,7 +142,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
 	});
 
-	after(async function () {
+	this.afterAll(async function () {
 		if (fs.existsSync(rootFolderPath)) {
 			rimraf.sync(rootFolderPath);
 		}
