@@ -83,15 +83,15 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 			title: 'Test Book'
 		};
-		fs.mkdir(rootFolderPath);
-		fs.mkdir(dataFolderPath);
-		fs.mkdir(contentFolderPath);
-		fs.writeFile(configFile, 'title: Test Book');
-		fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
-		fs.writeFile(notebook1File, '');
-		fs.writeFile(notebook2File, '');
-		fs.writeFile(notebook3File, '');
-		fs.writeFile(markdownFile, '');
+		await fs.mkdir(rootFolderPath);
+		await fs.mkdir(dataFolderPath);
+		await fs.mkdir(contentFolderPath);
+		await fs.writeFile(configFile, 'title: Test Book');
+		await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n  sections:\n  - title: Notebook2\n    url: /notebook2\n  - title: Notebook3\n    url: /notebook3\n- title: Markdown\n  url: /markdown\n- title: GitHub\n  url: https://github.com/\n  external: true');
+		await fs.writeFile(notebook1File, '');
+		await fs.writeFile(notebook2File, '');
+		await fs.writeFile(notebook3File, '');
+		await fs.writeFile(markdownFile, '');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		let folder: vscode.WorkspaceFolder = {
 			uri: vscode.Uri.file(rootFolderPath),
