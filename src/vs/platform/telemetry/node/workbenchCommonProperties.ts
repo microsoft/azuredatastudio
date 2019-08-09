@@ -31,8 +31,25 @@ export async function resolveWorkbenchCommonProperties(storageService: IStorageS
 	result['common.remoteAuthority'] = cleanRemoteAuthority(remoteAuthority);
 
 	result['common.application.name'] = product.nameLong; // {{SQL CARBON EDIT}}
+	setUsageDates(storageService);
 
 	return result;
+}
+
+// {{SQL CARBON EDIT}}
+function setUsageDates(storageService: IStorageService): void {
+	// daily last usage date
+	const appStartDate = new Date('January 1, 2000');
+	const dailyLastUseDate = storageService.get('telemetry.dailyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
+	storageService.store('telemetry.dailyLastUseDate', dailyLastUseDate, StorageScope.GLOBAL);
+
+	// weekly last usage date
+	const weeklyLastUseDate = storageService.get('telemetry.weeklyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
+	storageService.store('telemetry.weeklyLastUseDate', weeklyLastUseDate, StorageScope.GLOBAL);
+
+	// monthly last usage date
+	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
+	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate, StorageScope.GLOBAL);
 }
 
 function cleanRemoteAuthority(remoteAuthority?: string): string {
