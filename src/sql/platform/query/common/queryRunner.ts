@@ -283,7 +283,7 @@ export default class QueryRunner extends Disposable {
 		let message = {
 			// account for index by 1
 			message: nls.localize('query.message.startQuery', "Started executing query at Line {0}", batch.selection.startLine + 1),
-			time: new Date(batch.executionStart).toLocaleTimeString(),
+			time: batch.executionStart,
 			selection: batch.selection,
 			isError: false
 		};
@@ -393,7 +393,6 @@ export default class QueryRunner extends Disposable {
 	 */
 	public handleMessage(obj: azdata.QueryExecuteMessageParams): void {
 		let message = obj.message;
-		message.time = new Date(message.time).toLocaleTimeString();
 		this._messages.push(message);
 
 		// Send the message to the results pane

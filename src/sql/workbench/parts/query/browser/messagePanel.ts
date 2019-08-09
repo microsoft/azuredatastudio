@@ -109,7 +109,7 @@ class BatchMessageRenderer implements IListRenderer<IQueryMessage, IBatchTemplat
 	}
 
 	renderElement(element: IQueryMessage, index: number, templateData: IBatchTemplate, height: number): void {
-		templateData.timeStamp.innerText = element.time;
+		templateData.timeStamp.innerText = new Date(element.time).toLocaleDateString();
 		templateData.message.innerText = element.message;
 	}
 
@@ -146,7 +146,7 @@ export class MessagePanel extends Disposable {
 
 	private queryRunnerDisposables = new DisposableStore();
 	private _state: MessagePanelState | undefined;
-	private inital = false;
+	private initalized = false;
 
 	private list: WorkbenchList<IQueryMessage>;
 
@@ -219,9 +219,9 @@ export class MessagePanel extends Disposable {
 
 	public layout(size: Dimension): void {
 		this.list.layout(size.height, size.width);
-		if (!this.inital && isInDOM(this.container)) {
-			this.inital = true;
-			this.refresh();
+		if (!this.initalized && isInDOM(this.container)) {
+			this.initalized = true;
+			this.initalize();
 		}
 	}
 
@@ -231,21 +231,25 @@ export class MessagePanel extends Disposable {
 
 	public set queryRunner(runner: QueryRunner) {
 		this._runner = runner;
-		this.inital = false;
+		this.initalized = false;
 		if (isInDOM(this.container)) {
-			this.inital = true;
-			this.queryRunnerDisposables.dispose();
-			this.queryRunnerDisposables = new DisposableStore();
-			this.reset();
-			this.queryRunnerDisposables.add(runner.onQueryStart(() => this.reset()));
-			const refreshInterval = this.queryRunnerDisposables.add(new IntervalTimer());
-			if (runner.isExecuting) {
-				refreshInterval.cancelAndSet(() => this.refresh(), 100);
-			}
-			this.queryRunnerDisposables.add(runner.onQueryEnd(() => refreshInterval.cancel()));
-			this.queryRunnerDisposables.add(runner.onQueryStart(() => refreshInterval.cancelAndSet(() => this.refresh(), 100)));
-			this.refresh();
+			this.initalized = true;
+			this.initalize();
 		}
+	}
+
+	private initalize(): void {
+		this.queryRunnerDisposables.dispose();
+		this.queryRunnerDisposables = new DisposableStore();
+		this.reset();
+		this.queryRunnerDisposables.add(this._runner.onQueryStart(() => this.reset()));
+		const refreshInterval = this.queryRunnerDisposables.add(new IntervalTimer());
+		if (this._runner.isExecuting) {
+			refreshInterval.cancelAndSet(() => this.refresh(), 100);
+		}
+		this.queryRunnerDisposables.add(this._runner.onQueryEnd(() => refreshInterval.cancel()));
+		this.queryRunnerDisposables.add(this._runner.onQueryStart(() => refreshInterval.cancelAndSet(() => this.refresh(), 100)));
+		this.refresh();
 	}
 
 	private refresh() {
