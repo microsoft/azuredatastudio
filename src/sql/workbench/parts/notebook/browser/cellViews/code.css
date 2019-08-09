@@ -108,11 +108,11 @@ hidden-component .toggle-button.icon-show-cell{
 
 .vs-dark hidden-component .toggle-button.icon-hide-cell,
 .hc-black hidden-component .toggle-button.icon-hide-cell{
-	background-image: url("./media/light/minus_inverse.svg");
+	background-image: url("./media/dark/minus_inverse.svg");
 }
 
 
 .vs-dark hidden-component .toggle-button.icon-show-cell,
 .hc-black hidden-component .toggle-button.icon-show-cell{
-	background-image: url("./media/light/plus_inverse.svg");
+	background-image: url("./media/dark/plus_inverse.svg");
 }
