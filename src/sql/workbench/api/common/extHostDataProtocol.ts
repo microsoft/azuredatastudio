@@ -13,7 +13,7 @@ import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { URI } from 'vs/base/common/uri';
 
-export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
+export class ExtHostDataProtocol implements ExtHostDataProtocolShape {
 
 	private readonly _onDidChangeLanguageFlavor = new Emitter<azdata.DidChangeLanguageFlavorParams>();
 
@@ -29,7 +29,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		mainContext: IMainContext,
 		private uriTransformer: IURITransformer | null
 	) {
-		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
 	}
 
@@ -171,13 +170,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	$registerDacFxServiceProvider(provider: azdata.DacFxServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.DacFxServicesProvider);
-		this._proxy.$registerDacFxServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 
 	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
-		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
 		return rt;
 	}
 

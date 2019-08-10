@@ -12,13 +12,12 @@ import {
 	SqlMainContext,
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 
-export class ExtHostResourceProvider extends ExtHostResourceProviderShape {
+export class ExtHostResourceProvider implements ExtHostResourceProviderShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadResourceProviderShape;
 	private _providers: { [handle: number]: ResourceProviderWithMetadata } = {};
 
 	constructor(mainContext: IMainContext) {
-		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadResourceProvider);
 	}
 

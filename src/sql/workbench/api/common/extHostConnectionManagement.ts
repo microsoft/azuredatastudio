@@ -7,7 +7,7 @@ import { ExtHostConnectionManagementShape, SqlMainContext, MainThreadConnectionM
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import * as azdata from 'azdata';
 
-export class ExtHostConnectionManagement extends ExtHostConnectionManagementShape {
+export class ExtHostConnectionManagement implements ExtHostConnectionManagementShape {
 
 	private _proxy: MainThreadConnectionManagementShape;
 	private _nextListenerHandle: number = 0;
@@ -16,7 +16,6 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 	constructor(
 		mainContext: IMainContext
 	) {
-		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
 	}
 

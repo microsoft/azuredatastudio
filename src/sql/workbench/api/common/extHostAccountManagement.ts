@@ -14,7 +14,7 @@ import { AzureResource } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Event, Emitter } from 'vs/base/common/event';
 
-export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
+export class ExtHostAccountManagement implements ExtHostAccountManagementShape {
 	private _handlePool: number = 0;
 	private _proxy: MainThreadAccountManagementShape;
 	private _providers: { [handle: number]: AccountProviderWithMetadata } = {};
@@ -22,7 +22,6 @@ export class ExtHostAccountManagement extends ExtHostAccountManagementShape {
 	private readonly _onDidChangeAccounts = new Emitter<azdata.DidChangeAccountsParams>();
 
 	constructor(mainContext: IMainContext) {
-		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadAccountManagement);
 	}
 

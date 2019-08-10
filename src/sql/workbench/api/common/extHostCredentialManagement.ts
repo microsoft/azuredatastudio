@@ -31,7 +31,7 @@ class CredentialAdapter {
 
 type Adapter = CredentialAdapter;
 
-export class ExtHostCredentialManagement extends ExtHostCredentialManagementShape {
+export class ExtHostCredentialManagement implements ExtHostCredentialManagementShape {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _adapter: { [handle: number]: Adapter } = Object.create(null);
 	private _handlePool: number = 0;
@@ -40,7 +40,6 @@ export class ExtHostCredentialManagement extends ExtHostCredentialManagementShap
 	private _registrationPromiseResolve;
 
 	constructor(mainContext: IMainContext) {
-		super();
 
 		let self = this;
 
