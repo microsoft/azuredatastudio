@@ -389,6 +389,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 				const r: IInitData = {
 					commit: product.commit,
 					version: pkg.version,
+					vscodeVersion: product.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 					parentPid: process.pid,
 					environment: {
 						isExtensionDevelopmentDebug: this._isExtensionDevDebug,
