@@ -41,7 +41,7 @@ import { localize } from 'vs/nls';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
-import { IExtHostRpcService } from 'vs/workbench/api/common/rpcService';
+import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
 
 export interface ISqlExtensionApiFactory {
