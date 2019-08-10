@@ -43,6 +43,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -136,9 +137,10 @@ export class RestoreDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
+		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', "Restore database");
 		this._databaseTitle = localize('restoreDialog.database', "Database");
 		this._backupFileTitle = localize('restoreDialog.backupFile', "Backup file");
@@ -796,7 +798,8 @@ export class RestoreDialog extends Modal {
 			DOM.show(this._fileListTableContainer);
 			this._fileListData.push(data);
 
-			// Select the first row for the table by default
+			// Set data and Select the first row for the table by default
+			this._fileListTable.setData(this._fileListData);
 			this._fileListTable.setSelectedRows([0]);
 			this._fileListTable.setActiveCell(0, 0);
 		}

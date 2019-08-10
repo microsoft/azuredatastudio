@@ -84,15 +84,15 @@
       </trans-unit>
       <trans-unit id="cms.logDebugInfo">
         <source xml:lang="en">[Optional] Log debug output to the console (View -&gt; Output) and then select appropriate output channel from the dropdown</source>
-        <target state="translated">[オプション] コンソールへのデバッグ出力をログに記録し ([表示] -&gt; [出力])、ドロップダウンから適切な出力チャネルを選択します</target>
+        <target state="translated">[オプション] コンソールへのデバッグ出力 ([表示] -&gt; [出力]) をログに記録し、ドロップダウンから適切な出力チャネルを選択します</target>
       </trans-unit>
       <trans-unit id="cms.tracingLevel">
         <source xml:lang="en">[Optional] Log level for backend services. Azure Data Studio generates a file name every time it starts and if the file already exists the logs entries are appended to that file. For cleanup of old log files see logRetentionMinutes and logFilesRemovalLimit settings. The default tracingLevel does not log much. Changing verbosity could lead to extensive logging and disk space requirements for the logs. Error includes Critical, Warning includes Error, Information includes Warning and Verbose includes Information</source>
-        <target state="translated">[オプション] バックエンド サービスのログ レベル。Azure Data Studio は、起動のたびにファイル名を生成し、ファイルが既に存在する場合は、ログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes および logFilesRemoveLimit の 設定を参照してください。既定の tracingLevel の場合、ログに記録される数が多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。重大を含むエラー、エラーを含む警告、警告を含む情報、情報を含む詳細です</target>
+        <target state="translated">[オプション] バックエンド サービスのログ レベル。Azure Data Studio は開始のたびにファイル名を生成し、そのファイルが既に存在する場合にはログ エントリが対象ファイルに追加されます。古いログ ファイルのクリーンアップについては、logRetentionMinutes と logFilesRemovalLimit の設定を参照してください。既定の tracingLevel の場合、ログに記録される数が多くありません。詳細レベルを変更すると、詳細なログが記録され、ログのためのディスク容量が必要になる場合があります。重大を含むエラー、エラーを含む警告、警告を含む情報、情報を含む詳細です</target>
       </trans-unit>
       <trans-unit id="cms.logRetentionMinutes">
         <source xml:lang="en">Number of minutes to retain log files for backend services. Default is 1 week.</source>
-        <target state="translated">バックエンド サービスのログ ファイルを保持する分数。既知値は 1 週間です。</target>
+        <target state="translated">バックエンド サービスのログ ファイルを保持する分数。既定は 1 週間です。</target>
       </trans-unit>
       <trans-unit id="cms.logFilesRemovalLimit">
         <source xml:lang="en">Maximum number of old files to remove upon startup that have expired mssql.logRetentionMinutes. Files that do not get cleaned up due to this limitation get cleaned up next time Azure Data Studio starts up.</source>

@@ -38,7 +38,7 @@ export abstract class ExtHostAccountManagementShape {
 }
 
 export abstract class ExtHostConnectionManagementShape {
-	$onConnectionOpened(handleId: string, connection: azdata.connection.Connection): void { throw ni; }
+	$onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void { throw ni(); }
 }
 
 export abstract class ExtHostDataProtocolShape {
@@ -524,6 +524,15 @@ export abstract class ExtHostDataProtocolShape {
 	 */
 	$schemaCompareCancel(handle: number, operationId: string): Thenable<azdata.ResultStatus> { throw ni(); }
 
+	/**
+	 * Serialization start request
+	 */
+	$startSerialization(handle: number, requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
+
+	/**
+	 * Serialization continuation request
+	 */
+	$continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
 }
 
 /**
@@ -551,13 +560,6 @@ export abstract class ExtHostCredentialManagementShape {
 	$readCredential(credentialId: string): Thenable<azdata.Credential> { throw ni(); }
 
 	$deleteCredential(credentialId: string): Thenable<boolean> { throw ni(); }
-}
-
-/**
- * Serialization provider extension host class.
- */
-export abstract class ExtHostSerializationProviderShape {
-	$saveAs(saveFormat: string, savePath: string, results: string, appendToFile: boolean): Thenable<azdata.SaveResultRequestResult> { throw ni(); }
 }
 
 export interface MainThreadAccountManagementShape extends IDisposable {
@@ -595,6 +597,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerDacFxServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any>;
+	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;
 	$onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
@@ -626,6 +629,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 }
 
 export interface MainThreadConnectionManagementShape extends IDisposable {
+	$registerConnectionEventListener(handle: number, providerId: string): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
@@ -644,11 +648,6 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 	$unregisterCredentialProvider(handle: number): Promise<any>;
 }
 
-export interface MainThreadSerializationProviderShape extends IDisposable {
-	$registerSerializationProvider(handle: number): Promise<any>;
-	$unregisterSerializationProvider(handle: number): Promise<any>;
-}
-
 function ni() { return new Error('Not implemented'); }
 
 // --- proxy identifiers
@@ -661,7 +660,6 @@ export const SqlMainContext = {
 	MainThreadDataProtocol: createMainId<MainThreadDataProtocolShape>('MainThreadDataProtocol'),
 	MainThreadObjectExplorer: createMainId<MainThreadObjectExplorerShape>('MainThreadObjectExplorer'),
 	MainThreadBackgroundTaskManagement: createMainId<MainThreadBackgroundTaskManagementShape>('MainThreadBackgroundTaskManagement'),
-	MainThreadSerializationProvider: createMainId<MainThreadSerializationProviderShape>('MainThreadSerializationProvider'),
 	MainThreadResourceProvider: createMainId<MainThreadResourceProviderShape>('MainThreadResourceProvider'),
 	MainThreadModalDialog: createMainId<MainThreadModalDialogShape>('MainThreadModalDialog'),
 	MainThreadTasks: createMainId<MainThreadTasksShape>('MainThreadTasks'),
@@ -681,7 +679,6 @@ export const SqlExtHostContext = {
 	ExtHostCredentialManagement: createExtId<ExtHostCredentialManagementShape>('ExtHostCredentialManagement'),
 	ExtHostDataProtocol: createExtId<ExtHostDataProtocolShape>('ExtHostDataProtocol'),
 	ExtHostObjectExplorer: createExtId<ExtHostObjectExplorerShape>('ExtHostObjectExplorer'),
-	ExtHostSerializationProvider: createExtId<ExtHostSerializationProviderShape>('ExtHostSerializationProvider'),
 	ExtHostResourceProvider: createExtId<ExtHostResourceProviderShape>('ExtHostResourceProvider'),
 	ExtHostModalDialogs: createExtId<ExtHostModalDialogsShape>('ExtHostModalDialogs'),
 	ExtHostTasks: createExtId<ExtHostTasksShape>('ExtHostTasks'),
@@ -951,8 +948,10 @@ export interface MainThreadNotebookDocumentsAndEditorsShape extends IDisposable 
 
 export interface ExtHostExtensionManagementShape {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }
 
 export interface MainThreadExtensionManagementShape extends IDisposable {
 	$install(vsixPath: string): Thenable<string>;
+	$showObsoleteExtensionApiUsageNotification(message: string): void;
 }

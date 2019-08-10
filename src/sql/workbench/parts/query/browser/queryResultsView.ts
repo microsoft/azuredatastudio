@@ -13,15 +13,16 @@ import { ChartTab } from 'sql/workbench/parts/charts/browser/chartTab';
 import { QueryPlanTab } from 'sql/workbench/parts/queryPlan/browser/queryPlan';
 import { TopOperationsTab } from 'sql/workbench/parts/queryPlan/browser/topOperations';
 import { QueryModelViewTab } from 'sql/workbench/parts/query/browser/modelViewTab/queryModelViewTab';
+import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
+import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
 
 import * as nls from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as DOM from 'vs/base/browser/dom';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
-import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
-import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
+import { Event } from 'vs/base/common/event';
 
 class MessagesView extends Disposable implements IPanelView {
 	private messagePanel: MessagePanel;
@@ -119,7 +120,6 @@ class ResultsView extends Disposable implements IPanelView {
 		this.gridPanel.state = val;
 	}
 }
-
 class ResultsTab implements IPanelTab {
 	public readonly title = nls.localize('resultsTabTitle', "Results");
 	public readonly identifier = 'resultsTab';
@@ -174,7 +174,7 @@ export class QueryResultsView extends Disposable {
 	private topOperationsTab: TopOperationsTab;
 	private dynamicModelViewTabs: QueryModelViewTab[] = [];
 
-	private runnerDisposables: IDisposable[];
+	private runnerDisposables = new DisposableStore();
 
 	constructor(
 		container: HTMLElement,
@@ -213,26 +213,27 @@ export class QueryResultsView extends Disposable {
 
 	private setQueryRunner(runner: QueryRunner) {
 		const activeTab = this._input.state.activeTab;
-		if (runner.hasCompleted && !this.hasResults(runner)) {
-			this.hideResults();
-		} else {
+		if (this.hasResults(runner)) {
 			this.showResults();
+		} else {
+			if (runner.isExecuting) { // in case we don't have results yet, but we also have already started executing
+				this.runnerDisposables.add(Event.once(runner.onResultSet)(() => this.showResults()));
+			}
+			this.hideResults();
 		}
 		this.resultsTab.queryRunner = runner;
 		this.messagesTab.queryRunner = runner;
 		this.chartTab.queryRunner = runner;
-		this.runnerDisposables.push(runner.onQueryStart(e => {
-			this.showResults();
+		this.runnerDisposables.add(runner.onQueryStart(e => {
+			this.runnerDisposables.add(Event.once(runner.onResultSet)(() => this.showResults()));
+			this.hideResults();
 			this.hideChart();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
 			this.input.state.visibleTabs = new Set();
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
-		this.runnerDisposables.push(runner.onQueryEnd(() => {
-			if (!this.hasResults(runner)) {
-				this.hideResults();
-			}
+		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.messages.find(v => v.isError)) {
 				this._panelView.showTab(this.messagesTab.identifier);
 			}
@@ -279,7 +280,7 @@ export class QueryResultsView extends Disposable {
 			}
 		});
 
-		this.runnerDisposables.push(runner.onQueryEnd(() => {
+		this.runnerDisposables.add(runner.onQueryEnd(() => {
 			if (runner.isQueryPlan) {
 				runner.planXml.then(e => {
 					this.showPlan(e);
@@ -295,8 +296,8 @@ export class QueryResultsView extends Disposable {
 
 	public set input(input: QueryResultsInput) {
 		this._input = input;
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
 
 		[this.resultsTab, this.messagesTab, this.qpTab, this.topOperationsTab, this.chartTab].forEach(t => t.clear());
 		this.dynamicModelViewTabs.forEach(t => t.clear());
@@ -321,14 +322,14 @@ export class QueryResultsView extends Disposable {
 					disposable.dispose();
 				}
 			});
-			this.runnerDisposables.push(disposable);
+			this.runnerDisposables.add(disposable);
 		}
 	}
 
 	clearInput() {
 		this._input = undefined;
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
 		this.resultsTab.clear();
 		this.messagesTab.clear();
 		this.qpTab.clear();
@@ -410,8 +411,8 @@ export class QueryResultsView extends Disposable {
 	}
 
 	public dispose() {
-		dispose(this.runnerDisposables);
-		this.runnerDisposables = [];
+		this.runnerDisposables.dispose();
+		this.runnerDisposables = new DisposableStore();
 		super.dispose();
 	}
 

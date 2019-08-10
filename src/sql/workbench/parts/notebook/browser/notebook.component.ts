@@ -34,7 +34,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import * as TaskUtilities from 'sql/workbench/common/taskUtilities';
+import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
@@ -54,7 +54,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { getErrorMessage } from 'vs/base/common/errors';
-import product from 'vs/platform/product/node/product';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 
 
 export const NOTEBOOK_SELECTOR: string = 'notebook-component';
@@ -104,7 +104,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		@Inject(ICapabilitiesService) private capabilitiesService: ICapabilitiesService,
 		@Inject(ITextFileService) private textFileService: ITextFileService,
 		@Inject(ILogService) private readonly logService: ILogService,
-		@Inject(ITelemetryService) private telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private telemetryService: ITelemetryService,
+		@Inject(IEnvironmentService) private readonly environmentService: IEnvironmentService
 	) {
 		super();
 		this.updateProfile();
@@ -158,6 +159,14 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		return this._model ? this._model.cells : [];
 	}
 
+	public get addCodeLabel(): string {
+		return localize('addCodeLabel', "Add code");
+	}
+
+	public get addTextLabel(): string {
+		return localize('addTextLabel', "Add text");
+	}
+
 	private updateTheme(theme: IColorTheme): void {
 		let toolbarEl = <HTMLElement>this.toolbar.nativeElement;
 		toolbarEl.style.borderBottomColor = theme.getColor(themeColors.SIDE_BAR_BACKGROUND, true).toString();
@@ -191,8 +200,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	// Add cell based on cell type
-	public addCell(cellType: CellType) {
-		this._model.addCell(cellType);
+	public addCell(cellType: CellType, index?: number) {
+		this._model.addCell(cellType, index);
 	}
 
 	public onKeyDown(event) {
@@ -441,7 +450,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	protected initNavSection(): void {
 		this._navProvider = this.notebookService.getNavigationProvider(this._notebookParams.notebookUri);
 
-		if (product.quality !== 'stable' &&
+		if (this.environmentService.appQuality !== 'stable' &&
 			this.contextKeyService.getContextKeyValue('bookOpened') &&
 			this._navProvider) {
 			this._navProvider.getNavigation(this._notebookParams.notebookUri).then(result => {

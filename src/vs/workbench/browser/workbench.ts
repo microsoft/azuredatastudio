@@ -44,10 +44,6 @@ import { WorkbenchContextKeysHandler } from 'vs/workbench/browser/contextkeys';
 import { coalesce } from 'vs/base/common/arrays';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
 import { Layout } from 'vs/workbench/browser/layout';
-import { ICommandLineProcessing } from 'sql/workbench/services/commandLine/common/commandLine';
-import { CommandLineService } from 'sql/workbench/services/commandLine/common/commandLineService';
-import { IAdsTelemetryService } from 'sql/platform/telemetry/telemetry';
-import { AdsTelemetryService } from 'sql/platform/telemetry/adsTelemetryService';
 
 export class Workbench extends Layout {
 
@@ -83,11 +79,25 @@ export class Workbench extends Layout {
 		setUnexpectedErrorHandler(error => this.handleUnexpectedError(error, logService));
 
 		// Inform user about loading issues from the loader
+		interface AnnotatedLoadingError extends Error {
+			phase: 'loading';
+			moduleId: string;
+			neededBy: string[];
+		}
+		interface AnnotatedFactoryError extends Error {
+			phase: 'factory';
+			moduleId: string;
+		}
+		interface AnnotatedValidationError extends Error {
+			phase: 'configuration';
+		}
+		type AnnotatedError = AnnotatedLoadingError | AnnotatedFactoryError | AnnotatedValidationError;
 		(<any>window).require.config({
-			onError: (err: { errorCode: string; }) => {
-				if (err.errorCode === 'load') {
+			onError: (err: AnnotatedError) => {
+				if (err.phase === 'loading') {
 					onUnexpectedError(new Error(localize('loaderErrorNative', "Failed to load a required file. Please restart the application to try again. Details: {0}", JSON.stringify(err))));
 				}
+				console.error(err);
 			}
 		});
 	}
@@ -182,11 +192,6 @@ export class Workbench extends Layout {
 		}
 
 		const instantiationService = new InstantiationService(serviceCollection, true);
-
-		// {{SQL CARBON EDIT }}
-		// TODO@Davidshi commandLineService currently has no referents, so force its creation
-		serviceCollection.set(ICommandLineProcessing, instantiationService.createInstance(CommandLineService));
-		// {{SQL CARBON EDIT}} - End
 
 		// Wrap up
 		instantiationService.invokeFunction(accessor => {

@@ -60,11 +60,11 @@ export class QueryPlanEditor extends BaseEditor {
 	public layout(dimension: DOM.Dimension): void {
 	}
 
-	public setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: QueryPlanInput, options: EditorOptions): Promise<void> {
 		if (this.input instanceof QueryPlanInput && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
-
+		await input.resolve();
 		if (!input.hasInitialized) {
 			this.bootstrapAngular(input);
 		}

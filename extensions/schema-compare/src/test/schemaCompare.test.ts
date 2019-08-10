@@ -59,7 +59,7 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 		await dialog.openDialog();
 
 		should(dialog.dialog.title).equal('Schema Compare');
-		should(dialog.dialog.okButton.label).equal('Ok');
+		should(dialog.dialog.okButton.label).equal('OK');
 		should(dialog.dialog.okButton.enabled).equal(false); // Should be false when open
 	});
 });

@@ -128,6 +128,7 @@ const copyrightFilter = [
 	'!extensions/markdown-language-features/media/highlight.css',
 	'!extensions/html-language-features/server/src/modes/typescript/*',
 	'!extensions/*/server/bin/*',
+	'!src/vs/editor/test/node/classification/typescript-test.ts',
 	// {{SQL CARBON EDIT}}
 	'!extensions/notebook/src/intellisense/text.ts',
 	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
@@ -150,7 +151,7 @@ const copyrightFilter = [
 	'!src/sql/workbench/parts/notebook/common/models/nbformat.ts',
 	'!extensions/markdown-language-features/media/tomorrow.css',
 	'!src/sql/workbench/browser/modelComponents/media/highlight.css',
-	'!src/sql/parts/modelComponents/highlight.css',
+	'!src/sql/workbench/parts/notebook/electron-browser/cellViews/media/highlight.css',
 	'!extensions/mssql/sqltoolsservice/**',
 	'!extensions/import/flatfileimportservice/**',
 	'!extensions/notebook/src/prompts/**',
@@ -288,19 +289,6 @@ function hygiene(some) {
 
 		this.emit('data', file);
 	});
-
-	const localizeDoubleQuotes = es.through(function (file) {
-		const lines = file.__lines;
-		lines.forEach((line, i) => {
-			if (/localize\(['"].*['"],\s'.*'\)/.test(line)) {
-				console.error(file.relative + '(' + (i + 1) + ',1): Message parameter to localize calls should be double-quotes');
-				errorCount++;
-			}
-		});
-
-		this.emit('data', file);
-	});
-
 	// {{SQL CARBON EDIT}} END
 
 	const formatting = es.map(function (file, cb) {
@@ -351,6 +339,17 @@ function hygiene(some) {
 		input = some;
 	}
 
+	const tslintSqlConfiguration = tslint.Configuration.findConfiguration('tslint-sql.json', '.');
+	const tslintSqlOptions = { fix: false, formatter: 'json' };
+	const sqlTsLinter = new tslint.Linter(tslintSqlOptions);
+
+	const sqlTsl = es.through(function (file) {
+		const contents = file.contents.toString('utf8');
+		sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
+
+		this.emit('data', file);
+	});
+
 	const productJsonFilter = filter('product.json', { restore: true });
 
 	const result = input
@@ -370,9 +369,8 @@ function hygiene(some) {
 		// {{SQL CARBON EDIT}}
 		.pipe(filter(useStrictFilter))
 		.pipe(useStrict)
-		// Only look at files under the sql folder since we don't want to cause conflicts with VS code
 		.pipe(filter(sqlFilter))
-		.pipe(localizeDoubleQuotes);
+		.pipe(sqlTsl);
 
 	const javascript = result
 		.pipe(filter(eslintFilter))
@@ -402,6 +400,19 @@ function hygiene(some) {
 					console.error(`${name}:${line + 1}:${character + 1}:${failure.getFailure()}`);
 				}
 				errorCount += tslintResult.failures.length;
+			}
+
+			const sqlTslintResult = sqlTsLinter.getResult();
+			if (sqlTslintResult.failures.length > 0) {
+				for (const failure of sqlTslintResult.failures) {
+					const name = failure.getFileName();
+					const position = failure.getStartPosition();
+					const line = position.getLineAndCharacter().line;
+					const character = position.getLineAndCharacter().character;
+
+					console.error(`${name}:${line + 1}:${character + 1}:${failure.getFailure()}`);
+				}
+				errorCount += sqlTslintResult.failures.length;
 			}
 
 			if (errorCount > 0) {

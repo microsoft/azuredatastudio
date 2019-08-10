@@ -118,7 +118,8 @@ class CodeRendererMain extends Disposable {
 		const environmentService = new BrowserWorkbenchEnvironmentService({
 			workspaceId: payload.id,
 			remoteAuthority: this.configuration.remoteAuthority,
-			webviewEndpoint: this.configuration.webviewEndpoint
+			webviewEndpoint: this.configuration.webviewEndpoint,
+			connectionToken: this.configuration.connectionToken
 		});
 		serviceCollection.set(IWorkbenchEnvironmentService, environmentService);
 
@@ -131,11 +132,11 @@ class CodeRendererMain extends Disposable {
 		serviceCollection.set(IRemoteAuthorityResolverService, remoteAuthorityResolverService);
 
 		// Signing
-		const signService = new SignService();
+		const signService = new SignService(environmentService.configuration.connectionToken);
 		serviceCollection.set(ISignService, signService);
 
 		// Remote Agent
-		const remoteAgentService = this._register(new RemoteAgentService(environmentService, productService, remoteAuthorityResolverService, signService));
+		const remoteAgentService = this._register(new RemoteAgentService(this.configuration.webSocketFactory, environmentService, productService, remoteAuthorityResolverService, signService));
 		serviceCollection.set(IRemoteAgentService, remoteAgentService);
 
 		// Files

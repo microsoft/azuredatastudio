@@ -20,11 +20,13 @@ import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilitie
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { localize } from 'vs/nls';
 import { MessageLevel } from 'sql/workbench/api/common/sqlExtHostTypes';
-import * as os from 'os';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
+import { URI } from 'vs/base/common/uri';
+import { Schemas } from 'vs/base/common/network';
 
 export const MODAL_SHOWING_KEY = 'modalShowing';
 export const MODAL_SHOWING_CONTEXT = new RawContextKey<Array<string>>(MODAL_SHOWING_KEY, []);
@@ -142,11 +144,12 @@ export abstract class Modal extends Disposable implements IThemable {
 	constructor(
 		private _title: string,
 		private _name: string,
-		private _telemetryService: ITelemetryService,
-		protected layoutService: IWorkbenchLayoutService,
-		protected _clipboardService: IClipboardService,
-		protected _themeService: IThemeService,
-		protected logService: ILogService,
+		private readonly _telemetryService: ITelemetryService,
+		protected readonly layoutService: IWorkbenchLayoutService,
+		protected readonly _clipboardService: IClipboardService,
+		protected readonly _themeService: IThemeService,
+		protected readonly logService: ILogService,
+		protected readonly textResourcePropertiesService: ITextResourcePropertiesService,
 		_contextKeyService: IContextKeyService,
 		options?: IModalOptions
 	) {
@@ -284,7 +287,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	}
 
 	private getTextForClipboard(): string {
-		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${os.EOL}========================${os.EOL}${this._messageDetailText}`;
+		const eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
+		return this._messageDetailText === '' ? this._messageSummaryText : `${this._messageSummaryText}${eol}========================${eol}${this._messageDetailText}`;
 	}
 
 	private updateExpandMessageState() {

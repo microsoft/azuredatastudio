@@ -35,7 +35,6 @@ export interface ConnectionTypeRequest {
 	signedData?: string;
 	desiredConnectionType?: ConnectionType;
 	args?: any;
-	isBuilt: boolean;
 }
 
 export interface ErrorMessage {
@@ -51,13 +50,12 @@ export type HandshakeMessage = AuthRequest | SignRequest | ConnectionTypeRequest
 
 
 interface ISimpleConnectionOptions {
-	isBuilt: boolean;
 	commit: string | undefined;
 	host: string;
 	port: number;
 	reconnectionToken: string;
 	reconnectionProtocol: PersistentProtocol | null;
-	webSocketFactory: IWebSocketFactory;
+	socketFactory: ISocketFactory;
 	signService: ISignService;
 }
 
@@ -65,13 +63,13 @@ export interface IConnectCallback {
 	(err: any | undefined, socket: ISocket | undefined): void;
 }
 
-export interface IWebSocketFactory {
+export interface ISocketFactory {
 	connect(host: string, port: number, query: string, callback: IConnectCallback): void;
 }
 
 async function connectToRemoteExtensionHostAgent(options: ISimpleConnectionOptions, connectionType: ConnectionType, args: any | undefined): Promise<PersistentProtocol> {
 	const protocol = await new Promise<PersistentProtocol>((c, e) => {
-		options.webSocketFactory.connect(
+		options.socketFactory.connect(
 			options.host,
 			options.port,
 			`reconnectionToken=${options.reconnectionToken}&reconnection=${options.reconnectionProtocol ? 'true' : 'false'}`,
@@ -110,8 +108,7 @@ async function connectToRemoteExtensionHostAgent(options: ISimpleConnectionOptio
 					type: 'connectionType',
 					commit: options.commit,
 					signedData: signed,
-					desiredConnectionType: connectionType,
-					isBuilt: options.isBuilt
+					desiredConnectionType: connectionType
 				};
 				if (args) {
 					connTypeRequest.args = args;
@@ -200,9 +197,8 @@ async function doConnectRemoteAgentTunnel(options: ISimpleConnectionOptions, sta
 }
 
 export interface IConnectionOptions {
-	isBuilt: boolean;
 	commit: string | undefined;
-	webSocketFactory: IWebSocketFactory;
+	socketFactory: ISocketFactory;
 	addressProvider: IAddressProvider;
 	signService: ISignService;
 }
@@ -210,13 +206,12 @@ export interface IConnectionOptions {
 async function resolveConnectionOptions(options: IConnectionOptions, reconnectionToken: string, reconnectionProtocol: PersistentProtocol | null): Promise<ISimpleConnectionOptions> {
 	const { host, port } = await options.addressProvider.getAddress();
 	return {
-		isBuilt: options.isBuilt,
 		commit: options.commit,
 		host: host,
 		port: port,
 		reconnectionToken: reconnectionToken,
 		reconnectionProtocol: reconnectionProtocol,
-		webSocketFactory: options.webSocketFactory,
+		socketFactory: options.socketFactory,
 		signService: options.signService
 	};
 }

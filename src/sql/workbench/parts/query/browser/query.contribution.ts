@@ -25,8 +25,8 @@ import {
 	RunQueryKeyboardAction, RunCurrentQueryKeyboardAction, CancelQueryKeyboardAction, RefreshIntellisenseKeyboardAction, ToggleQueryResultsKeyboardAction,
 	RunQueryShortcutAction, RunCurrentQueryWithActualPlanKeyboardAction, FocusOnCurrentQueryKeyboardAction, ParseSyntaxAction
 } from 'sql/workbench/parts/query/browser/keyboardQueryActions';
-import * as gridActions from 'sql/workbench/parts/grid/views/gridActions';
-import * as gridCommands from 'sql/workbench/parts/grid/views/gridCommands';
+import * as gridActions from 'sql/workbench/parts/editData/common/gridActions';
+import * as gridCommands from 'sql/workbench/parts/editData/browser/gridCommands';
 import * as Constants from 'sql/workbench/parts/query/common/constants';
 import { localize } from 'vs/nls';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
@@ -80,7 +80,7 @@ if (isMacintosh) {
 	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
 		command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
 		group: 'query',
-		when: new ContextKeyEqualsExpr('activeEditor', 'workbench.editor.queryEditor')
+		when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
 	});
 }
 
@@ -506,7 +506,7 @@ for (let i = 0; i < 9; i++) {
 		'type': 'string',
 		'default': defaultVal,
 		'description': localize('queryShortcutDescription',
-			'Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter',
+			"Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter",
 			queryIndex)
 	};
 }

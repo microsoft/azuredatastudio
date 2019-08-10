@@ -15,7 +15,6 @@ import { SqlExtHostContext } from 'sql/workbench/api/common/sqlExtHost.protocol'
 import { ExtHostAccountManagement } from 'sql/workbench/api/common/extHostAccountManagement';
 import { ExtHostCredentialManagement } from 'sql/workbench/api/common/extHostCredentialManagement';
 import { ExtHostDataProtocol } from 'sql/workbench/api/common/extHostDataProtocol';
-import { ExtHostSerializationProvider } from 'sql/workbench/api/common/extHostSerializationProvider';
 import { ExtHostResourceProvider } from 'sql/workbench/api/common/extHostResourceProvider';
 import * as sqlExtHostTypes from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ExtHostModalDialogs } from 'sql/workbench/api/common/extHostModalDialog';
@@ -42,6 +41,7 @@ import { ExtHostStorage } from 'vs/workbench/api/common/extHostStorage';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { localize } from 'vs/nls';
 
 export interface ISqlExtensionApiFactory {
 	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -68,9 +68,8 @@ export function createApiFactory(
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
-	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol));
+	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
-	const extHostSerializationProvider = rpcProtocol.set(SqlExtHostContext.ExtHostSerializationProvider, new ExtHostSerializationProvider(rpcProtocol));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
 	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
@@ -99,6 +98,9 @@ export function createApiFactory(
 				},
 				getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 					return extHostConnectionManagement.$getConnections(activeConnectionsOnly);
+				},
+				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
+					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
 				},
 
 				// "sqlops" back-compat APIs
@@ -184,14 +186,7 @@ export function createApiFactory(
 				}
 			};
 
-			// namespace: serialization
-			const serialization: typeof azdata.serialization = {
-				registerProvider(provider: azdata.SerializationProvider): vscode.Disposable {
-					return extHostSerializationProvider.$registerSerializationProvider(provider);
-				},
-			};
-
-			// namespace: serialization
+			// namespace: resources
 			const resources: typeof azdata.resources = {
 				registerResourceProvider(providerMetadata: azdata.ResourceProviderMetadata, provider: azdata.ResourceProvider): vscode.Disposable {
 					return extHostResourceProvider.$registerResourceProvider(providerMetadata, provider);
@@ -365,6 +360,10 @@ export function createApiFactory(
 				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
 			};
 
+			let registerSerializationProvider = (provider: azdata.SerializationProvider): vscode.Disposable => {
+				return extHostDataProvider.$registerSerializationProvider(provider);
+			};
+
 			// namespace: dataprotocol
 			const dataprotocol: typeof azdata.dataprotocol = {
 				registerBackupProvider,
@@ -384,6 +383,7 @@ export function createApiFactory(
 				registerCapabilitiesServiceProvider,
 				registerDacFxServicesProvider,
 				registerSchemaCompareServicesProvider,
+				registerSerializationProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
 				},
@@ -512,7 +512,6 @@ export function createApiFactory(
 				credentials,
 				objectexplorer: objectExplorer,
 				resources,
-				serialization,
 				dataprotocol,
 				DataProviderType: sqlExtHostTypes.DataProviderType,
 				DeclarativeDataType: sqlExtHostTypes.DeclarativeDataType,
@@ -562,6 +561,7 @@ export function createApiFactory(
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
 		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
 
+			extHostExtensionManagement.$showObsoleteExtensionApiUsageNotification(localize('ObsoleteApiModuleMessage', "The extension \"{0}\" is using sqlops module which has been replaced by azdata module, the sqlops module will be removed in a future release.", extension.identifier.value));
 			// namespace: connection
 			const connection: typeof sqlops.connection = {
 				getActiveConnections(): Thenable<sqlops.connection.Connection[]> {
@@ -625,7 +625,9 @@ export function createApiFactory(
 			// namespace: serialization
 			const serialization: typeof sqlops.serialization = {
 				registerProvider(provider: sqlops.SerializationProvider): vscode.Disposable {
-					return extHostSerializationProvider.$registerSerializationProvider(provider);
+					// No-op this to avoid breaks in existing applications. Tested on Github - no examples,
+					// but I think it's safer to avoid breaking this
+					return undefined;
 				},
 			};
 

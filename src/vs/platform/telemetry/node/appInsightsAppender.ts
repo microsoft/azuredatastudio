@@ -73,7 +73,7 @@ export class AppInsightsAppender implements ITelemetryAppender {
 		});
 	}
 
-	dispose(): Promise<any> | undefined {
+	flush(): Promise<any> | undefined {
 		if (this._aiClient) {
 			return new Promise(resolve => {
 				this._aiClient!.flush({

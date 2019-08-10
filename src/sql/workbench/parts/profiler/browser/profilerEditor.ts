@@ -50,6 +50,7 @@ import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugi
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
 import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -161,7 +162,8 @@ export class ProfilerEditor extends BaseEditor {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEditorService editorService: IEditorService,
 		@IStorageService storageService: IStorageService,
-		@IClipboardService private _clipboardService: IClipboardService
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -392,7 +394,7 @@ export class ProfilerEditor extends BaseEditor {
 		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
 			// we always only get 1 item in the ranges
 			if (ranges && ranges.length === 1) {
-				handleCopyRequest(this._clipboardService, ranges[0], (row, cell) => {
+				handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, ranges[0], (row, cell) => {
 					const item = this._detailTableData.getItem(row);
 					// only 2 columns in this table
 					return cell === 0 ? item.label : item.value;

@@ -18,7 +18,6 @@ import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 
 import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/common/connectionActions';
-import * as Constants from 'sql/platform/connection/common/constants';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -37,6 +36,7 @@ import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export interface OnShowUIResponse {
 	selectedProviderDisplayName: string;
@@ -97,9 +97,10 @@ export class ConnectionDialogWidget extends Modal {
 		@IContextMenuService private _contextMenuService: IContextMenuService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasSpinner: true, hasErrors: true });
+		super(localize('connection', "Connection"), TelemetryKeys.Connection, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasSpinner: true, hasErrors: true });
 	}
 
 	/**
@@ -321,10 +322,14 @@ export class ConnectionDialogWidget extends Modal {
 		const actionProvider = this._instantiationService.createInstance(RecentConnectionActionsProvider);
 		const controller = new RecentConnectionTreeController(leftClick, actionProvider, this._connectionManagementService, this._contextMenuService);
 		actionProvider.onRecentConnectionRemoved(() => {
-			this.open(this._connectionManagementService.getRecentConnections().length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0);
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		controller.onRecentConnectionRemoved(() => {
-			this.open(this._connectionManagementService.getRecentConnections().length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections();
+			this.open(recentConnections.length > 0);
+			recentConnections.forEach(conn => conn.dispose());
 		});
 		this._recentConnectionTree = TreeCreationUtils.createConnectionTree(treeContainer, this._instantiationService, controller);
 
