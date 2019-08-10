@@ -98,11 +98,11 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			name: '',
 			index: 0
 		};
-		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+		bookTreeViewProvider = await new BookTreeViewProvider([folder], mockExtensionContext.object);
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren();
+		const children = await bookTreeViewProvider.getChildren(undefined);
 		should(children).be.Array();
 		should(children.length).equal(1);
 		book = children[0];
@@ -111,6 +111,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
 		const children = await bookTreeViewProvider.getChildren(book);
+		console.log(children);
 		should(children).be.Array();
 		should(children.length).equal(3);
 		notebook1 = children[0];
@@ -128,6 +129,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	it('should return all sections when element is a notebook', async function (): Promise<void> {
 		const children = await bookTreeViewProvider.getChildren(notebook1);
+		console.log(children);
 		should(children).be.Array();
 		should(children.length).equal(2);
 		const notebook2 = children[0];
@@ -154,6 +156,7 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 	let tableOfContentsFile: string;
 	let bookTreeViewProvider: BookTreeViewProvider;
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
+	let folder: vscode.WorkspaceFolder;
 
 	this.beforeAll(async () => {
 		let testFolder = '';
@@ -169,7 +172,7 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 		await fs.writeFile(tableOfContentsFile, '');
 		await fs.writeFile(tableOfContentsFileIgnore, '');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
-		let folder: vscode.WorkspaceFolder = {
+		folder = {
 			uri: vscode.Uri.file(rootFolderPath),
 			name: '',
 			index: 0
@@ -178,8 +181,8 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 	});
 
 	it('should ignore toc.yml files not in _data folder', function(): void {
-		let tocFiles: string[] = bookTreeViewProvider.getTableOfContentFiles([rootFolderPath]);
-		should(tocFiles).equal([tableOfContentsFile]);
+		bookTreeViewProvider.getTableOfContentFiles([folder]);
+		should(bookTreeViewProvider.tableOfContentPaths).equal([tableOfContentsFile]);
 	});
 
 	this.afterAll(async function () {

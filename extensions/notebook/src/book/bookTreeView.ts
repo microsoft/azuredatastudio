@@ -239,4 +239,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public get errorMessage() {
 		return this._errorMessage;
 	}
+
+	public get tableOfContentPaths() {
+		return this._tableOfContentPaths;
+	}
 }
