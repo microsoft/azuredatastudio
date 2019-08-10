@@ -20,7 +20,7 @@
 		<tab [title]="notebooksComponentTitle" class="fullsize" [identifier]="notebooksTabIdentifier"
 			[iconClass]="notebooksIconClass">
 			<ng-template>
-				<div id="jobsDiv" class="fullsize" *ngIf="showNotebookHistory === false">
+				<div id="notebooksDiv" class="fullsize" *ngIf="showNotebookHistory === false">
 					<notebooksview-component></notebooksview-component>
 				</div>
 				<div id="historyDiv" class="fullsize" *ngIf="showNotebookHistory === true">

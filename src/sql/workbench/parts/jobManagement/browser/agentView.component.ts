@@ -27,10 +27,12 @@ export class AgentViewComponent {
 	private _showHistory: boolean = false;
 	private _showNotebookHistory: boolean = false;
 	private _jobId: string = null;
+	private _notebookId: string = null;
 	private _agentJobInfo: AgentJobInfo = null;
 	private _agentNotebookInfo: AgentNotebookInfo = null;
 	private _refresh: boolean = undefined;
 	private _expanded: Map<string, string>;
+	private _expandedNotebook: Map<string, string>;
 
 	public jobsIconClass: string = 'jobsview-icon';
 	public notebooksIconClass: string = 'notebooksview-icon';
@@ -71,6 +73,10 @@ export class AgentViewComponent {
 		return this._jobId;
 	}
 
+	public get notebookId(): string {
+		return this._notebookId;
+	}
+
 	public get showHistory(): boolean {
 		return this._showHistory;
 	}
@@ -95,12 +101,20 @@ export class AgentViewComponent {
 		return this._expanded;
 	}
 
+	public get expandedNotebook(): Map<string, string> {
+		return this._expandedNotebook;
+	}
+
 	/**
 	 * Public Setters
 	 */
 
 	public set jobId(value: string) {
 		this._jobId = value;
+	}
+
+	public set notebookId(value: string) {
+		this._notebookId = value;
 	}
 
 	public set showHistory(value: boolean) {
@@ -130,8 +144,16 @@ export class AgentViewComponent {
 		this._expanded.set(jobId, errorMessage);
 	}
 
+	public setExpandedNotebook(jobId: string, errorMessage: string) {
+		this._expandedNotebook.set(jobId, errorMessage);
+	}
+
 	public set expanded(value: Map<string, string>) {
 		this._expanded = value;
+	}
+
+	public set expandedNotebook(value: Map<string, string>) {
+		this._expandedNotebook = value;
 	}
 
 	public layout() {

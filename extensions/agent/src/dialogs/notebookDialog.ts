@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as nls from 'vscode-nls';
-import * as fs from 'fs';
+import * as path from 'path';
 import * as azdata from 'azdata';
 import { JobData } from '../data/jobData';
 import { JobStepDialog } from './jobStepDialog';
@@ -22,24 +22,25 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 	// TODO: localize
 	// Top level
-	private static readonly CreateDialogTitle: string = localize('jobDialog.newJob', 'New Notebook');
-	private static readonly EditDialogTitle: string = localize('jobDialog.editJob', 'Edit Notebook');
-	private readonly GeneralTabText: string = localize('jobDialog.general', 'General');
-	private readonly SchedulesTabText: string = localize('jobDialog.schedules', 'Schedules');
-	private readonly BlankJobNameErrorText: string = localize('jobDialog.blankJobNameError', 'The name of the job cannot be blank.');
+	private static readonly CreateDialogTitle: string = localize('notebookDialog.newJob', 'New Notebook Job');
+	private static readonly EditDialogTitle: string = localize('notebookDialog.editJob', 'Edit Notebook Job');
+	private readonly GeneralTabText: string = localize('notebookDialog.general', 'General');
+	private readonly BlankJobNameErrorText: string = localize('notebookDialog.blankJobNameError', 'The name of the job cannot be blank.');
 
-	// General tab strings
+	// Notebook details strings
+	private readonly NotebookDetailsSeparatorTitle: string = localize('notebookDialog.notebookSection', "Notebook Details");
+	private readonly TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', 'Notebook Path');
+	private readonly TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Metadata Database');
+	private readonly ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execute Database');
+
+	// Job details string
+	private readonly JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
 	private readonly NameTextBoxLabel: string = localize('jobDialog.name', 'Name');
 	private readonly OwnerTextBoxLabel: string = localize('jobDialog.owner', 'Owner');
-	private readonly TargetDatabaseDropdownLabel: string = localize('jobDialog.targetDatabase', 'Target Database');
-	private readonly TemplateNotebookTextBoxLabel: string = localize('jobDialog.templateNotebook', 'Template Notebook');
-	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', 'Description');
-	private readonly EnabledCheckboxLabel: string = localize('jobDialog.enabled', 'Enabled');
-
-	// Schedules tab strings
 	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', 'Schedules list');
 	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', 'Pick Schedule');
 	private readonly ScheduleNameLabelString: string = localize('jobDialog.scheduleNameLabel', 'Schedule Name');
+	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', 'Description');
 
 	// Event Name strings
 	private readonly NewJobDialogEvent: string = 'NewJobDialogOpened';
@@ -47,34 +48,29 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 	// UI Components
 	private generalTab: azdata.window.DialogTab;
-	private schedulesTab: azdata.window.DialogTab;
 
-	// General tab controls
+	// Notebook Details controls
+	private templateFilePathBox: azdata.InputBoxComponent;
+	private openTemplateFileButton: azdata.ButtonComponent;
+	private targetDatabaseDropDown: azdata.DropDownComponent;
+	private executeDatabaseDropDown: azdata.DropDownComponent;
+
+	// Job Details controls
+
 	private nameTextBox: azdata.InputBoxComponent;
 	private ownerTextBox: azdata.InputBoxComponent;
-	private targetDatabaseDropDown: azdata.DropDownComponent;
-	private TemplateFilePathBox: azdata.InputBoxComponent;
-	private openTemplateFileButton: azdata.ButtonComponent;
-	private descriptionTextBox: azdata.InputBoxComponent;
-	private enabledCheckBox: azdata.CheckBoxComponent;
-
-	// Schedule tab controls
-	private removeScheduleButton: azdata.ButtonComponent;
-
-	// Schedule tab controls
 	private schedulesTable: azdata.TableComponent;
 	private pickScheduleButton: azdata.ButtonComponent;
+	private removeScheduleButton: azdata.ButtonComponent;
+	private descriptionTextBox: azdata.InputBoxComponent;
 
-	// Alert tab controls
-	private alertsTable: azdata.TableComponent;
-	private newAlertButton: azdata.ButtonComponent;
+
+
 	private isEdit: boolean = false;
 
 	// Job objects
 	private steps: azdata.AgentJobStepInfo[];
 	private schedules: azdata.AgentJobScheduleInfo[];
-	private alerts: azdata.AgentAlertInfo[] = [];
-	private startStepDropdownValues: azdata.CategoryValue[] = [];
 
 	constructor(ownerUri: string, notebookInfo: azdata.AgentNotebookInfo = undefined) {
 		super(
@@ -83,17 +79,14 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			notebookInfo ? NotebookDialog.EditDialogTitle : NotebookDialog.CreateDialogTitle);
 		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
-		this.alerts = this.model.alerts ? this.model.alerts : [];
 		this.isEdit = notebookInfo ? true : false;
 		this.dialogName = this.isEdit ? this.EditJobDialogEvent : this.NewJobDialogEvent;
 	}
 
 	protected async initializeDialog() {
 		this.generalTab = azdata.window.createTab(this.GeneralTabText);
-		this.schedulesTab = azdata.window.createTab(this.SchedulesTabText);
 		this.initializeGeneralTab();
-		this.initializeSchedulesTab();
-		this.dialog.content = [this.generalTab, this.schedulesTab];
+		this.dialog.content = [this.generalTab];
 		this.dialog.registerCloseValidator(() => {
 			this.updateModel();
 			let validationResult = this.model.validate();
@@ -108,6 +101,69 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 	private initializeGeneralTab() {
 		this.generalTab.registerContent(async view => {
+			this.templateFilePathBox = view.modelBuilder.inputBox()
+				.withProperties({
+					width: 400,
+					inputType: 'text'
+				}).component();
+			this.templateFilePathBox.onTextChanged(() => {
+				if (this.templateFilePathBox.value && this.templateFilePathBox.value.length > 0) {
+					this.dialog.okButton.enabled = true;
+				}
+				else {
+					this.dialog.okButton.enabled = false;
+				}
+			});
+			this.openTemplateFileButton = view.modelBuilder.button()
+				.withProperties({
+					label: '...',
+					title: '...',
+					width: '20px',
+					isFile: true,
+					fileType: '.ipynb'
+				}).component();
+			this.openTemplateFileButton.onDidClick(e => {
+				if (e) {
+					this.templateFilePathBox.value = e.filePath;
+					if (!this.isEdit) {
+						this.nameTextBox.value = path.basename(e.filePath);
+					}
+				}
+			});
+			let outputButtonContainer = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'row',
+					textAlign: 'right',
+					width: 20
+				}).withItems([this.openTemplateFileButton], { flex: '1 1 80%' }).component();
+			let notebookPathFlexBox = view.modelBuilder.flexContainer()
+				.withLayout({
+					flexFlow: 'row',
+					width: '100%'
+				}).withItems([this.templateFilePathBox, outputButtonContainer], {
+					flex: '1 1 50%'
+				}).component();
+			this.targetDatabaseDropDown = view.modelBuilder.dropDown().component();
+			this.executeDatabaseDropDown = view.modelBuilder.dropDown().component();
+			let databases = await AgentUtils.getDatabases(this.ownerUri);
+			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: databases[0],
+					values: databases
+				}).component();
+			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
+				multiline: true,
+				height: 50
+			}).component();
+			this.executeDatabaseDropDown = view.modelBuilder.dropDown()
+				.withProperties({
+					value: '',
+					values: databases
+				}).component();
+			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
+				multiline: true,
+				height: 50
+			}).component();
 			this.nameTextBox = view.modelBuilder.inputBox().component();
 			this.nameTextBox.required = true;
 			this.nameTextBox.onTextChanged(() => {
@@ -119,96 +175,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 				}
 			});
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
-			this.targetDatabaseDropDown = view.modelBuilder.dropDown().component();
-			this.dialog.okButton.enabled = false;
-			this.TemplateFilePathBox = view.modelBuilder.inputBox().component();
-			this.TemplateFilePathBox.onTextChanged(() => {
-				if (this.TemplateFilePathBox.value && this.TemplateFilePathBox.value.length > 0) {
-					this.dialog.okButton.enabled = true;
-				}
-				else {
-					this.dialog.okButton.enabled = false;
-				}
-			});
-			this.openTemplateFileButton = view.modelBuilder.button()
-				.withProperties({
-					label: this.TemplateNotebookTextBoxLabel,
-					title: this.TemplateNotebookTextBoxLabel,
-					width: '130px',
-					isFile: true,
-					fileType: '.ipynb'
-				}).component();
-			this.TemplateFilePathBox.required = true;
-			this.TemplateFilePathBox.enabled = false;
-			this.openTemplateFileButton.onDidClick(e => {
-				if (e) {
-					this.TemplateFilePathBox.value = e.filePath;
-				}
-			});
-			let databases = await AgentUtils.getDatabases(this.ownerUri);
-			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
-				.withProperties({
-					value: databases[0],
-					values: databases
-				}).component();
-			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
-				multiline: true,
-				height: 200
-			}).component();
-			this.enabledCheckBox = view.modelBuilder.checkBox()
-				.withProperties({
-					label: this.EnabledCheckboxLabel
-				}).component();
-			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.nameTextBox,
-					title: this.NameTextBoxLabel
-				}, {
-					component: this.ownerTextBox,
-					title: this.OwnerTextBoxLabel
-				}, {
-					component: this.targetDatabaseDropDown,
-					title: this.TargetDatabaseDropdownLabel
-				}, {
-					component: this.TemplateFilePathBox,
-					title: this.TemplateNotebookTextBoxLabel,
-					actions: [this.openTemplateFileButton]
-				}, {
-					component: this.descriptionTextBox,
-					title: this.DescriptionTextBoxLabel
-				}, {
-					component: this.enabledCheckBox,
-					title: ''
-				}]).withLayout({ width: '100%' }).component();
-
-			await view.initializeModel(formModel);
-
-			this.nameTextBox.value = this.model.name;
-			this.ownerTextBox.value = this.model.owner;
-			//this.categoryDropdown.values = this.model.jobCategories;
-			if (this.isEdit) {
-				this.TemplateFilePathBox.required = false;
-				this.targetDatabaseDropDown.value = this.model.targetDatabase;
-				this.targetDatabaseDropDown.enabled = false;
-			}
-			let idx: number = undefined;
-			if (this.model.category && this.model.category !== '') {
-				idx = this.model.jobCategories.indexOf(this.model.category);
-			}
-			//this.categoryDropdown.value = this.model.jobCategories[idx > 0 ? idx : 0];
-
-			this.enabledCheckBox.checked = this.model.enabled;
-			this.descriptionTextBox.value = this.model.description;
-			this.openTemplateFileButton.onDidClick(e => {
-				console.log(e);
-
-			});
-		});
-	}
-
-
-	private initializeSchedulesTab() {
-		this.schedulesTab.registerContent(async view => {
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({
 					columns: [
@@ -217,13 +183,13 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 						PickScheduleDialog.ScheduleDescription
 					],
 					data: [],
-					height: 750,
+					height: 50,
 					width: 420
 				}).component();
 
 			this.pickScheduleButton = view.modelBuilder.button().withProperties({
 				label: this.PickScheduleButtonString,
-				width: 80
+				width: 100
 			}).component();
 			this.removeScheduleButton = view.modelBuilder.button().withProperties({
 				label: 'Remove schedule',
@@ -256,15 +222,67 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					this.populateScheduleTable();
 				}
 			});
+
+
 			let formModel = view.modelBuilder.formContainer()
-				.withFormItems([{
-					component: this.schedulesTable,
-					title: this.SchedulesTopLabelString,
-					actions: [this.pickScheduleButton, this.removeScheduleButton]
-				}]).withLayout({ width: '100%' }).component();
+				.withFormItems([
+					{
+						components: [{
+							component: notebookPathFlexBox,
+							title: this.TemplateNotebookTextBoxLabel
+						}, {
+							component: this.targetDatabaseDropDown,
+							title: this.TargetDatabaseDropdownLabel
+						}, {
+							component: this.executeDatabaseDropDown,
+							title: this.ExecuteDatabaseDropdownLabel
+						}],
+						title: this.NotebookDetailsSeparatorTitle
+					}, {
+						components: [{
+							component: this.nameTextBox,
+							title: this.NameTextBoxLabel
+						}, {
+							component: this.ownerTextBox,
+							title: this.OwnerTextBoxLabel
+						}, {
+							component: this.schedulesTable,
+							title: this.SchedulesTopLabelString,
+							actions: [this.pickScheduleButton, this.removeScheduleButton]
+						}, {
+							component: this.descriptionTextBox,
+							title: this.DescriptionTextBoxLabel
+						}],
+						title: this.JobDetailsSeparatorTitle
+					}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);
 
+
+
+			this.nameTextBox.value = this.model.name;
+			this.ownerTextBox.value = this.model.owner;
+			//this.categoryDropdown.values = this.model.jobCategories;
+			if (this.isEdit) {
+				this.templateFilePathBox.placeHolder = this.model.targetDatabase + '\\' + this.model.name;
+				this.targetDatabaseDropDown.value = this.model.targetDatabase;
+				this.executeDatabaseDropDown.value = this.model.executeDatabase;
+				this.targetDatabaseDropDown.enabled = false;
+				this.schedules = this.model.jobSchedules;
+			}
+			else {
+				this.templateFilePathBox.required = true;
+			}
+			let idx: number = undefined;
+			if (this.model.category && this.model.category !== '') {
+				idx = this.model.jobCategories.indexOf(this.model.category);
+			}
+			//this.categoryDropdown.value = this.model.jobCategories[idx > 0 ? idx : 0];
+			this.descriptionTextBox.value = this.model.description;
+			this.openTemplateFileButton.onDidClick(e => {
+				console.log(e);
+
+			});
 			this.populateScheduleTable();
 		});
 	}
@@ -272,7 +290,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private populateScheduleTable() {
 		let data = this.convertSchedulesToData(this.schedules);
 		this.schedulesTable.data = data;
-		this.schedulesTable.height = 750;
+		this.schedulesTable.height = 100;
 
 	}
 
@@ -299,10 +317,10 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 		console.log(this);
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
-		this.model.enabled = this.enabledCheckBox.checked;
 		this.model.description = this.descriptionTextBox.value;
-		this.model.templatePath = this.TemplateFilePathBox.value;
+		this.model.templatePath = this.templateFilePathBox.value;
 		this.model.targetDatabase = this.targetDatabaseDropDown.value as string;
+		this.model.executeDatabase = this.executeDatabaseDropDown.value as string;
 		if (!this.model.jobSchedules) {
 			this.model.jobSchedules = [];
 		}

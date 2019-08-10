@@ -1375,6 +1375,7 @@ declare module 'azdata' {
 		templateId: number;
 		targetDatabase: string;
 		lastRunNotebookError: string;
+		executeDatabase: string;
 	}
 
 	export interface AgentJobScheduleInfo {

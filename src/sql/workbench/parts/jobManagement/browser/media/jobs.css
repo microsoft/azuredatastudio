@@ -37,6 +37,12 @@ notebooksview-component {
 	display: block;
 }
 
+.jobnotebooksview-grid {
+	height: calc(100% - 75px);
+	width : 100%;
+	display: block;
+}
+
 .vs-dark #agentViewDiv .slick-header-column {
 	background: #333333 !important;
 }
@@ -48,54 +54,62 @@ notebooksview-component {
 }
 
 .hc-black #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell,
-.hc-black #jobsDiv notebooks-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+.hc-black #notebooksDiv notebooks-component .jobnotebooksview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
 	border: 1px solid #2b56f2;
 }
 
 #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell,
-#jobsDiv notebooksview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+#notebooksDiv notebooksview-component .jobnotebooksview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
 	border-right: transparent !important;
 	border-left: transparent !important;
 	line-height: 33px !important;
 }
 
-#jobsDiv .jobview-joblist {
+#jobsDiv .jobview-joblist,
+#notebooksDiv .jobview-joblist {
 	height: 100%;
 	width: 100%;
 }
 
-#jobsDiv .jobview-jobnametable {
+#jobsDiv .jobview-jobnametable,
+#notebooksDiv .jobview-jobnametable {
 	border: 0px;
 	width: 100%;
 	height: 100%;
 }
 
-#jobsDiv .jobview-jobnameindicatorsuccess {
+#jobsDiv .jobview-jobnameindicatorsuccess,
+#notebooksDiv .jobview-jobnameindicatorsuccess {
 	width: 5px;
 	background: green;
 }
 
-#jobsDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure {
+#jobsDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure,
+#notebooksDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure {
 	width: 5px;
 	background: red;
 }
 
-#jobsDiv .jobview-jobnameindicatorcancel {
+#jobsDiv .jobview-jobnameindicatorcancel,
+#notebooksDiv .jobview-jobnameindicatorcancel {
 	width: 5px;
 	background: orange;
 }
 
-#jobsDiv .jobview-grid .jobview-jobnameindicatorunknown {
+#jobsDiv .jobview-grid .jobview-jobnameindicatorunknown,
+#notebooks .jobnotebooksview-grid .jobview-jobnameindicatorunknown {
 	width: 5px;
 	background: grey;
 }
 
 #jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext,
-#jobsDiv .jobview-grid .slick-cell.l1.r1.notebook-error-row .jobview-jobnametext {
+#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext,
+#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1.notebook-error-row .jobview-jobnametext {
 	width: 100%;
 }
 
-#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext {
+#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext,
+#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1 .jobview-jobnametext {
 	text-overflow: ellipsis;
 	width: 250px;
 	overflow: hidden;
@@ -113,18 +127,20 @@ notebooksview-component {
 	display: inline-block;
 }
 
-#jobsDiv .job-with-error {
+#jobsDiv .job-with-error,
+#notebooksDiv .job-with-error {
 	border-bottom: none;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
+.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row,
+.jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
 	width: 100%;
 	opacity: 1;
 	font-weight: 700;
 	color: orangered;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.notebook-error-row {
+.jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.notebook-error-row {
 	width: 100%;
 	opacity: 1;
 	font-weight: 700;
@@ -132,17 +148,19 @@ notebooksview-component {
 }
 
 .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row,
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.notebook-error-row {
+.jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
 	opacity: 1;
 }
 
-#jobsDiv .jobview-splitter {
+#jobsDiv .jobview-splitter,
+#notebooksDiv .jobview-splitter {
 	height: 1px;
 	width: 100%;
 	background-color: gray;
 }
 
-#jobsDiv .jobview-jobitem {
+#jobsDiv .jobview-jobitem,
+#notebooksDiv .jobview-jobitem {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -150,30 +168,36 @@ notebooksview-component {
 	white-space: nowrap;
 }
 
-#jobsDiv .jobview-label {
+#jobsDiv .jobview-label,
+#notebooksDiv .jobview-label {
 	padding-bottom: 10px;
 	padding-top: 10px;
 }
 
-#jobsDiv .jobview-highlight-none {
+#jobsDiv .jobview-highlight-none,
+#notebooksDiv .jobview-highlight-none {
 	width: 5px;
 	margin-right: 10px;
 }
 
-#jobsDiv .detail-container {
+#jobsDiv .detail-container,
+#notebooksDiv .detail-container {
 	max-height: 100px !important;
 	line-height: 20px;
 }
 
-#jobsDiv .detail {
+#jobsDiv .detail,
+#notebooksDiv .detail {
 	padding: 5px
 }
 
-#jobsDiv .preload {
+#jobsDiv .preload,
+#notebooksDiv .preload {
 	font-size: 13px;
 }
 
-#jobsDiv .dynamic-cell-detail > :first-child {
+#jobsDiv .dynamic-cell-detail > :first-child,
+#notebooksDiv .dynamic-cell-detail > :first-child {
 	vertical-align:     middle;
 	line-height:        13px;
 	padding:            10px;
@@ -228,7 +252,7 @@ notebooksview-component {
 }
 
 agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
-agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
+agentview-component .jobnotebooksview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
 	cursor: pointer;
 }
 
@@ -252,26 +276,36 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
 }
 
 #jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure,
-#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.notebook-error-row td.jobview-jobnameindicatorfailure {
+#notebooksDiv notebooksview-component .jobnotebooksview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure,
+#notebooksDiv notebooksview-component .jobnotebooksview-grid .slick-cell.l1.r1.notebook-error-row td.jobview-jobnameindicatorfailure {
 	width: 0;
 	background: none;
 }
 
 #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
 #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered,
+#notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+#notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+#notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
 	background: #dcdcdc !important;
 }
 
 .vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
 .vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+.vs-dark #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.vs-dark #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.vs-dark #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
 	background: #444444 !important;
 }
 
 .hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
 .hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+.hc-black #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.hc-black #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.hc-black #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
 	background: none !important;
 }
 
@@ -282,7 +316,8 @@ table.jobprevruns div.bar3, table.jobprevruns div.bar4, table.jobprevruns div.ba
 	width: 10px;
 }
 
-.jobview-grid .slick-cell.l10.r10 {
+.jobview-grid .slick-cell.l10.r10,
+.jobnotebooksview-grid .slick-cell.l10.r10 {
 	text-align: center;
 	display: inline-flex;
 }
@@ -293,6 +328,12 @@ table.jobprevruns {
 
 table.jobprevruns > tbody {
 	vertical-align: bottom;
+}
+
+#notebooksDiv .jobnotebooksview-grid {
+	height: calc(100% - 75px);
+	width : 100%;
+	display: block;
 }
 
 #alertsDiv .jobalertsview-grid {
@@ -340,9 +381,35 @@ table.jobprevruns > tbody {
 }
 
 jobsview-component .jobview-grid .slick-cell.error-row,
-notebooksview-component .jobview-grid .slick-cell.error-row,
-notebooksview-component .jobview-grid .slick-cell.notebook-error-row {
+notebooksview-component .notebookview-grid .slick-cell.error-row,
+notebooksview-component .notebookview-grid .slick-cell.notebook-error-row {
 	opacity: 0;
+}
+
+#notebooksDiv notebooksview-component .jobnotebooksview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+	border-right: transparent !important;
+	border-left: transparent !important;
+	line-height: 33px !important;
+}
+
+#notebooksDiv .jobnotebooksview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+#notebooksDiv .jobnotebooksview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
+#notebooksDiv .jobnotebooksview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+	background: #dcdcdc !important;
+}
+
+.vs-dark #notebooksDiv .jobnotebooksview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
+.vs-dark #notebooksDiv .jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
+.vs-dark #notebooksDiv .jobnotebooksview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+	background: #444444 !important;
+}
+
+.vs-dark .jobnotebooksview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+	border-left: 1px dotted white;
+}
+
+.jobnotebooksview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+	border-left: 1px dotted #444444;
 }
 
 #alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
@@ -442,7 +509,7 @@ notebooksview-component .jobview-grid .slick-cell.notebook-error-row {
 }
 
 #jobsDiv jobsview-component .monaco-toolbar.carbon-taskbar,
-#jobsDiv notebooksview-component .monaco-toolbar.carbon-taskbar,
+#notebooksDiv notebooksview-component .monaco-toolbar.carbon-taskbar,
 #operatorsDiv joboperatorsview-component .monaco-toolbar.carbon-taskbar,
 #alertsDiv jobalertsview-component .monaco-toolbar.carbon-taskbar,
 #proxiesDiv jobproxiesview-component .monaco-toolbar.carbon-taskbar {

@@ -173,6 +173,22 @@ export class EditJobAction extends Action {
 	}
 }
 
+export class OpenMaterializedNotebookAction extends Action {
+	public static ID = 'notebookAction.openNotebook';
+	public static LABEL = nls.localize('notebookAction.openNotebook', "Open");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'edit');
+	}
+
+	public run(context: any): Promise<boolean> {
+		context.component.openNotebook(context.history);
+		return Promise.resolve(true);
+	}
+}
+
 export class DeleteJobAction extends Action {
 	public static ID = 'jobaction.deleteJob';
 	public static LABEL = nls.localize('jobaction.deleteJob', "Delete Job");
@@ -557,7 +573,7 @@ export class DeleteProxyAction extends Action {
 
 export class NewNotebookJobAction extends Action {
 	public static ID = 'notebookaction.newJob';
-	public static LABEL = nls.localize('notebookaction.newJob', "New Notebook");
+	public static LABEL = nls.localize('notebookaction.newJob', "New Notebook Job");
 
 	constructor(
 	) {

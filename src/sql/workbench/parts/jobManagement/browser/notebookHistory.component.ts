@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, JobsRefreshAction, OpenNotebookAction, EditNotebookJobAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { RunJobAction, StopJobAction, JobsRefreshAction, OpenNotebookAction, EditNotebookJobAction, EditJobAction, OpenMaterializedNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -26,6 +26,7 @@ import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ScrollbarVisibility } from 'vs/base/common/scrollable';
+import { IAction } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -52,8 +53,9 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	@ViewChild('table') private _tableContainer: ElementRef;
 	@ViewChild('jobsteps') private _jobStepsView: ElementRef;
 	@ViewChild('notebookHistoryActionbarContainer') private _notebookHistoryActionbarView: ElementRef;
+	@ViewChild('notebookgriditem') private _notebookGridItem: ElementRef;
 
-	@Input() public agentJobInfo: azdata.AgentJobInfo = undefined;
+	@Input() public agentNotebookInfo: azdata.AgentNotebookInfo = undefined;
 	@Input() public agentJobHistories: azdata.AgentJobHistoryInfo[] = undefined;
 	public notebookHistories: azdata.AgentNotebookHistoryInfo[] = undefined;
 	public agentNotebookHistoryInfo: azdata.AgentNotebookHistoryInfo = undefined;
@@ -64,7 +66,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	private _showPreviousRuns: boolean = undefined;
 	private _runStatus: string = undefined;
 	private _notebookCacheObject: NotebookCacheObject;
-	private _agentJobInfo: azdata.AgentJobInfo;
 	private _agentNotebookInfo: azdata.AgentNotebookInfo;
 	private _noJobsAvailable: boolean = false;
 	protected _notebookHistoryActionBar: Taskbar;
@@ -74,6 +75,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	private _runJobAction: RunJobAction;
 	private _stopJobAction: StopJobAction;
 	private _refreshAction: JobsRefreshAction;
+	private _editJobAction: EditJobAction;
 
 	//Notebook Actions
 	private _openMaterializedNotebookAction: OpenNotebookAction;
@@ -110,7 +112,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		// set base class elements
 		this._visibilityElement = this._tableContainer;
 		this._parentComponent = this._agentViewComponent;
-		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
 		this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 		this.initActionBar();
 		const self = this;
@@ -120,8 +121,8 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	private loadHistory() {
 		const self = this;
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
-		let jobName = this._agentViewComponent.agentJobInfo.name;
-		let jobId = this._agentViewComponent.jobId;
+		let jobName = this._agentViewComponent.agentNotebookInfo.name;
+		let jobId = this._agentViewComponent.notebookId;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
 			if (result && result.histories) {
@@ -129,15 +130,14 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				self._notebookCacheObject.setNotebookHistory(jobId, result.histories);
 				self._notebookCacheObject.setJobSchedules(jobId, result.schedules);
 				self._notebookCacheObject.setJobSteps(jobId, result.steps);
-				this._agentViewComponent.agentJobInfo.jobSteps = this._notebookCacheObject.getJobSteps(jobId);
-				this._agentViewComponent.agentJobInfo.jobSchedules = this._notebookCacheObject.getJobSchedules(jobId);
-				this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+				this._agentViewComponent.agentNotebookInfo.jobSteps = this._notebookCacheObject.getJobSteps(jobId);
+				this._agentViewComponent.agentNotebookInfo.jobSchedules = this._notebookCacheObject.getJobSchedules(jobId);
 				this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 				if (result.histories.length > 0) {
 					self._noJobsAvailable = false;
 					self._showPreviousRuns = true;
 				} else {
-					self._notebookCacheObject.setNotebookHistory(self._agentViewComponent.jobId, result.histories);
+					self._notebookCacheObject.setNotebookHistory(self._agentViewComponent.notebookId, result.histories);
 					self._noJobsAvailable = true;
 					self._showPreviousRuns = false;
 				}
@@ -146,13 +146,14 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				self._showPreviousRuns = false;
 				self._showSteps = false;
 			}
-			this._actionBar.context = { targetObject: { canEdit: true, job: this._agentJobInfo }, ownerUri: this.ownerUri, component: this };
+			this._actionBar.context = { targetObject: { canEdit: true, notebook: this._agentNotebookInfo }, ownerUri: this.ownerUri, component: this };
 			this._editNotebookJobAction.enabled = true;
 			this._actionBar.setContent([
 				{ action: this._runJobAction },
 				{ action: this._stopJobAction },
 				{ action: this._refreshAction },
-				{ action: this._editNotebookJobAction }
+				{ action: this._editNotebookJobAction },
+				{ action: this._editJobAction }
 			]);
 			if (self._agentViewComponent.showNotebookHistory) {
 				self._cd.detectChanges();
@@ -182,7 +183,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 					return stepViewRow;
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
-				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
+				self._stepRows[0].rowID = 'stepsColumn' + self._agentNotebookInfo.jobId;
 				self._stepRows[0].stepId = nls.localize('stepRow.stepID', "Step ID");
 				self._stepRows[0].stepName = nls.localize('stepRow.stepName', "Step Name");
 				self._stepRows[0].message = nls.localize('stepRow.message', "Message");
@@ -260,10 +261,10 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	}
 
 	public onFirstVisible() {
-		this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+		this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 
-		if (!this.agentJobInfo) {
-			this.agentJobInfo = this._agentJobInfo;
+		if (!this.agentNotebookInfo) {
+			this.agentNotebookInfo = this._agentNotebookInfo;
 		}
 
 		if (this.isRefreshing) {
@@ -271,19 +272,19 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			return;
 		}
 
-		let jobHistories = this._notebookCacheObject.notebookHistories[this._agentViewComponent.jobId];
-		this.notebookHistories = jobHistories.reverse();
-		if (jobHistories) {
-			if (jobHistories.length > 0) {
+		let notebookHistories = this._notebookCacheObject.notebookHistories[this._agentViewComponent.notebookId];
+		this.notebookHistories = notebookHistories.reverse();
+		if (notebookHistories) {
+			if (notebookHistories.length > 0) {
 				const self = this;
 				this._noJobsAvailable = false;
-				if (this._notebookCacheObject.prevJobID === this._agentViewComponent.jobId || jobHistories[0].jobId === this._agentViewComponent.jobId) {
+				if (this._notebookCacheObject.prevJobID === this._agentViewComponent.notebookId || notebookHistories[0].jobId === this._agentViewComponent.notebookId) {
 					this._showPreviousRuns = true;
-					this._agentViewComponent.agentJobInfo.jobSteps = this._notebookCacheObject.getJobSteps(this._agentJobInfo.jobId);
-					this._agentViewComponent.agentJobInfo.jobSchedules = this._notebookCacheObject.getJobSchedules(this._agentJobInfo.jobId);
-					this._agentJobInfo = this._agentViewComponent.agentJobInfo;
+					this._agentViewComponent.agentNotebookInfo.jobSteps = this._notebookCacheObject.getJobSteps(this._agentNotebookInfo.jobId);
+					this._agentViewComponent.agentNotebookInfo.jobSchedules = this._notebookCacheObject.getJobSchedules(this._agentNotebookInfo.jobId);
+					this._agentNotebookInfo = this._agentViewComponent.agentNotebookInfo;
 				}
-			} else if (jobHistories.length === 0) {
+			} else if (notebookHistories.length === 0) {
 				this._showPreviousRuns = false;
 				this._showSteps = false;
 				this._noJobsAvailable = true;
@@ -293,14 +294,15 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				{ action: this._runJobAction },
 				{ action: this._stopJobAction },
 				{ action: this._refreshAction },
-				{ action: this._editNotebookJobAction }
+				{ action: this._editNotebookJobAction },
+				{ action: this._editJobAction }
 			]);
 			this._cd.detectChanges();
 
 		} else {
 			this.loadHistory();
 		}
-		this._notebookCacheObject.prevJobID = this._agentViewComponent.jobId;
+		this._notebookCacheObject.prevJobID = this._agentViewComponent.notebookId;
 	}
 
 	public layout() {
@@ -324,17 +326,19 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
 		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		this._editNotebookJobAction = this.instantiationService.createInstance(EditNotebookJobAction);
+		this._editJobAction = this.instantiationService.createInstance(EditJobAction);
 		this._refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
 		this._actionBar = new Taskbar(taskbar);
 		this._editNotebookJobAction.enabled = !this.showProgressWheel();
-		let targetObject: JobActionContext = { canEdit: !this.showProgressWheel(), job: this._agentJobInfo };
+		let targetObject: JobActionContext = { canEdit: !this.showProgressWheel(), job: this._agentNotebookInfo };
 		this._actionBar.context = { targetObject: targetObject, ownerUri: this.ownerUri, component: this };
 		this._actionBar.setContent([
 			{ action: this._runJobAction },
 			{ action: this._stopJobAction },
 			{ action: this._refreshAction },
-			{ action: this._editNotebookJobAction }
+			{ action: this._editNotebookJobAction },
+			{ action: this._editJobAction }
 		]);
 	}
 
@@ -352,6 +356,32 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterializedJson);
 			}
 		});
+	}
+
+	public openHistoryContextMenu(event: MouseEvent, history: azdata.AgentNotebookHistoryInfo) {
+		let anchor = {
+			x: event.clientX,
+			y: event.clientY
+		};
+		let runDate = event.target['runDate'];
+		let gridActions = this.getGridActions();
+		let actionContext = {
+			component: this,
+			history: history
+		};
+		this._contextMenuService.showContextMenu({
+			getAnchor: () => anchor,
+			getActions: () => gridActions,
+			getKeyBinding: (action) => this._keybindingFor(action),
+			getActionsContext: () => (actionContext)
+		});
+	}
+
+	protected getGridActions(): IAction[] {
+		const openNotebookAction = this._instantiationService.createInstance(OpenMaterializedNotebookAction);
+		return [
+			openNotebookAction
+		];
 	}
 
 

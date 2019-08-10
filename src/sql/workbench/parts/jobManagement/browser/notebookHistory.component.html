@@ -51,7 +51,7 @@
 						Enabled:
 					</td>
 					<td id="col4">
-						{{ this._agentJobInfo?.enabled }}
+						{{ this._agentNotebookInfo?.enabled }}
 					</td>
 				</tr>
 				<tr>
@@ -59,13 +59,13 @@
 						Template Notebook:
 					</td>
 					<td id="col2">
-						{{ this._agentJobInfo?.hasTarget }}
+						{{ this._agentNotebookInfo?.hasTarget }}
 					</td>
 					<td id="col3">
 						Has Schedule:
 					</td>
 					<td id="col4">
-						{{ this._agentJobInfo?.hasSchedule }}
+						{{ this._agentNotebookInfo?.hasSchedule }}
 					</td>
 				</tr>
 				<tr>
@@ -73,13 +73,13 @@
 						Last Run:
 					</td>
 					<td id="col2">
-						{{ this._agentJobInfo?.lastRun }}
+						{{ this._agentNotebookInfo?.lastRun }}
 					</td>
 					<td id="col3">
 						Next Run:
 					</td>
 					<td id="col4">
-						{{ this._agentJobInfo?.nextRun }}
+						{{ this._agentNotebookInfo?.nextRun }}
 					</td>
 				</tr>
 			</table>
@@ -100,6 +100,7 @@
 					class="notebook-grid-item"
 					(click)="openNotebook(history)"
 					title="{{history.materializedNotebookErrorInfo}}"
+					(contextmenu) = "openHistoryContextMenu($event, history)"
 				>
 					<div *ngIf="history.materializedNotebookErrorInfo" class="img-error" ></div>
 					<div *ngIf="history.runStatus === 1 && !history.materializedNotebookErrorInfo" class="img-success"></div>
@@ -124,6 +125,7 @@
 					*ngFor="let history of currentHistory"
 					class="notebook-grid-item"
 					(click)="openNotebook(history)"
+					title="{{history.materializedNotebookErrorInfo}}"
 				>
 					<div *ngIf="history.runStatus === 1" class="img-success"></div>
 					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
@@ -144,9 +146,11 @@
 			<div class="grid-title"><span>Last Month</span></div>
 			<div class="notebook-grid">
 				<div
+					#notebookgriditem
 					*ngFor="let history of currentHistory"
 					class="notebook-grid-item"
 					(click)="openNotebook(history)"
+					title="{{history.materializedNotebookErrorInfo}}"
 				>
 					<div *ngIf="history.runStatus === 1" class="img-success"></div>
 					<div *ngIf="history.runStatus === 0" class="img-failure"></div>
@@ -170,6 +174,7 @@
 					*ngFor="let history of currentHistory"
 					class="notebook-grid-item"
 					(click)="openNotebook(history)"
+					title="{{history.materializedNotebookErrorInfo}}"
 				>
 					<div *ngIf="history.runStatus === 1" class="img-success"></div>
 					<div *ngIf="history.runStatus === 0" class="img-failure"></div>

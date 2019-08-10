@@ -49,6 +49,7 @@ export class NotebookData implements IAgentDialogData {
 	public startStepId: number;
 	public categoryType: number;
 	public targetDatabase: string;
+	public executeDatabase: string;
 	public templateId: number;
 	public templatePath: string;
 
@@ -58,6 +59,7 @@ export class NotebookData implements IAgentDialogData {
 		private _agentService: azdata.AgentServicesProvider = undefined) {
 
 		this._ownerUri = ownerUri;
+		this.enabled = true;
 		if (notebookInfo) {
 			this.dialogMode = AgentDialogMode.EDIT;
 			this.name = notebookInfo.name;
@@ -74,6 +76,7 @@ export class NotebookData implements IAgentDialogData {
 			this.categoryId = notebookInfo.categoryId;
 			this.categoryType = notebookInfo.categoryType;
 			this.targetDatabase = notebookInfo.targetDatabase;
+			this.executeDatabase = notebookInfo.executeDatabase;
 		}
 	}
 
@@ -182,6 +185,7 @@ export class NotebookData implements IAgentDialogData {
 			jobSchedules: this.jobSchedules,
 			jobSteps: this.jobSteps,
 			targetDatabase: this.targetDatabase,
+			executeDatabase: this.executeDatabase,
 			// The properties below are not collected from UI
 			// We could consider using a seperate class for create job request
 			//
@@ -198,7 +202,9 @@ export class NotebookData implements IAgentDialogData {
 			lastRun: '',
 			nextRun: '',
 			jobId: this.jobId,
-			startStepId: this.startStepId
+			startStepId: this.startStepId,
+			lastRunNotebookError: '',
+
 		};
 	}
 }

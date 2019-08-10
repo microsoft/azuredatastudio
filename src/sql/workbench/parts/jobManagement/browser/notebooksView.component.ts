@@ -13,8 +13,8 @@ import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
-import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, RunJobAction, NewNotebookJobAction, EditNotebookJobAction, DeleteNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { JobCacheObject, NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
+import { EditJobAction, DeleteJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -32,14 +32,16 @@ import { tableBackground, cellBackground, cellBorderColor } from 'sql/platform/t
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
-import { expand } from 'rxjs/operator/expand';
+import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
+import { of } from 'rxjs/observable/of';
+
 
 export const NOTEBOOKSVIEW_SELECTOR: string = 'notebooksview-component';
 export const ROW_HEIGHT: number = 45;
 export const ACTIONBAR_PADDING: number = 10;
 
 interface IItem extends Slick.SlickData {
-	jobId?: string;
+	notebookId?: string;
 	id: string;
 }
 
@@ -59,12 +61,10 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			width: 150,
 			id: 'name'
 		},
-		{ name: nls.localize('jobColumns.TargetDatabase', "Target Database"), field: 'targetDatabase', width: 80, id: 'targetDatabase' },
+		{ name: nls.localize('jobColumns.targetDatbase', "Target Database"), field: 'targetDatabase', width: 80, id: 'targetDatabase' },
 		{ name: nls.localize('jobColumns.lastRun', "Last Run"), field: 'lastRun', width: 80, id: 'lastRun' },
 		{ name: nls.localize('jobColumns.nextRun', "Next Run"), field: 'nextRun', width: 80, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled', "Enabled"), field: 'enabled', width: 60, id: 'enabled' },
 		{ name: nls.localize('jobColumns.status', "Status"), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.schedule', "Schedule"), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
 		{ name: nls.localize('jobColumns.lastRunOutcome', "Last Run Outcome"), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
 		{
 			name: nls.localize('jobColumns.previousRuns', "Previous Runs"),
@@ -84,6 +84,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private filterStack = ['start'];
 	private filterValueMap: { [columnName: string]: string[]; } = {};
 	private sortingStylingMap: { [columnName: string]: any; } = {};
+
 	public notebooks: azdata.AgentNotebookInfo[];
 	private notebookHistories: { [jobId: string]: azdata.AgentNotebookHistoryInfo[]; } = Object.create(null);
 	private jobSteps: { [jobId: string]: azdata.AgentJobStepInfo[]; } = Object.create(null);
@@ -91,7 +92,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	private jobSchedules: { [jobId: string]: azdata.AgentJobScheduleInfo[]; } = Object.create(null);
 	public contextAction = NewNotebookJobAction;
 
-	@ViewChild('jobsgrid') _gridEl: ElementRef;
+	@ViewChild('notebooksgrid') _gridEl: ElementRef;
 
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
@@ -109,9 +110,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	) {
 		super(commonService, _dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let notebookCacheObjectMap = this._jobManagementService.notebookCacheObjectMap;
-		let notebookCache = notebookCacheObjectMap[this._serverName];
-		if (notebookCache) {
-			this._notebookCacheObject = notebookCache;
+		let jobCache = notebookCacheObjectMap[this._serverName];
+		if (jobCache) {
+			this._notebookCacheObject = jobCache;
 		} else {
 			this._notebookCacheObject = new NotebookCacheObject();
 			this._notebookCacheObject.serverName = this._serverName;
@@ -132,7 +133,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	}
 
 	public layout() {
-		let jobsViewToolbar = jQuery('notebookview-component .agent-actionbar-container').get(0);
+		let jobsViewToolbar = jQuery('notebooksview-component .agent-actionbar-container').get(0);
 		let statusBar = jQuery('.part.statusbar').get(0);
 		if (jobsViewToolbar && statusBar) {
 			let toolbarBottom = jobsViewToolbar.getBoundingClientRect().bottom + ACTIONBAR_PADDING;
@@ -188,10 +189,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
-			let job = self.getJob(args);
-			self._agentViewComponent.jobId = job.jobId;
-			self._agentViewComponent.agentNotebookInfo = job;
-			self._agentViewComponent.agentJobInfo = job;
+			let notebook = self.getNotebook(args);
+			self._agentViewComponent.notebookId = notebook.jobId;
+			self._agentViewComponent.agentNotebookInfo = notebook;
 			self._agentViewComponent.showNotebookHistory = true;
 		});
 		this._register(this._table.onContextMenu(e => {
@@ -199,7 +199,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		}));
 
 		if (cached && this._agentViewComponent.refresh !== true) {
-			this.onJobsAvailable(null);
+			this.onNotebooksAvailable(null);
 			this._showProgressWheel = false;
 			if (this.isVisible) {
 				this._cd.detectChanges();
@@ -210,7 +210,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				if (result && result.notebooks) {
 					self.notebooks = result.notebooks;
 					self._notebookCacheObject.notebooks = self.notebooks;
-					self.onJobsAvailable(result.notebooks);
+					self.onNotebooksAvailable(result.notebooks);
 				} else {
 					// TODO: handle error
 				}
@@ -223,29 +223,37 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		}
 	}
 
-	private onJobsAvailable(jobs: azdata.AgentNotebookInfo[]) {
+	protected initActionBar() {
+		let refreshAction = this._instantiationService.createInstance(JobsRefreshAction);
+		let newAction = this._instantiationService.createInstance(NewNotebookJobAction);
+		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
+		this._actionBar = new Taskbar(taskbar);
+		this._actionBar.setContent([
+			{ action: refreshAction },
+			{ action: newAction }
+		]);
+		let context: IJobActionInfo = { component: this, ownerUri: this._commonService.connectionManagementService.connectionInfo.ownerUri };
+		this._actionBar.context = context;
+	}
+
+	private onNotebooksAvailable(notebooks: azdata.AgentNotebookInfo[]) {
 		let jobViews: any;
 		let start: boolean = true;
-		if (!jobs) {
+		if (!notebooks) {
 			let dataView = this._notebookCacheObject.dataView;
 			jobViews = dataView.getItems();
 			start = false;
 		} else {
-			jobViews = jobs.map((job) => {
+			jobViews = notebooks.map((job) => {
 				return {
-					id: job.jobId,
-					jobId: job.jobId,
+					id: 'notebook' + job.jobId,
+					notebookId: job.jobId,
 					name: job.name,
 					targetDatabase: job.targetDatabase,
 					lastRun: JobManagementUtilities.convertToLastRun(job.lastRun),
 					nextRun: JobManagementUtilities.convertToNextRun(job.nextRun),
-					enabled: JobManagementUtilities.convertToResponse(job.enabled),
 					currentExecutionStatus: JobManagementUtilities.convertToExecutionStatusString(job.currentExecutionStatus),
-					category: job.category,
-					runnable: JobManagementUtilities.convertToResponse(job.runnable),
-					hasSchedule: JobManagementUtilities.convertToResponse(job.hasSchedule),
-					lastRunOutcome: JobManagementUtilities.convertToStatusString(job.lastRunOutcome),
-					notebookError: job.lastRunNotebookError
+					lastRunOutcome: (job.lastRunNotebookError === '') ? JobManagementUtilities.convertToStatusString(job.lastRunOutcome) : 'Notebook Error'
 				};
 			});
 		}
@@ -295,17 +303,6 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 									seenJobs++;
 									i++;
 								}
-								if (item.LastRunNotebookError !== '') {
-									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
-									if (this.filterStack.indexOf(args.column.name) < 0) {
-										this.filterStack.push(args.column.name);
-										this.filterValueMap[args.column.name] = [filterValues];
-									}
-									// one expansion for the row and one for
-									// the error detail
-									seenJobs++;
-									i++;
-								}
 								seenJobs++;
 							}
 							this.dataView.refresh();
@@ -317,7 +314,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 						}
 					}
 				} else {
-					let seenJobs = 0;
+					let seenNotebooks = 0;
 					for (let i = 0; i < this.notebooks.length; i++) {
 						this._table.grid.removeCellCssStyles('error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
@@ -326,28 +323,17 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 							// check all previous filters
 							if (this.checkPreviousFilters(item)) {
 								if (item.lastRunOutcome === 'Failed') {
-									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
+									this.addToStyleHash(seenNotebooks, false, this.filterStylingMap, args.column.name);
 									if (this.filterStack.indexOf(args.column.name) < 0) {
 										this.filterStack.push(args.column.name);
 										this.filterValueMap[args.column.name] = [filterValues];
 									}
 									// one expansion for the row and one for
 									// the error detail
-									seenJobs++;
+									seenNotebooks++;
 									i++;
 								}
-								if (item.LastRunNotebookError !== '') {
-									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
-									if (this.filterStack.indexOf(args.column.name) < 0) {
-										this.filterStack.push(args.column.name);
-										this.filterValueMap[args.column.name] = [filterValues];
-									}
-									// one expansion for the row and one for
-									// the error detail
-									seenJobs++;
-									i++;
-								}
-								seenJobs++;
+								seenNotebooks++;
 							}
 						}
 					}
@@ -388,25 +374,26 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._table.grid.onColumnsResized.subscribe((e, data: any) => {
 			let nameWidth: number = data.grid.getColumns()[1].width;
 			// adjust job name when resized
-			jQuery('#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
+			jQuery('#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1 .jobview-jobnametext').css('width', `${nameWidth - 10}px`);
 			// adjust error message when resized
-			jQuery('#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
+			jQuery('#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext').css('width', '100%');
+			jQuery('#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1.notebook-error-row .jobview-jobnametext').css('width', '100%');
 
 			// generate job charts again
 			self.notebooks.forEach(job => {
 				let jobHistories = self._notebookCacheObject.getNotebookHistory(job.jobId);
 				if (jobHistories) {
 					let previousRuns = jobHistories.slice(jobHistories.length - 5, jobHistories.length);
-					self.createJobChart(job.jobId, previousRuns);
+					self.createJobChart('notebook' + job.jobId, previousRuns);
 				}
 			});
 		});
 
-		jQuery('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
+		jQuery('#notebooksDiv .jobnotebooksview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 			this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 
 		this._table.grid.onScroll.subscribe((e) => {
-			jQuery('#jobsDiv .jobview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
+			jQuery('#notebooksDiv .jobnotebooksview-grid .monaco-table .slick-viewport .grid-canvas .ui-widget-content.slick-row').hover((e1) =>
 				this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 		});
 
@@ -466,9 +453,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			'targetDatabase': errorClass,
 			'lastRun': errorClass,
 			'nextRun': errorClass,
-			'enabled': errorClass,
 			'currentExecutionStatus': errorClass,
-			'hasSchedule': errorClass,
 			'lastRunOutcome': errorClass,
 			'previousRuns': errorClass
 		};
@@ -499,7 +484,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		this._table.grid.setCellCssStyles('error-row' + row.toString(), hash);
 	}
 
-	private notebookErrorStyleHash(row: number, start: boolean, map: any, columnName: string) {
+	private addToErrorStyleHash(row: number, start: boolean, map: any, columnName: string) {
 		let hash: {
 			[index: number]: {
 				[id: string]: string;
@@ -537,6 +522,9 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				break;
 			case ('Status Unknown'):
 				resultIndicatorClass = 'jobview-jobnameindicatorunknown';
+				break;
+			case ('Notebook Error'):
+				resultIndicatorClass = 'jobview-jobnameindicatorcancel';
 				break;
 			default:
 				resultIndicatorClass = 'jobview-jobnameindicatorfailure';
@@ -576,7 +564,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 
 	private expandJobRowDetails(rowIdx: number, message?: string): void {
 		let item = this.dataView.getItemByIdx(rowIdx);
-		item.message = this._agentViewComponent.expanded.get(item.jobId);
+		item.message = this._agentViewComponent.expandedNotebook.get(item.notebookId);
 		this.rowDetail.applyTemplateNewLineHeight(item, true);
 	}
 
@@ -588,7 +576,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			// so they can be expanded quicker
 			let failing = separatedJobs[0];
 			let passing = separatedJobs[1];
-			Promise.all([this.curateNotebookHistory(failing, ownerUri), this.curateNotebookHistory(passing, ownerUri)]);
+			Promise.all([this.curateJobHistory(failing, ownerUri), this.curateJobHistory(passing, ownerUri)]);
 		}
 	}
 
@@ -617,23 +605,23 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	}
 
 	private isErrorRow(cell: HTMLElement) {
-		return cell.classList.contains('error-row');
+		return cell.classList.contains('error-row') || cell.classList.contains('notebook-error-row');
 	}
 
-	private getJob(args: Slick.OnClickEventArgs<any>): azdata.AgentNotebookInfo {
+	private getNotebook(args: Slick.OnClickEventArgs<any>): azdata.AgentNotebookInfo {
 		let row = args.row;
-		let jobName: string;
+		let notebookName: string;
 		let cell = args.grid.getCellNode(row, 1);
 		if (this.isErrorRow(cell)) {
-			jobName = args.grid.getCellNode(row - 1, 1).innerText.trim();
+			notebookName = args.grid.getCellNode(row - 1, 1).innerText.trim();
 		} else {
-			jobName = cell.innerText.trim();
+			notebookName = cell.innerText.trim();
 		}
-		let job = this.notebooks.filter(job => job.name === jobName)[0];
-		return job;
+		let notebook = this.notebooks.filter(job => job.name === notebookName)[0];
+		return notebook;
 	}
 
-	private async curateNotebookHistory(notebooks: azdata.AgentNotebookInfo[], ownerUri: string) {
+	private async curateJobHistory(notebooks: azdata.AgentNotebookInfo[], ownerUri: string) {
 		const self = this;
 		for (let notebook of notebooks) {
 			let result = await this._jobManagementService.getNotebookHistory(ownerUri, notebook.jobId, notebook.name, notebook.targetDatabase);
@@ -651,26 +639,24 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				} else {
 					previousRuns = notebookHistories;
 				}
-				self.createJobChart(notebook.jobId, previousRuns);
-				if (self._agentViewComponent.expanded.has(notebook.jobId)) {
+
+				if (self._agentViewComponent.expandedNotebook.has(notebook.jobId)) {
 					let lastJobHistory = notebookHistories[notebookHistories.length - 1];
-					let item = self.dataView.getItemById(notebook.jobId + '.error');
+					let item = self.dataView.getItemById('notebook' + notebook.jobId + '.error');
 					let noStepsMessage = nls.localize('jobsView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
-					if (notebook.lastRunNotebookError !== '') {
-						errorMessage = notebook.lastRunNotebookError;
-					}
 					if (item) {
-						if (notebook.lastRunNotebookError !== '') {
-							item['name'] = nls.localize('jobsView.notebookError', "Notebook Error: ") + errorMessage;
-						}
-						else {
+						if (notebook.lastRunNotebookError.length === 0) {
 							item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
 						}
-						self._agentViewComponent.setExpanded(notebook.jobId, item['name']);
-						self.dataView.updateItem(notebook.jobId + '.error', item);
+						else {
+							item['name'] = nls.localize('jobsView.notebookError', "Notebook Error: ") + notebook.lastRunNotebookError;
+						}
+						self._agentViewComponent.setExpandedNotebook(notebook.jobId, item['name']);
+						self.dataView.updateItem('notebook' + notebook.jobId + '.error', item);
 					}
 				}
+				self.createJobChart('notebook' + notebook.jobId, previousRuns);
 			}
 		}
 	}
@@ -679,13 +665,15 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		let chartHeights = this.getChartHeights(jobHistories);
 		let runCharts = [];
 		for (let i = 0; i < chartHeights.length; i++) {
+			let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
+			if (jobHistories[i].materializedNotebookErrorInfo !== null && jobHistories[i].materializedNotebookErrorInfo.length > 0) {
+				bgColor = 'orange';
+			}
 			let runGraph = jQuery(`table.jobprevruns#${jobId} > tbody > tr > td > div.bar${i}`);
 			if (runGraph.length > 0) {
+
 				runGraph.css('height', chartHeights[i]);
-				let bgColor = jobHistories[i].runStatus === 0 ? 'red' : 'green';
-				if (jobHistories[i].materializedNotebookErrorInfo) {
-					bgColor = 'orange';
-				}
+
 				runGraph.css('background', bgColor);
 				runGraph.hover((e) => {
 					let currentTarget = e.currentTarget;
@@ -693,10 +681,14 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				});
 				runCharts.push(runGraph.get(0).outerHTML);
 			}
+			else {
+				runCharts.push('<div class="bar' + i + '" style="height:' + chartHeights[i] + '; background: ' + bgColor + ';"></div>');
+			}
 		}
 		if (runCharts.length > 0) {
 			this._notebookCacheObject.setRunChart(jobId, runCharts);
 		}
+		this._cd.detectChanges();
 	}
 
 	// chart height normalization logic
@@ -734,29 +726,25 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 
 	private expandJobs(start: boolean): void {
 		if (start) {
-			this._agentViewComponent.expanded = new Map<string, string>();
+			this._agentViewComponent.expandedNotebook = new Map<string, string>();
 		}
-		let expandedJobs = this._agentViewComponent.expanded;
+		let expandedJobs = this._agentViewComponent.expandedNotebook;
 		let expansions = 0;
 		for (let i = 0; i < this.notebooks.length; i++) {
-			let job = this.notebooks[i];
-			console.log(job);
-			console.log(job.lastRunNotebookError);
-			let notebookError = job.lastRunNotebookError;
-			let history = this.notebookHistories[job.jobId];
-			if (job.lastRunOutcome === 0 && !expandedJobs.get(job.jobId)) {
+			let notebook = this.notebooks[i];
+			if (notebook.lastRunOutcome === 0 && !expandedJobs.get(notebook.jobId)) {
 				this.expandJobRowDetails(i + expandedJobs.size);
 				this.addToStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);
-				this._agentViewComponent.setExpanded(job.jobId, 'Loading Error...');
-			} else if (job.lastRunOutcome === 0 && expandedJobs.get(job.jobId)) {
+				this._agentViewComponent.setExpandedNotebook(notebook.jobId, 'Loading Error...');
+			} else if (notebook.lastRunOutcome === 0 && expandedJobs.get(notebook.jobId)) {
 				this.addToStyleHash(i + expansions, start, this.filterStylingMap, undefined);
 				expansions++;
-			} else if (notebookError !== '' && !expandedJobs.get(job.jobId)) {
+			} else if (notebook.lastRunNotebookError !== '' && !expandedJobs.get(notebook.jobId)) {
 				this.expandJobRowDetails(i + expandedJobs.size);
-				this.addToStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);
-				this._agentViewComponent.setExpanded(job.jobId, job.lastRunNotebookError);
-			} else if (notebookError !== '' && expandedJobs.get(job.jobId)) {
-				this.addToStyleHash(i + expansions, start, this.filterStylingMap, undefined);
+				this.addToErrorStyleHash(i + expandedJobs.size, start, this.filterStylingMap, undefined);
+				this._agentViewComponent.setExpandedNotebook(notebook.jobId, notebook.lastRunNotebookError);
+			} else if (notebook.lastRunNotebookError !== '' && expandedJobs.get(notebook.jobId)) {
+				this.addToErrorStyleHash(i + expansions, start, this.filterStylingMap, undefined);
 				expansions++;
 			}
 		}
@@ -794,14 +782,6 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				}, isAscending);
 				break;
 			}
-			case ('Target Database'): {
-				this.dataView.setItems(jobItems);
-				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
-					return item1.targetDatabase.localeCompare(item2.targetDatabase);
-				}, isAscending);
-				break;
-			}
 			case ('Last Run'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
@@ -814,43 +794,11 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				this.dataView.sort((item1, item2) => this.dateCompare(item1, item2, false), isAscending);
 				break;
 			}
-			case ('Enabled'): {
-				this.dataView.setItems(jobItems);
-				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
-					return item1.enabled.localeCompare(item2.enabled);
-				}, isAscending);
-				break;
-			}
 			case ('Status'): {
 				this.dataView.setItems(jobItems);
 				// sort the actual jobs
 				this.dataView.sort((item1, item2) => {
 					return item1.currentExecutionStatus.localeCompare(item2.currentExecutionStatus);
-				}, isAscending);
-				break;
-			}
-			case ('Category'): {
-				this.dataView.setItems(jobItems);
-				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
-					return item1.category.localeCompare(item2.category);
-				}, isAscending);
-				break;
-			}
-			case ('Runnable'): {
-				this.dataView.setItems(jobItems);
-				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
-					return item1.runnable.localeCompare(item2.runnable);
-				}, isAscending);
-				break;
-			}
-			case ('Schedule'): {
-				this.dataView.setItems(jobItems);
-				// sort the actual jobs
-				this.dataView.sort((item1, item2) => {
-					return item1.hasSchedule.localeCompare(item2.hasSchedule);
 				}, isAscending);
 				break;
 			}
@@ -923,7 +871,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		let borderColor = theme.getColor(cellBorderColor);
 		let headerColumns = jQuery('#agentViewDiv .slick-header-column');
 		let cells = jQuery('.grid-canvas .ui-widget-content.slick-row .slick-cell');
-		let cellDetails = jQuery('#jobsDiv .dynamic-cell-detail');
+		let cellDetails = jQuery('#notebooksDiv .dynamic-cell-detail');
 		headerColumns.toArray().forEach(col => {
 			col.style.background = bgColor.toString();
 		});
@@ -937,15 +885,14 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	}
 
 	protected getTableActions(targetObject: JobActionContext): IAction[] {
-		const editAction = this._instantiationService.createInstance(EditNotebookJobAction);
+		const editAction = this._instantiationService.createInstance(EditJobAction);
+		const editNotebookAction = this._instantiationService.createInstance(EditNotebookJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
-		if (!targetObject.canEdit) {
-			editAction.enabled = false;
-		}
 		return [
 			runJobAction,
+			editNotebookAction,
 			editAction,
-			this._instantiationService.createInstance(DeleteNotebookAction)
+			this._instantiationService.createInstance(DeleteJobAction)
 		];
 	}
 
@@ -989,44 +936,49 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			return undefined;
 		}
 
-		let jobId = data.getItem(rowIndex).jobId;
-		if (!jobId) {
+		let notebookID = data.getItem(rowIndex).notebookId;
+		if (!notebookID) {
 			// if we couldn't find the ID, check if it's an
 			// error row
 			let isErrorRow: boolean = data.getItem(rowIndex).id.indexOf('error') >= 0;
 			if (isErrorRow) {
-				jobId = data.getItem(rowIndex - 1).jobId;
+				notebookID = data.getItem(rowIndex - 1).notebookId;
 			}
 		}
 
-		let notebook: azdata.AgentNotebookInfo[] = this.notebooks.filter(notebook => {
-			return notebook.jobId === jobId;
+		let notebook: azdata.AgentNotebookInfo[] = this.notebooks.filter(job => {
+			return job.jobId === notebookID;
 		});
 
 		if (notebook && notebook.length > 0) {
 			// add steps
-			if (this.jobSteps && this.jobSteps[jobId]) {
-				let steps = this.jobSteps[jobId];
+			if (this.jobSteps && this.jobSteps[notebookID]) {
+				let steps = this.jobSteps[notebookID];
 				notebook[0].jobSteps = steps;
 			}
 
 			// add schedules
-			if (this.jobSchedules && this.jobSchedules[jobId]) {
-				let schedules = this.jobSchedules[jobId];
+			if (this.jobSchedules && this.jobSchedules[notebookID]) {
+				let schedules = this.jobSchedules[notebookID];
 				notebook[0].jobSchedules = schedules;
 			}
 			// add alerts
-			if (this.jobAlerts && this.jobAlerts[jobId]) {
-				let alerts = this.jobAlerts[jobId];
+			if (this.jobAlerts && this.jobAlerts[notebookID]) {
+				let alerts = this.jobAlerts[notebookID];
 				notebook[0].alerts = alerts;
 			}
 
-			if (notebook[0].jobSteps && notebook[0].jobSchedules) {
+			if (notebook[0].jobSteps && notebook[0].jobSchedules && notebook[0].alerts) {
 				return { job: notebook[0], canEdit: true };
 			}
 			return { job: notebook[0], canEdit: false };
 		}
 		return undefined;
+	}
+
+	public async openCreateJobDialog() {
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		await this._commandService.executeCommand('agent.openJobDialog', ownerUri);
 	}
 
 	public async openCreateNotebookDialog() {

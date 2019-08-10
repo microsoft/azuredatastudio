@@ -14,7 +14,7 @@ notebookhistory-component .all-jobs {
 	display: inline-block;
 	cursor: pointer;
 	font-size: 15px;
-	width: 15%;
+	width: 100%;
 }
 
 .overview-container .overview-tab .resultsViewCollapsible,
