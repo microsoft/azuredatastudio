@@ -8,45 +8,44 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
+import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
+import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';
 
 	private _onDidChangeTreeData: vscode.EventEmitter<BookTreeItem | undefined> = new vscode.EventEmitter<BookTreeItem | undefined>();
 	readonly onDidChangeTreeData: vscode.Event<BookTreeItem | undefined> = this._onDidChangeTreeData.event;
-	private _tableOfContentsPath: string[];
+	private _tableOfContentPaths: string[] = [];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
-		this._tableOfContentsPath = this.getTableOfContentFiles(workspacePaths);
-		let bookOpened: boolean = this._tableOfContentsPath && this._tableOfContentsPath.length > 0;
-		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
+		this.getTableOfContentFiles(workspaceFolders).then(() => undefined, (err) => { console.log(err); });
 		this._extensionContext = extensionContext;
 	}
 
-	private getTableOfContentFiles(directories: string[]): string[] {
-		let tableOfContentPaths: string[] = [];
-		let paths: string[];
-		directories.forEach(dir => {
-			paths = fs.readdirSync(dir);
-			paths.forEach(filename => {
-				let fullPath = path.join(dir, filename);
-				if (fs.statSync(fullPath).isDirectory()) {
-					tableOfContentPaths = tableOfContentPaths.concat(this.getTableOfContentFiles([fullPath]));
-				} else if (filename === 'toc.yml') {
-					tableOfContentPaths.push(fullPath);
-				}
-			});
-		});
-		return tableOfContentPaths;
+	async getTableOfContentFiles(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
+		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
+		let maxDepth = notebookConfig[maxBookSearchDepth];
+		// Use default value if user enters an invalid value
+		if (maxDepth === undefined || maxDepth < 0) {
+			maxDepth = 5;
+		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
+			maxDepth = undefined;
+		}
+		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
+		for (let path of workspacePaths) {
+			let tableOfContentPaths = await glob([path + '/**/_data/toc.yml'], { deep: maxDepth });
+			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
+		}
+		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
+		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 	}
 
 	async openNotebook(resource: string): Promise<void> {
@@ -123,11 +122,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public getBooks(): BookTreeItem[] {
 		let books: BookTreeItem[] = [];
-		for (let i in this._tableOfContentsPath) {
-			let root = path.dirname(path.dirname(this._tableOfContentsPath[i]));
+		for (let i in this._tableOfContentPaths) {
+			let root = path.dirname(path.dirname(this._tableOfContentPaths[i]));
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
-				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentsPath[i], 'utf-8'));
+				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentPaths[i], 'utf-8'));
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
