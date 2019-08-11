@@ -119,6 +119,7 @@ export class SchemaCompareOptionsDialog {
 	private static readonly ExternalFileFormats: string = localize('SchemaCompare.ExternalFileFormats', 'External File Formats');
 	private static readonly ExternalTables: string = localize('SchemaCompare.ExternalTables', 'External Tables');
 	private static readonly Filegroups: string = localize('SchemaCompare.Filegroups', 'Filegroups');
+	private static readonly Files: string = localize('SchemaCompare.Files', 'Files');
 	private static readonly FileTables: string = localize('SchemaCompare.FileTables', 'File Tables');
 	private static readonly FullTextCatalogs: string = localize('SchemaCompare.FullTextCatalogs', 'Full Text Catalogs');
 	private static readonly FullTextStoplists: string = localize('SchemaCompare.FullTextStoplists', 'Full Text Stoplists');
@@ -362,6 +363,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ExternalFileFormats,
 		SchemaCompareOptionsDialog.ExternalTables,
 		SchemaCompareOptionsDialog.Filegroups,
+		SchemaCompareOptionsDialog.Files,
 		SchemaCompareOptionsDialog.FileTables,
 		SchemaCompareOptionsDialog.FullTextCatalogs,
 		SchemaCompareOptionsDialog.FullTextStoplists,
@@ -1146,6 +1148,8 @@ export class SchemaCompareOptionsDialog {
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalTables)) ? false : true;
 			case SchemaCompareOptionsDialog.Filegroups:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Filegroups)) ? false : true;
+			case SchemaCompareOptionsDialog.Files:
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Files)) ? false : true;
 			case SchemaCompareOptionsDialog.FileTables:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.FileTables)) ? false : true;
 			case SchemaCompareOptionsDialog.FullTextCatalogs:
@@ -1339,6 +1343,11 @@ export class SchemaCompareOptionsDialog {
 			case SchemaCompareOptionsDialog.Filegroups:
 				if (!included) {
 					this.excludedObjectTypes.push(azdata.SchemaObjectType.Filegroups);
+				}
+				return;
+			case SchemaCompareOptionsDialog.Files:
+				if (!included) {
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.Files);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FileTables:
