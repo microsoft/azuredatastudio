@@ -13,6 +13,7 @@ import { isNullOrUndefined } from 'util';
 import { existsSync } from 'fs';
 import { Telemetry } from '../telemetry';
 import { getEndpointName } from '../utils';
+import * as mssql from '../../../mssql';
 
 const localize = nls.loadMessageBundle();
 const OkButtonText: string = localize('schemaCompareDialog.ok', 'OK');
@@ -60,8 +61,8 @@ export class SchemaCompareDialog {
 	private connectionId: string;
 	private sourceDbEditable: string;
 	private taregtDbEditable: string;
-	private previousSource: azdata.SchemaCompareEndpointInfo;
-	private previousTarget: azdata.SchemaCompareEndpointInfo;
+	private previousSource: mssql.SchemaCompareEndpointInfo;
+	private previousTarget: mssql.SchemaCompareEndpointInfo;
 
 	constructor(private schemaCompareResult: SchemaCompareMainWindow) {
 		this.previousSource = schemaCompareResult.sourceEndpointInfo;
@@ -97,7 +98,7 @@ export class SchemaCompareDialog {
 	protected async execute(): Promise<void> {
 		if (this.sourceIsDacpac) {
 			this.schemaCompareResult.sourceEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
@@ -109,7 +110,7 @@ export class SchemaCompareDialog {
 			let ownerUri = await azdata.connection.getUriForConnection((this.sourceServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			this.schemaCompareResult.sourceEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
+				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: (this.sourceServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.sourceServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.sourceDatabaseDropdown.value).name,
@@ -121,7 +122,7 @@ export class SchemaCompareDialog {
 
 		if (this.targetIsDacpac) {
 			this.schemaCompareResult.targetEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+				endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 				serverDisplayName: '',
 				serverName: '',
 				databaseName: '',
@@ -133,7 +134,7 @@ export class SchemaCompareDialog {
 			let ownerUri = await azdata.connection.getUriForConnection((this.targetServerDropdown.value as ConnectionDropdownValue).connection.connectionId);
 
 			this.schemaCompareResult.targetEndpointInfo = {
-				endpointType: azdata.SchemaCompareEndpointType.Database,
+				endpointType: mssql.SchemaCompareEndpointType.Database,
 				serverDisplayName: (this.targetServerDropdown.value as ConnectionDropdownValue).displayName,
 				serverName: (this.targetServerDropdown.value as ConnectionDropdownValue).name,
 				databaseName: (<azdata.CategoryValue>this.targetDatabaseDropdown.value).name,
@@ -174,7 +175,7 @@ export class SchemaCompareDialog {
 		}
 	}
 
-	private endpointChanged(previousEndpoint: azdata.SchemaCompareEndpointInfo, updatedEndpoint: azdata.SchemaCompareEndpointInfo): boolean {
+	private endpointChanged(previousEndpoint: mssql.SchemaCompareEndpointInfo, updatedEndpoint: mssql.SchemaCompareEndpointInfo): boolean {
 		if (previousEndpoint && updatedEndpoint) {
 			return getEndpointName(previousEndpoint).toLowerCase() !== getEndpointName(updatedEndpoint).toLowerCase()
 				|| (previousEndpoint.serverDisplayName && updatedEndpoint.serverDisplayName && previousEndpoint.serverDisplayName.toLowerCase() !== updatedEndpoint.serverDisplayName.toLowerCase());
@@ -234,7 +235,7 @@ export class SchemaCompareDialog {
 			let targetComponents = [];
 
 			// start source and target with either dacpac or database selection based on what the previous value was
-			if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				sourceComponents = [
 					sourceRadioButtons,
 					this.sourceServerComponent,
@@ -247,7 +248,7 @@ export class SchemaCompareDialog {
 				];
 			}
 
-			if (this.schemaCompareResult.targetEndpointInfo && this.schemaCompareResult.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+			if (this.schemaCompareResult.targetEndpointInfo && this.schemaCompareResult.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 				targetComponents = [
 					targetRadioButtons,
 					this.targetServerComponent,
@@ -283,7 +284,7 @@ export class SchemaCompareDialog {
 		});
 	}
 
-	private async createFileBrowser(view: azdata.ModelView, isTarget: boolean, endpoint: azdata.SchemaCompareEndpointInfo): Promise<azdata.FormComponent> {
+	private async createFileBrowser(view: azdata.ModelView, isTarget: boolean, endpoint: mssql.SchemaCompareEndpointInfo): Promise<azdata.FormComponent> {
 		let currentTextbox = isTarget ? this.targetTextBox : this.sourceTextBox;
 		if (isTarget) {
 			this.targetFileButton = view.modelBuilder.button().withProperties({
@@ -367,7 +368,7 @@ export class SchemaCompareDialog {
 		});
 
 		// if source is currently a db, show it in the server and db dropdowns
-		if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+		if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			databaseRadioButton.checked = true;
 			this.sourceIsDacpac = false;
 		} else {
@@ -422,7 +423,7 @@ export class SchemaCompareDialog {
 		});
 
 		// if target is currently a db, show it in the server and db dropdowns
-		if (this.schemaCompareResult.targetEndpointInfo && this.schemaCompareResult.targetEndpointInfo.endpointType === azdata.SchemaCompareEndpointType.Database) {
+		if (this.schemaCompareResult.targetEndpointInfo && this.schemaCompareResult.targetEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			databaseRadioButton.checked = true;
 			this.targetIsDacpac = false;
 		} else {

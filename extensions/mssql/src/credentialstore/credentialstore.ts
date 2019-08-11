@@ -83,7 +83,7 @@ export class CredentialStore {
 			providerId: Constants.providerId,
 			features: [CredentialsFeature]
 		};
-		serverdownloader.getOrDownloadServer().then(e => {
+		return serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);
 			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			this._client.start();

@@ -200,8 +200,6 @@ import { IScriptingService, ScriptingService } from 'sql/platform/scripting/comm
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
-import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { ISchemaCompareService, SchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -277,8 +275,6 @@ registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
-registerSingleton(IDacFxService, DacFxService);
-registerSingleton(ISchemaCompareService, SchemaCompareService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 // {{SQL CARBON EDIT}} - End
 

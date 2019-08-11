@@ -352,14 +352,6 @@ export function createApiFactory(
 				return extHostDataProvider.$registerAgentServiceProvider(provider);
 			};
 
-			let registerDacFxServicesProvider = (provider: azdata.DacFxServicesProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerDacFxServiceProvider(provider);
-			};
-
-			let registerSchemaCompareServicesProvider = (provider: azdata.SchemaCompareServicesProvider): vscode.Disposable => {
-				return extHostDataProvider.$registerSchemaCompareServiceProvider(provider);
-			};
-
 			let registerSerializationProvider = (provider: azdata.SerializationProvider): vscode.Disposable => {
 				return extHostDataProvider.$registerSerializationProvider(provider);
 			};
@@ -381,8 +373,6 @@ export function createApiFactory(
 				registerAdminServicesProvider,
 				registerAgentServicesProvider,
 				registerCapabilitiesServiceProvider,
-				registerDacFxServicesProvider,
-				registerSchemaCompareServicesProvider,
 				registerSerializationProvider,
 				onDidChangeLanguageFlavor(listener: (e: azdata.DidChangeLanguageFlavorParams) => any, thisArgs?: any, disposables?: extHostTypes.Disposable[]) {
 					return extHostDataProvider.onDidChangeLanguageFlavor(listener, thisArgs, disposables);
@@ -545,10 +535,6 @@ export function createApiFactory(
 				AzureResource: sqlExtHostTypes.AzureResource,
 				TreeItem: sqlExtHostTypes.TreeItem,
 				extensions: extensions,
-				SchemaUpdateAction: sqlExtHostTypes.SchemaUpdateAction,
-				SchemaDifferenceType: sqlExtHostTypes.SchemaDifferenceType,
-				SchemaCompareEndpointType: sqlExtHostTypes.SchemaCompareEndpointType,
-				SchemaObjectType: sqlExtHostTypes.SchemaObjectType,
 				ColumnType: sqlExtHostTypes.ColumnType,
 				ActionOnCellCheckboxCheck: sqlExtHostTypes.ActionOnCellCheckboxCheck,
 				StepCompletionAction: sqlExtHostTypes.StepCompletionAction,

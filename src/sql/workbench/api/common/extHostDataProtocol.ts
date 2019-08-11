@@ -169,18 +169,6 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerDacFxServiceProvider(provider: azdata.DacFxServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.DacFxServicesProvider);
-		this._proxy.$registerDacFxServicesProvider(provider.providerId, provider.handle);
-		return rt;
-	}
-
-	$registerSchemaCompareServiceProvider(provider: azdata.SchemaCompareServicesProvider): vscode.Disposable {
-		let rt = this.registerProvider(provider, DataProviderType.SchemaCompareServicesProvider);
-		this._proxy.$registerSchemaCompareServicesProvider(provider.providerId, provider.handle);
-		return rt;
-	}
-
 	$registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
 		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
 		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle);

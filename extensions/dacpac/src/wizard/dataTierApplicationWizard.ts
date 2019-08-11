@@ -15,6 +15,7 @@ import { ExtractConfigPage } from './pages/extractConfigPage';
 import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
+import * as mssql from '../../../mssql';
 
 const localize = nls.loadMessageBundle();
 const msSqlProvider = 'MSSQL';
@@ -359,8 +360,8 @@ export class DataTierApplicationWizard {
 		return result.report;
 	}
 
-	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
-		const service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
+	private static async getService(providerName: string): Promise<mssql.IDacFxService> {
+		const service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).dacFx;
 		return service;
 	}
 }

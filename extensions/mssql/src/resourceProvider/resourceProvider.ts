@@ -88,7 +88,7 @@ export class AzureResourceProvider {
 			providerId: Constants.providerId,
 			features: [FireWallFeature]
 		};
-		serverdownloader.getOrDownloadServer().then(e => {
+		return serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);
 			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			this._client.start();
