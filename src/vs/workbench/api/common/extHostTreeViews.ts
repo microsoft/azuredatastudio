@@ -182,6 +182,7 @@ export class ExtHostTreeView<T> extends Disposable {
 	private _onDidChangeData: Emitter<TreeData<T>> = this._register(new Emitter<TreeData<T>>());
 
 	private refreshPromise: Promise<void> = Promise.resolve();
+	private refreshQueue: Promise<void> = Promise.resolve();
 
 	constructor(private viewId: string, options: vscode.TreeViewOptions<T>, private proxy: MainThreadTreeViewsShape, private commands: CommandsConverter, private logService: ILogService, private extension: IExtensionDescription) {
 		super();
@@ -214,9 +215,11 @@ export class ExtHostTreeView<T> extends Disposable {
 			return result;
 		}, 200)(({ message, elements }) => {
 			if (elements.length) {
-				const _promiseCallback = promiseCallback;
-				refreshingPromise = null;
-				this.refresh(elements).then(() => _promiseCallback());
+				this.refreshQueue = this.refreshQueue.then(() => {
+					const _promiseCallback = promiseCallback;
+					refreshingPromise = null;
+					return this.refresh(elements).then(() => _promiseCallback());
+				});
 			}
 			if (message) {
 				this.proxy.$setMessage(this.viewId, this._message);
