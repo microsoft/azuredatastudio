@@ -5,16 +5,13 @@
 
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
-// {{SQL CARBON EDIT}}
-import { createApiFactory, initializeExtensionApi, ISqlExtensionApiFactory } from 'sql/workbench/api/node/sqlExtHost.api.impl';
 import { originalFSPath } from 'vs/base/common/resources';
 import { Barrier } from 'vs/base/common/async';
 import { dispose, toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { TernarySearchTree } from 'vs/base/common/map';
 import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
-// {{SQL CARBON EDIT}} - Remove createApiFactory initializeExtensionApi, and IExtensionApiFactory imports
-// import { createApiFactory, IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
+import { createApiFactory, IExtensionApiFactory } from 'vs/workbench/api/node/extHost.api.impl';
 import { NodeModuleRequireInterceptor, VSCodeNodeModuleFactory, KeytarNodeModuleFactory, OpenNodeModuleFactory } from 'vs/workbench/api/node/extHostRequireInterceptor';
 import { ExtHostExtensionServiceShape, IEnvironment, IInitData, IMainContext, MainContext, MainThreadExtensionServiceShape, MainThreadTelemetryShape, MainThreadWorkspaceShape, IResolveAuthorityResult } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
@@ -37,6 +34,9 @@ import { ExtensionStoragePaths } from 'vs/workbench/api/node/extHostStoragePaths
 import { RemoteAuthorityResolverError, ExtensionExecutionContext } from 'vs/workbench/api/common/extHostTypes';
 import { IURITransformer } from 'vs/base/common/uriIpc';
 import { ResolvedAuthority, ResolvedOptions } from 'vs/platform/remote/common/remoteAuthorityResolver';
+
+import { AZDataNodeModuleFactory, SqlopsNodeModuleFactory } from 'sql/workbench/api/node/extHostRequireInterceptor'; // {{SQL CARBON EDIT}}
+import { createSqlopsApiFactory, ISqlopsExtensionApiFactory, IAzdataExtensionApiFactory, createAzdataApiFactory } from 'sql/workbench/api/node/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}}
 
 interface ITestRunner {
 	/** Old test runner API, as exported from `vscode/lib/testrunner` */
@@ -88,7 +88,9 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 	private readonly _storagePath: ExtensionStoragePaths;
 	private readonly _activator: ExtensionsActivator;
 	private _extensionPathIndex: Promise<TernarySearchTree<IExtensionDescription>> | null;
-	private readonly _extensionApiFactory: ISqlExtensionApiFactory;
+	private readonly _extensionApiFactory: IExtensionApiFactory;
+	private readonly _extensionSqlopsApiFactory: ISqlopsExtensionApiFactory; // {{SQL CARBON EDIT}} add sql api factory
+	private readonly _extensionAzdataApiFactory: IAzdataExtensionApiFactory; // {{SQL CARBON EDIT}} add sql api factory
 
 	private readonly _resolvers: { [authorityPrefix: string]: vscode.RemoteAuthorityResolver; };
 
@@ -158,6 +160,18 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 			uriTransformer
 		);
 
+		this._extensionSqlopsApiFactory = createSqlopsApiFactory( // {{SQL CARBON EDIT}} create sqlops factory
+			this._extHostContext,
+			this._extHostLogService,
+			uriTransformer
+		);
+
+		this._extensionAzdataApiFactory = createAzdataApiFactory( // {{SQL CARBON EDIT}} create azdata factory
+			this._extHostContext,
+			this._extHostLogService,
+			uriTransformer
+		);
+
 		this._resolvers = Object.create(null);
 
 		this._started = false;
@@ -173,9 +187,9 @@ export class ExtHostExtensionService implements ExtHostExtensionServiceShape {
 		try {
 			const configProvider = await this._extHostConfiguration.getConfigProvider();
 			const extensionPaths = await this.getExtensionPathIndex();
-			// {{SQL CARBON EDIT}} - disable VSCodeNodeModuleFactory and use older initializeExtensionApi
-			// NodeModuleRequireInterceptor.INSTANCE.register(new VSCodeNodeModuleFactory(this._extensionApiFactory, extensionPaths, this._registry, configProvider));
-			await initializeExtensionApi(this, this._extensionApiFactory, this._registry, configProvider);
+			NodeModuleRequireInterceptor.INSTANCE.register(new AZDataNodeModuleFactory(this._extensionAzdataApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
+			NodeModuleRequireInterceptor.INSTANCE.register(new SqlopsNodeModuleFactory(this._extensionSqlopsApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
+			NodeModuleRequireInterceptor.INSTANCE.register(new VSCodeNodeModuleFactory(this._extensionApiFactory, extensionPaths, this._registry, configProvider));
 			NodeModuleRequireInterceptor.INSTANCE.register(new KeytarNodeModuleFactory(this._extHostContext.getProxy(MainContext.MainThreadKeytar), this._environment));
 			if (this._initData.remote.isRemote) {
 				NodeModuleRequireInterceptor.INSTANCE.register(new OpenNodeModuleFactory(
