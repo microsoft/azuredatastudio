@@ -4,8 +4,7 @@
 		"noEmit": true,
 		"strictNullChecks": true,
 		"noImplicitAny": true,
-		"suppressImplicitAnyIndexErrors": true,
-		"moduleResolution": "classic"
+		"suppressImplicitAnyIndexErrors": true
 	},
 	"include": [
 		"./typings",
@@ -22,8 +21,5 @@
 		"./sql/platform/credentials/**/*.ts",
 		"./sql/platform/theme/**/*.ts",
 		"./sql/platform/telemetry/**/*.ts"
-	],
-	"exclude": [
-		"node_modules/**"
 	]
 }
