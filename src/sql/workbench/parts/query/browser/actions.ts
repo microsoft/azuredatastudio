@@ -23,6 +23,7 @@ import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { getErrorMessage } from 'vs/base/common/errors';
 
 export interface IGridActionContext {
 	gridDataProvider: IGridDataProvider;
@@ -79,7 +80,12 @@ export class SaveResultAction extends Action {
 		if (!context.gridDataProvider.canSerialize) {
 			this.notificationService.warn(localize('saveToFileNotSupported', "Save to file is not supported by the backing data source"));
 		}
-		await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
+		try {
+			await context.gridDataProvider.serializeResults(this.format, mapForNumberColumn(context.selection));
+		} catch (error) {
+			this.notificationService.error(getErrorMessage(error));
+			return false;
+		}
 		return true;
 	}
 }
