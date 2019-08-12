@@ -131,19 +131,21 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	});
 
 	it('should return all sections when element is a notebook', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren(notebook1);
-		should(children).be.Array();
-		should(children.length).equal(2);
-		const notebook2 = children[0];
-		const notebook3 = children[1];
-		should(notebook2.title).equal(expectedNotebook2.title);
-		should(notebook2.uri).equal(expectedNotebook2.url);
-		should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
-		should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
-		should(notebook3.title).equal(expectedNotebook3.title);
-		should(notebook3.uri).equal(expectedNotebook3.url);
-		should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
-		should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			const children = await bookTreeViewProvider.getChildren(notebook1);
+			should(children).be.Array();
+			should(children.length).equal(2);
+			const notebook2 = children[0];
+			const notebook3 = children[1];
+			should(notebook2.title).equal(expectedNotebook2.title);
+			should(notebook2.uri).equal(expectedNotebook2.url);
+			should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
+			should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
+			should(notebook3.title).equal(expectedNotebook3.title);
+			should(notebook3.uri).equal(expectedNotebook3.url);
+			should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
+			should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
+		});
 	});
 
 	this.afterAll(async function () {
