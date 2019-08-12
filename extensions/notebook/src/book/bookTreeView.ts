@@ -24,10 +24,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
+	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 
 	constructor(private workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
 		this.getTableOfContentFiles().then(() => undefined, (err) => { console.log(err); });
 		this._extensionContext = extensionContext;
+	}
+
+	public get onReadAllTOCFiles(): vscode.Event<void> {
+		return this._onReadAllTOCFiles.event;
 	}
 
 	async getTableOfContentFiles(): Promise<void> {
@@ -49,6 +54,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		});
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
 		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
+		this._onReadAllTOCFiles.fire();
 	}
 
 	async openNotebook(resource: string): Promise<void> {
