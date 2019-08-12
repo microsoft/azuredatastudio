@@ -470,7 +470,9 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 
 	hasBackup(): boolean;
 
-	isDirty(): boolean;
+	isDirty(): boolean; // {{SQL CARBON EDIT}} strict-null-check
+
+	makeDirty(): void;
 
 	isResolved(): this is IResolvedTextFileEditorModel;
 
