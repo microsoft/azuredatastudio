@@ -26,8 +26,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 
-	constructor(private workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		this.getTableOfContentFiles().then(() => undefined, (err) => { console.log(err); });
+	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
+		this.getTableOfContentFiles(workspaceFolders).then(() => undefined, (err) => { console.log(err); });
 		this._extensionContext = extensionContext;
 	}
 
@@ -35,7 +35,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return this._onReadAllTOCFiles.event;
 	}
 
-	async getTableOfContentFiles(): Promise<void> {
+	async getTableOfContentFiles(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
 		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 		let maxDepth = notebookConfig[maxBookSearchDepth];
 		// Use default value if user enters an invalid value
@@ -44,7 +44,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 			maxDepth = undefined;
 		}
-		let workspacePaths: string[] = this.workspaceFolders.map(a => a.uri.fsPath);
+		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
 		for (let path of workspacePaths) {
 			let tableOfContentPaths = await glob([path + '/**/_data/toc.yml'], { deep: maxDepth });
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
