@@ -62,13 +62,15 @@ export interface DialogFieldInfo {
 	required: boolean;
 	options: string[];
 	placeHolder: string;
+	userName?: string;
+	userNameVariableName?: string;
 }
 
 export enum FieldType {
 	Text = 'text',
 	Number = 'number',
 	DateTimeText = 'datetime_text',
-	Password = 'password',
+	SQLPassword = 'sql_password',
 	Options = 'options'
 }
 
