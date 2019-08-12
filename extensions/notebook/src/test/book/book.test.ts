@@ -43,7 +43,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		for (let i = 0; i < 8; i++) {
 			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
 		}
-		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		rootFolderPath = path.join(os.tmpdir(), 'BookTestData_' + testFolder);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
@@ -99,53 +99,50 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			index: 0
 		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
-		bookTreeViewProvider.onReadAllTOCFiles(async () => {
-			const children = await bookTreeViewProvider.getChildren();
-			should(children).be.Array();
-			should(children.length).equal(1);
-			book = children[0];
-			should(book.title).equal(expectedBook.title);
-		});
+		const children = await bookTreeViewProvider.getChildren();
+		should(children).be.Array();
+		should(children.length).equal(1);
+		book = children[0];
+		should(book.title).equal(expectedBook.title);
 	});
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
-		bookTreeViewProvider.onReadAllTOCFiles(async () => {
-			const children = await bookTreeViewProvider.getChildren(book);
-			should(children).be.Array();
-			should(children.length).equal(3);
-			notebook1 = children[0];
-			const markdown = children[1];
-			const externalLink = children[2];
-			should(notebook1.title).equal(expectedNotebook1.title);
-			should(notebook1.uri).equal(expectedNotebook1.url);
-			should(notebook1.previousUri).equal(expectedNotebook1.previousUri);
-			should(notebook1.nextUri).equal(expectedNotebook1.nextUri);
-			should(markdown.title).equal(expectedMarkdown.title);
-			should(markdown.uri).equal(expectedMarkdown.url);
-			should(externalLink.title).equal(expectedExternalLink.title);
-			should(externalLink.uri).equal(expectedExternalLink.url);
-		});
+		const children = await bookTreeViewProvider.getChildren(book);
+		should(children).be.Array();
+		should(children.length).equal(3);
+		notebook1 = children[0];
+		const markdown = children[1];
+		const externalLink = children[2];
+		should(notebook1.title).equal(expectedNotebook1.title);
+		should(notebook1.uri).equal(expectedNotebook1.url);
+		should(notebook1.previousUri).equal(expectedNotebook1.previousUri);
+		should(notebook1.nextUri).equal(expectedNotebook1.nextUri);
+		should(markdown.title).equal(expectedMarkdown.title);
+		should(markdown.uri).equal(expectedMarkdown.url);
+		should(externalLink.title).equal(expectedExternalLink.title);
+		should(externalLink.uri).equal(expectedExternalLink.url);
 	});
 
 	it('should return all sections when element is a notebook', async function (): Promise<void> {
-		bookTreeViewProvider.onReadAllTOCFiles(async () => {
-			const children = await bookTreeViewProvider.getChildren(notebook1);
-			should(children).be.Array();
-			should(children.length).equal(2);
-			const notebook2 = children[0];
-			const notebook3 = children[1];
-			should(notebook2.title).equal(expectedNotebook2.title);
-			should(notebook2.uri).equal(expectedNotebook2.url);
-			should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
-			should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
-			should(notebook3.title).equal(expectedNotebook3.title);
-			should(notebook3.uri).equal(expectedNotebook3.url);
-			should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
-			should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
-		});
+		const children = await bookTreeViewProvider.getChildren(notebook1);
+		should(children).be.Array();
+		should(children.length).equal(2);
+		const notebook2 = children[0];
+		const notebook3 = children[1];
+		should(notebook2.title).equal(expectedNotebook2.title);
+		should(notebook2.uri).equal(expectedNotebook2.url);
+		should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
+		should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
+		should(notebook3.title).equal(expectedNotebook3.title);
+		should(notebook3.uri).equal(expectedNotebook3.url);
+		should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
+		should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
 	});
 
 	this.afterAll(async function () {
