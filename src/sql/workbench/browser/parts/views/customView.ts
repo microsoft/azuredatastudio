@@ -263,12 +263,12 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		}
 	}
 
-	private _message: string | IMarkdownString | undefined;
-	get message(): string | IMarkdownString | undefined {
+	private _message: string | undefined;
+	get message(): string | undefined {
 		return this._message;
 	}
 
-	set message(message: string | IMarkdownString | undefined) {
+	set message(message: string | undefined) {
 		this._message = message;
 		this.updateMessage();
 	}
