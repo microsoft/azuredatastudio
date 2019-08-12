@@ -181,6 +181,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
+		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -749,5 +755,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onJobDataUpdated(handle: Number): void {
 		this._proxy.$onJobDataUpdated(handle);
+	}
+
+	// Serialization methods
+	public $startSerialization(handle: number, requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+		return this._resolveProvider<azdata.SerializationProvider>(handle).startSerialization(requestParams);
+	}
+
+	public $continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+		return this._resolveProvider<azdata.SerializationProvider>(handle).continueSerialization(requestParams);
 	}
 }
