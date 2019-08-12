@@ -3,39 +3,26 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-//#region --- workbench/editor core
-import 'sql/setup'; // {{SQL CARBON EDIT}}
-import 'vs/editor/editor.all';
 
-import 'vs/workbench/api/browser/extensionHost.contribution';
-import 'sql/workbench/api/electron-browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
+// #######################################################################
+// ###                                                                 ###
+// ### !!! PLEASE ADD COMMON IMPORTS INTO WORKBENCH.COMMON.MAIN.TS !!! ###
+// ###                                                                 ###
+// #######################################################################
+
+
+//#region --- workbench common
+
+import 'vs/workbench/workbench.common.main';
+
+//#endregion
+
+
+//#region --- workbench (desktop main)
+import 'sql/setup'; // {{SQL CARBON EDIT}}
 
 import 'vs/workbench/electron-browser/main.contribution';
-import 'vs/workbench/browser/workbench.contribution';
-
 import 'vs/workbench/electron-browser/main';
-
-//#endregion
-
-
-//#region --- workbench actions
-
-import 'vs/workbench/browser/actions/layoutActions';
-import 'vs/workbench/browser/actions/windowActions';
-import 'vs/workbench/browser/actions/developerActions';
-import 'vs/workbench/browser/actions/listCommands';
-import 'vs/workbench/browser/actions/navigationActions';
-import 'vs/workbench/browser/parts/quickopen/quickOpenActions';
-import 'vs/workbench/browser/parts/quickinput/quickInputActions';
-
-//#endregion
-
-
-//#region --- API Extension Points
-
-import 'vs/workbench/api/common/menusExtensionPoint';
-import 'vs/workbench/api/common/configurationExtensionPoint';
-import 'vs/workbench/api/browser/viewsExtensionPoint';
 
 //#endregion
 
@@ -94,6 +81,7 @@ import { ITunnelService } from 'vs/platform/remote/common/tunnel';
 import { TunnelService } from 'vs/workbench/services/remote/node/tunnelService';
 import { ICredentialsService } from 'vs/platform/credentials/common/credentials';
 import { KeytarCredentialsService } from 'vs/platform/credentials/node/credentialsService';
+import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/contrib/stats/electron-browser/workspaceStatsService';
 
 import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 import 'vs/workbench/services/integrity/node/integrityService';
@@ -282,52 +270,13 @@ registerSingleton(ISchemaCompareService, SchemaCompareService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 // {{SQL CARBON EDIT}} - End
 
-//#region --- workbench parts
-
-import 'vs/workbench/browser/parts/quickinput/quickInput';
-import 'vs/workbench/browser/parts/quickopen/quickOpenController';
-import 'vs/workbench/browser/parts/titlebar/titlebarPart';
-import 'vs/workbench/browser/parts/editor/editorPart';
-import 'vs/workbench/browser/parts/activitybar/activitybarPart';
-import 'vs/workbench/browser/parts/panel/panelPart';
-import 'vs/workbench/browser/parts/sidebar/sidebarPart';
-import 'vs/workbench/browser/parts/statusbar/statusbarPart';
-
-//#endregion
-
-
 //#region --- workbench contributions
-
-// Workspace File Watching
-import 'vs/workbench/services/files/common/workspaceWatcher';
-
-// Telemetry
-import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 
 // Localizations
 import 'vs/workbench/contrib/localizations/browser/localizations.contribution';
 
-// Preferences
-import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
-import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
-import { IPreferencesSearchService } from 'vs/workbench/contrib/preferences/common/preferences';
-import { PreferencesSearchService } from 'vs/workbench/contrib/preferences/browser/preferencesSearch';
-registerSingleton(IPreferencesSearchService, PreferencesSearchService, true);
-
 // Logs
-import 'vs/workbench/contrib/logs/common/logs.contribution';
 import 'vs/workbench/contrib/logs/electron-browser/logs.contribution';
-
-// Quick Open Handlers
-import 'vs/workbench/contrib/quickopen/browser/quickopen.contribution';
-
-// Explorer
-import 'vs/workbench/contrib/files/browser/explorerViewlet';
-import 'vs/workbench/contrib/files/browser/fileActions.contribution';
-import 'vs/workbench/contrib/files/browser/files.contribution';
-
-// Backup
-import 'vs/workbench/contrib/backup/common/backup.contribution';
 
 // Stats
 import 'vs/workbench/contrib/stats/electron-browser/stats.contribution';
@@ -335,86 +284,26 @@ import 'vs/workbench/contrib/stats/electron-browser/stats.contribution';
 // Rapid Render Splash
 import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
 
-// Search
-import 'vs/workbench/contrib/search/browser/search.contribution';
-import 'vs/workbench/contrib/search/browser/searchView';
-import 'vs/workbench/contrib/search/browser/openAnythingHandler';
-
-// SCM
-import 'vs/workbench/contrib/scm/browser/scm.contribution';
-import 'vs/workbench/contrib/scm/browser/scmViewlet';
-
-/* {{SQL CARBON EDIT}}
 // Debug
-import 'vs/workbench/contrib/debug/browser/debug.contribution';
-import 'vs/workbench/contrib/debug/browser/debugQuickOpen';
-import 'vs/workbench/contrib/debug/browser/debugEditorContribution';
-import 'vs/workbench/contrib/debug/browser/repl';
-import 'vs/workbench/contrib/debug/browser/debugViewlet';
-import 'vs/workbench/contrib/debug/node/debugHelperService';
-*/
-// Markers
-import 'vs/workbench/contrib/markers/browser/markers.contribution';
-
-// Comments
-import 'vs/workbench/contrib/comments/browser/comments.contribution';
-
-// URL Support
-import 'vs/workbench/contrib/url/common/url.contribution';
+// import 'vs/workbench/contrib/debug/node/debugHelperService'; {{SQL CARBON EDIT}}
 
 // Webview
-import 'vs/workbench/contrib/webview/browser/webview.contribution';
 import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';
 
 // Extensions Management
-import 'vs/workbench/contrib/extensions/browser/extensions.contribution';
 import 'vs/workbench/contrib/extensions/electron-browser/extensions.contribution';
-import 'vs/workbench/contrib/extensions/browser/extensionsQuickOpen';
-import 'vs/workbench/contrib/extensions/browser/extensionsViewlet';
-
-// Output Panel
-import 'vs/workbench/contrib/output/browser/output.contribution';
-import 'vs/workbench/contrib/output/browser/outputPanel';
 
 // Terminal
-import 'vs/workbench/contrib/terminal/browser/terminal.contribution';
 import 'vs/workbench/contrib/terminal/electron-browser/terminal.contribution';
-import 'vs/workbench/contrib/terminal/browser/terminalQuickOpen';
-import 'vs/workbench/contrib/terminal/browser/terminalPanel';
-
-// Relauncher
-import 'vs/workbench/contrib/relauncher/common/relauncher.contribution';
-
-// Tasks {{SQL CARBON EDIT}} remove tasks
-// import 'vs/workbench/contrib/tasks/browser/task.contribution';
-// import { TaskService } from 'vs/workbench/contrib/tasks/electron-browser/taskService';
-// import { ITaskService } from 'vs/workbench/contrib/tasks/common/taskService';
-// registerSingleton(ITaskService, TaskService, true);
 
 // Remote
-import 'vs/workbench/contrib/remote/common/remote.contribution';
 import 'vs/workbench/contrib/remote/electron-browser/remote.contribution';
 
-// Emmet
-// import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}} @anthonydresser comment our emmet
-
 // CodeEditor Contributions
-import 'vs/workbench/contrib/codeEditor/browser/codeEditor.contribution';
 import 'vs/workbench/contrib/codeEditor/electron-browser/codeEditor.contribution';
 
 // Execution
 import 'vs/workbench/contrib/externalTerminal/node/externalTerminalService';
-import 'vs/workbench/contrib/externalTerminal/browser/externalTerminal.contribution';
-
-// Snippets
-import 'vs/workbench/contrib/snippets/browser/snippets.contribution';
-import 'vs/workbench/contrib/snippets/browser/snippetsService';
-import 'vs/workbench/contrib/snippets/browser/insertSnippet';
-import 'vs/workbench/contrib/snippets/browser/configureSnippets';
-import 'vs/workbench/contrib/snippets/browser/tabCompletion';
-
-// Formatter Help
-import 'vs/workbench/contrib/format/browser/format.contribution';
 
 // Send a Smile
 import 'vs/workbench/contrib/feedback/browser/feedback.contribution';
@@ -433,30 +322,20 @@ import 'vs/workbench/contrib/performance/electron-browser/performance.contributi
 import 'vs/workbench/contrib/cli/node/cli.contribution';
 
 // Themes Support
-import 'vs/workbench/contrib/themes/browser/themes.contribution';
 import 'vs/workbench/contrib/themes/test/electron-browser/themes.test.contribution';
 
-// Watermark
-import 'vs/workbench/contrib/watermark/browser/watermark';
-
 // Welcome
-import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
 import 'vs/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
-import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 import 'vs/workbench/contrib/welcome/page/browser/welcomePage.contribution';
-
-// Call Hierarchy
-import 'vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution';
-
-// Outline
-import 'vs/workbench/contrib/outline/browser/outline.contribution';
 
 // Experiments
 import 'vs/workbench/contrib/experiments/electron-browser/experiments.contribution';
 
 // Issues
 import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
-import { IWorkspaceStatsService, WorkspaceStatsService } from 'vs/workbench/contrib/stats/electron-browser/workspaceStatsService';
+
+// Tasks
+import 'vs/workbench/contrib/tasks/electron-browser/taskService';
 
 // {{SQL CARBON EDIT}}
 // SQL
