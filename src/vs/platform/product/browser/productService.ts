@@ -17,7 +17,7 @@ export class ProductService implements IProductService {
 		this.productConfiguration = element ? JSON.parse(element.getAttribute('data-settings')!) : null;
 	}
 
-	get version(): string { return this.productConfiguration ? this.productConfiguration.version : 'Unknown'; }
+	get version(): string { return this.productConfiguration && this.productConfiguration.version ? this.productConfiguration.version : '1.38.0-unknown'; }
 
 	get vscodeVersion(): string { return '1.35.0'; } // {{SQL CARBON EDIT}} add vscodeversion
 
