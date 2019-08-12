@@ -4,7 +4,8 @@
 		"noEmit": true,
 		"strictNullChecks": true,
 		"noImplicitAny": true,
-		"suppressImplicitAnyIndexErrors": true
+		"suppressImplicitAnyIndexErrors": true,
+		"skipLibCheck": true
 	},
 	"include": [
 		"./typings",

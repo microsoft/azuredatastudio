@@ -43,6 +43,20 @@
 			}
 		},
 		{
+			"type": "npm",
+			"script": "strict-null-check-watch",
+			"label": "TS - Strict Null Cheks",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"problemMatcher": {
+				"base": "$tsc-watch",
+				"owner": "typescript-strict-null-checks",
+				"applyTo": "allDocuments"
+			}
+		},
+		{
 			"type": "gulp",
 			"task": "tslint",
 			"label": "Run tslint",
