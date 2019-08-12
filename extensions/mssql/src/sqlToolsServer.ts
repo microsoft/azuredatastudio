@@ -36,7 +36,7 @@ export class SqlToolsServer {
 			const installationStart = Date.now();
 			const path = await this.download();
 			const installationComplete = Date.now();
-			let serverOptions = generateServerOptions(path);
+			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
@@ -56,7 +56,7 @@ export class SqlToolsServer {
 			statusView.show();
 			statusView.text = 'Starting service';
 			this.client.start();
-			await this.activateFeatures();
+			await this.activateFeatures(context);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
@@ -76,9 +76,9 @@ export class SqlToolsServer {
 		return serverdownloader.getOrDownloadServer();
 	}
 
-	private activateFeatures(): Promise<void> {
-		const credsStore = new CredentialStore(this.config);
-		const resourceProvider = new AzureResourceProvider(this.config);
+	private activateFeatures(context: AppContext): Promise<void> {
+		const credsStore = new CredentialStore(context.extensionContext.logPath, this.config);
+		const resourceProvider = new AzureResourceProvider(context.extensionContext.logPath, this.config);
 		this.disposables.push(credsStore);
 		this.disposables.push(resourceProvider);
 		return Promise.all([credsStore.start(), resourceProvider.start()]).then();
@@ -92,8 +92,8 @@ export class SqlToolsServer {
 	}
 }
 
-function generateServerOptions(executablePath: string): ServerOptions {
-	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
+function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
+	const launchArgs = getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

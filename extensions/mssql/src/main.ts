@@ -41,6 +41,11 @@ export async function activate(context: vscode.ExtensionContext): Promise<mssql>
 		return undefined;
 	}
 
+	// ensure our log path exists
+	if (!(await Utils.pfs.exists(context.logPath))) {
+		await Utils.pfs.mkdir(context.logPath);
+	}
+
 	let prompter: IPrompter = new CodeAdapter();
 	let appContext = new AppContext(context, new ApiWrapper());
 
@@ -56,6 +61,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<mssql>
 	context.subscriptions.push(new ContextProvider());
 	registerHdfsCommands(context, prompter, appContext);
 
+	registerLogCommand(context);
+
 	registerServiceEndpoints(context);
 	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
 	const bookContributionProvider = getBookExtensionContributions(context);
@@ -69,6 +76,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<mssql>
 	await server.start(appContext);
 
 	return createMssqlApi(appContext);
+}
+
+const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
+function registerLogCommand(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.showLogFile', async () => {
+		const choice = await vscode.window.showQuickPick(logFiles);
+		if (choice) {
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
+			if (document) {
+				vscode.window.showTextDocument(document);
+			}
+		}
+	}));
 }
 
 function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPrompter, appContext: AppContext) {
