@@ -102,46 +102,52 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren(undefined);
-		should(children).be.Array();
-		should(children.length).equal(1);
-		book = children[0];
-		should(book.title).equal(expectedBook.title);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			const children = await bookTreeViewProvider.getChildren(undefined);
+			should(children).be.Array();
+			should(children.length).equal(1);
+			book = children[0];
+			should(book.title).equal(expectedBook.title);
+		});
 	});
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren(book);
-		console.log(children);
-		should(children).be.Array();
-		should(children.length).equal(3);
-		notebook1 = children[0];
-		const markdown = children[1];
-		const externalLink = children[2];
-		should(notebook1.title).equal(expectedNotebook1.title);
-		should(notebook1.uri).equal(expectedNotebook1.url);
-		should(notebook1.previousUri).equal(expectedNotebook1.previousUri);
-		should(notebook1.nextUri).equal(expectedNotebook1.nextUri);
-		should(markdown.title).equal(expectedMarkdown.title);
-		should(markdown.uri).equal(expectedMarkdown.url);
-		should(externalLink.title).equal(expectedExternalLink.title);
-		should(externalLink.uri).equal(expectedExternalLink.url);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			const children = await bookTreeViewProvider.getChildren(book);
+			console.log(children);
+			should(children).be.Array();
+			should(children.length).equal(3);
+			notebook1 = children[0];
+			const markdown = children[1];
+			const externalLink = children[2];
+			should(notebook1.title).equal(expectedNotebook1.title);
+			should(notebook1.uri).equal(expectedNotebook1.url);
+			should(notebook1.previousUri).equal(expectedNotebook1.previousUri);
+			should(notebook1.nextUri).equal(expectedNotebook1.nextUri);
+			should(markdown.title).equal(expectedMarkdown.title);
+			should(markdown.uri).equal(expectedMarkdown.url);
+			should(externalLink.title).equal(expectedExternalLink.title);
+			should(externalLink.uri).equal(expectedExternalLink.url);
+		});
 	});
 
 	it('should return all sections when element is a notebook', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren(notebook1);
-		console.log(children);
-		should(children).be.Array();
-		should(children.length).equal(2);
-		const notebook2 = children[0];
-		const notebook3 = children[1];
-		should(notebook2.title).equal(expectedNotebook2.title);
-		should(notebook2.uri).equal(expectedNotebook2.url);
-		should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
-		should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
-		should(notebook3.title).equal(expectedNotebook3.title);
-		should(notebook3.uri).equal(expectedNotebook3.url);
-		should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
-		should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			const children = await bookTreeViewProvider.getChildren(notebook1);
+			console.log(children);
+			should(children).be.Array();
+			should(children.length).equal(2);
+			const notebook2 = children[0];
+			const notebook3 = children[1];
+			should(notebook2.title).equal(expectedNotebook2.title);
+			should(notebook2.uri).equal(expectedNotebook2.url);
+			should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
+			should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
+			should(notebook3.title).equal(expectedNotebook3.title);
+			should(notebook3.uri).equal(expectedNotebook3.url);
+			should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
+			should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
+		});
 	});
 
 	this.afterAll(async function () {
@@ -181,8 +187,10 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 	});
 
 	it('should ignore toc.yml files not in _data folder', function(): void {
-		bookTreeViewProvider.getTableOfContentFiles([folder]);
-		should(bookTreeViewProvider.tableOfContentPaths).equal([tableOfContentsFile]);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			bookTreeViewProvider.getTableOfContentFiles([folder]);
+			should(bookTreeViewProvider.tableOfContentPaths).equal([tableOfContentsFile]);
+		});
 	});
 
 	this.afterAll(async function () {
@@ -220,11 +228,12 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 	});
 
 	it('should show error message if config.yml file not found', function(): void {
-		let configFile = path.join(rootFolderPath, '_config.yml');
-		bookTreeViewProvider.getBooks();
-		should(bookTreeViewProvider.errorMessage).equal('ENOENT: no such file or directory, open \'' + configFile + '\'');
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			let configFile = path.join(rootFolderPath, '_config.yml');
+			bookTreeViewProvider.getBooks();
+			should(bookTreeViewProvider.errorMessage).equal('ENOENT: no such file or directory, open \'' + configFile + '\'');
+		});
 	});
-
 	it('should show error if toc.yml file format is invalid', function(): void {
 
 	});
