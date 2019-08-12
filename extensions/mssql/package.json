@@ -115,6 +115,11 @@
       {
         "command": "mssql.clearSearchServerResult",
         "title": "%title.clearSearchServerResult%"
+      },
+      {
+        "command": "mssql.showLogFile",
+        "category": "MSSQL",
+        "title": "%title.showLogFile%"
       }
     ],
     "outputChannels": [
