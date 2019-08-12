@@ -73,6 +73,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
+		await bookTreeViewProvider.getTableOfContentFiles();
 		const children = await bookTreeViewProvider.getChildren();
 		should(children).be.Array();
 		should(children.length).equal(1);
