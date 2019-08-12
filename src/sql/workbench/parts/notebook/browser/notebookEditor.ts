@@ -211,11 +211,17 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 	}
 
-	public toggleSearch(): void {
-		this._findState.change({
-			isRevealed: true
-		}, false);
-		this._finder.focusFindInput();
+	public toggleSearch(reveal: boolean): void {
+		if (reveal) {
+			this._findState.change({
+				isRevealed: true
+			}, false);
+			this._finder.focusFindInput();
+		} else {
+			this._findState.change({
+				isRevealed: false
+			}, false);
+		}
 	}
 
 	public findNext(): void {
@@ -260,7 +266,7 @@ class StartSearchNotebookCommand extends SettingsCommand {
 	public runCommand(accessor: ServicesAccessor, args: any): void {
 		const NotebookEditor = this.getNotebookEditor(accessor);
 		if (NotebookEditor) {
-			NotebookEditor.toggleSearch();
+			NotebookEditor.toggleSearch(true);
 		}
 	}
 
@@ -275,3 +281,24 @@ const command = new StartSearchNotebookCommand({
 	}
 });
 command.register();
+
+class CloseSearchNotebookCommand extends SettingsCommand {
+
+	public runCommand(accessor: ServicesAccessor, args: any): void {
+		const NotebookEditor = this.getNotebookEditor(accessor);
+		if (NotebookEditor) {
+			NotebookEditor.toggleSearch(false);
+		}
+	}
+
+}
+
+const command2 = new CloseSearchNotebookCommand({
+	id: 'notebook.action.close.search',
+	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
+	kbOpts: {
+		primary: KeyCode.Escape,
+		weight: KeybindingWeight.EditorContrib
+	}
+});
+command2.register();
