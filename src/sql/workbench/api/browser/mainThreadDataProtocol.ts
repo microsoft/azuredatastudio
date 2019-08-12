@@ -134,11 +134,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 				return self._proxy.$disposeQuery(handle, ownerUri);
 			},
 			saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
-				let serializationProvider = self._serializationService.getSerializationFeatureMetadataProvider(requestParams.ownerUri);
-				if (serializationProvider && serializationProvider.enabled) {
+				let saveResultsFeatureInfo = self._serializationService.getSaveResultsFeatureMetadataProvider(requestParams.ownerUri);
+				if (saveResultsFeatureInfo && saveResultsFeatureInfo.enabled) {
 					return self._proxy.$saveResults(handle, requestParams);
 				}
-				else if (serializationProvider && !serializationProvider.enabled) {
+				else if (saveResultsFeatureInfo && !saveResultsFeatureInfo.enabled) {
 					return self._serializationService.disabledSaveAs();
 				}
 				else {
@@ -494,6 +494,20 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
 				return self._proxy.$schemaCompareCancel(handle, operationId);
 			}
+		});
+
+		return undefined;
+	}
+
+	public $registerSerializationProvider(providerId: string, handle: number): Promise<any> {
+		const self = this;
+		this._serializationService.registerProvider(providerId, <azdata.SerializationProvider>{
+			startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+				return self._proxy.$startSerialization(handle, requestParams);
+			},
+			continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+				return self._proxy.$continueSerialization(handle, requestParams);
+			},
 		});
 
 		return undefined;
