@@ -49,9 +49,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			let tableOfContentPaths = await glob([path + '/**/_data/toc.yml'], { deep: maxDepth });
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 		}
-		this._tableOfContentPaths = this._tableOfContentPaths.filter(function (elem, index, self) {
-			return index === self.indexOf(elem);
-		});
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
 		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
 		this._onReadAllTOCFiles.fire();
