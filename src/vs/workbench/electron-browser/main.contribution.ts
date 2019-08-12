@@ -13,7 +13,7 @@ import { KeyMod, KeyChord, KeyCode } from 'vs/base/common/keyCodes';
 import { isWindows, isLinux, isMacintosh } from 'vs/base/common/platform';
 import { KeybindingsReferenceAction, OpenDocumentationUrlAction, OpenIntroductoryVideosUrlAction, OpenTipsAndTricksUrlAction, OpenTwitterUrlAction, OpenRequestFeatureUrlAction, OpenPrivacyStatementUrlAction, OpenLicenseUrlAction, OpenNewsletterSignupUrlAction } from 'vs/workbench/electron-browser/actions/helpActions';
 import { ToggleSharedProcessAction, ToggleDevToolsAction } from 'vs/workbench/electron-browser/actions/developerActions';
-import { ShowAboutDialogAction, ZoomResetAction, ZoomOutAction, ZoomInAction, CloseCurrentWindowAction, SwitchWindow, NewWindowAction, QuickSwitchWindow, ReloadWindowWithExtensionsDisabledAction, NewWindowTabHandler, ShowPreviousWindowTabHandler, ShowNextWindowTabHandler, MoveWindowTabToNewWindowHandler, MergeWindowTabsHandlerHandler, ToggleWindowTabsBarHandler } from 'vs/workbench/electron-browser/actions/windowActions';
+import { ZoomResetAction, ZoomOutAction, ZoomInAction, CloseCurrentWindowAction, SwitchWindow, NewWindowAction, QuickSwitchWindow, ReloadWindowWithExtensionsDisabledAction, NewWindowTabHandler, ShowPreviousWindowTabHandler, ShowNextWindowTabHandler, MoveWindowTabToNewWindowHandler, MergeWindowTabsHandlerHandler, ToggleWindowTabsBarHandler } from 'vs/workbench/electron-browser/actions/windowActions';
 import { AddRootFolderAction, GlobalRemoveRootFolderAction, SaveWorkspaceAsAction, OpenWorkspaceConfigFileAction, DuplicateWorkspaceInNewWindowAction, CloseWorkspaceAction } from 'vs/workbench/browser/actions/workspaceActions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
@@ -23,7 +23,6 @@ import { ADD_ROOT_FOLDER_COMMAND_ID } from 'vs/workbench/browser/actions/workspa
 import { SupportsWorkspacesContext, IsMacContext, HasMacNativeTabsContext, IsDevelopmentContext, WorkbenchStateContext, WorkspaceFolderCountContext } from 'vs/workbench/browser/contextkeys';
 import { NoEditorsVisibleContext, SingleEditorGroupsContext } from 'vs/workbench/common/editor';
 import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
-import product from 'vs/platform/product/node/product';
 
 import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions'; // {{SQL CARBON EDIT}} add import
 
@@ -55,7 +54,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 		registry.registerWorkbenchAction(new SyncActionDescriptor(QuickSwitchWindow, QuickSwitchWindow.ID, QuickSwitchWindow.LABEL), 'Quick Switch Window...');
 
 		KeybindingsRegistry.registerCommandAndKeybindingRule({
-			id: 'workbench.action.closeWindow', // close the window when the last editor is closed by reusing the same keybinding
+			id: CloseCurrentWindowAction.ID, // close the window when the last editor is closed by reusing the same keybinding
 			weight: KeybindingWeight.WorkbenchContrib,
 			when: ContextKeyExpr.and(NoEditorsVisibleContext, SingleEditorGroupsContext),
 			primary: KeyMod.CtrlCmd | KeyCode.KEY_W,
@@ -165,7 +164,6 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 		registry.registerWorkbenchAction(new SyncActionDescriptor(OpenRequestFeatureUrlAction, OpenRequestFeatureUrlAction.ID, OpenRequestFeatureUrlAction.LABEL), 'Help: Search Feature Requests', helpCategory);
 		registry.registerWorkbenchAction(new SyncActionDescriptor(OpenLicenseUrlAction, OpenLicenseUrlAction.ID, OpenLicenseUrlAction.LABEL), 'Help: View License', helpCategory);
 		registry.registerWorkbenchAction(new SyncActionDescriptor(OpenPrivacyStatementUrlAction, OpenPrivacyStatementUrlAction.ID, OpenPrivacyStatementUrlAction.LABEL), 'Help: Privacy Statement', helpCategory);
-		registry.registerWorkbenchAction(new SyncActionDescriptor(ShowAboutDialogAction, ShowAboutDialogAction.ID, ShowAboutDialogAction.LABEL), `Help: About ${product.applicationName}`, helpCategory);
 	})();
 })();
 
@@ -283,7 +281,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '1_welcome',
 		command: {
-			id: 'workbench.action.openDocumentationUrl',
+			id: OpenDocumentationUrlAction.ID,
 			title: nls.localize({ key: 'miDocumentation', comment: ['&& denotes a mnemonic'] }, "&&Documentation")
 		},
 		order: 3
@@ -303,7 +301,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '2_reference',
 		command: {
-			id: 'workbench.action.keybindingsReference',
+			id: KeybindingsReferenceAction.ID,
 			title: nls.localize({ key: 'miKeyboardShortcuts', comment: ['&& denotes a mnemonic'] }, "&&Keyboard Shortcuts Reference")
 		},
 		order: 1
@@ -312,7 +310,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '2_reference',
 		command: {
-			id: 'workbench.action.openIntroductoryVideosUrl',
+			id: OpenIntroductoryVideosUrlAction.ID,
 			title: nls.localize({ key: 'miIntroductoryVideos', comment: ['&& denotes a mnemonic'] }, "Introductory &&Videos")
 		},
 		order: 2
@@ -321,7 +319,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '2_reference',
 		command: {
-			id: 'workbench.action.openTipsAndTricksUrl',
+			id: OpenTipsAndTricksUrlAction.ID,
 			title: nls.localize({ key: 'miTipsAndTricks', comment: ['&& denotes a mnemonic'] }, "Tips and Tri&&cks")
 		},
 		order: 3
@@ -331,7 +329,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '3_feedback',
 		command: {
-			id: 'workbench.action.openTwitterUrl',
+			id: OpenTwitterUrlAction.ID,
 			title: nls.localize({ key: 'miTwitter', comment: ['&& denotes a mnemonic'] }, "&&Join Us on Twitter")
 		},
 		order: 1
@@ -340,7 +338,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '3_feedback',
 		command: {
-			id: 'workbench.action.openRequestFeatureUrl',
+			id: OpenRequestFeatureUrlAction.ID,
 			title: nls.localize({ key: 'miUserVoice', comment: ['&& denotes a mnemonic'] }, "&&Search Feature Requests")
 		},
 		order: 2
@@ -360,7 +358,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '4_legal',
 		command: {
-			id: 'workbench.action.openLicenseUrl',
+			id: OpenLicenseUrlAction.ID,
 			title: nls.localize({ key: 'miLicense', comment: ['&& denotes a mnemonic'] }, "View &&License")
 		},
 		order: 1
@@ -369,7 +367,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '4_legal',
 		command: {
-			id: 'workbench.action.openPrivacyStatementUrl',
+			id: OpenPrivacyStatementUrlAction.ID,
 			title: nls.localize({ key: 'miPrivacyStatement', comment: ['&& denotes a mnemonic'] }, "Privac&&y Statement")
 		},
 		order: 2
@@ -379,7 +377,7 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
 		group: '5_tools',
 		command: {
-			id: 'workbench.action.toggleDevTools',
+			id: ToggleDevToolsAction.ID,
 			title: nls.localize({ key: 'miToggleDevTools', comment: ['&& denotes a mnemonic'] }, "&&Toggle Developer Tools")
 		},
 		order: 1
@@ -392,17 +390,6 @@ import { InstallVSIXAction } from 'vs/workbench/contrib/extensions/browser/exten
 			title: nls.localize({ key: 'miOpenProcessExplorerer', comment: ['&& denotes a mnemonic'] }, "Open &&Process Explorer")
 		},
 		order: 2
-	});
-
-	// About
-	MenuRegistry.appendMenuItem(MenuId.MenubarHelpMenu, {
-		group: 'z_about',
-		command: {
-			id: 'workbench.action.showAboutDialog',
-			title: nls.localize({ key: 'miAbout', comment: ['&& denotes a mnemonic'] }, "&&About")
-		},
-		order: 1,
-		when: IsMacContext.toNegated()
 	});
 })();
 
