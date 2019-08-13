@@ -8,9 +8,9 @@ import { URI } from 'vs/base/common/uri';
 import { nullExtensionDescription } from 'vs/workbench/services/extensions/common/extensions';
 import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import { INodeModuleFactory } from 'vs/workbench/api/node/extHostRequireInterceptor';
-import { ISqlopsExtensionApiFactory, IAzdataExtensionApiFactory } from 'sql/workbench/api/node/sqlExtHost.api.impl';
 import * as azdata from 'azdata';
 import * as sqlops from 'sqlops';
+import { IAzdataExtensionApiFactory, ISqlopsExtensionApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl';
 
 export class AZDataNodeModuleFactory implements INodeModuleFactory {
 	public readonly nodeModuleName = 'azdata';
