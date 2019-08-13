@@ -87,6 +87,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		this._terminating = false;
 
 		this._namedPipeServer = null;
+		this._inspectPort = null;
 		this._extensionHostProcess = null;
 		this._extensionHostConnection = null;
 		this._messageProtocol = null;
@@ -388,6 +389,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 				const r: IInitData = {
 					commit: product.commit,
 					version: pkg.version,
+					vscodeVersion: product.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 					parentPid: process.pid,
 					environment: {
 						isExtensionDevelopmentDebug: this._isExtensionDevDebug,

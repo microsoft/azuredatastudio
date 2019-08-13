@@ -3,16 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 
 export const IProductService = createDecorator<IProductService>('productService');
 
 export interface IProductService {
-	_serviceBrand: any;
+
+	_serviceBrand: ServiceIdentifier<any>;
 
 	readonly version: string;
 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
+	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}} add getter
 	readonly commit?: string;
+	readonly date?: string;
 
 	readonly nameLong: string;
 	readonly urlProtocol: string;
@@ -45,6 +48,7 @@ export interface IProductService {
 }
 
 export interface IProductConfiguration {
+	readonly version: string;
 	nameShort: string;
 	nameLong: string;
 	readonly applicationName: string;
@@ -74,7 +78,7 @@ export interface IProductConfiguration {
 	};
 	extensionTips: { [id: string]: string; };
 	recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
-	recommendedExtensionsByScenario: string[]; // {{SQL CARBON EDIT}}
+	recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
 	readonly exeBasedExtensionTips: { [id: string]: IExeBasedExtensionTip; };
 	readonly extensionKeywords: { [extension: string]: readonly string[]; };

@@ -6,7 +6,7 @@
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 
 import * as azdata from 'azdata';
@@ -247,7 +247,7 @@ export class QueryModelService implements IQueryModelService {
 				if (info.selectionSnippet) {
 					// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 					// executed query text
-					messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+					messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 				} else {
 					link = {
 						text: strings.format(LocalizedConstants.runQueryBatchStartLine, b.selection.startLine + 1)
@@ -398,7 +398,7 @@ export class QueryModelService implements IQueryModelService {
 					if (info.selectionSnippet) {
 						// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 						// executed query text
-						messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+						messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 					} else {
 						link = {
 							text: strings.format(LocalizedConstants.runQueryBatchStartLine, batch.selection.startLine + 1)

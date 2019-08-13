@@ -17,7 +17,6 @@ import { values, keys } from 'vs/base/common/map';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IKeybindings } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { IAction } from 'vs/base/common/actions';
-import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 
 export const TEST_VIEW_CONTAINER_ID = 'workbench.view.extension.test';
@@ -305,7 +304,7 @@ export interface ITreeView extends IDisposable {
 
 	showCollapseAllAction: boolean;
 
-	message?: string | IMarkdownString;
+	message?: string;
 
 	readonly visible: boolean;
 
@@ -325,7 +324,7 @@ export interface ITreeView extends IDisposable {
 
 	focus(): void;
 
-	layout(height: number): void;
+	layout(height: number, width: number): void;
 
 	show(container: HTMLElement): void;
 

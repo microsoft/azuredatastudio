@@ -7,9 +7,9 @@ import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/query
 import QueryRunner from 'sql/platform/query/common/queryRunner';
 import * as azdata from 'azdata';
 import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
 import { Event } from 'vs/base/common/event';
 import { QueryInfo } from 'sql/platform/query/common/queryModelService';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 
 export class TestQueryModelService implements IQueryModelService {
 	_serviceBrand: any;

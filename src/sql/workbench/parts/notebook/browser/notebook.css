@@ -8,7 +8,7 @@
 }
 
 .notebookEditor .notebook-cell {
-	margin: 10px 20px 10px;
+	margin: 1px 20px;
 	border-width: 1px;
 	border-style: solid;
 	border-radius: 3px;
@@ -136,4 +136,81 @@
 .notebookEditor .book-nav .dialog-message-button {
 	min-width: 100px;
 	margin-right: 10px;
+}
+
+.notebookEditor .hoverButtonsContainer {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	width: 60%;
+	margin: 1px auto;
+}
+
+.notebookEditor .hoverButtonsContainer .containerBackground {
+	position: absolute;
+	width: inherit;
+	height: 2px;
+	border-radius: 3px;
+	opacity: 0.4;
+	z-index: 0;
+	visibility: hidden;
+}
+
+.notebookEditor .hoverButtonsContainer:hover .containerBackground {
+	visibility: visible;
+}
+
+.notebookEditor .hoverButtonsContainer .hoverButton {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: center;
+	margin: 3px;
+	padding: 4px 6px;
+	font-size: 10px;
+	box-sizing: border-box;
+	border-color: transparent;
+	border-width: 1px;
+	border-style: solid;
+	border-radius: 3px;
+	z-index: 1;
+	visibility: hidden;
+}
+
+.notebookEditor .hoverButtonsContainer:hover .hoverButton {
+	visibility: visible;
+}
+
+.notebookEditor .hoverButton:active {
+	transform:scale(1.05);
+}
+
+.notebookEditor .hoverButton .addCodeIcon,
+.notebookEditor .hoverButton .addTextIcon {
+	display: inline-block;
+	background-position: center center;
+	background-repeat: no-repeat;
+	width: 10px;
+	height: 10px;
+	background-size: contain;
+	margin-right: 4px;
+}
+
+.notebookEditor .hoverButton .addCodeIcon {
+	background-image: url("./media/light/add_code.svg");
+}
+
+.vs-dark .notebookEditor .hoverButton .addCodeIcon,
+.hc-black .notebookEditor .hoverButton .addCodeIcon {
+	background-image: url("./media/dark/add_code_inverse.svg");
+}
+
+.notebookEditor .hoverButton .addTextIcon {
+	background-image: url("./media/light/add_text.svg");
+}
+
+.vs-dark .notebookEditor .hoverButton .addTextIcon,
+.hc-black .notebookEditor .hoverButton .addTextIcon {
+	background-image: url("./media/dark/add_text_inverse.svg");
 }

@@ -33,7 +33,7 @@ import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorIn
 
 export class FileEditorTracker extends Disposable implements IWorkbenchContribution {
 
-	private closeOnFileDelete: boolean;
+	private closeOnFileDelete: boolean | undefined;
 	private modelLoadQueue = new ResourceQueue();
 	private activeOutOfWorkspaceWatchers = new ResourceMap<IDisposable>();
 

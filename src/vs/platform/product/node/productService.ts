@@ -10,11 +10,13 @@ import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiatio
 
 export class ProductService implements IProductService {
 
-	_serviceBrand: ServiceIdentifier<IProductService>;
+	_serviceBrand!: ServiceIdentifier<IProductService>;
 
 	get version(): string { return pkg.version; }
 
 	get vscodeVersion(): string { return '1.35.0'; } // {{SQL CARBON EDIT}} add vscodeversion
+
+	get recommendedExtensionsByScenario(): { [area: string]: Array<string> } { return product.recommendedExtensionsByScenario; }// {{SQL CARBON EDIT}} add getter
 
 	get commit(): string | undefined { return product.commit; }
 

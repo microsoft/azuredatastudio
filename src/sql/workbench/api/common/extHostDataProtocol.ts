@@ -10,6 +10,8 @@ import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { Disposable } from 'vs/workbench/api/common/extHostTypes';
 import { SqlMainContext, MainThreadDataProtocolShape, ExtHostDataProtocolShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { DataProviderType } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { IURITransformer } from 'vs/base/common/uriIpc';
+import { URI } from 'vs/base/common/uri';
 
 export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
@@ -24,7 +26,8 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	private _providersByType = new Map<azdata.DataProviderType, azdata.DataProvider[]>();
 
 	constructor(
-		mainContext: IMainContext
+		mainContext: IMainContext,
+		private uriTransformer: IURITransformer | null
 	) {
 		super();
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadDataProtocol);
@@ -178,6 +181,12 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
+	$registerSerializationProvider(provider: azdata.SerializationProvider): vscode.Disposable {
+		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
+		this._proxy.$registerSerializationProvider(provider.providerId, provider.handle);
+		return rt;
+	}
+
 	// Capabilities Discovery handlers
 	$getServerCapabilities(handle: number, client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 		return this._resolveProvider<azdata.CapabilitiesProvider>(handle).getServerCapabilities(client);
@@ -185,6 +194,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Connection Management handlers
 	$connect(handle: number, connectionUri: string, connection: azdata.ConnectionInfo): Thenable<boolean> {
+		if (this.uriTransformer) {
+			connectionUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(connectionUri))).toString();
+		}
 		return this._resolveProvider<azdata.ConnectionProvider>(handle).connect(connectionUri, connection);
 	}
 
@@ -222,6 +234,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$onConnectComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void {
+		if (this.uriTransformer) {
+			connectionInfoSummary.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(connectionInfoSummary.ownerUri))).toString();
+		}
 		this._proxy.$onConnectionComplete(handle, connectionInfoSummary);
 	}
 
@@ -245,6 +260,9 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$runQuery(handle: number, ownerUri: string, selection: azdata.ISelectionData, runOptions?: azdata.ExecutionPlanOptions): Thenable<void> {
+		if (this.uriTransformer) {
+			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString();
+		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
@@ -273,29 +291,53 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	$getQueryRows(handle: number, rowData: azdata.QueryExecuteSubsetParams): Thenable<azdata.QueryExecuteSubsetResult> {
+		if (this.uriTransformer) {
+			rowData.ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(rowData.ownerUri))).toString();
+		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).getQueryRows(rowData);
 	}
 
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void> {
+		if (this.uriTransformer) {
+			ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(ownerUri))).toString();
+		}
 		return this._resolveProvider<azdata.QueryProvider>(handle).disposeQuery(ownerUri);
 	}
 
 	$onQueryComplete(handle: number, result: azdata.QueryExecuteCompleteNotificationResult): void {
+		if (this.uriTransformer) {
+			result.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(result.ownerUri))).toString();
+		}
 		this._proxy.$onQueryComplete(handle, result);
 	}
 	$onBatchStart(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
+		if (this.uriTransformer) {
+			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString();
+		}
 		this._proxy.$onBatchStart(handle, batchInfo);
 	}
 	$onBatchComplete(handle: number, batchInfo: azdata.QueryExecuteBatchNotificationParams): void {
+		if (this.uriTransformer) {
+			batchInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(batchInfo.ownerUri))).toString();
+		}
 		this._proxy.$onBatchComplete(handle, batchInfo);
 	}
 	$onResultSetAvailable(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
+		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString();
+		}
 		this._proxy.$onResultSetAvailable(handle, resultSetInfo);
 	}
 	$onResultSetUpdated(handle: number, resultSetInfo: azdata.QueryExecuteResultSetNotificationParams): void {
+		if (this.uriTransformer) {
+			resultSetInfo.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(resultSetInfo.ownerUri))).toString();
+		}
 		this._proxy.$onResultSetUpdated(handle, resultSetInfo);
 	}
 	$onQueryMessage(handle: number, message: azdata.QueryExecuteMessageParams): void {
+		if (this.uriTransformer) {
+			message.ownerUri = URI.from(this.uriTransformer.transformOutgoing(URI.parse(message.ownerUri))).toString();
+		}
 		this._proxy.$onQueryMessage(handle, message);
 	}
 
@@ -713,5 +755,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	public $onJobDataUpdated(handle: Number): void {
 		this._proxy.$onJobDataUpdated(handle);
+	}
+
+	// Serialization methods
+	public $startSerialization(handle: number, requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+		return this._resolveProvider<azdata.SerializationProvider>(handle).startSerialization(requestParams);
+	}
+
+	public $continueSerialization(handle: number, requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+		return this._resolveProvider<azdata.SerializationProvider>(handle).continueSerialization(requestParams);
 	}
 }

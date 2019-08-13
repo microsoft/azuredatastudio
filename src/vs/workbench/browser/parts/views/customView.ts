@@ -5,7 +5,7 @@
 
 import 'vs/css!./media/views';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IDisposable, Disposable, toDisposable, DisposableStore, MutableDisposable } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable, toDisposable, MutableDisposable } from 'vs/base/common/lifecycle';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IAction, IActionViewItem, ActionRunner, Action } from 'vs/base/common/actions';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
@@ -33,18 +33,14 @@ import { ViewletPanel, IViewletPanelOptions } from 'vs/workbench/browser/parts/v
 import { localize } from 'vs/nls';
 import { timeout } from 'vs/base/common/async';
 import { editorFindMatchHighlight, editorFindMatchHighlightBorder, textLinkForeground, textCodeBlockBackground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
-import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { isString } from 'vs/base/common/types';
-import { renderMarkdown, RenderOptions } from 'vs/base/browser/htmlContentRenderer';
-import { onUnexpectedError } from 'vs/base/common/errors';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { ILabelService } from 'vs/platform/label/common/label';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IListVirtualDelegate, IIdentityProvider } from 'vs/base/browser/ui/list/list';
 import { ITreeRenderer, ITreeNode, IAsyncDataSource, ITreeContextMenuEvent } from 'vs/base/browser/ui/tree/tree';
 import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
+import { isFalsyOrWhitespace } from 'vs/base/common/strings';
 
 export class CustomTreeViewPanel extends ViewletPanel {
 
@@ -76,8 +72,8 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		this.treeView.show(container);
 	}
 
-	layoutBody(size: number): void {
-		this.treeView.layout(size);
+	layoutBody(height: number, width: number): void {
+		this.treeView.layout(height, width);
 	}
 
 	getActions(): IAction[] {
@@ -167,16 +163,13 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private focused: boolean = false;
 	private domNode: HTMLElement;
 	private treeContainer: HTMLElement;
-	private _messageValue: string | IMarkdownString | undefined;
+	private _messageValue: string | undefined;
 	private messageElement: HTMLDivElement;
 	private tree: WorkbenchAsyncDataTree<ITreeItem, ITreeItem, FuzzyScore>;
 	private treeLabels: ResourceLabels;
 	private root: ITreeItem;
 	private elementsToRefresh: ITreeItem[] = [];
 	private menus: TitleMenus;
-
-	private markdownRenderer: MarkdownRenderer;
-	private markdownResult: IMarkdownRenderResult | null;
 
 	private readonly _onDidExpandItem: Emitter<ITreeItem> = this._register(new Emitter<ITreeItem>());
 	readonly onDidExpandItem: Event<ITreeItem> = this._onDidExpandItem.event;
@@ -217,12 +210,6 @@ export class CustomTreeView extends Disposable implements ITreeView {
 				this.doRefresh([this.root]); /** soft refresh **/
 			}
 		}));
-		this.markdownRenderer = instantiationService.createInstance(MarkdownRenderer);
-		this._register(toDisposable(() => {
-			if (this.markdownResult) {
-				this.markdownResult.dispose();
-			}
-		}));
 		this._register(Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).onDidChangeContainer(({ views, from, to }) => {
 			if (from === this.viewContainer && views.some(v => v.id === this.id)) {
 				this.viewContainer = to;
@@ -256,12 +243,12 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		}
 	}
 
-	private _message: string | IMarkdownString | undefined;
-	get message(): string | IMarkdownString | undefined {
+	private _message: string | undefined;
+	get message(): string | undefined {
 		return this._message;
 	}
 
-	set message(message: string | IMarkdownString | undefined) {
+	set message(message: string | undefined) {
 		this._message = message;
 		this.updateMessage();
 	}
@@ -329,11 +316,11 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this._onDidChangeVisibility.fire(this.isVisible);
 	}
 
-	focus(): void {
+	focus(reveal: boolean = true): void {
 		if (this.tree && this.root.children && this.root.children.length > 0) {
 			// Make sure the current selected element is revealed
 			const selectedElement = this.tree.getSelection()[0];
-			if (selectedElement) {
+			if (selectedElement && reveal) {
 				this.tree.reveal(selectedElement, 0.5);
 			}
 
@@ -384,7 +371,8 @@ export class CustomTreeView extends Disposable implements ITreeView {
 				expandOnlyOnTwistieClick: (e: ITreeItem) => !!e.command,
 				collapseByDefault: (e: ITreeItem): boolean => {
 					return e.collapsibleState !== TreeItemCollapsibleState.Expanded;
-				}
+				},
+				multipleSelectionSupport: false
 			}));
 		aligner.tree = this.tree;
 
@@ -469,43 +457,38 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		this.updateContentAreas();
 	}
 
-	private showMessage(message: string | IMarkdownString): void {
+	private showMessage(message: string): void {
 		DOM.removeClass(this.messageElement, 'hide');
 		if (this._messageValue !== message) {
 			this.resetMessageElement();
 			this._messageValue = message;
-			if (isString(this._messageValue)) {
+			if (!isFalsyOrWhitespace(this._message)) {
 				this.messageElement.textContent = this._messageValue;
-			} else {
-				this.markdownResult = this.markdownRenderer.render(this._messageValue);
-				DOM.append(this.messageElement, this.markdownResult.element);
 			}
-			this.layout(this._size);
+			this.layout(this._height, this._width);
 		}
 	}
 
 	private hideMessage(): void {
 		this.resetMessageElement();
 		DOM.addClass(this.messageElement, 'hide');
-		this.layout(this._size);
+		this.layout(this._height, this._width);
 	}
 
 	private resetMessageElement(): void {
-		if (this.markdownResult) {
-			this.markdownResult.dispose();
-			this.markdownResult = null;
-		}
 		DOM.clearNode(this.messageElement);
 	}
 
-	private _size: number;
-	layout(size: number) {
-		if (size) {
-			this._size = size;
-			const treeSize = size - DOM.getTotalHeight(this.messageElement);
-			this.treeContainer.style.height = treeSize + 'px';
+	private _height: number;
+	private _width: number;
+	layout(height: number, width: number) {
+		if (height && width) {
+			this._height = height;
+			this._width = width;
+			const treeHeight = height - DOM.getTotalHeight(this.messageElement);
+			this.treeContainer.style.height = treeHeight + 'px';
 			if (this.tree) {
-				this.tree.layout(treeSize);
+				this.tree.layout(treeHeight, width);
 			}
 		}
 	}
@@ -594,11 +577,20 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private async doRefresh(elements: ITreeItem[]): Promise<void> {
 		if (this.tree) {
 			this.refreshing = true;
-			await Promise.all(elements.map(element => this.tree.updateChildren(element, true)));
+			const parents: Set<ITreeItem> = new Set<ITreeItem>();
+			elements.forEach(element => {
+				if (element !== this.root) {
+					const parent = this.tree.getParentElement(element);
+					parents.add(parent);
+				} else {
+					parents.add(element);
+				}
+			});
+			await Promise.all(Array.from(parents.values()).map(element => this.tree.updateChildren(element, true)));
 			this.refreshing = false;
 			this.updateContentAreas();
 			if (this.focused) {
-				this.focus();
+				this.focus(false);
 			}
 		}
 	}
@@ -714,7 +706,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 
 		const icon = DOM.append(container, DOM.$('.custom-view-tree-node-item-icon'));
 
-		const resourceLabel = this.labels.create(container, { supportHighlights: true, donotSupportOcticons: true });
+		const resourceLabel = this.labels.create(container, { supportHighlights: true });
 		const actionsContainer = DOM.append(resourceLabel.element, DOM.$('.actions'));
 		const actionBar = new ActionBar(actionsContainer, {
 			actionViewItemProvider: this.actionViewItemProvider
@@ -881,38 +873,3 @@ class TreeMenus extends Disposable implements IDisposable {
 	}
 }
 
-class MarkdownRenderer {
-
-	constructor(
-		@IOpenerService private readonly _openerService: IOpenerService
-	) {
-	}
-
-	private getOptions(disposeables: DisposableStore): RenderOptions {
-		return {
-			actionHandler: {
-				callback: (content) => {
-					let uri: URI | undefined;
-					try {
-						uri = URI.parse(content);
-					} catch {
-						// ignore
-					}
-					if (uri && this._openerService) {
-						this._openerService.open(uri).catch(onUnexpectedError);
-					}
-				},
-				disposeables
-			}
-		};
-	}
-
-	render(markdown: IMarkdownString): IMarkdownRenderResult {
-		const disposeables = new DisposableStore();
-		const element: HTMLElement = markdown ? renderMarkdown(markdown, this.getOptions(disposeables)) : document.createElement('span');
-		return {
-			element,
-			dispose: () => disposeables.dispose()
-		};
-	}
-}

@@ -518,3 +518,13 @@ export namespace SchemaCompareCancellationRequest {
 }
 
 // ------------------------------- <Schema Compare> -----------------------------
+
+// ------------------------------- <Serialization> -----------------------------
+export namespace SerializeDataStartRequest {
+	export const type = new RequestType<azdata.SerializeDataStartRequestParams, azdata.SerializeDataResult, void, void>('serialize/start');
+}
+
+export namespace SerializeDataContinueRequest {
+	export const type = new RequestType<azdata.SerializeDataContinueRequestParams, azdata.SerializeDataResult, void, void>('serialize/continue');
+}
+// ------------------------------- <Serialization> -----------------------------
