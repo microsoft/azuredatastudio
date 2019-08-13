@@ -37,7 +37,7 @@ type ICachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditor
 
 export class EditorService extends Disposable implements EditorServiceImpl {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand!: ServiceIdentifier<any>;
 
 	private static CACHE: ResourceMap<ICachedEditorInput> = new ResourceMap<ICachedEditorInput>();
 
@@ -60,8 +60,8 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 	private fileInputFactory: IFileInputFactory;
 	private openEditorHandlers: IOpenEditorOverrideHandler[] = [];
 
-	private lastActiveEditor: IEditorInput | null;
-	private lastActiveGroupId: GroupIdentifier;
+	private lastActiveEditor: IEditorInput | null = null;
+	private lastActiveGroupId: GroupIdentifier | null = null;
 
 	constructor(
 		@IEditorGroupsService private readonly editorGroupService: IEditorGroupsService,
@@ -318,7 +318,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 		}
 
 		const textOptions: ITextEditorOptions = options;
-		if (!!textOptions.selection) {
+		if (textOptions.selection || textOptions.viewState) {
 			return TextEditorOptions.create(options);
 		}
 
@@ -451,13 +451,14 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 				typedEditors.push(replaceEditorArg as IEditorReplacement);
 			} else {
 				const editor = replaceEditorArg.editor as IResourceEditor;
+				const replacement = replaceEditorArg.replacement as IResourceEditor;
 				const typedEditor = this.createInput(editor);
-				const replacementEditor = this.createInput(replaceEditorArg.replacement as IResourceEditor);
+				const typedReplacement = this.createInput(replacement);
 
 				typedEditors.push({
 					editor: typedEditor,
-					replacement: replacementEditor,
-					options: this.toOptions(editor.options)
+					replacement: typedReplacement,
+					options: this.toOptions(replacement.options)
 				});
 			}
 		});
@@ -634,7 +635,7 @@ export interface IEditorOpenHandler {
  * method by providing a IEditorOpenHandler.
  */
 export class DelegatingEditorService extends EditorService {
-	private editorOpenHandler: IEditorOpenHandler;
+	private editorOpenHandler: IEditorOpenHandler | undefined;
 
 	constructor(
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
