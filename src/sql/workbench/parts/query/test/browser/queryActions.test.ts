@@ -26,13 +26,13 @@ import * as assert from 'assert';
 import { TestStorageService, TestFileService } from 'vs/workbench/test/workbenchTestServices';
 import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
-import { ConfigurationService } from 'vs/platform/configuration/node/configurationService';
 import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 import { TestQueryModelService } from 'sql/platform/query/test/common/testQueryModelService';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { URI } from 'vs/base/common/uri';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 suite('SQL QueryAction Tests', () => {
 
@@ -40,7 +40,7 @@ suite('SQL QueryAction Tests', () => {
 	let editor: TypeMoq.Mock<QueryEditor>;
 	let calledRunQueryOnInput: boolean = undefined;
 	let testQueryInput: TypeMoq.Mock<UntitledQueryEditorInput>;
-	let configurationService: TypeMoq.Mock<ConfigurationService>;
+	let configurationService: TypeMoq.Mock<TestConfigurationService>;
 	let queryModelService: TypeMoq.Mock<TestQueryModelService>;
 	let connectionManagementService: TypeMoq.Mock<TestConnectionManagementService>;
 
