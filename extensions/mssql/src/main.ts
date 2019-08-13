@@ -143,19 +143,22 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 }
 
 async function setClientQueryExecutionOptions() {
-	const provider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.ConnectionProvider) as azdata.ConnectionProvider;
-	return provider.registerOnConnectionComplete(async (conn) => {
-		const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
-		//const options: Map<string, any> = new Map();
-		try {
-			console.log('start');
-			const x = await queryProvider.setQueryExecutionOptions(conn.connectionId, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
-			console.log(x);
-		} catch (e) {
-			console.log(e);
+	let onConnectionConnect = {
+		onConnectionEvent: (type: azdata.connection.ConnectionEventType, ownerUri: string, args: azdata.IConnectionProfile) => {
+			if (type !== 'onConnect') {
+				return;
+			}
+
+			if (args.providerName !== 'MSSQL') {
+				return;
+			}
+			const queryProvider = azdata.dataprotocol.getProvider(Constants.providerId, azdata.DataProviderType.QueryProvider) as azdata.QueryProvider;
+			queryProvider.setQueryExecutionOptions(args.id, { 'MaxXmlCharsToStore': Utils.getConfigMaxXmlCharsToStore() });
+			console.log('called');
 		}
-		return undefined;
-	});
+	} as azdata.connection.ConnectionEventListener;
+
+	azdata.connection.registerConnectionEventListener(onConnectionConnect);
 }
 
 function getClientOptions(): ClientOptions {
