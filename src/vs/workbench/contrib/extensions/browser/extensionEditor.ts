@@ -374,11 +374,11 @@ export class ExtensionEditor extends BaseEditor {
 
 		// {{SQL CARBON EDIT}} add license url
 		if (extension.licenseUrl) {
-			this.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
-			this.license.style.display = 'initial';
+			template.license.onclick = finalHandler(() => window.open(extension.licenseUrl));
+			template.license.style.display = 'initial';
 		} else {
-			this.license.onclick = null;
-			this.license.style.display = 'none';
+			template.license.onclick = null;
+			template.license.style.display = 'none';
 		}
 		// {{SQL CARBON EDIT}} - End
 
