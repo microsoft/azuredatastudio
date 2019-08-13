@@ -53,6 +53,8 @@ export class NotebookEditorModel extends EditorModel {
 						this._register(notebook.model.onActiveCellChanged((cell) => {
 							if (cell) {
 								this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
+								// THIS WONT WORK WOMP WOMP WHEN NEWLINES ARE ADDED IN SOURCE
+								this.notebookTextFileModel.updateOutputBeginMap(this.textEditorModel, cell.cellGuid);
 							}
 						}));
 					}
@@ -154,7 +156,7 @@ export class NotebookEditorModel extends EditorModel {
 							} else {
 								newOutput = '\n'.concat(newOutput).concat('\n');
 							}
-							let range = this.notebookTextFileModel.getNextOutputRange(this.textEditorModel, contentChange.cells[0].cellGuid);
+							let range = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
 							if (range) {
 								this.textEditorModel.textEditorModel.applyEdits([{
 									range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
@@ -164,14 +166,32 @@ export class NotebookEditorModel extends EditorModel {
 								return;
 							}
 						}
+					} else if (type === NotebookChangeType.CellOutputCleared) {
+						let start = Date.now();
+						console.log('cell output cleared');
+						let outputStartNode = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
+						if (outputStartNode) {
+							let outputEndRange = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
+							if (outputEndRange) {
+								this.textEditorModel.textEditorModel.applyEdits([{
+									range: new Range(outputStartNode.startLineNumber, outputStartNode.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
+									text: ''
+								}]);
+								console.log('fast cell cleared in ' + (Date.now() - start) + 'ms');
+								return;
+							}
+						}
 					}
 				}
 				console.log('slow edit');
+				let start = Date.now();
 				this.replaceEntireTextEditorModel(notebookModel, type);
+				console.log('slow cell updated in ' + (Date.now() - start) + 'ms');
 				// After we replace all of the text editor model, attempt calculation again for active cell source to prevent
 				// future unnecessary use of the "slow" form of editing
 				if (type === NotebookChangeType.CellsModified || type === NotebookChangeType.CellSourceUpdated) {
 					this.notebookTextFileModel.updateSourceMap(this.textEditorModel, contentChange.cells[0].cellGuid);
+					this.notebookTextFileModel.updateOutputBeginMap(this.textEditorModel, contentChange.cells[0].cellGuid);
 				}
 			}
 		}

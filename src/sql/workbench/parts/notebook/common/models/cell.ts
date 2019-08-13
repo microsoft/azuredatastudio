@@ -286,19 +286,21 @@ export class CellModel implements ICellModel {
 				if (content) {
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					let future = await kernel.requestExecute({
-						code: content,
-						stop_on_error: true
-					}, false);
-					this.setFuture(future as FutureInternal);
-					this.fireExecutionStateChanged();
-					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
-					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
-					if (result && result.content) {
-						this.executionCount = result.content.execution_count;
-						if (result.content.status !== 'ok') {
-							// TODO track error state
-							return false;
+					if (content) {
+						let future = await kernel.requestExecute({
+							code: content,
+							stop_on_error: true
+						}, false);
+						this.setFuture(future as FutureInternal);
+						this.fireExecutionStateChanged();
+						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
+						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
+						if (result && result.content) {
+							this.executionCount = result.content.execution_count;
+							if (result.content.status !== 'ok') {
+								// TODO track error state
+								return false;
+							}
 						}
 					}
 				}
@@ -389,7 +391,11 @@ export class CellModel implements ICellModel {
 			shouldScroll: !!shouldScroll
 		};
 		this._onOutputsChanged.fire(outputEvent);
-		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
+		if (this.outputs.length !== 0) {
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
+		} else {
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputCleared);
+		}
 	}
 
 	private sendChangeToNotebook(change: NotebookChangeType): void {

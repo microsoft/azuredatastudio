@@ -9,12 +9,15 @@ import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textF
 
 export class NotebookTextFileModel {
 	private sourceMap: Map<string, Range>;
+	private outputBeginMap: Map<string, Range>;
+	private activeCellGuid: string;
 
 	constructor() {
 		this.sourceMap = new Map<string, Range>();
+		this.outputBeginMap = new Map<string, Range>();
 	}
 
-	public updateSourceMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
+	public updateSourceMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
 		if (!cellGuid) {
 			return;
 		}
@@ -31,10 +34,11 @@ export class NotebookTextFileModel {
 		this.sourceMap.set(cellGuid, firstQuoteOfSource.range);
 	}
 
-	public getNextOutputRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): IRange {
+	public updateOutputBeginMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
 		if (!cellGuid) {
 			return undefined;
 		}
+		this.outputBeginMap.clear();
 		let cellGuidMatch = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
 		if (!cellGuidMatch || cellGuidMatch.length < 1) {
 			return undefined;
@@ -43,42 +47,61 @@ export class NotebookTextFileModel {
 		if (!outputsBegin || !outputsBegin.range) {
 			return undefined;
 		}
-		if (textEditorModel.textEditorModel.getLineContent(outputsBegin.range.startLineNumber).trim() === '"outputs": [],') {
-			return {
-				startColumn: outputsBegin.range.endColumn,
-				startLineNumber: outputsBegin.range.endLineNumber,
-				endColumn: outputsBegin.range.endColumn,
-				endLineNumber: outputsBegin.range.endLineNumber
-			};
-		}
-		let isMultiLineOutput = false;
-		let executionCountAfter = textEditorModel.textEditorModel.findNextMatch('"execution_count": ', { lineNumber: outputsBegin.range.endLineNumber, column: outputsBegin.range.endColumn }, false, true, undefined, true);
-		let hypotheticalLastOutputCurlyBraceLineNumber;
 
-		while (!isMultiLineOutput) {
-			// Last 2 lines in multi-line output will look like the following. Execution count is directly after.
+		this.outputBeginMap.set(cellGuid, outputsBegin.range);
+	}
+
+	public getEndOfOutputs(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
+		let outputsBegin = this.outputBeginMap.get(cellGuid);
+		if (!outputsBegin) {
+			return undefined;
+		}
+		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
+		if (!outputsEnd || outputsEnd.length < 2) {
+			return undefined;
+		}
+		// single line output
+		if (outputsBegin.endLineNumber === outputsEnd[1].startLineNumber) {
+			// Adding 1 to startColumn to replace text starting one character after '['
+			return {
+				startColumn: outputsEnd[0].startColumn + 1,
+				startLineNumber: outputsEnd[0].startLineNumber,
+				endColumn: outputsEnd[0].endColumn,
+				endLineNumber: outputsEnd[0].endLineNumber
+			};
+		} else {
+			// Last 2 lines in multi-line output will look like the following.
 			// "                }"
 			// "            ],"
-			// "            "execution_count": 1"
-			let hypotheticalLastOutputCurlyBraceLineNumber = executionCountAfter.range.startLineNumber - 2;
-			isMultiLineOutput = textEditorModel.textEditorModel.getLineContent(hypotheticalLastOutputCurlyBraceLineNumber).trim() === '}';
-
-			executionCountAfter = textEditorModel.textEditorModel.findNextMatch('"execution_count": ', { lineNumber: executionCountAfter.range.endLineNumber, column: executionCountAfter.range.endColumn }, false, true, undefined, true);
-			if (!executionCountAfter || !executionCountAfter.range) {
-				return undefined;
+			if (textEditorModel.textEditorModel.getLineContent(outputsEnd[1].endLineNumber - 1).trim() === '}') {
+				return {
+					startColumn: textEditorModel.textEditorModel.getLineFirstNonWhitespaceColumn(outputsEnd[1].endLineNumber - 1) + 1,
+					startLineNumber: outputsEnd[1].endLineNumber - 1,
+					endColumn: outputsEnd[1].endColumn - 1,
+					endLineNumber: outputsEnd[1].endLineNumber
+				};
 			}
+			return undefined;
 		}
-
-		// Add 1 to account for the '}'
-		return {
-			startColumn: textEditorModel.textEditorModel.getLineFirstNonWhitespaceColumn(hypotheticalLastOutputCurlyBraceLineNumber) + 1,
-			startLineNumber: hypotheticalLastOutputCurlyBraceLineNumber,
-			endColumn: undefined,
-			endLineNumber: undefined
-		};
 	}
 
 	public getCellNodeByGuid(guid: string) {
 		return this.sourceMap.get(guid);
+	}
+
+	public getOutputNodeByGuid(guid: string) {
+		return this.outputBeginMap.get(guid);
+	}
+
+	public get ActiveCellGuid(): string {
+		return this.activeCellGuid;
+	}
+
+	public set ActiveCellGuid(guid: string) {
+		if (this.activeCellGuid !== guid) {
+			this.sourceMap.clear();
+			this.outputBeginMap.clear();
+			this.activeCellGuid = guid;
+		}
 	}
 }
