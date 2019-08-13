@@ -11,11 +11,11 @@
 		<loading-spinner [loading]="isLoading"></loading-spinner>
 		<div class="hoverButtonsContainer" *ngIf="(cells && cells.length > 0) && !isLoading">
 			<span class="containerBackground"></span>
-			<button class="hoverButton" (click)="addCell('code', 0)">
+			<button class="hoverButton" (click)="addCell('code', 0, $event)">
 				<div class="addCodeIcon"></div>
 				<span>{{addCodeLabel}}</span>
 			</button>
-			<button class="hoverButton" (click)="addCell('markdown', 0)">
+			<button class="hoverButton" (click)="addCell('markdown', 0, $event)">
 				<div class="addTextIcon"></div>
 				<span>{{addTextLabel}}</span>
 			</button>
@@ -29,11 +29,11 @@
 			</div>
 			<div class="hoverButtonsContainer">
 				<span class="containerBackground"></span>
-				<button class="hoverButton" (click)="addCell('code', findCellIndex(cell) + 1)">
+				<button class="hoverButton" (click)="addCell('code', findCellIndex(cell) + 1, $event)">
 					<div class="addCodeIcon"></div>
 					<span>{{addCodeLabel}}</span>
 				</button>
-				<button class="hoverButton" (click)="addCell('markdown', findCellIndex(cell) + 1)">
+				<button class="hoverButton" (click)="addCell('markdown', findCellIndex(cell) + 1, $event)">
 					<div class="addTextIcon"></div>
 					<span>{{addTextLabel}}</span>
 				</button>
