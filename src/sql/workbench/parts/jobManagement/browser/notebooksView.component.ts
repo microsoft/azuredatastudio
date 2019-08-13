@@ -55,19 +55,19 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 
 	private columns: Array<Slick.Column<any>> = [
 		{
-			name: nls.localize('jobColumns.name', "Name"),
+			name: nls.localize('notebookColumns.name', "Name"),
 			field: 'name',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
 			width: 150,
 			id: 'name'
 		},
-		{ name: nls.localize('jobColumns.targetDatbase', "Target Database"), field: 'targetDatabase', width: 80, id: 'targetDatabase' },
-		{ name: nls.localize('jobColumns.lastRun', "Last Run"), field: 'lastRun', width: 80, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun', "Next Run"), field: 'nextRun', width: 80, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.status', "Status"), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', "Last Run Outcome"), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
+		{ name: nls.localize('notebookColumns.targetDatbase', "Target Database"), field: 'targetDatabase', width: 80, id: 'targetDatabase' },
+		{ name: nls.localize('notebookColumns.lastRun', "Last Run"), field: 'lastRun', width: 80, id: 'lastRun' },
+		{ name: nls.localize('notebookColumns.nextRun', "Next Run"), field: 'nextRun', width: 80, id: 'nextRun' },
+		{ name: nls.localize('notebookColumns.status', "Status"), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
+		{ name: nls.localize('notebookColumns.lastRunOutcome', "Last Run Outcome"), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
 		{
-			name: nls.localize('jobColumns.previousRuns', "Previous Runs"),
+			name: nls.localize('notebookColumns.previousRuns', "Previous Runs"),
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderChartsPostHistory(row, cell, value, columnDef, dataContext),
 			field: 'previousRuns',
 			width: 100,
@@ -291,6 +291,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 							let seenJobs = 0;
 							for (let i = 0; i < currentItems.length; i++) {
 								this._table.grid.removeCellCssStyles('error-row' + i.toString());
+								this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
 								let item = this.dataView.getFilteredItems()[i];
 								if (item.lastRunOutcome === 'Failed') {
 									this.addToStyleHash(seenJobs, false, this.filterStylingMap, args.column.name);
@@ -317,6 +318,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					let seenNotebooks = 0;
 					for (let i = 0; i < this.notebooks.length; i++) {
 						this._table.grid.removeCellCssStyles('error-row' + i.toString());
+						this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
 						let item = this.dataView.getItemByIdx(i);
 						// current filter
 						if (_.contains(filterValues, item[args.column.field])) {
@@ -643,14 +645,14 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				if (self._agentViewComponent.expandedNotebook.has(notebook.jobId)) {
 					let lastJobHistory = notebookHistories[notebookHistories.length - 1];
 					let item = self.dataView.getItemById('notebook' + notebook.jobId + '.error');
-					let noStepsMessage = nls.localize('jobsView.noSteps', "No Steps available for this job.");
+					let noStepsMessage = nls.localize('notebooksView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
 					if (item) {
 						if (notebook.lastRunNotebookError.length === 0) {
-							item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
+							item['name'] = nls.localize('notebooksView.error', "Error: ") + errorMessage;
 						}
 						else {
-							item['name'] = nls.localize('jobsView.notebookError', "Notebook Error: ") + notebook.lastRunNotebookError;
+							item['name'] = nls.localize('notebooksView.notebookError', "Notebook Error: ") + notebook.lastRunNotebookError;
 						}
 						self._agentViewComponent.setExpandedNotebook(notebook.jobId, item['name']);
 						self.dataView.updateItem('notebook' + notebook.jobId + '.error', item);
@@ -832,6 +834,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		} else {
 			for (let i = 0; i < this.notebooks.length; i++) {
 				this._table.grid.removeCellCssStyles('error-row' + i.toString());
+				this._table.grid.removeCellCssStyles('notebook-error-row' + i.toString());
 			}
 		}
 		// add new style to the items back again

@@ -137,6 +137,7 @@ notebooksview-component {
 	width: 100%;
 	opacity: 1;
 	font-weight: 700;
+	text-overflow: ellipsis;
 	color: orangered;
 }
 
@@ -144,11 +145,14 @@ notebooksview-component {
 	width: 100%;
 	opacity: 1;
 	font-weight: 700;
+	overflow: hidden;
+	text-overflow: ellipsis;
 	color: orange;
 }
 
 .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row,
-.jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+.jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row,
+.jobnotebooksview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.notebook-error-row {
 	opacity: 1;
 }
 
@@ -381,8 +385,8 @@ table.jobprevruns > tbody {
 }
 
 jobsview-component .jobview-grid .slick-cell.error-row,
-notebooksview-component .notebookview-grid .slick-cell.error-row,
-notebooksview-component .notebookview-grid .slick-cell.notebook-error-row {
+notebooksview-component .jobnotebooksview-grid .slick-cell.error-row,
+notebooksview-component .jobnotebooksview-grid .slick-cell.notebook-error-row {
 	opacity: 0;
 }
 

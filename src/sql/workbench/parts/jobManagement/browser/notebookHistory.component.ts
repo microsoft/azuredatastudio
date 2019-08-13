@@ -38,7 +38,10 @@ import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { View } from 'vs/editor/browser/view/viewImpl';
 
 export const DASHBOARD_SELECTOR: string = 'notebookhistory-component';
-
+export class GridSection {
+	title: string;
+	histories: azdata.AgentNotebookHistoryInfo[];
+}
 @Component({
 	selector: DASHBOARD_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./notebookHistory.component.html')),
@@ -81,6 +84,10 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	private _openMaterializedNotebookAction: OpenNotebookAction;
 
 	private static readonly HEADING_HEIGHT: number = 24;
+
+
+
+	private _grids: GridSection[] = [];
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
@@ -126,6 +133,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
 			if (result && result.histories) {
+
 				this.notebookHistories = result.histories.reverse();
 				self._notebookCacheObject.setNotebookHistory(jobId, result.histories);
 				self._notebookCacheObject.setJobSchedules(jobId, result.schedules);
@@ -155,6 +163,8 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				{ action: this._editNotebookJobAction },
 				{ action: this._editJobAction }
 			]);
+
+			this.createGrid();
 			if (self._agentViewComponent.showNotebookHistory) {
 				self._cd.detectChanges();
 			}
@@ -271,7 +281,9 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			this.loadHistory();
 			return;
 		}
-
+		else {
+			this.createGrid();
+		}
 		let notebookHistories = this._notebookCacheObject.notebookHistories[this._agentViewComponent.notebookId];
 		this.notebookHistories = notebookHistories.reverse();
 		if (notebookHistories) {
@@ -387,11 +399,44 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 
 	public historyFilter(histories: azdata.AgentNotebookHistoryInfo[], minTime: number, maxTime: number) {
-		let resultHistory: azdata.AgentNotebookHistoryInfo[] = [];
-
-		return resultHistory;
+		let resultHistory: azdata.AgentNotebookHistoryInfo[] = histories.filter(function (h) {
+			let historyDateTime = (new Date().getTime() - new Date(h.runDate.replace('T', ' ')).getTime()) / 1000;
+			if (historyDateTime >= minTime && historyDateTime <= maxTime) {
+				return true;
+			}
+			return false;
+		});
+		resultHistory.sort((h1, h2) =>
+			(new Date(h1.runDate) > new Date(h2.runDate) ? -1 : 1));
+		return (resultHistory.length > 0) ? resultHistory : null;
 	}
 
+	public createGrid() {
+		let histories = this._notebookCacheObject.getNotebookHistory(this._agentViewComponent.notebookId);
+		let gridTitle: string[] = ['This Week', 'Last Week', 'Last Month', 'All Past Runs'];
+		let gridPeriods: any = [{
+			min: 0,
+			max: 604800
+		}, {
+			min: 604801,
+			max: 1209600
+		}, {
+			min: 1209601,
+			max: 2592000
+		}, {
+			min: 2592001,
+			max: 31557600
+		}];
+		// Grids for this week
+		this._grids = [];
+		gridTitle.forEach((title, index) => {
+			let grid = new GridSection();
+			console.log(title);
+			grid.title = title;
+			grid.histories = this.historyFilter(histories, gridPeriods[index].min, gridPeriods[index].max);
+			this._grids.push(grid);
+		});
+	}
 
 	/** GETTERS  */
 
