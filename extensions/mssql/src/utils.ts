@@ -11,6 +11,7 @@ import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
 import * as fs from 'fs';
+import { promisify } from 'util';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -27,6 +28,17 @@ export function getAppDataPath() {
 		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
+	}
+}
+
+export namespace pfs {
+
+	export function exists(path: string): Promise<boolean> {
+		return promisify(fs.exists)(path);
+	}
+
+	export function mkdir(path: string, mode?: number): Promise<void> {
+		return promisify(fs.mkdir)(path, mode);
 	}
 }
 
@@ -57,8 +69,8 @@ export function copyFile(source: string, target: string): void {
 	fs.copyFileSync(source, target);
 }
 
-export function removeOldLogFiles(prefix: string): JSON {
-	return findRemoveSync(getDefaultLogDir(), { prefix: `${prefix}_`, age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
+export function removeOldLogFiles(logPath: string, prefix: string): JSON {
+	return findRemoveSync(logPath, { age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
@@ -95,24 +107,20 @@ export function getConfigTracingLevel(): string {
 	}
 }
 
-export function getDefaultLogDir(): string {
-	return path.join(process.env['ADS_LOGS'], '..', '..', 'mssql');
+export function getLogFileName(prefix: string, pid: number): string {
+	return `${prefix}_${pid}.log`;
 }
 
-export function getDefaultLogFile(prefix: string, pid: number): string {
-	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
-}
-
-export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string): string[] {
+export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
-	let logFile = getDefaultLogFile(prefix, process.pid);
+	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
 	// Delete old log files
-	let deletedLogFiles = removeOldLogFiles(prefix);
+	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());

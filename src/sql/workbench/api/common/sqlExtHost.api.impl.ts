@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IMainContext } from 'vs/workbench/api/common/extHost.protocol';
-
 import * as azdata from 'azdata';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -31,9 +29,12 @@ import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/ext
 import { ExtHostExtensionManagement } from 'sql/workbench/api/common/extHostExtensionManagement';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
-import { IURITransformer } from 'vs/base/common/uriIpc';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
+import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
+import { ILogService } from 'vs/platform/log/common/log';
 
 export interface ISqlopsExtensionApiFactory {
 	(extension: IExtensionDescription): typeof sqlops;
@@ -47,18 +48,18 @@ export interface IAzdataExtensionApiFactory {
 /**
  * This method instantiates and returns the extension API surface
  */
-export function createSqlopsApiFactory(
-	rpcProtocol: IMainContext,
-	logService: ExtHostLogService,
-	uriTransformer: IURITransformer | null
-): ISqlopsExtensionApiFactory {
+export function createSqlopsApiFactory(accessor: ServicesAccessor): ISqlopsExtensionApiFactory {
+	const uriTransformer = accessor.get(IURITransformerService);
+	const rpcProtocol = accessor.get(IExtHostRpcService);
+	const extHostLogService = <ExtHostLogService>accessor.get(ILogService);
+
 	// Addressable instances
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
 	const extHostCredentialManagement = rpcProtocol.set(SqlExtHostContext.ExtHostCredentialManagement, new ExtHostCredentialManagement(rpcProtocol));
 	const extHostDataProvider = rpcProtocol.set(SqlExtHostContext.ExtHostDataProtocol, new ExtHostDataProtocol(rpcProtocol, uriTransformer));
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
-	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
+	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol));
@@ -436,11 +437,12 @@ export function createSqlopsApiFactory(
 /**
  * This method instantiates and returns the extension API surface
  */
-export function createAzdataApiFactory(
-	rpcProtocol: IMainContext,
-	logService: ExtHostLogService,
-	uriTransformer: IURITransformer | null
-): IAzdataExtensionApiFactory {
+export function createAzdataApiFactory(accessor: ServicesAccessor): IAzdataExtensionApiFactory {
+
+	const uriTransformer = accessor.get(IURITransformerService);
+	const rpcProtocol = accessor.get(IExtHostRpcService);
+	const extHostLogService = <ExtHostLogService>accessor.get(ILogService);
+
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
@@ -449,7 +451,7 @@ export function createAzdataApiFactory(
 	const extHostObjectExplorer = rpcProtocol.set(SqlExtHostContext.ExtHostObjectExplorer, new ExtHostObjectExplorer(rpcProtocol));
 	const extHostResourceProvider = rpcProtocol.set(SqlExtHostContext.ExtHostResourceProvider, new ExtHostResourceProvider(rpcProtocol));
 	const extHostModalDialogs = rpcProtocol.set(SqlExtHostContext.ExtHostModalDialogs, new ExtHostModalDialogs(rpcProtocol));
-	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, logService));
+	const extHostTasks = rpcProtocol.set(SqlExtHostContext.ExtHostTasks, new ExtHostTasks(rpcProtocol, extHostLogService));
 	const extHostBackgroundTaskManagement = rpcProtocol.set(SqlExtHostContext.ExtHostBackgroundTaskManagement, new ExtHostBackgroundTaskManagement(rpcProtocol));
 	const extHostWebviewWidgets = rpcProtocol.set(SqlExtHostContext.ExtHostDashboardWebviews, new ExtHostDashboardWebviews(rpcProtocol));
 	const extHostModelViewTree = rpcProtocol.set(SqlExtHostContext.ExtHostModelViewTreeViews, new ExtHostModelViewTreeViews(rpcProtocol));
