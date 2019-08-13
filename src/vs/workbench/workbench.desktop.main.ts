@@ -21,8 +21,8 @@ import 'vs/workbench/workbench.common.main';
 //#region --- workbench (desktop main)
 import 'sql/setup'; // {{SQL CARBON EDIT}}
 
-import 'vs/workbench/electron-browser/main.contribution';
-import 'vs/workbench/electron-browser/main';
+import 'vs/workbench/electron-browser/desktop.contribution';
+import 'vs/workbench/electron-browser/desktop.main';
 
 //#endregion
 
