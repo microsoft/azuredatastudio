@@ -31,7 +31,7 @@ if (context.RunTest) {
 		suiteSetup(async function () {
 			let attempts: number = 20;
 			while (attempts > 0) {
-				schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).schemaCompare;
+				schemaCompareService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.mssql)).schemaCompare;
 				if (schemaCompareService) {
 					break;
 				}
@@ -119,7 +119,7 @@ class SchemaCompareTester {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			let dacfxService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).dacFx;
+			let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.mssql)).dacFx;
 			assert(dacfxService, 'DacFx Service Provider is not available');
 			let result1 = await dacfxService.deployDacpac(dacpac1, sourceDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 			let result2 = await dacfxService.deployDacpac(dacpac2, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
