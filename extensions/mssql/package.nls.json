@@ -33,6 +33,8 @@
 	"title.endpoints": "Service Endpoints",
 	"title.books": "Notebooks",
 
+	"title.showLogFile": "Show Log File",
+
 	"mssql.configuration.title": "MSSQL configuration",
 	"mssql.query.displayBitAsNumber": "Should BIT columns be displayed as numbers (1 or 0)? If false, BIT columns will be displayed as 'true' or 'false'",
 	"mssql.format.alignColumnDefinitionsInColumns": "Should column definitions be aligned?",
