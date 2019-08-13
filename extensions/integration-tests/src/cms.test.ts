@@ -31,7 +31,7 @@ if (context.RunTest) {
 		setup(async function () {
 			// Set up CMS provider
 			if (!cmsService) {
-				let api: mssql.MssqlExtensionApi = (await (vscode.extensions.getExtension('Microsoft.mssql').activate())).exports;
+				let api: mssql.MssqlExtensionApi = await vscode.extensions.getExtension('Microsoft.mssql').activate();
 				cmsService = await api.getCmsServiceProvider();
 				assert(cmsService !== undefined);
 			}
