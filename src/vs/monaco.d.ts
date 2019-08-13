@@ -2650,6 +2650,11 @@ declare namespace monaco.editor {
 		 */
 		lineNumbers?: 'on' | 'off' | 'relative' | 'interval' | ((lineNumber: number) => string);
 		/**
+		 * Controls the minimal number of visible leading and trailing lines surrounding the cursor.
+		 * Defaults to 0.
+		*/
+		cursorSurroundingLines?: number;
+		/**
 		 * Render last line number when the file ends with a newline.
 		 * Defaults to true.
 		*/
@@ -3301,6 +3306,7 @@ declare namespace monaco.editor {
 		readonly ariaLabel: string;
 		readonly renderLineNumbers: RenderLineNumbersType;
 		readonly renderCustomLineNumbers: ((lineNumber: number) => string) | null;
+		readonly cursorSurroundingLines: number;
 		readonly renderFinalNewline: boolean;
 		readonly selectOnLineNumbers: boolean;
 		readonly glyphMargin: boolean;
@@ -4452,6 +4458,16 @@ declare namespace monaco.languages {
 	 * Register a folding range provider
 	 */
 	export function registerFoldingRangeProvider(languageId: string, provider: FoldingRangeProvider): IDisposable;
+
+	/**
+	 * Register a declaration provider
+	 */
+	export function registerDeclarationProvider(languageId: string, provider: DeclarationProvider): IDisposable;
+
+	/**
+	 * Register a selection range provider
+	 */
+	export function registerSelectionRangeProvider(languageId: string, provider: SelectionRangeProvider): IDisposable;
 
 	/**
 	 * Contains additional diagnostic information about the context in which
