@@ -760,9 +760,7 @@ declare module 'azdata' {
 		flavor: string;
 	}
 
-	export interface QueryExecutionOptions {
-		options: Map<string, any>;
-	}
+	export type QueryExecutionOptions = Map<string, any>;
 
 	export interface QueryProvider extends DataProvider {
 		cancelQuery(ownerUri: string): Thenable<QueryCancelResult>;
@@ -4016,7 +4014,7 @@ declare module 'azdata' {
 			uri: string;
 
 			// set the document's execution options
-			setExecutionOptions(options: Map<string, any>): Thenable<void>;
+			setExecutionOptions(options: QueryExecutionOptions): Thenable<void>;
 
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs

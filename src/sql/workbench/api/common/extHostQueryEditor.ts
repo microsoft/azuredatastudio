@@ -17,9 +17,8 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	}
 
 	public setExecutionOptions(options: Map<string, any>): Thenable<void> {
-		let executionOptions: azdata.QueryExecutionOptions = {
-			options: options
-		};
+		let executionOptions = options as azdata.QueryExecutionOptions;
+
 		return this._proxy.$setQueryExecutionOptions(this.uri, executionOptions);
 	}
 
