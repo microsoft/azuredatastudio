@@ -13,11 +13,11 @@ const msInH = 3.6e6;
 const msInM = 60000;
 const msInS = 1000;
 export const uriPrefixes = {
-	default: 'connection://',
-	connection: 'connection://',
-	dashboard: 'dashboard://',
-	insights: 'insights://',
-	notebook: 'notebook://'
+	default: 'connection:',
+	connection: 'connection:',
+	dashboard: 'dashboard:',
+	insights: 'insights:',
+	notebook: 'notebook:'
 };
 
 

@@ -217,7 +217,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		let connectionToUse = connection ? connection : connectionProfile;
 		return new Promise<IConnectionResult>((resolve, reject) => {
 			let id = connectionToUse.getOptionsKey();
-			let defaultUri = 'connection://' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
+			let defaultUri = 'connection:' + (id ? id : connectionToUse.serverName + ':' + connectionToUse.databaseName);
 			connectionManagementService.onConnectionRequestSent(() => {
 				let info: azdata.ConnectionInfoSummary = {
 					connectionId: error ? undefined : 'id',
