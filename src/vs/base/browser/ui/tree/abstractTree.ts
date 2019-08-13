@@ -451,8 +451,8 @@ class TypeFilter<T> implements ITreeFilter<T, FuzzyScore>, IDisposable {
 	private _matchCount = 0;
 	get matchCount(): number { return this._matchCount; }
 
-	private _pattern: string;
-	private _lowercasePattern: string;
+	private _pattern: string = '';
+	private _lowercasePattern: string = '';
 	private disposables: IDisposable[] = [];
 
 	set pattern(pattern: string) {
@@ -543,7 +543,7 @@ class TypeFilterController<T, TFilterData> implements IDisposable {
 	private _filterOnType: boolean;
 	get filterOnType(): boolean { return this._filterOnType; }
 
-	private _empty: boolean;
+	private _empty: boolean = false;
 	get empty(): boolean { return this._empty; }
 
 	private _onDidChangeEmptyState = new Emitter<boolean>();
@@ -897,6 +897,7 @@ export interface IAbstractTreeOptions<T, TFilterData = void> extends IAbstractTr
 	readonly autoExpandSingleChildren?: boolean;
 	readonly keyboardNavigationEventFilter?: IKeyboardNavigationEventFilter;
 	readonly expandOnlyOnTwistieClick?: boolean | ((e: T) => boolean);
+	readonly additionalScrollHeight?: number;
 }
 
 function dfs<T, TFilterData>(node: ITreeNode<T, TFilterData>, fn: (node: ITreeNode<T, TFilterData>) => void): void {
@@ -1062,6 +1063,16 @@ class TreeNodeListMouseController<T, TFilterData, TRef> extends MouseController<
 		}
 
 		super.onPointer(e);
+	}
+
+	protected onDoubleClick(e: IListMouseEvent<ITreeNode<T, TFilterData>>): void {
+		const onTwistie = hasClass(e.browserEvent.target as HTMLElement, 'monaco-tl-twistie');
+
+		if (onTwistie) {
+			return;
+		}
+
+		super.onDoubleClick(e);
 	}
 }
 
