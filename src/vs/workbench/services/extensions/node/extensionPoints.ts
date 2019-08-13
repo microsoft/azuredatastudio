@@ -413,7 +413,7 @@ class ExtensionManifestValidator extends ExtensionManifestHandler {
 
 export class ExtensionScannerInput {
 
-	public mtime: number;
+	public mtime: number | undefined;
 
 	constructor(
 		public readonly ourVersion: string,
