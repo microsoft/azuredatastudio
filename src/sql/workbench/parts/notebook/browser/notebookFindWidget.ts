@@ -65,7 +65,7 @@ export interface IConfigurationChangedEvent {
 
 export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSashLayoutProvider {
 	private static ID = 'editor.contrib.findWidget';
-	private _tableController: INotebookController;
+	private _notebookController: INotebookController;
 	private _state: FindReplaceState;
 	private _contextViewProvider: IContextViewProvider;
 	private _keybindingService: IKeybindingService;
@@ -88,7 +88,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	private searchTimeoutHandle: NodeJS.Timer;
 
 	constructor(
-		tableController: INotebookController,
+		notebookController: INotebookController,
 		state: FindReplaceState,
 		contextViewProvider: IContextViewProvider,
 		keybindingService: IKeybindingService,
@@ -96,7 +96,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		themeService: IThemeService
 	) {
 		super();
-		this._tableController = tableController;
+		this._notebookController = notebookController;
 		this._state = state;
 		this._contextViewProvider = contextViewProvider;
 		this._keybindingService = keybindingService;
@@ -108,7 +108,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		this._updateButtons();
 
 		let checkEditorWidth = () => {
-			let editorWidth = this._tableController.getConfiguration().layoutInfo.width;
+			let editorWidth = this._notebookController.getConfiguration().layoutInfo.width;
 			let collapsedFindWidget = false;
 			let reducedFindWidget = false;
 			let narrowFindWidget = false;
@@ -141,7 +141,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		};
 		checkEditorWidth();
 
-		this._register(this._tableController.onDidChangeConfiguration((e: IConfigurationChangedEvent) => {
+		this._register(this._notebookController.onDidChangeConfiguration((e: IConfigurationChangedEvent) => {
 			if (e.layoutInfo) {
 				checkEditorWidth();
 			}
@@ -156,7 +156,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			this._findInputFocussed.set(false);
 		});
 
-		this._tableController.addOverlayWidget(this);
+		this._notebookController.addOverlayWidget(this);
 
 		this._applyTheme(themeService.getTheme());
 		this._register(themeService.onThemeChange(this._applyTheme.bind(this)));
@@ -271,7 +271,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 					}, 200);
 				}
 			}, 0);
-			this._tableController.layoutOverlayWidget(this);
+			this._notebookController.layoutOverlayWidget(this);
 		}
 	}
 
@@ -284,9 +284,9 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			dom.removeClass(this._domNode, 'visible');
 			this._domNode.setAttribute('aria-hidden', 'true');
 			if (focusTheEditor) {
-				this._tableController.focus();
+				this._notebookController.focus();
 			}
-			this._tableController.layoutOverlayWidget(this);
+			this._notebookController.layoutOverlayWidget(this);
 		}
 	}
 
@@ -326,13 +326,13 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 	private _onFindInputKeyDown(e: IKeyboardEvent): void {
 
 		if (e.equals(KeyCode.Enter)) {
-			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
+			this._notebookController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			e.preventDefault();
 			return;
 		}
 
 		if (e.equals(KeyMod.Shift | KeyCode.Enter)) {
-			this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
+			this._notebookController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			e.preventDefault();
 			return;
 		}
@@ -344,7 +344,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 		}
 
 		if (e.equals(KeyMod.CtrlCmd | KeyCode.DownArrow)) {
-			this._tableController.focus();
+			this._notebookController.focus();
 			e.preventDefault();
 			return;
 		}
@@ -431,7 +431,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			label: NLS_PREVIOUS_MATCH_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.PreviousMatchFindAction),
 			className: 'previous',
 			onTrigger: () => {
-				this._tableController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
+				this._notebookController.getAction(ACTION_IDS.FIND_PREVIOUS).run().then(null, onUnexpectedError);
 			},
 			onKeyDown: (e) => { }
 		}));
@@ -441,7 +441,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			label: NLS_NEXT_MATCH_BTN_LABEL + this._keybindingLabelFor(FIND_IDS.NextMatchFindAction),
 			className: 'next',
 			onTrigger: () => {
-				this._tableController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
+				this._notebookController.getAction(ACTION_IDS.FIND_NEXT).run().then(null, onUnexpectedError);
 			},
 			onKeyDown: (e) => { }
 		}));

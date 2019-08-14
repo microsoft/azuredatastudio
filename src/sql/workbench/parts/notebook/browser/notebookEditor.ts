@@ -43,7 +43,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	private _actionMap: { [x: string]: IEditorAction } = {};
 	private _onDidChangeConfiguration = new Emitter<IConfigurationChangedEvent>();
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
-
+	private _notebookModel: INotebookModel;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -65,12 +65,9 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this.input as NotebookInput;
 	}
 
-	public get notebookModel(): INotebookModel {
-		let model: INotebookModel;
-		this.notebookInput.resolve().then(m => {
-			model = m.getNotebookModel();
-		});
-		return model;
+	async setNotebookModel(): Promise<void> {
+		let notebookEditorModel = await this.notebookInput.resolve();
+		this._notebookModel = notebookEditorModel.getNotebookModel();
 	}
 
     /**
@@ -113,7 +110,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 	}
 
-	public setInput(input: NotebookInput, options: EditorOptions): Promise<void> {
+	public async setInput(input: NotebookInput, options: EditorOptions): Promise<void> {
 		if (this.input && this.input.matches(input)) {
 			return Promise.resolve(undefined);
 		}
@@ -123,6 +120,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		super.setInput(input, options, CancellationToken.None);
 
 		DOM.clearNode(parentElement);
+		parentElement.appendChild(this._overlay);
 
 		if (!input.hasBootstrapped) {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
@@ -181,7 +179,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this._actionMap[id];
 	}
 
-	private _onFindStateChange(e: FindReplaceStateChangedEvent): void {
+	private async _onFindStateChange(e: FindReplaceStateChangedEvent): Promise<void> {
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
 				this._finder.getDomNode().style.top = '0px';
@@ -192,14 +190,12 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 
 		if (e.searchString) {
-			if (this.notebookModel) {
+			await this.setNotebookModel();
+			if (this._notebookModel) {
 				if (this._findState.searchString) {
-					// let content = this.notebookModel.toJSON().cells;
-					// let contentString = content.map(a => a.source);
-					this.notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
+					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
 						if (p) {
-							// TODO: set active cell
-							// this.notebookModel.activeCell = p;
+							this._notebookModel.activeCell = p;
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
 						}
@@ -225,7 +221,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	public findNext(): void {
-		this.notebookModel.findNext().then(p => {
+		this._notebookModel.findNext().then(p => {
 			// TODO: set active cell
 			// this.notebookModel.activeCell = p;
 			this._updateFinderMatchState();
@@ -233,7 +229,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	public findPrevious(): void {
-		this.notebookModel.findPrevious().then(p => {
+		this._notebookModel.findPrevious().then(p => {
 			// TODO: set active cell
 			// this.notebookModel.activeCell = p;
 			this._updateFinderMatchState();
@@ -241,8 +237,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	private _updateFinderMatchState(): void {
-		if (this.notebookInput && this.notebookInput.data) {
-			this._findState.changeMatchInfo(this.notebookInput.data.findPosition, this.notebookInput.data.findCount, undefined);
+		if (this.notebookInput && this._notebookModel) {
+			this._findState.changeMatchInfo(this._notebookModel.findIndex, this._notebookModel.findCount, undefined);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}

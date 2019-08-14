@@ -106,15 +106,17 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
-	findNext(): Thenable<number> {
+	findNext(): Thenable<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
-	findPrevious(): Thenable<number> {
+	findPrevious(): Thenable<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
-	find(exp: string, maxMatches?: number): Promise<number> {
+	find(exp: string, maxMatches?: number): Promise<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
+	findCount: number;
+	findIndex: number;
 }
 
 export class NotebookManagerStub implements INotebookManager {

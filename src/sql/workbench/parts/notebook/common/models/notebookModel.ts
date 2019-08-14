@@ -77,8 +77,9 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
-	private _findArray: Array<number>;
+	private _findArray: Array<ICellModel>;
 	private _findIndex: number;
+	private _findCount: number;
 	private _onFindCountChange = new Emitter<number>();
 	get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
@@ -426,8 +427,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._activeCell;
 	}
 
-	public set activeCell(value: ICellModel) {
-		this._activeCell = value;
+	public set activeCell(cell: ICellModel) {
+		this.updateActiveCell(cell);
 	}
 
 	private notifyError(error: string): void {
@@ -1022,7 +1023,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
-	findNext(): Thenable<number> {
+	findNext(): Thenable<ICellModel> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === this._findArray.length - 1) {
 				this._findIndex = 0;
@@ -1035,7 +1036,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	findPrevious(): Thenable<number> {
+	findPrevious(): Thenable<ICellModel> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === 0) {
 				this._findIndex = this._findArray.length - 1;
@@ -1048,12 +1049,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	find(exp: string, maxMatches?: number): Promise<number> {
-		this._findArray = new Array<number>();
+	public get findIndex(): number {
+		return this._findIndex;
+	}
+
+	public get findCount(): number {
+		return this._findCount;
+	}
+
+	find(exp: string, maxMatches?: number): Promise<ICellModel> {
+		this._findArray = new Array<ICellModel>();
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
-			return new Promise<number>((resolve) => {
+			return new Promise<ICellModel>((resolve) => {
 				const disp = this.onFindCountChange(e => {
 					resolve(this._findArray[e - 1]);
 					disp.dispose();
@@ -1068,12 +1077,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _startSearch(exp: string, maxMatches: number = 0): void {
 		let searchFn = (cell: ICellModel, exp: string): boolean => {
 			let cellVal = cell.source;
+			this._findCount = 0;
 			if (cellVal) {
 				if (typeof cellVal === 'string' && cellVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+					this._findCount++;
 					return true;
 				} else {
 					for (let j = 0; j < cellVal.length; j++) {
 						if (cellVal[j].toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+							this._findCount++;
 							return true;
 						}
 					}
@@ -1086,7 +1098,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			const result = searchFn!(item, exp);
 			let breakout = false;
 			if (result) {
-				this._findArray.push(i);
+				this._findArray.push(item);
 				this._onFindCountChange.fire(this._findArray.length);
 				if (maxMatches > 0 && this._findArray.length === maxMatches) {
 					breakout = true;

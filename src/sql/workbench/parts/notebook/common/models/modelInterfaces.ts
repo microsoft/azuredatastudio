@@ -262,7 +262,7 @@ export interface INotebookModel {
 	/**
 	 * The active cell for this model. May be undefined
 	 */
-	readonly activeCell: ICellModel;
+	activeCell: ICellModel;
 
 	/**
 	 * Client Session in the notebook, used for sending requests to the notebook service
@@ -407,20 +407,24 @@ export interface INotebookModel {
 
 	standardKernels: IStandardKernelWithProvider[];
 
+	findCount: number;
+
+	findIndex: number;
+
 	/**
 	 * Find next (number is cell index)
 	 */
-	findNext(): Thenable<number>;
+	findNext(): Thenable<ICellModel>;
 
 	/**
 	 * Find previous (number is cell index)
 	 */
-	findPrevious(): Thenable<number>;
+	findPrevious(): Thenable<ICellModel>;
 
 	/**
 	 * Find
 	 */
-	find(exp: string, maxMatches?: number): Promise<number>;
+	find(exp: string, maxMatches?: number): Promise<ICellModel>;
 }
 
 export interface NotebookContentChange {
