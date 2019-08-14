@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
 import { DeploymentProvider, DialogFieldInfo, FieldType } from '../interfaces';
-import { isArray } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -93,17 +92,17 @@ export class DeploymentDialog extends DialogBase {
 				component = this.createTextField(view, fieldInfo);
 				break;
 			default:
-				throw new Error('Unknown field type: "' + fieldInfo.type + '"');
+				throw new Error(localize('deploymentDialog.UnknownFieldTypeError', "Unknown field type: \"{0}\"", fieldInfo.type));
 		}
 
 		if (component) {
-			if (isArray(component)) {
+			if (Array.isArray(component)) {
 				fields.push(...component);
 			} else {
 				fields.push({ title: fieldInfo.label, component: component });
 			}
 		} else {
-			throw new Error('Failed to add field: "' + fieldInfo.label + '"');
+			throw new Error(localize('deploymentDialog.addFieldError', "Failed to add field: \"{0}\"", fieldInfo.label));
 		}
 	}
 
@@ -149,7 +148,7 @@ export class DeploymentDialog extends DialogBase {
 		components.push({ title: fieldInfo.label, component: passwordInput });
 
 		if (fieldInfo.type === FieldType.SQLPassword) {
-			const invalidPasswordMessage = localize('invalidSQLPassword', "{0} doesn't meet the password complexity requirement. More information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldInfo.label);
+			const invalidPasswordMessage = localize('invalidSQLPassword', "{0} doesn't meet the password complexity requirement. For more information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldInfo.label);
 			this._toDispose.push(passwordInput.onTextChanged(() => {
 				if (fieldInfo.type === FieldType.SQLPassword && this.isValidSQLPassword(fieldInfo, passwordInput)) {
 					this.removeValidationMessage(invalidPasswordMessage);
@@ -199,8 +198,7 @@ export class DeploymentDialog extends DialogBase {
 	private isValidSQLPassword(field: DialogFieldInfo, component: azdata.InputBoxComponent): boolean {
 		const password = component.value!;
 		// Validate SQL Server password
-		const userName = field.userName ? field.userName! : this.variables[field.userNameVariableName!];
-		const containsUserName = userName && password.includes(userName);
+		const containsUserName = password && field.userName && password.toUpperCase().includes(field.userName.toUpperCase());
 		// Instead of using one RegEx, I am seperating it to make it more readable.
 		const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
 		const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
