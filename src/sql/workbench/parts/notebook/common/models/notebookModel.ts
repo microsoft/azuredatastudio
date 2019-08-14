@@ -26,6 +26,7 @@ import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { getErrorMessage } from 'vs/base/common/errors';
+import * as types from 'vs/base/common/types';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -81,7 +82,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _findIndex: number;
 	private _findCount: number;
 	private _onFindCountChange = new Emitter<number>();
-	get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
+	getOnFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 
 	public requestConnectionHandler: () => Promise<boolean>;
 
@@ -428,7 +429,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public set activeCell(cell: ICellModel) {
-		this.updateActiveCell(cell);
+		this._activeCell = cell;
 	}
 
 	private notifyError(error: string): void {
@@ -795,6 +796,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		super.dispose();
 		this.disconnectAttachToConnections();
 		this.handleClosed();
+		this._findArray = [];
 	}
 
 	public async handleClosed(): Promise<void> {
@@ -1049,21 +1051,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public get findIndex(): number {
-		return this._findIndex;
-	}
-
-	public get findCount(): number {
-		return this._findCount;
-	}
-
 	find(exp: string, maxMatches?: number): Promise<ICellModel> {
 		this._findArray = new Array<ICellModel>();
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			return new Promise<ICellModel>((resolve) => {
-				const disp = this.onFindCountChange(e => {
+				let onFindCountChange = this.getOnFindCountChange();
+				const disp = onFindCountChange(e => {
 					resolve(this._findArray[e - 1]);
 					disp.dispose();
 				});
@@ -1109,5 +1104,19 @@ export class NotebookModel extends Disposable implements INotebookModel {
 				break;
 			}
 		}
+	}
+
+	clearFind(): void {
+		this._findArray = new Array<ICellModel>();
+		this._findIndex = 0;
+		this._onFindCountChange.fire(this._findArray.length);
+	}
+
+	getFindIndex(): number {
+		return types.isUndefinedOrNull(this._findIndex) ? 0 : this._findIndex + 1;
+	}
+
+	getFindCount(): number {
+		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
 	}
 }

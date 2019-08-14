@@ -30,7 +30,8 @@ import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
-import { NOTEBOOK_COMMAND_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
+import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
+import { IDisposable } from 'vs/base/common/lifecycle';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
@@ -44,6 +45,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	private _onDidChangeConfiguration = new Emitter<IConfigurationChangedEvent>();
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 	private _notebookModel: INotebookModel;
+	private _findCountChangeListener: IDisposable;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -120,7 +122,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		super.setInput(input, options, CancellationToken.None);
 
 		DOM.clearNode(parentElement);
-		parentElement.appendChild(this._overlay);
 
 		if (!input.hasBootstrapped) {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
@@ -140,6 +141,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
      */
 	private bootstrapAngular(input: NotebookInput): void {
 		// Get the bootstrap params and perform the bootstrap
+		this._notebookContainer.appendChild(this._overlay);
 		input.hasBootstrapped = true;
 		let params: INotebookParams = {
 			notebookUri: input.notebookUri,
@@ -171,7 +173,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public addOverlayWidget(widget: IOverlayWidget): void {
 		let domNode = widget.getDomNode();
 		domNode.style.right = '28px';
-		this._overlay.appendChild(widget.getDomNode());
+		this._overlay.appendChild(domNode);
 		this._findState.change({ isRevealed: false }, false);
 	}
 
@@ -201,7 +203,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 						}
 					});
 				} else {
-					this.notebookInput.data.clearFind();
+					this._notebookModel.clearFind();
 				}
 			}
 		}
@@ -222,23 +224,21 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
-			// TODO: set active cell
-			// this.notebookModel.activeCell = p;
+			this._notebookModel.activeCell = p;
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
-			// TODO: set active cell
-			// this.notebookModel.activeCell = p;
+			this._notebookModel.activeCell = p;
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	private _updateFinderMatchState(): void {
 		if (this.notebookInput && this._notebookModel) {
-			this._findState.changeMatchInfo(this._notebookModel.findIndex, this._notebookModel.findCount, undefined);
+			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), undefined);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}
@@ -290,7 +290,7 @@ class CloseSearchNotebookCommand extends SettingsCommand {
 }
 
 const command2 = new CloseSearchNotebookCommand({
-	id: 'notebook.action.close.search',
+	id: NOTEBOOK_COMMAND_CLOSE_SEARCH,
 	precondition: ContextKeyExpr.and(NotebookEditorVisibleContext),
 	kbOpts: {
 		primary: KeyCode.Escape,

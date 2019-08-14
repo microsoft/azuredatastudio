@@ -115,8 +115,18 @@ export class NotebookModelStub implements INotebookModel {
 	find(exp: string, maxMatches?: number): Promise<ICellModel> {
 		throw new Error('Method not implemented.');
 	}
-	findCount: number;
-	findIndex: number;
+	clearFind(): void {
+		throw new Error('Method not implemented.');
+	}
+	getOnFindCountChange(): Event<number> {
+		throw new Error('Method not implemented.');
+	}
+	getFindCount(): number {
+		throw new Error('Method not implemented.');
+	}
+	getFindIndex(): number {
+		throw new Error('Method not implemented.');
+	}
 }
 
 export class NotebookManagerStub implements INotebookManager {

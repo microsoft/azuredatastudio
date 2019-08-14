@@ -407,24 +407,19 @@ export interface INotebookModel {
 
 	standardKernels: IStandardKernelWithProvider[];
 
-	findCount: number;
+	getFindCount(): number;
 
-	findIndex: number;
+	getFindIndex(): number;
 
-	/**
-	 * Find next (number is cell index)
-	 */
 	findNext(): Thenable<ICellModel>;
 
-	/**
-	 * Find previous (number is cell index)
-	 */
 	findPrevious(): Thenable<ICellModel>;
 
-	/**
-	 * Find
-	 */
 	find(exp: string, maxMatches?: number): Promise<ICellModel>;
+
+	clearFind(): void;
+
+	getOnFindCountChange(): Event<number>;
 }
 
 export interface NotebookContentChange {
