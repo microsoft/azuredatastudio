@@ -34,7 +34,7 @@ import { timeout } from 'vs/base/common/async';
 import { editorFindMatchHighlight, editorFindMatchHighlightBorder, textLinkForeground, textCodeBlockBackground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { isString } from 'vs/base/common/types';
-import { renderMarkdown, RenderOptions } from 'vs/base/browser/htmlContentRenderer';
+import { renderMarkdown, MarkdownRenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
@@ -934,7 +934,7 @@ class MarkdownRenderer {
 	) {
 	}
 
-	private getOptions(disposeables: DisposableStore): RenderOptions {
+	private getOptions(disposeables: DisposableStore): MarkdownRenderOptions {
 		return {
 			actionHandler: {
 				callback: (content) => {

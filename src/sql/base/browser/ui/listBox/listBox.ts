@@ -10,9 +10,8 @@ import { IMessage, MessageType, defaultOpts } from 'vs/base/browser/ui/inputbox/
 import * as dom from 'vs/base/browser/dom';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
-import { RenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { Emitter } from 'vs/base/common/event';
-import { renderFormattedText, renderText } from 'vs/base/browser/formattedTextRenderer';
+import { renderFormattedText, renderText, FormattedTextRenderOptions } from 'vs/base/browser/formattedTextRenderer';
 
 const $ = dom.$;
 
@@ -213,7 +212,7 @@ export class ListBox extends SelectBox {
 				div = dom.append(container, $('.monaco-inputbox-container'));
 				layout();
 
-				const renderOptions: RenderOptions = {
+				const renderOptions: FormattedTextRenderOptions = {
 					inline: true,
 					className: 'monaco-inputbox-message'
 				};
