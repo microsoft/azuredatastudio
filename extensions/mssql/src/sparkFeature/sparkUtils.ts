@@ -5,13 +5,14 @@
 
 import * as childProcess from 'child_process';
 import * as fs from 'fs-extra';
-import * as nls from 'vscode-nls';
 import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as which from 'which';
+import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
+import * as constants from '../constants';
 
 export function getDropdownValue(dropdownValue: string | azdata.CategoryValue): string {
 	if (typeof (dropdownValue) === 'string') {
@@ -23,8 +24,8 @@ export function getDropdownValue(dropdownValue: string | azdata.CategoryValue): 
 
 export function getServerAddressFromName(connection: azdata.ConnectionInfo | string): string {
 	// Strip TDS port number from the server URI
-	if ((<azdata.ConnectionInfo>connection).options && (<azdata.ConnectionInfo>connection).options['host']) {
-		return (<azdata.ConnectionInfo>connection).options['host'].split(',')[0].split(':')[0];
+	if ((<azdata.ConnectionInfo>connection).options && (<azdata.ConnectionInfo>connection).options[constants.hostPropName]) {
+		return (<azdata.ConnectionInfo>connection).options[constants.hostPropName].split(',')[0].split(':')[0];
 	} else if ((<azdata.ConnectionInfo>connection).options && (<azdata.ConnectionInfo>connection).options['server']) {
 		return (<azdata.ConnectionInfo>connection).options['server'].split(',')[0].split(':')[0];
 	} else {

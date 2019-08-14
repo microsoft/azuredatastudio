@@ -11,6 +11,7 @@ const localize = nls.loadMessageBundle();
 import * as constants from '../../../constants';
 import { SqlClusterConnection } from '../../../objectExplorerNodeProvider/connection';
 import * as utils from '../../../utils';
+import * as auth from '../../../util/auth';
 
 export class SparkJobSubmissionService {
 	private _requestPromise: (args: any) => any;
@@ -28,6 +29,10 @@ export class SparkJobSubmissionService {
 	public async submitBatchJob(submissionArgs: SparkJobSubmissionInput): Promise<string> {
 		try {
 			let livyUrl: string = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/`;
+
+			// Get correct authentication headers
+			let headers = await this.getAuthenticationHeaders(submissionArgs);
+
 			let options = {
 				uri: livyUrl,
 				method: 'POST',
@@ -41,9 +46,7 @@ export class SparkJobSubmissionService {
 					name: submissionArgs.jobName
 				},
 				// authentication headers
-				headers: {
-					'Authorization': 'Basic ' + Buffer.from(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
-				}
+				headers: headers
 			};
 
 			// Set arguments
@@ -90,18 +93,30 @@ export class SparkJobSubmissionService {
 		}
 	}
 
+	private async getAuthenticationHeaders(submissionArgs: SparkJobSubmissionInput) {
+		let headers = {};
+		if (submissionArgs.isIntegratedAuth) {
+			let kerberosToken = await auth.authenticateKerberos(submissionArgs.host);
+			headers = { Authorization: `Negotiate ${kerberosToken}` };
+		}
+		else {
+			headers = { Authorization: 'Basic ' + Buffer.from(submissionArgs.user + ':' + submissionArgs.password).toString('base64') };
+		}
+		return headers;
+	}
+
 	public async getYarnAppId(submissionArgs: SparkJobSubmissionInput, livyBatchId: string): Promise<LivyLogResponse> {
 		try {
 			let livyUrl = `https://${submissionArgs.host}:${submissionArgs.port}${submissionArgs.livyPath}/${livyBatchId}/log`;
+			let headers = await this.getAuthenticationHeaders(submissionArgs);
+
 			let options = {
 				uri: livyUrl,
 				method: 'GET',
 				json: true,
 				rejectUnauthorized: false,
 				// authentication headers
-				headers: {
-					'Authorization': 'Basic ' + Buffer.from(submissionArgs.user + ':' + submissionArgs.password).toString('base64')
-				}
+				headers: headers
 			};
 
 			const response = await this._requestPromise(options);
@@ -146,6 +161,7 @@ export class SparkJobSubmissionInput {
 		this._livyPath = constants.mssqlClusterLivySubmitPath;
 		this._user = sqlClusterConnection.user;
 		this._passWord = sqlClusterConnection.password;
+		this._isIntegratedAuth = sqlClusterConnection.isIntegratedAuth();
 	}
 
 	constructor(
@@ -160,7 +176,8 @@ export class SparkJobSubmissionInput {
 		private _port?: number,
 		private _livyPath?: string,
 		private _user?: string,
-		private _passWord?: string) {
+		private _passWord?: string,
+		private _isIntegratedAuth?: boolean) {
 	}
 
 	public get jobName(): string { return this._jobName; }
@@ -175,6 +192,7 @@ export class SparkJobSubmissionInput {
 	public get livyPath(): string { return this._livyPath; }
 	public get user(): string { return this._user; }
 	public get password(): string { return this._passWord; }
+	public get isIntegratedAuth(): boolean { return this._isIntegratedAuth; }
 }
 
 export enum SparkFileSource {

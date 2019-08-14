@@ -123,7 +123,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 							let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
 							if (password && password.length > 0) {
 								session.sqlClusterConnection.updatePassword(password);
-								node.updateFileSource(session.sqlClusterConnection);
+								await node.updateFileSource(session.sqlClusterConnection);
 								children = await node.getChildren(true);
 							}
 						}
@@ -325,12 +325,17 @@ class DataServicesNode extends TreeNode {
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
-			this._children = [];
-			let fileSource: IFileSource = this.session.sqlClusterConnection.createHdfsFileSource();
-			let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', 'HDFS'), fileSource);
-			hdfsNode.parent = this;
-			this._children.push(hdfsNode);
+			return this.refreshChildren();
 		}
+		return this._children;
+	}
+
+	private async refreshChildren(): Promise<TreeNode[]> {
+		this._children = [];
+		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
+		let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', 'HDFS'), fileSource);
+		hdfsNode.parent = this;
+		this._children.push(hdfsNode);
 		return this._children;
 	}
 

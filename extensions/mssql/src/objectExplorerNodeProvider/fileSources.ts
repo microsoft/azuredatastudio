@@ -16,6 +16,7 @@ import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
 import { WebHDFS, HdfsError } from './webhdfs';
+import * as auth from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -72,6 +73,7 @@ export interface IFileSource {
 export interface IHttpAuthentication {
 	user: string;
 	pass: string;
+	isKerberos?: boolean;
 }
 export interface IHdfsOptions {
 	host?: string;
@@ -89,6 +91,7 @@ export interface IRequestParams {
 	 */
 	timeout?: number;
 	agent?: https.Agent;
+	headers?: {};
 }
 
 export interface IHdfsFileStatus {
@@ -106,7 +109,7 @@ export class FileSourceFactory {
 		return FileSourceFactory._instance;
 	}
 
-	public createHdfsFileSource(options: IHdfsOptions): IFileSource {
+	public async createHdfsFileSource(options: IHdfsOptions): Promise<IFileSource> {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
 		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
 		if (requestParams.auth) {
@@ -119,6 +122,11 @@ export class FileSourceFactory {
 			};
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
+
+			if (requestParams.auth.isKerberos) {
+				let kerberosToken = await auth.authenticateKerberos(options.host);
+				requestParams.headers = { Authorization: `Negotiate ${kerberosToken}` };
+			}
 		}
 		return new HdfsFileSource(WebHDFS.createClient(options, requestParams));
 	}

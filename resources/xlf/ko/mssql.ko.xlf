@@ -922,7 +922,7 @@
         <source xml:lang="en">Log Search Dashboard</source>
         <target state="translated">로그 검색 대시보드</target>
       </trans-unit>
-      <trans-unit id="sparkHostory">
+      <trans-unit id="sparkhistory">
         <source xml:lang="en">Spark Job Monitoring</source>
         <target state="translated">Spark 작업 모니터링</target>
       </trans-unit>
