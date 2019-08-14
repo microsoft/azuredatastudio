@@ -23,7 +23,7 @@ const hyperlinkedEndpoints = [grafanaEndpointName, logsuiEndpointName, sparkHist
 
 export function registerServiceEndpoints(context: vscode.ExtensionContext): void {
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
-		const endpointsArray: Array<utils.IEndpoint> = Object.assign([], utils.getClusterEndpoints(view.serverInfo));
+		let endpointsArray: Array<utils.IEndpoint> = Object.assign([], utils.getClusterEndpoints(view.serverInfo));
 
 		if (endpointsArray.length > 0) {
 			const grafanaEp = endpointsArray.find(e => e.serviceName === grafanaEndpointName);
@@ -53,11 +53,16 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 				}
 			}
 
+			endpointsArray = endpointsArray.map(e => {
+				e.description = getFriendlyEndpointNames(e);
+				return e;
+			}).sort((a, b) => a.endpoint.localeCompare(b.endpoint));
+
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
 			endpointsArray.forEach(endpointInfo => {
 
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: getFriendlyEndpointNames(endpointInfo) }).component();
+				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
 				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.serviceName) >= 0) {
 					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.endpoint, url: endpointInfo.endpoint }).component();
