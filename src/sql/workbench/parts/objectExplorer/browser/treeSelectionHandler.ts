@@ -15,8 +15,8 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _clicks: number = 0;
-	private _doubleClickTimeoutTimer: NodeJS.Timer = undefined;
+	private _lastClicked: any;
+	private _clickTimer: NodeJS.Timer = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -42,28 +42,31 @@ export class TreeSelectionHandler {
 	 * Handle selection of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
-		if (this.isMouseEvent(event)) {
-			this._clicks++;
-		}
-
-		// clear pending click timeouts to avoid sending multiple events on double-click
-		if (this._doubleClickTimeoutTimer) {
-			clearTimeout(this._doubleClickTimeoutTimer);
-		}
-
-		let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
-
-		// grab the current selection for use later
-		let selection = tree.getSelection();
-
-		this._doubleClickTimeoutTimer = setTimeout(() => {
-			// don't send tree update events while dragging
+		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean) => {
+			let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				let isDoubleClick = this._clicks > 1;
 				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
 			}
-			this._clicks = 0;
-			this._doubleClickTimeoutTimer = undefined;
+		});
+
+		let selection = tree.getSelection();
+
+		if (!selection || selection.length === 0) {
+			return;
+		}
+		let specificSelection = selection[0];
+
+		if (this.isMouseEvent(event)) {
+			if (this._lastClicked === specificSelection) {
+				clearTimeout(this._clickTimer);
+				sendSelectionEvent(event, selection, true);
+				return;
+			}
+			this._lastClicked = specificSelection;
+		}
+
+		this._clickTimer = setTimeout(() => {
+			sendSelectionEvent(event, selection, false);
 		}, 300);
 	}
 

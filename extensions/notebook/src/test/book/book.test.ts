@@ -73,26 +73,30 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren();
-		should(children).be.Array();
-		should(children.length).equal(1);
-		book = children[0];
-		should(book.title).equal(expectedBook.title);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+			const children = await bookTreeViewProvider.getChildren();
+			should(children).be.Array();
+			should(children.length).equal(1);
+			book = children[0];
+			should(book.title).equal(expectedBook.title);
+		});
 	});
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren(book);
-		should(children).be.Array();
-		should(children.length).equal(3);
-		const notebook = children[0];
-		const markdown = children[1];
-		const externalLink = children[2];
-		should(notebook.title).equal(expectedNotebook.title);
-		should(notebook.uri).equal(expectedNotebook.url);
-		should(markdown.title).equal(expectedMarkdown.title);
-		should(markdown.uri).equal(expectedMarkdown.url);
-		should(externalLink.title).equal(expectedExternalLink.title);
-		should(externalLink.uri).equal(expectedExternalLink.url);
+		bookTreeViewProvider.onReadAllTOCFiles(async () => {
+				const children = await bookTreeViewProvider.getChildren(book);
+				should(children).be.Array();
+				should(children.length).equal(3);
+				const notebook = children[0];
+				const markdown = children[1];
+				const externalLink = children[2];
+				should(notebook.title).equal(expectedNotebook.title);
+				should(notebook.uri).equal(expectedNotebook.url);
+				should(markdown.title).equal(expectedMarkdown.title);
+				should(markdown.uri).equal(expectedMarkdown.url);
+				should(externalLink.title).equal(expectedExternalLink.title);
+				should(externalLink.uri).equal(expectedExternalLink.url);
+		});
 	});
 
 	this.afterAll(async function () {
