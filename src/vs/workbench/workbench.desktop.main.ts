@@ -21,8 +21,8 @@ import 'vs/workbench/workbench.common.main';
 //#region --- workbench (desktop main)
 import 'sql/setup'; // {{SQL CARBON EDIT}}
 
-import 'vs/workbench/electron-browser/main.contribution';
-import 'vs/workbench/electron-browser/main';
+import 'vs/workbench/electron-browser/desktop.contribution';
+import 'vs/workbench/electron-browser/desktop.main';
 
 //#endregion
 
@@ -33,7 +33,6 @@ import 'vs/workbench/services/textMate/electron-browser/textMateService';
 import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
 import 'vs/workbench/services/extensions/common/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/search/node/searchService';
-import 'vs/workbench/contrib/debug/electron-browser/extensionHostDebugService';
 import 'vs/workbench/services/output/node/outputChannelModelService';
 import 'vs/workbench/services/textfile/node/textFileService';
 import 'vs/workbench/services/dialogs/electron-browser/dialogService';
@@ -49,7 +48,6 @@ import 'vs/workbench/services/configurationResolver/electron-browser/configurati
 import 'vs/workbench/services/extensionManagement/node/extensionManagementService';
 import 'vs/workbench/services/accessibility/node/accessibilityService';
 import 'vs/workbench/services/remote/node/tunnelService';
-import 'vs/workbench/contrib/stats/electron-browser/workspaceStatsService';
 import 'vs/workbench/services/backup/node/backupFileService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -214,6 +212,7 @@ import 'vs/workbench/contrib/localizations/browser/localizations.contribution';
 import 'vs/workbench/contrib/logs/electron-browser/logs.contribution';
 
 // Stats
+import 'vs/workbench/contrib/stats/electron-browser/workspaceStatsService';
 import 'vs/workbench/contrib/stats/electron-browser/stats.contribution';
 
 // Rapid Render Splash
@@ -221,6 +220,7 @@ import 'vs/workbench/contrib/splash/electron-browser/partsSplash.contribution';
 
 // Debug
 // import 'vs/workbench/contrib/debug/node/debugHelperService'; {{SQL CARBON EDIT}}
+import 'vs/workbench/contrib/debug/electron-browser/extensionHostDebugService';
 
 // Webview
 import 'vs/workbench/contrib/webview/electron-browser/webview.contribution';

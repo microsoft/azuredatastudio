@@ -44,7 +44,7 @@ import { CLOSE_EDITORS_AND_GROUP_COMMAND_ID } from 'vs/workbench/browser/parts/e
 import { coalesce } from 'vs/base/common/arrays';
 import { AsyncDataTree } from 'vs/base/browser/ui/tree/asyncDataTree';
 import { ExplorerItem, NewExplorerItem } from 'vs/workbench/contrib/files/common/explorerModel';
-import { onUnexpectedError } from 'vs/base/common/errors';
+import { onUnexpectedError, getErrorMessage } from 'vs/base/common/errors';
 
 // {{SQL CARBON EDIT}}
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -1140,7 +1140,7 @@ export const pasteFileHandler = async (accessor: ServicesAccessor) => {
 					return await fileService.copy(fileToPaste, targetFile);
 				}
 			} catch (e) {
-				onError(notificationService, new Error(nls.localize('fileDeleted', "File to paste was deleted or moved meanwhile")));
+				onError(notificationService, new Error(nls.localize('fileDeleted', "File to paste was deleted or moved meanwhile. {0}", getErrorMessage(e))));
 				return undefined;
 			}
 		}));
