@@ -160,7 +160,7 @@ export class SparkJobSubmissionInput {
 		this._port = sqlClusterConnection.port;
 		this._livyPath = constants.mssqlClusterLivySubmitPath;
 		this._user = sqlClusterConnection.user;
-		this._passWord = sqlClusterConnection.password;
+		this._password = sqlClusterConnection.password;
 		this._isIntegratedAuth = sqlClusterConnection.isIntegratedAuth();
 	}
 
@@ -176,7 +176,7 @@ export class SparkJobSubmissionInput {
 		private _port?: number,
 		private _livyPath?: string,
 		private _user?: string,
-		private _passWord?: string,
+		private _password?: string,
 		private _isIntegratedAuth?: boolean) {
 	}
 
@@ -191,7 +191,7 @@ export class SparkJobSubmissionInput {
 	public get port(): number { return this._port; }
 	public get livyPath(): string { return this._livyPath; }
 	public get user(): string { return this._user; }
-	public get password(): string { return this._passWord; }
+	public get password(): string { return this._password; }
 	public get isIntegratedAuth(): boolean { return this._isIntegratedAuth; }
 }
 

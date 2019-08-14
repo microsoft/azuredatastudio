@@ -9,10 +9,9 @@ import * as path from 'path';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as which from 'which';
-import * as nls from 'vscode-nls';
-
-const localize = nls.loadMessageBundle();
 import * as constants from '../constants';
+import * as nls from 'vscode-nls';
+const localize = nls.loadMessageBundle();
 
 export function getDropdownValue(dropdownValue: string | azdata.CategoryValue): string {
 	if (typeof (dropdownValue) === 'string') {

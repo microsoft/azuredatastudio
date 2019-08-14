@@ -14,7 +14,7 @@ const mgmtProxyName = 'mgmtproxy';
 const grafanaEndpointName = 'metricsui';
 const grafanaDescription = localize('grafana', "Metrics Dashboard");
 const logsuiEndpointName = 'logsui';
-const kibanaDescription = localize('kibana', "Log Search Dashboard");
+const logsuiDescription = localize('kibana', "Log Search Dashboard");
 const sparkHistoryEndpointName = 'spark-history';
 const sparkHistoryDescription = localize('sparkHistory', "Spark Jobs Management and Monitoring Dashboard");
 const yarnUiEndpointName = 'yarn-ui';
@@ -43,7 +43,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 				const managementProxyEp = endpointsArray.find(e => e.serviceName === mgmtProxyName);
 				if (managementProxyEp) {
 					endpointsArray.push(getCustomEndpoint(managementProxyEp, grafanaEndpointName, grafanaDescription, '/grafana/d/wZx3OUdmz'));
-					endpointsArray.push(getCustomEndpoint(managementProxyEp, logsuiEndpointName, kibanaDescription, '/kibana/app/kibana#/discover'));
+					endpointsArray.push(getCustomEndpoint(managementProxyEp, logsuiEndpointName, logsuiDescription, '/kibana/app/kibana#/discover'));
 				}
 
 				const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
@@ -116,7 +116,7 @@ function getFriendlyEndpointNames(endpointInfo: utils.IEndpoint): string {
 			friendlyName = localize('mgmtproxy.description', "Management Proxy");
 			break;
 		case logsuiEndpointName:
-			friendlyName = kibanaDescription;
+			friendlyName = logsuiDescription;
 			break;
 		case grafanaEndpointName:
 			friendlyName = grafanaDescription;
