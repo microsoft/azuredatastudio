@@ -3633,6 +3633,75 @@ suite('Editor Controller - Indentation Rules', () => {
 		model.dispose();
 		mode.dispose();
 	});
+
+	test('', () => {
+		class JSONMode extends MockMode {
+			private static readonly _id = new LanguageIdentifier('indentRulesMode', 4);
+			constructor() {
+				super(JSONMode._id);
+				this._register(LanguageConfigurationRegistry.register(this.getLanguageIdentifier(), {
+					brackets: [
+						['{', '}'],
+						['[', ']'],
+						['(', ')']
+					],
+					indentationRules: {
+						increaseIndentPattern: new RegExp('^.*\\{[^}\"\\\']*$|^.*\\([^\\)\"\\\']*$|^\\s*(public|private|protected):\\s*$|^\\s*@(public|private|protected)\\s*$|^\\s*\\{\\}$'),
+						decreaseIndentPattern: new RegExp('^\\s*(\\s*/[*].*[*]/\\s*)*\\}|^\\s*(\\s*/[*].*[*]/\\s*)*\\)|^\\s*(public|private|protected):\\s*$|^\\s*@(public|private|protected)\\s*$'),
+					}
+				}));
+			}
+		}
+
+		let mode = new JSONMode();
+		let model = createTextModel(
+			[
+				'{',
+				'  "scripts: {"',
+				'    "watch": "a {"',
+				'    "build{": "b"',
+				'    "tasks": []',
+				'    "tasks": ["a"]',
+				'  "}"',
+				'"}"'
+			].join('\n'),
+			{
+				tabSize: 2,
+				indentSize: 2
+			},
+			mode.getLanguageIdentifier()
+		);
+
+		withTestCodeEditor(null, { model: model, autoIndent: true }, (editor, cursor) => {
+			moveTo(cursor, 3, 19, false);
+			assertCursor(cursor, new Selection(3, 19, 3, 19));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(4), '    ');
+
+			moveTo(cursor, 5, 18, false);
+			assertCursor(cursor, new Selection(5, 18, 5, 18));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(6), '    ');
+
+			moveTo(cursor, 7, 15, false);
+			assertCursor(cursor, new Selection(7, 15, 7, 15));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(8), '      ');
+			assert.deepEqual(model.getLineContent(9), '    ]');
+
+			moveTo(cursor, 10, 18, false);
+			assertCursor(cursor, new Selection(10, 18, 10, 18));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(11), '    ]');
+		});
+
+		model.dispose();
+		mode.dispose();
+	});
 });
 
 interface ICursorOpts {
@@ -4591,6 +4660,34 @@ suite('autoClosingPairs', () => {
 
 			cursorCommand(cursor, H.Type, { text: ')' }, 'keyboard');
 			assert.strictEqual(model.getLineContent(1), 'x=(())');
+		});
+		mode.dispose();
+	});
+
+	test('issue #78527 - does not close quote on odd count', () => {
+		let mode = new AutoClosingMode();
+		usingCursor({
+			text: [
+				'std::cout << \'"\' << entryMap'
+			],
+			languageIdentifier: mode.getLanguageIdentifier()
+		}, (model, cursor) => {
+			cursor.setSelections('test', [new Selection(1, 29, 1, 29)]);
+
+			cursorCommand(cursor, H.Type, { text: '[' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap[]');
+
+			cursorCommand(cursor, H.Type, { text: '"' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap[""]');
+
+			cursorCommand(cursor, H.Type, { text: 'a' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
+
+			cursorCommand(cursor, H.Type, { text: '"' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
+
+			cursorCommand(cursor, H.Type, { text: ']' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
 		});
 		mode.dispose();
 	});

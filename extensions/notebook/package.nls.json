@@ -6,6 +6,7 @@
 	"notebook.useExistingPython.description": "Local path to a preexisting python installation used by Notebooks.",
 	"notebook.overrideEditorTheming.description": "Override editor default settings in the Notebook editor. Settings include background color, current line color and border",
 	"notebook.maxTableRows.description": "Maximum number of rows returned per table in the Notebook editor",
+	"notebook.maxBookSearchDepth.description": "Maximum depth of subdirectories to search for Books (Enter 0 for infinite)",
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
 	"notebook.analyzeJupyterNotebook": "Analyze in Notebook",
