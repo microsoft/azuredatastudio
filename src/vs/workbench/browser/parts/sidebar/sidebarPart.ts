@@ -63,7 +63,7 @@ export class SidebarPart extends CompositePart<Viewlet> implements IViewletServi
 			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
 
-		return width;
+		return Math.max(width, 300);
 	}
 
 	//#endregion
