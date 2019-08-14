@@ -4,5 +4,6 @@
 	"text.sqlServerBigDataClustersEnabledConfig.description":"Whether the SQL Server big data clusters data explorer view is enabled",
 	"command.addController.title": "Connect to Controller",
 	"command.deleteController.title" : "Delete",
-	"command.refreshController.title" : "Refresh"
+	"command.refreshController.title" : "Refresh",
+	"command.manageController.title" : "Manage",
 }

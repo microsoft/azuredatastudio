@@ -420,6 +420,8 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 	}
 
 	private async restoreEditors(from: IEditorGroupView | ISerializedEditorGroup): Promise<void> {
+		await this._group.removeNonExitingEditor(); // {{SQL CARBON EDIT}} @udeeshagautam perform async correction for non-existing files
+
 		if (this._group.count === 0) {
 			return; // nothing to show
 		}
@@ -798,7 +800,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 
 	//#region openEditor()
 
-	openEditor(editor: EditorInput, options?: EditorOptions): Promise<IEditor | null> {
+	async openEditor(editor: EditorInput, options?: EditorOptions): Promise<IEditor | null> {
 
 		// Guard against invalid inputs
 		if (!editor) {
@@ -814,7 +816,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		}
 
 		// Proceed with opening
-		return this.doOpenEditor(editor, options).then(withUndefinedAsNull);
+		return withUndefinedAsNull(await this.doOpenEditor(editor, options));
 	}
 
 	private doOpenEditor(editor: EditorInput, options?: EditorOptions): Promise<IEditor | undefined> {

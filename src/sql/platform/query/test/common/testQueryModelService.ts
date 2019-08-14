@@ -13,6 +13,7 @@ import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 
 export class TestQueryModelService implements IQueryModelService {
 	_serviceBrand: any;
+	onRunQueryUpdate: Event<string>;
 	getQueryRunner(uri: string): QueryRunner {
 		throw new Error('Method not implemented.');
 	}

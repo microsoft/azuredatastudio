@@ -16,8 +16,7 @@ import { coalesce } from 'vs/base/common/arrays';
 // {{SQL CARBON EDIT}}
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import * as os from 'os';
-import * as path from 'vs/base/common/path';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -654,15 +653,6 @@ export class EditorGroup extends Disposable {
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
-				// Do not add generated files from Temp if file is not dirty
-				if (e instanceof FileEditorInput && !e.isDirty()) {
-					let filePath = e.getResource() ? e.getResource().fsPath : undefined;
-					let tempPath = os.tmpdir();
-					if (filePath && tempPath &&
-						filePath.toLocaleLowerCase().includes(path.join(tempPath.toLocaleLowerCase(), 'mssql_definition'))) {
-						return;
-					}
-				}
 				// {{SQL CARBON EDIT}} - End
 
 				const value = factory.serialize(e);
@@ -718,4 +708,26 @@ export class EditorGroup extends Disposable {
 			this.preview = this.editors[data.preview];
 		}
 	}
+
+	// {{SQL CARBON EDIT}}
+	async removeNonExitingEditor(): Promise<void> {
+		let n = 0;
+		while (n < this.editors.length) {
+			let editor = this.editors[n];
+			if (editor instanceof QueryEditorInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
+				// remove from editors list so that they do not get restored
+				this.editors.splice(n, 1);
+				let index = this.mru.findIndex(e => e.matches(editor));
+
+				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
+				this.mru.splice(index, 1);
+				this.active = this.isActive(editor) ? this.editors[0] : this.active;
+				editor.close();
+			}
+			else {
+				n++;
+			}
+		}
+	}
+	// {{SQL CARBON EDIT}}
 }

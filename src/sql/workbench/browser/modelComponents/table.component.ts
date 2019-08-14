@@ -208,6 +208,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
+		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
@@ -285,5 +286,9 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get forceFitColumns() {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
+	}
+
+	public get title() {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
 	}
 }

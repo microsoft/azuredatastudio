@@ -13,6 +13,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { EncodingMode } from 'vs/workbench/common/editor';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { BinaryEditorModel } from 'vs/workbench/common/editor/binaryEditorModel';
+import { IFileService } from 'vs/platform/files/common/files';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
@@ -26,9 +27,10 @@ export class FileQueryEditorInput extends QueryEditorInput implements PublicPart
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IFileService fileService: IFileService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, fileService);
 	}
 
 	public resolve(): Promise<TextFileEditorModel | BinaryEditorModel> {

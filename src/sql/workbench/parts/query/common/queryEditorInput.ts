@@ -9,6 +9,7 @@ import { Emitter } from 'vs/base/common/event';
 import { URI } from 'vs/base/common/uri';
 import { EditorInput, ConfirmResult } from 'vs/workbench/common/editor';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IFileService } from 'vs/platform/files/common/files';
 
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
@@ -108,7 +109,8 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 		protected _results: QueryResultsInput,
 		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
 		@IQueryModelService private readonly queryModelService: IQueryModelService,
-		@IConfigurationService private readonly configurationService: IConfigurationService
+		@IConfigurationService private readonly configurationService: IConfigurationService,
+		@IFileService private _fileService: IFileService
 	) {
 		super();
 
@@ -163,6 +165,14 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	public isDirty(): boolean { return this._text.isDirty(); }
 	public confirmSave(): Promise<ConfirmResult> { return this._text.confirmSave(); }
 	public getResource(): URI { return this._text.getResource(); }
+
+	public matchInputInstanceType(inputType: any): boolean {
+		return (this._text instanceof inputType);
+	}
+
+	public inputFileExists(): Promise<boolean> {
+		return this._fileService.exists(this.getResource());
+	}
 
 	public getName(longForm?: boolean): string {
 		if (this.configurationService.getValue('sql.showConnectionInfoInTitle')) {

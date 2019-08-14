@@ -4,8 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
-import { ClusterRouterApi, Authentication } from './apiGenerated';
+import { ClusterRouterApi, Authentication, DefaultApi, EndpointModel } from './apiGenerated';
+import * as nls from 'vscode-nls';
 
+const localize = nls.loadMessageBundle();
 
 class AuthConfiguration implements Authentication {
 	public username: string = '';
@@ -43,40 +45,47 @@ export async function getEndPoints(
 	url = adjustUrl(url);
 	let endPointApi = new ClusterApiWrapper(username, password, url, !!ignoreSslVerification);
 
-	let controllerResponse: IEndPointsResponse = undefined;
-	let controllerError: IControllerError = undefined;
-	let request = <IEndPointsRequest>{
-		url: url,
-		username: username,
-		password: password,
-		method: 'endPointsGet'
-	};
-
 	try {
 		let result = await endPointApi.endpointsGet(clusterName);
-		controllerResponse = <IEndPointsResponse>{
+		return {
 			response: result.response as IHttpResponse,
-			endPoints: result.body as IEndPoint[],
-			request
+			endPoints: result.body as EndpointModel[]
 		};
-		return controllerResponse;
 	} catch (error) {
-		if ('response' in error) {
-			let err: IEndPointsResponse = error as IEndPointsResponse;
-			let errCode = `${err.response.statusCode || ''}`;
-			let errMessage = err.response.statusMessage;
-			let errUrl = err.response.url;
-			controllerError = <IControllerError>{
-				address: errUrl,
-				code: errCode,
-				errno: errCode,
-				message: errMessage,
-				name: undefined
-			};
-		} else {
-			controllerError = error as IControllerError;
-		}
-		throw Object.assign(controllerError, { request }) as IControllerError;
+		throw new ControllerError(error, localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", url));
+	}
+}
+
+class DefaultApiWrapper extends DefaultApi {
+	constructor(basePathOrUsername: string, password?: string, basePath?: string, ignoreSslVerification?: boolean) {
+		super(basePathOrUsername, password, basePath);
+		this.authentications.default = new AuthConfiguration(!!ignoreSslVerification);
+	}
+}
+
+export async function getClusterStatus(
+	clusterName: string,
+	url: string,
+	username: string,
+	password: string,
+	ignoreSslVerification?: boolean
+): Promise<IClusterStatusResponse> {
+
+	if (!url) {
+		return undefined;
+	}
+
+	url = adjustUrl(url);
+	const defaultApi = new DefaultApiWrapper(username, password, url, ignoreSslVerification);
+
+	try {
+		const clusterStatus = await defaultApi.getClusterStatus('', '', clusterName);
+		return {
+			response: clusterStatus.response,
+			clusterStatus: clusterStatus.body
+		};
+	} catch (error) {
+		throw new ControllerError(error, localize('bdc.error.getClusterStatus', "Error retrieving cluster status from {0}", url));
 	}
 }
 
@@ -95,7 +104,7 @@ function adjustUrl(url: string): string {
 	return url;
 }
 
-export interface IEndPointsRequest {
+export interface IClusterRequest {
 	url: string;
 	username: string;
 	password?: string;
@@ -104,7 +113,12 @@ export interface IEndPointsRequest {
 
 export interface IEndPointsResponse {
 	response: IHttpResponse;
-	endPoints: IEndPoint[];
+	endPoints: EndpointModel[];
+}
+
+export interface IClusterStatusResponse {
+	response: IHttpResponse;
+	clusterStatus: IBdcStatus;
 }
 
 export interface IHttpResponse {
@@ -114,17 +128,65 @@ export interface IHttpResponse {
 	statusMessage?: string;
 }
 
-export interface IEndPoint {
-	name?: string;
-	description?: string;
-	endpoint?: string;
-	ip?: string;
-	port?: number;
+export interface IBdcStatus {
+	name: string;
+	status: IStatus;
+	services: IServiceStatus[];
 }
 
-export interface IControllerError extends Error {
-	code?: string;
-	errno?: string;
-	message: string;
-	request?: any;
+export interface IServiceStatus {
+	serviceName: string;
+	status: IStatus;
+	resources: IResourceStatus[];
+}
+
+export interface IResourceStatus {
+	resourceName: string;
+	status: IStatus;
+	instances?: IInstanceStatus[];
+}
+
+export interface IInstanceStatus {
+	instanceName: string;
+	status: IStatus;
+	dashboards: IDashboard[];
+}
+
+export interface IDashboard {
+	nodeMetricsUrl: string;
+	sqlMetricsUrl: string;
+	logsUrl: string;
+}
+
+export interface IStatus {
+	state: string;
+	healthStatus: string;
+	details?: string;
+}
+
+export class ControllerError extends Error {
+	public code?: string;
+	public errno?: string;
+	public reason?: string;
+	public address?: string;
+
+	/**
+	 *
+	 * @param error The original error to wrap
+	 * @param messagePrefix Optional text to prefix the error message with
+	 */
+	constructor(error: any, messagePrefix?: string) {
+		super(messagePrefix);
+		// Pull out the response information containing details about the failure
+		if (error.response) {
+			this.code = error.response.statusCode || '';
+			this.message += `${error.response.statusMessage ? ` - ${error.response.statusMessage}` : ''}` || '';
+			this.address = error.response.url || '';
+		}
+
+		// The body message contains more specific information about the failure
+		if (error.body && error.body.reason) {
+			this.message += ` - ${error.body.reason}`;
+		}
+	}
 }

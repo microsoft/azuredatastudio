@@ -22,7 +22,6 @@ import { ExtHostModelView } from 'sql/workbench/api/common/extHostModelView';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/common/extHostConnectionManagement';
 import { ExtHostDashboard } from 'sql/workbench/api/common/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/common/extHostObjectExplorer';
-import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/common/extHostModelViewDialog';
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/common/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/common/extHostQueryEditor';
@@ -56,7 +55,7 @@ export function createApiFactory(accessor: ServicesAccessor): ISqlExtensionApiFa
 	const instaServer = accessor.get(IInstantiationService);
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
-	const extHostLogService = <ExtHostLogService>accessor.get(ILogService);
+	const extHostLogService = accessor.get(ILogService);
 	let vsCodeFactory = instaServer.invokeFunction(extHostApi.createApiFactoryAndRegisterActors);
 
 	// Addressable instances

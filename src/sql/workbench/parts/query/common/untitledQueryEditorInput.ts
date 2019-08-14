@@ -13,6 +13,7 @@ import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorIn
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IResolvedTextEditorModel } from 'vs/editor/common/services/resolverService';
+import { IFileService } from 'vs/platform/files/common/files';
 
 type PublicPart<T> = { [K in keyof T]: T[K] };
 
@@ -29,9 +30,10 @@ export class UntitledQueryEditorInput extends QueryEditorInput implements IEncod
 		results: QueryResultsInput,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IQueryModelService queryModelService: IQueryModelService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IFileService fileService: IFileService
 	) {
-		super(description, text, results, connectionManagementService, queryModelService, configurationService);
+		super(description, text, results, connectionManagementService, queryModelService, configurationService, fileService);
 	}
 
 	public resolve(): Promise<UntitledEditorModel & IResolvedTextEditorModel> {
