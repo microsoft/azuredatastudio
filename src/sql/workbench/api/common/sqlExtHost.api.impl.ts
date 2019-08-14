@@ -440,7 +440,7 @@ export function createAzdataApiFactory(accessor: ServicesAccessor): IAzdataExten
 
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
-	const extHostLogService = <ExtHostLogService>accessor.get(ILogService);
+	const extHostLogService = accessor.get(ILogService);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
