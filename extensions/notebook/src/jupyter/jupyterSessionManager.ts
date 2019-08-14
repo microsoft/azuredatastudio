@@ -247,7 +247,15 @@ export class JupyterSession implements nb.ISession {
 				if (!clusterEndpoint) {
 					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server big data cluster master instance.")));
 				}
-				connection.options[KNOX_ENDPOINT_SERVER] = clusterEndpoint.ipAddress;
+				if (this.isIntegratedAuth(connection)) {
+					// Hack: for now, we need to use gateway-0 for integrated auth
+					let sqlDnsName: string = connection.options['server'].split(',')[0];
+					let parts = sqlDnsName.split('.');
+					parts[0] = 'gateway-0';
+					connection.options[KNOX_ENDPOINT_SERVER] = parts.join('.');
+				} else {
+					connection.options[KNOX_ENDPOINT_SERVER] = clusterEndpoint.ipAddress;
+				}
 				connection.options[KNOX_ENDPOINT_PORT] = clusterEndpoint.port;
 				connection.options[USER] = DEFAULT_CLUSTER_USER_NAME;
 			}
