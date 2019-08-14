@@ -227,7 +227,7 @@ function getMockAccountManagementService(resolveSecurityToken: boolean): TypeMoq
 	let accountManagementTestService = new TestAccountManagementService();
 	let mockAccountManagementService = TypeMoq.Mock.ofInstance(accountManagementTestService);
 	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveSecurityToken ? Promise.resolve({}) : Promise.reject(undefined).then());
+		.returns(() => resolveSecurityToken ? Promise.resolve({}) : Promise.reject(null));
 	return mockAccountManagementService;
 }
 
@@ -235,7 +235,7 @@ function getMockResourceProvider(resolveCreateFirewallRule: boolean, response?: 
 	let resourceProviderStub = new TestResourceProvider();
 	let mockResourceProvider = TypeMoq.Mock.ofInstance(resourceProviderStub);
 	mockResourceProvider.setup(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response) : Promise.reject(undefined).then());
+		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response) : Promise.reject(null));
 	return mockResourceProvider;
 }
 
@@ -243,9 +243,6 @@ function getMockErrorMessageService(deferredPromise: Deferred<{}>): TypeMoq.Mock
 	let errorMessageServiceStub = new TestErrorMessageService();
 	let mockErrorMessageService = TypeMoq.Mock.ofInstance(errorMessageServiceStub);
 	mockErrorMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).callback(() => {
-		deferredPromise.resolve(true);
-	});
-	mockErrorMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).callback(() => {
 		deferredPromise.resolve(true);
 	});
 	return mockErrorMessageService;
