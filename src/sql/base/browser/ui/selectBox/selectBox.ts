@@ -9,10 +9,11 @@ import { SelectBox as vsSelectBox, ISelectBoxStyles as vsISelectBoxStyles, ISele
 import { Color } from 'vs/base/common/color';
 import { IContextViewProvider, AnchorAlignment } from 'vs/base/browser/ui/contextview/contextview';
 import * as dom from 'vs/base/browser/dom';
-import { RenderOptions, renderFormattedText, renderText } from 'vs/base/browser/htmlContentRenderer';
+import { RenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { IMessage, MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as aria from 'vs/base/browser/ui/aria/aria';
 import * as nls from 'vs/nls';
+import { renderFormattedText, renderText } from 'vs/base/browser/formattedTextRenderer';
 
 const $ = dom.$;
 
