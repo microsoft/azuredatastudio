@@ -12,7 +12,7 @@ import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRender
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
-import { MarkdownRenderOptions } from 'vs/base/browser/htmlContentRenderer';
+import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
