@@ -114,7 +114,7 @@ suite('Firewall rule dialog controller tests', () => {
 		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	test('create firewall rule success', (done) => {
+	test('create firewall rule success', async () => {
 		let deferredPromise = new Deferred();
 
 		mockFirewallRuleDialog.setup(x => x.onServiceComplete())
@@ -136,16 +136,14 @@ suite('Firewall rule dialog controller tests', () => {
 		mockOnCreateFirewallRule.fire();
 
 		// Then: it should get security token from account management service and call create firewall rule in resource provider
-		deferredPromise.promise.then(() => {
-			mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockFirewallRuleDialog.verify(x => x.close(), TypeMoq.Times.once());
-			mockFirewallRuleDialog.verify(x => x.onServiceComplete(), TypeMoq.Times.once());
-			done();
-		});
+		await deferredPromise;
+		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockFirewallRuleDialog.verify(x => x.close(), TypeMoq.Times.once());
+		mockFirewallRuleDialog.verify(x => x.onServiceComplete(), TypeMoq.Times.once());
 	});
 
-	test('create firewall rule fails during getSecurity', (done) => {
+	test('create firewall rule fails during getSecurity', async () => {
 		let deferredPromise = new Deferred<{}>();
 
 		// ... Create a mock instance of the error message service
@@ -165,15 +163,13 @@ suite('Firewall rule dialog controller tests', () => {
 		mockOnCreateFirewallRule.fire();
 
 		// Then: it should get security token from account management service and an error dialog should have been opened
-		deferredPromise.promise.then(() => {
-			mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
-			done();
-		});
+		await deferredPromise;
+		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.never());
 	});
 
-	test('create firewall rule fails during createFirewallRule in ResourceProvider - result is false', (done) => {
+	test('create firewall rule fails during createFirewallRule in ResourceProvider - result is false', async () => {
 		let deferredPromise = new Deferred<{}>();
 
 		// ... Create a mock instance of the error message service
@@ -193,15 +189,14 @@ suite('Firewall rule dialog controller tests', () => {
 		mockOnCreateFirewallRule.fire();
 
 		// Then: it should get security token from account management service and an error dialog should have been opened
-		deferredPromise.promise.then(() => {
-			mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			done();
-		});
+		await deferredPromise;
+
+		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 
-	test('create firewall rule fails during createFirewallRule in ResourceProvider - reject promise', (done) => {
+	test('create firewall rule fails during createFirewallRule in ResourceProvider - reject promise', async () => {
 		let deferredPromise = new Deferred<{}>();
 
 		// ... Create a mock instance of the error message service
@@ -221,12 +216,10 @@ suite('Firewall rule dialog controller tests', () => {
 		mockOnCreateFirewallRule.fire();
 
 		// Then: it should get security token from account management service and an error dialog should have been opened
-		deferredPromise.promise.then(() => {
-			mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
-			done();
-		});
+		await deferredPromise;
+		mockAccountManagementService.verify(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockResourceProvider.verify(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
+		mockErrorMessageService.verify(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.once());
 	});
 });
 
@@ -234,7 +227,7 @@ function getMockAccountManagementService(resolveSecurityToken: boolean): TypeMoq
 	let accountManagementTestService = new TestAccountManagementService();
 	let mockAccountManagementService = TypeMoq.Mock.ofInstance(accountManagementTestService);
 	mockAccountManagementService.setup(x => x.getSecurityToken(TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveSecurityToken ? Promise.resolve({}) : Promise.reject(undefined));
+		.returns(() => resolveSecurityToken ? Promise.resolve({}) : Promise.reject(undefined).then());
 	return mockAccountManagementService;
 }
 
@@ -242,7 +235,7 @@ function getMockResourceProvider(resolveCreateFirewallRule: boolean, response?: 
 	let resourceProviderStub = new TestResourceProvider();
 	let mockResourceProvider = TypeMoq.Mock.ofInstance(resourceProviderStub);
 	mockResourceProvider.setup(x => x.createFirewallRule(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny()))
-		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response) : Promise.reject(undefined));
+		.returns(() => resolveCreateFirewallRule ? Promise.resolve(response) : Promise.reject(undefined).then());
 	return mockResourceProvider;
 }
 
@@ -250,6 +243,9 @@ function getMockErrorMessageService(deferredPromise: Deferred<{}>): TypeMoq.Mock
 	let errorMessageServiceStub = new TestErrorMessageService();
 	let mockErrorMessageService = TypeMoq.Mock.ofInstance(errorMessageServiceStub);
 	mockErrorMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).callback(() => {
+		deferredPromise.resolve(true);
+	});
+	mockErrorMessageService.setup(x => x.showDialog(TypeMoq.It.isAny(), TypeMoq.It.isAny(), undefined)).callback(() => {
 		deferredPromise.resolve(true);
 	});
 	return mockErrorMessageService;
