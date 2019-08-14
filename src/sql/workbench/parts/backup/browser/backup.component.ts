@@ -270,6 +270,7 @@ export class BackupComponent {
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], this.contextViewService);
+		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
 		this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox.selectedOptions.length > 0) {
 				const key = e.keyCode;

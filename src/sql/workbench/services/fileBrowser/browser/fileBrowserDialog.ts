@@ -94,8 +94,9 @@ export class FileBrowserDialog extends Modal {
 			ariaLabel: pathLabel
 		});
 
-		this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
 		let filterLabel = localize('fileFilter', "Files of type");
+		this._fileFilterSelectBox = new SelectBox(['*'], '*', this._contextViewService);
+		this._fileFilterSelectBox.setAriaLabel(filterLabel);
 		let filterBuilder = DialogHelper.appendRow(tableContainer, filterLabel, 'file-input-label', 'file-input-box');
 		DialogHelper.appendInputSelectBox(filterBuilder, this._fileFilterSelectBox);
 
