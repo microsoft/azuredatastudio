@@ -3239,6 +3239,7 @@ declare module 'azdata' {
 		fontSize?: number | string;
 		selectedRows?: number[];
 		forceFitColumns?: ColumnSizingMode;
+		title?: string;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -3994,6 +3995,7 @@ declare module 'azdata' {
 	export namespace queryeditor {
 		export type QueryEvent =
 			| 'queryStart'
+			| 'queryUpdate'
 			| 'queryStop'
 			| 'executionPlan'
 			| 'visualize';

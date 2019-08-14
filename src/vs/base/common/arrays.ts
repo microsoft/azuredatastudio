@@ -297,7 +297,7 @@ function topStep<T>(array: ReadonlyArray<T>, compare: (a: T, b: T) => number, re
  */
 export function coalesce<T>(array: ReadonlyArray<T | undefined | null>): T[] {
 	if (!array) {
-		return undefined; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
+		return array as T[]; // {{SQL CARBON EDIT}} @anthonydresser strict-null-checks
 	}
 	return <T[]>array.filter(e => !!e);
 }

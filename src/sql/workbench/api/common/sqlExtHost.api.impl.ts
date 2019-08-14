@@ -19,7 +19,6 @@ import { ExtHostModelView } from 'sql/workbench/api/common/extHostModelView';
 import { ExtHostConnectionManagement } from 'sql/workbench/api/common/extHostConnectionManagement';
 import { ExtHostDashboard } from 'sql/workbench/api/common/extHostDashboard';
 import { ExtHostObjectExplorer } from 'sql/workbench/api/common/extHostObjectExplorer';
-import { ExtHostLogService } from 'vs/workbench/api/common/extHostLogService';
 import { ExtHostModelViewDialog } from 'sql/workbench/api/common/extHostModelViewDialog';
 import { ExtHostModelViewTreeViews } from 'sql/workbench/api/common/extHostModelViewTree';
 import { ExtHostQueryEditor } from 'sql/workbench/api/common/extHostQueryEditor';
@@ -51,7 +50,7 @@ export interface IAzdataExtensionApiFactory {
 export function createSqlopsApiFactory(accessor: ServicesAccessor): ISqlopsExtensionApiFactory {
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
-	const extHostLogService = <ExtHostLogService>accessor.get(ILogService);
+	const extHostLogService = accessor.get(ILogService);
 
 	// Addressable instances
 	const extHostConnectionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostConnectionManagement, new ExtHostConnectionManagement(rpcProtocol));
