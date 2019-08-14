@@ -2447,8 +2447,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.9.5",
-							"lastUpdated": "7/10/2019",
+							"version": "0.9.6",
+							"lastUpdated": "8/15/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -2462,7 +2462,7 @@
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
-									"source": "https://downloads.sentryone.com/downloads/ads/readme.0.9.5.md"
+									"source": "https://downloads.sentryone.com/downloads/ads/readme.0.9.6.md"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Content.License",
