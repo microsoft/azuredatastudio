@@ -12,7 +12,7 @@ import * as azdata from 'azdata';
 import * as sqlops from 'sqlops';
 import { IAzdataExtensionApiFactory, ISqlopsExtensionApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl';
 
-export class AZDataNodeModuleFactory implements INodeModuleFactory {
+export class AzdataNodeModuleFactory implements INodeModuleFactory {
 	public readonly nodeModuleName = 'azdata';
 
 	private readonly _extApiImpl = new Map<string, typeof azdata>();
