@@ -12,7 +12,7 @@ import { AbstractExtHostExtensionService } from 'vs/workbench/api/common/extHost
 import { ExtHostDownloadService } from 'vs/workbench/api/node/extHostDownloadService';
 import { CLIServer } from 'vs/workbench/api/node/extHostCLIServer';
 import { createAzdataApiFactory, createSqlopsApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} use our extension initalizer
-import { AZDataNodeModuleFactory, SqlopsNodeModuleFactory } from 'sql/workbench/api/node/extHostRequireInterceptor'; // {{SQL CARBON EDIT}} use our extension initalizer
+import { AzdataNodeModuleFactory, SqlopsNodeModuleFactory } from 'sql/workbench/api/node/extHostRequireInterceptor'; // {{SQL CARBON EDIT}} use our extension initalizer
 
 export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 
@@ -34,7 +34,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		// Module loading tricks
 		const configProvider = await this._extHostConfiguration.getConfigProvider();
 		const extensionPaths = await this.getExtensionPathIndex();
-		NodeModuleRequireInterceptor.INSTANCE.register(new AZDataNodeModuleFactory(azdataExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
+		NodeModuleRequireInterceptor.INSTANCE.register(new AzdataNodeModuleFactory(azdataExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
 		NodeModuleRequireInterceptor.INSTANCE.register(new SqlopsNodeModuleFactory(sqlopsExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
 		NodeModuleRequireInterceptor.INSTANCE.register(new VSCodeNodeModuleFactory(extensionApiFactory, extensionPaths, this._registry, configProvider));
 		NodeModuleRequireInterceptor.INSTANCE.register(new KeytarNodeModuleFactory(this._extHostContext.getProxy(MainContext.MainThreadKeytar), this._initData.environment));
