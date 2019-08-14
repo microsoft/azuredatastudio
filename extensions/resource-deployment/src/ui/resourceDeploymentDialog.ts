@@ -11,13 +11,13 @@ import * as vscode from 'vscode';
 import { ResourceType, DeploymentProvider } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
 import { INotebookService } from '../services/notebookService';
+import { DialogBase } from './dialogBase';
+import { DeploymentDialog } from './deploymentDialog';
 
 const localize = nls.loadMessageBundle();
 
-export class ResourceDeploymentDialog {
+export class ResourceTypePickerDialog extends DialogBase {
 	private _selectedResourceType: ResourceType;
-	private _toDispose: vscode.Disposable[] = [];
-	private _dialogObject: azdata.window.Dialog;
 	private _resourceTypeCards: azdata.CardComponent[] = [];
 	private _view!: azdata.ModelView;
 	private _resourceDescriptionLabel!: azdata.TextComponent;
@@ -26,19 +26,18 @@ export class ResourceDeploymentDialog {
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 
-	constructor(private context: vscode.ExtensionContext,
+	constructor(context: vscode.ExtensionContext,
 		private notebookService: INotebookService,
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
+		super(context, localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
-		this._dialogObject = azdata.window.createModelViewDialog(localize('deploymentDialog.title', 'Select the deployment options'), 'resourceDeploymentDialog', true);
-		this._dialogObject.cancelButton.onClick(() => this.onCancel());
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
-	private initializeDialog() {
+	initializeDialog() {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
@@ -98,17 +97,12 @@ export class ResourceDeploymentDialog {
 		this._dialogObject.content = [tab];
 	}
 
-	public open(): void {
-		this.initializeDialog();
-		azdata.window.openDialog(this._dialogObject);
-	}
-
 	private addCard(resourceType: ResourceType): void {
 		const card = this._view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
 			iconPath: {
-				dark: this.context.asAbsolutePath(resourceType.icon.dark),
-				light: this.context.asAbsolutePath(resourceType.icon.light)
+				dark: this.extensionContext.asAbsolutePath(resourceType.icon.dark),
+				light: this.extensionContext.asAbsolutePath(resourceType.icon.light)
 			},
 			label: resourceType.displayName,
 			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name)
@@ -180,17 +174,14 @@ export class ResourceDeploymentDialog {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	private onCancel(): void {
-		this.dispose();
-	}
-
 	private onComplete(): void {
 		const provider = this.getCurrentProvider();
-		this.notebookService.launchNotebook(provider.notebook);
+		if (provider.dialog) {
+			const dialog = new DeploymentDialog(this.extensionContext, this.notebookService, provider);
+			dialog.open();
+		} else {
+			this.notebookService.launchNotebook(provider.notebook);
+		}
 		this.dispose();
-	}
-
-	private dispose(): void {
-		this._toDispose.forEach(disposable => disposable.dispose());
 	}
 }

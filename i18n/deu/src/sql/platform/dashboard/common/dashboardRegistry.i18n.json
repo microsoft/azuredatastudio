@@ -8,9 +8,18 @@
 	],
 	"dashboard.properties.property": "Definiert eine Eigenschaft, die auf dem Dashboard angezeigt werden soll",
 	"dashboard.properties.property.displayName": "Welcher Wert soll als Kennzeichnung für die Eigenschaft verwendet werden",
+	"dashboard.properties.property.value": "Wert des Objekts, auf den für den Wert zugegriffen werden soll",
+	"dashboard.properties.property.ignore": "Werte angeben, die ignoriert werden sollen",
+	"dashboard.properties.property.default": "Standardwert, der angezeigt werden soll, wenn der Wert ignoriert wird oder kein Wert angegeben ist",
 	"dashboard.properties.flavor": "Ein Eindruck für das Festlegen von Dashboard-Eigenschaften",
+	"dashboard.properties.flavor.id": "Flavor-ID",
+	"dashboard.properties.flavor.condition": "Voraussetzung für die Verwendung dieser Variante",
 	"dashboard.properties.flavor.condition.field": "Vergleichsfeld",
 	"dashboard.properties.flavor.condition.operator": "Vergleichsoperator auswählen",
+	"dashboard.properties.flavor.condition.value": "Vergleichswert",
 	"dashboard.properties.databaseProperties": "Eigenschaften für Datenbank-Seite zeigen",
-	"dashboard.id": "Anbieter-ID (z.B. MSSQL)"
+	"dashboard.properties.serverProperties": "Anzuzeigende Eigenschaften für die Seite \"Server\"",
+	"carbon.extension.dashboard": "Legt fest, dass dieser Anbieter das Dashboard unterstützt",
+	"dashboard.id": "Anbieter-ID (z.B. MSSQL)",
+	"dashboard.properties": "Eigenschaftswerte, die auf dem Dashboard angezeigt werden sollen"
 }

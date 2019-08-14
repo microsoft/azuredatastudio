@@ -22,7 +22,7 @@
 		"out/extension": {
 			"server.ready.nocapture.error": "Format uri ('{0}') uses a substitution placeholder but pattern did not capture anything.",
 			"server.ready.placeholder.error": "Format uri ('{0}') must contain exactly one substitution placeholder.",
-			"server.ready.chrome.not.installed": "The action 'debugWithChrome' requires the '{0}'"
+			"server.ready.chrome.not.installed": "The action '{0}' requires the '{1}' extension."
 		}
 	}
 }

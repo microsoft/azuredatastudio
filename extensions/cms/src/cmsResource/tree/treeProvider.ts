@@ -14,6 +14,7 @@ import { CmsResourceEmptyTreeNode } from './cmsResourceEmptyTreeNode';
 import { ICmsResourceTreeChangeHandler } from './treeChangeHandler';
 import { CmsResourceMessageTreeNode } from '../messageTreeNode';
 import { CmsResourceTreeNode } from './cmsResourceTreeNode';
+import { ICmsResourceNodeInfo } from './baseTreeNodes';
 
 export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICmsResourceTreeChangeHandler {
 
@@ -27,26 +28,26 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 
 	public async getChildren(element?: TreeNode): Promise<TreeNode[]> {
 		if (element) {
-			return element.getChildren(true);
+			let children = await element.getChildren(true);
+			return children;
 		}
 
 		if (!this.isSystemInitialized) {
 			try {
 				// Call to collect all locally saved CMS servers
 				// to determine whether the system has been initialized.
-				let cmsConfig = this._appContext.cmsUtils.getConfiguration();
-				let cachedServers = cmsConfig.servers ? cmsConfig.servers : [];
+				const cachedServers = this._appContext.cmsUtils.getSavedServers();
 				if (cachedServers && cachedServers.length > 0) {
-					let servers = [];
+					const servers = [];
 					cachedServers.forEach(async (server) => {
 						servers.push(new CmsResourceTreeNode(
 							server.name,
 							server.description,
-							undefined,
+							server.ownerUri,
 							server.connection,
 							this._appContext, this, null));
 						this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
-							undefined, server.connection);
+							server.ownerUri, server.connection);
 					});
 					return servers;
 				}
@@ -62,13 +63,6 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			let registeredCmsServers = this.appContext.cmsUtils.registeredCmsServers;
 			if (registeredCmsServers && registeredCmsServers.length > 0) {
 				this.isSystemInitialized = true;
-				// save the CMS Servers for future use
-				let toSaveCmsServers = JSON.parse(JSON.stringify(registeredCmsServers));
-				toSaveCmsServers.forEach(server => {
-					server.ownerUri = undefined,
-						server.connection.options.password = '';
-				});
-				await this._appContext.cmsUtils.setConfiguration(toSaveCmsServers);
 				return registeredCmsServers.map((server) => {
 					return new CmsResourceTreeNode(
 						server.name,

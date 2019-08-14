@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!sql/media/actionBarLabel';
+import 'vs/css!./media/dataExplorer.contribution';
 import { localize } from 'vs/nls';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -54,7 +55,7 @@ registry.registerWorkbenchAction(
 		OpenDataExplorerViewletAction,
 		OpenDataExplorerViewletAction.ID,
 		OpenDataExplorerViewletAction.LABEL,
-		{ primary: KeyMod.CtrlCmd | KeyCode.Shift | KeyCode.KEY_C }),
+		{ primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_D }),
 	'View: Show Data Explorer',
 	localize('dataExplorer.view', "View")
 );

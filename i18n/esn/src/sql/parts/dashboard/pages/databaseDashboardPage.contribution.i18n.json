@@ -8,11 +8,14 @@
 	],
 	"dashboardDatabaseProperties": "Activar o desactivar el widget de propiedades",
 	"dashboard.databaseproperties": "Valores de la propiedad a mostrar",
-	"dashboard.databaseproperties.displayName": "Nombre para mostrar de la propiedad",
+	"dashboard.databaseproperties.displayName": "Nombre de la propiedad",
 	"dashboard.databaseproperties.value": "Valor en el objeto de la información de la base de datos",
 	"dashboard.databaseproperties.ignore": "Especificar valores específicos que ignorar",
 	"recoveryModel": "Modelo de recuperación",
 	"lastDatabaseBackup": "Última copia de seguridad de base de datos",
+	"lastLogBackup": "Último backup del log",
+	"compatibilityLevel": "Nivel de compatibilidad",
 	"owner": "Propietario",
+	"dashboardDatabase": "Personaliza la página del panel de base de datos",
 	"dashboardDatabaseTabs": "Personaliza las pestañas de consola de base de datos"
 }

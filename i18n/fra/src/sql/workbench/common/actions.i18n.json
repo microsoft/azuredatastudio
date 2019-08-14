@@ -8,12 +8,17 @@
 	],
 	"newQueryAction.newQuery": "Nouvelle requête",
 	"scriptSelect": "Sélectionnez les 1000 premiers",
+	"scriptExecute": "Scripter comme Exécuter",
+	"scriptAlter": "Script Alter",
 	"editData": "Modifier les données",
 	"scriptCreate": "Script de création",
+	"scriptDelete": "Scripter comme Abandonner",
 	"backupAction.backup": "Sauvegarde",
+	"backup.isPreviewFeature": "Vous devez activer les fonctionnalités en préversion pour utiliser la sauvegarde",
 	"restoreAction.restore": "Restaurer",
+	"restore.isPreviewFeature": "Vous devez activer les fonctionnalités en préversion pour utiliser la restauration",
 	"manage": "Gérer",
 	"showDetails": "Afficher les détails",
 	"newDatabase": "Nouvelle base de données",
-	"configureDashboard": "Configurer"
+	"configureDashboard": "Découvrir comment configurer le tableau de bord"
 }

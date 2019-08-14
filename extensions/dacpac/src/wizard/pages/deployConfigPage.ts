@@ -157,14 +157,17 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
-		}).component();
+		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+
 		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 		});
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
+
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
+			required: true
+		}).component();
+
 		return {
 			component: this.databaseLoader,
 			title: localize('dacFx.targetDatabaseDropdownTitle', 'Database Name')

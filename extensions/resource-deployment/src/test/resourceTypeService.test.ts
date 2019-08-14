@@ -24,7 +24,7 @@ suite('Resource Type Service Tests', function (): void {
 			{ platform: 'win32', resourceTypeCount: 2 },
 			{ platform: 'darwin', resourceTypeCount: 2 },
 			{ platform: 'linux', resourceTypeCount: 2 }];
-		const totalResourceTypeCount = 2;
+		const totalResourceTypeCount = 1;
 		platforms.forEach(platformInfo => {
 			mockPlatformService.reset();
 			mockPlatformService.setup(service => service.platform()).returns(() => platformInfo.platform);

@@ -47,6 +47,9 @@
 			"previewTitle": "Vista Previa {0}",
 			"preview.clickOpenFailed": "No se pudo abrir {0}"
 		},
+		"out/features/documentLinkProvider": {
+			"documentLink.tooltip": "follow link"
+		},
 		"out/security": {
 			"strict.title": "Strict",
 			"strict.description": "Cargar solo el contenido seguro",

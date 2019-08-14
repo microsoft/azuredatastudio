@@ -125,7 +125,7 @@ export interface ITextFileService extends IDisposable {
 	/**
 	 * Move a file. If the file is dirty, its contents will be preserved and restored.
 	 */
-	move(source: URI, target: URI, overwrite?: boolean): Promise<void>;
+	move(source: URI, target: URI, overwrite?: boolean): Promise<IFileStatWithMetadata>;
 
 	/**
 	 * Brings up the confirm dialog to either save, don't save or cancel.
@@ -136,12 +136,12 @@ export interface ITextFileService extends IDisposable {
 	confirmSave(resources?: URI[]): Promise<ConfirmResult>;
 
 	/**
-	 * Convinient fast access to the current auto save mode.
+	 * Convenient fast access to the current auto save mode.
 	 */
 	getAutoSaveMode(): AutoSaveMode;
 
 	/**
-	 * Convinient fast access to the raw configured auto save settings.
+	 * Convenient fast access to the raw configured auto save settings.
 	 */
 	getAutoSaveConfiguration(): IAutoSaveConfiguration;
 }
@@ -428,6 +428,7 @@ export interface ISaveOptions {
 	overwriteEncoding?: boolean;
 	skipSaveParticipants?: boolean;
 	writeElevated?: boolean;
+	availableFileSystems?: string[];
 }
 
 export interface ILoadOptions {
@@ -467,7 +468,11 @@ export interface ITextFileEditorModel extends ITextEditorModel, IEncodingSupport
 
 	backup(target?: URI): Promise<void>;
 
-	isDirty(): boolean;
+	hasBackup(): boolean;
+
+	isDirty(): boolean; // {{SQL CARBON EDIT}} strict-null-check
+
+	makeDirty(): void;
 
 	isResolved(): this is IResolvedTextFileEditorModel;
 
@@ -519,7 +524,7 @@ export function stringToSnapshot(value: string): ITextSnapshot {
 }
 
 export class TextSnapshotReadable implements VSBufferReadable {
-	private preambleHandled: boolean;
+	private preambleHandled = false;
 
 	constructor(private snapshot: ITextSnapshot, private preamble?: string) { }
 

@@ -1,0 +1,49 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
+	<div #toolbar class="editor-toolbar actionbar-container" style="flex: 0 0 auto; display: flex; flex-flow: row; width: 100%; align-items: center;">
+	</div>
+	<div #container class="scrollable" style="flex: 1 1 auto; position: relative; outline: none" (click)="unselectActiveCell()" (scroll)="scrollHandler($event)">
+		<loading-spinner [loading]="isLoading"></loading-spinner>
+		<div class="hoverButtonsContainer" *ngIf="(cells && cells.length > 0) && !isLoading">
+			<span class="containerBackground"></span>
+			<button class="hoverButton" (click)="addCell('code', 0, $event)">
+				<div class="addCodeIcon"></div>
+				<span>{{addCodeLabel}}</span>
+			</button>
+			<button class="hoverButton" (click)="addCell('markdown', 0, $event)">
+				<div class="addTextIcon"></div>
+				<span>{{addTextLabel}}</span>
+			</button>
+		</div>
+		<div *ngFor="let cell of cells">
+			<div class="notebook-cell" (click)="selectCell(cell, $event)" [class.active]="cell.active">
+				<code-cell-component *ngIf="cell.cellType === 'code'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+				</code-cell-component>
+				<text-cell-component *ngIf="cell.cellType === 'markdown'" [cellModel]="cell" [model]="model" [activeCellId]="activeCellId">
+				</text-cell-component>
+			</div>
+			<div class="hoverButtonsContainer">
+				<span class="containerBackground"></span>
+				<button class="hoverButton" (click)="addCell('code', findCellIndex(cell) + 1, $event)">
+					<div class="addCodeIcon"></div>
+					<span>{{addCodeLabel}}</span>
+				</button>
+				<button class="hoverButton" (click)="addCell('markdown', findCellIndex(cell) + 1, $event)">
+					<div class="addTextIcon"></div>
+					<span>{{addTextLabel}}</span>
+				</button>
+			</div>
+		</div>
+		<div class="notebook-cell" *ngIf="(!cells || !cells.length) && !isLoading">
+			<placeholder-cell-component [cellModel]="cell" [model]="model">
+			</placeholder-cell-component>
+		</div>
+		<div class="book-nav" #bookNav [style.visibility]="navigationVisibility">
+		</div>
+	</div>
+</div>

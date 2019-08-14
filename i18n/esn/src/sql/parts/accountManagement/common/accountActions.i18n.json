@@ -10,5 +10,9 @@
 	"removeAccount": "Eliminar cuenta",
 	"confirmRemoveUserAccountMessage": "¿Está seguro que desea eliminar '{0}'?",
 	"accountActions.yes": "Sí",
-	"refreshAccount": "Vuelva a introducir sus credenciales"
+	"accountActions.no": "No",
+	"removeAccountFailed": "Error al quitar cuenta",
+	"applyFilters": "Aplicar filtros",
+	"refreshAccount": "Vuelva a introducir sus credenciales",
+	"NoAccountToRefresh": "No hay ninguna cuenta para actualizar"
 }

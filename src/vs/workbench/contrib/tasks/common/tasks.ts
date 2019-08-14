@@ -273,7 +273,7 @@ export namespace PresentationOptions {
 export enum RuntimeType {
 	Shell = 1,
 	Process = 2,
-	CustomExecution = 3
+	CustomExecution2 = 3
 }
 
 export namespace RuntimeType {
@@ -283,8 +283,8 @@ export namespace RuntimeType {
 				return RuntimeType.Shell;
 			case 'process':
 				return RuntimeType.Process;
-			case 'customExecution':
-				return RuntimeType.CustomExecution;
+			case 'customExecution2':
+				return RuntimeType.CustomExecution2;
 			default:
 				return RuntimeType.Process;
 		}
@@ -431,6 +431,11 @@ export const enum GroupType {
 	user = 'user'
 }
 
+export const enum DependsOrder {
+	parallel = 'parallel',
+	sequence = 'sequence'
+}
+
 export interface ConfigurationProperties {
 
 	/**
@@ -479,6 +484,11 @@ export interface ConfigurationProperties {
 	dependsOn?: TaskDependency[];
 
 	/**
+	 * The order the dependsOn tasks should be executed in.
+	 */
+	dependsOrder?: DependsOrder;
+
+	/**
 	 * The problem watchers to use for this task
 	 */
 	problemMatchers?: Array<string | ProblemMatcher>;
@@ -508,7 +518,7 @@ export abstract class CommonTask {
 	/**
 	 * The cached label.
 	 */
-	_label: string;
+	_label: string = '';
 
 	type?: string;
 
@@ -604,10 +614,10 @@ export abstract class CommonTask {
 
 export class CustomTask extends CommonTask {
 
-	type: '$customized'; // CUSTOMIZED_TASK_TYPE
+	type!: '$customized'; // CUSTOMIZED_TASK_TYPE
 
 	/**
-	 * Indicated the source of the task (e.g tasks.json or extension)
+	 * Indicated the source of the task (e.g. tasks.json or extension)
 	 */
 	_source: WorkspaceTaskSource;
 
@@ -616,7 +626,7 @@ export class CustomTask extends CommonTask {
 	/**
 	 * The command configuration
 	 */
-	command: CommandConfiguration;
+	command: CommandConfiguration = {};
 
 	public constructor(id: string, source: WorkspaceTaskSource, label: string, type: string, command: CommandConfiguration | undefined,
 		hasDefinedMatchers: boolean, runOptions: RunOptions, configurationProperties: ConfigurationProperties) {
@@ -650,8 +660,8 @@ export class CustomTask extends CommonTask {
 					type = 'process';
 					break;
 
-				case RuntimeType.CustomExecution:
-					type = 'customExecution';
+				case RuntimeType.CustomExecution2:
+					type = 'customExecution2';
 					break;
 
 				case undefined:
@@ -714,7 +724,7 @@ export class CustomTask extends CommonTask {
 export class ConfiguringTask extends CommonTask {
 
 	/**
-	 * Indicated the source of the task (e.g tasks.json or extension)
+	 * Indicated the source of the task (e.g. tasks.json or extension)
 	 */
 	_source: WorkspaceTaskSource;
 
@@ -735,14 +745,18 @@ export class ConfiguringTask extends CommonTask {
 		return object;
 	}
 
+	public getDefinition(): KeyedTaskIdentifier {
+		return this.configures;
+	}
 }
 
 export class ContributedTask extends CommonTask {
 
 	/**
-	 * Indicated the source of the task (e.g tasks.json or extension)
+	 * Indicated the source of the task (e.g. tasks.json or extension)
+	 * Set in the super constructor
 	 */
-	_source: ExtensionTaskSource;
+	_source!: ExtensionTaskSource;
 
 	defines: KeyedTaskIdentifier;
 
@@ -807,11 +821,11 @@ export class ContributedTask extends CommonTask {
 
 export class InMemoryTask extends CommonTask {
 	/**
-	 * Indicated the source of the task (e.g tasks.json or extension)
+	 * Indicated the source of the task (e.g. tasks.json or extension)
 	 */
 	_source: InMemoryTaskSource;
 
-	type: 'inMemory';
+	type!: 'inMemory';
 
 	public constructor(id: string, source: InMemoryTaskSource, label: string, type: string,
 		runOptions: RunOptions, configurationProperties: ConfigurationProperties) {

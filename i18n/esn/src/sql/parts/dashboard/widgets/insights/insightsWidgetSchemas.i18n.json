@@ -9,8 +9,12 @@
 	"insightWidgetDescription": "Añade un widget que puede consultar un servidor o base de datos y mostrar los resultados de múltiples maneras, como un gráfico o una cuenta de resumen, entre otras.",
 	"insightIdDescription": "Identificador único para el almacenamiento en cache de los resultados de la revisión.",
 	"insightQueryDescription": "Consulta SQL para ejecutar. Esto debería devolver exactamente un conjunto de datos.",
+	"insightQueryFileDescription": "[Opcional] Ruta de acceso a un archivo que contiene una consulta. Utilizar si la consulta no está establicida",
+	"insightAutoRefreshIntervalDescription": "[Opcional] Intervalo de actualización automática en minutos, si no se establece, no habrá actualización automática",
 	"actionTypes": "Qué acciones utilizar",
-	"actionDatabaseDescription": "Base de datos de destino para la acción; puede utilizar el formato \"${columnName} para usar unas nombre de columna de datos.",
-	"actionUserDescription": "Usuario de destino para la acción; puede usar el formato \"${columnName}\" para utilizar un nombre de columna controlado por datos.",
+	"actionDatabaseDescription": "Base de datos de destino para la acción; puede usar el formato \"${columnName}\" para utilizar un nombre de columna de datos.",
+	"actionServerDescription": "Servidor de destino para la acción; puede utilizar el formato \"${columnName}\" para utilizar un nombre de columna de datos.",
+	"actionUserDescription": "Usuario de destino para la acción; puede utilizar el formato \"${columnName}\" para utilizar un nombre de columna de datos.",
+	"carbon.extension.contributes.insightType.id": "Identificador de la información",
 	"carbon.extension.contributes.insights": "Aporta conocimientos a la paleta del panel."
 }

@@ -47,6 +47,9 @@
 			"previewTitle": "預覽 [0]",
 			"preview.clickOpenFailed": "無法開啟 {0}"
 		},
+		"out/features/documentLinkProvider": {
+			"documentLink.tooltip": "follow link"
+		},
 		"out/security": {
 			"strict.title": "嚴謹",
 			"strict.description": "僅載入安全內容",

@@ -37,7 +37,7 @@ export class FileBrowserViewModel {
 		this._fileValidationServiceType = fileValidationServiceType;
 
 		if (!fileFilters) {
-			this._fileFilters = [{ label: localize('allFiles', 'All files'), filters: ['*'] }];
+			this._fileFilters = [{ label: localize('allFiles', "All files"), filters: ['*'] }];
 		} else {
 			this._fileFilters = fileFilters;
 		}

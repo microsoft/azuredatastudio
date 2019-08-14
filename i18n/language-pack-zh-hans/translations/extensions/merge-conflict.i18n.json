@@ -25,7 +25,11 @@
 			"config.title": "合并冲突",
 			"config.autoNavigateNextConflictEnabled": "是否在解决合并冲突后自动转到下一个合并冲突。",
 			"config.codeLensEnabled": "为编辑器中的合并冲突区域创建 CodeLens。",
-			"config.decoratorsEnabled": "为编辑器中的合并冲突区域创建提示小标。"
+			"config.decoratorsEnabled": "为编辑器中的合并冲突区域创建提示小标。",
+			"config.diffViewPosition": "Controls where the diff view should be opened when comparing changes in merge conflicts.",
+			"config.diffViewPosition.current": "Open the diff view in the current editor group.",
+			"config.diffViewPosition.beside": "Open the diff view next to the current editor group.",
+			"config.diffViewPosition.below": "Open the diff view below the current editor group."
 		},
 		"out/mergeDecorator": {
 			"currentChange": "(当前更改)",

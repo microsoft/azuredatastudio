@@ -8,7 +8,7 @@
 	],
 	"carbon.extension.contributes.account.id": "Identificatore del tipo di account",
 	"carbon.extension.contributes.account.icon": "(Opzionale) Icona utilizzata per rappresentare l'account nell'interfaccia utente. Un percorso di file o una configurazione themable",
-	"carbon.extension.contributes.account.icon.light": "Percorso icona per temi chiari",
-	"carbon.extension.contributes.account.icon.dark": "Percorso dell'icona quando è utilizzato un tema scuro",
+	"carbon.extension.contributes.account.icon.light": "Percorso dell'icona quando è utilizzato un tema chiaro",
+	"carbon.extension.contributes.account.icon.dark": "Percorso dell'icona quando si utilizza un tema scuro",
 	"carbon.extension.contributes.account": "Fornisce icone al provider dell'account."
 }

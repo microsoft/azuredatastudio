@@ -22,7 +22,7 @@
 		"out/extension": {
 			"server.ready.nocapture.error": "URI-Format ('{0}') verwendet einen Ersatzplatzhalter, aber das Muster hat nichts erfasst.",
 			"server.ready.placeholder.error": "Das Format des URI ('{0}') muss genau einen Ersatzplatzhalter enthalten.",
-			"server.ready.chrome.not.installed": "Die Aktion 'debugWithChrome' erfordert die '{0}'-"
+			"server.ready.chrome.not.installed": "The action '{0}' requires the '{1}' extension."
 		}
 	}
 }

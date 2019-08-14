@@ -334,4 +334,13 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		this.styleElement.innerHTML = content.join('\n');
 	}
+
+	public setOptions(newOptions: Slick.GridOptions<T>) {
+		this._grid.setOptions(newOptions);
+		this._grid.invalidate();
+	}
+
+	public setTableTitle(title: string): void {
+		this._tableContainer.title = title;
+	}
 }

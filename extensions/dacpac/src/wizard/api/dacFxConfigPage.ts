@@ -12,7 +12,7 @@ import * as path from 'path';
 import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
-import { sanitizeStringForFilename } from './utils';
+import { sanitizeStringForFilename, isValidBasename } from './utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -96,9 +96,7 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
-		}).component();
+		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -107,7 +105,9 @@ export abstract class DacFxConfigPage extends BasePage {
 			this.model.filePath = this.fileTextBox.value;
 		});
 
-		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).component();
+		this.databaseLoader = this.view.modelBuilder.loadingComponent().withItem(this.databaseDropdown).withProperties({
+			required: true
+		}).component();
 
 		return {
 			component: this.databaseLoader,
@@ -125,9 +125,13 @@ export abstract class DacFxConfigPage extends BasePage {
 		}
 
 		let values = await this.getDatabaseValues();
-		this.model.database = values[0].name;
-		this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
-		this.fileTextBox.value = this.model.filePath;
+
+		// only update values and regenerate filepath if this is the first time and database isn't set yet
+		if (this.model.database !== values[0].name) {
+			this.model.database = values[0].name;
+			this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
+			this.fileTextBox.value = this.model.filePath;
+		}
 
 		this.databaseDropdown.updateProperties({
 			values: values
@@ -138,9 +142,12 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createFileBrowserParts() {
-		this.fileTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
-		}).component();
+		this.fileTextBox = this.view.modelBuilder.inputBox().withValidation(
+			component => isValidBasename(component.value)
+		)
+			.withProperties({
+				required: true
+			}).component();
 
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
@@ -157,12 +164,24 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected getRootPath(): string {
-		// return rootpath of opened folder in file explorer if one is open, otherwise default to user home directory
-		return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		// use previous file location if there was one
+		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
+			return path.dirname(this.fileTextBox.value);
+		} else { // otherwise use the folder open in the Explorer or the home directory
+			return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+		}
+	}
+
+	protected appendFileExtensionIfNeeded() {
+		// make sure filepath ends in proper file extension if it's a valid name
+		if (!this.model.filePath.endsWith(this.fileExtension) && isValidBasename(this.model.filePath)) {
+			this.model.filePath += this.fileExtension;
+			this.fileTextBox.value = this.model.filePath;
+		}
 	}
 }
 
 interface ConnectionDropdownValue extends azdata.CategoryValue {
-	connection: azdata.connection.Connection;
+	connection: azdata.connection.ConnectionProfile;
 }
 

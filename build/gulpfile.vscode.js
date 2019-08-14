@@ -21,7 +21,6 @@ const json = require('gulp-json-editor');
 const _ = require('underscore');
 const util = require('./lib/util');
 const task = require('./lib/task');
-const ext = require('./lib/extensions');
 const buildfile = require('../src/buildfile');
 const common = require('./lib/optimize');
 const root = path.dirname(__dirname);
@@ -30,19 +29,14 @@ const packageJson = require('../package.json');
 const product = require('../product.json');
 const crypto = require('crypto');
 const i18n = require('./lib/i18n');
-// {{SQL CARBON EDIT}}
-const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
-const platformInfo = require('service-downloader/out/platform').PlatformInformation;
-// {{SQL CARBON EDIT}} - End
+const ext = require('./lib/extensions'); // {{SQL CARBON EDIT}}
 const deps = require('./dependencies');
 const getElectronVersion = require('./lib/electron').getElectronVersion;
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
+const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
-// @ts-ignore
-// {{SQL CARBON EDIT}}
-var del = require('del');
 
 const baseModules = Object.keys(process.binding('natives')).filter(n => !/^_|\//.test(n));
 // {{SQL CARBON EDIT}}
@@ -52,15 +46,21 @@ const nodeModules = [
 	'rxjs/Observable',
 	'rxjs/Subject',
 	'rxjs/Observer',
-	'ng2-charts']
+	'slickgrid/lib/jquery.event.drag-2.3.0',
+	'slickgrid/lib/jquery-ui-1.9.2',
+	'slickgrid/slick.core',
+	'slickgrid/slick.grid',
+	'slickgrid/slick.editors',
+	'slickgrid/slick.dataview']
 	.concat(Object.keys(product.dependencies || {}))
 	.concat(_.uniq(productionDependencies.map(d => d.name)))
 	.concat(baseModules);
 
 // Build
 const vscodeEntryPoints = _.flatten([
-	buildfile.entrypoint('vs/workbench/workbench.main'),
+	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
+	buildfile.serviceWorker,
 	buildfile.workbench,
 	buildfile.code
 ]);
@@ -74,7 +74,7 @@ const vscodeResources = [
 	'out-build/bootstrap-amd.js',
 	'out-build/bootstrap-window.js',
 	'out-build/paths.js',
-	'out-build/vs/**/*.{svg,png,cur,html}',
+	'out-build/vs/**/*.{svg,png,html}',
 	'!out-build/vs/code/browser/**/*.html',
 	'out-build/vs/base/common/performance.js',
 	'out-build/vs/base/node/languagePacks.js',
@@ -88,8 +88,8 @@ const vscodeResources = [
 	'out-build/vs/**/markdown.css',
 	'out-build/vs/workbench/contrib/tasks/**/*.json',
 	'out-build/vs/workbench/contrib/welcome/walkThrough/**/*.md',
-	'out-build/vs/workbench/services/files/**/*.exe',
-	'out-build/vs/workbench/services/files/**/*.md',
+	'out-build/vs/platform/files/**/*.exe',
+	'out-build/vs/platform/files/**/*.md',
 	'out-build/vs/code/electron-browser/workbench/**',
 	'out-build/vs/code/electron-browser/sharedProcess/sharedProcess.js',
 	'out-build/vs/code/electron-browser/issue/issueReporter.js',
@@ -113,50 +113,36 @@ const vscodeResources = [
 	'out-build/sql/media/objectTypes/*.svg',
 	'out-build/sql/media/icons/*.svg',
 	'out-build/sql/workbench/parts/notebook/media/**/*.svg',
+	'out-build/sql/setup.js',
 	'!**/test/**'
 ];
 
-const BUNDLED_FILE_HEADER = [
-	'/*!--------------------------------------------------------',
-	' * Copyright (C) Microsoft Corporation. All rights reserved.',
-	' *--------------------------------------------------------*/'
-].join('\n');
-
 const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
-	task.parallel(
-		util.rimraf('out-vscode'),
-		compileBuildTask
-	),
+	util.rimraf('out-vscode'),
 	common.optimizeTask({
 		src: 'out-build',
 		entryPoints: vscodeEntryPoints,
 		resources: vscodeResources,
 		loaderConfig: common.loaderConfig(nodeModules),
-		header: BUNDLED_FILE_HEADER,
 		out: 'out-vscode',
 		bundleInfo: undefined
 	})
 ));
+gulp.task(optimizeVSCodeTask);
 
-
-const optimizeIndexJSTask = task.define('optimize-index-js', task.series(
+const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
+const minifyVSCodeTask = task.define('minify-vscode', task.series(
 	optimizeVSCodeTask,
+	util.rimraf('out-vscode-min'),
 	() => {
 		const fullpath = path.join(process.cwd(), 'out-vscode/bootstrap-window.js');
 		const contents = fs.readFileSync(fullpath).toString();
 		const newContents = contents.replace('[/*BUILD->INSERT_NODE_MODULES*/]', JSON.stringify(nodeModules));
 		fs.writeFileSync(fullpath, newContents);
-	}
-));
-
-const sourceMappingURLBase = `https://ticino.blob.core.windows.net/sourcemaps/${commit}`;
-const minifyVSCodeTask = task.define('minify-vscode', task.series(
-	task.parallel(
-		util.rimraf('out-vscode-min'),
-		optimizeIndexJSTask
-	),
+	},
 	common.minifyTask('out-vscode', `${sourceMappingURLBase}/core`)
 ));
+gulp.task(minifyVSCodeTask);
 
 // Package
 
@@ -269,28 +255,25 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const out = sourceFolderName;
 
 		const checksums = computeChecksums(out, [
-			'vs/workbench/workbench.main.js',
-			'vs/workbench/workbench.main.css',
+			'vs/workbench/workbench.desktop.main.js',
+			'vs/workbench/workbench.desktop.main.css',
 			'vs/code/electron-browser/workbench/workbench.html',
 			'vs/code/electron-browser/workbench/workbench.js'
 		]);
 
 		const src = gulp.src(out + '/**', { base: '.' })
 			.pipe(rename(function (path) { path.dirname = path.dirname.replace(new RegExp('^' + out), 'out'); }))
-			.pipe(util.setExecutableBit(['**/*.sh']))
-			.pipe(filter(['**', '!**/*.js.map']));
-
-		const root = path.resolve(path.join(__dirname, '..'));
+			.pipe(util.setExecutableBit(['**/*.sh']));
 
 		// {{SQL CARBON EDIT}}
 		ext.packageBuiltInExtensions();
 
-		const sources = es.merge(src, ext.packageExtensionsStream({
-			sourceMappingURLBase: sourceMappingURLBase
-		}));
+		const extensions = gulp.src('.build/extensions/**', { base: '.build', dot: true });
+
+		const sources = es.merge(src, extensions)
+			.pipe(filter(['**', '!**/*.js.map'], { dot: true }));
 
 		let version = packageJson.version;
-		// @ts-ignore JSON checking: quality is optional
 		const quality = product.quality;
 
 		if (quality && quality !== 'stable') {
@@ -327,41 +310,24 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 		const dataApi = gulp.src('src/sql/azdata.d.ts').pipe(rename('out/sql/azdata.d.ts'));
 		const sqlopsAPI = gulp.src('src/sql/sqlops.d.ts').pipe(rename('out/sql/sqlops.d.ts'));
 
-		const depsSrc = [
-			..._.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`])),
-			// @ts-ignore JSON checking: dependencies is optional
-			..._.flatten(Object.keys(product.dependencies || {}).map(d => [`node_modules/${d}/**`, `!node_modules/${d}/**/{test,tests}/**`]))
-		];
+		const telemetry = gulp.src('.build/telemetry/**', { base: '.build/telemetry', dot: true });
 
-		const deps = gulp.src(depsSrc, { base: '.', dot: true })
+		const root = path.resolve(path.join(__dirname, '..'));
+		const dependenciesSrc = _.flatten(productionDependencies.map(d => path.relative(root, d.path)).map(d => [`${d}/**`, `!${d}/**/{test,tests}/**`]));
+
+		const deps = gulp.src(dependenciesSrc, { base: '.', dot: true })
 			.pipe(filter(['**', '!**/package-lock.json']))
 			.pipe(util.cleanNodeModules(path.join(__dirname, '.nativeignore')))
 			.pipe(createAsar(path.join(process.cwd(), 'node_modules'), ['**/*.node', '**/vscode-ripgrep/bin/*', '**/node-pty/build/Release/*'], 'app/node_modules.asar'));
 
-		// {{SQL CARBON EDIT}}
-		let copiedModules = gulp.src([
-			'node_modules/jquery/**/*.*',
-			'node_modules/reflect-metadata/**/*.*',
-			'node_modules/slickgrid/**/*.*',
-			'node_modules/underscore/**/*.*',
-			'node_modules/zone.js/**/*.*',
-			'node_modules/chart.js/**/*.*',
-			'node_modules/chartjs-color/**/*.*',
-			'node_modules/chartjs-color-string/**/*.*',
-			'node_modules/color-convert/**/*.*',
-			'node_modules/color-name/**/*.*',
-			'node_modules/moment/**/*.*'
-		], { base: '.', dot: true });
-
 		let all = es.merge(
-		packageJsonStream,
+			packageJsonStream,
 			productJsonStream,
 			license,
 			api,
-			// {{SQL CARBON EDIT}}
-			copiedModules,
 			dataApi,
-			sqlopsAPI,
+			sqlopsAPI, // {{SQL CARBON EDIT}}
+			telemetry,
 			sources,
 			deps
 		);
@@ -385,9 +351,17 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 			.pipe(util.skipDirectories())
 			.pipe(util.fixWin32DirectoryPermissions())
 			.pipe(electron(_.extend({}, config, { platform, arch, ffmpegChromium: true })))
-			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version']));
+			.pipe(filter(['**', '!LICENSE', '!LICENSES.chromium.html', '!version'], { dot: true }));
 
-		// result = es.merge(result, gulp.src('resources/completions/**', { base: '.' }));
+		if (platform === 'linux') {
+			result = es.merge(result, gulp.src('resources/completions/bash/code', { base: '.' })
+				.pipe(replace('@@APPNAME@@', product.applicationName))
+				.pipe(rename(function (f) { f.basename = product.applicationName; })));
+
+			result = es.merge(result, gulp.src('resources/completions/zsh/_code', { base: '.' })
+				.pipe(replace('@@APPNAME@@', product.applicationName))
+				.pipe(rename(function (f) { f.basename = '_' + product.applicationName; })));
+		}
 
 		if (platform === 'win32') {
 			result = es.merge(result, gulp.src('resources/win32/bin/code.js', { base: 'resources/win32', allowEmpty: true }));
@@ -402,6 +376,7 @@ function packageTask(platform, arch, sourceFolderName, destinationFolderName, op
 				.pipe(replace('@@VERSION@@', version))
 				.pipe(replace('@@COMMIT@@', commit))
 				.pipe(replace('@@APPNAME@@', product.applicationName))
+				.pipe(replace('@@DATAFOLDER@@', product.dataFolderName))
 				.pipe(replace('@@QUALITY@@', quality))
 				.pipe(rename(function (f) { f.basename = product.applicationName; f.extname = ''; })));
 
@@ -448,12 +423,17 @@ BUILD_TARGETS.forEach(buildTarget => {
 		const sourceFolderName = `out-vscode${dashed(minified)}`;
 		const destinationFolderName = `azuredatastudio${dashed(platform)}${dashed(arch)}`;
 
-		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
-			task.parallel(
-				minified ? minifyVSCodeTask : optimizeVSCodeTask,
-				util.rimraf(path.join(buildRoot, destinationFolderName))
-			),
+		const vscodeTaskCI = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}-ci`, task.series(
+			util.rimraf(path.join(buildRoot, destinationFolderName)),
 			packageTask(platform, arch, sourceFolderName, destinationFolderName, opts)
+		));
+		gulp.task(vscodeTaskCI);
+
+		const vscodeTask = task.define(`vscode${dashed(platform)}${dashed(arch)}${dashed(minified)}`, task.series(
+			compileBuildTask,
+			compileExtensionsBuildTask,
+			minified ? minifyVSCodeTask : optimizeVSCodeTask,
+			vscodeTaskCI
 		));
 		gulp.task(vscodeTask);
 	});
@@ -483,6 +463,8 @@ const apiToken = process.env.TRANSIFEX_API_TOKEN;
 gulp.task(task.define(
 	'vscode-translations-push',
 	task.series(
+		compileBuildTask,
+		compileExtensionsBuildTask,
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -502,6 +484,8 @@ gulp.task(task.define(
 gulp.task(task.define(
 	'vscode-translations-export',
 	task.series(
+		compileBuildTask,
+		compileExtensionsBuildTask,
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
@@ -526,38 +510,16 @@ gulp.task('vscode-translations-pull', function () {
 
 gulp.task('vscode-translations-import', function () {
 	// {{SQL CARBON EDIT}} - Replace function body with our own
-	[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
-		gulp.src(`../vscode-localization/${language.id}/build/*/*.xlf`)
-			.pipe(i18n.prepareI18nFiles())
-			.pipe(vfs.dest(`./i18n/${language.folderName}`));
+	return new Promise(function(resolve) {
+		[...i18n.defaultLanguages, ...i18n.extraLanguages].forEach(language => {
+			let languageId = language.translationId ? language.translationId : language.id;
+			gulp.src(`resources/xlf/${languageId}/**/*.xlf`)
+				.pipe(i18n.prepareI18nFiles())
+				.pipe(vfs.dest(`./i18n/${language.folderName}`));
+			resolve();
+		});
 	});
 	// {{SQL CARBON EDIT}} - End
-});
-
-// Sourcemaps
-
-gulp.task('upload-vscode-sourcemaps', () => {
-	const vs = gulp.src('out-vscode-min/**/*.map', { base: 'out-vscode-min' })
-		.pipe(es.mapSync(f => {
-			f.path = `${f.base}/core/${f.relative}`;
-			return f;
-		}));
-
-	const extensionsOut = gulp.src('extensions/**/out/**/*.map', { base: '.' });
-	const extensionsDist = gulp.src('extensions/**/dist/**/*.map', { base: '.' });
-
-	return es.merge(vs, extensionsOut, extensionsDist)
-		.pipe(es.through(function (data) {
-			// debug
-			console.log('Uploading Sourcemap', data.relative);
-			this.emit('data', data);
-		}))
-		.pipe(azure.upload({
-			account: process.env.AZURE_STORAGE_ACCOUNT,
-			key: process.env.AZURE_STORAGE_ACCESS_KEY,
-			container: 'sourcemaps',
-			prefix: commit + '/'
-		}));
 });
 
 // This task is only run for the MacOS build
@@ -652,51 +614,3 @@ function getSettingsSearchBuildId(packageJson) {
 		throw new Error('Could not determine build number: ' + e.toString());
 	}
 }
-
-// {{SQL CARBON EDIT}}
-// Install service locally before building carbon
-
-function installService() {
-	let config = require('../extensions/mssql/src/config.json');
-	return platformInfo.getCurrent().then(p => {
-		let runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '../extensions/mssql/src', config.installDirectory);
-		var installer = new serviceDownloader(config);
-		let serviceInstallFolder = installer.getInstallDirectory(runtime);
-		console.log('Cleaning up the install folder: ' + serviceInstallFolder);
-		return del(serviceInstallFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
-	});
-}
-
-gulp.task('install-sqltoolsservice', () => {
-	return installService();
-});
-
-function installSsmsMin() {
-	const config = require('../extensions/admin-tool-ext-win/src/config.json');
-	return platformInfo.getCurrent().then(p => {
-		const runtime = p.runtimeId;
-		// fix path since it won't be correct
-		config.installDirectory = path.join(__dirname, '..', 'extensions', 'admin-tool-ext-win', config.installDirectory);
-		var installer = new serviceDownloader(config);
-		const serviceInstallFolder = installer.getInstallDirectory(runtime);
-		const serviceCleanupFolder = path.join(serviceInstallFolder, '..');
-		console.log('Cleaning up the install folder: ' + serviceCleanupFolder);
-		return del(serviceCleanupFolder + '/*').then(() => {
-			console.log('Installing the service. Install folder: ' + serviceInstallFolder);
-			return installer.installService(runtime);
-		}, delError => {
-			console.log('failed to delete the install folder error: ' + delError);
-		});
-	});
-}
-
-gulp.task('install-ssmsmin', () => {
-	return installSsmsMin();
-});

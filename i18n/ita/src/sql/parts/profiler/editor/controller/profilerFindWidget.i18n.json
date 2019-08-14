@@ -11,7 +11,7 @@
 	"label.previousMatchButton": "Corrispondenza precedente",
 	"label.nextMatchButton": "Trova successivo",
 	"label.closeButton": "Chiudi",
-	"title.matchesCountLimit": "Vengono evidenziati solo i primi 999 risultati, ma tutte le operazioni di ricerca vengono eseguite sull'intero testo.",
+	"title.matchesCountLimit": "La ricerca ha restituito un numero elevato di risultati. Verranno evidenziate solo le prime 999 corrispondenze.",
 	"label.matchesLocation": "{0} di {1}",
 	"label.noResults": "Nessun risultato"
 }

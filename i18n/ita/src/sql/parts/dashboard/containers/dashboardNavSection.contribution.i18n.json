@@ -12,5 +12,10 @@
 	"dashboard.container.left-nav-bar.icon.dark": "Percorso dell'icona quando si utilizza un tema scuro",
 	"dashboard.container.left-nav-bar.title": "Titolo della sezione nav da mostrare all'utente.",
 	"dashboard.container.left-nav-bar.container": "Contenitore che sarrà visualizzato in questa sezione di navigazione.",
-	"dashboard.container.left-nav-bar": "L'elenco dei contenitori di dashboard che verrà visualizzato in questa sezione di navigazione."
+	"dashboard.container.left-nav-bar": "L'elenco dei contenitori di dashboard che verrà visualizzato in questa sezione di navigazione.",
+	"opticon": "la proprietà `icon` può essere omessa o deve essere una stringa o un valore letterale come `{dark, light}`",
+	"navSection.missingTitle": "Nessun titolo nella sezione nav specificato per l'estensione.",
+	"navSection.missingContainer": "Nella sezione nav non è stato specificato alcun contenitore per l'estensione.",
+	"navSection.moreThanOneDashboardContainersError": "Per ogni spazio è necessario definire un solo contenitore di dashboard.",
+	"navSection.invalidContainer": "NAV_SECTION all'interno di un altro NAV_SECTION non è un contenitore valido per l'estensione."
 }

@@ -3,8 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as os from 'os';
-const INVALID_FILE_CHARS_Windows = /[\\/:\*\?"<>\|]/g;
-const INVALID_FILE_CHARS = /[\\/]/g;
+import * as path from 'path';
+
+const WINDOWS_INVALID_FILE_CHARS = /[\\/:\*\?"<>\|]/g;
+const UNIX_INVALID_FILE_CHARS = /[\\/]/g;
+const isWindows = os.platform() === 'win32';
+const WINDOWS_FORBIDDEN_NAMES = /^(con|prn|aux|clock\$|nul|lpt[0-9]|com[0-9])$/i;
 
 /**
  * Determines if a given character is a valid filename character
@@ -16,17 +20,16 @@ export function isValidFilenameCharacter(c: string): boolean {
 		return false;
 	}
 	let isWindows = os.platform() === 'win32';
-	INVALID_FILE_CHARS_Windows.lastIndex = 0;
-	INVALID_FILE_CHARS.lastIndex = 0;
-	if (isWindows && INVALID_FILE_CHARS_Windows.test(c)) {
+	WINDOWS_INVALID_FILE_CHARS.lastIndex = 0;
+	UNIX_INVALID_FILE_CHARS.lastIndex = 0;
+	if (isWindows && WINDOWS_INVALID_FILE_CHARS.test(c)) {
 		return false;
-	} else if (!isWindows && INVALID_FILE_CHARS.test(c)) {
+	} else if (!isWindows && UNIX_INVALID_FILE_CHARS.test(c)) {
 		return false;
 	}
 
 	return true;
 }
-
 
 /**
  * Replaces invalid filename characters in a string with underscores
@@ -40,4 +43,49 @@ export function sanitizeStringForFilename(s: string): string {
 	}
 
 	return result;
+}
+
+/**
+ * Returns true if the string is a valid filename
+ * Logic is copied from src\vs\base\common\extpath.ts
+ * @param name filename to check
+ */
+export function isValidBasename(name: string | null | undefined): boolean {
+	const invalidFileChars = isWindows ? WINDOWS_INVALID_FILE_CHARS : UNIX_INVALID_FILE_CHARS;
+
+	if (!name) {
+		return false;
+	}
+
+	if (isWindows && name[name.length - 1] === '.') {
+		return false; // Windows: file cannot end with a "."
+	}
+
+	let basename = path.parse(name).name;
+	if (!basename || basename.length === 0 || /^\s+$/.test(basename)) {
+		return false; // require a name that is not just whitespace
+	}
+
+	invalidFileChars.lastIndex = 0;
+	if (invalidFileChars.test(basename)) {
+		return false; // check for certain invalid file characters
+	}
+
+	if (isWindows && WINDOWS_FORBIDDEN_NAMES.test(basename)) {
+		return false; // check for certain invalid file names
+	}
+
+	if (basename === '.' || basename === '..') {
+		return false; // check for reserved values
+	}
+
+	if (isWindows && basename.length !== basename.trim().length) {
+		return false; // Windows: file cannot end with a whitespace
+	}
+
+	if (basename.length > 255) {
+		return false; // most file systems do not allow files > 255 length
+	}
+
+	return true;
 }

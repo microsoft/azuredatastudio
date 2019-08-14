@@ -11,9 +11,8 @@ import * as colors from 'vs/platform/theme/common/colorRegistry';
 import { editorLineNumbers } from 'vs/editor/common/view/editorColorRegistry';
 import { IThemeService, ITheme } from 'vs/platform/theme/common/themeService';
 
-import { IInsightData } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
-import { IInsightOptions, IInsight } from './interfaces';
-import { ChartType, DataDirection, LegendPosition, DataType, IPointDataSet, customMixin } from 'sql/workbench/parts/dashboard/widgets/insights/views/charts/interfaces';
+import { IInsight, IInsightData, IPointDataSet, customMixin } from './interfaces';
+import { IInsightOptions, DataDirection, ChartType, LegendPosition, DataType } from 'sql/workbench/parts/charts/common/interfaces';
 
 const noneLineGraphs = [ChartType.Doughnut, ChartType.Pie];
 
@@ -129,7 +128,7 @@ export class Graph implements IInsight {
 					chartData = data.rows.map((row, i) => {
 						return {
 							data: row.map(item => Number(item)),
-							label: localize('series', 'Series {0}', i)
+							label: localize('series', "Series {0}", i)
 						};
 					});
 				}
@@ -145,7 +144,7 @@ export class Graph implements IInsight {
 					chartData = data.rows[0].slice(1).map((row, i) => {
 						return {
 							data: data.rows.map(row => Number(row[i + 1])),
-							label: localize('series', 'Series {0}', i + 1)
+							label: localize('series', "Series {0}", i + 1)
 						};
 					});
 				}

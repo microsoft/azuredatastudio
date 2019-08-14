@@ -22,7 +22,7 @@
 		"out/extension": {
 			"server.ready.nocapture.error": "El URI de formato (\"{0}\") usa un marcador de posición de sustitución, pero el patrón no capturó nada.",
 			"server.ready.placeholder.error": "El URI de formato (\"{0}\") debe contener exactamente un marcador de posición de sustitución.",
-			"server.ready.chrome.not.installed": "La acción \"debugWithChrome\" requiere \"{0}\""
+			"server.ready.chrome.not.installed": "The action '{0}' requires the '{1}' extension."
 		}
 	}
 }

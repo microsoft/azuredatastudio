@@ -31,6 +31,7 @@ describe('ServerGroupTreeNode.info', function(): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+		mockCmsUtils = TypeMoq.Mock.ofType<CmsUtils>();
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object, mockCmsUtils.object);
 		mockTreeChangeHandler = TypeMoq.Mock.ofType<ICmsResourceTreeChangeHandler>();
 		mockResourceTreeDataProvider1 = TypeMoq.Mock.ofType<cmsResource.ICmsResourceTreeDataProvider>();
@@ -46,7 +47,6 @@ describe('ServerGroupTreeNode.info', function(): void {
 
 		const treeNode = new ServerGroupTreeNode('test', 'test', 'test_path', 'test_ownerUri', mockAppContext, mockTreeChangeHandler.object, null);
 
-		should(treeNode.nodePathValue).equal('cms_serverGroup_test');
 		should(treeNode.relativePath).equal('test_path');
 
 		const treeItem = await treeNode.getTreeItem();

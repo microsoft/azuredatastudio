@@ -9,6 +9,9 @@
 	"saveAsCsv": "另存為 CSV",
 	"saveAsJson": "另存為 JSON",
 	"saveAsExcel": "另存為 Excel",
+	"saveAsXml": "另存為 xml",
 	"copySelection": "複製",
+	"copyWithHeaders": "隨標頭一同複製",
+	"selectAll": "全選",
 	"copyMessages": "複製"
 }

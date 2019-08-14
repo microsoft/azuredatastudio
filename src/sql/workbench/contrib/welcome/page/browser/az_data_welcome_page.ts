@@ -9,12 +9,25 @@ import { localize } from 'vs/nls';
 export function used() {
 }
 
+let productQuality: string;
+
+export function setProductQuality(quality: string): void {
+	productQuality = quality;
+}
+
+function showDeploySection(): boolean {
+	// only show the deploy section for insider build and dev environment for now until the feature is stable
+	// tracking issue: https://github.com/microsoft/azuredatastudio/issues/5987
+	return productQuality !== 'stable';
+}
+
+
 export default () => `
 <div class="welcomePageContainer">
 	<div class="welcomePage">
 		<div class="title">
 			<h1 class="caption">${escape(localize('welcomePage.azdata', "Azure Data Studio"))}</h1>
-			<p class="subtitle detail">${escape(localize({ key: 'welcomePage.azdataTagline', comment: ['Shown as subtitle on the Welcome page.'] }, ""))}</p>
+			<p class="subtitle detail"></p>
 		</div>
 		<div class="row">
 			<div class="splash">
@@ -26,6 +39,14 @@ export default () => `
 						<li><a href="command:notebook.command.new">${escape(localize('welcomePage.newNotebook', "New notebook"))}</a></li>
 						<li class="mac-only"><a href="command:workbench.action.files.openLocalFileFolder">${escape(localize('welcomePage.openFileMac', "Open file"))}</a></li>
 						<li class="windows-only linux-only"><a href="command:workbench.action.files.openFile">${escape(localize('welcomePage.openFileLinuxPC', "Open file"))}</a></li>
+					</ul>
+				</div>
+				<div class="section deploy" style="display:${showDeploySection() ? 'block' : 'none'}">
+					<h2 class="caption">${escape(localize('welcomePage.deploy', "Deploy"))}</h2>
+					<ul>
+						<li><a href="command:azdata.resource.sql-image.deploy">${escape(localize('welcomePage.deploy-image', "Deploy SQL Server on Docker…"))}</a></li>
+						<li><a href="command:azdata.resource.sql-bdc.deploy">${escape(localize('welcomePage.deploy-bdc', "Deploy SQL Server big data cluster…"))}</a></li>
+						<li><a href="command:azdata.resource.deploy">${escape(localize('welcomePage.MoreOptions', "More…"))}</a></li>
 					</ul>
 				</div>
 				<div class="section recent">
@@ -60,7 +81,8 @@ export default () => `
 				<div class="section learn">
 					<h2 class="caption">${escape(localize('welcomePage.learn', "Learn"))}</h2>
 					<div class="list">
-						<div class="item showCommands"><button data-href="command:workbench.action.showCommands"><h3 class="caption">${escape(localize('welcomePage.showCommands', "Find and run all commands"))}</h3> <span class="detail">${escape(localize('welcomePage.showCommandsDescription', "Rapidly access and search commands from the Command Palette ({0})")).replace('{0}', '<span class="shortcut" data-command="workbench.action.showCommands"></span>')}</span></button></div>
+						<div class="item showCommands"><button data-href="command:workbench.action.showCommands"><h3 class="caption">${escape(localize('welcomePage.showCommands', "Find and run all commands"))}</h3> <span class="detail">${escape(localize('welcomePage.showCommandsDescription', "Rapidly access and search commands from the Command Palette ({0})"))
+		.replace('{0}', '<span class="shortcut" data-command="workbench.action.showCommands"></span>')}</span></button></div>
 						<div class="item showInterfaceOverview"><button data-href="https://aka.ms/azdata-blog"><h3 class="caption">${escape(localize('welcomePage.azdataBlog', "Discover what's new in the latest release"))}</h3> <span class="detail">${escape(localize('welcomePage.azdataBlogDescription', "New monthly blog posts each month showcasing our new features"))}</span></button></div>
 						<div class="item showInteractivePlayground"><button data-href="https://twitter.com/azuredatastudio"><h3 class="caption">${escape(localize('welcomePage.followTwitter', "Follow us on Twitter"))}</h3> <span class="detail">${escape(localize('welcomePage.followTwitterDescription', "Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers."))}</span></button></div>
 					</div>

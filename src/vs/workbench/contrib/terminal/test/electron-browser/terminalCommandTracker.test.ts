@@ -4,8 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Terminal, TerminalCore } from 'vscode-xterm';
-import { TerminalCommandTracker } from 'vs/workbench/contrib/terminal/browser/terminalCommandTracker';
+import { Terminal, TerminalCore } from 'xterm';
+import { CommandTrackerAddon } from 'vs/workbench/contrib/terminal/browser/addons/commandTrackerAddon';
 import { isWindows } from 'vs/base/common/platform';
 
 interface TestTerminalCore extends TerminalCore {

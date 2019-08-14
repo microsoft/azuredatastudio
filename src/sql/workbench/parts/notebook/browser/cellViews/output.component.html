@@ -1,0 +1,15 @@
+<!--
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+-->
+<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
+	<div style="flex: 0 0 auto; user-select: none;">
+		<div #output class="output-userselect">
+			<ng-template component-host>
+			</ng-template>
+			<pre *ngIf="hasError" class="p-Widget jp-RenderedText">{{errorText}}</pre>
+		</div>
+	</div>
+</div>

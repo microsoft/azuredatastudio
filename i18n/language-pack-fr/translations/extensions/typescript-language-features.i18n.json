@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "Activez/désactivez les diagnostics de suggestion pour les fichiers TypeScript dans l'éditeur. Nécessite l'utilisation de TypeScript 2.8 ou d'une version plus récente dans l'espace de travail.",
 			"typescript.preferences.quoteStyle": "Style de guillemet par défaut à utiliser pour les corrections rapides : 'single' pour les guillemets simples, 'double' pour les guillemets doubles ou 'auto' pour déduire le type de guillemet à partir des importations existantes. Nécessite l'utilisation de TypeScript 2.9 ou d'une version plus récente dans l'espace de travail.",
 			"typescript.preferences.importModuleSpecifier": "Style de chemin préféré pour les importations automatiques.",
-			"typescript.preferences.importModuleSpecifier.auto": "Déduire le type de chemin le plus court.",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "Relatif à l’emplacement du fichier.",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "Basé sur le `baseUrl` configuré dans votre `jsconfig.json` / `tsconfig.json`.",
 			"typescript.updateImportsOnFileMove.enabled": "Activer/désactiver la mise à jour automatique des chemins d’importation quand vous renommez ou déplacez un fichier dans VS Code. Nécessite l’utilisation de TypeScript 2.9 ou plus récent dans l’espace de travail.",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "Activer/désactiver des enquêtes ponctuelles qui nous aident à améliorer le support JavaScript et TypeScript de VS Code.",
 			"configuration.suggest.completeJSDocs": "Activez/désactivez la suggestion pour commenter JSDoc.",
 			"typescript.preferences.renameShorthandProperties": "Activez/désactivez l'introduction d'alias pour les propriétés raccourcies d'objet pendant les renommages. Nécessite l'utilisation de TypeScript 3.4 ou version ultérieure dans l'espace de travail."
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "Impossible de charger la version TypeScript dans ce chemin",
@@ -102,6 +105,7 @@
 			"neverAgain": "Désactiver les enquêtes JS/TS"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "Pour activer les fonctionnalités de langage JavaScript/TypeScript à l'échelle du projet, excluez les dossiers contenant de nombreux fichiers, par exemple : {0}",
 			"hintExclude.generic": "Pour activer les fonctionnalités de langage JavaScript/TypeScript à l'échelle du projet, excluez les dossiers volumineux contenant des fichiers sources inutilisés.",
 			"large.label": "Configurer les exclusions",

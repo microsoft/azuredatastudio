@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/big-data-cluster/package" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">Support for managing SQL Server big data clusters</source>
+        <target state="translated">SQL Server ビッグ データ クラスターの管理をサポート</target>
+      </trans-unit>
+      <trans-unit id="text.sqlServerBigDataClusters">
+        <source xml:lang="en">SQL Server big data clusters</source>
+        <target state="translated">SQL Server ビッグ データ クラスター</target>
+      </trans-unit>
+      <trans-unit id="command.addController.title">
+        <source xml:lang="en">Connect to Controller</source>
+        <target state="translated">コントローラーに接続する</target>
+      </trans-unit>
+      <trans-unit id="command.deleteController.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">削除</target>
+      </trans-unit>
+      <trans-unit id="command.refreshController.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">最新の情報に更新</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/controllerTreeNode" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="textSqlServers">
+        <source xml:lang="en">SQL Servers</source>
+        <target state="translated">SQL Server</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="textBigDataClusterControllerWithDots">
+        <source xml:lang="en">Add big data cluster controller...</source>
+        <target state="translated">ビッグ データ クラスター コントローラーを追加...</target>
+      </trans-unit>
+      <trans-unit id="textConnectToController">
+        <source xml:lang="en">Connect to Controller</source>
+        <target state="translated">コントローラーに接続する</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="textAddNewController">
+        <source xml:lang="en">Add New Controller</source>
+        <target state="translated">新しいコントローラーを追加する</target>
+      </trans-unit>
+      <trans-unit id="textUrlLower">
+        <source xml:lang="en">url</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="textUsernameLower">
+        <source xml:lang="en">username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="textPasswordLower">
+        <source xml:lang="en">password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="textRememberPassword">
+        <source xml:lang="en">Remember Password</source>
+        <target state="translated">パスワードを記録する</target>
+      </trans-unit>
+      <trans-unit id="textUrlCapital">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="textUsernameCapital">
+        <source xml:lang="en">Username</source>
+        <target state="translated">ユーザー名</target>
+      </trans-unit>
+      <trans-unit id="textPasswordCapital">
+        <source xml:lang="en">Password</source>
+        <target state="translated">パスワード</target>
+      </trans-unit>
+      <trans-unit id="textAdd">
+        <source xml:lang="en">Add</source>
+        <target state="translated">追加</target>
+      </trans-unit>
+      <trans-unit id="textCancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">キャンセル</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/extension" source-language="en" target-language="ja" datatype="plaintext">
+    <body>
+      <trans-unit id="textYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">はい</target>
+      </trans-unit>
+      <trans-unit id="textNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">いいえ</target>
+      </trans-unit>
+      <trans-unit id="textConfirmDeleteController">
+        <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
+        <target state="translated">'{0}' を削除しますか?</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

@@ -14,30 +14,11 @@ const bootstrapWindow = require('../../../../bootstrap-window');
 // Setup shell environment
 process['lazyEnv'] = getLazyEnv();
 
-// {{SQL CARBON EDIT}}
-
-/* eslint-disable */
-
-// SQL global imports
-const jQuery = require('jquery');
-const $ = jQuery;
-require('slickgrid/lib/jquery.event.drag-2.3.0');
-require('slickgrid/lib/jquery-ui-1.9.2');
-const _ = require('underscore')._;
-require('slickgrid/slick.core');
-const Slick = window.Slick;
-require('slickgrid/slick.grid');
-require('slickgrid/slick.editors');
-require('slickgrid/slick.dataview');
-require('reflect-metadata');
-require('zone.js');
-// {{SQL CARBON EDIT}} - End
-
 // Load workbench main
 bootstrapWindow.load([
-	'vs/workbench/workbench.main',
-	'vs/nls!vs/workbench/workbench.main',
-	'vs/css!vs/workbench/workbench.main'
+	'vs/workbench/workbench.desktop.main',
+	'vs/nls!vs/workbench/workbench.desktop.main',
+	'vs/css!vs/workbench/workbench.desktop.main'
 ],
 	function (workbench, configuration) {
 		perf.mark('didLoadWorkbenchMain');
@@ -46,7 +27,7 @@ bootstrapWindow.load([
 			perf.mark('main/startup');
 
 			// @ts-ignore
-			return require('vs/workbench/electron-browser/main').main(configuration);
+			return require('vs/workbench/electron-browser/desktop.main').main(configuration);
 		});
 	}, {
 		removeDeveloperKeybindingsAfterLoad: true,
@@ -54,13 +35,7 @@ bootstrapWindow.load([
 			showPartsSplash(windowConfig);
 		},
 		beforeLoaderConfig: function (windowConfig, loaderConfig) {
-			loaderConfig.recordStats = !!windowConfig['prof-modules'];
-			if (loaderConfig.nodeCachedData) {
-				const onNodeCachedData = window['MonacoEnvironment'].onNodeCachedData = [];
-				loaderConfig.nodeCachedData.onData = function () {
-					onNodeCachedData.push(arguments);
-				};
-			}
+			loaderConfig.recordStats = true;
 		},
 		beforeRequire: function () {
 			perf.mark('willLoadWorkbenchMain');
@@ -68,7 +43,6 @@ bootstrapWindow.load([
 	});
 
 /**
- * // configuration: IWindowConfiguration
  * @param {{
  *	partsSplashPath?: string,
  *	highContrast?: boolean,
@@ -89,7 +63,7 @@ function showPartsSplash(configuration) {
 		}
 	}
 
-	// high contrast mode has been turned on from the outside, e.g OS -> ignore stored colors and layouts
+	// high contrast mode has been turned on from the outside, e.g. OS -> ignore stored colors and layouts
 	if (data && configuration.highContrast && data.baseTheme !== 'hc-black') {
 		data = undefined;
 	}

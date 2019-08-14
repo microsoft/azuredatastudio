@@ -9,8 +9,9 @@
 	"saveAsCsv": "Enregistrer au format CSV",
 	"saveAsJson": "Enregistrer au format JSON",
 	"saveAsExcel": "Enregistrer au format Excel",
+	"saveAsXml": "Enregistrer au format XML",
 	"copySelection": "Copier",
 	"copyWithHeaders": "Copier avec en-têtes",
 	"selectAll": "Tout sélectionner",
-	"copyMessages": "Copie"
+	"copyMessages": "Copier"
 }

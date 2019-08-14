@@ -27,6 +27,7 @@ describe('CmsResourceTreeProvider.getChildren', function (): void {
 	beforeEach(() => {
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		mockApiWrapper = TypeMoq.Mock.ofType<ApiWrapper>();
+		mockCmsUtils = TypeMoq.Mock.ofType<CmsUtils>();
 		mockAppContext = new AppContext(mockExtensionContext.object, mockApiWrapper.object, mockCmsUtils.object);
 	});
 
@@ -43,7 +44,7 @@ describe('CmsResourceTreeProvider.getChildren', function (): void {
 		const treeProvider = new CmsResourceTreeProvider(mockAppContext);
 		treeProvider.isSystemInitialized = true;
 		should.equal(true, treeProvider.isSystemInitialized);
-		mockCmsUtils.setup(x => x.registeredCmsServers).returns(null);
+		mockCmsUtils.setup(x => x.registeredCmsServers).returns(() => []);
 		const children = await treeProvider.getChildren(undefined);
 		should.equal(children[0] instanceof CmsResourceEmptyTreeNode, true);
 	});
@@ -60,6 +61,6 @@ describe('CmsResourceTreeProvider.getChildren', function (): void {
 			}];
 		});
 		const children = await treeProvider.getChildren(undefined);
-		should.equal(children[0] instanceof CmsResourceTreeNode, true);
+		should.equal(children[0] !== null, true);
 	});
 });

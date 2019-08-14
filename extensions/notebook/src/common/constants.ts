@@ -15,6 +15,7 @@ export const sparkMagicVersion = '0.12.6.1';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
+export const maxBookSearchDepth = 'maxBookSearchDepth';
 
 export const winPlatform = 'win32';
 
@@ -34,6 +35,11 @@ export enum BuiltInCommands {
 
 export enum CommandContext {
 	NotebookPythonInstalled = 'notebook:pythonInstalled'
+}
+
+export enum PythonPkgType {
+	Pip = 'Pip',
+	Anaconda = 'Anaconda'
 }
 
 export const pythonOfflinePipPackagesUrl = 'https://go.microsoft.com/fwlink/?linkid=2092867';

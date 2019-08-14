@@ -18,10 +18,10 @@ import * as Constants from 'sql/platform/connection/common/constants';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as ConnectionContracts from 'sql/workbench/parts/connection/common/connection';
 import { ConnectionStatusManager } from 'sql/platform/connection/common/connectionStatusManager';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
 import { ConnectionGlobalStatus } from 'sql/workbench/parts/connection/common/connectionGlobalStatus';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import * as TelemetryUtils from 'sql/platform/telemetry/telemetryUtilities';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import * as TelemetryUtils from 'sql/platform/telemetry/common/telemetryUtilities';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import * as QueryConstants from 'sql/workbench/parts/query/common/constants';
@@ -43,7 +43,6 @@ import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { Event, Emitter } from 'vs/base/common/event';
-import { IStatusbarService } from 'vs/platform/statusbar/common/statusbar';
 import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -60,11 +59,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 	private _iconProviders = new Map<string, azdata.IconProvider>();
-
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
-
-	private _connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
-
 	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
 	private _onDeleteConnectionProfile = new Emitter<void>();
 	private _onConnect = new Emitter<IConnectionParams>();
@@ -72,7 +67,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	private _onConnectRequestSent = new Emitter<void>();
 	private _onConnectionChanged = new Emitter<IConnectionParams>();
 	private _onLanguageFlavorChanged = new Emitter<azdata.DidChangeLanguageFlavorParams>();
-	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._statusBarService);
+	private _connectionGlobalStatus = new ConnectionGlobalStatus(this._notificationService);
 
 	private _mementoContext: Memento;
 	private _mementoObj: any;
@@ -80,6 +75,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	constructor(
 		private _connectionStore: ConnectionStore,
+		private _connectionStatusManager: ConnectionStatusManager,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
 		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -88,19 +84,21 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@IQuickInputService private _quickInputService: IQuickInputService,
-		@IStatusbarService private _statusBarService: IStatusbarService,
+		@INotificationService private _notificationService: INotificationService,
 		@IResourceProviderService private _resourceProviderService: IResourceProviderService,
 		@IAngularEventingService private _angularEventing: IAngularEventingService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@ILogService private _logService: ILogService,
 		@IStorageService private _storageService: IStorageService,
-		@IEnvironmentService private _environmentService: IEnvironmentService,
-		@INotificationService private _notificationService: INotificationService
+		@IEnvironmentService private _environmentService: IEnvironmentService
 	) {
 		super();
 
 		if (!this._connectionStore) {
 			this._connectionStore = _instantiationService.createInstance(ConnectionStore);
+		}
+		if (!this._connectionStatusManager) {
+			this._connectionStatusManager = new ConnectionStatusManager(this._capabilitiesService, this._logService, this._environmentService, this._notificationService);
 		}
 
 		if (this._storageService) {
@@ -237,7 +235,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param connectionProfile Connection Profile
 	 */
 	public async addSavedPassword(connectionProfile: IConnectionProfile): Promise<IConnectionProfile> {
-		await this.fillInAzureTokenIfNeeded(connectionProfile);
+		await this.fillInOrClearAzureToken(connectionProfile);
 		return this._connectionStore.addSavedPassword(connectionProfile).then(result => result.profile);
 	}
 
@@ -277,7 +275,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				}
 
 				// Fill in the Azure account token if needed and open the connection dialog if it fails
-				let tokenFillSuccess = await self.fillInAzureTokenIfNeeded(newConnection);
+				let tokenFillSuccess = await self.fillInOrClearAzureToken(newConnection);
 
 				// If the password is required and still not loaded show the dialog
 				if ((!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
@@ -446,9 +444,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			if (callbacks.onConnectStart) {
 				callbacks.onConnectStart();
 			}
-			let tokenFillSuccess = await this.fillInAzureTokenIfNeeded(connection);
+			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
 			if (!tokenFillSuccess) {
-				throw new Error(nls.localize('connection.noAzureAccount', 'Failed to get Azure account token for connection'));
+				throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 			}
 			this.createNewConnection(uri, connection).then(connectionResult => {
 				if (connectionResult && connectionResult.connected) {
@@ -487,7 +485,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					});
 				} else {
 					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', 'Connection Not Accepted'));
+						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 					}
 					resolve(connectionResult);
 				}
@@ -502,7 +500,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private handleConnectionError(connection: IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
 		return new Promise<IConnectionResult>((resolve, reject) => {
-			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', 'Connection Not Accepted');
+			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
 			if (options.showFirewallRuleOnError && connectionResult.errorCode) {
 				this.handleFirewallRuleError(connection, connectionResult).then(success => {
 					if (success) {
@@ -614,6 +612,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		this._editorService.editors.map(editor => {
 			if (editor instanceof DashboardInput) {
 				if (DashboardInput.profileMatches(profile, editor.connectionProfile)) {
+					editor.connectionProfile.connectionName = profile.connectionName;
 					editor.connectionProfile.databaseName = profile.databaseName;
 					this._editorService.openEditor(editor)
 						.then(() => {
@@ -693,7 +692,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public hasRegisteredServers(): boolean {
-		return this.doHasRegisteredServers(this.getConnectionGroups());
+		const groups: ConnectionProfileGroup[] = this.getConnectionGroups();
+		const hasRegisteredServers: boolean = this.doHasRegisteredServers(groups);
+		groups.forEach(cpg => cpg.dispose());
+		return hasRegisteredServers;
 	}
 
 	private doHasRegisteredServers(root: ConnectionProfileGroup[]): boolean {
@@ -778,8 +780,17 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return defaultProvider && this._providers.has(defaultProvider) ? defaultProvider : undefined;
 	}
 
-	private async fillInAzureTokenIfNeeded(connection: IConnectionProfile): Promise<boolean> {
-		if (connection.authenticationType !== Constants.azureMFA || connection.options['azureAccountToken']) {
+	/**
+	 * Fills in the Azure account token if it's needed for this connection and doesn't already have one
+	 * and clears it if it isn't.
+	 * @param connection The connection to fill in or update
+	 */
+	private async fillInOrClearAzureToken(connection: IConnectionProfile): Promise<boolean> {
+		if (connection.authenticationType !== Constants.azureMFA) {
+			connection.options['azureAccountToken'] = undefined;
+			return true;
+		}
+		if (connection.options['azureAccountToken']) {
 			return true;
 		}
 		let accounts = await this._accountManagementService.getAccountsForProvider('azurePublicCloud');
@@ -1061,11 +1072,11 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return new Promise<boolean>((resolve, reject) => {
 			// Setup our cancellation choices
 			let choices: { key, value }[] = [
-				{ key: nls.localize('connectionService.yes', 'Yes'), value: true },
-				{ key: nls.localize('connectionService.no', 'No'), value: false }
+				{ key: nls.localize('connectionService.yes', "Yes"), value: true },
+				{ key: nls.localize('connectionService.no', "No"), value: false }
 			];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', 'Are you sure you want to cancel this connection?'), ignoreFocusLost: true }).then((choice) => {
+			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
 				let confirm = choices.find(x => x.key === choice);
 				resolve(confirm && confirm.value);
 			});
@@ -1431,5 +1442,55 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	public getProviderProperties(providerName: string): ConnectionProviderProperties {
 		let connectionProvider = this._providers.get(providerName);
 		return connectionProvider && connectionProvider.properties;
+	}
+
+	/**
+	 * Get known connection profiles including active connections, recent connections and saved connections.
+	 * @param activeConnectionsOnly Indicates whether only get the active connections, default value is false.
+	 * @returns array of connections
+	 **/
+	public getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
+
+		// 1. Active Connections
+		const connections = this.getActiveConnections();
+
+		const connectionExists: (conn: ConnectionProfile) => boolean = (conn) => {
+			return connections.find(existingConnection => existingConnection.id === conn.id) !== undefined;
+		};
+
+		if (!activeConnectionsOnly) {
+			// 2. Recent Connections
+			this.getRecentConnections().forEach(connection => {
+				if (!connectionExists(connection)) {
+					connections.push(connection);
+				}
+			});
+
+			// 3. Saved Connections
+			const groups = this.getConnectionGroups();
+			if (groups && groups.length > 0) {
+				groups.forEach(group => {
+					this.getConnectionsInGroup(group).forEach(savedConnection => {
+						if (!connectionExists(savedConnection)) {
+							connections.push(savedConnection);
+						}
+					});
+				});
+			}
+		}
+		return connections;
+	}
+
+	private getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
+		const connections = [];
+		if (group) {
+			if (group.connections && group.connections.length > 0) {
+				connections.push(...group.connections);
+			}
+			if (group.children && group.children.length > 0) {
+				group.children.forEach(child => connections.push(...this.getConnectionsInGroup(child)));
+			}
+		}
+		return connections;
 	}
 }

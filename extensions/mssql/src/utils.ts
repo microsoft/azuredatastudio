@@ -10,6 +10,8 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
+import * as fs from 'fs';
+import { promisify } from 'util';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -29,8 +31,46 @@ export function getAppDataPath() {
 	}
 }
 
-export function removeOldLogFiles(prefix: string): JSON {
-	return findRemoveSync(getDefaultLogDir(), { prefix: `${prefix}_`, age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
+export namespace pfs {
+
+	export function exists(path: string): Promise<boolean> {
+		return promisify(fs.exists)(path);
+	}
+
+	export function mkdir(path: string, mode?: number): Promise<void> {
+		return promisify(fs.mkdir)(path, mode);
+	}
+}
+
+/**
+ * Get a file name that is not already used in the target directory
+ * @param filePath source notebook file name
+ * @param fileExtension file type
+ */
+export function findNextUntitledEditorName(filePath: string): string {
+	const fileExtension = path.extname(filePath);
+	const baseName = path.basename(filePath, fileExtension);
+	let idx = 0;
+	let title = `${baseName}`;
+	do {
+		const suffix = idx === 0 ? '' : `-${idx}`;
+		title = `${baseName}${suffix}`;
+		idx++;
+	} while (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
+
+	return title;
+}
+
+export function fileExists(file: string): boolean {
+	return fs.existsSync(file);
+}
+
+export function copyFile(source: string, target: string): void {
+	fs.copyFileSync(source, target);
+}
+
+export function removeOldLogFiles(logPath: string, prefix: string): JSON {
+	return findRemoveSync(logPath, { age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
@@ -67,24 +107,20 @@ export function getConfigTracingLevel(): string {
 	}
 }
 
-export function getDefaultLogDir(): string {
-	return path.join(process.env['ADS_LOGS'], '..', '..', 'mssql');
+export function getLogFileName(prefix: string, pid: number): string {
+	return `${prefix}_${pid}.log`;
 }
 
-export function getDefaultLogFile(prefix: string, pid: number): string {
-	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
-}
-
-export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string): string[] {
+export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
-	let logFile = getDefaultLogFile(prefix, process.pid);
+	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
 	// Delete old log files
-	let deletedLogFiles = removeOldLogFiles(prefix);
+	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());

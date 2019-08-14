@@ -83,9 +83,6 @@ export class SelectBox extends vsSelectBox {
 			this.element = dom.append(container, $('.monaco-selectbox.idle'));
 		}
 
-		// explicitly set the accessible role so that the screen readers can read the control type properly
-		this.selectElement.setAttribute('role', 'combobox');
-
 		this._selectBoxOptions = selectBoxOptions;
 		let focusTracker = dom.trackFocus(this.selectElement);
 		this._register(focusTracker);

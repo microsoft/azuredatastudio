@@ -3,58 +3,73 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { localize } from 'vs/nls';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
-import { DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID } from './nodeCommands';
-import { ContextKeyExpr, ContextKeyRegexExpr } from 'vs/platform/contextkey/common/contextkey';
-import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+import { SCRIPT_AS_CREATE_COMMAND_ID, SCRIPT_AS_DELETE_COMMAND_ID, SCRIPT_AS_SELECT_COMMAND_ID, SCRIPT_AS_EXECUTE_COMMAND_ID, SCRIPT_AS_ALTER_COMMAND_ID, EDIT_DATA_COMMAND_ID } from 'sql/workbench/parts/dataExplorer/electron-browser/nodeCommand';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { localize } from 'vs/nls';
 
+// Script as Create
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
 	order: 3,
 	command: {
-		id: DISCONNECT_COMMAND_ID,
-		title: localize('disconnect', 'Disconnect')
+		id: SCRIPT_AS_CREATE_COMMAND_ID,
+		title: localize('scriptAsCreate', "Script as Create")
 	},
-	when: NodeContextKey.IsConnected
+	when: MssqlNodeContext.CanScriptAsCreateOrDelete
 });
 
-// The weird regex is because we want this to generically apply to Database and Server nodes but right now
-// there isn't a consistent standard for the values there. We can't just search for database or server being
-// in the string at all because there's lots of node types which have those values (such as ServerLevelLogin)
-// that we don't want these menu items showing up on.
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 2,
-	command: {
-		id: NEW_QUERY_COMMAND_ID,
-		title: localize('newQuery', 'New Query')
-	},
-	when: ContextKeyExpr.and(
-		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*|^database$/i))
-});
-
-// Note that we don't show this for Databases under Server nodes (viewItem == Database) because
-// of an issue there where the connection always being master instead of the actual DB
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 1,
-	command: {
-		id: MANAGE_COMMAND_ID,
-		title: localize('manage', 'Manage')
-	},
-	when: ContextKeyExpr.and(
-		NodeContextKey.IsConnectable,
-		new ContextKeyRegexExpr('viewItem', /.+itemType\.database.*/i))
-});
-
+// Script as Delete
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',
 	order: 4,
 	command: {
-		id: REFRESH_COMMAND_ID,
-		title: localize('refresh', 'Refresh')
+		id: SCRIPT_AS_DELETE_COMMAND_ID,
+		title: localize('scriptAsDelete', "Script as Drop")
 	},
-	when: NodeContextKey.IsConnected
+	when: MssqlNodeContext.CanScriptAsCreateOrDelete
+});
+
+// Script as Select
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 1,
+	command: {
+		id: SCRIPT_AS_SELECT_COMMAND_ID,
+		title: localize('scriptAsSelect', "Select Top 1000")
+	},
+	when: MssqlNodeContext.CanScriptAsSelect
+});
+
+// Script as Execute
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 5,
+	command: {
+		id: SCRIPT_AS_EXECUTE_COMMAND_ID,
+		title: localize('scriptAsExecute', "Script as Execute")
+	},
+	when: MssqlNodeContext.CanScriptAsExecute
+});
+
+// Script as Alter
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 5,
+	command: {
+		id: SCRIPT_AS_ALTER_COMMAND_ID,
+		title: localize('scriptAsAlter', "Script as Alter")
+	},
+	when: MssqlNodeContext.CanScriptAsAlter
+});
+
+// Edit Data
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 2,
+	command: {
+		id: EDIT_DATA_COMMAND_ID,
+		title: localize('editData', "Edit Data")
+	},
+	when: MssqlNodeContext.CanEditData
 });

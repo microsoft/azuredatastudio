@@ -10,6 +10,9 @@
 	"createOperationName": "Créer",
 	"insertOperationName": "Insérer",
 	"updateOperationName": "Mettre à jour",
-	"deleteOperationName": "Supprimer",
-	"scriptingFailed": "Échec de l’écriture de scripts"
+	"deleteOperationName": "supprimer",
+	"scriptSelectNotFound": "Aucun script n'a été retourné lors de l’appel de script select sur l’objet",
+	"scriptNotFoundForObject": "Aucun script n'a été retournée lors de la création du script {0} sur l'objet {1}",
+	"scriptingFailed": "Échec de l’écriture de scripts",
+	"scriptNotFound": "Aucun script n'a été retourné lors de la création du script {0}"
 }

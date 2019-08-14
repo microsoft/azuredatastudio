@@ -25,7 +25,11 @@
 			"config.title": "충돌 병합",
 			"config.autoNavigateNextConflictEnabled": "병합 충돌을 해결한 후 다음 병합 충돌로 자동으로 이동할지 여부입니다.",
 			"config.codeLensEnabled": "편집기 내에서 병합 충돌 블록에 대한 Code Lens를 만듭니다.",
-			"config.decoratorsEnabled": "편집기 내에서 병합 충돌 블록에 대한 decorator를 만듭니다."
+			"config.decoratorsEnabled": "편집기 내에서 병합 충돌 블록에 대한 decorator를 만듭니다.",
+			"config.diffViewPosition": "Controls where the diff view should be opened when comparing changes in merge conflicts.",
+			"config.diffViewPosition.current": "Open the diff view in the current editor group.",
+			"config.diffViewPosition.beside": "Open the diff view next to the current editor group.",
+			"config.diffViewPosition.below": "Open the diff view below the current editor group."
 		},
 		"out/mergeDecorator": {
 			"currentChange": "(현재 변경 사항)",

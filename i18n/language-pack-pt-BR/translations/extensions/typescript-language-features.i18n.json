@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "Ativar/desativar o diagnóstico de sugestão para arquivos TypeScript no editor. Requer o uso do TypeScript 2.8 ou mais recente na área de trabalho.",
 			"typescript.preferences.quoteStyle": "Estilo preferido de aspas para correções rápidas: 'single' para aspas simples, 'double' para aspas duplas ou 'auto' para inferir o tipo de aspas de importações existentes. Requer o uso de TypeScript 2.9 ou mais recente na área de trabalho.",
 			"typescript.preferences.importModuleSpecifier": "Estilo de caminho preferencial para importação automática.",
-			"typescript.preferences.importModuleSpecifier.auto": "Inferir o tipo de caminho mais curto.",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "Relativo à localização do arquivo.",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "Baseado na 'baseUrl' configurada em seu 'jsconfig.json' / 'tsconfig.json'.",
 			"typescript.updateImportsOnFileMove.enabled": "Ativar/desativar a atualização automática de caminhos de importação quando você renomear ou move um arquivo no VS Code. Requer o uso de TypeScript 2.9 ou mais recente na área de trabalho.",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "Habilita/desabilita pesquisas ocasionais que nos ajudam a melhorar o JavaScript do VS Code e o suporte ao TypeScript.",
 			"configuration.suggest.completeJSDocs": "Ativar/desativar sugestão para completar JSDoc comentários.",
 			"typescript.preferences.renameShorthandProperties": "Ativar / desativar a introdução de aliases para propriedades abreviadas de objetos durante renomeações. Requer o uso do TypeScript 3.4 ou mais recente no espaço de trabalho."
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "Não foi possível carregar a versão do TypeScript neste caminho",
@@ -102,6 +105,7 @@
 			"neverAgain": "Desabilitar Pesquisas JS/TS"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "Para habilitar os recursos de linguagem JavaScript/TypeScipt em todo o projeto, excluir pastas com muitos arquivos, como: {0}",
 			"hintExclude.generic": "Para habilitar os recursos de linguagem JavaScript/TypeScipt em todo o projeto, excluir pastas grandes com arquivos em que você não trabalha.",
 			"large.label": "Configurar exclusões",

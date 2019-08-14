@@ -5,16 +5,13 @@
 
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProperties';
-
-export const instanceStorageKey = 'telemetry.instanceId';
-export const currentSessionDateStorageKey = 'telemetry.currentSessionDate';
-export const firstSessionDateStorageKey = 'telemetry.firstSessionDate';
-export const lastSessionDateStorageKey = 'telemetry.lastSessionDate';
+import { instanceStorageKey, firstSessionDateStorageKey, lastSessionDateStorageKey } from 'vs/platform/telemetry/common/telemetry';
+import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtils';
 
 // {{ SQL CARBON EDIT }}
 import product from 'vs/platform/product/node/product';
 
-export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, installSourcePath: string): Promise<{ [name: string]: string | undefined }> {
+export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, installSourcePath: string, remoteAuthority?: string): Promise<{ [name: string]: string | undefined }> {
 	const result = await resolveCommonProperties(commit, version, machineId, installSourcePath);
 	const instanceId = storageService.get(instanceStorageKey, StorageScope.GLOBAL)!;
 	const firstSessionDate = storageService.get(firstSessionDateStorageKey, StorageScope.GLOBAL)!;
@@ -32,11 +29,9 @@ export async function resolveWorkbenchCommonProperties(storageService: IStorageS
 	// result['common.isNewSession'] = !lastSessionDate ? '1' : '0';
 	// __GDPR__COMMON__ "common.instanceId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	// result['common.instanceId'] = instanceId;
+	// __GDPR__COMMON__ "common.remoteAuthority" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+	// result['common.remoteAuthority'] = cleanRemoteAuthority(remoteAuthority);
 
-	// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	result['common.version.shell'] = process.versions && process.versions['electron'];
-	// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	result['common.version.renderer'] = process.versions && process.versions['chrome'];
 	// {{SQL CARBON EDIT}}
 	result['common.application.name'] = product.nameLong;
 	// {{SQL CARBON EDIT}}
@@ -62,5 +57,4 @@ function setUsageDates(storageService: IStorageService): void {
 	// monthly last usage date
 	const monthlyLastUseDate = storageService.get('telemetry.monthlyLastUseDate', StorageScope.GLOBAL, appStartDate.toUTCString());
 	storageService.store('telemetry.monthlyLastUseDate', monthlyLastUseDate, StorageScope.GLOBAL);
-
 }

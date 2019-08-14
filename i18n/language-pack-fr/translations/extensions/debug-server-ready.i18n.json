@@ -22,7 +22,7 @@
 		"out/extension": {
 			"server.ready.nocapture.error": "L'URI de format ('{0}') utilise un espace réservé de remplacement, mais le modèle n'a rien capturé.",
 			"server.ready.placeholder.error": "L'URI de mise en forme ('{0}') doit contenir exactement un espace réservé de remplacement.",
-			"server.ready.chrome.not.installed": "L'action 'debugWithChrome' nécessite le '{0}'"
+			"server.ready.chrome.not.installed": "The action '{0}' requires the '{1}' extension."
 		}
 	}
 }

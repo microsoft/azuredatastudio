@@ -10,5 +10,6 @@
 	"showTaskHistory": "Mostrar o histórico de tarefa",
 	"taskHistory.view": "Visão",
 	"taskHistory": "Tarefa de história",
-	"datasource.task": "Status da Tarefa de Operação"
+	"datasource.task": "Status da Tarefa de Operação",
+	"miViewTasks": "&&Tarefas"
 }

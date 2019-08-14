@@ -61,9 +61,9 @@ Besonderen Dank an die Community-Mitwirkenden, um dies möglich zu machen.
 
 **Viel Vergnügen!**
 
-#  German Language Pack for VS Code
+#  German Language Pack for Azure Data Studio
 
-German Language Pack provides localized UI experience for VS Code.
+German Language Pack provides localized UI experience for Azure Data Studio.
 
 ## Usage
 
@@ -71,13 +71,13 @@ Once installed, set `"locale": "de"` in `locale.json` to load German Language Pa
 
 ## Contributing
 
-The translation strings are maintained in "DevTools - VS Code" project in Microsoft Localization Community Platform (MLCP).
+The translation strings are maintained in "DevTools - Azure Data Studio" project in Microsoft Localization Community Platform (MLCP).
 
 If you'd like to participate in the effort either to contribue translation or improve translation, see [community localization page](https://aka.ms/vscodeloc) for more information.
 
 ## License
 
-The source code and strings are licensed under the [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md) license.
+The source code and strings are licensed under the [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt).
 
 ## Credits
 

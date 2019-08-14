@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
@@ -19,6 +19,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	options: { [name: string]: any } = {};
 
 	private _providerName: string;
+	private _onCapabilitiesRegisteredDisposable: IDisposable;
 	protected _serverCapabilities: ConnectionProviderProperties;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
@@ -74,12 +75,22 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 			if (capabilities) {
 				this._serverCapabilities = capabilities.connection;
 			}
-			this._register(this.capabilitiesService.onCapabilitiesRegistered(e => {
+			if (this._onCapabilitiesRegisteredDisposable) {
+				dispose(this._onCapabilitiesRegisteredDisposable);
+			}
+			this._onCapabilitiesRegisteredDisposable = this.capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.connection.providerId === this.providerName) {
 					this._serverCapabilities = e.connection;
 				}
-			}));
+			});
 		}
+	}
+
+	public dispose(): void {
+		if (this._onCapabilitiesRegisteredDisposable) {
+			dispose(this._onCapabilitiesRegisteredDisposable);
+		}
+		super.dispose();
 	}
 
 	public clone(): ProviderConnectionInfo {

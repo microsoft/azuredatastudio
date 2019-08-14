@@ -2,7 +2,7 @@
 	"name": "cms",
 	"displayName": "%cms.displayName%",
 	"description": "%cms.description%",
-	"version": "0.2.0",
+	"version": "0.4.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -13,6 +13,9 @@
 	},
 	"activationEvents": [
 		"*"
+	],
+	"extensionDependencies": [
+		"Microsoft.mssql"
 	],
 	"forceReload": true,
 	"repository": {
@@ -87,6 +90,10 @@
 					"defaultValue": null,
 					"objectType": null,
 					"categoryValues": [
+						{
+							"displayName": "%cms.connectionOptions.authType.categoryValues.sqlLogin%",
+							"name": "SqlLogin"
+						},
 						{
 							"displayName": "%cms.connectionOptions.authType.categoryValues.integrated%",
 							"name": "Integrated"
@@ -625,5 +632,10 @@
 		"should": "^13.2.1",
 		"vscode": "^1.1.26",
 		"typemoq": "^2.1.0"
+	},
+	"__metadata": {
+		"id": "40",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }

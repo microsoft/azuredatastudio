@@ -10,5 +10,6 @@
 	"showTaskHistory": "Visualizza la cronologia delle attività",
 	"taskHistory.view": "Vista",
 	"taskHistory": "Cronologia delle attività",
-	"datasource.task": "Stato dell'attività dell'operazione"
+	"datasource.task": "Stato dell'attività dell'operazione",
+	"miViewTasks": "&&Attività"
 }

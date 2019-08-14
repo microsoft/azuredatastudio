@@ -7,11 +7,12 @@ import { localize } from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor';
 import { Emitter } from 'vs/base/common/event';
 
-import { GridPanelState } from 'sql/workbench/parts/query/electron-browser/gridPanel';
-import { MessagePanelState } from 'sql/workbench/parts/query/browser/messagePanel';
-import { QueryPlanState } from 'sql/workbench/parts/queryPlan/electron-browser/queryPlan';
-import { ChartState } from 'sql/workbench/parts/charts/browser/chartView';
-import { TopOperationsState } from 'sql/workbench/parts/queryPlan/browser/topOperations';
+import { TopOperationsState } from 'sql/workbench/parts/queryPlan/common/topOperationsState';
+import { ChartState } from 'sql/workbench/parts/charts/common/interfaces';
+import { QueryPlanState } from 'sql/workbench/parts/queryPlan/common/queryPlanState';
+import { MessagePanelState } from 'sql/workbench/parts/query/common/messagePanelState';
+import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState';
+import { QueryModelViewState } from 'sql/workbench/parts/query/common/modelViewTab/modelViewState';
 
 export class ResultsViewState {
 	public gridPanelState: GridPanelState = new GridPanelState();
@@ -19,6 +20,8 @@ export class ResultsViewState {
 	public chartState: ChartState = new ChartState();
 	public queryPlanState: QueryPlanState = new QueryPlanState();
 	public topOperationsState = new TopOperationsState();
+	public dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
+
 	public activeTab: string;
 	public visibleTabs: Set<string> = new Set<string>();
 
@@ -27,6 +30,10 @@ export class ResultsViewState {
 		this.messagePanelState.dispose();
 		this.chartState.dispose();
 		this.queryPlanState.dispose();
+		this.dynamicModelViewTabsState.forEach((state: QueryModelViewState, identifier: string) => {
+			state.dispose();
+		});
+		this.dynamicModelViewTabsState.clear();
 	}
 }
 
@@ -72,7 +79,7 @@ export class QueryResultsInput extends EditorInput {
 	}
 
 	getName(): string {
-		return localize('extensionsInputName', 'Extension');
+		return localize('extensionsInputName', "Extension");
 	}
 
 	matches(other: any): boolean {

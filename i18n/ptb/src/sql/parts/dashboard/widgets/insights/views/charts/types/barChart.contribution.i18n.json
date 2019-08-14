@@ -8,8 +8,8 @@
 	],
 	"yAxisMin": "Valor mínimo do eixo y",
 	"yAxisMax": "Valor máximo do eixo y",
-	"yAxisLabel": "Rótulo para o eixo y",
+	"barchart.yAxisLabel": "Rótulo para o eixo y",
 	"xAxisMin": "Valor mínimo do eixo x",
 	"xAxisMax": "Valor máximo do eixo x",
-	"xAxisLabel": "Rótulo para o eixo x"
+	"barchart.xAxisLabel": "Rótulo para o eixo x"
 }

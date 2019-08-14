@@ -14,14 +14,29 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 	}
 
 	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
-		throw new Error('Method not implemented.');
+		let result: azdata.SchemaCompareOptionsResult = {
+			defaultDeploymentOptions: undefined,
+			success: true,
+			errorMessage: ''
+		};
+
+		return Promise.resolve(result);
 	}
 
 	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
+	schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
+		throw new Error('Method not implemented.');
+	}
+
+
+	schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+		throw new Error('Method not implemented.');
+	}
+
+	schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
 		let result: azdata.SchemaCompareResult = {
 			operationId: this.testOperationId,
 			areEqual: true,
@@ -33,7 +48,11 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 		return Promise.resolve(result);
 	}
 
-	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
+	schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+		return undefined;
+	}
+
+	schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
 		return undefined;
 	}
 

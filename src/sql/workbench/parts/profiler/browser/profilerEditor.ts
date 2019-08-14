@@ -46,6 +46,11 @@ import { IWorkbenchThemeService, VS_DARK_THEME, VS_HC_THEME } from 'vs/workbench
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import { clamp } from 'vs/base/common/numbers';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { CellSelectionModel } from 'sql/base/browser/ui/table/plugins/cellSelectionModel.plugin';
+import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class BasicView implements IView {
 	public get element(): HTMLElement {
@@ -156,7 +161,9 @@ export class ProfilerEditor extends BaseEditor {
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IEditorService editorService: IEditorService,
-		@IStorageService storageService: IStorageService
+		@IStorageService storageService: IStorageService,
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(ProfilerEditor.ID, telemetryService, themeService, storageService);
 		this._profilerEditorContextKey = CONTEXT_PROFILER_EDITOR.bindTo(this._contextKeyService);
@@ -223,7 +230,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._clearFilterAction.enabled = true;
 		this._viewTemplates = this._profilerService.getViewTemplates();
 		this._viewTemplateSelector = new SelectBox(this._viewTemplates.map(i => i.name), 'Standard View', this._contextViewService);
-		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', 'Select View'));
+		this._viewTemplateSelector.setAriaLabel(nls.localize('profiler.viewSelectAccessibleName', "Select View"));
 		this._register(this._viewTemplateSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.viewTemplate = this._viewTemplates.find(i => i.name === e.selected);
@@ -236,7 +243,7 @@ export class ProfilerEditor extends BaseEditor {
 
 		this._sessionsList = [''];
 		this._sessionSelector = new SelectBox(this._sessionsList, '', this._contextViewService);
-		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', 'Select Session'));
+		this._sessionSelector.setAriaLabel(nls.localize('profiler.sessionSelectAccessibleName', "Select Session"));
 		this._register(this._sessionSelector.onDidSelect(e => {
 			if (this.input) {
 				this.input.sessionName = e.selected;
@@ -254,7 +261,7 @@ export class ProfilerEditor extends BaseEditor {
 		this._actionBar.setContent([
 			{ action: this._createAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', 'Select Session:')) },
+			{ element: this._createTextElement(nls.localize('profiler.sessionSelectLabel', "Select Session:")) },
 			{ element: sessionsContainer },
 			{ action: this._startAction },
 			{ action: this._stopAction },
@@ -263,7 +270,7 @@ export class ProfilerEditor extends BaseEditor {
 			{ action: this._filterAction },
 			{ action: this._clearFilterAction },
 			{ element: Taskbar.createTaskbarSeparator() },
-			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', 'Select View:')) },
+			{ element: this._createTextElement(nls.localize('profiler.viewSelectLabel', "Select View:")) },
 			{ element: viewTemplateContainer },
 			{ action: this._autoscrollAction },
 			{ action: this._instantiationService.createInstance(Actions.ProfilerClear, Actions.ProfilerClear.ID, Actions.ProfilerClear.LABEL) }
@@ -336,6 +343,13 @@ export class ProfilerEditor extends BaseEditor {
 		tabbedPanelContainer.className = 'profiler-tabbedPane';
 		this._tabbedPanel = new TabbedPanel(tabbedPanelContainer);
 		attachTabbedPanelStyler(this._tabbedPanel, this.themeService);
+
+		const expandPanel = () => {
+			if (this._collapsedPanelAction.collapsed) {
+				this._collapsedPanelAction.run(this.input);
+			}
+		};
+
 		this._tabbedPanel.pushTab({
 			identifier: 'editor',
 			title: nls.localize('text', "Text"),
@@ -343,7 +357,8 @@ export class ProfilerEditor extends BaseEditor {
 				layout: dim => this._editor.layout(dim),
 				render: parent => parent.appendChild(editorContainer),
 				focus: () => this._editor.focus()
-			}
+			},
+			tabSelectedHandler: expandPanel
 		});
 
 		let detailTableContainer = document.createElement('div');
@@ -375,6 +390,21 @@ export class ProfilerEditor extends BaseEditor {
 			this._detailTable.updateRowCount();
 		});
 
+		const detailTableCopyKeybind = new CopyKeybind();
+		detailTableCopyKeybind.onCopy((ranges: Slick.Range[]) => {
+			// we always only get 1 item in the ranges
+			if (ranges && ranges.length === 1) {
+				handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, ranges[0], (row, cell) => {
+					const item = this._detailTableData.getItem(row);
+					// only 2 columns in this table
+					return cell === 0 ? item.label : item.value;
+				});
+			}
+		});
+		this._detailTable.setSelectionModel(new CellSelectionModel());
+		this._detailTable.registerPlugin(detailTableCopyKeybind);
+
+
 		this._tabbedPanel.pushTab({
 			identifier: 'detailTable',
 			title: nls.localize('details', "Details"),
@@ -382,7 +412,8 @@ export class ProfilerEditor extends BaseEditor {
 				layout: dim => this._detailTable.layout(dim),
 				render: parent => parent.appendChild(detailTableContainer),
 				focus: () => this._detailTable.focus()
-			}
+			},
+			tabSelectedHandler: expandPanel
 		});
 
 		this._collapsedPanelAction = this._instantiationService.createInstance(Actions.ProfilerCollapsablePanelAction, Actions.ProfilerCollapsablePanelAction.ID, Actions.ProfilerCollapsablePanelAction.LABEL);

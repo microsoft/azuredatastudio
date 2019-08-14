@@ -17,7 +17,7 @@ import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
 
 const localize = nls.loadMessageBundle();
-
+const msSqlProvider = 'MSSQL';
 class Page {
 	wizardPage: azdata.window.WizardPage;
 	dacFxPage: BasePage;
@@ -86,9 +86,9 @@ export class DataTierApplicationWizard {
 		}
 
 		this.connection = await azdata.connection.getCurrentConnection();
-		if (!this.connection) {
+		if (!this.connection || (profile && this.connection.connectionId !== profile.id)) {
 			// @TODO: remove cast once azdata update complete - karlb 3/1/2019
-			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog();
+			this.connection = <azdata.connection.ConnectionProfile><any>await azdata.connection.openConnectionDialog(undefined, profile);
 
 			// don't open the wizard if connection dialog is cancelled
 			if (!this.connection) {
@@ -161,22 +161,17 @@ export class DataTierApplicationWizard {
 		});
 
 		this.wizard.onPageChanged(async (event) => {
-			let idx = event.newPage;
-			let page = this.getPage(idx);
-
-			if (page !== undefined) {
-				page.dacFxPage.setupNavigationValidator();
-				page.dacFxPage.onPageEnter();
+			let idxLast = event.lastPage;
+			let lastPage = this.getPage(idxLast);
+			if (lastPage) {
+				lastPage.dacFxPage.onPageLeave();
 			}
 
-			//do onPageLeave for summary page so that GenerateScript button only shows up if upgrading database
-			let idxLast = event.lastPage;
-
-			if (this.isSummaryPage(idxLast)) {
-				let lastPage = this.pages.get('summary');
-				if (lastPage) {
-					lastPage.dacFxPage.onPageLeave();
-				}
+			let idx = event.newPage;
+			let page = this.getPage(idx);
+			if (page) {
+				page.dacFxPage.setupNavigationValidator();
+				page.dacFxPage.onPageEnter();
 			}
 		});
 
@@ -252,10 +247,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async deploy() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.deployDacpac(this.model.filePath, this.model.database, this.model.upgradeExisting, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -263,10 +258,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async extract() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.extractDacpac(this.model.database, this.model.filePath, this.model.database, this.model.version, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.extractErrorMessage', "Extract failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -274,10 +269,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async export() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.exportBacpac(this.model.database, this.model.filePath, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.exportErrorMessage', "Export failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -285,10 +280,10 @@ export class DataTierApplicationWizard {
 	}
 
 	private async import() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.importBacpac(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.importErrorMessage', "Import failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -296,15 +291,15 @@ export class DataTierApplicationWizard {
 	}
 
 	private async generateDeployScript() {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 		this.wizard.message = {
 			text: localize('dacfx.scriptGeneratingMessage', 'You can view the status of script generation in the Tasks View once the wizard is closed. The generated script will open when complete.'),
 			level: azdata.window.MessageLevel.Information,
 			description: ''
 		};
 
-		let result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
+		const result = await service.generateDeployScript(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.script);
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
 				localize('alertData.deployErrorMessage', "Deploy failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
@@ -351,10 +346,10 @@ export class DataTierApplicationWizard {
 	}
 
 	public async generateDeployPlan(): Promise<string> {
-		let service = await DataTierApplicationWizard.getService(this.model.server.providerName);
-		let ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
+		const service = await DataTierApplicationWizard.getService(msSqlProvider);
+		const ownerUri = await azdata.connection.getUriForConnection(this.model.server.connectionId);
 
-		let result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
+		const result = await service.generateDeployPlan(this.model.filePath, this.model.database, ownerUri, azdata.TaskExecutionMode.execute);
 
 		if (!result || !result.success) {
 			vscode.window.showErrorMessage(
@@ -365,7 +360,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
-		let service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
+		const service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
 		return service;
 	}
 }

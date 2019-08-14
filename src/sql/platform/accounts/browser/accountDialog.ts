@@ -32,9 +32,10 @@ import { AddAccountAction } from 'sql/platform/accounts/common/accountActions';
 import { AccountListRenderer, AccountListDelegate } from 'sql/platform/accounts/browser/accountListRenderer';
 import { AccountProviderAddedEventParams, UpdateAccountListEventParams } from 'sql/platform/accounts/common/eventTypes';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 class AccountPanel extends ViewletPanel {
 	public index: number;
@@ -46,14 +47,15 @@ class AccountPanel extends ViewletPanel {
 		@IContextMenuService contextMenuService: IContextMenuService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IInstantiationService private instantiationService: IInstantiationService,
-		@IThemeService private themeService: IThemeService
+		@IThemeService private themeService: IThemeService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
 		this.accountList = new List<azdata.Account>(container, new AccountListDelegate(AccountDialog.ACCOUNTLIST_HEIGHT), [this.instantiationService.createInstance(AccountListRenderer)]);
-		this.disposables.push(attachListStyler(this.accountList, this.themeService));
+		this._register(attachListStyler(this.accountList, this.themeService));
 	}
 
 	protected layoutBody(size: number): void {
@@ -121,18 +123,20 @@ export class AccountDialog extends Modal {
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITelemetryService telemetryService: ITelemetryService,
-		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(
-			localize('linkedAccounts', 'Linked accounts'),
+			localize('linkedAccounts', "Linked accounts"),
 			TelemetryKeys.Accounts,
 			telemetryService,
 			layoutService,
 			clipboardService,
 			themeService,
 			logService,
+			textResourcePropertiesService,
 			contextKeyService,
 			{ hasSpinner: true }
 		);
@@ -164,7 +168,7 @@ export class AccountDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		this._closeButton = this.addFooterButton(localize('accountDialog.close', 'Close'), () => this.close());
+		this._closeButton = this.addFooterButton(localize('accountDialog.close', "Close"), () => this.close());
 		this.registerListeners();
 	}
 
@@ -176,14 +180,14 @@ export class AccountDialog extends Modal {
 
 		this._noaccountViewContainer = DOM.$('div.no-account-view');
 		const noAccountTitle = DOM.append(this._noaccountViewContainer, DOM.$('.no-account-view-label'));
-		const noAccountLabel = localize('accountDialog.noAccountLabel', 'There is no linked account. Please add an account.');
+		const noAccountLabel = localize('accountDialog.noAccountLabel', "There is no linked account. Please add an account.");
 		noAccountTitle.innerText = noAccountLabel;
 
 		// Show the add account button for the first provider
 		// Todo: If we have more than 1 provider, need to show all add account buttons for all providers
 		const buttonSection = DOM.append(this._noaccountViewContainer, DOM.$('div.button-section'));
 		this._addAccountButton = new Button(buttonSection);
-		this._addAccountButton.label = localize('accountDialog.addConnection', 'Add an account');
+		this._addAccountButton.label = localize('accountDialog.addConnection', "Add an account");
 		this._register(this._addAccountButton.onDidClick(() => {
 			(<IProviderViewUiComponent>values(this._providerViewsMap)[0]).addAccountAction.run();
 		}));
@@ -290,7 +294,8 @@ export class AccountDialog extends Modal {
 			this._contextMenuService,
 			this._configurationService,
 			this._instantiationService,
-			this._themeService
+			this._themeService,
+			this.contextKeyService
 		);
 
 		attachPanelStyler(providerView, this._themeService);

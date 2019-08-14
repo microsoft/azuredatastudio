@@ -25,7 +25,11 @@
 			"config.title": "Объединить конфликт",
 			"config.autoNavigateNextConflictEnabled": "Следует ли автоматически перейти к следующему конфликту слияния после устранения конфликта слияния.",
 			"config.codeLensEnabled": "Создать Code Lens для блоков объединения конфликтов в редакторе.",
-			"config.decoratorsEnabled": "Создать декораторы для блоков объединения конфликтов в редакторе."
+			"config.decoratorsEnabled": "Создать декораторы для блоков объединения конфликтов в редакторе.",
+			"config.diffViewPosition": "Controls where the diff view should be opened when comparing changes in merge conflicts.",
+			"config.diffViewPosition.current": "Open the diff view in the current editor group.",
+			"config.diffViewPosition.beside": "Open the diff view next to the current editor group.",
+			"config.diffViewPosition.below": "Open the diff view below the current editor group."
 		},
 		"out/mergeDecorator": {
 			"currentChange": "(текущее изменение)",

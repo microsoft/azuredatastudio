@@ -6,26 +6,19 @@
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { QueryStatusbarItem } from 'sql/workbench/parts/query/browser/queryStatus';
-import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
-import { RowCountStatusBarItem } from 'sql/workbench/parts/query/browser/rowCountStatus';
-import { TimeElapsedStatusBarItem } from 'sql/workbench/parts/query/browser/timeElapsedStatus';
 
 import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
-import * as statusbar from 'vs/workbench/browser/parts/statusbar/statusbar';
-import * as platform from 'vs/platform/registry/common/platform';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as strings from 'vs/base/common/strings';
 import * as types from 'vs/base/common/types';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
-import { StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 
 const selectionSnippetMaxLen = 100;
 
@@ -65,12 +58,14 @@ export class QueryModelService implements IQueryModelService {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _queryInfoMap: Map<string, QueryInfo>;
 	private _onRunQueryStart: Emitter<string>;
+	private _onRunQueryUpdate: Emitter<string>;
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
+	public get onRunQueryUpdate(): Event<string> { return this._onRunQueryUpdate.event; }
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
@@ -82,35 +77,10 @@ export class QueryModelService implements IQueryModelService {
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
+		this._onRunQueryUpdate = new Emitter<string>();
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
-
-		// Register Statusbar items
-
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			TimeElapsedStatusBarItem,
-			StatusbarAlignment.RIGHT,
-			100 /* Should appear to the right of the SQL editor status */
-		));
-
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			RowCountStatusBarItem,
-			StatusbarAlignment.RIGHT,
-			100 /* Should appear to the right of the SQL editor status */
-		));
-
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			QueryStatusbarItem,
-			StatusbarAlignment.RIGHT,
-			100 /* High Priority */
-		));
-		(<statusbar.IStatusbarRegistry>platform.Registry.as(statusbar.Extensions.Statusbar)).registerStatusbarItem(new statusbar.StatusbarItemDescriptor(
-			SqlFlavorStatusbarItem,
-			StatusbarAlignment.RIGHT,
-			90 /* Should appear to the right of the SQL editor status */
-		));
-
 	}
 
 	// IQUERYMODEL /////////////////////////////////////////////////////////
@@ -197,7 +167,7 @@ export class QueryModelService implements IQueryModelService {
 	public showCommitError(error: string): void {
 		this._notificationService.notify({
 			severity: Severity.Error,
-			message: nls.localize('commitEditFailed', 'Commit row failed: ') + error
+			message: nls.localize('commitEditFailed', "Commit row failed: ") + error
 		});
 	}
 
@@ -287,7 +257,7 @@ export class QueryModelService implements IQueryModelService {
 				if (info.selectionSnippet) {
 					// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 					// executed query text
-					messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+					messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 				} else {
 					link = {
 						text: strings.format(LocalizedConstants.runQueryBatchStartLine, b.selection.startLine + 1)
@@ -332,6 +302,17 @@ export class QueryModelService implements IQueryModelService {
 
 			this._fireQueryEvent(uri, 'start');
 		});
+		queryRunner.onResultSetUpdate(() => {
+			this._onRunQueryUpdate.fire(uri);
+
+			let event: IQueryEvent = {
+				type: 'queryUpdate',
+				uri: uri
+			};
+			this._onQueryEvent.fire(event);
+
+			this._fireQueryEvent(uri, 'update');
+		});
 
 		queryRunner.onQueryPlanAvailable(planInfo => {
 			// fire extensibility API event
@@ -339,6 +320,15 @@ export class QueryModelService implements IQueryModelService {
 				type: 'executionPlan',
 				uri: planInfo.fileUri,
 				params: planInfo
+			};
+			this._onQueryEvent.fire(event);
+		});
+
+		queryRunner.onVisualize(resultSetInfo => {
+			let event: IQueryEvent = {
+				type: 'visualize',
+				uri: uri,
+				params: resultSetInfo
 			};
 			this._onQueryEvent.fire(event);
 		});
@@ -429,7 +419,7 @@ export class QueryModelService implements IQueryModelService {
 					if (info.selectionSnippet) {
 						// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 						// executed query text
-						messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+						messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 					} else {
 						link = {
 							text: strings.format(LocalizedConstants.runQueryBatchStartLine, batch.selection.startLine + 1)
@@ -513,7 +503,7 @@ export class QueryModelService implements IQueryModelService {
 			return queryRunner.updateCell(ownerUri, rowId, columnId, newValue).then((result) => result, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('updateCellFailed', 'Update cell failed: ') + error.message
+					message: nls.localize('updateCellFailed', "Update cell failed: ") + error.message
 				});
 				return Promise.reject(error);
 			});
@@ -528,7 +518,7 @@ export class QueryModelService implements IQueryModelService {
 			return queryRunner.commitEdit(ownerUri).then(() => { }, error => {
 				this._notificationService.notify({
 					severity: Severity.Error,
-					message: nls.localize('commitEditFailed', 'Commit row failed: ') + error.message
+					message: nls.localize('commitEditFailed', "Commit row failed: ") + error.message
 				});
 				return Promise.reject(error);
 			});

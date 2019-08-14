@@ -5,21 +5,21 @@
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
-**Download the latest Azure Data Studio release**
+## **Download the latest Azure Data Studio release**
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2094100
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2094200
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2094201
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2094202
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2094101
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2094102
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2094203
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2098449
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2098450
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2098500
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2098501
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2098197
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2098280
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2098279
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
-Try out the latest insiders build from `master`:
+## Try out the latest insiders build from `master`:
 - [Windows User Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-user/insider)
 - [Windows System Installer - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64/insider)
 - [Windows ZIP - **Insiders build**](https://azuredatastudio-update.azurewebsites.net/latest/win32-x64-archive/insider)
@@ -28,7 +28,7 @@ Try out the latest insiders build from `master`:
 
 See the [change log](https://github.com/Microsoft/azuredatastudio/blob/master/CHANGELOG.md) for additional details of what's in this release.
 
-**Feature Highlights**
+## **Feature Highlights**
 
 - Cross-Platform DB management for Windows, macOS and Linux with simple XCopy deployment
 - SQL Server Connection Management with Connection Dialog, Server Groups, Azure Integration and Registered Servers

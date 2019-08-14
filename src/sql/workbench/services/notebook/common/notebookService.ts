@@ -8,14 +8,14 @@ import * as azdata from 'azdata';
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
-import { IBootstrapParams } from 'sql/platform/bootstrap/node/bootstrapService';
-import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/outputs/registry';
-import { ModelFactory } from 'sql/workbench/parts/notebook/models/modelFactory';
+import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/browser/outputs/registry';
+import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { ICellModel, INotebookModel, ILanguageMagic } from 'sql/workbench/parts/notebook/models/modelInterfaces';
-import { NotebookChangeType } from 'sql/workbench/parts/notebook/models/contracts';
+import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import { IBootstrapParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 
 export const SERVICE_ID = 'notebookService';
 export const INotebookService = createDecorator<INotebookService>(SERVICE_ID);
@@ -24,6 +24,13 @@ export const DEFAULT_NOTEBOOK_PROVIDER = 'builtin';
 export const DEFAULT_NOTEBOOK_FILETYPE = 'IPYNB';
 export const SQL_NOTEBOOK_PROVIDER = 'sql';
 export const OVERRIDE_EDITOR_THEMING_SETTING = 'notebook.overrideEditorTheming';
+
+export interface ILanguageMagic {
+	magic: string;
+	language: string;
+	kernels?: string[];
+	executionTarget?: string;
+}
 
 export interface INotebookService {
 	_serviceBrand: any;
@@ -44,6 +51,10 @@ export interface INotebookService {
 	 * Register a metadata provider
 	 */
 	unregisterProvider(providerId: string): void;
+
+	registerNavigationProvider(provider: INavigationProvider): void;
+
+	getNavigationProvider(notebookUri: URI): INavigationProvider;
 
 	getSupportedFileExtensions(): string[];
 
@@ -90,6 +101,12 @@ export interface INotebookService {
 	 */
 	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType): void;
 
+	/**
+	 *
+	 * @param notebookUri URI of the notebook to navigate to
+	 * @param sectionId ID of the section to navigate to
+	 */
+	navigateTo(notebookUri: URI, sectionId: string): void;
 }
 
 export interface INotebookProvider {
@@ -117,6 +134,15 @@ export interface INotebookParams extends IBootstrapParams {
 	modelFactory?: ModelFactory;
 }
 
+/**
+ * Defines a section in a notebook as the header text for that section,
+ * the relative URI that can be used to link to it inside Notebook documents
+ */
+export interface INotebookSection {
+	header: string;
+	relativeUri: string;
+}
+
 export interface INotebookEditor {
 	readonly notebookParams: INotebookParams;
 	readonly id: string;
@@ -128,6 +154,17 @@ export interface INotebookEditor {
 	isVisible(): boolean;
 	executeEdits(edits: ISingleNotebookEditOperation[]): boolean;
 	runCell(cell: ICellModel): Promise<boolean>;
-	runAllCells(): Promise<boolean>;
+	runAllCells(startCell?: ICellModel, endCell?: ICellModel): Promise<boolean>;
+	clearOutput(cell: ICellModel): Promise<boolean>;
 	clearAllOutputs(): Promise<boolean>;
+	getSections(): INotebookSection[];
+	navigateToSection(sectionId: string): void;
+}
+
+export interface INavigationProvider {
+	providerId: string;
+	hasNavigation: boolean;
+	getNavigation(uri: URI): Thenable<azdata.nb.NavigationResult>;
+	onNext(uri: URI): void;
+	onPrevious(uri: URI): void;
 }

@@ -17,6 +17,11 @@
 			"type": "object",
 			"title": "%notebook.configuration.title%",
 			"properties": {
+				"notebook.maxBookSearchDepth": {
+					"type": "number",
+					"default": 5,
+					"description": "%notebook.maxBookSearchDepth.description%"
+				},
 				"notebook.pythonPath": {
 					"type": "string",
 					"default": "",
@@ -64,6 +69,10 @@
 				"command": "notebook.command.runactivecell",
 				"title": "%notebook.command.runactivecell%",
 				"icon": "resources/dark/touchbar_run_cell.png"
+			},
+			{
+				"command": "notebook.command.clearactivecellresult",
+				"title": "%notebook.command.clearactivecellresult%"
 			},
 			{
 				"command": "notebook.command.runallcells",
@@ -156,6 +165,10 @@
 					"when": "notebookEditorVisible"
 				},
 				{
+					"command": "notebook.command.clearactivecellresult",
+					"when": "notebookEditorVisible"
+				},
+				{
 					"command": "notebook.command.runallcells",
 					"when": "notebookEditorVisible"
 				},
@@ -232,6 +245,11 @@
 			{
 				"command": "notebook.command.runactivecell",
 				"key": "F5",
+				"when": "activeEditor == workbench.editor.notebookEditor"
+			},
+			{
+				"command": "notebook.command.clearactivecellresult",
+				"key": "Ctrl+Shift+R",
 				"when": "activeEditor == workbench.editor.notebookEditor"
 			},
 			{
@@ -320,12 +338,24 @@
 					"connectionProviderIds": []
 				}
 			]
+		},
+		"views": {
+			"explorer": [
+				{
+					"id": "bookTreeView",
+					"name": "Books",
+					"when": "bookOpened && notebookQuality != stable"
+				}
+			]
 		}
 	},
 	"dependencies": {
 		"@jupyterlab/services": "^3.2.1",
+		"@types/js-yaml": "^3.12.1",
+		"@types/rimraf": "^2.0.2",
 		"decompress": "^4.2.0",
 		"error-ex": "^1.3.1",
+		"fast-glob": "^3.0.4",
 		"figures": "^2.0.0",
 		"fs-extra": "^5.0.0",
 		"glob": "^7.1.1",

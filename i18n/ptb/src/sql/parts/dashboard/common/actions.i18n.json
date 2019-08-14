@@ -13,5 +13,7 @@
 	"deleteWidget": "Excluir o Widget",
 	"clickToUnpin": "Clique para Desafixar",
 	"clickToPin": "Clique para fixar",
-	"addFeatureAction.openInstalledFeatures": "Recursos instalados abertos"
+	"addFeatureAction.openInstalledFeatures": "Recursos instalados abertos",
+	"collapseWidget": "Recolher",
+	"expandWidget": "Expandir"
 }

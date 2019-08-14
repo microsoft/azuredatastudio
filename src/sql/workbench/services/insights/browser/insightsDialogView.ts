@@ -7,16 +7,14 @@ import 'vs/css!./media/insightsDialog';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Modal } from 'sql/workbench/browser/modal/modal';
-import { IInsightsConfigDetails } from 'sql/workbench/parts/dashboard/widgets/insights/interfaces';
 import { attachButtonStyler, attachModalDialogStyler, attachTableStyler, attachPanelStyler } from 'sql/platform/theme/common/styler';
-import { TaskRegistry } from 'sql/platform/tasks/common/tasks';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import * as TelemetryKeys from 'sql/platform/telemetry/telemetryKeys';
-import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/common/insightsDialogService';
+import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
+import { IInsightsDialogModel, ListResource, IInsightDialogActionContext, insertValueRegex } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
 import { Table } from 'sql/base/browser/ui/table/table';
-import { CopyInsightDialogSelectionAction } from 'sql/workbench/services/insights/common/insightDialogActions';
+import { CopyInsightDialogSelectionAction } from 'sql/workbench/services/insights/browser/insightDialogActions';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { IDisposableDataProvider } from 'sql/base/browser/ui/table/interfaces';
@@ -41,6 +39,9 @@ import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
+import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -58,9 +59,10 @@ class InsightTableView<T> extends ViewletPanel {
 		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -165,9 +167,10 @@ export class InsightsDialogView extends Modal {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
 		@ICommandService private readonly _commandService: ICommandService,
-		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 

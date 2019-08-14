@@ -112,6 +112,7 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 				actions.push(...group[1]);
 			}
 		});
+		menu.dispose();
 		return actions;
 	}
 

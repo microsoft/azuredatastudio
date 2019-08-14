@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "Включить/отключить предложения диагностики для файлов TypeScript в редакторе. Требуется TypeScript версии 2.8 или более поздней версии в рабочей области.",
 			"typescript.preferences.quoteStyle": "Предпочтительный стиль кавычек для быстрых исправлений. Допустимые значения: 'single' (одинарные кавычки), 'double' (двойные кавычки) и 'auto' (использовать тип кавычек из предыдущих операций импорта). Требуется TypeScript версии 2.9 или более поздней версии в рабочей области.",
 			"typescript.preferences.importModuleSpecifier": "Предпочтительный стиль пути для автоматического импорта.",
-			"typescript.preferences.importModuleSpecifier.auto": "Определить кратчайший путь.",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "Относительно расположения файла.",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "На основе параметра baseUrl, заданного в файле jsconfig.json или tsconfig.json.",
 			"typescript.updateImportsOnFileMove.enabled": "Включить/отключить автоматическое обновление путей импорта при переименовании или перемещении файла в VS Code. Требуется TypeScript версии 2.9 или более поздней версии в рабочей области.",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "Включить/отключить периодические опросы, которые помогают нам улучшить поддержку JavaScript и TypeScript в VS Code.",
 			"configuration.suggest.completeJSDocs": "Включить/отключить предложение для завершения комментариев JSDoc.",
 			"typescript.preferences.renameShorthandProperties": "Включить/отключить введение псевдонимов для собирательных свойств при переименованиях. Требуется использование TypeScript 3.4 или более новой версии в рабочей области."
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "Не удалось загрузить версию TypeScript по этому пути",
@@ -102,6 +105,7 @@
 			"neverAgain": "Отключить опросы JS/TS"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "Чтобы включить языковые функции JavaScript/TypeScript IntelliSense во всем проекте, исключите папки с большим числом файлов, например: {0}.",
 			"hintExclude.generic": "Чтобы включить языковые функции JavaScript/TypeScript IntelliSense во всем проекте, исключите большие папки с исходными файлами, с которыми вы не работаете.",
 			"large.label": "Настройка исключений",

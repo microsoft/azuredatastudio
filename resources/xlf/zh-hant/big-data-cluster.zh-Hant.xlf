@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file original="extensions/big-data-cluster/package" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="description">
+        <source xml:lang="en">Support for managing SQL Server big data clusters</source>
+        <target state="translated">管理 SQL Server 巨量資料叢集的支援</target>
+      </trans-unit>
+      <trans-unit id="text.sqlServerBigDataClusters">
+        <source xml:lang="en">SQL Server big data clusters</source>
+        <target state="translated">SQL Server 巨量資料叢集</target>
+      </trans-unit>
+      <trans-unit id="command.addController.title">
+        <source xml:lang="en">Connect to Controller</source>
+        <target state="translated">連線到控制器</target>
+      </trans-unit>
+      <trans-unit id="command.deleteController.title">
+        <source xml:lang="en">Delete</source>
+        <target state="translated">刪除</target>
+      </trans-unit>
+      <trans-unit id="command.refreshController.title">
+        <source xml:lang="en">Refresh</source>
+        <target state="translated">重新整理</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/controllerTreeNode" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="textSqlServers">
+        <source xml:lang="en">SQL Servers</source>
+        <target state="translated">SQL 伺服器</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/tree/addControllerTreeNode" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="textBigDataClusterControllerWithDots">
+        <source xml:lang="en">Add big data cluster controller...</source>
+        <target state="translated">新增巨量資料叢集控制器…</target>
+      </trans-unit>
+      <trans-unit id="textConnectToController">
+        <source xml:lang="en">Connect to Controller</source>
+        <target state="translated">連線到控制器</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/bigDataCluster/dialog/addControllerDialog" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="textAddNewController">
+        <source xml:lang="en">Add New Controller</source>
+        <target state="translated">新增控制項</target>
+      </trans-unit>
+      <trans-unit id="textUrlLower">
+        <source xml:lang="en">url</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="textUsernameLower">
+        <source xml:lang="en">username</source>
+        <target state="translated">使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="textPasswordLower">
+        <source xml:lang="en">password</source>
+        <target state="translated">密碼</target>
+      </trans-unit>
+      <trans-unit id="textRememberPassword">
+        <source xml:lang="en">Remember Password</source>
+        <target state="translated">記住密碼</target>
+      </trans-unit>
+      <trans-unit id="textUrlCapital">
+        <source xml:lang="en">URL</source>
+        <target state="translated">URL</target>
+      </trans-unit>
+      <trans-unit id="textUsernameCapital">
+        <source xml:lang="en">Username</source>
+        <target state="translated">使用者名稱</target>
+      </trans-unit>
+      <trans-unit id="textPasswordCapital">
+        <source xml:lang="en">Password</source>
+        <target state="translated">密碼</target>
+      </trans-unit>
+      <trans-unit id="textAdd">
+        <source xml:lang="en">Add</source>
+        <target state="translated">加入</target>
+      </trans-unit>
+      <trans-unit id="textCancel">
+        <source xml:lang="en">Cancel</source>
+        <target state="translated">取消</target>
+      </trans-unit>
+    </body>
+  </file>
+  <file original="extensions/big-data-cluster/out/extension" source-language="en" target-language="zh-Hant" datatype="plaintext">
+    <body>
+      <trans-unit id="textYes">
+        <source xml:lang="en">Yes</source>
+        <target state="translated">是</target>
+      </trans-unit>
+      <trans-unit id="textNo">
+        <source xml:lang="en">No</source>
+        <target state="translated">否</target>
+      </trans-unit>
+      <trans-unit id="textConfirmDeleteController">
+        <source xml:lang="en">Are you sure you want to delete '{0}'?</source>
+        <target state="translated">您確定要刪除 '{0}' 嗎?</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

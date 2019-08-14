@@ -70,10 +70,15 @@
 		]
 	},
 	"dependencies": {
-		"vscode-extension-telemetry": "^0.0.15",
+		"ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
 		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
 		"vscode": "1.0.1"
+	},
+	"__metadata": {
+		"id": "41",
+		"publisherDisplayName": "Microsoft",
+		"publisherId": "Microsoft"
 	}
 }

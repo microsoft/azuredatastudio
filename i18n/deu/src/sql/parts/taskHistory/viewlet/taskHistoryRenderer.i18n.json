@@ -8,6 +8,8 @@
 	],
 	"succeeded": "erfolgreich",
 	"failed": "fehlgeschlagen",
+	"inProgress": "In Bearbeitung",
+	"notStarted": "Nicht gestartet",
 	"canceled": "abgebrochen",
 	"canceling": "Wird abgebrochen"
 }

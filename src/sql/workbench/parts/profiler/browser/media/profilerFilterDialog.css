@@ -6,12 +6,16 @@
 .profiler-filter-dialog {
 	height: 300px;
 	padding: 10px;
-	overflow-y: scroll;
 }
 
 .profiler-filter-clause-table {
 	width: 100%;
 	margin-bottom: 10px;
+}
+
+.clause-table-container{
+	max-height: 270px;
+	overflow-y: scroll;
 }
 
 .profiler-filter-remove-condition {
@@ -20,7 +24,10 @@
 	cursor: pointer;
 }
 
-.profiler-filter-add-clause-prompt {
+.profiler-filter-clause-table-action {
 	cursor: pointer;
-	margin: 0px 2px 0px 2px
+	margin-right: 10px;
+	padding: 2px;
+	text-decoration: underline;
+	display: inline-block;
 }

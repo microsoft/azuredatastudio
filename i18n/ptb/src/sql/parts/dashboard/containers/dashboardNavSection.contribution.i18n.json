@@ -12,5 +12,10 @@
 	"dashboard.container.left-nav-bar.icon.dark": "Caminho de ícone quando é usado um tema escuro",
 	"dashboard.container.left-nav-bar.title": "Título da seção de nav para mostrar ao usuário.",
 	"dashboard.container.left-nav-bar.container": "O contêiner que será exibido nesta seção de nav.",
-	"dashboard.container.left-nav-bar": "A lista de recipientes de painel de controle que será exibido nesta seção de navegação."
+	"dashboard.container.left-nav-bar": "A lista de recipientes de painel de controle que será exibido nesta seção de navegação.",
+	"opticon": "Propriedade 'ícone' pode ser omitida ou deve ser uma sequência de caracteres ou um literal como '{escuro, luz}'",
+	"navSection.missingTitle": "Nenhum título na seção NAV especificado para extensão.",
+	"navSection.missingContainer": "Nenhum container especificado na seção nav para a extensão",
+	"navSection.moreThanOneDashboardContainersError": "Exatamente 1 contêiner do Dashboard deve ser definido por espaço.",
+	"navSection.invalidContainer": "NAV_SECTION dentro NAV_SECTION é um contêiner inválido para a extensão."
 }

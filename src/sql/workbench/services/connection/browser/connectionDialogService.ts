@@ -70,7 +70,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	private _providerDisplayNames: string[] = [];
 	private _currentProviderType: string = Constants.mssqlProviderName;
 	private _connecting: boolean = false;
-	private _connectionErrorTitle = localize('connectionError', 'Connection error');
+	private _connectionErrorTitle = localize('connectionError', "Connection error");
 	private _dialogDeferredPromise: Deferred<IConnectionProfile>;
 
 	/**
@@ -316,9 +316,17 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			}
 		}
 		this._model.providerName = this._currentProviderType;
-
+		const previousModel = this._model;
 		this._model = new ConnectionProfile(this._capabilitiesService, this._model);
-		this.uiController.showUiComponent(input.container);
+		if (previousModel) {
+			previousModel.dispose();
+		}
+		if (this._inputModel && this._inputModel.options) {
+			this.uiController.showUiComponent(input.container,
+				this._inputModel.options.authTypeChanged);
+		} else {
+			this.uiController.showUiComponent(input.container);
+		}
 
 	}
 
@@ -328,9 +336,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 
 	private handleFillInConnectionInputs(connectionInfo: IConnectionProfile): void {
 		this._connectionManagementService.addSavedPassword(connectionInfo).then(connectionWithPassword => {
-			let model = this.createModel(connectionWithPassword);
-			this._model = model;
-			this.uiController.fillInConnectionInputs(model);
+			if (this._model) {
+				this._model.dispose();
+			}
+			this._model = this.createModel(connectionWithPassword);
+
+			this.uiController.fillInConnectionInputs(this._model);
 		});
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[connectionInfo.providerName]);
 	}
@@ -344,6 +355,9 @@ export class ConnectionDialogService implements IConnectionDialogService {
 	}
 
 	private updateModelServerCapabilities(model: IConnectionProfile) {
+		if (this._model) {
+			this._model.dispose();
+		}
 		this._model = this.createModel(model);
 		if (this._model.providerName) {
 			this._currentProviderType = this._model.providerName;
@@ -447,8 +461,10 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		this._connectionDialog.updateProvider(this._providerNameToDisplayNameMap[this._currentProviderType]);
 
 		return new Promise<void>(() => {
-			this._connectionDialog.open(this._connectionManagementService.getRecentConnections(params.providers).length > 0);
+			const recentConnections: ConnectionProfile[] = this._connectionManagementService.getRecentConnections(params.providers);
+			this._connectionDialog.open(recentConnections.length > 0);
 			this.uiController.focusOnOpen();
+			recentConnections.forEach(conn => conn.dispose());
 		});
 	}
 

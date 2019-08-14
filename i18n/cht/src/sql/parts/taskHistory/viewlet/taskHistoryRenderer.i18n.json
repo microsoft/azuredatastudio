@@ -8,6 +8,8 @@
 	],
 	"succeeded": "已成功",
 	"failed": "失敗",
+	"inProgress": "進行中",
 	"notStarted": "未啟動",
-	"canceled": "已取消"
+	"canceled": "已取消",
+	"canceling": "取消中"
 }

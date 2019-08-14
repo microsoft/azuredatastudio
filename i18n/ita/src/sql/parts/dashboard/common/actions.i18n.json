@@ -13,5 +13,7 @@
 	"deleteWidget": "Elimina Widget",
 	"clickToUnpin": "Fare clic per sbloccare",
 	"clickToPin": "Click per bloccare (pin)",
-	"addFeatureAction.openInstalledFeatures": "Mostra funzionalità installate"
+	"addFeatureAction.openInstalledFeatures": "Mostra funzionalità installate",
+	"collapseWidget": "Comprimi",
+	"expandWidget": "Espandi"
 }

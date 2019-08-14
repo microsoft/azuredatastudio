@@ -67,7 +67,7 @@
 			"typescript.suggestionActions.enabled": "편집기에서 TypeScript 파일에 대한 제안 진단을 사용하거나 사용하지 않도록 설정합니다. 작업 영역에서 TypeScript 2.8 이상을 사용해야 합니다.",
 			"typescript.preferences.quoteStyle": "빠른 수정에 사용할 기본 따옴표 스타일은 '작은' 따옴표, '큰' 따옴표 또는 '자동'입니다. '자동'이면 기존 가져오기에서 따옴표 형식이 유추됩니다. 작업 영역에서 TypeScript 2.9 이상을 사용해야 합니다.",
 			"typescript.preferences.importModuleSpecifier": "자동 가져오기의 기본 경로 스타일입니다.",
-			"typescript.preferences.importModuleSpecifier.auto": "최단 경로 유형을 유추합니다.",
+			"typescript.preferences.importModuleSpecifier.auto": "Automatically select import path style. Prefers using a relative import if `baseUrl` is configured and the relative path has fewer segments than the non-relative import.",
 			"typescript.preferences.importModuleSpecifier.relative": "파일 위치를 기준으로 합니다.",
 			"typescript.preferences.importModuleSpecifier.nonRelative": "`jsconfig.json`/`tsconfig.json`에 구성된 `baseUrl`을 기준으로 합니다.",
 			"typescript.updateImportsOnFileMove.enabled": "VS Code에서 파일을 이동하거나 이름을 바꿀 때 가져오기 경로의 자동 업데이트를 사용하거나 사용하지 않도록 설정합니다. 작업 영역에서 TypeScript 2.9 이상을 사용해야 합니다.",
@@ -79,6 +79,9 @@
 			"configuration.surveys.enabled": "VS Code의 Javascript 및 Typescript 지원을 개선하는 데 도움이 되는 가끔 있는 설문을 사용하거나 사용하지 않도록 설정합니다.",
 			"configuration.suggest.completeJSDocs": "제안을 사용하거나 사용하지 않도록 설정하여 JSDoc 주석을 완료합니다.",
 			"typescript.preferences.renameShorthandProperties": "이름을 바꾸는 중 개체 줄임 속성의 별칭 지정을 사용하거나 사용하지 않도록 설정합니다. 작업 영역에서 TypeScript 3.4 이상을 사용해야 합니다."
+		},
+		"out/utils/versionStatus": {
+			"typescriptVersion": "TypeScript: Version"
 		},
 		"out/utils/versionProvider": {
 			"couldNotLoadTsVersion": "이 경로에서 TypeScript 버전을 로드할 수 없음",
@@ -102,6 +105,7 @@
 			"neverAgain": "JS/TS 설문 사용 안 함"
 		},
 		"out/utils/projectStatus": {
+			"statusExclude": "TypeScript: Configure Excludes",
 			"hintExclude": "프로젝트 전체에서 JavaScript/TypeScript 언어 기능을 사용하도록 설정하려면 {0}과(와) 같이 파일이 많은 폴더를 제외하세요.",
 			"hintExclude.generic": "프로젝트 전체에서 JavaScript/TypeScript 언어 기능을 사용하도록 설정하려면 사용하지 않는 소스 파일이 포함된 큰 폴더를 제외하세요.",
 			"large.label": "제외 구성",

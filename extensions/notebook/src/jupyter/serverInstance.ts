@@ -13,7 +13,7 @@ import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 import { IServerInstance } from './common';
-import JupyterServerInstallation from './jupyterServerInstallation';
+import { JupyterServerInstallation } from './jupyterServerInstallation';
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import * as notebookUtils from '../common/notebookUtils';
@@ -377,8 +377,13 @@ export class PerNotebookServerInstance implements IServerInstance {
 		return childProcess;
 	}
 
-	private getEnvWithConfigPaths(env: {}): any {
+	private getEnvWithConfigPaths(env: { [key: string]: string }): any {
+		// Take the variables that starts with 'AZDATA_NB_VAR_' from process.env object so that we can pass information to notebooks
 		let newEnv: { [key: string]: string } = Object.assign({}, env);
+		Object.keys(process.env).filter(key => key.startsWith('AZDATA_NB_VAR_')).forEach(key => {
+			newEnv[key] = process.env[key];
+		});
+
 		newEnv['JUPYTER_CONFIG_DIR'] = this.instanceConfigRoot;
 		newEnv['JUPYTER_PATH'] = this.instanceDataRoot;
 		return newEnv;

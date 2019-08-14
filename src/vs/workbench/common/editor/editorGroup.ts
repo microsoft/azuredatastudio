@@ -8,7 +8,7 @@ import { Extensions, IEditorInputFactoryRegistry, EditorInput, toResource, IEdit
 import { URI } from 'vs/base/common/uri';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
-import { dispose, IDisposable, Disposable } from 'vs/base/common/lifecycle';
+import { dispose, Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { ResourceMap } from 'vs/base/common/map';
 import { coalesce } from 'vs/base/common/arrays';
@@ -17,10 +17,8 @@ import { coalesce } from 'vs/base/common/arrays';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import * as CustomInputConverter from 'sql/workbench/common/customInputConverter';
-import { NotebookInput } from 'sql/workbench/parts/notebook/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
-import * as path from 'path';
-import * as os from 'os';
 
 const EditorOpenPositioning = {
 	LEFT: 'left',
@@ -69,31 +67,31 @@ export class EditorGroup extends Disposable {
 	//#region events
 
 	private readonly _onDidEditorActivate = this._register(new Emitter<EditorInput>());
-	get onDidEditorActivate(): Event<EditorInput> { return this._onDidEditorActivate.event; }
+	readonly onDidEditorActivate: Event<EditorInput> = this._onDidEditorActivate.event;
 
 	private readonly _onDidEditorOpen = this._register(new Emitter<EditorInput>());
-	get onDidEditorOpen(): Event<EditorInput> { return this._onDidEditorOpen.event; }
+	readonly onDidEditorOpen: Event<EditorInput> = this._onDidEditorOpen.event;
 
 	private readonly _onDidEditorClose = this._register(new Emitter<EditorCloseEvent>());
-	get onDidEditorClose(): Event<EditorCloseEvent> { return this._onDidEditorClose.event; }
+	readonly onDidEditorClose: Event<EditorCloseEvent> = this._onDidEditorClose.event;
 
 	private readonly _onDidEditorDispose = this._register(new Emitter<EditorInput>());
-	get onDidEditorDispose(): Event<EditorInput> { return this._onDidEditorDispose.event; }
+	readonly onDidEditorDispose: Event<EditorInput> = this._onDidEditorDispose.event;
 
 	private readonly _onDidEditorBecomeDirty = this._register(new Emitter<EditorInput>());
-	get onDidEditorBecomeDirty(): Event<EditorInput> { return this._onDidEditorBecomeDirty.event; }
+	readonly onDidEditorBecomeDirty: Event<EditorInput> = this._onDidEditorBecomeDirty.event;
 
 	private readonly _onDidEditorLabelChange = this._register(new Emitter<EditorInput>());
-	get onDidEditorLabelChange(): Event<EditorInput> { return this._onDidEditorLabelChange.event; }
+	readonly onDidEditorLabelChange: Event<EditorInput> = this._onDidEditorLabelChange.event;
 
 	private readonly _onDidEditorMove = this._register(new Emitter<EditorInput>());
-	get onDidEditorMove(): Event<EditorInput> { return this._onDidEditorMove.event; }
+	readonly onDidEditorMove: Event<EditorInput> = this._onDidEditorMove.event;
 
 	private readonly _onDidEditorPin = this._register(new Emitter<EditorInput>());
-	get onDidEditorPin(): Event<EditorInput> { return this._onDidEditorPin.event; }
+	readonly onDidEditorPin: Event<EditorInput> = this._onDidEditorPin.event;
 
 	private readonly _onDidEditorUnpin = this._register(new Emitter<EditorInput>());
-	get onDidEditorUnpin(): Event<EditorInput> { return this._onDidEditorUnpin.event; }
+	readonly onDidEditorUnpin: Event<EditorInput> = this._onDidEditorUnpin.event;
 
 	//#endregion
 
@@ -147,16 +145,16 @@ export class EditorGroup extends Disposable {
 		return mru ? this.mru.slice(0) : this.editors.slice(0);
 	}
 
-	getEditor(index: number): EditorInput | null;
-	getEditor(resource: URI): EditorInput | null;
-	getEditor(arg1: number | URI): EditorInput | null {
+	getEditor(index: number): EditorInput | undefined;
+	getEditor(resource: URI): EditorInput | undefined;
+	getEditor(arg1: number | URI): EditorInput | undefined {
 		if (typeof arg1 === 'number') {
 			return this.editors[arg1];
 		}
 
 		const resource: URI = arg1;
 		if (!this.contains(resource)) {
-			return null; // fast check for resource opened or not
+			return undefined; // fast check for resource opened or not
 		}
 
 		for (const editor of this.editors) {
@@ -166,7 +164,7 @@ export class EditorGroup extends Disposable {
 			}
 		}
 
-		return null;
+		return undefined;
 	}
 
 	get activeEditor(): EditorInput | null {
@@ -279,30 +277,30 @@ export class EditorGroup extends Disposable {
 	}
 
 	private registerEditorListeners(editor: EditorInput): void {
-		const unbind: IDisposable[] = [];
+		const listeners = new DisposableStore();
 
 		// Re-emit disposal of editor input as our own event
 		const onceDispose = Event.once(editor.onDispose);
-		unbind.push(onceDispose(() => {
+		listeners.add(onceDispose(() => {
 			if (this.indexOf(editor) >= 0) {
 				this._onDidEditorDispose.fire(editor);
 			}
 		}));
 
 		// Re-Emit dirty state changes
-		unbind.push(editor.onDidChangeDirty(() => {
+		listeners.add(editor.onDidChangeDirty(() => {
 			this._onDidEditorBecomeDirty.fire(editor);
 		}));
 
 		// Re-Emit label changes
-		unbind.push(editor.onDidChangeLabel(() => {
+		listeners.add(editor.onDidChangeLabel(() => {
 			this._onDidEditorLabelChange.fire(editor);
 		}));
 
 		// Clean up dispose listeners once the editor gets closed
-		unbind.push(this.onDidEditorClose(event => {
+		listeners.add(this.onDidEditorClose(event => {
 			if (event.editor.matches(editor)) {
-				dispose(unbind);
+				dispose(listeners);
 			}
 		}));
 	}
@@ -666,15 +664,6 @@ export class EditorGroup extends Disposable {
 					&& !this.configurationService.getValue<boolean>('sql.promptToSaveGeneratedFiles')) {
 					return;
 				}
-				// Do not add generated files from Temp if file is not dirty
-				if (e instanceof FileEditorInput && !e.isDirty()) {
-					let filePath = e.getResource() ? e.getResource().fsPath : undefined;
-					let tempPath = os.tmpdir();
-					if (filePath && tempPath &&
-						filePath.toLocaleLowerCase().includes(path.join(tempPath.toLocaleLowerCase(), 'mssql_definition'))) {
-						return;
-					}
-				}
 				// {{SQL CARBON EDIT}} - End
 
 				const value = factory.serialize(e);
@@ -740,4 +729,26 @@ export class EditorGroup extends Disposable {
 			this.preview = this.editors[data.preview];
 		}
 	}
+
+	// {{SQL CARBON EDIT}}
+	async removeNonExitingEditor(): Promise<void> {
+		let n = 0;
+		while (n < this.editors.length) {
+			let editor = this.editors[n];
+			if (editor instanceof QueryInput && editor.matchInputInstanceType(FileEditorInput) && !editor.isDirty() && await editor.inputFileExists() === false && this.editors.length > 1) {
+				// remove from editors list so that they do not get restored
+				this.editors.splice(n, 1);
+				let index = this.mru.findIndex(e => e.matches(editor));
+
+				// remove from MRU list otherwise later if we try to close them it leaves a sticky active editor with no data
+				this.mru.splice(index, 1);
+				this.active = this.isActive(editor) ? this.editors[0] : this.active;
+				editor.close();
+			}
+			else {
+				n++;
+			}
+		}
+	}
+	// {{SQL CARBON EDIT}}
 }

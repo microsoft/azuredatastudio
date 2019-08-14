@@ -169,6 +169,39 @@ export enum ModelComponentTypes {
 	Hyperlink
 }
 
+export enum ColumnSizingMode {
+	ForceFit = 0,	// all columns will be sized to fit in viewable space, no horiz scroll bar
+	AutoFit = 1,	// columns will be ForceFit up to a certain number; currently 3.  At 4 or more the behavior will switch to NO force fit
+	DataFit = 2		// columns use sizing based on cell data, horiz scroll bar present if more cells than visible in view area
+}
+
+export enum AgentSubSystem {
+	TransactSql = 1,
+	ActiveScripting = 2,
+	CmdExec = 3,
+	Snapshot = 4,
+	LogReader = 5,
+	Distribution = 6,
+	Merge = 7,
+	QueueReader = 8,
+	AnalysisQuery = 9,
+	AnalysisCommands = 10,
+	Ssis = 11,
+	PowerShell = 12
+}
+
+export enum StepCompletionAction {
+	QuitWithSuccess = 1,
+	QuitWithFailure = 2,
+	GoToNextStep = 3,
+	GoToStep = 4
+}
+
+export enum ExtensionNodeType {
+	Server = 'Server',
+	Database = 'Database'
+}
+
 export interface IComponentShape {
 	type: ModelComponentTypes;
 	id: string;
@@ -295,7 +328,8 @@ export enum DataProviderType {
 	DacFxServicesProvider = 'DacFxServicesProvider',
 	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
-	IconProvider = 'IconProvider'
+	IconProvider = 'IconProvider',
+	SerializationProvider = 'SerializationProvider'
 }
 
 export enum DeclarativeDataType {
@@ -544,6 +578,7 @@ export class ConnectionProfile {
 	groupId: string;
 	saveProfile: boolean;
 	azureTenantId?: string;
+	options: { [name: string]: any };
 
 	static createFrom(options: any[]): ConnectionProfile {
 		// create from options
@@ -587,53 +622,54 @@ export enum SchemaObjectType {
 	ExternalFileFormats = 16,
 	ExternalTables = 17,
 	Filegroups = 18,
-	FileTables = 19,
-	FullTextCatalogs = 20,
-	FullTextStoplists = 21,
-	MessageTypes = 22,
-	PartitionFunctions = 23,
-	PartitionSchemes = 24,
-	Permissions = 25,
-	Queues = 26,
-	RemoteServiceBindings = 27,
-	RoleMembership = 28,
-	Rules = 29,
-	ScalarValuedFunctions = 30,
-	SearchPropertyLists = 31,
-	SecurityPolicies = 32,
-	Sequences = 33,
-	Services = 34,
-	Signatures = 35,
-	StoredProcedures = 36,
-	SymmetricKeys = 37,
-	Synonyms = 38,
-	Tables = 39,
-	TableValuedFunctions = 40,
-	UserDefinedDataTypes = 41,
-	UserDefinedTableTypes = 42,
-	ClrUserDefinedTypes = 43,
-	Users = 44,
-	Views = 45,
-	XmlSchemaCollections = 46,
-	Audits = 47,
-	Credentials = 48,
-	CryptographicProviders = 49,
-	DatabaseAuditSpecifications = 50,
-	DatabaseEncryptionKeys = 51,
-	DatabaseScopedCredentials = 52,
-	Endpoints = 53,
-	ErrorMessages = 54,
-	EventNotifications = 55,
-	EventSessions = 56,
-	LinkedServerLogins = 57,
-	LinkedServers = 58,
-	Logins = 59,
-	MasterKeys = 60,
-	Routes = 61,
-	ServerAuditSpecifications = 62,
-	ServerRoleMembership = 63,
-	ServerRoles = 64,
-	ServerTriggers = 65
+	Files = 19,
+	FileTables = 20,
+	FullTextCatalogs = 21,
+	FullTextStoplists = 22,
+	MessageTypes = 23,
+	PartitionFunctions = 24,
+	PartitionSchemes = 25,
+	Permissions = 26,
+	Queues = 27,
+	RemoteServiceBindings = 28,
+	RoleMembership = 29,
+	Rules = 30,
+	ScalarValuedFunctions = 31,
+	SearchPropertyLists = 32,
+	SecurityPolicies = 33,
+	Sequences = 34,
+	Services = 35,
+	Signatures = 36,
+	StoredProcedures = 37,
+	SymmetricKeys = 38,
+	Synonyms = 39,
+	Tables = 40,
+	TableValuedFunctions = 41,
+	UserDefinedDataTypes = 42,
+	UserDefinedTableTypes = 43,
+	ClrUserDefinedTypes = 44,
+	Users = 45,
+	Views = 46,
+	XmlSchemaCollections = 47,
+	Audits = 48,
+	Credentials = 49,
+	CryptographicProviders = 50,
+	DatabaseAuditSpecifications = 51,
+	DatabaseEncryptionKeys = 52,
+	DatabaseScopedCredentials = 53,
+	Endpoints = 54,
+	ErrorMessages = 55,
+	EventNotifications = 56,
+	EventSessions = 57,
+	LinkedServerLogins = 58,
+	LinkedServers = 59,
+	Logins = 60,
+	MasterKeys = 61,
+	Routes = 62,
+	ServerAuditSpecifications = 63,
+	ServerRoleMembership = 64,
+	ServerRoles = 65,
+	ServerTriggers = 66
 }
 
 export enum ColumnType {

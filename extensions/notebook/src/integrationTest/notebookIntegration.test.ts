@@ -10,9 +10,10 @@ import * as path from 'path';
 import 'mocha';
 
 import { JupyterController } from '../jupyter/jupyterController';
-import JupyterServerInstallation, { PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
+import { JupyterServerInstallation, PythonPkgDetails } from '../jupyter/jupyterServerInstallation';
 import { pythonBundleVersion } from '../common/constants';
 import { executeStreamedCommand } from '../common/utils';
+import { AddNewPackageTab } from '../dialog/managePackages/addNewPackageTab';
 
 describe('Notebook Extension Python Installation', function () {
 	this.timeout(600000);
@@ -20,6 +21,7 @@ describe('Notebook Extension Python Installation', function () {
 	let installComplete = false;
 	let pythonInstallDir = process.env.PYTHON_TEST_PATH;
 	let jupyterController: JupyterController;
+
 	before(async function () {
 		assert.ok(pythonInstallDir, 'Python install directory was not defined.');
 
@@ -81,12 +83,8 @@ describe('Notebook Extension Python Installation', function () {
 		console.log('Existing Python Installation is done');
 	});
 
-	it('Python Install Utilities Test', async function () {
+	it('Pip Install Utilities Test', async function () {
 		let install = jupyterController.jupyterInstallation;
-
-		let packagePath = await install.getPythonPackagesPath();
-		should(packagePath).not.be.undefined();
-		should(packagePath.length).be.greaterThan(0);
 
 		let testPkg = 'pandas';
 		let testPkgVersion = '0.24.2';
@@ -103,5 +101,27 @@ describe('Notebook Extension Python Installation', function () {
 		await install.installPipPackage(testPkg, testPkgVersion);
 		packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
+	});
+
+	it('Conda Install Utilities Test', async function () {
+		let install = jupyterController.jupyterInstallation;
+
+		// Anaconda is not included in our Python package, so all
+		// the conda utilities should fail.
+		should(install.usingConda).be.false();
+
+		should(install.getInstalledCondaPackages()).be.rejected();
+
+		should(install.installCondaPackage('pandas', '0.24.2')).be.rejected();
+
+		should(install.uninstallCondaPackages([{ name: 'pandas', version: '0.24.2' }])).be.rejected();
+	});
+
+	it('Manage Packages Dialog: New Package Test', async function () {
+		let testVersions = ['1.0.0', '1.1', '0.0.0.9', '0.0.5', '100', '0.3', '3'];
+		let expectedVerions = ['100', '3', '1.1', '1.0.0', '0.3', '0.0.5', '0.0.0.9'];
+
+		let actualVersions = AddNewPackageTab.sortPackageVersions(testVersions);
+		should(actualVersions).be.deepEqual(expectedVerions);
 	});
 });

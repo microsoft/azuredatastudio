@@ -61,9 +61,9 @@ Especial agradecimiento a quienes contribuyen a la comunidad por hacerlo disponi
 **Disfrútelo!**
 
 
-#  Spanish Language Pack for VS Code
+#  Spanish Language Pack for Azure Data Studio
 
-Spanish Language Pack provides localized UI experience for VS Code.
+Spanish Language Pack provides localized UI experience for Azure Data Studio.
 
 ## Usage
 
@@ -71,13 +71,13 @@ Once installed, set `"locale": "es"` in `locale.json` to load Spanish Language P
 
 ## Contributing
 
-The translation strings are maintained in "DevTools - VS Code" project in Microsoft Localization Community Platform (MLCP).
+The translation strings are maintained in "DevTools - Azure Data Studio" project in Microsoft Localization Community Platform (MLCP).
 
 If you'd like to participate in the effort either to contribue translation or improve translation, see [community localization page](https://aka.ms/vscodeloc) for more information.
 
 ## License
 
-The source code and strings are licensed under the [MIT](https://github.com/Microsoft/vscode-loc/blob/master/LICENSE.md) license.
+The source code and strings are licensed under the [SOURCE EULA](https://github.com/Microsoft/azuredatastudio/blob/master/LICENSE.txt).
 
 ## Credits
 

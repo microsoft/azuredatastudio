@@ -366,7 +366,7 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 	static readonly ID = 'workbench.picker.filesymbols';
 
 	private rangeHighlightDecorationId?: IEditorLineDecoration;
-	private lastKnownEditorViewState: IEditorViewState | null;
+	private lastKnownEditorViewState: IEditorViewState | null = null;
 
 	private cachedOutlineRequest?: Promise<OutlineModel | null>;
 	private pendingOutlineRequest?: CancellationTokenSource;
@@ -495,7 +495,7 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 		return this.cachedOutlineRequest;
 	}
 
-	private doGetActiveOutline(): Promise<OutlineModel | null> {
+	private async doGetActiveOutline(): Promise<OutlineModel | null> {
 		const activeTextEditorWidget = this.editorService.activeTextEditorWidget;
 		if (activeTextEditorWidget) {
 			let model = activeTextEditorWidget.getModel();
@@ -504,13 +504,13 @@ export class GotoSymbolHandler extends QuickOpenHandler {
 			}
 
 			if (model && types.isFunction((<ITextModel>model).getLanguageIdentifier)) {
-				return Promise.resolve(asPromise(() => getDocumentSymbols(<ITextModel>model, true, this.pendingOutlineRequest!.token)).then(entries => {
-					return new OutlineModel(this.toQuickOpenEntries(entries));
-				}));
+				const entries = await asPromise(() => getDocumentSymbols(<ITextModel>model, true, this.pendingOutlineRequest!.token));
+
+				return new OutlineModel(this.toQuickOpenEntries(entries));
 			}
 		}
 
-		return Promise.resolve(null);
+		return null;
 	}
 
 	decorateOutline(fullRange: IRange, startRange: IRange, editor: IEditor, group: IEditorGroup): void {

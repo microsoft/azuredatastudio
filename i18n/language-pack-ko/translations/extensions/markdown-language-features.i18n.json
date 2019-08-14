@@ -47,6 +47,9 @@
 			"previewTitle": "미리 보기 {0}",
 			"preview.clickOpenFailed": "{0}을(를) 열 수 없습니다."
 		},
+		"out/features/documentLinkProvider": {
+			"documentLink.tooltip": "follow link"
+		},
 		"out/security": {
 			"strict.title": "Strict",
 			"strict.description": "보안 콘텐츠만 로드",

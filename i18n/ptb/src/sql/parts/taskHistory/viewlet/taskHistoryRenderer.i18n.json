@@ -8,7 +8,7 @@
 	],
 	"succeeded": "sucedeu",
 	"failed": "falhou",
-	"inProgress": "em andamento",
+	"inProgress": "Em andamento",
 	"notStarted": "não iniciado",
 	"canceled": "cancelado",
 	"canceling": "cancelando"

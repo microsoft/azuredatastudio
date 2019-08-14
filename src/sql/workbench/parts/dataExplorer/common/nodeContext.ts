@@ -9,6 +9,9 @@ import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -30,10 +33,14 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	private readonly _viewItemKey: IContextKey<string>;
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
 
+	private _nodeContextUtils: MssqlNodeContext;
+
 	constructor(
-		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextKeyService private contextKeyService: IContextKeyService,
 		@IOEShimService private oeService: IOEShimService,
-		@IQueryManagementService queryManagementService: IQueryManagementService
+		@IQueryManagementService queryManagementService: IQueryManagementService,
+		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
 	) {
 		super();
 
@@ -62,6 +69,8 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		}
 		this._nodeContextKey.set(value);
 		this._viewIdKey.set(value.viewId);
+		this._nodeContextUtils = new MssqlNodeContext(this._nodeContextKey.get(), this.contextKeyService,
+			this.connectionManagementService, this.capabilitiesService);
 	}
 
 	reset(): void {
@@ -71,6 +80,7 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._connectedKey.reset();
 		this._connectionContextKey.reset();
 		this._nodeContextKey.reset();
+		this._nodeContextUtils.dispose();
 	}
 
 	get(): INodeContextValue | undefined {

@@ -10,10 +10,11 @@
 	"insightIdDescription": "Identificatore univoco usato per memorizzare nella cache i risultati del rilevamento intelligente.",
 	"insightQueryDescription": "Query SQL da eseguire. Dovrebbe restituire esattamente 1 solo set di risultati.",
 	"insightQueryFileDescription": "[Facoltativo] percorso di un file contenente una query. Utilizzare se la \"query\" non è impostata",
+	"insightAutoRefreshIntervalDescription": "[Facoltativo] Intervallo di aggiornamento automatico in minuti. Se non è impostato, non verrà eseguito alcun aggiornamento automatico",
 	"actionTypes": "Azioni da utilizzare",
-	"actionDatabaseDescription": "Database di destinazione per l'azione; è possibile utilizzare il formato \"${columnName} per ottenre un nome colonna basato sul contenuto.",
-	"actionServerDescription": "Server di destinazione per l'azione; possibile utilizzare il formato \"${columnName} per utilizzare un nome di colonna data-driven.",
-	"actionUserDescription": "Utente di destinazione per l'azione; possibile utilizzare il formato \"${columnName} per utilizzare un nome colonna data-driven.",
+	"actionDatabaseDescription": "Database di destinazione per l'azione; è possibile utilizzare il formato \"${columnName}\" per utilizzare un nome di colonna basato sui dati.",
+	"actionServerDescription": "Server di destinazione per l'azione. È possibile usare il formato \"${columnName}\" per specificare un nome di colonna basato sui dati.",
+	"actionUserDescription": "Utente di destinazione per l'azione; è possibile utilizzare il formato \"${columnName}\" per utilizzare un nome di colonna basata sui dati.",
 	"carbon.extension.contributes.insightType.id": "Identificatore dell'insight",
 	"carbon.extension.contributes.insights": "Fornisce insight per la dashboard palette."
 }

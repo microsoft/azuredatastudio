@@ -25,7 +25,11 @@
 			"config.title": "Esegui merge del conflitto",
 			"config.autoNavigateNextConflictEnabled": "Indica se passare automaticamente al conflitto successivo dopo la risoluzione di un conflitto di merge.",
 			"config.codeLensEnabled": "Crea le finestre di CodeLens per i blocchi di conflitti di merge all'interno dell'editor.",
-			"config.decoratorsEnabled": "Crea elementi Decorator per blocchi di conflitti di merge all'interno dell'editor."
+			"config.decoratorsEnabled": "Crea elementi Decorator per blocchi di conflitti di merge all'interno dell'editor.",
+			"config.diffViewPosition": "Controls where the diff view should be opened when comparing changes in merge conflicts.",
+			"config.diffViewPosition.current": "Open the diff view in the current editor group.",
+			"config.diffViewPosition.beside": "Open the diff view next to the current editor group.",
+			"config.diffViewPosition.below": "Open the diff view below the current editor group."
 		},
 		"out/mergeDecorator": {
 			"currentChange": "(modifica corrente)",

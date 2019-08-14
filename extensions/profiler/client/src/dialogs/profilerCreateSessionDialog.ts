@@ -116,6 +116,10 @@ export class CreateSessionDialog {
 		let name = this.sessionNameBox.value;
 		let selected = this.templatesBox.value.toString();
 		let temp = this.model.selectTemplate(selected);
-		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, temp);
+		profilerService.createSession(this.model.ownerUri, this.sessionNameBox.value, temp).then(() => {
+		}, (error) => {
+			const message = error && error.message ? error.message : localize('createSessionDialog.createSessionFailed', "Failed to create a session");
+			vscode.window.showErrorMessage(message);
+		});
 	}
 }

@@ -14,6 +14,7 @@
 	"changeConnectionDatabaseLabel": "Cambia connessione",
 	"connectDatabaseLabel": "Connetti",
 	"selectDatabase": "Seleziona Database",
-	"changeDatabase.failed": "Impossibile cambiare il database",
+	"listDatabases.toggleDatabaseNameDropdown": "Menu a tendina per la selezione del Database",
+	"changeDatabase.failed": "Impossibile cambiare database",
 	"changeDatabase.failedWithError": "Impossibile modificare il database {0}"
 }

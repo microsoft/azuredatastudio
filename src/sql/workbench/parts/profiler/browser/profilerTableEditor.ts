@@ -29,6 +29,10 @@ import { textFormatter, slickGridDataItemColumnValueExtractor } from 'sql/base/b
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IStatusbarService, StatusbarAlignment } from 'vs/platform/statusbar/common/statusbar';
 import { localize } from 'vs/nls';
+import { CopyKeybind } from 'sql/base/browser/ui/table/plugins/copyKeybind.plugin';
+import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { handleCopyRequest } from 'sql/workbench/parts/profiler/browser/profilerCopyHandler';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export interface ProfilerTableViewState {
 	scrollTop: number;
@@ -62,7 +66,9 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 		@IContextKeyService private _contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IStorageService storageService: IStorageService,
-		@IStatusbarService private _statusbarService: IStatusbarService
+		@IStatusbarService private _statusbarService: IStatusbarService,
+		@IClipboardService private _clipboardService: IClipboardService,
+		@ITextResourcePropertiesService private readonly textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super(ProfilerTableEditor.ID, telemetryService, _themeService, storageService);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(ProfilerFindNext, this);
@@ -89,6 +95,17 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
 			});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
+		const copyKeybind = new CopyKeybind();
+		copyKeybind.onCopy((e) => {
+			// in context of this table, the selection mode is row selection, copy the whole row will get a lot of unwanted data
+			// ignore the passed in range and create a range so that it only copies the currently selected cell value.
+			const activeCell = this._profilerTable.activeCell;
+			handleCopyRequest(this._clipboardService, this.textResourcePropertiesService, new Slick.Range(activeCell.row, activeCell.cell), (row, cell) => {
+				const fieldName = this._input.columns[cell].field;
+				return this._input.data.getItem(row)[fieldName];
+			});
+		});
+		this._profilerTable.registerPlugin(copyKeybind);
 		attachTableStyler(this._profilerTable, this._themeService);
 
 		this._findState = new FindReplaceState();
@@ -267,11 +284,11 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 	private _updateRowCountStatus(): void {
 		if (this._showStatusBarItem) {
 			let message = this._input.data.filterEnabled ?
-				localize('ProfilerTableEditor.eventCountFiltered', 'Events (Filtered): {0}/{1}', this._input.data.getLength(), this._input.data.getLengthNonFiltered())
-				: localize('ProfilerTableEditor.eventCount', 'Events: {0}', this._input.data.getLength());
+				localize('ProfilerTableEditor.eventCountFiltered', "Events (Filtered): {0}/{1}", this._input.data.getLength(), this._input.data.getLengthNonFiltered())
+				: localize('ProfilerTableEditor.eventCount', "Events: {0}", this._input.data.getLength());
 
 			this._disposeStatusbarItem();
-			this._statusbarItem = this._statusbarService.addEntry({ text: message }, StatusbarAlignment.RIGHT);
+			this._statusbarItem = this._statusbarService.addEntry({ text: message }, 'status.eventCount', localize('status.eventCount', "Event Count"), StatusbarAlignment.RIGHT);
 		}
 	}
 
