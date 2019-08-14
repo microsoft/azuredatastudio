@@ -2493,7 +2493,7 @@
 					"flags": "preview"
 				},
 				{
-					"extensionId": "27",
+					"extensionId": "53",
 					"extensionName": "delete-database",
 					"displayName": "Delete database",
 					"shortDescription": "Adds 'Delete' option when right clicking on a database",
