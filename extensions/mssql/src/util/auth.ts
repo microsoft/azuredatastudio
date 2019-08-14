@@ -6,7 +6,7 @@
 import * as kerberos from 'kerberos';
 
 export async function authenticateKerberos(hostname: string): Promise<string> {
-	const service = `HTTP@${hostname}`;
+	const service = 'HTTP' + (process.platform === 'win32' ? '/' : '@') + hostname;
 	const mechOID = kerberos.GSS_MECH_OID_KRB5;
 	let client = await kerberos.initializeClient(service, { mechOID });
 	let response = await client.step('');
