@@ -1133,6 +1133,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('forceFitColumns', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
