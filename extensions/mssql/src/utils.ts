@@ -253,12 +253,12 @@ export type HostAndIp = { host: string, port: string };
 
 export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 	let authority = vscode.Uri.parse(endpoint).authority;
-	let hostAndPortRegex = /^(.*)([,:](\d))/g;
+	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
 	let match = hostAndPortRegex.exec(authority);
 	if (match) {
 		return {
-			host: match[0],
-			port: match[2]
+			host: match[1],
+			port: match[3]
 		};
 	}
 	return {

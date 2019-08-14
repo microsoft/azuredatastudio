@@ -56,14 +56,16 @@ export class SqlClusterConnection {
 			user: this.user,
 			path: 'gateway/default/webhdfs/v1',
 			requestParams: {
-				auth: {
-					user: this.user,
-					pass: this.password
-				}
 			}
 		};
 		if (this.isIntegratedAuth()) {
-			options.requestParams.auth.isKerberos = this.isIntegratedAuth();
+			options.requestParams.isKerberos = this.isIntegratedAuth();
+			options.requestParams.auth = undefined;
+		} else {
+			options.requestParams.auth = {
+				user: this.user,
+				pass: this.password
+			};
 		}
 		let fileSource = await FileSourceFactory.instance.createHdfsFileSource(options);
 		return fileSource;

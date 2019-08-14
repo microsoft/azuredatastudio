@@ -7,16 +7,8 @@ import * as kerberos from 'kerberos';
 
 export async function authenticateKerberos(hostname: string): Promise<string> {
 	const service = `HTTP@${hostname}`;
-
-	let client = await kerberos.initializeClient(service, {});
+	const mechOID = kerberos.GSS_MECH_OID_KRB5;
+	let client = await kerberos.initializeClient(service, { mechOID });
 	let response = await client.step('');
-	let count = 2;
-	while (!client.contextComplete && count > 0) {
-		response = await client.step(response);
-		count--;
-	}
-	if (!client.contextComplete) {
-		throw new Error('Failed to authenticate, unclear why');
-	}
 	return response;
 }

@@ -73,7 +73,6 @@ export interface IFileSource {
 export interface IHttpAuthentication {
 	user: string;
 	pass: string;
-	isKerberos?: boolean;
 }
 export interface IHdfsOptions {
 	host?: string;
@@ -86,6 +85,7 @@ export interface IHdfsOptions {
 
 export interface IRequestParams {
 	auth?: IHttpAuthentication;
+	isKerberos?: boolean;
 	/**
 	 * Timeout in milliseconds to wait for response
 	 */
@@ -112,7 +112,7 @@ export class FileSourceFactory {
 	public async createHdfsFileSource(options: IHdfsOptions): Promise<IFileSource> {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
 		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
-		if (requestParams.auth) {
+		if (requestParams.auth || requestParams.isKerberos) {
 			// TODO Remove handling of unsigned cert once we have real certs in our Knox service
 			let agentOptions = {
 				host: options.host,
@@ -123,10 +123,10 @@ export class FileSourceFactory {
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
 
-			if (requestParams.auth.isKerberos) {
-				let kerberosToken = await auth.authenticateKerberos(options.host);
-				requestParams.headers = { Authorization: `Negotiate ${kerberosToken}` };
-			}
+		}
+		if (requestParams.isKerberos) {
+			let kerberosToken = await auth.authenticateKerberos(options.host);
+			requestParams.headers = { Authorization: `Negotiate ${kerberosToken}` };
 		}
 		return new HdfsFileSource(WebHDFS.createClient(options, requestParams));
 	}
