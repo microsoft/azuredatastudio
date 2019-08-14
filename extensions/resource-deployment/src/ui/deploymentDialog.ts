@@ -10,6 +10,7 @@ import * as vscode from 'vscode';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
 import { DeploymentProvider, DialogFieldInfo, FieldType } from '../interfaces';
+import { isArray } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -72,80 +73,119 @@ export class DeploymentDialog extends DialogBase {
 	}
 
 	private addField(view: azdata.ModelView, fields: azdata.FormComponent[], fieldInfo: DialogFieldInfo): void {
+		this.variables[fieldInfo.variableName] = fieldInfo.defaultValue;
+		let component: { component: azdata.Component, title: string }[] | azdata.Component | undefined = undefined;
 		switch (fieldInfo.type) {
 			case FieldType.Options:
-				this.addOptionsTypeField(view, fields, fieldInfo);
+				component = this.createOptionsTypeField(view, fieldInfo);
 				break;
 			case FieldType.DateTimeText:
+				component = this.createDateTimeTextField(view, fieldInfo);
+				break;
 			case FieldType.Number:
+				component = this.createNumberField(view, fieldInfo);
+				break;
 			case FieldType.SQLPassword:
+			case FieldType.Password:
+				component = this.createPasswordField(view, fieldInfo);
+				break;
 			case FieldType.Text:
-				this.addInputTypeField(view, fields, fieldInfo);
+				component = this.createTextField(view, fieldInfo);
 				break;
+			default:
+				throw new Error('Unknown field type: "' + fieldInfo.type + '"');
+		}
+
+		if (component) {
+			if (isArray(component)) {
+				fields.push(...component);
+			} else {
+				fields.push({ title: fieldInfo.label, component: component });
+			}
+		} else {
+			throw new Error('Failed to add field: "' + fieldInfo.label + '"');
 		}
 	}
 
-	private addOptionsTypeField(view: azdata.ModelView, fields: azdata.FormComponent[], fieldInfo: DialogFieldInfo): void {
-		const component = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({ values: fieldInfo.options, value: fieldInfo.defaultValue }).component();
-		this.variables[fieldInfo.variableName] = fieldInfo.defaultValue;
-		this._toDispose.push(component.onValueChanged(() => { this.variables[fieldInfo.variableName] = <string>component.value; }));
-		fields.push({ title: fieldInfo.label, component: component });
+	private createOptionsTypeField(view: azdata.ModelView, fieldInfo: DialogFieldInfo): azdata.DropDownComponent {
+		const dropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({ values: fieldInfo.options, value: fieldInfo.defaultValue }).component();
+		this._toDispose.push(dropdown.onValueChanged(() => { this.variables[fieldInfo.variableName] = <string>dropdown.value; }));
+		return dropdown;
 	}
 
-	private addInputTypeField(view: azdata.ModelView, fields: azdata.FormComponent[], fieldInfo: DialogFieldInfo): void {
-		let inputType: azdata.InputBoxInputType = 'text';
-		let defaultValue: string | undefined = fieldInfo.defaultValue;
-
-		switch (fieldInfo.type) {
-			case FieldType.Number:
-				inputType = 'number';
-				break;
-			case FieldType.SQLPassword:
-				inputType = 'password';
-				break;
-			case FieldType.DateTimeText:
-				defaultValue = fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, '');
-				break;
-		}
-		const component = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-			value: defaultValue, ariaLabel: fieldInfo.label, inputType: inputType, min: fieldInfo.min, max: fieldInfo.max, required: fieldInfo.required, placeHolder: fieldInfo.placeHolder
+	private createDateTimeTextField(view: azdata.ModelView, fieldInfo: DialogFieldInfo): azdata.InputBoxComponent {
+		const defaultValue = fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, '');
+		const input = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			value: defaultValue, ariaLabel: fieldInfo.label, inputType: 'text', required: fieldInfo.required, placeHolder: fieldInfo.placeHolder
 		}).component();
 		this.variables[fieldInfo.variableName] = defaultValue;
-		this._toDispose.push(component.onTextChanged(() => { this.variables[fieldInfo.variableName] = component.value; }));
-		fields.push({ title: fieldInfo.label, component: component });
+		this._toDispose.push(input.onTextChanged(() => { this.variables[fieldInfo.variableName] = input.value; }));
+		return input;
+
+	}
+
+	private createNumberField(view: azdata.ModelView, fieldInfo: DialogFieldInfo): azdata.InputBoxComponent {
+		const input = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			value: fieldInfo.defaultValue, ariaLabel: fieldInfo.label, inputType: 'number', min: fieldInfo.min, max: fieldInfo.max, required: fieldInfo.required
+		}).component();
+		this._toDispose.push(input.onTextChanged(() => { this.variables[fieldInfo.variableName] = input.value; }));
+		return input;
+	}
+
+	private createTextField(view: azdata.ModelView, fieldInfo: DialogFieldInfo): azdata.InputBoxComponent {
+		const input = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			value: fieldInfo.defaultValue, ariaLabel: fieldInfo.label, inputType: 'text', min: fieldInfo.min, max: fieldInfo.max, required: fieldInfo.required, placeHolder: fieldInfo.placeHolder
+		}).component();
+		this._toDispose.push(input.onTextChanged(() => { this.variables[fieldInfo.variableName] = input.value; }));
+		return input;
+	}
+
+	private createPasswordField(view: azdata.ModelView, fieldInfo: DialogFieldInfo): { title: string, component: azdata.Component }[] {
+		const components: { title: string, component: azdata.Component }[] = [];
+		const passwordInput = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+			ariaLabel: fieldInfo.label, inputType: 'password', required: fieldInfo.required, placeHolder: fieldInfo.placeHolder
+		}).component();
+		this._toDispose.push(passwordInput.onTextChanged(() => { this.variables[fieldInfo.variableName] = passwordInput.value; }));
+		components.push({ title: fieldInfo.label, component: passwordInput });
 
 		if (fieldInfo.type === FieldType.SQLPassword) {
-			const invalidPasswordMessage = localize('invalidPassword', "{0} doesn't meet the password complexity requirement. More information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldInfo.label);
-			const passwordMatchMessage = localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldInfo.label);
+			const invalidPasswordMessage = localize('invalidSQLPassword', "{0} doesn't meet the password complexity requirement. More information: https://docs.microsoft.com/sql/relational-databases/security/password-policy", fieldInfo.label);
+			this._toDispose.push(passwordInput.onTextChanged(() => {
+				if (fieldInfo.type === FieldType.SQLPassword && this.isValidSQLPassword(fieldInfo, passwordInput)) {
+					this.removeValidationMessage(invalidPasswordMessage);
+				}
+			}));
+
 			this.validators.push((): { valid: boolean, message: string } => {
-				return { valid: this.validateSQLPassword(fieldInfo, component), message: invalidPasswordMessage };
+				return { valid: this.isValidSQLPassword(fieldInfo, passwordInput), message: invalidPasswordMessage };
 			});
-			if (fieldInfo.confirmationRequired) {
-				const confirmPasswordComponent = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ ariaLabel: fieldInfo.confirmationLabel, inputType: inputType, required: true }).component();
-				fields.push({ title: fieldInfo.confirmationLabel, component: confirmPasswordComponent });
-
-				this.validators.push((): { valid: boolean, message: string } => {
-					const passwordMatches = component.value === confirmPasswordComponent.value;
-					return { valid: passwordMatches, message: passwordMatchMessage };
-				});
-
-				const updatePasswordMessage = () => {
-					if (this.validateSQLPassword(fieldInfo, component)) {
-						this.removeValidationMessage(invalidPasswordMessage);
-					}
-					if (component.value === confirmPasswordComponent.value) {
-						this.removeValidationMessage(passwordMatchMessage);
-					}
-				};
-
-				this._toDispose.push(component.onTextChanged(() => {
-					updatePasswordMessage();
-				}));
-				this._toDispose.push(confirmPasswordComponent.onTextChanged(() => {
-					updatePasswordMessage();
-				}));
-			}
 		}
+
+		if (fieldInfo.confirmationRequired) {
+			const passwordNotMatchMessage = localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldInfo.label);
+
+			const confirmPasswordInput = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ ariaLabel: fieldInfo.confirmationLabel, inputType: 'password', required: true }).component();
+			components.push({ title: fieldInfo.confirmationLabel, component: confirmPasswordInput });
+
+			this.validators.push((): { valid: boolean, message: string } => {
+				const passwordMatches = passwordInput.value === confirmPasswordInput.value;
+				return { valid: passwordMatches, message: passwordNotMatchMessage };
+			});
+
+			const updatePasswordMismatchMessage = () => {
+				if (passwordInput.value === confirmPasswordInput.value) {
+					this.removeValidationMessage(passwordNotMatchMessage);
+				}
+			};
+
+			this._toDispose.push(passwordInput.onTextChanged(() => {
+				updatePasswordMismatchMessage();
+			}));
+			this._toDispose.push(confirmPasswordInput.onTextChanged(() => {
+				updatePasswordMismatchMessage();
+			}));
+		}
+		return components;
 	}
 
 	private onComplete(): void {
@@ -156,7 +196,7 @@ export class DeploymentDialog extends DialogBase {
 		this.dispose();
 	}
 
-	private validateSQLPassword(field: DialogFieldInfo, component: azdata.InputBoxComponent): boolean {
+	private isValidSQLPassword(field: DialogFieldInfo, component: azdata.InputBoxComponent): boolean {
 		const password = component.value!;
 		// Validate SQL Server password
 		const userName = field.userName ? field.userName! : this.variables[field.userNameVariableName!];

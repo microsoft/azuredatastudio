@@ -71,6 +71,7 @@ export enum FieldType {
 	Number = 'number',
 	DateTimeText = 'datetime_text',
 	SQLPassword = 'sql_password',
+	Password = 'password',
 	Options = 'options'
 }
 
