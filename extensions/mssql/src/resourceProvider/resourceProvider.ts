@@ -75,7 +75,7 @@ export class AzureResourceProvider {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
 
-	constructor(baseConfig: IConfig) {
+	constructor(private logPath: string, baseConfig: IConfig) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['SqlToolsResourceProviderService.exe', 'SqlToolsResourceProviderService'];
@@ -102,7 +102,7 @@ export class AzureResourceProvider {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('resourceprovider', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this.logPath, 'resourceprovider.log', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }

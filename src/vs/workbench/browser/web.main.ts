@@ -40,13 +40,9 @@ import { joinPath } from 'vs/base/common/resources';
 import { BrowserStorageService } from 'vs/platform/storage/browser/storageService';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getThemeTypeSelector, DARK, HIGH_CONTRAST, LIGHT } from 'vs/platform/theme/common/themeService';
-import { IRequestService } from 'vs/platform/request/common/request';
-import { RequestService } from 'vs/workbench/services/request/browser/requestService';
 import { InMemoryUserDataProvider } from 'vs/workbench/services/userData/common/inMemoryUserDataProvider';
 
 class CodeRendererMain extends Disposable {
-
-	private workbench: Workbench;
 
 	constructor(
 		private readonly domElement: HTMLElement,
@@ -65,24 +61,30 @@ class CodeRendererMain extends Disposable {
 		this.restoreBaseTheme();
 
 		// Create Workbench
-		this.workbench = new Workbench(
+		const workbench = new Workbench(
 			this.domElement,
 			services.serviceCollection,
 			services.logService
 		);
 
 		// Layout
-		this._register(addDisposableListener(window, EventType.RESIZE, () => this.workbench.layout()));
+		this._register(addDisposableListener(window, EventType.RESIZE, () => workbench.layout()));
 
 		// Workbench Lifecycle
-		this._register(this.workbench.onShutdown(() => this.dispose()));
-		this._register(this.workbench.onWillShutdown(() => {
+		this._register(workbench.onBeforeShutdown(event => {
+			if (services.storageService.hasPendingUpdate) {
+				console.warn('Unload prevented: pending storage update');
+				event.veto(true); // prevent data loss from pending storage update
+			}
+		}));
+		this._register(workbench.onWillShutdown(() => {
 			services.storageService.close();
 			this.saveBaseTheme();
 		}));
+		this._register(workbench.onShutdown(() => this.dispose()));
 
 		// Startup
-		this.workbench.startup();
+		workbench.startup();
 	}
 
 	private restoreBaseTheme(): void {
@@ -105,7 +107,7 @@ class CodeRendererMain extends Disposable {
 
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		// NOTE: DO NOT ADD ANY OTHER SERVICE INTO THE COLLECTION HERE.
-		// CONTRIBUTE IT VIA WORKBENCH.MAIN.TS AND registerSingleton().
+		// CONTRIBUTE IT VIA WORKBENCH.WEB.MAIN.TS AND registerSingleton().
 		// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		// Log
@@ -166,7 +168,7 @@ class CodeRendererMain extends Disposable {
 		// User Data Provider
 		fileService.registerProvider(Schemas.userData, userDataProvider);
 
-		const [configurationService, storageService] = await Promise.all([
+		const services = await Promise.all([
 			this.createWorkspaceService(payload, environmentService, fileService, remoteAgentService, logService).then(service => {
 
 				// Workspace
@@ -187,10 +189,7 @@ class CodeRendererMain extends Disposable {
 			})
 		]);
 
-		// Request Service
-		serviceCollection.set(IRequestService, new RequestService(this.configuration.requestHandler, remoteAgentService, configurationService, logService));
-
-		return { serviceCollection, logService, storageService };
+		return { serviceCollection, logService, storageService: services[1] };
 	}
 
 	private async createStorageService(payload: IWorkspaceInitializationPayload, environmentService: IWorkbenchEnvironmentService, fileService: IFileService, logService: ILogService): Promise<BrowserStorageService> {

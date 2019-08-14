@@ -303,7 +303,7 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 			return 'native'; // native tabs on sierra do not work with custom title style
 		}
 
-		const useSimpleFullScreen = false; //isMacintosh && configuration.nativeFullScreen === false;
+		const useSimpleFullScreen = isMacintosh && configuration.nativeFullScreen === false;
 		if (useSimpleFullScreen) {
 			return 'native'; // simple fullscreen does not work well with custom title style (https://github.com/Microsoft/vscode/issues/63291)
 		}
@@ -426,6 +426,7 @@ export interface IWindowConfiguration extends ParsedArgs {
 	folderUri?: ISingleFolderWorkspaceIdentifier;
 
 	remoteAuthority?: string;
+	connectionToken?: string;
 
 	zoomLevel?: number;
 	fullscreen?: boolean;
@@ -444,7 +445,6 @@ export interface IWindowConfiguration extends ParsedArgs {
 	filesToDiff?: IPath[];
 	filesToWait?: IPathsToWaitFor;
 	termProgram?: string;
-	connectionToken?: string;
 }
 
 export interface IRunActionInWindowRequest {
