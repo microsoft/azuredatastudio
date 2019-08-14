@@ -6,11 +6,13 @@
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
+import { FindMatch } from 'vs/editor/common/model';
 
 export class NotebookTextFileModel {
 	private sourceMap: Map<string, Range>;
 	private outputBeginMap: Map<string, Range>;
 	private activeCellGuid: string;
+	private cellGuidMatches: FindMatch[];
 
 	constructor() {
 		this.sourceMap = new Map<string, Range>();
@@ -22,16 +24,17 @@ export class NotebookTextFileModel {
 			return;
 		}
 		this.sourceMap.clear();
-		let cellGuidMatch = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
-		if (!cellGuidMatch || cellGuidMatch.length < 1) {
+
+		if (this.findOrSetCellGuidMatch(textEditorModel, cellGuid)) {
+			let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: this.cellGuidMatches[0].range.startLineNumber, column: this.cellGuidMatches[0].range.startColumn }, false, true, undefined, true);
+			if (!sourceBefore || !sourceBefore.range) {
+				return;
+			}
+			let firstQuoteOfSource = textEditorModel.textEditorModel.findNextMatch('"', { lineNumber: sourceBefore.range.startLineNumber, column: sourceBefore.range.endColumn }, false, true, undefined, true);
+			this.sourceMap.set(cellGuid, firstQuoteOfSource.range);
+		} else {
 			return;
 		}
-		let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: cellGuidMatch[0].range.startLineNumber, column: cellGuidMatch[0].range.startColumn }, false, true, undefined, true);
-		if (!sourceBefore || !sourceBefore.range) {
-			return;
-		}
-		let firstQuoteOfSource = textEditorModel.textEditorModel.findNextMatch('"', { lineNumber: sourceBefore.range.startLineNumber, column: sourceBefore.range.endColumn }, false, true, undefined, true);
-		this.sourceMap.set(cellGuid, firstQuoteOfSource.range);
 	}
 
 	public updateOutputBeginMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
@@ -39,22 +42,25 @@ export class NotebookTextFileModel {
 			return undefined;
 		}
 		this.outputBeginMap.clear();
-		let cellGuidMatch = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
-		if (!cellGuidMatch || cellGuidMatch.length < 1) {
+		if (this.findOrSetCellGuidMatch(textEditorModel, cellGuid)) {
+			let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: this.cellGuidMatches[0].range.endLineNumber, column: this.cellGuidMatches[0].range.endColumn }, false, true, undefined, true);
+			if (!outputsBegin || !outputsBegin.range) {
+				return undefined;
+			}
+			this.outputBeginMap.set(cellGuid, outputsBegin.range);
+		} else {
 			return undefined;
 		}
-		let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: cellGuidMatch[0].range.endLineNumber, column: cellGuidMatch[0].range.endColumn }, false, true, undefined, true);
-		if (!outputsBegin || !outputsBegin.range) {
-			return undefined;
-		}
-
-		this.outputBeginMap.set(cellGuid, outputsBegin.range);
 	}
 
 	public getEndOfOutputs(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
 		let outputsBegin = this.outputBeginMap.get(cellGuid);
-		if (!outputsBegin) {
-			return undefined;
+		if (!outputsBegin || !textEditorModel.textEditorModel.getLineContent(outputsBegin.startLineNumber).trim().includes('output')) {
+			this.updateOutputBeginMap(textEditorModel, cellGuid);
+			outputsBegin = this.outputBeginMap.get(cellGuid);
+			if (!outputsBegin) {
+				return undefined;
+			}
 		}
 		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
 		if (!outputsEnd || outputsEnd.length < 2) {
@@ -85,6 +91,14 @@ export class NotebookTextFileModel {
 		}
 	}
 
+	public getExecutionCountRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
+		let endOutputRange = this.getEndOfOutputs(textEditorModel, cellGuid);
+		if (endOutputRange && endOutputRange.endLineNumber) {
+			return textEditorModel.textEditorModel.findNextMatch('"execution_count": ', { lineNumber: endOutputRange.endLineNumber, column: endOutputRange.endColumn }, false, true, undefined, true);
+		}
+		return undefined;
+	}
+
 	public getCellNodeByGuid(guid: string) {
 		return this.sourceMap.get(guid);
 	}
@@ -101,7 +115,18 @@ export class NotebookTextFileModel {
 		if (this.activeCellGuid !== guid) {
 			this.sourceMap.clear();
 			this.outputBeginMap.clear();
+			this.cellGuidMatches = undefined;
 			this.activeCellGuid = guid;
 		}
+	}
+
+	private findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): boolean {
+		if (!this.cellGuidMatches || this.cellGuidMatches.length < 1 || !textEditorModel.textEditorModel.getLineContent(this.cellGuidMatches[0].range.endLineNumber).trim().includes(cellGuid)) {
+			this.cellGuidMatches = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
+			if (!this.cellGuidMatches || this.cellGuidMatches.length < 1) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

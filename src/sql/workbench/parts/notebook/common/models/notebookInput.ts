@@ -52,9 +52,8 @@ export class NotebookEditorModel extends EditorModel {
 						this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
 						this._register(notebook.model.onActiveCellChanged((cell) => {
 							if (cell) {
+								this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
 								this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
-								// THIS WONT WORK WOMP WOMP WHEN NEWLINES ARE ADDED IN SOURCE
-								this.notebookTextFileModel.updateOutputBeginMap(this.textEditorModel, cell.cellGuid);
 							}
 						}));
 					}
@@ -118,11 +117,13 @@ export class NotebookEditorModel extends EditorModel {
 			// Request serialization so trusted state is preserved but don't update the model
 			this.sendNotebookSerializationStateChange();
 		} else {
+			let start1 = Date.now();
 			let notebookModel = this.getNotebookModel();
 
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
 				if (contentChange && contentChange.cells && contentChange.cells[0]) {
 					if (type === NotebookChangeType.CellSourceUpdated) {
+						let start = Date.now();
 						// starting "
 						let node = this.notebookTextFileModel.getCellNodeByGuid(contentChange.cells[0].cellGuid);
 						if (node) {
@@ -142,6 +143,9 @@ export class NotebookEditorModel extends EditorModel {
 										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
 										text: change.text.replace('\n', '\\n\",\n'.concat(startSpaces).concat('\"'))
 									}]);
+									console.log('cell edited in ' + (Date.now() - start) + 'ms');
+
+									console.log('Model updated in ' + (Date.now() - start1) + 'ms');
 								});
 								return;
 							}
@@ -169,17 +173,37 @@ export class NotebookEditorModel extends EditorModel {
 					} else if (type === NotebookChangeType.CellOutputCleared) {
 						let start = Date.now();
 						console.log('cell output cleared');
-						let outputStartNode = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
-						if (outputStartNode) {
-							let outputEndRange = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
-							if (outputEndRange) {
-								this.textEditorModel.textEditorModel.applyEdits([{
-									range: new Range(outputStartNode.startLineNumber, outputStartNode.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
-									text: ''
-								}]);
-								console.log('fast cell cleared in ' + (Date.now() - start) + 'ms');
-								return;
+						// let outputStartNode = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
+						// if (outputStartNode) {
+						let outputEndRange = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
+						let outputStartRange = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
+						if (outputStartRange && outputEndRange) {
+							this.textEditorModel.textEditorModel.applyEdits([{
+								range: new Range(outputStartRange.startLineNumber, outputStartRange.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
+								text: ''
+							}]);
+							console.log('fast cell cleared in ' + (Date.now() - start) + 'ms');
+							return;
+						}
+						// }
+					} else if (type === NotebookChangeType.CellExecuted) {
+						let start = Date.now();
+						console.log('cell executed');
+
+						let executionCountMatch = this.notebookTextFileModel.getExecutionCountRange(this.textEditorModel, contentChange.cells[0].cellGuid);
+						if (executionCountMatch && executionCountMatch.range) {
+							// Execution count can be between 0 and n characters long
+							let beginExecutionCountColumn = executionCountMatch.range.endColumn;
+							let endExecutionCountColumn = beginExecutionCountColumn + 1;
+							while (this.textEditorModel.textEditorModel.getLineContent(executionCountMatch.range.endLineNumber)[endExecutionCountColumn + 1]) {
+								endExecutionCountColumn++;
 							}
+							this.textEditorModel.textEditorModel.applyEdits([{
+								range: new Range(executionCountMatch.range.startLineNumber, beginExecutionCountColumn, executionCountMatch.range.endLineNumber, endExecutionCountColumn),
+								text: contentChange.cells[0].executionCount.toString()
+							}]);
+							console.log('fast cell executed in ' + (Date.now() - start) + 'ms');
+							return;
 						}
 					}
 				}

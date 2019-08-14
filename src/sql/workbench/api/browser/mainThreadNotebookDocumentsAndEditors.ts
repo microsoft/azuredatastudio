@@ -575,7 +575,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
 			this._modelToDisposeMap.set(editor.uri.toString(), [editor.contentChanged((e) => {
+				let start = Date.now();
 				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
+				console.log('main thread nonsense' + (Date.now() - start) + ' ms');
 			})]);
 		});
 	}

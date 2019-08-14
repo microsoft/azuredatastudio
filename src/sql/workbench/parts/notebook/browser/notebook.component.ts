@@ -364,7 +364,9 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 
 	private handleContentChanged() {
 		// Note: for now we just need to set dirty state and refresh the UI.
+		let start = Date.now();
 		this.detectChanges();
+		console.log('notebook component detectChanges: ' + (Date.now() - start) + 'ms');
 	}
 
 	private handleProviderIdChanged(providerId: string) {

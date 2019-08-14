@@ -167,7 +167,9 @@ export class CellModel implements ICellModel {
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
 			this._source = newSource;
+			let start = Date.now();
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
+			console.log('it took ' + (Date.now() - start) + ' ms to send the chaange');
 		}
 		this._modelContentChangedEvent = undefined;
 	}
@@ -234,7 +236,7 @@ export class CellModel implements ICellModel {
 
 	private notifyExecutionComplete(): void {
 		if (this._notebookService) {
-			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted);
+			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted, this);
 		}
 	}
 
@@ -400,6 +402,7 @@ export class CellModel implements ICellModel {
 
 	private sendChangeToNotebook(change: NotebookChangeType): void {
 		if (this._options && this._options.notebook) {
+			console.log('Before cellChange: ' + Date.now());
 			this._options.notebook.onCellChange(this, change);
 		}
 	}
