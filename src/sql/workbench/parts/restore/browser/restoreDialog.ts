@@ -250,6 +250,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
 		this._restorePlanTable = new Table<Slick.SlickData>(this._restorePlanTableContainer,
 			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
+		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 		this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
 
