@@ -219,10 +219,10 @@ export class ChartDataAction extends Action {
 	}
 
 	public run(context: IGridActionContext): Promise<boolean> {
+		// show the visualizer extension recommendation notification
+		this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
+
 		const activeEditor = this.editorService.activeControl as QueryEditor;
-		if (this.environmentService.appQuality !== 'stable') {
-			this.extensionTipsService.promptRecommendedExtensionsByScenario(Constants.visualizerExtensions);
-		}
 		activeEditor.chart({ batchId: context.batchId, resultId: context.resultId });
 		return Promise.resolve(true);
 	}
