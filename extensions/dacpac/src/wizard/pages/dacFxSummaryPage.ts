@@ -32,7 +32,9 @@ export class DacFxSummaryPage extends BasePage {
 	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().component();
+		this.table = this.view.modelBuilder.table().withProperties({
+			title: 'Summary of settings'
+		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.form = this.view.modelBuilder.formContainer().withFormItems(
 			[
