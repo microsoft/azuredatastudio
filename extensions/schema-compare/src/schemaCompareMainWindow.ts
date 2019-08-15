@@ -827,8 +827,8 @@ export class SchemaCompareMainWindow {
 
 		this.selectTargetButton = view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('schemaCompare.targetButtonTitle', "Select Target"),
-			ariaLabel: localize('schemaCompare.targetButtonTitle', "Select Target")
+			title: localize('schemaCompare.targetButtonTitle', 'Select Target'),
+			ariaLabel: localize('schemaCompare.targetButtonTitle', 'Select Target')
 		}).component();
 
 		this.selectTargetButton.onDidClick(() => {
