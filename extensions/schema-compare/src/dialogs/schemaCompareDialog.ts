@@ -15,7 +15,7 @@ import { Telemetry } from '../telemetry';
 import { getEndpointName } from '../utils';
 
 const localize = nls.loadMessageBundle();
-const OkButtonText: string = localize('schemaCompareDialog.ok', 'Ok');
+const OkButtonText: string = localize('schemaCompareDialog.ok', 'OK');
 const CancelButtonText: string = localize('schemaCompareDialog.cancel', 'Cancel');
 const SourceTitle: string = localize('schemaCompareDialog.SourceTitle', 'Source');
 const TargetTitle: string = localize('schemaCompareDialog.TargetTitle', 'Target');

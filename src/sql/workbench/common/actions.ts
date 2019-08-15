@@ -148,10 +148,6 @@ export class RestoreAction extends Task {
 			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
 				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', "Restore command is not supported for Azure SQL databases."));
 			}
-
-			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupportedForServer', "Restore command is not supported in Server Context. Please select a Database and try again."));
-			}
 		}
 
 		TaskUtilities.showRestore(

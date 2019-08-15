@@ -57,31 +57,28 @@ export class FirewallRuleDialogController {
 		this._errorMessageService.showDialog(Severity.Error, this._addAccountErrorTitle, message);
 	}
 
-	private handleOnCreateFirewallRule(): void {
+	private async handleOnCreateFirewallRule(): Promise<void> {
 		const resourceProviderId = this._resourceProviderId;
-
-		this._accountManagementService.getSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount, AzureResource.ResourceManagement).then(tokenMappings => {
-			let firewallRuleInfo: azdata.FirewallRuleInfo = {
+		try {
+			const securityTokenMappings = await this._accountManagementService.getSecurityToken(this._firewallRuleDialog.viewModel.selectedAccount!, AzureResource.ResourceManagement);
+			const firewallRuleInfo: azdata.FirewallRuleInfo = {
 				startIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.fromSubnetIPRange,
 				endIpAddress: this._firewallRuleDialog.viewModel.isIPAddressSelected ? this._firewallRuleDialog.viewModel.defaultIPAddress : this._firewallRuleDialog.viewModel.toSubnetIPRange,
 				serverName: this._connection.serverName,
-				securityTokenMappings: tokenMappings
+				securityTokenMappings
 			};
 
-			this._resourceProviderService.createFirewallRule(this._firewallRuleDialog.viewModel.selectedAccount, firewallRuleInfo, resourceProviderId).then(createFirewallRuleResponse => {
-				if (createFirewallRuleResponse.result) {
-					this._firewallRuleDialog.close();
-					this._deferredPromise.resolve(true);
-				} else {
-					this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, createFirewallRuleResponse.errorMessage);
-				}
-				this._firewallRuleDialog.onServiceComplete();
-			}, error => {
-				this.showError(error);
-			});
-		}, error => {
-			this.showError(error);
-		});
+			const response = await this._resourceProviderService.createFirewallRule(this._firewallRuleDialog.viewModel.selectedAccount!, firewallRuleInfo, resourceProviderId);
+			if (response.result) {
+				this._firewallRuleDialog.close();
+				this._deferredPromise.resolve(true);
+			} else {
+				this._errorMessageService.showDialog(Severity.Error, this._firewallRuleErrorTitle, response.errorMessage);
+			}
+			this._firewallRuleDialog.onServiceComplete();
+		} catch (e) {
+			this.showError(e);
+		}
 	}
 
 	private showError(error: any): void {

@@ -193,9 +193,9 @@ export class ConnectionWidget {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
-						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName) });
+						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", serverNameOption.displayName) });
 					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
-						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', '{0} will be trimmed.', serverNameOption.displayName) });
+						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', "{0} will be trimmed.", serverNameOption.displayName) });
 					}
 					return undefined;
 				}
@@ -211,7 +211,7 @@ export class ConnectionWidget {
 		let userName = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._userNameInputBox = new InputBox(userName, this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
+				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
 			ariaLabel: userNameOption.displayName
 		});

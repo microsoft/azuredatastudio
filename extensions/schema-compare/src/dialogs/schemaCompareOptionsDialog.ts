@@ -8,11 +8,12 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
+import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareOptionsDialog {
-	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'Ok');
+	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'OK');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
 	private static readonly YesButtonText: string = localize('SchemaCompareOptionsDialog.Yes', 'Yes');
@@ -118,6 +119,7 @@ export class SchemaCompareOptionsDialog {
 	private static readonly ExternalFileFormats: string = localize('SchemaCompare.ExternalFileFormats', 'External File Formats');
 	private static readonly ExternalTables: string = localize('SchemaCompare.ExternalTables', 'External Tables');
 	private static readonly Filegroups: string = localize('SchemaCompare.Filegroups', 'Filegroups');
+	private static readonly Files: string = localize('SchemaCompare.Files', 'Files');
 	private static readonly FileTables: string = localize('SchemaCompare.FileTables', 'File Tables');
 	private static readonly FullTextCatalogs: string = localize('SchemaCompare.FullTextCatalogs', 'Full Text Catalogs');
 	private static readonly FullTextStoplists: string = localize('SchemaCompare.FullTextStoplists', 'Full Text Stoplists');
@@ -361,6 +363,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ExternalFileFormats,
 		SchemaCompareOptionsDialog.ExternalTables,
 		SchemaCompareOptionsDialog.Filegroups,
+		SchemaCompareOptionsDialog.Files,
 		SchemaCompareOptionsDialog.FileTables,
 		SchemaCompareOptionsDialog.FullTextCatalogs,
 		SchemaCompareOptionsDialog.FullTextStoplists,
@@ -445,10 +448,11 @@ export class SchemaCompareOptionsDialog {
 	protected async execute() {
 		this.SetDeploymentOptions();
 		this.SetObjectTypeOptions();
+		this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
+
 		if (this.optionsChanged) {
 			vscode.window.showWarningMessage(SchemaCompareOptionsDialog.OptionsChangedMessage, SchemaCompareOptionsDialog.YesButtonText, SchemaCompareOptionsDialog.NoButtonText).then((result) => {
 				if (result === SchemaCompareOptionsDialog.YesButtonText) {
-					this.schemaComparison.setDeploymentOptions(this.deploymentOptions);
 					this.schemaComparison.startCompare();
 				}
 			});
@@ -1107,7 +1111,7 @@ export class SchemaCompareOptionsDialog {
 	private GetSchemaCompareIncludedObjectsUtil(label): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Aggregates)) ? false : true;
+				return !isNullOrUndefined(this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Aggregates)) ? false : true;
 			case SchemaCompareOptionsDialog.ApplicationRoles:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ApplicationRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.Assemblies:
@@ -1144,6 +1148,8 @@ export class SchemaCompareOptionsDialog {
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalTables)) ? false : true;
 			case SchemaCompareOptionsDialog.Filegroups:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Filegroups)) ? false : true;
+			case SchemaCompareOptionsDialog.Files:
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Files)) ? false : true;
 			case SchemaCompareOptionsDialog.FileTables:
 				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.FileTables)) ? false : true;
 			case SchemaCompareOptionsDialog.FullTextCatalogs:
@@ -1337,6 +1343,11 @@ export class SchemaCompareOptionsDialog {
 			case SchemaCompareOptionsDialog.Filegroups:
 				if (!included) {
 					this.excludedObjectTypes.push(azdata.SchemaObjectType.Filegroups);
+				}
+				return;
+			case SchemaCompareOptionsDialog.Files:
+				if (!included) {
+					this.excludedObjectTypes.push(azdata.SchemaObjectType.Files);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FileTables:

@@ -103,9 +103,6 @@ exports.load = function (modulePaths, resultCallback, options) {
 		nodeModules: [/*BUILD->INSERT_NODE_MODULES*/]
 	};
 
-	// {{SQL CARBON EDIT}}
-	require('reflect-metadata');
-	require('chart.js');
 	loaderConfig.nodeModules = loaderConfig.nodeModules.concat([
 		'@angular/common',
 		'@angular/core',
@@ -115,7 +112,13 @@ exports.load = function (modulePaths, resultCallback, options) {
 		'@angular/router',
 		'rxjs/Observable',
 		'rxjs/Subject',
-		'rxjs/Observer'
+		'rxjs/Observer',
+		'slickgrid/lib/jquery.event.drag-2.3.0',
+		'slickgrid/lib/jquery-ui-1.9.2',
+		'slickgrid/slick.core',
+		'slickgrid/slick.grid',
+		'slickgrid/slick.editors',
+		'slickgrid/slick.dataview'
 	]);
 	// {{SQL CARBON EDIT}} - End
 

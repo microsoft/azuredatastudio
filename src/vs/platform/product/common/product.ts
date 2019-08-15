@@ -3,48 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 
 export const IProductService = createDecorator<IProductService>('productService');
 
 export interface IProductService {
-	_serviceBrand: any;
 
-	readonly version: string;
-	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
-	readonly commit?: string;
+	_serviceBrand: ServiceIdentifier<any>;
 
-	readonly nameLong: string;
-	readonly urlProtocol: string;
-	readonly extensionAllowedProposedApi: readonly string[];
-	readonly uiExtensions?: readonly string[];
-
-	readonly enableTelemetry: boolean;
-	readonly extensionsGallery?: {
-		readonly serviceUrl: string;
-		readonly itemUrl: string;
-		readonly controlUrl: string;
-		readonly recommendationsUrl: string;
-	};
-
-	readonly sendASmile?: {
-		readonly reportIssueUrl: string;
-		readonly requestFeatureUrl: string;
-	};
-
-	readonly settingsSearchBuildId?: number;
-	readonly settingsSearchUrl?: string;
-
-	readonly experimentsUrl?: string;
-	readonly extensionKeywords?: { [extension: string]: readonly string[]; };
-	readonly extensionAllowedBadgeProviders?: readonly string[];
-
-	readonly aiConfig?: {
-		readonly asimovKey: string;
-	};
+	readonly productConfiguration: IProductConfiguration;
 }
 
 export interface IProductConfiguration {
+	readonly version: string;
 	nameShort: string;
 	nameLong: string;
 	readonly applicationName: string;
@@ -72,10 +43,12 @@ export interface IProductConfiguration {
 		readonly controlUrl: string;
 		readonly recommendationsUrl: string;
 	};
-	extensionTips: { [id: string]: string; };
-	recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
-	recommendedExtensionsByScenario: string[]; // {{SQL CARBON EDIT}}
-	extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
+	readonly extensionTips: { [id: string]: string; };
+	readonly recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
+	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
+	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
+	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
+	readonly extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
 	readonly exeBasedExtensionTips: { [id: string]: IExeBasedExtensionTip; };
 	readonly extensionKeywords: { [extension: string]: readonly string[]; };
 	readonly extensionAllowedBadgeProviders: readonly string[];
@@ -96,8 +69,6 @@ export interface IProductConfiguration {
 	};
 	readonly documentationUrl: string;
 	readonly releaseNotesUrl: string;
-	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
-	readonly vscodeVersion: string; // {SQL CARBON EDIT}
 	readonly keyboardShortcutsUrlMac: string;
 	readonly keyboardShortcutsUrlLinux: string;
 	readonly keyboardShortcutsUrlWin: string;

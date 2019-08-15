@@ -170,12 +170,8 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 		this._startExtensionHostProcess(false, Array.from(this._allRequestedActivateEvents.keys()));
 	}
 
-	public startExtensionHost(): void {
+	protected startExtensionHost(): void {
 		this._startExtensionHostProcess(false, Array.from(this._allRequestedActivateEvents.keys()));
-	}
-
-	public stopExtensionHost(): void {
-		this._stopExtensionHostProcess();
 	}
 
 	public activateByEvent(activationEvent: string): Promise<void> {
@@ -261,6 +257,11 @@ export abstract class AbstractExtensionService extends Disposable implements IEx
 
 	public getInspectPort(): number {
 		return 0;
+	}
+
+	public async setRemoteEnvironment(env: { [key: string]: string | null }): Promise<void> {
+		await this._extensionHostProcessManagers
+			.map(manager => manager.setRemoteEnvironment(env));
 	}
 
 	//#endregion
@@ -461,12 +462,12 @@ class ProposedApiController {
 		}
 
 		this.enableProposedApiForAll = !environmentService.isBuilt ||
-			(!!environmentService.extensionDevelopmentLocationURI && productService.nameLong !== 'Visual Studio Code') ||
+			(!!environmentService.extensionDevelopmentLocationURI && productService.productConfiguration.nameLong !== 'Visual Studio Code') ||
 			(this.enableProposedApiFor.length === 0 && 'enable-proposed-api' in environmentService.args);
 
 		this.productAllowProposedApi = new Set<string>();
-		if (isNonEmptyArray(productService.extensionAllowedProposedApi)) {
-			productService.extensionAllowedProposedApi.forEach((id) => this.productAllowProposedApi.add(ExtensionIdentifier.toKey(id)));
+		if (isNonEmptyArray(productService.productConfiguration.extensionAllowedProposedApi)) {
+			productService.productConfiguration.extensionAllowedProposedApi.forEach((id) => this.productAllowProposedApi.add(ExtensionIdentifier.toKey(id)));
 		}
 	}
 

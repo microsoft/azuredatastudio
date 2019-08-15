@@ -46,13 +46,13 @@ export class FeedbackDropdown extends Dropdown {
 
 	private readonly feedbackDelegate: IFeedbackDelegate;
 
-	private feedbackForm: HTMLFormElement | null;
-	private feedbackDescriptionInput: HTMLTextAreaElement | null;
-	private smileyInput: HTMLElement | null;
-	private frownyInput: HTMLElement | null;
-	private sendButton: Button;
-	private hideButton: HTMLInputElement;
-	private remainingCharacterCount: HTMLElement;
+	private feedbackForm: HTMLFormElement | null = null;
+	private feedbackDescriptionInput: HTMLTextAreaElement | null = null;
+	private smileyInput: HTMLElement | null = null;
+	private frownyInput: HTMLElement | null = null;
+	private sendButton: Button | null = null;
+	private hideButton: HTMLInputElement | null = null;
+	private remainingCharacterCount: HTMLElement | null = null;
 
 	private requestFeatureLink: string | undefined;
 
@@ -73,8 +73,8 @@ export class FeedbackDropdown extends Dropdown {
 		this.feedbackDelegate = options.feedbackService;
 		this.maxFeedbackCharacters = this.feedbackDelegate.getCharacterLimit(this.sentiment);
 
-		if (productService.sendASmile) {
-			this.requestFeatureLink = productService.sendASmile.requestFeatureUrl;
+		if (productService.productConfiguration.sendASmile) {
+			this.requestFeatureLink = productService.productConfiguration.sendASmile.requestFeatureUrl;
 		}
 
 		this.integrityService.isPure().then(result => {
@@ -253,7 +253,7 @@ export class FeedbackDropdown extends Dropdown {
 		// Checkbox: Hide Feedback Smiley
 		const hideButtonContainer = dom.append(buttonsContainer, dom.$('div.hide-button-container'));
 
-		this.hideButton = dom.append(hideButtonContainer, dom.$('input.hide-button'));
+		this.hideButton = dom.append(hideButtonContainer, dom.$('input.hide-button')) as HTMLInputElement;
 		this.hideButton.type = 'checkbox';
 		this.hideButton.checked = true;
 		this.hideButton.id = 'hide-button';
@@ -316,7 +316,7 @@ export class FeedbackDropdown extends Dropdown {
 	}
 
 	private updateCharCountText(): void {
-		if (this.feedbackDescriptionInput) {
+		if (this.feedbackDescriptionInput && this.remainingCharacterCount && this.sendButton) {
 			this.remainingCharacterCount.innerText = this.getCharCountText(this.feedbackDescriptionInput.value.length);
 			this.sendButton.enabled = this.feedbackDescriptionInput.value.length > 0;
 		}

@@ -100,6 +100,14 @@ export class BookTreeItem extends vscode.TreeItem {
 		}
 	}
 
+	public get title(): string {
+		return this.book.title;
+	}
+
+	public get uri(): string {
+		return this._uri;
+	}
+
 	public get root(): string {
 		return this.book.root;
 	}

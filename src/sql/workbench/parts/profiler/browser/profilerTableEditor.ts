@@ -284,8 +284,8 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 	private _updateRowCountStatus(): void {
 		if (this._showStatusBarItem) {
 			let message = this._input.data.filterEnabled ?
-				localize('ProfilerTableEditor.eventCountFiltered', 'Events (Filtered): {0}/{1}', this._input.data.getLength(), this._input.data.getLengthNonFiltered())
-				: localize('ProfilerTableEditor.eventCount', 'Events: {0}', this._input.data.getLength());
+				localize('ProfilerTableEditor.eventCountFiltered', "Events (Filtered): {0}/{1}", this._input.data.getLength(), this._input.data.getLengthNonFiltered())
+				: localize('ProfilerTableEditor.eventCount', "Events: {0}", this._input.data.getLength());
 
 			this._disposeStatusbarItem();
 			this._statusbarItem = this._statusbarService.addEntry({ text: message }, 'status.eventCount', localize('status.eventCount', "Event Count"), StatusbarAlignment.RIGHT);

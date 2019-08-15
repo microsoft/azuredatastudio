@@ -92,7 +92,7 @@ export class TaskHistoryView {
 		}, {
 				indentPixels: 10,
 				twistiePixels: 20,
-				ariaLabel: localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, 'Task history')
+				ariaLabel: localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, "Task history")
 			});
 	}
 

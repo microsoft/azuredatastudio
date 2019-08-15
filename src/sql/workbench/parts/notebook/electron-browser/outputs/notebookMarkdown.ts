@@ -7,12 +7,12 @@ import * as fs from 'fs';
 
 import { URI } from 'vs/base/common/uri';
 
-import { RenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
+import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -30,7 +30,7 @@ export class NotebookMarkdownRenderer {
 		};
 	}
 
-	createElement(options: RenderOptions): HTMLElement {
+	createElement(options: MarkdownRenderOptions): HTMLElement {
 		const tagName = options.inline ? 'span' : 'div';
 		const element = document.createElement(tagName);
 		if (options.className) {
@@ -52,7 +52,7 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: RenderOptions = {}): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created

@@ -45,8 +45,8 @@ function createCheckbox(): HTMLInputElement {
 export class BreakpointsView extends ViewletPanel {
 
 	private static readonly MAX_VISIBLE_FILES = 9;
-	private list: WorkbenchList<IEnablement>;
-	private needsRefresh: boolean;
+	private list!: WorkbenchList<IEnablement>;
+	private needsRefresh = false;
 
 	constructor(
 		options: IViewletViewOptions,
@@ -543,9 +543,9 @@ class FunctionBreakpointInputRenderer implements IListRenderer<IFunctionBreakpoi
 	}
 }
 
-export function openBreakpointSource(breakpoint: IBreakpoint, sideBySide: boolean, preserveFocus: boolean, debugService: IDebugService, editorService: IEditorService): Promise<IEditor | null> {
+export function openBreakpointSource(breakpoint: IBreakpoint, sideBySide: boolean, preserveFocus: boolean, debugService: IDebugService, editorService: IEditorService): Promise<IEditor | undefined> {
 	if (breakpoint.uri.scheme === DEBUG_SCHEME && debugService.state === State.Inactive) {
-		return Promise.resolve(null);
+		return Promise.resolve(undefined);
 	}
 
 	const selection = breakpoint.endLineNumber ? {

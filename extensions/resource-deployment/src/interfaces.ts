@@ -27,9 +27,51 @@ export interface ResourceTypeOptionValue {
 }
 
 export interface DeploymentProvider {
+	title: string;
+	dialog: DialogInfo;
 	notebook: string | NotebookInfo;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
+}
+
+export interface DialogInfo {
+	title: string;
+	name: string;
+	tabs: DialogTabInfo[];
+}
+
+export interface DialogTabInfo {
+	title: string;
+	sections: DialogSectionInfo[];
+}
+
+export interface DialogSectionInfo {
+	title: string;
+	fields: DialogFieldInfo[];
+}
+
+export interface DialogFieldInfo {
+	label: string;
+	variableName: string;
+	type: FieldType;
+	defaultValue: string;
+	confirmationRequired: boolean;
+	confirmationLabel: string;
+	min?: number;
+	max?: number;
+	required: boolean;
+	options: string[];
+	placeHolder: string;
+	userName?: string; //needed for sql server's password complexity requirement check, password can not include the login name.
+}
+
+export enum FieldType {
+	Text = 'text',
+	Number = 'number',
+	DateTimeText = 'datetime_text',
+	SQLPassword = 'sql_password',
+	Password = 'password',
+	Options = 'options'
 }
 
 export interface NotebookInfo {

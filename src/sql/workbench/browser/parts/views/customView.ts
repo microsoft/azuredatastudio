@@ -34,7 +34,7 @@ import { timeout } from 'vs/base/common/async';
 import { editorFindMatchHighlight, editorFindMatchHighlightBorder, textLinkForeground, textCodeBlockBackground, focusBorder } from 'vs/platform/theme/common/colorRegistry';
 import { IMarkdownString } from 'vs/base/common/htmlContent';
 import { isString } from 'vs/base/common/types';
-import { renderMarkdown, RenderOptions } from 'vs/base/browser/htmlContentRenderer';
+import { renderMarkdown, MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
@@ -79,8 +79,8 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		this.treeView.show(container);
 	}
 
-	layoutBody(size: number): void {
-		this.treeView.layout(size);
+	layoutBody(height: number, width: number): void {
+		this.treeView.layout(height, width);
 	}
 
 	getActions(): IAction[] {
@@ -263,12 +263,12 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		}
 	}
 
-	private _message: string | IMarkdownString | undefined;
-	get message(): string | IMarkdownString | undefined {
+	private _message: string | undefined;
+	get message(): string | undefined {
 		return this._message;
 	}
 
-	set message(message: string | IMarkdownString | undefined) {
+	set message(message: string | undefined) {
 		this._message = message;
 		this.updateMessage();
 	}
@@ -746,7 +746,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 
 		const icon = DOM.append(container, DOM.$('.custom-view-tree-node-item-icon'));
 
-		const resourceLabel = this.labels.create(container, { supportHighlights: true, donotSupportOcticons: true });
+		const resourceLabel = this.labels.create(container, { supportHighlights: true });
 		const actionsContainer = DOM.append(resourceLabel.element, DOM.$('.actions'));
 		const actionBar = new ActionBar(actionsContainer, {
 			actionViewItemProvider: this.actionViewItemProvider
@@ -934,7 +934,7 @@ class MarkdownRenderer {
 	) {
 	}
 
-	private getOptions(disposeables: DisposableStore): RenderOptions {
+	private getOptions(disposeables: DisposableStore): MarkdownRenderOptions {
 		return {
 			actionHandler: {
 				callback: (content) => {

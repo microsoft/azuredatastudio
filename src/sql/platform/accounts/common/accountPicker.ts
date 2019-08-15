@@ -15,6 +15,6 @@ export interface IAccountPickerService {
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;
 	addAccountStartEvent: Event<void>;
-	onAccountSelectionChangeEvent: Event<azdata.Account>;
-	selectedAccount: azdata.Account;
+	onAccountSelectionChangeEvent: Event<azdata.Account | undefined>;
+	selectedAccount: azdata.Account | undefined;
 }

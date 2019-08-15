@@ -17,7 +17,7 @@ import { runWhenIdle } from 'vs/base/common/async';
 
 export class BrowserStorageService extends Disposable implements IStorageService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand!: ServiceIdentifier<any>;
 
 	private readonly _onDidChangeStorage: Emitter<IWorkspaceStorageChangeEvent> = this._register(new Emitter<IWorkspaceStorageChangeEvent>());
 	readonly onDidChangeStorage: Event<IWorkspaceStorageChangeEvent> = this._onDidChangeStorage.event;
@@ -28,10 +28,17 @@ export class BrowserStorageService extends Disposable implements IStorageService
 	private globalStorage: IStorage;
 	private workspaceStorage: IStorage;
 
+	private globalStorageDatabase: FileStorageDatabase;
+	private workspaceStorageDatabase: FileStorageDatabase;
+
 	private globalStorageFile: URI;
 	private workspaceStorageFile: URI;
 
 	private initializePromise: Promise<void>;
+
+	get hasPendingUpdate(): boolean {
+		return this.globalStorageDatabase.hasPendingUpdate || this.workspaceStorageDatabase.hasPendingUpdate;
+	}
 
 	constructor(
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
@@ -76,12 +83,14 @@ export class BrowserStorageService extends Disposable implements IStorageService
 
 		// Workspace Storage
 		this.workspaceStorageFile = joinPath(stateRoot, `${payload.id}.json`);
-		this.workspaceStorage = new Storage(this._register(new FileStorageDatabase(this.workspaceStorageFile, this.fileService)));
+		this.workspaceStorageDatabase = this._register(new FileStorageDatabase(this.workspaceStorageFile, this.fileService));
+		this.workspaceStorage = new Storage(this.workspaceStorageDatabase);
 		this._register(this.workspaceStorage.onDidChangeStorage(key => this._onDidChangeStorage.fire({ key, scope: StorageScope.WORKSPACE })));
 
 		// Global Storage
 		this.globalStorageFile = joinPath(stateRoot, 'global.json');
-		this.globalStorage = new Storage(this._register(new FileStorageDatabase(this.globalStorageFile, this.fileService)));
+		this.globalStorageDatabase = this._register(new FileStorageDatabase(this.globalStorageFile, this.fileService));
+		this.globalStorage = new Storage(this.globalStorageDatabase);
 		this._register(this.globalStorage.onDidChangeStorage(key => this._onDidChangeStorage.fire({ key, scope: StorageScope.GLOBAL })));
 
 		// Init both
@@ -134,5 +143,11 @@ export class BrowserStorageService extends Disposable implements IStorageService
 
 		// Signal as event so that clients can still store data
 		this._onWillSaveState.fire({ reason: WillSaveStateReason.SHUTDOWN });
+
+		// We explicitly do not close our DBs because writing data onBeforeUnload()
+		// can result in unexpected results. Namely, it seems that - even though this
+		// operation is async - sometimes it is being triggered on unload and
+		// succeeds. Often though, the DBs turn out to be empty because the write
+		// never had a chance to complete.
 	}
 }
