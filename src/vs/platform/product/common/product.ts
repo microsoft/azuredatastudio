@@ -43,12 +43,12 @@ export interface IProductConfiguration {
 		readonly controlUrl: string;
 		readonly recommendationsUrl: string;
 	};
-	extensionTips: { [id: string]: string; };
-	recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
-	recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
+	readonly extensionTips: { [id: string]: string; };
+	readonly recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
+	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
 	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
 	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
-	extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
+	readonly extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
 	readonly exeBasedExtensionTips: { [id: string]: IExeBasedExtensionTip; };
 	readonly extensionKeywords: { [extension: string]: readonly string[]; };
 	readonly extensionAllowedBadgeProviders: readonly string[];
