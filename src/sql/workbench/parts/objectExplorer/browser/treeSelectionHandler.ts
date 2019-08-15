@@ -15,7 +15,7 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _lastClicked: any;
+	private _lastClicked: any[];
 	private _clickTimer: NodeJS.Timer = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
@@ -43,6 +43,9 @@ export class TreeSelectionHandler {
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
 		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean) => {
+			if (this._lastClicked === selection) {
+				this._lastClicked = undefined;
+			}
 			let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
 			if (!TreeUpdateUtils.isInDragAndDrop) {
 				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
@@ -57,12 +60,18 @@ export class TreeSelectionHandler {
 		let specificSelection = selection[0];
 
 		if (this.isMouseEvent(event)) {
-			if (this._lastClicked === specificSelection) {
+			if (this._lastClicked !== undefined) {
 				clearTimeout(this._clickTimer);
-				sendSelectionEvent(event, selection, true);
-				return;
+				let lastSpecificClick = this._lastClicked[0];
+
+				if (lastSpecificClick === specificSelection) {
+					sendSelectionEvent(event, selection, true);
+					return;
+				} else {
+					sendSelectionEvent(event, this._lastClicked, false);
+				}
 			}
-			this._lastClicked = specificSelection;
+			this._lastClicked = selection;
 		}
 
 		this._clickTimer = setTimeout(() => {
