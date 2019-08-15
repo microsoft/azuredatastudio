@@ -59,7 +59,9 @@ const opts = minimist(args, {
 	],
 	boolean: [
 		'verbose',
-		'remote'
+		'remote',
+		'web',
+		'headless'
 	],
 	default: {
 		verbose: false
@@ -140,7 +142,7 @@ if (testCodePath) {
 	process.env.VSCODE_CLI = '1';
 }
 
-if (!fs.existsSync(electronPath || '')) {
+if (!opts.web && !fs.existsSync(electronPath || '')) {
 	fail(`Can't find Code at ${electronPath}.`);
 }
 
@@ -219,7 +221,9 @@ function createOptions(): ApplicationOptions {
 		verbose: opts.verbose,
 		log,
 		screenshotsPath,
-		remote: opts.remote
+		remote: opts.remote,
+		web: opts.web,
+		headless: opts.headless
 	};
 }
 
@@ -241,11 +245,17 @@ after(async function () {
 
 	await new Promise((c, e) => rimraf(testDataPath, { maxBusyTries: 10 }, err => err ? e(err) : c()));
 });
+/*//{{SQL CARBON EDIT}}
+if (!opts.web) {
+	setupDataMigrationTests(stableCodePath, testDataPath);
+}*/
 
 describe('Running Code', () => {
 	before(async function () {
 		const app = new Application(this.defaultOptions);
-		await app!.start();
+		await app!.start(opts.web ? false : undefined);
+		this.app = app;
+
 		//{{SQL CARBON EDIT}}
 		const testExtLoadedText = 'Test Extension Loaded';
 		const testSetupCompletedText = 'Test Setup Completed';
@@ -260,7 +270,11 @@ describe('Running Code', () => {
 		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
 		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
 		//{{END}}
-		this.app = app;
+
+		// TODO: User data dir is not cleared for web yet
+		if (opts.web) {
+			await app.workbench.settingsEditor.clearUserSettings();
+		}
 	});
 
 	after(async function () {
@@ -287,28 +301,27 @@ describe('Running Code', () => {
 			app.logger.log('*** Test start:', title);
 		});
 	}
-
 	//{{SQL CARBON EDIT}}
 	runProfilerTests();
 	runQueryEditorTests();
-	//Original
 	/*
-	setupDataLossTests();
+	if (!opts.web) { setupDataLossTests(); }
 	setupDataExplorerTests();
-	setupDataPreferencesTests();
+	if (!opts.web) { setupDataPreferencesTests(); }
 	setupDataSearchTests();
 	setupDataCSSTests();
 	setupDataEditorTests();
-	setupDataDebugTests();
+	if (!opts.web) { setupDataDebugTests(); }
 	setupDataGitTests();
 	setupDataStatusbarTests();
 	setupDataExtensionTests();
 	setupTerminalTests();
-	setupDataMultirootTests();
+	if (!opts.web) { setupDataMultirootTests(); }
 	setupDataLocalizationTests();
 	*/
 	//{{END}}
 });
-
-// {{SQL CARBON EDIT}}
-// setupLaunchTests();
+/*//{{SQL CARBON EDIT}}
+if (!opts.web) {
+	setupLaunchTests();
+}*/

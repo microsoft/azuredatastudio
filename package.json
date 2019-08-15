@@ -62,6 +62,7 @@
     "nsfw": "1.2.5",
     "onigasm-umd": "^2.2.2",
     "plotly.js-dist": "^1.48.3",
+    "puppeteer": "^1.17.0",
     "reflect-metadata": "^0.1.8",
     "rxjs": "5.4.0",
     "sanitize-html": "^1.19.1",
