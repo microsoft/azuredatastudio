@@ -14,7 +14,7 @@ import { CLIServer } from 'vs/workbench/api/node/extHostCLIServer';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 
-import { createAzdataApiFactory, createSqlopsApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} use our extension initalizer
+import { createAdsApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} use our extension initalizer
 import { AzdataNodeModuleFactory, SqlopsNodeModuleFactory } from 'sql/workbench/api/node/extHostRequireInterceptor'; // {{SQL CARBON EDIT}} use our extension initalizer
 
 export class ExtHostExtensionService extends AbstractExtHostExtensionService {
@@ -22,8 +22,7 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 	protected async _beforeAlmostReadyToRunExtensions(): Promise<void> {
 		// initialize API and register actors
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		const sqlopsExtensionApiFactory = this._instaService.invokeFunction(createSqlopsApiFactory); // {{SQL CARBON EDIT}} // add factory
-		const azdataExtensionApiFactory = this._instaService.invokeFunction(createAzdataApiFactory); // {{SQL CARBON EDIT}} // add factory
+		const adsExtensionApiFactory = this._instaService.invokeFunction(createAdsApiFactory); // {{SQL CARBON EDIT}} // add factory
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);
@@ -37,8 +36,8 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		// Module loading tricks
 		const configProvider = await this._extHostConfiguration.getConfigProvider();
 		const extensionPaths = await this.getExtensionPathIndex();
-		NodeModuleRequireInterceptor.INSTANCE.register(new AzdataNodeModuleFactory(azdataExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
-		NodeModuleRequireInterceptor.INSTANCE.register(new SqlopsNodeModuleFactory(sqlopsExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
+		NodeModuleRequireInterceptor.INSTANCE.register(new AzdataNodeModuleFactory(adsExtensionApiFactory.azdata, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
+		NodeModuleRequireInterceptor.INSTANCE.register(new SqlopsNodeModuleFactory(adsExtensionApiFactory.sqlops, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
 		NodeModuleRequireInterceptor.INSTANCE.register(new VSCodeNodeModuleFactory(extensionApiFactory, extensionPaths, this._registry, configProvider));
 		NodeModuleRequireInterceptor.INSTANCE.register(new KeytarNodeModuleFactory(this._extHostContext.getProxy(MainContext.MainThreadKeytar), this._initData.environment));
 		if (this._initData.remote.isRemote) {
