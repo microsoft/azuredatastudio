@@ -3356,6 +3356,7 @@ declare module 'azdata' {
 		isFile?: boolean;
 		fileContent?: string;
 		title?: string;
+		ariaLabel?: string;
 	}
 
 	export interface LoadingComponentProperties {
