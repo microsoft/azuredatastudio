@@ -25,7 +25,7 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/note
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookModel, ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -122,6 +122,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		super.setInput(input, options, CancellationToken.None);
 
 		DOM.clearNode(parentElement);
+		parentElement.appendChild(this._finder.getDomNode());
 
 		if (!input.hasBootstrapped) {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
@@ -141,7 +142,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
      */
 	private bootstrapAngular(input: NotebookInput): void {
 		// Get the bootstrap params and perform the bootstrap
-		this._notebookContainer.appendChild(this._overlay);
 		input.hasBootstrapped = true;
 		let params: INotebookParams = {
 			notebookUri: input.notebookUri,
@@ -181,6 +181,16 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this._actionMap[id];
 	}
 
+	public changeActiveCell(cell: ICellModel) {
+		if (cell !== this._notebookModel.activeCell) {
+			if (this._notebookModel.activeCell) {
+				this._notebookModel.activeCell.active = false;
+			}
+			this._notebookModel.activeCell = cell;
+			this._notebookModel.activeCell.active = true;
+		}
+	}
+
 	private async _onFindStateChange(e: FindReplaceStateChangedEvent): Promise<void> {
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
@@ -197,7 +207,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 				if (this._findState.searchString) {
 					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
 						if (p) {
-							this._notebookModel.activeCell = p;
+							// this._notebookModel.activeCell = p;
+							this.changeActiveCell(p);
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
 						}
@@ -224,14 +235,16 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
-			this._notebookModel.activeCell = p;
+			// this._notebookModel.activeCell = p;
+			this.changeActiveCell(p);
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
-			this._notebookModel.activeCell = p;
+			// this._notebookModel.activeCell = p;
+			this.changeActiveCell(p);
 			this._updateFinderMatchState();
 		}, er => { });
 	}
