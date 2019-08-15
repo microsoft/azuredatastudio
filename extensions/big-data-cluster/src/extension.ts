@@ -27,7 +27,6 @@ let throttleTimers: { [key: string]: any } = {};
 export function activate(extensionContext: vscode.ExtensionContext) {
 	IconPath.setExtensionContext(extensionContext);
 	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
-
 	registerTreeDataProvider(treeDataProvider);
 	registerCommands(extensionContext, treeDataProvider);
 }
@@ -56,8 +55,8 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 	});
 
 	vscode.commands.registerCommand(ManageControllerCommand, async (node: ControllerNode) => {
-		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(node.url)} ${localize('bdc.Dash', "-")} ${node.clusterName}`;
-		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.clusterName, node.url, node.username, node.password), context);
+		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(node.url)} ${localize('bdc.dash', "-")} ${node.clusterName}`;
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.clusterName, node.url, node.username, node.password));
 		dashboard.showDashboard();
 	});
 }

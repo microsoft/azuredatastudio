@@ -42,6 +42,10 @@
 				{
 					"command": "bigDataClusters.command.refreshController",
 					"when": "false"
+				},
+				{
+					"command": "bigDataClusters.command.manageController",
+					"when": "false"
 				}
 			],
 			"view/title": [
@@ -53,14 +57,19 @@
 			],
 			"view/item/context": [
 				{
-					"command": "bigDataClusters.command.deleteController",
+					"command": "bigDataClusters.command.manageController",
 					"when": "viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@1"
 				},
 				{
 					"command": "bigDataClusters.command.refreshController",
 					"when": "viewItem == bigDataClusters.itemType.controllerNode",
-					"group": "navigation@1"
+					"group": "navigation@2"
+				},
+				{
+					"command": "bigDataClusters.command.deleteController",
+					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"group": "navigation@3"
 				}
 			]
 		},
@@ -96,6 +105,10 @@
 					"light": "resources/light/refresh.svg",
 					"dark": "resources/dark/refresh_inverse.svg"
 				}
+			},
+			{
+				"command": "bigDataClusters.command.manageController",
+				"title": "%command.manageController.title%"
 			}
 		]
 	},
