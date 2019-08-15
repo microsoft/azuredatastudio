@@ -6,7 +6,7 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookFindPosition, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
@@ -106,13 +106,13 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
-	findNext(): Thenable<ICellModel> {
+	findNext(): Thenable<INotebookFindPosition> {
 		throw new Error('Method not implemented.');
 	}
-	findPrevious(): Thenable<ICellModel> {
+	findPrevious(): Thenable<INotebookFindPosition> {
 		throw new Error('Method not implemented.');
 	}
-	find(exp: string, maxMatches?: number): Promise<ICellModel> {
+	find(exp: string, maxMatches?: number): Promise<INotebookFindPosition> {
 		throw new Error('Method not implemented.');
 	}
 	clearFind(): void {

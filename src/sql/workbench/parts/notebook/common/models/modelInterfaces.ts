@@ -411,15 +411,22 @@ export interface INotebookModel {
 
 	getFindIndex(): number;
 
-	findNext(): Thenable<ICellModel>;
+	findNext(): Thenable<INotebookFindPosition>;
 
-	findPrevious(): Thenable<ICellModel>;
+	findPrevious(): Thenable<INotebookFindPosition>;
 
-	find(exp: string, maxMatches?: number): Promise<ICellModel>;
+	find(exp: string, maxMatches?: number): Promise<INotebookFindPosition>;
 
 	clearFind(): void;
 
 	onFindCountChange: Event<number>;
+}
+
+export interface INotebookFindPosition {
+	cell: ICellModel;
+	lineNumber: number;
+	startColumnNumber: number;
+	endColumnNumber: number;
 }
 
 export interface NotebookContentChange {
