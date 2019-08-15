@@ -79,7 +79,7 @@ export class TreeSelectionHandler {
 			this._clickTimer = setTimeout(() => {
 				sendSelectionEvent(event, selection, false);
 			}, 300);
-		} else {
+		} else if (this.isKeyboardEvent(event)) {
 			sendSelectionEvent(event, selection, true);
 		}
 	}
