@@ -10,7 +10,7 @@ import * as DOM from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode } from 'vs/base/common/keyCodes';
+import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
 import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { isUndefinedOrNull } from 'vs/base/common/types';
@@ -51,6 +51,7 @@ interface IInternalPanelTab {
 	label: HTMLElement;
 	body?: HTMLElement;
 	destroyTabBody?: boolean;
+	firstElement?: HTMLElement;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -72,11 +73,13 @@ export class TabbedPanel extends Disposable {
 	private _collapsed = false;
 	private _headerVisible: boolean;
 	private _styleElement: HTMLStyleElement;
+	private n: number = 0;
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
 
 	private tabHistory: string[] = [];
+	private _tabOrder: PanelTabIdentifier[] = [];
 
 	constructor(container: HTMLElement, private options: IPanelOptions = defaultOptions) {
 		super();
@@ -161,19 +164,42 @@ export class TabbedPanel extends Disposable {
 			invokeTabSelectedHandler();
 		}));
 
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_UP, (e: KeyboardEvent) => {
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.showTab(tab.tab.identifier);
 				invokeTabSelectedHandler();
 				e.stopImmediatePropagation();
 			}
+			if (event.equals(KeyCode.RightArrow)) {
+				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
+				this.focusNextTab(currentIndex + 1);
+			}
+			if (event.equals(KeyCode.LeftArrow)) {
+				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
+				this.focusNextTab(currentIndex - 1);
+			}
 		}));
+
+		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+			let event = new StandardKeyboardEvent(e);
+			if (event.equals(KeyCode.Tab)) {
+				e.preventDefault();
+				if (this._shownTabId) {
+					const shownTab = this._tabMap.get(this._shownTabId);
+					this.setFocusToFirstElemnt(shownTab);
+				}
+			}
+		}));
+
 		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
 		if (insertBefore) {
+			this._tabOrder.copyWithin(index + 1, index);
+			this._tabOrder[index] = tab.tab.identifier;
 			this.tabList.insertBefore(tabHeaderElement, insertBefore);
 		} else {
 			this.tabList.append(tabHeaderElement);
+			this._tabOrder.push(tab.tab.identifier);
 		}
 		tab.header = tabHeaderElement;
 		tab.label = tabLabel;
@@ -223,6 +249,20 @@ export class TabbedPanel extends Disposable {
 		if (tab.tab.view.onShow) {
 			tab.tab.view.onShow();
 		}
+		if (tab.firstElement === null || tab.firstElement === undefined) {
+			tab.firstElement = this.getFirstFocusableElement(tab.body);
+			tab.disposables.push(DOM.addDisposableListener(tab.firstElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+				let event = new StandardKeyboardEvent(e);
+				if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+					e.preventDefault();
+					if (this._shownTabId) {
+						const shownTab = this._tabMap.get(this._shownTabId);
+						shownTab.header.focus();
+					}
+				}
+			}));
+		}
+
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
@@ -244,6 +284,8 @@ export class TabbedPanel extends Disposable {
 		}
 		dispose(actualTab.disposables);
 		this._tabMap.delete(tab);
+		let index = this._tabOrder.findIndex(t => t === tab);
+		this._tabOrder.splice(index, 1);
 		if (this._shownTabId === tab) {
 			this._shownTabId = undefined;
 			while (this._shownTabId === undefined && this.tabHistory.length > 0) {
@@ -264,6 +306,28 @@ export class TabbedPanel extends Disposable {
 			this._headerVisible = false;
 			this.layout(this._currentDimensions);
 		}
+	}
+
+	private focusNextTab(index: number): void {
+		if (index < 0 || index > this.tabList.children.length) {
+			return;
+		}
+		let tab = (<HTMLElement>this.tabList.children[index]);
+		if (tab) {
+			tab.focus();
+		}
+	}
+
+	private setFocusToFirstElemnt(tab: IInternalPanelTab) {
+		let firstFocasableElement = tab.firstElement ? tab.firstElement : this.getFirstFocusableElement(tab.body);
+		if (firstFocasableElement) {
+			(<HTMLElement>firstFocasableElement).focus();
+		}
+	}
+
+	private getFirstFocusableElement(body: HTMLElement): HTMLElement {
+		let firstFocasableElement = body.querySelector('a[href], area[href], input:not([disabled]), dropdown:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		return <HTMLElement>firstFocasableElement;
 	}
 
 	public style(styles: ITabbedPanelStyles): void {
