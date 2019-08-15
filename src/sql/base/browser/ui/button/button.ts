@@ -47,10 +47,6 @@ export class Button extends vsButton {
 		this.element.setAttribute('aria-label', value);
 	}
 
-	public get ariaLabel(): string {
-		return this.element.getAttribute('aria-label');
-	}
-
 	public setHeight(value: string) {
 		this.element.style.height = value;
 	}
