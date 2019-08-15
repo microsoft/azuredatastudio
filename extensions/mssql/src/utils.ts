@@ -232,55 +232,36 @@ export function getUserHome(): string {
 	return process.env.HOME || process.env.USERPROFILE;
 }
 
-export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
-	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
-	if (!endpoints || endpoints.length === 0) { return []; }
+export async function getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
 
-	return endpoints.map(e => {
-		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
-		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
-		let updatedEndpoint: IEndpoint = {
-			serviceName: e.serviceName,
-			description: e.description,
-			endpoint: endpoint,
-			protocol: e.protocol
-		};
-		return updatedEndpoint;
-	});
-}
-
-export type HostAndIp = { host: string, port: string };
-
-export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
-	let authority = vscode.Uri.parse(endpoint).authority;
-	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
-	let match = hostAndPortRegex.exec(authority);
-	if (match) {
-		return {
-			host: match[1],
-			port: match[3]
-		};
+	let serverInfo: azdata.ServerInfo = await azdata.connection.getServerInfo(profileId);
+	if (!serverInfo || !serverInfo.options) {
+		return undefined;
 	}
-	return {
-		host: authority,
-		port: undefined
+	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) {
+		return undefined;
+	}
+	let index = endpoints.findIndex(ep => ep.serviceName === serviceName);
+	if (index === -1) {
+		return undefined;
+	}
+	let clusterEndpoint: IEndpoint = {
+		serviceName: endpoints[index].serviceName,
+		ipAddress: endpoints[index].ipAddress,
+		port: endpoints[index].port,
+		isHyperlink: false,
+		hyperlink: null
 	};
-}
-
-interface RawEndpoint {
-	serviceName: string;
-	description?: string;
-	endpoint?: string;
-	protocol?: string;
-	ipAddress?: string;
-	port?: number;
+	return clusterEndpoint;
 }
 
 export interface IEndpoint {
 	serviceName: string;
-	description: string;
-	endpoint: string;
-	protocol: string;
+	ipAddress: string;
+	port: number;
+	isHyperlink: boolean;
+	hyperlink: string;
 }
 
 export function isValidNumber(maybeNumber: any) {

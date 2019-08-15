@@ -11,8 +11,9 @@ import * as UUID from 'vscode-languageclient/lib/utils/uuid';
 import { AppContext } from './appContext';
 import { SqlClusterConnection } from './objectExplorerNodeProvider/connection';
 import { ICommandObjectExplorerContext } from './objectExplorerNodeProvider/command';
-import { IEndpoint, getClusterEndpoints, getHostAndPortFromEndpoint } from './utils';
+import { IEndpoint } from './utils';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
+
 
 export function findSqlClusterConnection(
 	obj: ICommandObjectExplorerContext | azdata.IConnectionProfile,
@@ -75,10 +76,14 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	let serverInfo = await azdata.connection.getServerInfo(connectionId);
 	if (!serverInfo || !serverInfo.options) { return undefined; }
 
-	let endpoints: IEndpoint[] = getClusterEndpoints(serverInfo);
+	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
 	if (!endpoints || endpoints.length === 0) { return undefined; }
 
-	let index = endpoints.findIndex(ep => ep.serviceName.toLowerCase() === constants.hadoopEndpointNameGateway.toLowerCase());
+	let index = endpoints.findIndex(ep => {
+		let serviceName: string = ep.serviceName.toLowerCase();
+		return serviceName === constants.hadoopEndpointNameKnox.toLowerCase() ||
+			serviceName === constants.hadoopEndpointNameGateway.toLowerCase();
+	});
 	if (index < 0) { return undefined; }
 
 	let credentials = await azdata.connection.getCredentials(connectionId);
@@ -90,26 +95,14 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 		options: {}
 	};
 
-	let hostAndIp = getHostAndPortFromEndpoint(endpoints[index].endpoint);
-	clusterConnInfo.options[constants.hostPropName] = hostAndIp.host;
-	// TODO should we default the port? Or just ignore later?
-	clusterConnInfo.options[constants.knoxPortPropName] = hostAndIp.port || constants.defaultKnoxPort;
-	let authType = clusterConnInfo.options[constants.authenticationTypePropName] = sqlConnInfo.options[constants.authenticationTypePropName];
-	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
-		clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
-		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
-	} else {
-		// Hack: for now, we need to use gateway-0 for integrated auth
-		let sqlDnsName: string = sqlConnInfo.options['server'].split(',')[0];
-		let parts = sqlDnsName.split('.');
-		parts[0] = 'gateway-0';
-		clusterConnInfo.options[constants.hostPropName] = parts.join('.');
-	}
+	clusterConnInfo.options[constants.hostPropName] = endpoints[index].ipAddress;
+	clusterConnInfo.options[constants.knoxPortPropName] = endpoints[index].port;
+	clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
+	clusterConnInfo.options[constants.passwordPropName] = credentials.password;
 	clusterConnInfo = connToConnectionParam(clusterConnInfo);
 
 	return clusterConnInfo;
 }
-
 
 function connProfileToConnectionParam(connectionProfile: azdata.IConnectionProfile): ConnectionParam {
 	let result = Object.assign(connectionProfile, { connectionId: connectionProfile.id });
@@ -125,7 +118,6 @@ function connToConnectionParam(connection: azdata.connection.Connection): Connec
 			userName: options[constants.userPropName],
 			password: options[constants.passwordPropName],
 			id: connectionId,
-			authenticationType: options[constants.authenticationTypePropName]
 		}
 	);
 	return <ConnectionParam>result;

@@ -8,74 +8,46 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import * as utils from '../utils';
-
-const mgmtProxyName = 'mgmtproxy';
-const grafanaEndpointName = 'metricsui';
-const grafanaDescription = localize('grafana', "Metrics Dashboard");
-const logsuiEndpointName = 'logsui';
-const logsuiDescription = localize('kibana', "Log Search Dashboard");
-const sparkHistoryEndpointName = 'spark-history';
-const sparkHistoryDescription = localize('sparkHistory', "Spark Jobs Management and Monitoring Dashboard");
-const yarnUiEndpointName = 'yarn-ui';
-const yarnHistoryDescription = localize('yarnHistory', "Spark Diagnostics and Monitoring Dashboard");
-const hyperlinkedEndpoints = [grafanaEndpointName, logsuiEndpointName, sparkHistoryEndpointName, yarnUiEndpointName];
+import * as Utils from '../utils';
 
 export function registerServiceEndpoints(context: vscode.ExtensionContext): void {
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
-		let endpointsArray: Array<utils.IEndpoint> = Object.assign([], utils.getClusterEndpoints(view.serverInfo));
 
+		const endpointsArray: Array<Utils.IEndpoint> = Object.assign([], view.serverInfo.options['clusterEndpoints']);
+		endpointsArray.forEach(endpointInfo => {
+			endpointInfo.hyperlink = 'https://' + endpointInfo.ipAddress + ':' + endpointInfo.port;
+
+		});
 		if (endpointsArray.length > 0) {
-			const grafanaEp = endpointsArray.find(e => e.serviceName === grafanaEndpointName);
-			if (grafanaEp) {
-				// Update to have correct URL
-				grafanaEp.endpoint += '/d/wZx3OUdmz';
-			}
-			const kibanaEp = endpointsArray.find(e => e.serviceName === logsuiEndpointName);
-			if (kibanaEp) {
-				// Update to have correct URL
-				kibanaEp.endpoint += '/app/kibana#/discover';
+			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy' || e.serviceName === 'mgmtproxy');
+			if (managementProxyEp) {
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("grafana", "Metrics Dashboard"), '/grafana/d/wZx3OUdmz'));
+				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("kibana", "Log Search Dashboard"), '/kibana/app/kibana#/discover'));
 			}
 
-			if (!grafanaEp) {
-				// We are on older CTP, need to manually add some endpoints.
-				// TODO remove once CTP support goes away
-				const managementProxyEp = endpointsArray.find(e => e.serviceName === mgmtProxyName);
-				if (managementProxyEp) {
-					endpointsArray.push(getCustomEndpoint(managementProxyEp, grafanaEndpointName, grafanaDescription, '/grafana/d/wZx3OUdmz'));
-					endpointsArray.push(getCustomEndpoint(managementProxyEp, logsuiEndpointName, logsuiDescription, '/kibana/app/kibana#/discover'));
-				}
-
-				const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
-				if (gatewayEp) {
-					endpointsArray.push(getCustomEndpoint(gatewayEp, sparkHistoryEndpointName, sparkHistoryDescription, '/gateway/default/sparkhistory'));
-					endpointsArray.push(getCustomEndpoint(gatewayEp, yarnUiEndpointName, yarnHistoryDescription, '/gateway/default/yarn'));
-				}
+			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
+			if (gatewayEp) {
+				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("sparkHostory", "Spark Job Monitoring"), '/gateway/default/sparkhistory'));
+				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("yarnHistory", "Spark Resource Management"), '/gateway/default/yarn'));
 			}
-
-			endpointsArray = endpointsArray.map(e => {
-				e.description = getFriendlyEndpointNames(e);
-				return e;
-			}).sort((a, b) => a.endpoint.localeCompare(b.endpoint));
 
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
 			endpointsArray.forEach(endpointInfo => {
-
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
+				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: getFriendlyEndpointNames(endpointInfo.serviceName) }).component();
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
-				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.serviceName) >= 0) {
-					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.endpoint, url: endpointInfo.endpoint }).component();
+				if (endpointInfo.isHyperlink) {
+					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink }).component();
 					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px' } });
 				}
 				else {
-					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.endpoint }).component();
+					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
 					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '62%', 'user-select': 'text' } });
 				}
 				const copyValueCell = view.modelBuilder.button().component();
 				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.png'), dark: context.asAbsolutePath('resources/dark/copy_inverse.png') };
 				copyValueCell.onDidClick(() => {
-					vscode.env.clipboard.writeText(endpointInfo.endpoint);
+					vscode.env.clipboard.writeText(endpointInfo.hyperlink);
 				});
 				copyValueCell.title = localize("copyText", "Copy");
 				copyValueCell.iconHeight = '14px';
@@ -92,54 +64,37 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 	});
 }
 
-function getCustomEndpoint(parentEndpoint: utils.IEndpoint, serviceName: string, description: string, serviceUrl?: string): utils.IEndpoint {
+function getCustomEndpoint(parentEndpoint: Utils.IEndpoint, serviceName: string, serviceUrl?: string): Utils.IEndpoint {
 	if (parentEndpoint) {
-		let endpoint: utils.IEndpoint = {
+		let endpoint: Utils.IEndpoint = {
 			serviceName: serviceName,
-			description: description,
-			endpoint: parentEndpoint.endpoint + serviceUrl,
-			protocol: 'https'
+			ipAddress: parentEndpoint.ipAddress,
+			port: parentEndpoint.port,
+			isHyperlink: serviceUrl ? true : false,
+			hyperlink: 'https://' + parentEndpoint.ipAddress + ':' + parentEndpoint.port + serviceUrl
 		};
 		return endpoint;
 	}
 	return null;
 }
 
-function getFriendlyEndpointNames(endpointInfo: utils.IEndpoint): string {
-	let friendlyName: string = endpointInfo.description || endpointInfo.serviceName;
-	switch (endpointInfo.serviceName) {
+function getFriendlyEndpointNames(name: string): string {
+	let friendlyName: string = name;
+	switch (name) {
 		case 'app-proxy':
-			friendlyName = localize('approxy.description', "Application Proxy");
+			friendlyName = localize("appproxy", "Application Proxy");
 			break;
 		case 'controller':
-			friendlyName = localize('controller.description', "Cluster Management Service");
+			friendlyName = localize("controller", "Cluster Management Service");
 			break;
 		case 'gateway':
-			friendlyName = localize('gateway.description', "HDFS and Spark");
+			friendlyName = localize("gateway", "HDFS and Spark");
 			break;
-		case mgmtProxyName:
-			friendlyName = localize('mgmtproxy.description', "Management Proxy");
+		case 'management-proxy':
+			friendlyName = localize("managementproxy", "Management Proxy");
 			break;
-		case logsuiEndpointName:
-			friendlyName = logsuiDescription;
-			break;
-		case grafanaEndpointName:
-			friendlyName = grafanaDescription;
-			break;
-		case sparkHistoryEndpointName:
-			friendlyName = sparkHistoryDescription;
-			break;
-		case yarnUiEndpointName:
-			friendlyName = yarnHistoryDescription;
-			break;
-		case 'sql-server-master':
-			friendlyName = localize('sqlmaster.description', "SQL Server Master Instance Front-End");
-			break;
-		case 'webhdfs':
-			friendlyName = localize('webhdfs.description', "HDFS File System Proxy");
-			break;
-		case 'livy':
-			friendlyName = localize('livy.description', "Proxy for running Spark statements, jobs, applications");
+		case 'mgmtproxy':
+			friendlyName = localize("mgmtproxy", "Management Proxy");
 			break;
 		default:
 			break;

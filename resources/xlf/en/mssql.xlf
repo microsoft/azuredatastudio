@@ -674,7 +674,7 @@
     <trans-unit id="kibana">
       <source xml:lang="en">Log Search Dashboard</source>
     </trans-unit>
-    <trans-unit id="sparkHistory">
+    <trans-unit id="sparkHostory">
       <source xml:lang="en">Spark Job Monitoring</source>
     </trans-unit>
     <trans-unit id="yarnHistory">

@@ -16,7 +16,6 @@ import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
 import { WebHDFS, HdfsError } from './webhdfs';
-import * as auth from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -85,13 +84,11 @@ export interface IHdfsOptions {
 
 export interface IRequestParams {
 	auth?: IHttpAuthentication;
-	isKerberos?: boolean;
 	/**
 	 * Timeout in milliseconds to wait for response
 	 */
 	timeout?: number;
 	agent?: https.Agent;
-	headers?: {};
 }
 
 export interface IHdfsFileStatus {
@@ -109,10 +106,10 @@ export class FileSourceFactory {
 		return FileSourceFactory._instance;
 	}
 
-	public async createHdfsFileSource(options: IHdfsOptions): Promise<IFileSource> {
+	public createHdfsFileSource(options: IHdfsOptions): IFileSource {
 		options = options && options.host ? FileSourceFactory.removePortFromHost(options) : options;
 		let requestParams: IRequestParams = options.requestParams ? options.requestParams : {};
-		if (requestParams.auth || requestParams.isKerberos) {
+		if (requestParams.auth) {
 			// TODO Remove handling of unsigned cert once we have real certs in our Knox service
 			let agentOptions = {
 				host: options.host,
@@ -122,11 +119,6 @@ export class FileSourceFactory {
 			};
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
-
-		}
-		if (requestParams.isKerberos) {
-			let kerberosToken = await auth.authenticateKerberos(options.host);
-			requestParams.headers = { Authorization: `Negotiate ${kerberosToken}` };
 		}
 		return new HdfsFileSource(WebHDFS.createClient(options, requestParams));
 	}
