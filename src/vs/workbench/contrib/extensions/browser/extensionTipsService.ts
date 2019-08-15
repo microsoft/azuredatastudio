@@ -48,7 +48,7 @@ import { timeout } from 'vs/base/common/async';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; // {{SQL CARBON EDIT}}
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
-import { Platform } from 'vs/base/common/platform';
+import { Platform, setImmediate } from 'vs/base/common/platform';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
