@@ -179,10 +179,6 @@ export class TabbedPanel extends Disposable {
 				let currentIndex = this._tabOrder.findIndex(x => x === tab.tab.identifier);
 				this.focusNextTab(currentIndex - 1);
 			}
-		}));
-
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Tab)) {
 				e.preventDefault();
 				if (this._shownTabId) {
