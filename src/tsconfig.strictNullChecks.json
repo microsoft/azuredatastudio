@@ -18,6 +18,7 @@
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
 		"./sql/platform/angularEventing/**/*.ts",
+		"./sql/platform/accounts/**/*.ts",
 		"./sql/platform/clipboard/**/*.ts",
 		"./sql/platform/credentials/**/*.ts",
 		"./sql/platform/theme/**/*.ts",
