@@ -193,6 +193,7 @@ import 'vs/workbench/contrib/relauncher/common/relauncher.contribution';
 
 // Remote
 import 'vs/workbench/contrib/remote/common/remote.contribution';
+import 'vs/workbench/contrib/remote/browser/remote';
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}}
