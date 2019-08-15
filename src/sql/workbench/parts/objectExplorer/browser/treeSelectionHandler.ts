@@ -38,17 +38,20 @@ export class TreeSelectionHandler {
 		return event && event.payload && event.payload.origin === 'mouse';
 	}
 
+	private isKeyboardEvent(event: any): boolean {
+		return event && event.payload && event.payload.origin === 'keyboard';
+	}
+
 	/**
 	 * Handle selection of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
-		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean) => {
+		let sendSelectionEvent = (async (event: any, selection: any, isDoubleClick: boolean) => {
 			if (this._lastClicked === selection) {
 				this._lastClicked = undefined;
 			}
-			let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
+				await this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
 			}
 		});
 
@@ -85,7 +88,7 @@ export class TreeSelectionHandler {
 	 *
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): void {
+	private async handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): Promise<void> {
 		let connectionProfile: ConnectionProfile = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
@@ -116,7 +119,7 @@ export class TreeSelectionHandler {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
 				if (connectionProfile) {
-					connectionManagementService.showDashboard(connectionProfile);
+					await connectionManagementService.showDashboard(connectionProfile);
 				}
 			}
 		}
