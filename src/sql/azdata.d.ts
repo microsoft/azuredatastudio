@@ -4035,8 +4035,10 @@ declare module 'azdata' {
 		/**
 		 * Run query if it is a query editor and it is already opened.
 		 * @param fileUri file URI for the query editor
+		 * @param options options
+		 * @param runCurrentQuery true: run current query only, false: run all the queries in the file, default is true.
 		 */
-		export function runQuery(fileUri: string, options?: Map<string, string>): void;
+		export function runQuery(fileUri: string, options?: Map<string, string>, runCurrentQuery?: boolean): void;
 
 		/**
 		 * Register a query event listener

@@ -67,13 +67,17 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		});
 	}
 
-	public $runQuery(fileUri: string): void {
+	public $runQuery(fileUri: string, runCurrentQuery: boolean = true): void {
 		let filteredEditors = this._editorService.visibleControls.filter(editor => editor.input.getResource().toString() === fileUri);
 		if (filteredEditors && filteredEditors.length > 0) {
 			let editor = filteredEditors[0];
 			if (editor instanceof QueryEditor) {
 				let queryEditor: QueryEditor = editor;
-				queryEditor.runQuery();
+				if (runCurrentQuery) {
+					queryEditor.runCurrentQuery();
+				} else {
+					queryEditor.runQuery();
+				}
 			}
 		}
 	}
