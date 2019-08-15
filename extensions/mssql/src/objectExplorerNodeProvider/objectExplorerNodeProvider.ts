@@ -120,10 +120,10 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 					if (children.length === 1 && this.hasExpansionError(children)) {
 						if (children[0].errorStatusCode === 401) {
 							//Prompt for password
-							let password: string = await this.promptPassword(localize('prmptPwd', "Please provide the password to connect to HDFS:"));
+							let password: string = await this.promptPassword(localize('prmptPwd', 'Please provide the password to connect to HDFS:'));
 							if (password && password.length > 0) {
 								session.sqlClusterConnection.updatePassword(password);
-								await node.updateFileSource(session.sqlClusterConnection);
+								node.updateFileSource(session.sqlClusterConnection);
 								children = await node.getChildren(true);
 							}
 						}
@@ -181,7 +181,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 		try {
 			let session = this.getSqlClusterSessionForNode(node);
 			if (!session) {
-				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', "Session for node {0} does not exist", node.nodePathValue));
+				this.appContext.apiWrapper.showErrorMessage(localize('sessionNotFound', 'Session for node {0} does not exist', node.nodePathValue));
 			} else {
 				let nodeInfo = node.getNodeInfo();
 				let expandInfo: azdata.ExpandNodeInfo = {
@@ -191,7 +191,7 @@ export class MssqlObjectExplorerNodeProvider extends ProviderBase implements azd
 				await this.refreshNode(expandInfo);
 			}
 		} catch (err) {
-			mssqlOutputChannel.appendLine(localize('notifyError', "Error notifying of node change: {0}", err));
+			mssqlOutputChannel.appendLine(localize('notifyError', 'Error notifying of node change: {0}', err));
 		}
 	}
 
@@ -295,7 +295,7 @@ class SqlClusterRootNode extends TreeNode {
 
 	getNodeInfo(): azdata.NodeInfo {
 		let nodeInfo: azdata.NodeInfo = {
-			label: localize('rootLabel', "Root"),
+			label: localize('rootLabel', 'Root'),
 			isLeaf: false,
 			errorMessage: undefined,
 			metadata: undefined,
@@ -325,17 +325,12 @@ class DataServicesNode extends TreeNode {
 
 	public getChildren(refreshChildren: boolean): TreeNode[] | Promise<TreeNode[]> {
 		if (refreshChildren || !this._children) {
-			return this.refreshChildren();
+			this._children = [];
+			let fileSource: IFileSource = this.session.sqlClusterConnection.createHdfsFileSource();
+			let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', 'HDFS'), fileSource);
+			hdfsNode.parent = this;
+			this._children.push(hdfsNode);
 		}
-		return this._children;
-	}
-
-	private async refreshChildren(): Promise<TreeNode[]> {
-		this._children = [];
-		let fileSource: IFileSource = await this.session.sqlClusterConnection.createHdfsFileSource();
-		let hdfsNode = new ConnectionNode(this._context, localize('hdfsFolder', "HDFS"), fileSource);
-		hdfsNode.parent = this;
-		this._children.push(hdfsNode);
 		return this._children;
 	}
 
@@ -345,7 +340,7 @@ class DataServicesNode extends TreeNode {
 
 	getNodeInfo(): azdata.NodeInfo {
 		let nodeInfo: azdata.NodeInfo = {
-			label: localize('dataServicesLabel', "Data Services"),
+			label: localize('dataServicesLabel', 'Data Services'),
 			isLeaf: false,
 			errorMessage: undefined,
 			metadata: undefined,
