@@ -81,8 +81,6 @@ import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
-import { OpenerService } from 'vs/editor/browser/services/openerService';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IEditorWorkerService } from 'vs/editor/common/services/editorWorkerService';
 import { EditorWorkerServiceImpl } from 'vs/editor/common/services/editorWorkerServiceImpl';
 import { MarkerDecorationsService } from 'vs/editor/common/services/markerDecorationsServiceImpl';
@@ -103,7 +101,6 @@ import { DownloadService } from 'vs/platform/download/common/downloadService';
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
 registerSingleton(IContextViewService, ContextViewService, true);
 registerSingleton(IListService, ListService, true);
-registerSingleton(IOpenerService, OpenerService, true);
 registerSingleton(IEditorWorkerService, EditorWorkerServiceImpl);
 registerSingleton(IMarkerDecorationsService, MarkerDecorationsService);
 registerSingleton(IMarkerService, MarkerService, true);
@@ -196,6 +193,7 @@ import 'vs/workbench/contrib/relauncher/common/relauncher.contribution';
 
 // Remote
 import 'vs/workbench/contrib/remote/common/remote.contribution';
+import 'vs/workbench/contrib/remote/browser/remote';
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}}
@@ -231,5 +229,8 @@ import 'vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution';
 
 // Outline
 import 'vs/workbench/contrib/outline/browser/outline.contribution';
+
+// Experiments
+import 'vs/workbench/contrib/experiments/browser/experiments.contribution';
 
 //#endregion
