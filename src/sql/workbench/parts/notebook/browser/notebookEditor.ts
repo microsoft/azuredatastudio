@@ -192,6 +192,10 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	private async _onFindStateChange(e: FindReplaceStateChangedEvent): Promise<void> {
+		await this.setNotebookModel();
+		if (this._findCountChangeListener === undefined) {
+			this._findCountChangeListener = this._notebookModel.onFindCountChange(() => this._updateFinderMatchState());
+		}
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
 				this._finder.getDomNode().style.top = '0px';
@@ -202,12 +206,10 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 
 		if (e.searchString) {
-			await this.setNotebookModel();
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
 						if (p) {
-							// this._notebookModel.activeCell = p;
 							this.changeActiveCell(p);
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
@@ -235,7 +237,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
-			// this._notebookModel.activeCell = p;
 			this.changeActiveCell(p);
 			this._updateFinderMatchState();
 		}, er => { });
@@ -243,7 +244,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
-			// this._notebookModel.activeCell = p;
 			this.changeActiveCell(p);
 			this._updateFinderMatchState();
 		}, er => { });

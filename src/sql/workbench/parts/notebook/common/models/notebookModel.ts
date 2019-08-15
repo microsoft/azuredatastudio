@@ -82,8 +82,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _findIndex: number;
 	private _findCount: number;
 	private _onFindCountChange = new Emitter<number>();
-	getOnFindCountChange(): Event<number> { return this._onFindCountChange.event; }
-
+	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 	public requestConnectionHandler: () => Promise<boolean>;
 
 	constructor(
@@ -1057,8 +1056,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
 			return new Promise<ICellModel>((resolve) => {
-				let onFindCountChange = this.getOnFindCountChange();
-				const disp = onFindCountChange(e => {
+				const disp = this.onFindCountChange(e => {
 					resolve(this._findArray[e - 1]);
 					disp.dispose();
 				});

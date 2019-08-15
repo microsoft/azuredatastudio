@@ -118,15 +118,13 @@ export class NotebookModelStub implements INotebookModel {
 	clearFind(): void {
 		throw new Error('Method not implemented.');
 	}
-	getOnFindCountChange(): Event<number> {
-		throw new Error('Method not implemented.');
-	}
 	getFindCount(): number {
 		throw new Error('Method not implemented.');
 	}
 	getFindIndex(): number {
 		throw new Error('Method not implemented.');
 	}
+	onFindCountChange: Event<number>;
 }
 
 export class NotebookManagerStub implements INotebookManager {

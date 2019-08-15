@@ -419,7 +419,7 @@ export interface INotebookModel {
 
 	clearFind(): void;
 
-	getOnFindCountChange(): Event<number>;
+	onFindCountChange: Event<number>;
 }
 
 export interface NotebookContentChange {
