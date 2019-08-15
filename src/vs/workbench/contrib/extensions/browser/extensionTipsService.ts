@@ -28,7 +28,6 @@ import { IExtensionsConfiguration, ConfigurationKey, ShowRecommendationsOnlyOnDe
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { flatten, distinct, shuffle, coalesce } from 'vs/base/common/arrays';
-import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { guessMimeTypes, MIME_UNKNOWN } from 'vs/base/common/mime';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IRequestService, asJson } from 'vs/platform/request/common/request';
@@ -48,8 +47,9 @@ import { timeout } from 'vs/base/common/async';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; // {{SQL CARBON EDIT}}
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
-import { Platform, setImmediate } from 'vs/base/common/platform';
+import { Platform, setImmediate, IProcessEnvironment } from 'vs/base/common/platform';
 import { platform } from 'vs/base/common/process';
+import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -73,7 +73,7 @@ function caseInsensitiveGet<T>(obj: { [key: string]: T }, key: string): T | unde
 	return undefined;
 }
 
-export class ExtensionTipsService extends Disposable implements IExtensionTipsService {
+export abstract class BaseExtensionTipsService extends Disposable implements IExtensionTipsService {
 
 	_serviceBrand: any;
 
@@ -107,7 +107,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService,
+		@IWorkbenchEnvironmentService private readonly environmentService: IWorkbenchEnvironmentService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IRequestService private readonly requestService: IRequestService,
 		@IViewletService private readonly viewletService: IViewletService,
@@ -1032,11 +1032,12 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				if (!windowsPath || typeof windowsPath !== 'string') {
 					return;
 				}
-				windowsPath = windowsPath.replace('%USERPROFILE%', process.env['USERPROFILE']!)
-					.replace('%ProgramFiles(x86)%', process.env['ProgramFiles(x86)']!)
-					.replace('%ProgramFiles%', process.env['ProgramFiles']!)
-					.replace('%APPDATA%', process.env['APPDATA']!)
-					.replace('%WINDIR%', process.env['WINDIR']!);
+				const processEnv = this.getProcessEnvironment();
+				windowsPath = windowsPath.replace('%USERPROFILE%', processEnv['USERPROFILE']!)
+					.replace('%ProgramFiles(x86)%', processEnv['ProgramFiles(x86)']!)
+					.replace('%ProgramFiles%', processEnv['ProgramFiles']!)
+					.replace('%APPDATA%', processEnv['APPDATA']!)
+					.replace('%WINDIR%', processEnv['WINDIR']!);
 				promises.push(findExecutable(exeName, entry.value, windowsPath));
 			} else {
 				promises.push(findExecutable(exeName, entry.value, join('/usr/local/bin', exeName)));
@@ -1254,4 +1255,14 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			.map(extensionId => (<IExtensionRecommendation>{ extensionId, sources: ['application'] })));
 	}
 	// {{SQL CARBON EDIT}} - End
+	protected abstract getProcessEnvironment(): IProcessEnvironment;
+}
+
+
+export class ExtensionTipsService extends BaseExtensionTipsService implements IExtensionTipsService {
+
+	protected getProcessEnvironment(): IProcessEnvironment {
+		return {};
+	}
+
 }
