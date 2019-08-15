@@ -117,16 +117,16 @@ export class WebWorkerExtensionHostStarter implements IExtensionHostStarter {
 		const [telemetryInfo, extensionDescriptions] = await Promise.all([this._telemetryService.getTelemetryInfo(), this._extensions]);
 		const workspace = this._contextService.getWorkspace();
 		return {
-			commit: this._productService.commit,
-			version: this._productService.version,
-			vscodeVersion: this._productService.vscodeVersion,
+			commit: this._productService.productConfiguration.commit,
+			version: this._productService.productConfiguration.version,
+			vscodeVersion: this._productService.productConfiguration.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 			parentPid: -1,
 			environment: {
 				isExtensionDevelopmentDebug: false,
 				appRoot: this._environmentService.appRoot ? URI.file(this._environmentService.appRoot) : undefined,
 				appSettingsHome: this._environmentService.appSettingsHome ? this._environmentService.appSettingsHome : undefined,
-				appName: this._productService.nameLong,
-				appUriScheme: this._productService.urlProtocol,
+				appName: this._productService.productConfiguration.nameLong,
+				appUriScheme: this._productService.productConfiguration.urlProtocol,
 				appLanguage: platform.language,
 				extensionDevelopmentLocationURI: this._environmentService.extensionDevelopmentLocationURI,
 				extensionTestsLocationURI: this._environmentService.extensionTestsLocationURI,

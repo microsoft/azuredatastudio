@@ -11,40 +11,7 @@ export interface IProductService {
 
 	_serviceBrand: ServiceIdentifier<any>;
 
-	readonly version: string;
-	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
-	readonly recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}} add getter
-	readonly commit?: string;
-	readonly date?: string;
-
-	readonly nameLong: string;
-	readonly urlProtocol: string;
-	readonly extensionAllowedProposedApi: readonly string[];
-	readonly uiExtensions?: readonly string[];
-
-	readonly enableTelemetry: boolean;
-	readonly extensionsGallery?: {
-		readonly serviceUrl: string;
-		readonly itemUrl: string;
-		readonly controlUrl: string;
-		readonly recommendationsUrl: string;
-	};
-
-	readonly sendASmile?: {
-		readonly reportIssueUrl: string;
-		readonly requestFeatureUrl: string;
-	};
-
-	readonly settingsSearchBuildId?: number;
-	readonly settingsSearchUrl?: string;
-
-	readonly experimentsUrl?: string;
-	readonly extensionKeywords?: { [extension: string]: readonly string[]; };
-	readonly extensionAllowedBadgeProviders?: readonly string[];
-
-	readonly aiConfig?: {
-		readonly asimovKey: string;
-	};
+	readonly productConfiguration: IProductConfiguration;
 }
 
 export interface IProductConfiguration {
@@ -79,6 +46,8 @@ export interface IProductConfiguration {
 	extensionTips: { [id: string]: string; };
 	recommendedExtensions: string[]; // {{SQL CARBON EDIT}}
 	recommendedExtensionsByScenario: { [area: string]: Array<string> }; // {{SQL CARBON EDIT}}
+	readonly vscodeVersion: string; // {{SQL CARBON EDIT}} add vscode version
+	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
 	extensionImportantTips: { [id: string]: { name: string; pattern: string; isExtensionPack?: boolean }; };
 	readonly exeBasedExtensionTips: { [id: string]: IExeBasedExtensionTip; };
 	readonly extensionKeywords: { [extension: string]: readonly string[]; };
@@ -100,8 +69,6 @@ export interface IProductConfiguration {
 	};
 	readonly documentationUrl: string;
 	readonly releaseNotesUrl: string;
-	readonly gettingStartedUrl: string; // {SQL CARBON EDIT}
-	readonly vscodeVersion: string; // {SQL CARBON EDIT}
 	readonly keyboardShortcutsUrlMac: string;
 	readonly keyboardShortcutsUrlLinux: string;
 	readonly keyboardShortcutsUrlWin: string;
