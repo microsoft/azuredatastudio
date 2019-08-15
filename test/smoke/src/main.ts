@@ -255,7 +255,6 @@ describe('Running Code', () => {
 		const app = new Application(this.defaultOptions);
 		await app!.start(opts.web ? false : undefined);
 		this.app = app;
-
 		//{{SQL CARBON EDIT}}
 		const testExtLoadedText = 'Test Extension Loaded';
 		const testSetupCompletedText = 'Test Setup Completed';
@@ -270,11 +269,6 @@ describe('Running Code', () => {
 		await app.workbench.quickopen.runCommand(waitForExtensionsCommand);
 		await app.workbench.statusbar.waitForStatusbarText(allExtensionsLoadedText, allExtensionsLoadedText);
 		//{{END}}
-
-		// TODO: User data dir is not cleared for web yet
-		if (opts.web) {
-			await app.workbench.settingsEditor.clearUserSettings();
-		}
 	});
 
 	after(async function () {

@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { createApiFactoryAndRegisterActors } from 'vs/workbench/api/common/extHost.api.impl';
-import { NodeModuleRequireInterceptor, VSCodeNodeModuleFactory, KeytarNodeModuleFactory, OpenNodeModuleFactory } from 'vs/workbench/api/node/extHostRequireInterceptor';
+import { createApiFactoryAndRegisterActors } from 'sql/workbench/api/common/sqlExtHost.api.impl';  // {{SQL CARBON EDIT}} replace with ours
+import { RequireInterceptor } from 'vs/workbench/api/common/extHostRequireInterceptor';
 import { MainContext } from 'vs/workbench/api/common/extHost.protocol';
 import { ExtensionActivationTimesBuilder } from 'vs/workbench/api/common/extHostExtensionActivator';
 import { connectProxyResolver } from 'vs/workbench/services/extensions/node/proxyResolver';
@@ -14,16 +14,33 @@ import { CLIServer } from 'vs/workbench/api/node/extHostCLIServer';
 import { URI } from 'vs/base/common/uri';
 import { Schemas } from 'vs/base/common/network';
 
-import { createAzdataApiFactory, createSqlopsApiFactory } from 'sql/workbench/api/common/sqlExtHost.api.impl'; // {{SQL CARBON EDIT}} use our extension initalizer
-import { AzdataNodeModuleFactory, SqlopsNodeModuleFactory } from 'sql/workbench/api/node/extHostRequireInterceptor'; // {{SQL CARBON EDIT}} use our extension initalizer
+class NodeModuleRequireInterceptor extends RequireInterceptor {
+
+	protected _installInterceptor(): void {
+		const that = this;
+		const node_module = <any>require.__$__nodeRequire('module');
+		const original = node_module._load;
+		node_module._load = function load(request: string, parent: { filename: string; }, isMain: any) {
+			for (let alternativeModuleName of that._alternatives) {
+				let alternative = alternativeModuleName(request);
+				if (alternative) {
+					request = alternative;
+					break;
+				}
+			}
+			if (!that._factories.has(request)) {
+				return original.apply(this, arguments);
+			}
+			return that._factories.get(request)!.load(request, URI.file(parent.filename), isMain, original);
+		};
+	}
+}
 
 export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 
 	protected async _beforeAlmostReadyToRunExtensions(): Promise<void> {
 		// initialize API and register actors
 		const extensionApiFactory = this._instaService.invokeFunction(createApiFactoryAndRegisterActors);
-		const sqlopsExtensionApiFactory = this._instaService.invokeFunction(createSqlopsApiFactory); // {{SQL CARBON EDIT}} // add factory
-		const azdataExtensionApiFactory = this._instaService.invokeFunction(createAzdataApiFactory); // {{SQL CARBON EDIT}} // add factory
 
 		// Register Download command
 		this._instaService.createInstance(ExtHostDownloadService);
@@ -35,21 +52,11 @@ export class ExtHostExtensionService extends AbstractExtHostExtensionService {
 		}
 
 		// Module loading tricks
-		const configProvider = await this._extHostConfiguration.getConfigProvider();
-		const extensionPaths = await this.getExtensionPathIndex();
-		NodeModuleRequireInterceptor.INSTANCE.register(new AzdataNodeModuleFactory(azdataExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
-		NodeModuleRequireInterceptor.INSTANCE.register(new SqlopsNodeModuleFactory(sqlopsExtensionApiFactory, extensionPaths)); // {{SQL CARBON EDIT}} // add node module
-		NodeModuleRequireInterceptor.INSTANCE.register(new VSCodeNodeModuleFactory(extensionApiFactory, extensionPaths, this._registry, configProvider));
-		NodeModuleRequireInterceptor.INSTANCE.register(new KeytarNodeModuleFactory(this._extHostContext.getProxy(MainContext.MainThreadKeytar), this._initData.environment));
-		if (this._initData.remote.isRemote) {
-			NodeModuleRequireInterceptor.INSTANCE.register(new OpenNodeModuleFactory(
-				this._extHostContext.getProxy(MainContext.MainThreadWindow),
-				this._extHostContext.getProxy(MainContext.MainThreadTelemetry),
-				extensionPaths
-			));
-		}
+		const interceptor = this._instaService.createInstance(NodeModuleRequireInterceptor, extensionApiFactory, this._registry);
+		await interceptor.install();
 
 		// Do this when extension service exists, but extensions are not being activated yet.
+		const configProvider = await this._extHostConfiguration.getConfigProvider();
 		await connectProxyResolver(this._extHostWorkspace, configProvider, this, this._logService, this._mainThreadTelemetryProxy);
 
 		// Use IPC messages to forward console-calls, note that the console is

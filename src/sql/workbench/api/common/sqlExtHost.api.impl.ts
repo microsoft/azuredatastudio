@@ -34,6 +34,7 @@ import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFacotry } from 'vs/workbench/api/common/extHost.api.impl';
 
 export interface ISqlopsExtensionApiFactory {
 	(extension: IExtensionDescription): typeof sqlops;
@@ -43,6 +44,23 @@ export interface IAzdataExtensionApiFactory {
 	(extension: IExtensionDescription): typeof azdata;
 }
 
+export interface IExtensionApiFactory {
+	azdata: IAzdataExtensionApiFactory;
+	sqlops: ISqlopsExtensionApiFactory;
+	vscode: vsIApiFactory;
+}
+
+
+/**
+ * This method instantiates and returns the extension API surface
+ */
+export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
+	return {
+		azdata: createAzdataApiFactory(accessor),
+		sqlops: createSqlopsApiFactory(accessor),
+		vscode: vsApiFacotry(accessor)
+	};
+}
 
 /**
  * This method instantiates and returns the extension API surface
