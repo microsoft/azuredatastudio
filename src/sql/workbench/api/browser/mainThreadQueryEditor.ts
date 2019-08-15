@@ -73,7 +73,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 			let editor = filteredEditors[0];
 			if (editor instanceof QueryEditor) {
 				let queryEditor: QueryEditor = editor;
-				queryEditor.runCurrentQuery();
+				queryEditor.runQuery();
 			}
 		}
 	}
