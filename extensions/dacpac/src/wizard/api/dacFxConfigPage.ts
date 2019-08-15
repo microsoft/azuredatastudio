@@ -85,6 +85,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true
 		}).component();
 
+		this.databaseTextBox.ariaLabel = localize('dacfx.databaseEdit', "Database Edit");
 		this.databaseTextBox.onTextChanged(async () => {
 			this.model.database = this.databaseTextBox.value;
 		});
@@ -149,6 +150,7 @@ export abstract class DacFxConfigPage extends BasePage {
 				required: true
 			}).component();
 
+		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationEdit', "File Location Edit");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 		}).component();
