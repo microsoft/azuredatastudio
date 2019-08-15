@@ -19,6 +19,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 
 @Component({
