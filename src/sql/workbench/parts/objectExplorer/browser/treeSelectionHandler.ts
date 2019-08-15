@@ -72,11 +72,13 @@ export class TreeSelectionHandler {
 				}
 			}
 			this._lastClicked = selection;
-		}
 
-		this._clickTimer = setTimeout(() => {
-			sendSelectionEvent(event, selection, false);
-		}, 300);
+			this._clickTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false);
+			}, 300);
+		} else {
+			sendSelectionEvent(event, selection, true);
+		}
 	}
 
 	/**
