@@ -147,7 +147,7 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(localFilePath));
 			}
 
-			let fileSource: IFileSource = await this._sqlClusterConnection.createHdfsFileSource();
+			let fileSource: IFileSource = this._sqlClusterConnection.createHdfsFileSource();
 			await fileSource.writeFile(new File(localFilePath, false), hdfsFolderPath);
 		} catch (error) {
 			return Promise.reject(error);
@@ -160,7 +160,7 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(localize('sparkJobSubmission_PathNotSpecified.', 'Property Path is not specified. '));
 			}
 
-			let fileSource: IFileSource = await this._sqlClusterConnection.createHdfsFileSource();
+			let fileSource: IFileSource = this._sqlClusterConnection.createHdfsFileSource();
 			return await fileSource.exists(path);
 		} catch (error) {
 			return Promise.reject(error);

@@ -482,17 +482,15 @@ export class WebHDFS {
 
 		let stream = undefined;
 		let canResume: boolean = true;
-		let params: any = Object.assign(
+		let params = Object.assign(
 			{
 				method: append ? 'POST' : 'PUT',
 				url: endpoint,
 				json: true,
+				headers: { 'content-type': 'application/octet-stream' }
 			},
 			this._requestParams
 		);
-		params.headers = params.headers || {};
-		params.headers['content-type'] = 'application/octet-stream';
-
 
 		let req = request(params, (error, response, body) => {
 			// Handle redirect only if there was not an error (e.g. res is defined)

@@ -124,8 +124,6 @@ export interface TopLevelChildrenPath {
 	providerObject: azdata.ObjectExplorerNodeProvider | azdata.ObjectExplorerProvider;
 }
 
-const errSessionCreateFailed = nls.localize('OeSessionFailedError', "Failed to create Object Explorer session");
-
 export class ObjectExplorerService implements IObjectExplorerService {
 
 	public _serviceBrand: any;
@@ -233,18 +231,19 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		if (session && session.success) {
 			this.handleSessionCreated(session);
 		} else {
-			let errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
+			let errorMessage = session && session.errorMessage ? session.errorMessage :
+				nls.localize('OeSessionFailedError', "Failed to create Object Explorer session");
 			this.logService.error(errorMessage);
 		}
 	}
 
 	private async handleSessionCreated(session: azdata.ObjectExplorerSession): Promise<void> {
-		let connection: ConnectionProfile = undefined;
-		let errorMessage: string = undefined;
-		if (this._sessions[session.sessionId]) {
-			connection = this._sessions[session.sessionId].connection;
+		try {
+			let connection: ConnectionProfile = undefined;
+			let errorMessage: string = undefined;
+			if (this._sessions[session.sessionId]) {
+				connection = this._sessions[session.sessionId].connection;
 
-			try {
 				if (session.success && session.rootNode) {
 					let server = this.toTreeNode(session.rootNode, null);
 					server.connection = connection;
@@ -252,7 +251,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._activeObjectExplorerNodes[connection.id] = server;
 				}
 				else {
-					errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
+					errorMessage = session && session.errorMessage ? session.errorMessage :
+						nls.localize('OeSessionFailedError', "Failed to create Object Explorer session");
 					this.logService.error(errorMessage);
 				}
 				// Send on session created about the session to all node providers so they can prepare for node expansion
@@ -261,14 +261,14 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					let promises: Thenable<boolean>[] = nodeProviders.map(p => p.handleSessionOpen(session));
 					await Promise.all(promises);
 				}
-			} catch (error) {
-				this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
-			} finally {
-				this.sendUpdateNodeEvent(connection, errorMessage);
 			}
-		}
-		else {
-			this.logService.warn(`cannot find session ${session.sessionId}`);
+			else {
+				this.logService.warn(`cannot find session ${session.sessionId}`);
+			}
+
+			this.sendUpdateNodeEvent(connection, errorMessage);
+		} catch (error) {
+			this.logService.warn(`cannot handle the session ${session.sessionId} in all nodeProviders`);
 		}
 	}
 
