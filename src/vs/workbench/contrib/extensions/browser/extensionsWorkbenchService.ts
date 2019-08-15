@@ -118,20 +118,19 @@ class Extension implements IExtension {
 	}
 
 	get url(): string | undefined {
-		if (!this.productService.extensionsGallery || !this.gallery) {
+		if (!this.productService.productConfiguration.extensionsGallery || !this.gallery) {
 			return undefined;
 		}
 
-		return this.productService.extensionsGallery.itemUrl && `${this.productService.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`; // {{SQL CARBON EDIT}} add check for itemurl
+		return `${this.productService.productConfiguration.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
 	}
 
 	// {{SQL CARBON EDIT}}
 	get downloadPage(): string {
-		if (!this.productService.extensionsGallery) {
+		if (!this.productService.productConfiguration.extensionsGallery) {
 			return null;
 		}
 
-		// {{SQL CARBON EDIT}}
 		return this.gallery && this.gallery.assets && this.gallery.assets.downloadPage && this.gallery.assets.downloadPage.uri;
 	}
 
@@ -632,7 +631,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			text = text.replace(extensionRegex, (m, ext) => {
 
 				// Get curated keywords
-				const lookup = this.productService.extensionKeywords || {};
+				const lookup = this.productService.productConfiguration.extensionKeywords || {};
 				const keywords = lookup[ext] || [];
 
 				// Get mode name
@@ -832,9 +831,9 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// This is the execution path for install/update extension from marketplace.
 		// Check both the vscode version and azure data studio version
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
-		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion)
-			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version)))) {
-			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.version, gallery.version)));
+		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.productConfiguration.vscodeVersion)
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.productConfiguration.version)))) {
+			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.productConfiguration.version, gallery.version)));
 		}
 
 		return this.installWithProgress(async () => {
@@ -1077,7 +1076,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 	get allowedBadgeProviders(): string[] {
 		if (!this._extensionAllowedBadgeProviders) {
-			this._extensionAllowedBadgeProviders = (this.productService.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
+			this._extensionAllowedBadgeProviders = (this.productService.productConfiguration.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
 		}
 		return this._extensionAllowedBadgeProviders;
 	}
