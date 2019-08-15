@@ -49,6 +49,7 @@ import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; 
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
 import { Platform, setImmediate } from 'vs/base/common/platform';
+import { platform } from 'vs/base/common/process';
 
 const milliSecondsInADay = 1000 * 60 * 60 * 24;
 const choiceNever = localize('neverShowAgain', "Don't Show Again");
@@ -1026,7 +1027,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				return;
 			}
 			const exeName = entry.key;
-			if (process.platform === 'win32') {
+			if (platform === 'win32') {
 				let windowsPath = entry.value['windowsPath'];
 				if (!windowsPath || typeof windowsPath !== 'string') {
 					return;
