@@ -47,7 +47,7 @@ export class Button extends vsButton {
 		this.element.setAttribute('aria-label', value);
 	}
 
-	public get ariaLabel() {
+	public get ariaLabel(): string {
 		return this.element.getAttribute('aria-label');
 	}
 
