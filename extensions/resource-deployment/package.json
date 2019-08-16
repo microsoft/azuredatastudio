@@ -512,7 +512,7 @@
       ],
       "providers": [
         {
-          "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=85dad3016",
+          "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=853016",
           "requiredTools": [],
           "when": "version=sql2017"
         },

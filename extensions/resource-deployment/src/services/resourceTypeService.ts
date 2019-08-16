@@ -201,7 +201,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		} else if (provider.notebook) {
 			this.notebookService.launchNotebook(provider.notebook);
 		} else if (provider.downloadUrl) {
-			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer");
+			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
 			azdata.tasks.startBackgroundOperation({
 				displayName: taskName,
 				description: taskName,
@@ -214,7 +214,7 @@ export class ResourceTypeService implements IResourceTypeService {
 						cp.exec(downloadedFile);
 						op.updateStatus(azdata.TaskStatus.Succeeded, localize('resourceDeployment.ProgramLaunchedText', "Successfully launched: {0}", downloadedFile));
 					}, (error) => {
-						op.updateStatus(azdata.TaskStatus.Failed, localize('resourceDeployment.DownloadFailedText', "Failed to download: {0}", provider.downloadUrl));
+						op.updateStatus(azdata.TaskStatus.Failed, error);
 					});
 				}
 			});
@@ -227,8 +227,10 @@ export class ResourceTypeService implements IResourceTypeService {
 		const self = this;
 		const promise = new Promise<string>((resolve, reject) => {
 			https.get(url, function (response) {
+				console.log('Download installer from: ' + url);
 				if (response.statusCode === 301 || response.statusCode === 302) {
 					// Redirect and download from new location
+					console.log('Redirecting the download to: ' + response.headers.location);
 					self.download(response.headers.location!).then((result) => {
 						resolve(result);
 					}, (err) => {
