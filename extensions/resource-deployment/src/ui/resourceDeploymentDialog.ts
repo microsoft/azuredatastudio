@@ -205,6 +205,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 					});
 				}
 			});
+		} else if (provider.url) {
+			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.url));
 		}
 		this.dispose();
 	}
