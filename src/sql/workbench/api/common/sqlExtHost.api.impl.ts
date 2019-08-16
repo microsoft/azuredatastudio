@@ -3,9 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as extHostApi from 'vs/workbench/api/common/extHost.api.impl';
-import { URI } from 'vs/base/common/uri';
-
 import * as azdata from 'azdata';
 import * as sqlops from 'sqlops';
 import * as vscode from 'vscode';
@@ -28,35 +25,61 @@ import { ExtHostQueryEditor } from 'sql/workbench/api/common/extHostQueryEditor'
 import { ExtHostBackgroundTaskManagement } from 'sql/workbench/api/common/extHostBackgroundTaskManagement';
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
-import { ExtensionDescriptionRegistry } from 'vs/workbench/services/extensions/common/extensionDescriptionRegistry';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/common/extHostExtensionManagement';
-import { ExtensionIdentifier, IExtensionDescription } from 'vs/platform/extensions/common/extensions';
-import { TernarySearchTree } from 'vs/base/common/map';
-import { ExtHostConfigProvider, IExtHostConfiguration } from 'vs/workbench/api/common/extHostConfiguration';
+import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
-import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { IExtHostExtensionService } from 'vs/workbench/api/common/extHostExtensionService';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { ILogService } from 'vs/platform/log/common/log';
+import { IExtensionApiFactory as vsIApiFactory, createApiFactoryAndRegisterActors as vsApiFactory } from 'vs/workbench/api/common/extHost.api.impl';
 
-export interface ISqlExtensionApiFactory {
-	vsCodeFactory(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
-	sqlopsFactory(extension: IExtensionDescription): typeof sqlops;
-	azdataFactory(extension: IExtensionDescription): typeof azdata;
+export interface ISqlopsExtensionApiFactory {
+	(extension: IExtensionDescription): typeof sqlops;
+}
+
+export interface IAzdataExtensionApiFactory {
+	(extension: IExtensionDescription): typeof azdata;
+}
+
+export interface IExtensionApiFactory {
+	azdata: IAzdataExtensionApiFactory;
+	sqlops: ISqlopsExtensionApiFactory;
+	vscode: vsIApiFactory;
+}
+
+export interface IAdsExtensionApiFactory {
+	azdata: IAzdataExtensionApiFactory;
+	sqlops: ISqlopsExtensionApiFactory;
 }
 
 /**
  * This method instantiates and returns the extension API surface
  */
-export function createApiFactory(accessor: ServicesAccessor): ISqlExtensionApiFactory {
-	const instaServer = accessor.get(IInstantiationService);
+export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): IExtensionApiFactory {
+	const { azdata, sqlops } = createAdsApiFactory(accessor);
+	return {
+		azdata,
+		sqlops,
+		vscode: vsApiFactory(accessor)
+	};
+}
+
+
+export interface IAdsExtensionApiFactory {
+	azdata: IAzdataExtensionApiFactory;
+	sqlops: ISqlopsExtensionApiFactory;
+}
+
+/**
+ * This method instantiates and returns the extension API surface
+ */
+export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionApiFactory {
 	const uriTransformer = accessor.get(IURITransformerService);
 	const rpcProtocol = accessor.get(IExtHostRpcService);
 	const extHostLogService = accessor.get(ILogService);
-	let vsCodeFactory = instaServer.invokeFunction(extHostApi.createApiFactoryAndRegisterActors);
 
 	// Addressable instances
 	const extHostAccountManagement = rpcProtocol.set(SqlExtHostContext.ExtHostAccountManagement, new ExtHostAccountManagement(rpcProtocol));
@@ -80,8 +103,7 @@ export function createApiFactory(accessor: ServicesAccessor): ISqlExtensionApiFa
 
 
 	return {
-		vsCodeFactory: vsCodeFactory,
-		azdataFactory: function (extension: IExtensionDescription): typeof azdata {
+		azdata: function (extension: IExtensionDescription): typeof azdata {
 			// namespace: connection
 			const connection: typeof azdata.connection = {
 				// "azdata" API definition
@@ -553,7 +575,7 @@ export function createApiFactory(accessor: ServicesAccessor): ISqlExtensionApiFa
 		},
 
 		// "sqlops" namespace provided for back-compat only, add new interfaces to "azdata"
-		sqlopsFactory: function (extension: IExtensionDescription): typeof sqlops {
+		sqlops: function (extension: IExtensionDescription): typeof sqlops {
 
 			extHostExtensionManagement.$showObsoleteExtensionApiUsageNotification(localize('ObsoleteApiModuleMessage', "The extension \"{0}\" is using sqlops module which has been replaced by azdata module, the sqlops module will be removed in a future release.", extension.identifier.value));
 			// namespace: connection
@@ -918,91 +940,3 @@ export function createApiFactory(accessor: ServicesAccessor): ISqlExtensionApiFa
 		}
 	};
 }
-
-export function initializeExtensionApi(extensionService: IExtHostExtensionService, apiFactory: ISqlExtensionApiFactory, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): Promise<void> {
-	return extensionService.getExtensionPathIndex().then(trie => defineAPI(apiFactory, trie, extensionRegistry, configProvider));
-}
-
-function defineAPI(factory: ISqlExtensionApiFactory, extensionPaths: TernarySearchTree<IExtensionDescription>, extensionRegistry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): void {
-	type ApiImpl = typeof vscode | typeof azdata | typeof sqlops;
-
-	// each extension is meant to get its own api implementation
-	const extApiImpl = new Map<string, typeof vscode>();
-	const dataExtApiImpl = new Map<string, typeof sqlops>();
-	const azDataExtApiImpl = new Map<string, typeof azdata>();
-	let defaultApiImpl: typeof vscode;
-	let defaultDataApiImpl: typeof sqlops;
-	let defaultAzDataApiImpl: typeof azdata;
-
-	// The module factory looks for an entry in the API map for an extension. If found, it reuses this.
-	// If not, it loads it & saves it in the map
-	let getModuleFactory = function (apiMap: Map<string, any>,
-		createApi: (extensionDescription: IExtensionDescription) => ApiImpl,
-		defaultImpl: ApiImpl,
-		setDefaultApiImpl: (defaultImpl: ApiImpl) => void,
-		parent: any): ApiImpl {
-		// get extension id from filename and api for extension
-		const ext = extensionPaths.findSubstr(URI.file(parent.filename).fsPath);
-		if (ext) {
-			let apiImpl = apiMap.get(ext.identifier.value);
-			if (!apiImpl) {
-				apiImpl = createApi(ext);
-				apiMap.set(ext.identifier.value, apiImpl);
-			}
-			return apiImpl;
-		}
-
-		// fall back to a default implementation
-		if (!defaultImpl) {
-			console.warn(`Could not identify extension for 'vscode' require call from ${parent.filename}`);
-			defaultImpl = createApi(nullExtensionDescription);
-			setDefaultApiImpl(defaultImpl);
-		}
-		return defaultImpl;
-	};
-
-	const node_module = <any>require.__$__nodeRequire('module');
-	const original = node_module._load;
-
-	// TODO look into de-duplicating this code
-	node_module._load = function load(request, parent, isMain) {
-		if (request === 'vscode') {
-			return getModuleFactory(extApiImpl, (ext) => factory.vsCodeFactory(ext, extensionRegistry, configProvider),
-				defaultApiImpl,
-				(impl) => defaultApiImpl = <typeof vscode>impl,
-				parent);
-		} else if (request === 'azdata') {
-			return getModuleFactory(azDataExtApiImpl,
-				(ext) => factory.azdataFactory(ext),
-				defaultAzDataApiImpl,
-				(impl) => defaultAzDataApiImpl = <typeof azdata>impl,
-				parent);
-		} else if (request === 'sqlops') {
-			return getModuleFactory(dataExtApiImpl,
-				(ext) => factory.sqlopsFactory(ext),
-				defaultDataApiImpl,
-				(impl) => defaultDataApiImpl = <typeof sqlops>impl,
-				parent);
-		} else {
-			// Allow standard node_module load to occur
-			return original.apply(this, arguments);
-		}
-	};
-}
-
-
-const nullExtensionDescription: IExtensionDescription = {
-	identifier: new ExtensionIdentifier('nullExtensionDescription'),
-	name: 'Null Extension Description',
-	publisher: 'vscode',
-	activationEvents: undefined,
-	contributes: undefined,
-	enableProposedApi: false,
-	engines: undefined,
-	extensionDependencies: undefined,
-	extensionLocation: undefined,
-	isBuiltin: false,
-	main: undefined,
-	version: undefined,
-	isUnderDevelopment: true
-};

@@ -72,7 +72,7 @@ interface IDiffEditorWidgetStyle {
 }
 
 class VisualEditorState {
-	private _zones: number[];
+	private _zones: string[];
 	private _zonesMap: { [zoneId: string]: boolean; };
 	private _decorations: string[];
 

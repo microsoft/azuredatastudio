@@ -944,7 +944,7 @@ export class ServerExtensionsView extends ExtensionsListView {
 		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionManagementServerService extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService productService: IProductService,
-		@IContextKeyService contextKeyService: IContextKeyService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
 		options.server = server;
 		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService, contextKeyService);
@@ -960,7 +960,7 @@ export class ServerExtensionsView extends ExtensionsListView {
 	}
 
 	getActions(): IAction[] {
-		if (this.extensionManagementServerService.localExtensionManagementServer === this.server) {
+		if (this.extensionManagementServerService.remoteExtensionManagementServer && this.extensionManagementServerService.localExtensionManagementServer === this.server) {
 			const installLocalExtensionsInRemoteAction = this._register(this.instantiationService.createInstance(InstallLocalExtensionsInRemoteAction, false));
 			installLocalExtensionsInRemoteAction.class = 'octicon octicon-cloud-download';
 			return [installLocalExtensionsInRemoteAction];

@@ -122,7 +122,7 @@ class Extension implements IExtension {
 			return undefined;
 		}
 
-		return this.productService.extensionsGallery.itemUrl && `${this.productService.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`; // {{SQL CARBON EDIT}} add check for itemurl
+		return `${this.productService.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
 	}
 
 	// {{SQL CARBON EDIT}}
@@ -131,7 +131,6 @@ class Extension implements IExtension {
 			return null;
 		}
 
-		// {{SQL CARBON EDIT}}
 		return this.gallery && this.gallery.assets && this.gallery.assets.downloadPage && this.gallery.assets.downloadPage.uri;
 	}
 
@@ -500,7 +499,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	private readonly _onChange: Emitter<IExtension | undefined> = new Emitter<IExtension | undefined>();
 	get onChange(): Event<IExtension | undefined> { return this._onChange.event; }
 
-	private _extensionAllowedBadgeProviders: string[] | undefined;
 	private installing: IExtension[] = [];
 
 	constructor(
@@ -1073,13 +1071,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			}
 		}
 		return changed;
-	}
-
-	get allowedBadgeProviders(): string[] {
-		if (!this._extensionAllowedBadgeProviders) {
-			this._extensionAllowedBadgeProviders = (this.productService.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
-		}
-		return this._extensionAllowedBadgeProviders;
 	}
 
 	private _activityCallBack: (() => void) | null = null;

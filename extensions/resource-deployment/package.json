@@ -113,7 +113,8 @@
                       {
                         "label": "%docker-sql-password-field%",
                         "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
-                        "type": "password",
+                        "type": "sql_password",
+                        "userName": "sa",
                         "confirmationRequired": true,
                         "confirmationLabel": "%docker-confirm-sql-password-field%",
                         "defaultValue": "",
@@ -163,7 +164,8 @@
                       {
                         "label": "%docker-sql-password-field%",
                         "variableName": "AZDATA_NB_VAR_DOCKER_PASSWORD",
-                        "type": "password",
+                        "type": "sql_password",
+                        "userName": "sa",
                         "confirmationRequired": true,
                         "confirmationLabel": "%docker-confirm-sql-password-field%",
                         "defaultValue": "",
@@ -266,7 +268,8 @@
                       {
                         "label": "%bdc-password-field%",
                         "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
-                        "type": "password",
+                        "type": "sql_password",
+                        "userName": "sa",
                         "confirmationRequired": true,
                         "confirmationLabel": "%bdc-confirm-password-field%",
                         "defaultValue": "",
@@ -370,7 +373,8 @@
                       {
                         "label": "%bdc-password-field%",
                         "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
-                        "type": "password",
+                        "type": "sql_password",
+                        "userName": "sa",
                         "confirmationRequired": true,
                         "confirmationLabel": "%bdc-confirm-password-field%",
                         "defaultValue": "",
@@ -421,7 +425,8 @@
                       {
                         "label": "%bdc-password-field%",
                         "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
-                        "type": "password",
+                        "type": "sql_password",
+                        "userName": "sa",
                         "confirmationRequired": true,
                         "confirmationLabel": "%bdc-confirm-password-field%",
                         "defaultValue": "",
