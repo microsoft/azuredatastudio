@@ -30,6 +30,7 @@ export interface DeploymentProvider {
 	title: string;
 	dialog: DialogInfo;
 	notebook: string | NotebookInfo;
+	executable: string;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
