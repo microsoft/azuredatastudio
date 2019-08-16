@@ -33,6 +33,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { notebookModeId } from 'sql/workbench/common/customInputConverter';
 import { localize } from 'vs/nls';
+import * as fs from 'fs';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -700,13 +701,25 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.next, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.next, {});
+					}
 				}
 			},
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.previous, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.previous, {});
+					}
 				}
 			}
 		});

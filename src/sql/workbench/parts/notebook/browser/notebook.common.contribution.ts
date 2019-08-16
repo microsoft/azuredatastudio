@@ -23,6 +23,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
 import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer } from 'vs/workbench/common/views';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -83,6 +84,23 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
+
+/**
+* Explorer viewlet id.
+*/
+export const VIEWLET_ID = 'bookTreeView'; //'workbench.view.extension.books-explorer';
+/**
+* Explorer viewlet container.
+*/
+export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
+registerAction({
+	id: 'workbench.books.action.focusBooksExplorer',
+	handler: async (accessor) => {
+		const viewletService = accessor.get(IViewletService);
+		viewletService.openViewlet('workbench.view.extension.books-explorer', true);
+	}
+});
+
 
 /* *************** Output components *************** */
 // Note: most existing types use the same component to render. In order to
