@@ -159,11 +159,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private updateTools(): void {
 		const tools = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
-		this._toolsTable.height = 25 * tools.length + headerRowHeight;
-		this._toolsTable.data = tools.map(toolRef => {
-			const tool = this.toolsService.getToolByName(toolRef.name)!;
-			return [tool.displayName, tool.description];
-		});
+		this._toolsTable.height = 25 * Math.max(tools.length, 1) + headerRowHeight;
+		if (tools.length === 0) {
+			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
+		} else {
+			this._toolsTable.data = tools.map(toolRef => {
+				const tool = this.toolsService.getToolByName(toolRef.name)!;
+				return [tool.displayName, tool.description];
+			});
+		}
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
@@ -186,9 +190,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 		} else if (provider.notebook) {
 			this.notebookService.launchNotebook(provider.notebook);
 		} else if (provider.executable) {
+			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer");
 			azdata.tasks.startBackgroundOperation({
-				displayName: provider.title,
-				description: provider.title,
+				displayName: taskName,
+				description: taskName,
 				isCancelable: false,
 				operation: op => {
 					op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadingText', "Downloading from: {0}", provider.executable));

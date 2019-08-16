@@ -129,8 +129,8 @@ export class ResourceTypeService implements IResourceTypeService {
 			let providerIndex = 1;
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
-				if (!provider.notebook) {
-					errorMessages.push(`Notebook is not specified for the provider, ${providerPositionInfo}`);
+				if (!provider.dialog && !provider.notebook && !provider.executable) {
+					errorMessages.push(`No method defined for the provider, ${providerPositionInfo}`);
 				}
 
 				if (provider.requiredTools && provider.requiredTools.length > 0) {

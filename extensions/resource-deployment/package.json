@@ -502,7 +502,7 @@
           "executable": "https://go.microsoft.com/fwlink/?linkid=853016",
           "requiredTools": [
           ],
-          "when": "target=aks&&version=sql2017"
+          "when": "version=sql2017"
         }
       ]
     }

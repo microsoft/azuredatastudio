@@ -12,7 +12,6 @@ import { ResourceTypeService } from './services/resourceTypeService';
 import { PlatformService } from './services/platformService';
 import * as nls from 'vscode-nls';
 import { DownloadService } from './services/downloadService';
-import * as cp from 'child_process';
 
 const localize = nls.loadMessageBundle();
 
@@ -42,13 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	vscode.commands.registerCommand('azdata.resource.sql-image.deploy', () => {
-		const service = new DownloadService();
-		service.download('https://go.microsoft.com/fwlink/?linkid=853016').then((result) => {
-			vscode.window.showInformationMessage(result);
-			cp.exec(result);
-		}, (error) => {
-			vscode.window.showErrorMessage(error);
-		});
+		openDialog('sql-image');
 	});
 	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
 		openDialog('sql-bdc');

@@ -47,6 +47,6 @@
 	"bdc-storage-class-field": "Storage class name",
 	"bdc-data-size-field": "Capacity for data (GB)",
 	"bdc-log-size-field": "Capacity for logs (GB)",
-	"resource-type-sql-windows-setup-display-name": "Install SQL Server on Windows",
-	"resource-type-sql-windows-setup-description": "Install SQL Server on Windows"
+	"resource-type-sql-windows-setup-display-name": "SQL Server on Windows",
+	"resource-type-sql-windows-setup-description": "SQL Server on Windows"
 }
