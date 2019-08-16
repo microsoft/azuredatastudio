@@ -157,7 +157,10 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		const targetDatabaseTitle = localize('dacFx.targetDatabaseDropdownTitle', "Database Name");
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			ariaLabel: targetDatabaseTitle
+		}).component();
 
 		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -170,7 +173,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.targetDatabaseDropdownTitle', 'Database Name')
+			title: targetDatabaseTitle
 		};
 	}
 
