@@ -392,10 +392,10 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		@IProductService private readonly productService: IProductService,
 		@optional(IStorageService) private readonly storageService: IStorageService,
 	) {
-		const config = productService.productConfiguration.extensionsGallery;
+		const config = productService.extensionsGallery;
 		this.extensionsGalleryUrl = config && config.serviceUrl;
 		this.extensionsControlUrl = config && config.controlUrl;
-		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.productConfiguration.version, this.environmentService, this.fileService, this.storageService);
+		this.commonHeadersPromise = resolveMarketplaceHeaders(productService.version, this.environmentService, this.fileService, this.storageService);
 	}
 
 	private api(path = ''): string {
@@ -440,7 +440,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 					const versionAsset = rawExtension.versions.filter(v => v.version === version)[0];
 					if (versionAsset) {
 						const extension = toExtension(rawExtension, versionAsset, 0, query);
-						if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.productConfiguration.version)) {
+						if (extension.properties.engine && isEngineValid(extension.properties.engine, this.productService.version)) {
 							return extension;
 						}
 					}
@@ -788,7 +788,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		return this.queryGallery(query, CancellationToken.None).then(({ galleryExtensions }) => {
 			if (galleryExtensions.length) {
 				if (compatible) {
-					return Promise.all(galleryExtensions[0].versions.map(v => this.getEngine(v).then(engine => isEngineValid(engine, this.productService.productConfiguration.version) ? v : null)))
+					return Promise.all(galleryExtensions[0].versions.map(v => this.getEngine(v).then(engine => isEngineValid(engine, this.productService.version) ? v : null)))
 						.then(versions => versions
 							.filter(v => !!v)
 							.map(v => ({ version: v!.version, date: v!.lastUpdated })));
@@ -874,7 +874,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 			if (!engine) {
 				return null;
 			}
-			if (isEngineValid(engine, this.productService.productConfiguration.version)) {
+			if (isEngineValid(engine, this.productService.version)) {
 				return Promise.resolve(version);
 			}
 		}
@@ -906,7 +906,7 @@ export class ExtensionGalleryService implements IExtensionGalleryService {
 		const version = versions[0];
 		return this.getEngine(version)
 			.then(engine => {
-				if (!isEngineValid(engine, this.productService.productConfiguration.version)) {
+				if (!isEngineValid(engine, this.productService.version)) {
 					return this.getLastValidExtensionVersionRecursively(extension, versions.slice(1));
 				}
 
