@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
 import { DacFxSummaryPage } from './dacFxSummaryPage';
 
@@ -126,8 +126,8 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 			// add deploy plan page and remove and re-add summary page so that it has the correct page number
 			this.instance.wizard.removePage(DeployNewOperationPath.summary);
-			let deployPlanPage = this.instance.pages.get('deployPlan');
-			let summaryPage = this.instance.pages.get('summary');
+			let deployPlanPage = this.instance.pages.get(PageName.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
 			this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
 		});
@@ -142,7 +142,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 			// remove deploy plan page and readd summary page so that it has the correct page number
 			this.instance.wizard.removePage(DeployOperationPath.summary);
 			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
-			let summaryPage = this.instance.pages.get('summary');
+			let summaryPage = this.instance.pages.get(PageName.summary);
 			this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
 		});
 
