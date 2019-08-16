@@ -57,6 +57,10 @@
         {
           "command": "azdata.resource.sql-bdc.deploy",
           "group": "secondary"
+        },
+        {
+          "command": "azdata.resource.deploy",
+          "group": "secondary"
         }
       ]
     }
