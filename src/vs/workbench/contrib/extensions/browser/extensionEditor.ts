@@ -54,6 +54,7 @@ import { IWebviewService, Webview } from 'vs/workbench/contrib/webview/common/we
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { renderDashboardContributions } from 'sql/workbench/parts/extensions/browser/contributionRenders'; // {{SQL CARBON EDIT}}
 import { generateUuid } from 'vs/base/common/uuid';
+import { platform } from 'vs/base/common/process';
 
 function removeEmbeddedSVGs(documentContent: string): string {
 	const newDocument = new DOMParser().parseFromString(documentContent, 'text/html');
@@ -582,9 +583,7 @@ export class ExtensionEditor extends BaseEditor {
 					{
 						enableFindWidget: true,
 					},
-					{
-						svgWhiteList: this.extensionsWorkbenchService.allowedBadgeProviders,
-					});
+					{});
 				webviewElement.mountTo(template.content);
 				this.contentDisposables.add(webviewElement.onDidFocus(() => this.fireOnDidFocus()));
 				const removeLayoutParticipant = arrays.insert(this.layoutParticipants, webviewElement);
@@ -1287,7 +1286,7 @@ export class ExtensionEditor extends BaseEditor {
 	private resolveKeybinding(rawKeyBinding: IKeyBinding): ResolvedKeybinding | null {
 		let key: string | undefined;
 
-		switch (process.platform) {
+		switch (platform) {
 			case 'win32': key = rawKeyBinding.win; break;
 			case 'linux': key = rawKeyBinding.linux; break;
 			case 'darwin': key = rawKeyBinding.mac; break;
