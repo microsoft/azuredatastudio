@@ -26,7 +26,6 @@ export class SqlClusterConnection {
 			this._connection = this.toConnection(this._profile);
 		} else {
 			this._connection = connectionInfo;
-			this._profile = this.toConnectionProfile(this._connection);
 		}
 		this._host = this._connection.options[constants.hostPropName];
 		this._port = this._connection.options[constants.knoxPortPropName];
@@ -35,7 +34,6 @@ export class SqlClusterConnection {
 	}
 
 	public get connection(): azdata.connection.Connection { return this._connection; }
-	public get profile(): azdata.IConnectionProfile { return this._profile; }
 	public get host(): string { return this._host; }
 	public get port(): number { return this._port ? Number.parseInt(this._port) : constants.defaultKnoxPort; }
 	public get user(): string { return this._user; }
@@ -50,7 +48,7 @@ export class SqlClusterConnection {
 			.every(e => options1[e] === options2[e]);
 	}
 
-	public createHdfsFileSource(): IFileSource {
+	public async createHdfsFileSource(): Promise<IFileSource> {
 		let options: IHdfsOptions = {
 			protocol: 'https',
 			host: this.host,
@@ -58,13 +56,24 @@ export class SqlClusterConnection {
 			user: this.user,
 			path: 'gateway/default/webhdfs/v1',
 			requestParams: {
-				auth: {
-					user: this.user,
-					pass: this.password
-				}
 			}
 		};
-		return FileSourceFactory.instance.createHdfsFileSource(options);
+		if (this.isIntegratedAuth()) {
+			options.requestParams.isKerberos = this.isIntegratedAuth();
+			options.requestParams.auth = undefined;
+		} else {
+			options.requestParams.auth = {
+				user: this.user,
+				pass: this.password
+			};
+		}
+		let fileSource = await FileSourceFactory.instance.createHdfsFileSource(options);
+		return fileSource;
+	}
+
+	public isIntegratedAuth(): boolean {
+		let authType: string = this._connection.options[constants.authenticationTypePropName];
+		return authType && authType.toLowerCase() === constants.integratedAuth;
 	}
 
 	public updatePassword(password: string): void {
@@ -90,29 +99,17 @@ export class SqlClusterConnection {
 
 	private getMissingProperties(connectionInfo: azdata.ConnectionInfo): string[] {
 		if (!connectionInfo || !connectionInfo.options) { return undefined; }
-		return [
-			constants.hostPropName, constants.knoxPortPropName,
-			constants.userPropName, constants.passwordPropName
-		].filter(e => connectionInfo.options[e] === undefined);
+		let requiredProps = [constants.hostPropName, constants.knoxPortPropName];
+		let authType = connectionInfo.options[constants.authenticationTypePropName] && connectionInfo.options[constants.authenticationTypePropName].toLowerCase();
+		if (authType !== constants.integratedAuth) {
+			requiredProps.push(constants.userPropName, constants.passwordPropName);
+		}
+		return requiredProps.filter(e => connectionInfo.options[e] === undefined);
 	}
 
 	private toConnection(connProfile: azdata.IConnectionProfile): azdata.connection.Connection {
 		let connection: azdata.connection.Connection = Object.assign(connProfile,
 			{ connectionId: this._profile.id });
 		return connection;
-	}
-
-	private toConnectionProfile(connectionInfo: azdata.connection.Connection): azdata.IConnectionProfile {
-		let options = connectionInfo.options;
-		let connProfile: azdata.IConnectionProfile = Object.assign(<azdata.IConnectionProfile>{},
-			connectionInfo,
-			{
-				serverName: `${options[constants.hostPropName]},${options[constants.knoxPortPropName]}`,
-				userName: options[constants.userPropName],
-				password: options[constants.passwordPropName],
-				id: connectionInfo.connectionId,
-			}
-		);
-		return connProfile;
 	}
 }

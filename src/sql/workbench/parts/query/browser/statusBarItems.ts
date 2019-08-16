@@ -158,11 +158,19 @@ export class RowCountStatusBarContributions extends Disposable implements IWorkb
 				this.disposable.add(runner.onQueryStart(e => {
 					this._displayValue(runner);
 				}));
+				this.disposable.add(runner.onResultSetUpdate(e => {
+					this._displayValue(runner);
+				}));
 				this.disposable.add(runner.onQueryEnd(e => {
 					this._displayValue(runner);
 				}));
 			} else {
 				this.disposable.add(this.queryModelService.onRunQueryStart(e => {
+					if (e === uri) {
+						this._displayValue(this.queryModelService.getQueryRunner(uri));
+					}
+				}));
+				this.disposable.add(this.queryModelService.onRunQueryUpdate(e => {
 					if (e === uri) {
 						this._displayValue(this.queryModelService.getQueryRunner(uri));
 					}

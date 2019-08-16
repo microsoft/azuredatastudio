@@ -62,12 +62,14 @@ export interface DialogFieldInfo {
 	required: boolean;
 	options: string[];
 	placeHolder: string;
+	userName?: string; //needed for sql server's password complexity requirement check, password can not include the login name.
 }
 
 export enum FieldType {
 	Text = 'text',
 	Number = 'number',
 	DateTimeText = 'datetime_text',
+	SQLPassword = 'sql_password',
 	Password = 'password',
 	Options = 'options'
 }

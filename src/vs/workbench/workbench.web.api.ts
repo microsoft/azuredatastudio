@@ -7,8 +7,8 @@ import 'vs/workbench/workbench.web.main';
 import { main } from 'vs/workbench/browser/web.main';
 import { UriComponents } from 'vs/base/common/uri';
 import { IFileSystemProvider } from 'vs/platform/files/common/files';
-import { IRequestOptions, IRequestContext } from 'vs/platform/request/common/request';
 import { IWebSocketFactory } from 'vs/platform/remote/browser/browserSocketFactory';
+import { ICredentialsProvider } from 'vs/workbench/services/credentials/browser/credentialsService';
 
 export interface IWorkbenchConstructionOptions {
 
@@ -46,15 +46,19 @@ export interface IWorkbenchConstructionOptions {
 	userDataProvider?: IFileSystemProvider;
 
 	/**
-	 * Experimental: Optional request handler to handle http requests.
-	 * In case not provided, workbench uses <code>XMLHttpRequest</code>.
-	 */
-	requestHandler?: (requestOptions: IRequestOptions) => Promise<IRequestContext>;
-
-	/**
 	 * A factory for web sockets.
 	 */
 	webSocketFactory?: IWebSocketFactory;
+
+	/**
+	 * Experimental: Whether to enable the smoke test driver.
+	 */
+	driver?: boolean;
+
+	/**
+	 * Experimental: The credentials provider to store and retrieve secrets.
+	 */
+	credentialsProvider?: ICredentialsProvider;
 }
 
 /**
