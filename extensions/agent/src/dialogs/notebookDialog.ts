@@ -35,12 +35,12 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 	// Job details string
 	private readonly JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
-	private readonly NameTextBoxLabel: string = localize('jobDialog.name', 'Name');
-	private readonly OwnerTextBoxLabel: string = localize('jobDialog.owner', 'Owner');
-	private readonly SchedulesTopLabelString: string = localize('jobDialog.schedulesaLabel', 'Schedules list');
-	private readonly PickScheduleButtonString: string = localize('jobDialog.pickSchedule', 'Pick Schedule');
-	private readonly ScheduleNameLabelString: string = localize('jobDialog.scheduleNameLabel', 'Schedule Name');
-	private readonly DescriptionTextBoxLabel: string = localize('jobDialog.description', 'Description');
+	private readonly NameTextBoxLabel: string = localize('notebookDialog.name', 'Name');
+	private readonly OwnerTextBoxLabel: string = localize('notebookDialog.owner', 'Owner');
+	private readonly SchedulesTopLabelString: string = localize('notebookDialog.schedulesaLabel', 'Schedules list');
+	private readonly PickScheduleButtonString: string = localize('notebookDialog.pickSchedule', 'Pick Schedule');
+	private readonly ScheduleNameLabelString: string = localize('notebookDialog.scheduleNameLabel', 'Schedule Name');
+	private readonly DescriptionTextBoxLabel: string = localize('notebookDialog.description', 'Description');
 
 	// Event Name strings
 	private readonly NewJobDialogEvent: string = 'NewJobDialogOpened';

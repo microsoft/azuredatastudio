@@ -14,12 +14,12 @@ const localize = nls.loadMessageBundle();
 
 export class NotebookData implements IAgentDialogData {
 
-	private readonly JobCompletionActionCondition_Always: string = localize('jobData.whenJobCompletes', 'When the job completes');
-	private readonly JobCompletionActionCondition_OnFailure: string = localize('jobData.whenJobFails', 'When the job fails');
-	private readonly JobCompletionActionCondition_OnSuccess: string = localize('jobData.whenJobSucceeds', 'When the job succeeds');
+	private readonly NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', 'When the notebook completes');
+	private readonly NotebookCompletionActionCondition_OnFailure: string = localize('notebookData.whenJobFails', 'When the notebook fails');
+	private readonly NotebookCompletionActionCondition_OnSuccess: string = localize('notebookData.whenJobSucceeds', 'When the notebook succeeds');
 
 	// Error Messages
-	private readonly CreateJobErrorMessage_NameIsEmpty = localize('jobData.jobNameRequired', 'Notebook name must be provided');
+	private readonly CreateNotebookErrorMessage_NameIsEmpty = localize('notebookData.jobNameRequired', 'Notebook name must be provided');
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
@@ -119,37 +119,37 @@ export class NotebookData implements IAgentDialogData {
 		}
 
 		this._jobCompletionActionConditions = [{
-			displayName: this.JobCompletionActionCondition_OnSuccess,
+			displayName: this.NotebookCompletionActionCondition_OnSuccess,
 			name: azdata.JobCompletionActionCondition.OnSuccess.toString()
 		}, {
-			displayName: this.JobCompletionActionCondition_OnFailure,
+			displayName: this.NotebookCompletionActionCondition_OnFailure,
 			name: azdata.JobCompletionActionCondition.OnFailure.toString()
 		}, {
-			displayName: this.JobCompletionActionCondition_Always,
+			displayName: this.NotebookCompletionActionCondition_Always,
 			name: azdata.JobCompletionActionCondition.Always.toString()
 		}];
 	}
 
 	public async save() {
-		let jobInfo: azdata.AgentNotebookInfo = this.toAgentJobInfo();
+		let notebookInfo: azdata.AgentNotebookInfo = this.toAgentJobInfo();
 		let result = this.dialogMode === AgentDialogMode.CREATE
-			? await this._agentService.createNotebook(this.ownerUri, jobInfo, this.templatePath)
-			: await this._agentService.updateNotebook(this.ownerUri, this.originalName, jobInfo, this.templatePath);
+			? await this._agentService.createNotebook(this.ownerUri, notebookInfo, this.templatePath)
+			: await this._agentService.updateNotebook(this.ownerUri, this.originalName, notebookInfo, this.templatePath);
 		if (!result || !result.success) {
 			if (this.dialogMode === AgentDialogMode.EDIT) {
 				vscode.window.showErrorMessage(
-					localize('jobData.saveErrorMessage', "Job update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+					localize('notebookData.saveErrorMessage', "Notebook update failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 			} else {
 				vscode.window.showErrorMessage(
-					localize('jobData.newJobErrorMessage', "Job creation failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
+					localize('notebookData.newJobErrorMessage', "Notebook creation failed '{0}'", result.errorMessage ? result.errorMessage : 'Unknown'));
 			}
 		} else {
 			if (this.dialogMode === AgentDialogMode.EDIT) {
 				vscode.window.showInformationMessage(
-					localize('jobData.saveSucessMessage', "Job '{0}' updated successfully", jobInfo.name));
+					localize('notebookData.saveSucessMessage', "Notebook '{0}' updated successfully", notebookInfo.name));
 			} else {
 				vscode.window.showInformationMessage(
-					localize('jobData.newJobSuccessMessage', "Job '{0}' created successfully", jobInfo.name));
+					localize('notebookData.newJobSuccessMessage', "Notebook '{0}' created successfully", notebookInfo.name));
 			}
 
 		}
@@ -159,7 +159,7 @@ export class NotebookData implements IAgentDialogData {
 		let validationErrors: string[] = [];
 
 		if (!(this.name && this.name.trim())) {
-			validationErrors.push(this.CreateJobErrorMessage_NameIsEmpty);
+			validationErrors.push(this.CreateNotebookErrorMessage_NameIsEmpty);
 		}
 
 		return {
