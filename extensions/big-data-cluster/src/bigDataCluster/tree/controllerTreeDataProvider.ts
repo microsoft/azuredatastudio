@@ -11,9 +11,9 @@ import { TreeNode } from './treeNode';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { AddControllerNode } from './addControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
-import { IEndPoint } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
+import { EndpointModel } from '../controller/apiGenerated';
 
 const CredentialNamespace = 'clusterControllerCredentials';
 
@@ -63,7 +63,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 		username: string,
 		password: string,
 		rememberPassword: boolean,
-		masterInstance?: IEndPoint
+		masterInstance?: EndpointModel
 	): void {
 		this.removeNonControllerNodes();
 		this.root.addControllerNode(clusterName, url, username, password, rememberPassword, masterInstance);

@@ -44,8 +44,8 @@ export class AccountPicker extends Disposable {
 	private _addAccountStartEmitter: Emitter<void>;
 	public get addAccountStartEvent(): Event<void> { return this._addAccountStartEmitter.event; }
 
-	private _onAccountSelectionChangeEvent: Emitter<azdata.Account>;
-	public get onAccountSelectionChangeEvent(): Event<azdata.Account> { return this._onAccountSelectionChangeEvent.event; }
+	private _onAccountSelectionChangeEvent: Emitter<azdata.Account | undefined>;
+	public get onAccountSelectionChangeEvent(): Event<azdata.Account | undefined> { return this._onAccountSelectionChangeEvent.event; }
 
 	constructor(
 		private _providerId: string,
@@ -145,7 +145,7 @@ export class AccountPicker extends Disposable {
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
-	private onAccountSelectionChange(account: azdata.Account) {
+	private onAccountSelectionChange(account: azdata.Account | undefined) {
 		this.viewModel.selectedAccount = account;
 		if (account && account.isStale) {
 			this._refreshAccountAction.account = account;
@@ -157,7 +157,7 @@ export class AccountPicker extends Disposable {
 		this._onAccountSelectionChangeEvent.fire(account);
 	}
 
-	private renderLabel(container: HTMLElement): IDisposable {
+	private renderLabel(container: HTMLElement): IDisposable | null {
 		if (container.hasChildNodes()) {
 			for (let i = 0; i < container.childNodes.length; i++) {
 				container.removeChild(container.childNodes.item(i));
@@ -189,7 +189,7 @@ export class AccountPicker extends Disposable {
 			const row = DOM.append(container, DOM.$('div.no-account-container'));
 			row.innerText = AddAccountAction.LABEL + '...';
 		}
-		return undefined;
+		return null;
 	}
 
 	private updateAccountList(accounts: azdata.Account[]): void {
@@ -197,7 +197,7 @@ export class AccountPicker extends Disposable {
 		const selectedElements = this._accountList.getSelectedElements();
 
 		// find selected index
-		let selectedIndex: number;
+		let selectedIndex: number | undefined;
 		if (selectedElements.length > 0 && accounts.length > 0) {
 			selectedIndex = accounts.findIndex((account) => {
 				return (account.key.accountId === selectedElements[0].key.accountId);

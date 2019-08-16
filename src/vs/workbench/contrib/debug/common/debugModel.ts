@@ -94,8 +94,8 @@ export class ExpressionContainer implements IExpressionContainer {
 	// Use chunks to support variable paging #9537
 	private static readonly BASE_CHUNK_SIZE = 100;
 
-	public valueChanged: boolean;
-	private _value: string;
+	public valueChanged = false;
+	private _value: string = '';
 	protected children?: Promise<IExpression[]>;
 
 	constructor(
@@ -201,7 +201,7 @@ export class Expression extends ExpressionContainer implements IExpression {
 	static DEFAULT_VALUE = nls.localize('notAvailable', "not available");
 
 	public available: boolean;
-	public type: string;
+	public type: string | undefined;
 
 	constructor(public name: string, id = generateUuid()) {
 		super(undefined, 0, id);
@@ -227,14 +227,14 @@ export class Expression extends ExpressionContainer implements IExpression {
 			const response = await session.evaluate(this.name, stackFrame ? stackFrame.frameId : undefined, context);
 			this.available = !!(response && response.body);
 			if (response && response.body) {
-				this.value = response.body.result;
+				this.value = response.body.result || '';
 				this.reference = response.body.variablesReference;
 				this.namedVariables = response.body.namedVariables;
 				this.indexedVariables = response.body.indexedVariables;
 				this.type = response.body.type || this.type;
 			}
 		} catch (e) {
-			this.value = e.message;
+			this.value = e.message || '';
 			this.available = false;
 			this.reference = 0;
 		}
@@ -256,7 +256,7 @@ export class Variable extends ExpressionContainer implements IExpression {
 		reference: number | undefined,
 		public name: string,
 		public evaluateName: string | undefined,
-		value: string,
+		value: string | undefined,
 		namedVariables: number | undefined,
 		indexedVariables: number | undefined,
 		public presentationHint: DebugProtocol.VariablePresentationHint | undefined,
@@ -265,7 +265,7 @@ export class Variable extends ExpressionContainer implements IExpression {
 		startOfVariables = 0
 	) {
 		super(session, reference, `variable:${parent.getId()}:${name}`, namedVariables, indexedVariables, startOfVariables);
-		this.value = value;
+		this.value = value || '';
 	}
 
 	async setVariable(value: string): Promise<any> {
@@ -276,7 +276,7 @@ export class Variable extends ExpressionContainer implements IExpression {
 		try {
 			const response = await this.session.setVariable((<ExpressionContainer>this.parent).reference, this.name, value);
 			if (response && response.body) {
-				this.value = response.body.value;
+				this.value = response.body.value || '';
 				this.type = response.body.type || this.type;
 				this.reference = response.body.variablesReference;
 				this.namedVariables = response.body.namedVariables;

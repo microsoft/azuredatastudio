@@ -24,10 +24,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
+	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
 		this.getTableOfContentFiles(workspaceFolders).then(() => undefined, (err) => { console.log(err); });
 		this._extensionContext = extensionContext;
+	}
+
+	public get onReadAllTOCFiles(): vscode.Event<void> {
+		return this._onReadAllTOCFiles.event;
 	}
 
 	async getTableOfContentFiles(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
@@ -40,12 +45,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			maxDepth = undefined;
 		}
 		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
-		for (let path of workspacePaths) {
-			let tableOfContentPaths = await glob([path + '/**/_data/toc.yml'], { deep: maxDepth });
+		for (let workspacePath of workspacePaths) {
+			let p = path.join(workspacePath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+			let tableOfContentPaths = await glob(p, { deep: maxDepth });
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 		}
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
 		vscode.commands.executeCommand('setContext', 'bookOpened', bookOpened);
+		this._onReadAllTOCFiles.fire();
 	}
 
 	async openNotebook(resource: string): Promise<void> {
