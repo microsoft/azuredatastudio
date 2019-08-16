@@ -3240,6 +3240,8 @@ declare module 'azdata' {
 		selectedRows?: number[];
 		forceFitColumns?: ColumnSizingMode;
 		title?: string;
+		ariaRowCount?: number;
+		ariaColumnCount?: number;
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
