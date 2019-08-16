@@ -473,6 +473,38 @@
           "when": "target=existing-kubeadm&&version=bdc2019"
         }
       ]
+    },
+    {
+      "name": "sql-windows-setup",
+      "displayName": "%resource-type-sql-windows-setup-display-name%",
+      "description": "%resource-type-sql-windows-setup-description%",
+      "platforms": [
+        "win32"
+      ],
+      "icon": {
+        "light": "./images/sql_server.svg",
+        "dark": "./images/sql_server_inverse.svg"
+      },
+      "options": [
+        {
+          "name": "version",
+          "displayName": "%version-display-name%",
+          "values": [
+            {
+              "name": "sql2017",
+              "displayName": "%sql-2017-display-name%"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "executable": "https://go.microsoft.com/fwlink/?linkid=853016",
+          "requiredTools": [
+          ],
+          "when": "target=aks&&version=sql2017"
+        }
+      ]
     }
   ],
   "dependencies": {

@@ -21,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const toolsService = new ToolsService();
 	const notebookService = new NotebookService(platformService, context.extensionPath);
 	const resourceTypeService = new ResourceTypeService(platformService, toolsService);
+	const downloadService = new DownloadService();
 
 	const resourceTypes = resourceTypeService.getResourceTypes();
 	const validationFailures = resourceTypeService.validateResourceTypes(resourceTypes);
@@ -35,7 +36,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (filtered.length !== 1) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));
 		} else {
-			const dialog = new ResourceTypePickerDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
+			const dialog = new ResourceTypePickerDialog(context, notebookService, toolsService, resourceTypeService, downloadService, filtered[0]);
 			dialog.open();
 		}
 	};

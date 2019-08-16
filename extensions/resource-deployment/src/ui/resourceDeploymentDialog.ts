@@ -13,6 +13,8 @@ import { IToolsService } from '../services/toolsService';
 import { INotebookService } from '../services/notebookService';
 import { DialogBase } from './dialogBase';
 import { DeploymentDialog } from './deploymentDialog';
+import { IDownloadService } from '../services/downloadService';
+import * as cp from 'child_process';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,6 +32,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		private notebookService: INotebookService,
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
+		private downloadService: IDownloadService,
 		resourceType: ResourceType) {
 		super(context, localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
@@ -175,12 +178,28 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private onComplete(): void {
+		const self = this;
 		const provider = this.getCurrentProvider();
 		if (provider.dialog) {
 			const dialog = new DeploymentDialog(this.extensionContext, this.notebookService, provider);
 			dialog.open();
-		} else {
+		} else if (provider.notebook) {
 			this.notebookService.launchNotebook(provider.notebook);
+		} else if (provider.executable) {
+			azdata.tasks.startBackgroundOperation({
+				displayName: provider.title,
+				description: provider.title,
+				isCancelable: false,
+				operation: op => {
+					op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadingText', "Downloading from: {0}", provider.executable));
+					self.downloadService.download(provider.executable).then((downloadedFile) => {
+						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadCompleteText', "Successfully downloaded: {0}", downloadedFile));
+						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.LaunchingProgramText', "Launching: {0}", downloadedFile));
+						cp.exec(downloadedFile);
+						op.updateStatus(azdata.TaskStatus.Succeeded, localize('resourceDeployment.ProgramLaunchedText', "Successfully launched: {0}", downloadedFile));
+					});
+				}
+			});
 		}
 		this.dispose();
 	}
