@@ -114,7 +114,6 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
 		const children = await bookTreeViewProvider.getChildren(book);
-		console.log(children);
 		should(children).be.Array();
 		should(children.length).equal(3);
 		notebook1 = children[0];
@@ -132,7 +131,6 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 
 	it('should return all sections when element is a notebook', async function (): Promise<void> {
 		const children = await bookTreeViewProvider.getChildren(notebook1);
-		console.log(children);
 		should(children).be.Array();
 		should(children.length).equal(2);
 		const notebook2 = children[0];
@@ -233,8 +231,11 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 		bookTreeViewProvider.getBooks();
 		should(bookTreeViewProvider.errorMessage).equal('ENOENT: no such file or directory, open \'' + configFile + '\'');
 	});
-	it('should show error if toc.yml file format is invalid', function(): void {
-
+	it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
+		let configFile = path.join(rootFolderPath, '_config.yml');
+		await fs.writeFile(configFile, 'title: Test Book');
+		bookTreeViewProvider.getBooks();
+		should(bookTreeViewProvider.errorMessage).equal('');
 	});
 
 	this.afterAll(async function () {
