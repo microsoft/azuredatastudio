@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
-import { DeploymentProvider, DialogFieldInfo, FieldType } from '../interfaces';
+import { DialogFieldInfo, FieldType, DialogInfo } from '../interfaces';
 
 const localize = nls.loadMessageBundle();
 
@@ -20,15 +20,15 @@ export class DeploymentDialog extends DialogBase {
 
 	constructor(context: vscode.ExtensionContext,
 		private notebookService: INotebookService,
-		private deploymentProvider: DeploymentProvider) {
-		super(context, deploymentProvider.dialog.title, deploymentProvider.dialog.name, false);
+		private dialogInfo: DialogInfo) {
+		super(context, dialogInfo.title, dialogInfo.name, false);
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	protected initializeDialog() {
 		const tabs: azdata.window.DialogTab[] = [];
-		this.deploymentProvider.dialog.tabs.forEach(tabInfo => {
+		this.dialogInfo.tabs.forEach(tabInfo => {
 			const tab = azdata.window.createTab(tabInfo.title);
 			tab.registerContent((view: azdata.ModelView) => {
 				const sections: azdata.FormComponentGroup[] = [];
@@ -191,7 +191,7 @@ export class DeploymentDialog extends DialogBase {
 		Object.keys(this.variables).forEach(key => {
 			process.env[key] = this.variables[key];
 		});
-		this.notebookService.launchNotebook(this.deploymentProvider.notebook);
+		this.notebookService.launchNotebook(this.dialogInfo.notebook);
 		this.dispose();
 	}
 

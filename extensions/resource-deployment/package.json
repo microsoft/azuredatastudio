@@ -98,6 +98,7 @@
       "providers": [
         {
           "dialog": {
+            "notebook": "%sql-2017-docker-notebook%",
             "title": "%docker-sql-2017-title%",
             "name": "docker-sql-2017-dialog",
             "tabs": [
@@ -139,7 +140,6 @@
               }
             ]
           },
-          "notebook": "%sql-2017-docker-notebook%",
           "requiredTools": [
             {
               "name": "docker"
@@ -149,6 +149,7 @@
         },
         {
           "dialog": {
+            "notebook": "%sql-2019-docker-notebook%",
             "title": "%docker-sql-2019-title%",
             "name": "docker-sql-2019-dialog",
             "tabs": [
@@ -190,7 +191,6 @@
               }
             ]
           },
-          "notebook": "%sql-2019-docker-notebook%",
           "requiredTools": [
             {
               "name": "docker"
@@ -246,6 +246,7 @@
       "providers": [
         {
           "dialog": {
+            "notebook": "%bdc-2019-aks-notebook%",
             "title": "%bdc-new-aks-dialog-title%",
             "name": "bdc-new-aks-dialog",
             "tabs": [
@@ -335,7 +336,6 @@
               }
             ]
           },
-          "notebook": "%bdc-2019-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -351,6 +351,7 @@
         },
         {
           "dialog": {
+            "notebook": "%bdc-2019-existing-aks-notebook%",
             "title": "%bdc-existing-aks-dialog-title%",
             "name": "bdc-existing-aks-dialog",
             "tabs": [
@@ -390,7 +391,6 @@
               }
             ]
           },
-          "notebook": "%bdc-2019-existing-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -405,6 +405,7 @@
           "dialog": {
             "title": "%bdc-existing-kubeadm-dialog-title%",
             "name": "bdc-existing-kubeadm-dialog",
+            "notebook": "%bdc-2019-existing-kubeadm-notebook%",
             "tabs": [
               {
                 "title": "",
@@ -465,7 +466,6 @@
               }
             ]
           },
-          "notebook": "%bdc-2019-existing-kubeadm-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"

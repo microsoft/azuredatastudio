@@ -37,6 +37,7 @@ export interface DeploymentProvider {
 }
 
 export interface DialogInfo {
+	notebook: string | NotebookInfo;
 	title: string;
 	name: string;
 	tabs: DialogTabInfo[];
