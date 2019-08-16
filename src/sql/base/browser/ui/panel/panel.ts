@@ -183,7 +183,9 @@ export class TabbedPanel extends Disposable {
 				e.preventDefault();
 				if (this._shownTabId) {
 					const shownTab = this._tabMap.get(this._shownTabId);
-					this.setFocusToFirstElemnt(shownTab);
+					if (shownTab) {
+						this.setFocusToFirstElemnt(shownTab);
+					}
 				}
 			}
 		}));
@@ -253,7 +255,9 @@ export class TabbedPanel extends Disposable {
 					e.preventDefault();
 					if (this._shownTabId) {
 						const shownTab = this._tabMap.get(this._shownTabId);
-						shownTab.header.focus();
+						if (shownTab) {
+							shownTab.header.focus();
+						}
 					}
 				}
 			}));
