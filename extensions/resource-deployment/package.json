@@ -40,12 +40,17 @@
         "command": "azdata.resource.deploy",
         "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
+      },
+      {
+        "command": "azdata.openNotebookInputDialog",
+        "title": "Open notebook input dialog",
+        "category": "Notebook"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "azdata.resource.deploy",
+          "command": "azdata.openNotebookInputDialog",
           "when": "false"
         }
       ],
@@ -508,14 +513,12 @@
       "providers": [
         {
           "executable": "https://go.microsoft.com/fwlink/?linkid=853016",
-          "requiredTools": [
-          ],
+          "requiredTools": [],
           "when": "version=sql2017"
         },
         {
           "url": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-ctp",
-          "requiredTools": [
-          ],
+          "requiredTools": [],
           "when": "version=sql2019"
         }
       ]

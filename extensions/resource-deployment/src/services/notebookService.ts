@@ -26,13 +26,16 @@ export class NotebookService implements INotebookService {
 	 * @param notebook the path of the notebook
 	 */
 	launchNotebook(notebook: string | NotebookInfo): void {
-		const notebookRelativePath = this.getNotebook(notebook);
-		const notebookFullPath = path.join(this.extensionPath, notebookRelativePath);
-		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
+		const notebookPath = this.getNotebook(notebook);
+		const notebookFullPath = path.join(this.extensionPath, notebookPath);
+		if (notebookPath && this.platformService.fileExists(notebookPath)) {
+			this.showNotebookAsUntitled(notebookPath);
+		}
+		else if (notebookPath && this.platformService.fileExists(notebookFullPath)) {
 			this.showNotebookAsUntitled(notebookFullPath);
 		}
 		else {
-			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookFullPath));
+			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookPath));
 		}
 	}
 

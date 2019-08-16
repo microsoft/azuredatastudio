@@ -6,22 +6,20 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import * as vscode from 'vscode';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
 import { DialogFieldInfo, FieldType, DialogInfo } from '../interfaces';
 
 const localize = nls.loadMessageBundle();
 
-export class DeploymentDialog extends DialogBase {
+export class NotebookInputDialog extends DialogBase {
 
 	private variables: { [s: string]: string | undefined; } = {};
 	private validators: (() => { valid: boolean, message: string })[] = [];
 
-	constructor(context: vscode.ExtensionContext,
-		private notebookService: INotebookService,
+	constructor(private notebookService: INotebookService,
 		private dialogInfo: DialogInfo) {
-		super(context, dialogInfo.title, dialogInfo.name, false);
+		super(dialogInfo.title, dialogInfo.name, false);
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}

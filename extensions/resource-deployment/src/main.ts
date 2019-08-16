@@ -12,6 +12,8 @@ import { ResourceTypeService } from './services/resourceTypeService';
 import { PlatformService } from './services/platformService';
 import * as nls from 'vscode-nls';
 import { DownloadService } from './services/downloadService';
+import { DialogInfo } from './interfaces';
+import { NotebookInputDialog } from './ui/deploymentDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -48,6 +50,10 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	vscode.commands.registerCommand('azdata.resource.deploy', () => {
 		openDialog('sql-bdc');
+	});
+	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: DialogInfo) => {
+		const dialog = new NotebookInputDialog(notebookService, dialogInfo);
+		dialog.open();
 	});
 }
 

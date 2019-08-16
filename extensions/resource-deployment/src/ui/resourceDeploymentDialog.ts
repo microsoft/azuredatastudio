@@ -12,7 +12,7 @@ import { ResourceType, DeploymentProvider } from '../interfaces';
 import { IToolsService } from '../services/toolsService';
 import { INotebookService } from '../services/notebookService';
 import { DialogBase } from './dialogBase';
-import { DeploymentDialog } from './deploymentDialog';
+import { NotebookInputDialog } from './deploymentDialog';
 import { IDownloadService } from '../services/downloadService';
 import * as cp from 'child_process';
 
@@ -28,13 +28,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 
-	constructor(context: vscode.ExtensionContext,
+	constructor(private extensionContext: vscode.ExtensionContext,
 		private notebookService: INotebookService,
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		private downloadService: IDownloadService,
 		resourceType: ResourceType) {
-		super(context, localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
+		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
@@ -185,7 +185,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const self = this;
 		const provider = this.getCurrentProvider();
 		if (provider.dialog) {
-			const dialog = new DeploymentDialog(this.extensionContext, this.notebookService, provider);
+			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);
 			dialog.open();
 		} else if (provider.notebook) {
 			this.notebookService.launchNotebook(provider.notebook);
