@@ -44,6 +44,9 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
 		}
 		rootFolderPath = path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		if (os.type() === 'Windows_NT') {
+			rootFolderPath = rootFolderPath.replace('C:', 'c:');
+		}
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
@@ -105,13 +108,11 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
-		bookTreeViewProvider.onReadAllTOCFiles(async () => {
-			const children = await bookTreeViewProvider.getChildren();
-			should(children).be.Array();
-			should(children.length).equal(1);
-			book = children[0];
-			should(book.title).equal(expectedBook.title);
-		});
+		const children = await bookTreeViewProvider.getChildren();
+		should(children).be.Array();
+		should(children.length).equal(1);
+		book = children[0];
+		should(book.title).equal(expectedBook.title);
 	});
 
 	it('should return all page nodes when element is a book', async function (): Promise<void> {
