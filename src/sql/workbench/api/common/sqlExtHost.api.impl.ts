@@ -474,8 +474,8 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostQueryEditor.$connect(fileUri, connectionId);
 				},
 
-				runQuery(fileUri: string, options?: Map<string, string>): void {
-					extHostQueryEditor.$runQuery(fileUri);
+				runQuery(fileUri: string, options?: Map<string, string>, runCurrentQuery: boolean = true): void {
+					extHostQueryEditor.$runQuery(fileUri, runCurrentQuery);
 				},
 
 				registerQueryEventListener(listener: azdata.queryeditor.QueryEventListener): void {
