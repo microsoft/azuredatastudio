@@ -10,8 +10,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, DeployOperationPath, Operation } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
+import { DacFxSummaryPage } from './dacFxSummaryPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -135,8 +136,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = this.databaseTextBox.value;
 			this.instance.setDoneButton(Operation.deploy);
 
-			// remove deploy plan page
+			// remove deploy plan page and readd summary page so that it has the correct page number
+			this.instance.wizard.removePage(DeployOperationPath.summary);
 			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
+			let summaryPage = this.instance.pages.get('summary');
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
 		});
 
 		//Initialize with upgrade existing true
