@@ -512,12 +512,12 @@
       ],
       "providers": [
         {
-          "executable": "https://go.microsoft.com/fwlink/?linkid=853016",
+          "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=85dad3016",
           "requiredTools": [],
           "when": "version=sql2017"
         },
         {
-          "url": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-ctp",
+          "webPageUrl": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-ctp",
           "requiredTools": [],
           "when": "version=sql2019"
         }

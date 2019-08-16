@@ -5,15 +5,14 @@
 'use strict';
 
 import vscode = require('vscode');
-import { ResourceTypePickerDialog } from './ui/resourceDeploymentDialog';
+import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
 import { ToolsService } from './services/toolsService';
 import { NotebookService } from './services/notebookService';
 import { ResourceTypeService } from './services/resourceTypeService';
 import { PlatformService } from './services/platformService';
 import * as nls from 'vscode-nls';
-import { DownloadService } from './services/downloadService';
 import { DialogInfo } from './interfaces';
-import { NotebookInputDialog } from './ui/deploymentDialog';
+import { NotebookInputDialog } from './ui/notebookInputDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -21,9 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const platformService = new PlatformService();
 	const toolsService = new ToolsService();
 	const notebookService = new NotebookService(platformService, context.extensionPath);
-	const resourceTypeService = new ResourceTypeService(platformService, toolsService);
-	const downloadService = new DownloadService();
-
+	const resourceTypeService = new ResourceTypeService(platformService, toolsService, notebookService);
 	const resourceTypes = resourceTypeService.getResourceTypes();
 	const validationFailures = resourceTypeService.validateResourceTypes(resourceTypes);
 	if (validationFailures.length !== 0) {
@@ -37,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (filtered.length !== 1) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));
 		} else {
-			const dialog = new ResourceTypePickerDialog(context, notebookService, toolsService, resourceTypeService, downloadService, filtered[0]);
+			const dialog = new ResourceTypePickerDialog(context, toolsService, resourceTypeService, filtered[0]);
 			dialog.open();
 		}
 	};
