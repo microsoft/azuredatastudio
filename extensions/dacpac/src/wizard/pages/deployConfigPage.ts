@@ -28,7 +28,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
-		this.fileExtension = '.bacpac';
+		this.fileExtension = '.dacpac';
 	}
 
 	async start(): Promise<boolean> {
