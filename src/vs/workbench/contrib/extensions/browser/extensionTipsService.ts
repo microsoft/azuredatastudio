@@ -47,7 +47,7 @@ import { timeout } from 'vs/base/common/async';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; // {{SQL CARBON EDIT}}
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
-import { Platform, setImmediate } from 'vs/base/common/platform';
+import { setImmediate, isWeb } from 'vs/base/common/platform';
 import { platform, env as processEnv } from 'vs/base/common/process';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
@@ -996,7 +996,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * If user has any of the tools listed in this.productService.exeBasedExtensionTips, fetch corresponding recommendations
 	 */
 	private async fetchExecutableRecommendations(important: boolean): Promise<void> {
-		if (Platform.Web) {
+		if (isWeb) {
 			return;
 		}
 
