@@ -365,7 +365,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				let regex = /:|-/gi;
 				let readableDataTimeStirng = history.runDate.replace(regex, '').replace(' ', '');
 				let tempNotebookFileName = this._agentViewComponent.agentNotebookInfo.name + '_' + readableDataTimeStirng;
-				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterializedJson);
+				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
 			}
 		});
 	}
