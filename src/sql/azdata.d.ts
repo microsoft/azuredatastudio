@@ -1612,7 +1612,7 @@ declare module 'azdata' {
 	}
 
 	export interface AgentNotebookMaterializedResult extends ResultStatus {
-		notebookMaterializedJson: string;
+		notebookMaterialized: string;
 	}
 
 	export interface CreateAgentNotebookResult extends ResultStatus {

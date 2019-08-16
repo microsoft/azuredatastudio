@@ -99,9 +99,11 @@ export class MainController {
 		});
 		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string) => {
 			const tempfilePath = path.join(os.tmpdir(), filename + '.ipynb');
-			if (!fs.existsSync(tempfilePath)) {
-				fs.writeFileSync(tempfilePath, jsonNotebook);
+			if (fs.existsSync(tempfilePath)) {
+				fs.unlinkSync(tempfilePath);
+
 			}
+			fs.writeFileSync(tempfilePath, jsonNotebook);
 			let uri = vscode.Uri.file(tempfilePath);
 			await azdata.nb.showNotebookDocument(uri);
 		});

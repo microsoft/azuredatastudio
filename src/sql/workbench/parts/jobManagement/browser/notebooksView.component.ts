@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject, NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, DeleteJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo } from 'sql/platform/jobManagement/browser/jobActions';
+import { EditJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -544,11 +544,11 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td>${runChart[0] ? runChart[0] : '<div></div>'}</td>
-					<td>${runChart[1] ? runChart[1] : '<div></div>'}</td>
-					<td>${runChart[2] ? runChart[2] : '<div></div>'}</td>
-					<td>${runChart[3] ? runChart[3] : '<div></div>'}</td>
-					<td>${runChart[4] ? runChart[4] : '<div></div>'}</td>
+				<td>${runChart[0] ? runChart[0] : '<div class="bar0"></div>'}</td>
+				<td>${runChart[1] ? runChart[1] : '<div class="bar1"></div>'}</td>
+				<td>${runChart[2] ? runChart[2] : '<div class="bar2"></div>'}</td>
+				<td>${runChart[3] ? runChart[3] : '<div class="bar3"></div>'}</td>
+				<td>${runChart[4] ? runChart[4] : '<div class="bar4"></div>'}</td>
 				</tr>
 			</table>`;
 		} else {
@@ -682,9 +682,6 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					currentTarget.title = jobHistories[i].runDuration;
 				});
 				runCharts.push(runGraph.get(0).outerHTML);
-			}
-			else {
-				runCharts.push('<div class="bar' + i + '" style="height:' + chartHeights[i] + '; background: ' + bgColor + ';"></div>');
 			}
 		}
 		if (runCharts.length > 0) {
@@ -895,7 +892,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			runJobAction,
 			editNotebookAction,
 			editAction,
-			this._instantiationService.createInstance(DeleteJobAction)
+			this._instantiationService.createInstance(DeleteNotebookAction)
 		];
 	}
 

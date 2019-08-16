@@ -691,14 +691,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 * Deletes a job
 	 */
 	$deleteJob(handle: number, ownerUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> {
-		throw this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
 	}
 
 	/**
 	 * Deletes a job step
 	 */
 	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
-		throw this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
 	}
 
 	/**

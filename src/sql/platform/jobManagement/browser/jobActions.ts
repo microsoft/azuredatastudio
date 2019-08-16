@@ -213,6 +213,7 @@ export class DeleteJobAction extends Action {
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
 					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
+						console.log(result);
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
