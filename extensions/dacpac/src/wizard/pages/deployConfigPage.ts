@@ -124,9 +124,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
-			// add deploy plan page
+			// add deploy plan page and remove and re-add summary page so that it has the correct page number
+			this.instance.wizard.removePage(DeployNewOperationPath.summary);
 			let deployPlanPage = this.instance.pages.get('deployPlan');
+			let summaryPage = this.instance.pages.get('summary');
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
 		});
 
 		newRadioButton.onDidClick(() => {
