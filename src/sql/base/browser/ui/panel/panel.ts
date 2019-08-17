@@ -51,7 +51,6 @@ interface IInternalPanelTab {
 	label: HTMLElement;
 	body?: HTMLElement;
 	destroyTabBody?: boolean;
-	firstElement?: HTMLElement;
 }
 
 const defaultOptions: IPanelOptions = {
@@ -74,6 +73,7 @@ export class TabbedPanel extends Disposable {
 	private _headerVisible: boolean;
 	private _styleElement: HTMLStyleElement;
 	private n: number = 0;
+	private disposables: IDisposable[] = [];
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
@@ -87,9 +87,9 @@ export class TabbedPanel extends Disposable {
 		this._styleElement = DOM.createStyleSheet(this.parent);
 		container.appendChild(this.parent);
 		this.header = DOM.$('.composite.title');
+		this.header.setAttribute('tabindex', '0');
 		this.tabList = DOM.$('.tabList');
 		this.tabList.setAttribute('role', 'tablist');
-		this.tabList.setAttribute('tabindex', '0');
 		this.tabList.style.height = this.headersize + 'px';
 		this.header.appendChild(this.tabList);
 		let actionbarcontainer = DOM.$('.title-actions');
@@ -104,6 +104,7 @@ export class TabbedPanel extends Disposable {
 		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
 		this.parent.appendChild(this.body);
+		this.disposables.push(DOM.addDisposableListener(this.header, DOM.EventType.FOCUS, e => this.focusCurrentTab()));
 	}
 
 	public dispose() {
@@ -112,6 +113,7 @@ export class TabbedPanel extends Disposable {
 		this.body.remove();
 		this.parent.remove();
 		this._styleElement.remove();
+		this.disposables.forEach(x => x.dispose());
 	}
 
 	public contains(tab: IPanelTab): boolean {
@@ -145,7 +147,7 @@ export class TabbedPanel extends Disposable {
 
 	private _createTab(tab: IInternalPanelTab, index?: number): void {
 		let tabHeaderElement = DOM.$('.tab-header');
-		tabHeaderElement.setAttribute('tabindex', '0');
+		tabHeaderElement.setAttribute('tabindex', '-1');
 		tabHeaderElement.setAttribute('role', 'tab');
 		tabHeaderElement.setAttribute('aria-selected', 'false');
 		tabHeaderElement.setAttribute('aria-controls', tab.tab.identifier);
@@ -184,14 +186,14 @@ export class TabbedPanel extends Disposable {
 				if (this._shownTabId) {
 					const shownTab = this._tabMap.get(this._shownTabId);
 					if (shownTab) {
-						this.setFocusToFirstElemnt(shownTab);
+						shownTab.tab.view.focus();
 					}
 				}
 			}
 		}));
 
 		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
-		if (insertBefore) {
+		if (insertBefore && index) {
 			this._tabOrder.copyWithin(index + 1, index);
 			this._tabOrder[index] = tab.tab.identifier;
 			this.tabList.insertBefore(tabHeaderElement, insertBefore);
@@ -247,22 +249,6 @@ export class TabbedPanel extends Disposable {
 		if (tab.tab.view.onShow) {
 			tab.tab.view.onShow();
 		}
-		if (tab.firstElement === null || tab.firstElement === undefined) {
-			tab.firstElement = this.getFirstFocusableElement(tab.body);
-			tab.disposables.push(DOM.addDisposableListener(tab.firstElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-				let event = new StandardKeyboardEvent(e);
-				if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
-					e.preventDefault();
-					if (this._shownTabId) {
-						const shownTab = this._tabMap.get(this._shownTabId);
-						if (shownTab) {
-							shownTab.header.focus();
-						}
-					}
-				}
-			}));
-		}
-
 		if (this._currentDimensions) {
 			this._layoutCurrentTab(new DOM.Dimension(this._currentDimensions.width, this._currentDimensions.height - this.headersize));
 		}
@@ -318,16 +304,13 @@ export class TabbedPanel extends Disposable {
 		}
 	}
 
-	private setFocusToFirstElemnt(tab: IInternalPanelTab) {
-		let firstFocasableElement = tab.firstElement ? tab.firstElement : this.getFirstFocusableElement(tab.body);
-		if (firstFocasableElement) {
-			(<HTMLElement>firstFocasableElement).focus();
+	private focusCurrentTab(): void {
+		if (this._shownTabId) {
+			const tab = this._tabMap.get(this._shownTabId);
+			if (tab) {
+				tab.header.focus();
+			}
 		}
-	}
-
-	private getFirstFocusableElement(body: HTMLElement): HTMLElement {
-		let firstFocasableElement = body.querySelector('a[href], area[href], input:not([disabled]), dropdown:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
-		return <HTMLElement>firstFocasableElement;
 	}
 
 	public style(styles: ITabbedPanelStyles): void {
