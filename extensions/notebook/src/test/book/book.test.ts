@@ -24,6 +24,17 @@ export interface ExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
+export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem) : void {
+	should(book.title).equal(expectedBook.title);
+	should(book.uri).equal(expectedBook.url);
+	if (expectedBook.previousUri || expectedBook.nextUri) {
+		let prevUri = book.previousUri ? book.previousUri.toLocaleLowerCase() : undefined;
+		should(prevUri).equal(expectedBook.previousUri);
+		let nextUri = book.nextUri ? book.nextUri.toLocaleLowerCase() : undefined;
+		should(nextUri).equal(expectedBook.nextUri);
+	}
+}
+
 describe('BookTreeViewProvider.getChildren', function (): void {
 	let rootFolderPath: string;
 	let expectedNotebook1: ExpectedBookItem;
@@ -43,7 +54,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		for (let i = 0; i < 8; i++) {
 			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
 		}
-		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		rootFolderPath = path.join(os.tmpdir(), 'BookTestData_' + testFolder);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
@@ -56,18 +67,18 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			title: 'Notebook1',
 			url: '/notebook1',
 			previousUri: undefined,
-			nextUri: notebook2File
+			nextUri: notebook2File.toLocaleLowerCase()
 		};
 		expectedNotebook2 = {
 			title: 'Notebook2',
 			url: '/notebook2',
-			previousUri: notebook1File,
-			nextUri: notebook3File
+			previousUri: notebook1File.toLocaleLowerCase(),
+			nextUri: notebook3File.toLocaleLowerCase()
 		};
 		expectedNotebook3 = {
 			title: 'Notebook3',
 			url: '/notebook3',
-			previousUri: notebook2File,
+			previousUri: notebook2File.toLocaleLowerCase(),
 			nextUri: undefined
 		};
 		expectedMarkdown = {
@@ -98,14 +109,14 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			name: '',
 			index: 0
 		};
-		bookTreeViewProvider = await new BookTreeViewProvider([folder], mockExtensionContext.object);
+		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
-		const children = await bookTreeViewProvider.getChildren(undefined);
+		const children = await bookTreeViewProvider.getChildren();
 		should(children).be.Array();
 		should(children.length).equal(1);
 		book = children[0];
@@ -119,14 +130,9 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		notebook1 = children[0];
 		const markdown = children[1];
 		const externalLink = children[2];
-		should(notebook1.title).equal(expectedNotebook1.title);
-		should(notebook1.uri).equal(expectedNotebook1.url);
-		should(notebook1.previousUri).equal(expectedNotebook1.previousUri);
-		should(notebook1.nextUri).equal(expectedNotebook1.nextUri);
-		should(markdown.title).equal(expectedMarkdown.title);
-		should(markdown.uri).equal(expectedMarkdown.url);
-		should(externalLink.title).equal(expectedExternalLink.title);
-		should(externalLink.uri).equal(expectedExternalLink.url);
+		equalBookItems(notebook1, expectedNotebook1);
+		equalBookItems(markdown, expectedMarkdown);
+		equalBookItems(externalLink, expectedExternalLink);
 	});
 
 	it('should return all sections when element is a notebook', async function (): Promise<void> {
@@ -135,14 +141,8 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		should(children.length).equal(2);
 		const notebook2 = children[0];
 		const notebook3 = children[1];
-		should(notebook2.title).equal(expectedNotebook2.title);
-		should(notebook2.uri).equal(expectedNotebook2.url);
-		should(notebook2.previousUri).equal(expectedNotebook2.previousUri);
-		should(notebook2.nextUri).equal(expectedNotebook2.nextUri);
-		should(notebook3.title).equal(expectedNotebook3.title);
-		should(notebook3.uri).equal(expectedNotebook3.url);
-		should(notebook3.previousUri).equal(expectedNotebook3.previousUri);
-		should(notebook3.nextUri).equal(expectedNotebook3.nextUri);
+		equalBookItems(notebook2, expectedNotebook2);
+		equalBookItems(notebook3, expectedNotebook3);
 	});
 
 	this.afterAll(async function () {
@@ -186,7 +186,9 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 
 	it('should ignore toc.yml files not in _data folder', function(): void {
 		bookTreeViewProvider.getTableOfContentFiles([folder]);
-		should(bookTreeViewProvider.tableOfContentPaths).equal([tableOfContentsFile]);
+		for (let p of bookTreeViewProvider.tableOfContentPaths) {
+			should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
+		}
 	});
 
 	this.afterAll(async function () {
