@@ -213,7 +213,7 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 		let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
 		await fs.mkdir(rootFolderPath);
 		await fs.mkdir(dataFolderPath);
-		await fs.writeFile(tableOfContentsFile, '');
+		await fs.writeFile(tableOfContentsFile, 'title: Test');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		folder = {
 			uri: vscode.Uri.file(rootFolderPath),
@@ -229,13 +229,17 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 	it('should show error message if config.yml file not found', function(): void {
 		let configFile = path.join(rootFolderPath, '_config.yml');
 		bookTreeViewProvider.getBooks();
-		should(bookTreeViewProvider.errorMessage).equal('ENOENT: no such file or directory, open \'' + configFile + '\'');
+		should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 	});
 	it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
 		let configFile = path.join(rootFolderPath, '_config.yml');
 		await fs.writeFile(configFile, 'title: Test Book');
+		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 		bookTreeViewProvider.getBooks();
-		should(bookTreeViewProvider.errorMessage).equal('');
+		should(bookTreeViewProvider.errorMessage).equal('Error: toc.yml file format is incorrect');
 	});
 
 	this.afterAll(async function () {

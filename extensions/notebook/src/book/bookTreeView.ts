@@ -126,7 +126,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	private flattenArray(array: any[]): any[] {
-		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections)) : acc.concat(val), []);
+		try {
+			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections)) : acc.concat(val), []);
+		} catch (e) {
+			throw localize('Invalid toc.yml', 'Error: toc.yml file format is incorrect');
+		}
 	}
 
 	public getBooks(): BookTreeItem[] {
