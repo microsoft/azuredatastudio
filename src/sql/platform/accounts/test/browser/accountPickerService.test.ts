@@ -13,6 +13,7 @@ import { AccountPickerService } from 'sql/platform/accounts/browser/accountPicke
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';
 import { InstantiationService } from 'vs/platform/instantiation/common/instantiationService';
+import { TestThemeService } from 'vs/platform/theme/test/common/testThemeService';
 
 // SUITE STATE /////////////////////////////////////////////////////////////
 let mockAddAccountCompleteEmitter: Emitter<void>;
@@ -98,7 +99,8 @@ function createInstantiationService(): InstantiationService {
 		.returns(() => mockAccountViewModel.object);
 
 	// Create a mock account picker
-	let accountPicker = new AccountPicker(null, null, instantiationService.object, null);
+
+	let accountPicker = new AccountPicker('provider', new TestThemeService(), instantiationService.object, undefined!);
 	let mockAccountDialog = TypeMoq.Mock.ofInstance(accountPicker);
 
 	mockAccountDialog.setup(x => x.addAccountCompleteEvent)

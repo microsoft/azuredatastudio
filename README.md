@@ -9,13 +9,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2098449
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2098450
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2098500
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2098501
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2098197
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2098280
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2098279
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2100710
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2100711
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2100712
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2100809
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2100714
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2100810
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2100672
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 

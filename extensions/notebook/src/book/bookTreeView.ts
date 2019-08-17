@@ -47,8 +47,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			maxDepth = undefined;
 		}
 		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
-		for (let path of workspacePaths) {
-			let tableOfContentPaths = await glob([path + '/**/_data/toc.yml'], { deep: maxDepth });
+		for (let workspacePath of workspacePaths) {
+			let p = path.join(workspacePath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+			let tableOfContentPaths = await glob(p, { deep: maxDepth });
 			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
 		}
 		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
