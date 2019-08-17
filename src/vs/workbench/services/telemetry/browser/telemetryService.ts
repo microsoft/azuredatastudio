@@ -51,7 +51,7 @@ export class WebTelemetryAppender implements ITelemetryAppender {
 		});
 	}
 
-	flush(): Promise<any> | undefined {
+	flush(): Promise<void> {
 		if (this._aiClient) {
 			return new Promise(resolve => {
 				this._aiClient!.flush();
@@ -60,7 +60,7 @@ export class WebTelemetryAppender implements ITelemetryAppender {
 			});
 		}
 
-		return undefined;
+		return Promise.resolve();
 	}
 }
 
