@@ -157,8 +157,9 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 		};
 	}
 
-	if (options.actionHandler) {
-		options.actionHandler.disposeables.add(DOM.addStandardDisposableListener(element, 'click', event => {
+	const actionHandler = options.actionHandler;
+	if (actionHandler) {
+		actionHandler.disposeables.add(DOM.addStandardDisposableListener(element, 'click', event => {
 			let target: HTMLElement | null = event.target;
 			if (target.tagName !== 'A') {
 				target = target.parentElement;
@@ -169,7 +170,7 @@ export function renderMarkdown(markdown: IMarkdownString, options: MarkdownRende
 			try {
 				const href = target.dataset['href'];
 				if (href) {
-					options.actionHandler!.callback(href, event);
+					actionHandler.callback(href, event);
 				}
 			} catch (err) {
 				onUnexpectedError(err);
