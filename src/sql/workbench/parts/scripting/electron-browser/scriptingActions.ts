@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -23,6 +22,7 @@ import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import Severity from 'vs/base/common/severity';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
+import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 
 //#region -- Data Explorer
 export const SCRIPT_AS_CREATE_COMMAND_ID = 'dataExplorer.scriptAsCreate';

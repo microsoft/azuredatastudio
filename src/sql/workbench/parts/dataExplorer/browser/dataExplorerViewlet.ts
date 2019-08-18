@@ -18,14 +18,17 @@ import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAddedViewDescriptorRef } from 'vs/workbench/browser/parts/views/views';
 import { ViewletPanel } from 'vs/workbench/browser/parts/views/panelViewlet';
-import { VIEWLET_ID, VIEW_CONTAINER } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
-import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
+import { Extensions as ViewContainerExtensions, IViewDescriptor, IViewsRegistry, IViewContainersRegistry } from 'vs/workbench/common/views';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+
+export const VIEWLET_ID = 'workbench.view.connections';
+
+export const VIEW_CONTAINER = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -41,7 +44,7 @@ export class DataExplorerViewletViewsContribution implements IWorkbenchContribut
 
 	private createObjectExplorerViewDescriptor(): IViewDescriptor {
 		return {
-			id: 'dataExplorer.servers',
+			id: ConnectionViewletPanel.ID,
 			name: localize('dataExplorer.servers', "Servers"),
 			ctorDescriptor: { ctor: ConnectionViewletPanel },
 			weight: 100,

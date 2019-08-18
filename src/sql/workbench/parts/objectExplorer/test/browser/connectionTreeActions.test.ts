@@ -105,7 +105,7 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(OEManageConnectionAction.ID,
-			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object);
+			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, undefined);
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
@@ -143,7 +143,7 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(OEManageConnectionAction.ID,
-			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object);
+			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, undefined);
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();

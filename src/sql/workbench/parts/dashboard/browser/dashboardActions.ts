@@ -18,6 +18,8 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IViewsService } from 'vs/workbench/common/views';
+import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
 
 export const DE_MANAGE_COMMAND_ID = 'dataExplorer.manage';
 
@@ -65,7 +67,8 @@ export class OEManageConnectionAction extends Action {
 		@IConnectionManagementService protected readonly _connectionManagementService: IConnectionManagementService,
 		@ICapabilitiesService protected readonly _capabilitiesService: ICapabilitiesService,
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
-		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
+		@IViewsService private readonly _viewsService: IViewsService
 	) {
 		super(id, label);
 	}
@@ -119,7 +122,8 @@ export class OEManageConnectionAction extends Action {
 		if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 			return this._connectionManagementService.showDashboard(connectionProfile);
 		} else {
-			return TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, this._connectionManagementService, this._objectExplorerService, actionContext.tree);
+			const view = await this._viewsService.openView(ConnectionViewletPanel.ID) as ConnectionViewletPanel;
+			return TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, this._connectionManagementService, this._objectExplorerService, view.serversTree);
 		}
 	}
 
