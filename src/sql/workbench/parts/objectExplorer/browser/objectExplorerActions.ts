@@ -21,7 +21,6 @@ export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContex
 	public connectionProfile: azdata.IConnectionProfile;
 	public nodeInfo: azdata.NodeInfo;
 	public isConnectionNode: boolean = false;
-	public tree: ITree;
 }
 
 export async function getTreeNode(context: ObjectExplorerActionsContext, objectExplorerService: IObjectExplorerService): Promise<TreeNode> {

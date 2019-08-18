@@ -16,9 +16,7 @@ import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customView
 import { coalesce } from 'vs/base/common/arrays';
 
 import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
-
-export const VIEWLET_ID = 'workbench.view.connections';
-export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
+import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
