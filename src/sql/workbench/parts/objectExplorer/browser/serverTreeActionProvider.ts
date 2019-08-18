@@ -14,7 +14,7 @@ import {
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import {
-	ManageConnectionAction, OEAction
+	OEAction
 } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
@@ -111,7 +111,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getBuiltinConnectionActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
 		this.addNewQueryNotebookActions(context, actions);
 
 		if (this._connectionManagementService.isProfileConnected(context.profile)) {
@@ -168,7 +167,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				isAvailableDatabaseNode = true;
-				actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
 				this.addNewQueryNotebookActions(context, actions);
 			} else {
 				return actions;

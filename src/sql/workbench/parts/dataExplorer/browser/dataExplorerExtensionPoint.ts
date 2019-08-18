@@ -9,12 +9,11 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ITreeViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
 import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 
@@ -67,7 +66,7 @@ const dataExplorerContribution: IJSONSchema = {
 
 const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', jsonSchema: dataExplorerContribution });
 
-class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
+export class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 	private viewContainersRegistry: IViewContainersRegistry;
 
@@ -154,5 +153,3 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 	}
 }
 
-const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
-workbenchRegistry.registerWorkbenchContribution(DataExplorerContainerExtensionHandler, LifecyclePhase.Starting);

@@ -41,18 +41,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.IsDatabaseOrServer)
 });
 
-// Manage
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 1,
-	command: {
-		id: MANAGE_COMMAND_ID,
-		title: localize('manage', "Manage")
-	},
-	when: MssqlNodeContext.IsDatabaseOrServer
-});
-
-
 // Refresh
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: 'connection',

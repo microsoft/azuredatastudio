@@ -271,8 +271,6 @@ import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
-import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/common/nodeActions.common.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';

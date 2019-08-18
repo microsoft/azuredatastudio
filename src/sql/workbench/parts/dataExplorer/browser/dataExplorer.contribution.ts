@@ -8,7 +8,7 @@ import 'vs/css!./media/dataExplorer.contribution';
 import { localize } from 'vs/nls';
 import { ViewletRegistry, Extensions as ViewletExtensions, ViewletDescriptor, ShowViewletAction } from 'vs/workbench/browser/viewlet';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
+import { VIEWLET_ID, DataExplorerContainerExtensionHandler } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import { DataExplorerViewlet, DataExplorerViewletViewsContribution } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 import { IWorkbenchActionRegistry, Extensions as ActionExtensions } from 'vs/workbench/common/actions';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
@@ -89,3 +89,5 @@ configurationRegistry.registerConfiguration({
 		}
 	}
 });
+
+workbenchRegistry.registerWorkbenchContribution(DataExplorerContainerExtensionHandler, LifecyclePhase.Starting);
