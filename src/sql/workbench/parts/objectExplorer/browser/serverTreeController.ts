@@ -77,11 +77,13 @@ export class ServerTreeController extends treedefaults.DefaultController {
 			context.connectionProfile = element.getConnectionProfile().toIConnectionProfile();
 			context.connectionProfile.databaseName = element.getDatabaseName();
 			actionContext = context;
+			context.tree = tree;
 		} else if (element instanceof ConnectionProfile) {
 			let context = new ObjectExplorerActionsContext();
 			context.connectionProfile = element.toIConnectionProfile();
 			context.isConnectionNode = true;
 			actionContext = context;
+			context.tree = tree;
 		} else {
 			// TODO: because the connection group is used as a context object and isn't serializable,
 			// the Group-level context menu is not currently extensible

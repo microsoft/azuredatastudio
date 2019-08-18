@@ -308,16 +308,15 @@ import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/type
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/countInsight.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/imageInsight.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/tableInsight.contribution';
-import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
-/* Tasks */
-import 'sql/workbench/common/actions.contribution';
 /* Widgets */
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.common.contribution';
 import 'sql/workbench/parts/dashboard/electron-browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/dashboardConfig.contribution';
+import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
+/* Tasks */
+import 'sql/workbench/common/actions.contribution';
 /* Model-based Views */
 import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */

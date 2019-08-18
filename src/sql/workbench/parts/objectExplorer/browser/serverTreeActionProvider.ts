@@ -25,10 +25,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
@@ -42,8 +40,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IScriptingService private _scriptingService: IScriptingService,
-		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private _contextKeyService: IContextKeyService
 	) {
