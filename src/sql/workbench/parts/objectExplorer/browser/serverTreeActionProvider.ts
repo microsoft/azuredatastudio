@@ -23,7 +23,7 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
-import { NewQueryAction, BackupAction, RestoreAction } from 'sql/workbench/common/actions';
+import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
@@ -193,7 +193,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private addNewQueryNotebookActions(context: ObjectExplorerContext, actions: IAction[]): void {
 		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			actions.push(this._instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
 			// Workaround for #6397 right-click and run New Notebook connects to wrong server. Use notebook action instead of generic command action
 			let notebookAction = this._instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL);
 			actions.push(notebookAction);

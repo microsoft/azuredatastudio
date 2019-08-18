@@ -274,10 +274,12 @@ import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/common/nodeActions.common.contribution';
-import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
+
+// Scripting
+import 'sql/workbench/parts/scripting/electron-browser/scripting.contribution';
 
 // query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
@@ -295,7 +297,6 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
-import 'sql/workbench/parts/objectExplorer/electron-browser/objectExplorerScripting.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard
