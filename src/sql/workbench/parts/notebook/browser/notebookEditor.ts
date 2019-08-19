@@ -199,6 +199,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
 				this._finder.getDomNode().style.visibility = 'visible';
+				this._finder.focusFindInput();
 				this._updateFinderMatchState();
 			} else {
 				this._finder.getDomNode().style.visibility = 'hidden';
