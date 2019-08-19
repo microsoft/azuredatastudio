@@ -19,7 +19,6 @@ export const REFRESH_COMMAND_ID = 'dataExplorer.refresh';
 export const NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
 export const DATA_TIER_WIZARD_COMMAND_ID = 'dataExplorer.dataTierWizard';
 export const PROFILER_COMMAND_ID = 'dataExplorer.profiler';
-export const IMPORT_COMMAND_ID = 'dataExplorer.flatFileImport';
 export const SCHEMA_COMPARE_COMMAND_ID = 'dataExplorer.schemaCompare';
 export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
 export const PROPERTIES_COMMAND_ID = 'dataExplorer.properties';
@@ -66,17 +65,6 @@ CommandsRegistry.registerCommand({
 		const commandService = accessor.get(ICommandService);
 		const connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
 		return commandService.executeCommand('dacFx.start', connectedContext);
-	}
-});
-
-
-// Flat File Import
-CommandsRegistry.registerCommand({
-	id: IMPORT_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
-		return commandService.executeCommand('flatFileImport.start', connectedContext);
 	}
 });
 

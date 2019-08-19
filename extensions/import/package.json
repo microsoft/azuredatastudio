@@ -49,7 +49,14 @@
 					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
 					"group": "import"
 				}
-			]
+      ],
+      "dataExplorer/context": [
+				{
+					"command": "flatFileImport.start",
+					"when": "connectionProvider == MSSQL && nodeType && nodeType == Database",
+					"group": "import"
+				}
+      ]
 		}
 	},
 	"dependencies": {

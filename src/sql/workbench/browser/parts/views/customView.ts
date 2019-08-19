@@ -12,7 +12,7 @@ import { IContextMenuService } from 'vs/platform/contextview/browser/contextView
 import { IMenuService, MenuId, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ContextAwareMenuEntryActionViewItem, createAndFillInActionBarActions, createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
-import { TreeItemCollapsibleState, ITreeViewDataProvider, TreeViewItemHandleArg, ITreeViewDescriptor, IViewsRegistry, ViewContainer, ITreeItemLabel, Extensions } from 'vs/workbench/common/views';
+import { TreeItemCollapsibleState, ITreeViewDataProvider, ITreeViewDescriptor, IViewsRegistry, ViewContainer, ITreeItemLabel, Extensions } from 'vs/workbench/common/views';
 import { IViewletViewOptions } from 'vs/workbench/browser/parts/views/viewsViewlet';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -45,7 +45,7 @@ import { ITreeRenderer, ITreeNode, IAsyncDataSource, ITreeContextMenuEvent } fro
 import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 
-import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
+import { ITreeItem, ITreeView, TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 
@@ -902,6 +902,16 @@ class MultipleSelectionActionRunner extends ActionRunner {
 	}
 }
 
+class ExtensionContributionAction extends Action {
+	constructor(id: string, label: string, private action: IAction) {
+		super(id, label);
+	}
+
+	public run(args: TreeViewItemHandleArg): Promise<boolean> {
+		return this.action.run({ connectionProfile: args.$treeItem.payload });
+	}
+}
+
 class TreeMenus extends Disposable implements IDisposable {
 
 	constructor(
@@ -916,14 +926,14 @@ class TreeMenus extends Disposable implements IDisposable {
 	getResourceActions(element: ITreeItem): IAction[] {
 		return this.mergeActions([
 			this.getActions(MenuId.ViewItemContext, { key: 'viewItem', value: element.contextValue }).primary,
-			this.getActions(MenuId.DataExplorerContext, { key: 'viewItem', value: element.contextValue }).primary
+			this.getActions(MenuId.DataExplorerContext, { key: 'viewItem', value: element.contextValue }).primary.map(a => new ExtensionContributionAction(a.id, a.label, a))
 		]);
 	}
 
 	getResourceContextActions(element: ITreeItem): IAction[] {
 		return this.mergeActions([
 			this.getActions(MenuId.ViewItemContext, { key: 'viewItem', value: element.contextValue }).secondary,
-			this.getActions(MenuId.DataExplorerContext, { key: 'viewItem', value: element.contextValue }).secondary
+			this.getActions(MenuId.DataExplorerContext, { key: 'viewItem', value: element.contextValue }).secondary.map(a => new ExtensionContributionAction(a.id, a.label, a))
 		]);
 	}
 

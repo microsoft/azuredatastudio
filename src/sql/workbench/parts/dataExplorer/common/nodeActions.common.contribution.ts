@@ -9,7 +9,7 @@ import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
 	DISCONNECT_COMMAND_ID, REFRESH_COMMAND_ID,
 	SCHEMA_COMPARE_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
-	IMPORT_COMMAND_ID, PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
+	PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
 } from './nodeCommands.common';
 import { ContextKeyExpr, ContextKeyRegexExpr, ContextKeyNotEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
@@ -87,18 +87,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server))
-});
-
-// Flat File Import
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'import',
-	order: 10,
-	command: {
-		id: IMPORT_COMMAND_ID,
-		title: localize('flatFileImport', "Import Wizard")
-	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
 });
 
 // Schema Compare
