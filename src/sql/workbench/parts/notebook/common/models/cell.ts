@@ -68,6 +68,7 @@ export class CellModel implements ICellModel {
 		} else {
 			this._isTrusted = false;
 		}
+		this._cellGuid = generateUuid();
 		this.createUri();
 	}
 
@@ -169,7 +170,6 @@ export class CellModel implements ICellModel {
 			this._source = newSource;
 			let start = Date.now();
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
-			console.log('it took ' + (Date.now() - start) + ' ms to send the chaange');
 		}
 		this._modelContentChangedEvent = undefined;
 	}
@@ -550,7 +550,7 @@ export class CellModel implements ICellModel {
 			source: this._source,
 			metadata: this._metadata || {}
 		};
-		cellJson.metadata.cellGuid = this._cellGuid;
+		cellJson.metadata.azdata_cell_guid = this._cellGuid;
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language;
 			cellJson.outputs = this._outputs;
@@ -567,7 +567,7 @@ export class CellModel implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
-		this._cellGuid = cell.metadata && cell.metadata.cellGuid ? cell.metadata.cellGuid : generateUuid();
+		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {

@@ -37,7 +37,7 @@ suite('Cell Model', function (): void {
 		cell.setOverrideLanguage('sql');
 		should(cell.language).equal('sql');
 		cell.source = 'abcd';
-		should(cell.source).equal('abcd');
+		should(cell.source).equal(['abcd']);
 	});
 
 	test('Should match ICell values if defined', async function (): Promise<void> {
@@ -421,6 +421,56 @@ suite('Cell Model', function (): void {
 			cell.setFuture(future.object);
 
 			oldFuture.verify(f => f.dispose(), TypeMoq.Times.once());
+		});
+
+		test('should include cellGuid', async () => {
+			let notebookModel = new NotebookModelStub({
+				name: '',
+				version: '',
+				mimetype: ''
+			});
+
+			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
+			should(cell.cellGuid).not.be.undefined();
+			should(cell.cellGuid.length).equal(36);
+			let cellJson = cell.toJSON();
+			should(cellJson.metadata.azdata_cell_guid).not.be.undefined();
+		});
+
+		test('should include azdata_cell_guid in metadata', async () => {
+			let notebookModel = new NotebookModelStub({
+				name: '',
+				version: '',
+				mimetype: ''
+			});
+
+			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
+			let cellJson = cell.toJSON();
+			should(cellJson.metadata.azdata_cell_guid).not.be.undefined();
+		});
+
+		// This is critical for the notebook editor model to parse changes correctly
+		// If this test fails, please ensure that the notebookEditorModel tests still pass
+		test('should stringify in the correct order', async () => {
+			let notebookModel = new NotebookModelStub({
+				name: '',
+				version: '',
+				mimetype: ''
+			});
+
+			let cell = factory.createCell(undefined, { notebook: notebookModel, isTrusted: false });
+			let content = JSON.stringify(cell.toJSON(), undefined, '    ');
+			let contentSplit = content.split('\n');
+			should(contentSplit.length).equal(9);
+			should(contentSplit[0].trim().startsWith('{')).equal(true);
+			should(contentSplit[1].trim().startsWith('"cell_type": "code",')).equal(true);
+			should(contentSplit[2].trim().startsWith('"source": ""')).equal(true);
+			should(contentSplit[3].trim().startsWith('"metadata": {')).equal(true);
+			should(contentSplit[4].trim().startsWith('"azdata_cell_guid": "')).equal(true);
+			should(contentSplit[5].trim().startsWith('}')).equal(true);
+			should(contentSplit[6].trim().startsWith('"outputs": []')).equal(true);
+			should(contentSplit[7].trim().startsWith('"execution_count": 0')).equal(true);
+			should(contentSplit[8].trim().startsWith('}')).equal(true);
 		});
 	});
 

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Range, IRange } from 'vs/editor/common/core/range';
+import { Range } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { FindMatch } from 'vs/editor/common/model';
@@ -76,7 +76,7 @@ export class NotebookTextFileModel {
 				endLineNumber: outputsEnd[0].endLineNumber
 			};
 		} else {
-			// Last 2 lines in multi-line output will look like the following.
+			// Last 2 lines in multi-line output will look like the following:
 			// "                }"
 			// "            ],"
 			if (textEditorModel.textEditorModel.getLineContent(outputsEnd[1].endLineNumber - 1).trim() === '}') {

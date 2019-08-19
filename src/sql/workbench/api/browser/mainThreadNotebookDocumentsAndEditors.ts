@@ -659,7 +659,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						execution_count: cell.executionCount,
 						metadata: {
 							language: cell.language,
-							cellGuid: cell.cellGuid
+							azdata_cell_guid: cell.cellGuid
 						},
 						source: undefined,
 						outputs: [...cell.outputs]
@@ -675,7 +675,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					execution_count: undefined,
 					metadata: {
 						language: cells.language,
-						cellGuid: cells.cellGuid
+						azdata_cell_guid: cells.cellGuid
 					},
 					source: undefined
 				}

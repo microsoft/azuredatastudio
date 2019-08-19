@@ -36,30 +36,33 @@ export class NotebookEditorModel extends EditorModel {
 	private changeEventsHookedUp: boolean = false;
 	private notebookTextFileModel: NotebookTextFileModel = new NotebookTextFileModel();
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
+	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: TextFileEditorModel | UntitledEditorModel,
 		@INotebookService private notebookService: INotebookService,
 		@ITextFileService private textFileService: ITextFileService
 	) {
 		super();
-		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
-			if (notebook.id === this.notebookUri.toString()) {
-				// Hook to content change events
-				notebook.modelReady.then((model) => {
-					if (!this.changeEventsHookedUp) {
-						this.changeEventsHookedUp = true;
-						this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
-						this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
-						this._register(notebook.model.onActiveCellChanged((cell) => {
-							if (cell) {
-								this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
-								this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
-							}
-						}));
-					}
-				}, err => undefined);
-			}
-		}));
+		if (this.notebookService && this.notebookService.onNotebookEditorAdd) {
+			this._register(this.notebookService.onNotebookEditorAdd(notebook => {
+				if (notebook.id === this.notebookUri.toString()) {
+					// Hook to content change events
+					notebook.modelReady.then((model) => {
+						if (!this.changeEventsHookedUp) {
+							this.changeEventsHookedUp = true;
+							this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
+							this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
+							this._register(notebook.model.onActiveCellChanged((cell) => {
+								if (cell) {
+									this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
+									this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
+								}
+							}));
+						}
+					}, err => undefined);
+				}
+			}));
+		}
 
 		if (this.textEditorModel instanceof UntitledEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => this.setDirty(this.textEditorModel.isDirty())));
@@ -77,6 +80,10 @@ export class NotebookEditorModel extends EditorModel {
 	public get contentString(): string {
 		let model = this.textEditorModel.textEditorModel;
 		return model.getValue();
+	}
+
+	public get lastEditFullReplacement(): boolean {
+		return this._lastEditFullReplacement;
 	}
 
 	isDirty(): boolean {
@@ -106,6 +113,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public updateModel(contentChange?: NotebookContentChange, type?: NotebookChangeType): void {
+		this._lastEditFullReplacement = false;
 		if (contentChange && contentChange.changeType === NotebookChangeType.Saved) {
 			// We send the saved events out, so ignore. Otherwise we double-count this as a change
 			// and cause the text to be reapplied
@@ -210,6 +218,7 @@ export class NotebookEditorModel extends EditorModel {
 				console.log('slow edit');
 				let start = Date.now();
 				this.replaceEntireTextEditorModel(notebookModel, type);
+				this._lastEditFullReplacement = true;
 				console.log('slow cell updated in ' + (Date.now() - start) + 'ms');
 				// After we replace all of the text editor model, attempt calculation again for active cell source to prevent
 				// future unnecessary use of the "slow" form of editing
@@ -221,7 +230,7 @@ export class NotebookEditorModel extends EditorModel {
 		}
 	}
 
-	private replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType) {
+	public replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType) {
 		let content = JSON.stringify(notebookModel.toJSON(type), undefined, '    ');
 		let model = this.textEditorModel.textEditorModel;
 		let endLine = model.getLineCount();
@@ -253,6 +262,10 @@ export class NotebookEditorModel extends EditorModel {
 
 	get onDidChangeDirty(): Event<void> {
 		return this._onDidChangeDirty.event;
+	}
+
+	get editorModel() {
+		return this.textEditorModel;
 	}
 }
 
