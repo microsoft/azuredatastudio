@@ -9,14 +9,29 @@ import * as azdata from 'azdata';
 import * as constants from '../constants';
 import * as contracts from '../contracts';
 import { AppContext } from '../appContext';
-import { ConnectParams } from 'dataprotocol-client/lib/protocol';
-import { SqlOpsDataClient } from 'dataprotocol-client';
-import { ListRegisteredServersResult } from '../api/mssqlapis';
+import { ConnectParams, ClientCapabilities } from 'dataprotocol-client/lib/protocol';
+import { SqlOpsDataClient, ISqlOpsFeature } from 'dataprotocol-client';
+import { ListRegisteredServersResult, ICmsService } from '../mssql';
+import * as Utils from '../utils';
 
-export class CmsService {
+export class CmsService implements ICmsService {
+	public static asFeature(context: AppContext): ISqlOpsFeature {
+		return class extends CmsService {
+			constructor(client: SqlOpsDataClient) {
+				super(context, client);
+			}
 
-	constructor(private appContext: AppContext, private client: SqlOpsDataClient) {
-		this.appContext.registerService<CmsService>(constants.CmsService, this);
+			fillClientCapabilities(capabilities: ClientCapabilities): void {
+				Utils.ensure(capabilities, 'cms')!.cms = true;
+			}
+
+			initialize(): void {
+			}
+		};
+	}
+
+	private constructor(context: AppContext, protected readonly client: SqlOpsDataClient) {
+		context.registerService(constants.CmsService, this);
 	}
 
 	createCmsServer(name: string, description: string, connectiondetails: azdata.ConnectionInfo, ownerUri: string): Thenable<ListRegisteredServersResult> {
@@ -97,5 +112,9 @@ export class CmsService {
 				return Promise.reject(new Error(e.message));
 			}
 		);
+	}
+
+	dispose() {
+
 	}
 }
