@@ -99,8 +99,13 @@ export class NotebookTextFileModel {
 		return undefined;
 	}
 
-	public getCellNodeByGuid(guid: string) {
-		return this.sourceMap.get(guid);
+	public getCellNodeByGuid(textEditorModel: TextFileEditorModel | UntitledEditorModel, guid: string) {
+		if (this.sourceMap.get(guid)) {
+			return this.sourceMap.get(guid);
+		} else {
+			this.updateSourceMap(textEditorModel, guid);
+			return this.sourceMap.get(guid);
+		}
 	}
 
 	public getOutputNodeByGuid(guid: string) {

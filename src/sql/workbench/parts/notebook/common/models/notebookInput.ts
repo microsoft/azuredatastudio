@@ -133,7 +133,7 @@ export class NotebookEditorModel extends EditorModel {
 					if (type === NotebookChangeType.CellSourceUpdated) {
 						let start = Date.now();
 						// starting "
-						let node = this.notebookTextFileModel.getCellNodeByGuid(contentChange.cells[0].cellGuid);
+						let node = this.notebookTextFileModel.getCellNodeByGuid(this.textEditorModel, contentChange.cells[0].cellGuid);
 						if (node) {
 							// now, convert the range to leverage offsets in the json
 							if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
@@ -149,7 +149,7 @@ export class NotebookEditorModel extends EditorModel {
 									console.log('fast edit');
 									this.textEditorModel.textEditorModel.applyEdits([{
 										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-										text: change.text.replace('\n', '\\n\",\n'.concat(startSpaces).concat('\"'))
+										text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
 									}]);
 									console.log('cell edited in ' + (Date.now() - start) + 'ms');
 
