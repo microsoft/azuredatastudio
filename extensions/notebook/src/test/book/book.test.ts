@@ -10,9 +10,9 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import * as os from 'os';
+import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
-import { generateUuid } from '../common/uuid';
 
 export interface ExpectedBookItem {
 	title: string;
@@ -49,8 +49,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let notebook1: BookTreeItem;
 
 	this.beforeAll(async () => {
-		let testFolder = generateUuid();
-		rootFolderPath = path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
@@ -155,8 +154,7 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 	let folder: vscode.WorkspaceFolder;
 
 	this.beforeAll(async () => {
-		let testFolder = generateUuid();
-		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
 		let tableOfContentsFileIgnore = path.join(rootFolderPath, 'toc.yml');
@@ -199,8 +197,7 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
 	this.beforeAll(async () => {
-		let testFolder = generateUuid();
-		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		configFile = path.join(rootFolderPath, '_config.yml');
 		let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
@@ -245,8 +242,7 @@ describe('BookTreeViewProvider.getSections', function (): void {
 	let expectedNotebook2: ExpectedBookItem;
 
 	this.beforeAll(async () => {
-		let testFolder = generateUuid();
-		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
