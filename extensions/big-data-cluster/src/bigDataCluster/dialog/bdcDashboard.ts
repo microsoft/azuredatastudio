@@ -123,13 +123,13 @@ export class BdcDashboard {
 	}
 
 	private handleEndpointsUpdate(endpoints: EndpointModel[]): void {
-		if (!this.initialized) {
+		if (!this.initialized || !endpoints) {
 			return;
 		}
 	}
 
 	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
-		if (!this.initialized) {
+		if (!this.initialized || !bdcStatus) {
 			return;
 		}
 
@@ -139,28 +139,27 @@ export class BdcDashboard {
 	/**
 	 * Helper to create the navigation tabs for the services once the status has been loaded
 	 */
-	private createServiceNavTabs(services: ServiceStatusModel[]) {
+	private createServiceNavTabs(services: ServiceStatusModel[]): void {
 		if (this.initialized && !this.serviceTabsCreated && services) {
 			// Add a nav item for each service
 			services.forEach(s => {
-				const navItem = createServiceNavTab(this.modelView.modelBuilder, this.navContainer, getFriendlyServiceName(s.serviceName));
-				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model).create(this.modelView);
+				const navItem = createServiceNavTab(this.modelView.modelBuilder, getFriendlyServiceName(s.serviceName));
+				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
 				navItem.onDidClick(() => {
 					this.mainAreaContainer.removeItem(this.currentPage);
 					this.mainAreaContainer.addItem(serviceStatusPage);
 					this.currentPage = serviceStatusPage;
 				});
+				this.navContainer.addItem(navItem, { flex: '0 0 auto' });
 			});
 			this.serviceTabsCreated = true;
 		}
 	}
 }
 
-function createServiceNavTab(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, serviceName: string): azdata.DivContainer {
+function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceName: string): azdata.DivContainer {
 	const navItem = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).component();
 	navItem.addItem(modelBuilder.text().withProperties({ value: serviceName }).component(), { CSSStyles: { 'user-select': 'text' } });
-
-	container.addItem(navItem, { flex: '0 0 auto' });
 	return navItem;
 }
 
