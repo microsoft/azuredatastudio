@@ -3290,6 +3290,7 @@ declare module 'azdata' {
 		values?: string[] | CategoryValue[];
 		editable?: boolean;
 		fireOnTextChange?: boolean;
+		ariaLabel?: string;
 	}
 
 	export interface DeclarativeTableColumn {

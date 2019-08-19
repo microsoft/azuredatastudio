@@ -111,8 +111,9 @@ export class ExtractConfigPage extends DacFxConfigPage {
 			required: true
 		}).component();
 
-		// default filepath
+		// default version
 		this.versionTextBox.value = '1.0.0.0';
+		this.versionTextBox.ariaLabel = localize('dacfx.versionAriaLabel', "Version");
 		this.model.version = this.versionTextBox.value;
 
 		this.versionTextBox.onTextChanged(async () => {

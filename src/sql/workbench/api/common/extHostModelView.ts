@@ -1191,6 +1191,13 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 		this.setProperty('fireOnTextChange', v);
 	}
 
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
+	}
+
 	public get onValueChanged(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidChange);
 		return emitter && emitter.event;
