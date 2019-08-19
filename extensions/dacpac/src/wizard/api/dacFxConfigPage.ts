@@ -9,7 +9,7 @@ import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import * as path from 'path';
-import { DataTierApplicationWizard } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, Operation } from '../dataTierApplicationWizard';
 import { DacFxDataModel } from './models';
 import { BasePage } from './basePage';
 import { sanitizeStringForFilename, isValidBasename } from './utils';
@@ -128,9 +128,15 @@ export abstract class DacFxConfigPage extends BasePage {
 
 		// only update values and regenerate filepath if this is the first time and database isn't set yet
 		if (this.model.database !== values[0].name) {
-			this.model.database = values[0].name;
-			this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
-			this.fileTextBox.value = this.model.filePath;
+			// db should only get set to the dropdown value if it isn't deploy with create database
+			if (!(this.instance.selectedOperation === Operation.deploy && !this.model.upgradeExisting)) {
+				this.model.database = values[0].name;
+			}
+			// filename shouldn't change for deploy because the file exists and isn't being generated like for extract and export
+			if (this.instance.selectedOperation !== Operation.deploy) {
+				this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
+				this.fileTextBox.value = this.model.filePath;
+			}
 		}
 
 		this.databaseDropdown.updateProperties({

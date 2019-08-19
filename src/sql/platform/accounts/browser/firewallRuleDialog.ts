@@ -278,7 +278,7 @@ export class FirewallRuleDialog extends Modal {
 		}
 	}
 
-	public onAccountSelectionChange(account: azdata.Account): void {
+	public onAccountSelectionChange(account: azdata.Account | undefined): void {
 		this.viewModel.selectedAccount = account;
 		if (account && !account.isStale) {
 			this._createButton.enabled = true;

@@ -25,8 +25,8 @@ export class AccountPickerService implements IAccountPickerService {
 	private _addAccountStartEmitter: Emitter<void>;
 	public get addAccountStartEvent(): Event<void> { return this._addAccountStartEmitter.event; }
 
-	private _onAccountSelectionChangeEvent: Emitter<azdata.Account>;
-	public get onAccountSelectionChangeEvent(): Event<azdata.Account> { return this._onAccountSelectionChangeEvent.event; }
+	private _onAccountSelectionChangeEvent: Emitter<azdata.Account | undefined>;
+	public get onAccountSelectionChangeEvent(): Event<azdata.Account | undefined> { return this._onAccountSelectionChangeEvent.event; }
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService
@@ -41,7 +41,7 @@ export class AccountPickerService implements IAccountPickerService {
 	/**
 	 * Get selected account
 	 */
-	public get selectedAccount(): azdata.Account {
+	public get selectedAccount(): azdata.Account | undefined {
 		return this._accountPicker.viewModel.selectedAccount;
 	}
 

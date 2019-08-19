@@ -26,6 +26,7 @@ import 'vs/workbench/browser/web.main';
 
 
 //#region --- workbench services
+import 'vs/workbench/services/integrity/browser/integrityService';
 import 'vs/workbench/services/textMate/browser/textMateService';
 import 'vs/workbench/services/search/common/searchService';
 import 'vs/workbench/services/output/common/outputChannelModelService';
@@ -35,6 +36,7 @@ import 'vs/workbench/services/extensions/browser/extensionService';
 import 'vs/workbench/services/extensionManagement/common/extensionManagementServerService';
 import 'vs/workbench/services/telemetry/browser/telemetryService';
 import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
+import 'vs/workbench/services/credentials/browser/credentialsService';
 import 'vs/workbench/browser/web.simpleservices';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -54,6 +56,8 @@ import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuS
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { BackupFileService } from 'vs/workbench/services/backup/common/backupFileService';
 import { ExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagementService';
+import { OpenerService } from 'vs/editor/browser/services/openerService';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 registerSingleton(IRequestService, RequestService, true);
 registerSingleton(IExtensionManagementService, ExtensionManagementService);
@@ -63,6 +67,7 @@ registerSingleton(IClipboardService, BrowserClipboardService, true);
 registerSingleton(IAccessibilityService, BrowserAccessibilityService, true);
 registerSingleton(ILifecycleService, BrowserLifecycleService);
 registerSingleton(IContextMenuService, ContextMenuService);
+registerSingleton(IOpenerService, OpenerService, true);
 
 //#endregion
 
