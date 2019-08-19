@@ -33,6 +33,8 @@ import { ConnectedContext } from 'azdata';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ManageActionContext } from 'sql/workbench/common/actions';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -101,6 +103,22 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		title: localize('newQuery', "New Notebook")
 	},
 	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+});
+
+const ExplorerNotebookActionID = 'explorer.notebook';
+CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
+	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerNotebookActionID,
+		title: NewNotebookAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('database'),
+	order: 1
 });
 
 registerAction({

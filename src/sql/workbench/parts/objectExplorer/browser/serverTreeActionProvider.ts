@@ -13,9 +13,6 @@ import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
-import {
-	OEAction
-} from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -23,7 +20,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
-import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
@@ -157,21 +153,11 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
 		let treeNode = context.treeNode;
-		let isAvailableDatabaseNode = false;
 		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
-				isAvailableDatabaseNode = true;
 			} else {
 				return actions;
 			}
-		}
-
-		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
-		let isCloud = serverInfo && serverInfo.isCloud;
-
-		if (isAvailableDatabaseNode && !isCloud) {
-			this.addBackupAction(context, actions);
-			this.addRestoreAction(context, actions);
 		}
 
 		// Contribute refresh action for scriptable objects via contribution
@@ -180,18 +166,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		}
 
 		return actions;
-	}
-
-	private addBackupAction(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			actions.push(this._instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL));
-		}
-	}
-
-	private addRestoreAction(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			actions.push(this._instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL));
-		}
 	}
 
 	private isScriptableObject(context: ObjectExplorerContext): boolean {

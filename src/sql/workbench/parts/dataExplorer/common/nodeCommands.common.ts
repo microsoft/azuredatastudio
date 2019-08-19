@@ -13,7 +13,6 @@ import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/c
 import { IViewsRegistry, Extensions } from 'vs/workbench/common/views';
 import { IProgressService } from 'vs/platform/progress/common/progress';
 import { Registry } from 'vs/platform/registry/common/platform';
-import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 
 export const DISCONNECT_COMMAND_ID = 'dataExplorer.disconnect';
 export const REFRESH_COMMAND_ID = 'dataExplorer.refresh';
@@ -22,8 +21,6 @@ export const DATA_TIER_WIZARD_COMMAND_ID = 'dataExplorer.dataTierWizard';
 export const PROFILER_COMMAND_ID = 'dataExplorer.profiler';
 export const IMPORT_COMMAND_ID = 'dataExplorer.flatFileImport';
 export const SCHEMA_COMPARE_COMMAND_ID = 'dataExplorer.schemaCompare';
-export const BACKUP_COMMAND_ID = 'dataExplorer.backup';
-export const RESTORE_COMMAND_ID = 'dataExplorer.restore';
 export const GENERATE_SCRIPTS_COMMAND_ID = 'dataExplorer.generateScripts';
 export const PROPERTIES_COMMAND_ID = 'dataExplorer.properties';
 
@@ -90,26 +87,6 @@ CommandsRegistry.registerCommand({
 		const commandService = accessor.get(ICommandService);
 		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
 		return commandService.executeCommand('schemaCompare.start', connectedContext);
-	}
-});
-
-// Backup
-CommandsRegistry.registerCommand({
-	id: BACKUP_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
-		return commandService.executeCommand(BackupAction.ID, connectedContext);
-	}
-});
-
-// Restore
-CommandsRegistry.registerCommand({
-	id: RESTORE_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
-		const commandService = accessor.get(ICommandService);
-		let connectedContext: azdata.ConnectedContext = { connectionProfile: args.$treeItem.payload };
-		return commandService.executeCommand(RestoreAction.ID, connectedContext);
 	}
 });
 

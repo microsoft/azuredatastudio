@@ -9,7 +9,7 @@ import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
 	DISCONNECT_COMMAND_ID, REFRESH_COMMAND_ID,
 	SCHEMA_COMPARE_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
-	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID, PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
+	IMPORT_COMMAND_ID, PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
 } from './nodeCommands.common';
 import { ContextKeyExpr, ContextKeyRegexExpr, ContextKeyNotEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
@@ -108,30 +108,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	command: {
 		id: SCHEMA_COMPARE_COMMAND_ID,
 		title: localize('schemaCompare', "Schema Compare")
-	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
-});
-
-// Backup Action
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 4,
-	command: {
-		id: BACKUP_COMMAND_ID,
-		title: localize('backup', "Backup")
-	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
-		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
-});
-
-// Restore Action
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 5,
-	command: {
-		id: RESTORE_COMMAND_ID,
-		title: localize('restore', "Restore")
 	},
 	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))

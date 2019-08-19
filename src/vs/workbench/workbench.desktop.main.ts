@@ -292,6 +292,12 @@ import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
 //acounts
 import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 
+//backup
+import 'sql/workbench/parts/backup/browser/backup.contribution';
+
+//restore
+import 'sql/workbench/parts/restore/browser/restore.contribution';
+
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
