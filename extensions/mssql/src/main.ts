@@ -21,7 +21,7 @@ import { CredentialStore } from './credentialstore/credentialstore';
 import { AzureResourceProvider } from './resourceProvider/resourceProvider';
 import * as Utils from './utils';
 import { Telemetry, LanguageClientErrorHandler } from './telemetry';
-import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature, SchemaCompareServicesFeature } from './features';
+import { TelemetryFeature, AgentServicesFeature, DacFxServicesFeature, SchemaCompareServicesFeature, SerializationFeature } from './features';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
@@ -53,13 +53,17 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 		return undefined;
 	}
 
+	if (!(await Utils.pfs.exists(context.logPath))) {
+		await Utils.pfs.mkdir(context.logPath);
+	}
+
 	let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
 	config.installDirectory = path.join(__dirname, config.installDirectory);
 	config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 	config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
 
-	const credentialsStore = new CredentialStore(config);
-	const resourceProvider = new AzureResourceProvider(config);
+	const credentialsStore = new CredentialStore(context.logPath, config);
+	const resourceProvider = new AzureResourceProvider(context.logPath, config);
 	let languageClient: SqlOpsDataClient;
 	let cmsService: CmsService;
 
@@ -75,7 +79,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	const installationStart = Date.now();
 	let serverPromise = serverdownloader.getOrDownloadServer().then(e => {
 		const installationComplete = Date.now();
-		let serverOptions = generateServerOptions(e);
+		let serverOptions = generateServerOptions(context.logPath, e);
 		languageClient = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 		const processStart = Date.now();
 		languageClient.onReady().then(() => {
@@ -118,6 +122,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	registerHdfsCommands(context, prompter, appContext);
 	context.subscriptions.push({ dispose: () => languageClient.stop() });
 
+	registerLogCommand(context);
+
 	registerServiceEndpoints(context);
 	// Get book contributions - in the future this will be integrated with the Books/Notebook widget to show as a dashboard widget
 	const bookContributionProvider = getBookExtensionContributions(context);
@@ -141,6 +147,19 @@ export async function activate(context: vscode.ExtensionContext): Promise<MssqlE
 	return api;
 }
 
+const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
+function registerLogCommand(context: vscode.ExtensionContext) {
+	context.subscriptions.push(vscode.commands.registerCommand('mssql.showLogFile', async () => {
+		const choice = await vscode.window.showQuickPick(logFiles);
+		if (choice) {
+			const document = await vscode.workspace.openTextDocument(vscode.Uri.file(path.join(context.logPath, choice)));
+			if (document) {
+				vscode.window.showTextDocument(document);
+			}
+		}
+	}));
+}
+
 function getClientOptions(): ClientOptions {
 	return {
 		documentSelector: ['sql'],
@@ -155,7 +174,8 @@ function getClientOptions(): ClientOptions {
 			TelemetryFeature,
 			AgentServicesFeature,
 			DacFxServicesFeature,
-			SchemaCompareServicesFeature
+			SchemaCompareServicesFeature,
+			SerializationFeature
 		],
 		outputChannel: new CustomOutputChannel()
 	};
@@ -286,8 +306,8 @@ async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionPr
 		});
 	}
 }
-function generateServerOptions(executablePath: string): ServerOptions {
-	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('sqltools', executablePath);
+function generateServerOptions(logPath: string, executablePath: string): ServerOptions {
+	let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(logPath, 'sqltools.log', executablePath);
 	return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 }
 

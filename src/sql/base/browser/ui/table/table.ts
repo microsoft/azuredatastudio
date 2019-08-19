@@ -339,4 +339,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 		this._grid.setOptions(newOptions);
 		this._grid.invalidate();
 	}
+
+	public setTableTitle(title: string): void {
+		this._tableContainer.title = title;
+	}
 }

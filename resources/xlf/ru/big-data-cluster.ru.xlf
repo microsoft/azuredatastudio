@@ -4,15 +4,15 @@
     <body>
       <trans-unit id="description">
         <source xml:lang="en">Support for managing SQL Server big data clusters</source>
-        <target state="new">Support for managing SQL Server big data clusters</target>
+        <target state="translated">Поддержка управления кластерами больших данных SQL Server</target>
       </trans-unit>
       <trans-unit id="text.sqlServerBigDataClusters">
         <source xml:lang="en">SQL Server big data clusters</source>
-        <target state="new">SQL Server big data clusters</target>
+        <target state="translated">Кластеры больших данных SQL Server</target>
       </trans-unit>
       <trans-unit id="command.addController.title">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="new">Connect to Controller</target>
+        <target state="translated">Подключение к контроллеру</target>
       </trans-unit>
       <trans-unit id="command.deleteController.title">
         <source xml:lang="en">Delete</source>
@@ -36,11 +36,11 @@
     <body>
       <trans-unit id="textBigDataClusterControllerWithDots">
         <source xml:lang="en">Add big data cluster controller...</source>
-        <target state="new">Add big data cluster controller...</target>
+        <target state="translated">Добавить контроллер кластера больших данных...</target>
       </trans-unit>
       <trans-unit id="textConnectToController">
         <source xml:lang="en">Connect to Controller</source>
-        <target state="new">Connect to Controller</target>
+        <target state="translated">Подключение к контроллеру</target>
       </trans-unit>
     </body>
   </file>
@@ -48,7 +48,7 @@
     <body>
       <trans-unit id="textAddNewController">
         <source xml:lang="en">Add New Controller</source>
-        <target state="new">Add New Controller</target>
+        <target state="translated">Добавление нового контроллера</target>
       </trans-unit>
       <trans-unit id="textUrlLower">
         <source xml:lang="en">url</source>

@@ -437,8 +437,6 @@ export class TypeOperations {
 			return false;
 		}
 
-		const isEqualPair = (ch === config.autoClosingPairsClose[ch]);
-
 		for (let i = 0, len = selections.length; i < len; i++) {
 			const selection = selections[i];
 
@@ -452,14 +450,6 @@ export class TypeOperations {
 
 			if (afterCharacter !== ch) {
 				return false;
-			}
-
-			if (isEqualPair) {
-				const lineTextBeforeCursor = lineText.substr(0, position.column - 1);
-				const chCntBefore = this._countNeedlesInHaystack(lineTextBeforeCursor, ch);
-				if (chCntBefore % 2 === 0) {
-					return false;
-				}
 			}
 
 			// Must over-type a closing character typed by the editor
@@ -947,6 +937,7 @@ export class TypeWithAutoClosingCommand extends ReplaceCommandWithOffsetCursorSt
 		super(selection, openCharacter + closeCharacter, 0, -closeCharacter.length);
 		this._closeCharacter = closeCharacter;
 		this.closeCharacterRange = null;
+		this.enclosingRange = null;
 	}
 
 	public computeCursorState(model: ITextModel, helper: ICursorStateComputerData): Selection {

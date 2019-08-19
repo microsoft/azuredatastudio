@@ -8,9 +8,10 @@ import { Uri, TreeDataProvider, TreeItem, ExtensionContext, Event, EventEmitter,
 import * as path from 'path';
 import * as fs from 'fs';
 import * as yaml from 'js-yaml';
-import * as fg from 'fast-glob';
 import { dispose } from '../common/utils';
+import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
+import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
@@ -24,33 +25,45 @@ export class BookTreeViewProvider implements TreeDataProvider<BookTreeItem>, azd
 	private _throttleTimer: any;
 	private _resource: string;
 	private _listener: Disposable;
+	private _onReadAllTOCFiles: EventEmitter<void> = new EventEmitter<void>();
 
 	constructor(workspaceFolders: WorkspaceFolder[], extensionContext: ExtensionContext) {
-		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
-		this.getTableOfContentFiles(workspacePaths);
+		this.getTableOfContentFiles(workspaceFolders).then(() => undefined, (err) => { console.log(err); });
 		this._extensionContext = extensionContext;
 		this._listener = workspace.onDidChangeWorkspaceFolders(() => {
 			this.refresh();
 		});
 	}
 
-	async getTableOfContentFiles(directories?: string[]): Promise<void> {
-		for (let i in directories) {
-			let tableOfContentPaths = await fg([directories[i] + '/**/_data/toc.yml']);
-			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
-		}
-		this._tableOfContentPaths = this._tableOfContentPaths.filter(function (elem, index, self) {
-			return index === self.indexOf(elem);
-		});
-		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
-		commands.executeCommand('setContext', 'bookOpened', bookOpened);
-	}
-
 	public async refresh(): Promise<void> {
 		this._tableOfContentPaths = [];
-		let workspacePaths: string[] = workspace.workspaceFolders.map(a => a.uri.fsPath);
+		let workspacePaths: WorkspaceFolder[] = workspace.workspaceFolders;
 		await this.getTableOfContentFiles(workspacePaths);
 		this._onDidChangeTreeData.fire();
+	}
+
+	public get onReadAllTOCFiles(): Event<void> {
+		return this._onReadAllTOCFiles.event;
+	}
+
+	async getTableOfContentFiles(workspaceFolders: WorkspaceFolder[]): Promise<void> {
+		let notebookConfig = workspace.getConfiguration(notebookConfigKey);
+		let maxDepth = notebookConfig[maxBookSearchDepth];
+		// Use default value if user enters an invalid value
+		if (maxDepth === undefined || maxDepth < 0) {
+			maxDepth = 5;
+		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
+			maxDepth = undefined;
+		}
+		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
+		for (let workspacePath of workspacePaths) {
+			let p = path.join(workspacePath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
+			let tableOfContentPaths = await glob(p, { deep: maxDepth });
+			this._tableOfContentPaths = this._tableOfContentPaths.concat(tableOfContentPaths);
+		}
+		let bookOpened: boolean = this._tableOfContentPaths.length > 0;
+		commands.executeCommand('setContext', 'bookOpened', bookOpened);
+		this._onReadAllTOCFiles.fire();
 	}
 
 	async openNotebook(resource: string): Promise<void> {
