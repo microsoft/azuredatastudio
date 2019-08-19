@@ -150,7 +150,7 @@ async function main(server: Server, initData: ISharedProcessInitData, configurat
 
 		let appInsightsAppender: ITelemetryAppender | null = NullAppender;
 		if (!extensionDevelopmentLocationURI && !environmentService.args['disable-telemetry'] && product.enableTelemetry) {
-			if (product.aiConfig && product.aiConfig.asimovKey) {
+			if (product.aiConfig && product.aiConfig.asimovKey && isBuilt) {
 				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey, telemetryLogService);
 				disposables.add(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
