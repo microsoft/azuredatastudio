@@ -121,13 +121,13 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 			}
 
 			if (FIND_WIDGET_INITIAL_WIDTH + 28 >= editorWidth) {
-				reducedFindWidget = true;
+				reducedFindWidget = false;
 			}
 			if (FIND_WIDGET_INITIAL_WIDTH + 28 - MAX_MATCHES_COUNT_WIDTH >= editorWidth) {
-				narrowFindWidget = true;
+				narrowFindWidget = false;
 			}
 			if (FIND_WIDGET_INITIAL_WIDTH + 28 - MAX_MATCHES_COUNT_WIDTH >= editorWidth + 50) {
-				collapsedFindWidget = true;
+				collapsedFindWidget = false;
 			}
 			dom.toggleClass(this._domNode, 'collapsed-find-widget', collapsedFindWidget);
 			dom.toggleClass(this._domNode, 'narrow-find-widget', narrowFindWidget);
