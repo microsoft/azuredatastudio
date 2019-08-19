@@ -413,6 +413,9 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
 				return self._proxy.$getMaterializedNotebook(handle, connectionUri, targetDatabase, notebookMaterializedId);
 			},
+			getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+				return self._proxy.$getTemplateNotebook(handle, connectionUri, targetDatabase, jobId);
+			},
 			deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteNotebook(handle, connectionUri, notebook);
 			},

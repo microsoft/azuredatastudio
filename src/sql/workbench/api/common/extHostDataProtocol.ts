@@ -737,6 +737,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
+	 * Get a Agent Template Notebook
+	 */
+	public $getTemplateNotebook(handle: number, ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getTemplateNotebook(ownerUri, targetDatabase, jobId);
+	}
+
+	/**
 	 * Delete a Agent Notebook
 	 */
 	public $deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {

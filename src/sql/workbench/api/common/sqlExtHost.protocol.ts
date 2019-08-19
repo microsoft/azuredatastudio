@@ -413,7 +413,12 @@ export abstract class ExtHostDataProtocolShape {
 	$getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> { throw ni(); }
 
 	/**
-	 * Get a Agent materialized notebook
+	 * Get a Agent Template notebook
+	 */
+	$getTemplateNotebook(handle: number, ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> { throw ni(); }
+
+	/**
+	 * Deletes a notebook
 	 */
 	$deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> { throw ni(); }
 

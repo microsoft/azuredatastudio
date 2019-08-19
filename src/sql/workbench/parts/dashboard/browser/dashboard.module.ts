@@ -57,7 +57,7 @@ import { JobHistoryComponent } from 'sql/workbench/parts/jobManagement/browser/j
 import { OperatorsViewComponent } from 'sql/workbench/parts/jobManagement/browser/operatorsView.component';
 import { ProxiesViewComponent } from 'sql/workbench/parts/jobManagement/browser/proxiesView.component';
 import { NotebooksViewComponent } from 'sql/workbench/parts/jobManagement/browser/notebooksView.component';
-import { NotebookHistoryComponent, NotebookHistoryFilterPipe } from 'sql/workbench/parts/jobManagement/browser/notebookHistory.component';
+import { NotebookHistoryComponent } from 'sql/workbench/parts/jobManagement/browser/notebookHistory.component';
 import LoadingSpinner from 'sql/workbench/browser/modelComponents/loadingSpinner.component';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox.component';
 import { SelectBox } from 'sql/platform/browser/selectBox/selectBox.component';
@@ -67,7 +67,7 @@ import { EditableDropDown } from 'sql/platform/browser/editableDropdown/editable
 const baseComponents = [DashboardHomeContainer, DashboardComponent, DashboardWidgetWrapper, DashboardWebviewContainer,
 	DashboardWidgetContainer, DashboardGridContainer, DashboardErrorContainer, DashboardNavSection, ModelViewContent, WebviewContent, WidgetContent,
 	ComponentHostDirective, BreadcrumbComponent, ControlHostContent, DashboardControlHostContainer,
-	JobsViewComponent, NotebooksViewComponent, AgentViewComponent, JobHistoryComponent, NotebookHistoryComponent, NotebookHistoryFilterPipe, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
+	JobsViewComponent, NotebooksViewComponent, AgentViewComponent, JobHistoryComponent, NotebookHistoryComponent, JobStepsViewComponent, AlertsViewComponent, ProxiesViewComponent, OperatorsViewComponent,
 	DashboardModelViewContainer, ModelComponentWrapper, Checkbox, EditableDropDown, SelectBox, InputBox, LoadingSpinner];
 
 /* Panel */

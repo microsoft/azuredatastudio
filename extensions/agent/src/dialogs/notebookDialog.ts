@@ -43,8 +43,8 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private readonly DescriptionTextBoxLabel: string = localize('notebookDialog.description', 'Description');
 
 	// Event Name strings
-	private readonly NewJobDialogEvent: string = 'NewJobDialogOpened';
-	private readonly EditJobDialogEvent: string = 'EditJobDialogOpened';
+	private readonly NewJobDialogEvent: string = 'NewNotebookJobDialogOpened';
+	private readonly EditJobDialogEvent: string = 'EditNotebookJobDialogOpened';
 
 	// UI Components
 	private generalTab: azdata.window.DialogTab;
@@ -262,7 +262,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 			this.nameTextBox.value = this.model.name;
 			this.ownerTextBox.value = this.model.owner;
-			//this.categoryDropdown.values = this.model.jobCategories;
 			if (this.isEdit) {
 				this.templateFilePathBox.placeHolder = this.model.targetDatabase + '\\' + this.model.name;
 				this.targetDatabaseDropDown.value = this.model.targetDatabase;
@@ -277,11 +276,8 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			if (this.model.category && this.model.category !== '') {
 				idx = this.model.jobCategories.indexOf(this.model.category);
 			}
-			//this.categoryDropdown.value = this.model.jobCategories[idx > 0 ? idx : 0];
 			this.descriptionTextBox.value = this.model.description;
 			this.openTemplateFileButton.onDidClick(e => {
-				console.log(e);
-
 			});
 			this.populateScheduleTable();
 		});
@@ -314,7 +310,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	}
 
 	protected updateModel() {
-		console.log(this);
 		this.model.name = this.nameTextBox.value;
 		this.model.owner = this.ownerTextBox.value;
 		this.model.description = this.descriptionTextBox.value;

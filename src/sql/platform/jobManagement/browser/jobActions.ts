@@ -180,7 +180,7 @@ export class OpenMaterializedNotebookAction extends Action {
 	constructor(
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'edit');
+		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'open');
 	}
 
 	public run(context: any): Promise<boolean> {
@@ -213,7 +213,6 @@ export class DeleteJobAction extends Action {
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
 					self._jobService.deleteJob(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
-						console.log(result);
 						if (!result || !result.success) {
 							let errorMessage = nls.localize("jobaction.failedToDeleteJob", "Could not delete job '{0}'.\nError: {1}",
 								job.name, result.errorMessage ? result.errorMessage : 'Unknown error');
@@ -591,15 +590,12 @@ export class NewNotebookJobAction extends Action {
 				reject(e);
 			}
 		});
-		return new Promise<boolean>(async (resolve, reject) => {
-		});
 	}
 }
 
-
 export class EditNotebookJobAction extends Action {
 	public static ID = 'notebookaction.editNotebook';
-	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook");
+	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook Job");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService
@@ -616,50 +612,25 @@ export class EditNotebookJobAction extends Action {
 	}
 }
 
-
-export class ChangeNotebookHistoryType extends Action {
-	public static ID = 'notebookaction.editJob';
-	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook");
+export class OpenTemplateNotebookAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Template Notebook");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(EditNotebookJobAction.ID, EditNotebookJobAction.LABEL, 'edit');
+		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'open');
 	}
 
-	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
-			'agent.openJobDialog',
-			actionInfo.ownerUri,
-			actionInfo.targetObject.job);
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.openTemplateNotebook();
 		return Promise.resolve(true);
 	}
 }
 
-export class OpenNotebookAction extends Action {
-	public static ID = 'notebookaction.openNotebook';
-	public static LABEL = nls.localize('notebookaction.openNotebook', "Open Materialized Notebook");
-
-	constructor(
-	) {
-		super(OpenNotebookAction.ID, OpenNotebookAction.LABEL, 'openNotebook');
-	}
-
-	public run(context: NotebookHistoryComponent): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			if (context) {
-				//context.openNotebook();
-				resolve(true);
-			} else {
-				reject(false);
-			}
-		});
-	}
-}
-
 export class DeleteNotebookAction extends Action {
-	public static ID = 'jobaction.deleteNotebook';
-	public static LABEL = nls.localize('jobaction.deleteNotebook', "Delete Notebook");
+	public static ID = 'notebookaction.deleteNotebook';
+	public static LABEL = nls.localize('notebookaction.deleteNotebook', "Delete Notebook");
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,

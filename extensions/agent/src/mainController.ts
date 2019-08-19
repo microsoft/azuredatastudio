@@ -101,11 +101,23 @@ export class MainController {
 			const tempfilePath = path.join(os.tmpdir(), filename + '.ipynb');
 			if (fs.existsSync(tempfilePath)) {
 				fs.unlinkSync(tempfilePath);
-
 			}
-			fs.writeFileSync(tempfilePath, jsonNotebook);
-			let uri = vscode.Uri.file(tempfilePath);
-			await azdata.nb.showNotebookDocument(uri);
+			fs.writeFile(tempfilePath, jsonNotebook, function (err) {
+				if (err) {
+					return console.log(err);
+				}
+				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
+				vscode.workspace.openTextDocument(tempfilePath).then((document) => {
+					let initialContent = document.getText();
+					console.log(initialContent);
+					azdata.nb.showNotebookDocument(uri, {
+						preview: false,
+						initialContent: initialContent,
+						initialDirtyState: false
+					});
+				});
+			});
+			//await azdata.nb.showNotebookDocument(uri);
 		});
 		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo) => {
 			if (!this.notebookDialog || (this.notebookDialog && !this.notebookDialog.isOpen)) {

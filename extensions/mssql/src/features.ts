@@ -526,6 +526,18 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
+		let getTemplateNotebook = (ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> => {
+			let params: contracts.AgentNotebookTemplateParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, jobId: jobId };
+			return client.sendRequest(contracts.AgentNotebookTemplateRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.AgentNotebookTemplateRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
 		let createNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.CreateAgentNotebookResult> => {
 			let params: contracts.CreateAgentNotebookParams = {
 				ownerUri: ownerUri,
@@ -897,6 +909,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			getNotebooks,
 			getNotebookHistory,
 			getMaterializedNotebook,
+			getTemplateNotebook,
 			createNotebook,
 			updateNotebook,
 			deleteNotebook,

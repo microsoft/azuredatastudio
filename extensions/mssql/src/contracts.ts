@@ -105,6 +105,12 @@ export interface AgentNotebookMaterializedParams {
 	notebookMaterializedId: number;
 }
 
+export interface AgentNotebookTemplateParams {
+	ownerUri: string;
+	targetDatabase: string;
+	jobId: string;
+}
+
 export interface CreateAgentNotebookParams {
 	ownerUri: string;
 	notebook: azdata.AgentNotebookInfo;
@@ -265,6 +271,10 @@ export namespace AgentNotebookHistoryRequest {
 
 export namespace AgentNotebookMaterializedRequest {
 	export const type = new RequestType<AgentNotebookMaterializedParams, azdata.AgentNotebookMaterializedResult, void, void>('agent/notebookmaterialized');
+}
+
+export namespace AgentNotebookTemplateRequest {
+	export const type = new RequestType<AgentNotebookTemplateParams, azdata.AgentNotebookTemplateResult, void, void>('agent/notebooktemplate');
 }
 
 export namespace CreateAgentNotebookRequest {
