@@ -288,12 +288,14 @@ export class SchemaCompareDialog {
 		if (isTarget) {
 			this.targetFileButton = view.modelBuilder.button().withProperties({
 				label: '•••',
-				ariaLabel: localize('schemaCompare.selectFileAriaLabel', "Select file")
+				title: localize('schemaCompare.selectTargetFile', "Select target file"),
+				ariaLabel: localize('schemaCompare.selectTargetFile', "Select target file")
 			}).component();
 		} else {
 			this.sourceFileButton = view.modelBuilder.button().withProperties({
 				label: '•••',
-				ariaLabel: localize('schemaCompare.selectFileAriaLabel', "Select file")
+				title: localize('schemaCompare.selectTargetFile', "Select target file"),
+				ariaLabel: localize('schemaCompare.selectTargetFile', "Select target file")
 			}).component();
 		}
 
