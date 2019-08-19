@@ -262,7 +262,7 @@ export class SettingsEditor2 extends BaseEditor {
 	}
 
 	private _setOptions(options: SettingsEditorOptions): void {
-		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref
+		// {{SQL CARBON EDIT}} - return if options is undefined to avoid nullref @todo anthonydresser 8/17/19 investigate
 		if (!options) {
 			return;
 		}
