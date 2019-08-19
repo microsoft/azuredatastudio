@@ -125,11 +125,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private flattenArray(array: any[]): any[] {
+	private flattenArray(array: any[], title: string): any[] {
 		try {
-			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections)) : acc.concat(val), []);
+			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections, title)) : acc.concat(val), []);
 		} catch (e) {
-			throw localize('Invalid toc.yml', 'Error: toc.yml file format is incorrect');
+			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', title);
 		}
 	}
 
@@ -143,7 +143,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
-					tableOfContents: this.flattenArray(tableOfContents),
+					tableOfContents: this.flattenArray(tableOfContents, config.title),
 					page: tableOfContents,
 					type: BookTreeItemType.Book
 				},
@@ -162,7 +162,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return books;
 	}
 
-	private getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
+	public getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {

@@ -12,8 +12,7 @@ import * as rimraf from 'rimraf';
 import * as os from 'os';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
-
-const SEED = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+import { generateUuid } from '../common/uuid';
 
 export interface ExpectedBookItem {
 	title: string;
@@ -50,10 +49,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let notebook1: BookTreeItem;
 
 	this.beforeAll(async () => {
-		let testFolder = '';
-		for (let i = 0; i < 8; i++) {
-			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
-		}
+		let testFolder = generateUuid();
 		rootFolderPath = path.join(os.tmpdir(), 'BookTestData_' + testFolder);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
@@ -156,14 +152,10 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 	let rootFolderPath: string;
 	let tableOfContentsFile: string;
 	let bookTreeViewProvider: BookTreeViewProvider;
-	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 	let folder: vscode.WorkspaceFolder;
 
 	this.beforeAll(async () => {
-		let testFolder = '';
-		for (let i = 0; i < 8; i++) {
-			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
-		}
+		let testFolder = generateUuid();
 		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
@@ -172,7 +164,7 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 		await fs.mkdir(dataFolderPath);
 		await fs.writeFile(tableOfContentsFile, '');
 		await fs.writeFile(tableOfContentsFileIgnore, '');
-		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		let mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		folder = {
 			uri: vscode.Uri.file(rootFolderPath),
 			name: '',
@@ -201,17 +193,16 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 
 describe('BookTreeViewProvider.getBooks', function (): void {
 	let rootFolderPath: string;
+	let configFile: string;
 	let folder: vscode.WorkspaceFolder;
 	let bookTreeViewProvider: BookTreeViewProvider;
 	let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
 
 	this.beforeAll(async () => {
-		let testFolder = '';
-		for (let i = 0; i < 8; i++) {
-			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
-		}
+		let testFolder = generateUuid();
 		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
 		let dataFolderPath = path.join(rootFolderPath, '_data');
+		configFile = path.join(rootFolderPath, '_config.yml');
 		let tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
 		await fs.mkdir(rootFolderPath);
 		await fs.mkdir(dataFolderPath);
@@ -229,19 +220,69 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 	});
 
 	it('should show error message if config.yml file not found', function(): void {
-		let configFile = path.join(rootFolderPath, '_config.yml');
 		bookTreeViewProvider.getBooks();
 		should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 	});
 	it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
-		let configFile = path.join(rootFolderPath, '_config.yml');
 		await fs.writeFile(configFile, 'title: Test Book');
+		bookTreeViewProvider.getBooks();
+		should(bookTreeViewProvider.errorMessage).equal('Error: Test Book has an incorrect toc.yml file');
+	});
+
+	this.afterAll(async function () {
+		if (fs.existsSync(rootFolderPath)) {
+			rimraf.sync(rootFolderPath);
+		}
+	});
+});
+
+
+describe('BookTreeViewProvider.getSections', function (): void {
+	let rootFolderPath: string;
+	let tableOfContentsFile: string;
+	let bookTreeViewProvider: BookTreeViewProvider;
+	let folder: vscode.WorkspaceFolder;
+	let expectedNotebook2: ExpectedBookItem;
+
+	this.beforeAll(async () => {
+		let testFolder = generateUuid();
+		rootFolderPath =  path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		let dataFolderPath = path.join(rootFolderPath, '_data');
+		let contentFolderPath = path.join(rootFolderPath, 'content');
+		let configFile = path.join(rootFolderPath, '_config.yml');
+		tableOfContentsFile = path.join(dataFolderPath, 'toc.yml');
+		let notebook2File = path.join(contentFolderPath, 'notebook2.ipynb');
+		expectedNotebook2 = {
+			title: 'Notebook2',
+			url: '/notebook2',
+			previousUri: undefined,
+			nextUri: undefined
+		};
+		await fs.mkdir(rootFolderPath);
+		await fs.mkdir(dataFolderPath);
+		await fs.mkdir(contentFolderPath);
+		await fs.writeFile(configFile, 'title: Test Book');
+		await fs.writeFile(tableOfContentsFile, '- title: Notebook1\n  url: /notebook1\n- title: Notebook2\n  url: /notebook2');
+		await fs.writeFile(notebook2File, '');
+
+		let mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		folder = {
+			uri: vscode.Uri.file(rootFolderPath),
+			name: '',
+			index: 0
+		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
-		bookTreeViewProvider.getBooks();
-		should(bookTreeViewProvider.errorMessage).equal('Error: toc.yml file format is incorrect');
+	});
+
+	it('should show error if notebook or markdown file is missing', function(): void {
+		let books = bookTreeViewProvider.getBooks();
+		let children = bookTreeViewProvider.getSections([], books[0].sections, rootFolderPath);
+		should(bookTreeViewProvider.errorMessage).equal('Missing file : Notebook1');
+		// Rest of book should be detected correctly even with a missing file
+		equalBookItems(children[0], expectedNotebook2);
 	});
 
 	this.afterAll(async function () {
