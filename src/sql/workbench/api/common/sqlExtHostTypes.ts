@@ -579,8 +579,7 @@ export class ConnectionProfile {
 	options: { [name: string]: any };
 
 	static createFrom(options: any[]): ConnectionProfile {
-		// create from options
-		return undefined;
+		throw new Error('Method not implemented');
 	}
 }
 

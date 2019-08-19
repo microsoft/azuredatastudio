@@ -27,13 +27,14 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		this._proxy = extHostContext.getProxy(ExtHostContext.ExtHostTreeViews);
 	}
 
-	$registerTreeViewDataProvider(treeViewId: string, options: { showCollapseAll: boolean }): void {
+	$registerTreeViewDataProvider(treeViewId: string, options: { showCollapseAll: boolean, canSelectMany: boolean }): void {
 		const dataProvider = new TreeViewDataProvider(treeViewId, this._proxy, this.notificationService);
 		this._dataProviders.set(treeViewId, dataProvider);
 		const viewer = this.getTreeView(treeViewId);
 		if (viewer) {
 			viewer.dataProvider = dataProvider;
 			viewer.showCollapseAllAction = !!options.showCollapseAll;
+			viewer.canSelectMany = !!options.canSelectMany;
 			this.registerListeners(treeViewId, viewer);
 			this._proxy.$setVisible(treeViewId, viewer.visible);
 		} else {
@@ -124,7 +125,7 @@ export class MainThreadTreeViews extends Disposable implements MainThreadTreeVie
 		this._dataProviders.forEach((dataProvider, treeViewId) => {
 			const treeView = this.getTreeView(treeViewId);
 			if (treeView) {
-				treeView.dataProvider = null;
+				treeView.dataProvider = undefined;
 			}
 		});
 		this._dataProviders.clear();

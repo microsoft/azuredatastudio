@@ -13,9 +13,10 @@ export const extensionConfigSectionName = 'mssql';
 
 // DATA PROTOCOL VALUES ///////////////////////////////////////////////////////////
 export const mssqlClusterProviderName = 'mssqlCluster';
-export const hadoopEndpointNameKnox = 'Knox';
 export const hadoopEndpointNameGateway = 'gateway';
 export const protocolVersion = '1.0';
+export const authenticationTypePropName = 'authenticationType';
+export const integratedAuth = 'integrated';
 export const hostPropName = 'host';
 export const userPropName = 'user';
 export const knoxPortPropName = 'knoxport';
@@ -26,8 +27,6 @@ export const groupIdName = 'groupId';
 export const sqlProviderName = 'MSSQL';
 export const dataService = 'Data Services';
 
-export const hdfsHost = 'host';
-export const hdfsUser = 'user';
 export const UNTITLED_SCHEMA = 'untitled';
 
 export const hadoopConnectionTimeoutSeconds = 15;

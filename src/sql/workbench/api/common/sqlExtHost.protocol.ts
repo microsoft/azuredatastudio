@@ -739,7 +739,7 @@ export interface ExtHostQueryEditorShape {
 
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
-	$runQuery(fileUri: string): void;
+	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number, providerId: string): void;

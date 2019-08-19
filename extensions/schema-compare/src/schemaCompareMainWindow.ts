@@ -815,7 +815,8 @@ export class SchemaCompareMainWindow {
 	private createSourceAndTargetButtons(view: azdata.ModelView): void {
 		this.selectSourceButton = view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('schemaCompare.sourceButtonTitle', 'Select Source')
+			title: localize('schemaCompare.sourceButtonTitle', "Select Source"),
+			ariaLabel: localize('schemaCompare.sourceButtonTitle', "Select Source")
 		}).component();
 
 		this.selectSourceButton.onDidClick(() => {
@@ -826,7 +827,8 @@ export class SchemaCompareMainWindow {
 
 		this.selectTargetButton = view.modelBuilder.button().withProperties({
 			label: '•••',
-			title: localize('schemaCompare.targetButtonTitle', 'Select Target')
+			title: localize('schemaCompare.targetButtonTitle', "Select Target"),
+			ariaLabel: localize('schemaCompare.targetButtonTitle', "Select Target")
 		}).component();
 
 		this.selectTargetButton.onDidClick(() => {
