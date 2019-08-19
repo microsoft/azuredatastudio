@@ -31,6 +31,8 @@ import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/t
 import { UNSAVED_GROUP_ID, mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/parts/dashboard/browser/dashboardActions';
+import { IViewsService, IView, ViewContainer, IViewDescriptorCollection } from 'vs/workbench/common/views';
+import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -104,8 +106,21 @@ suite('SQL Connection Tree Action tests', () => {
 			return treeSelectionMock.object;
 		});
 
+		const viewsService = new class implements IViewsService {
+			_serviceBrand: ServiceIdentifier<any>;
+			openView(id: string, focus?: boolean): Promise<IView> {
+				return Promise.resolve({
+					id: '',
+					serversTree: undefined
+				});
+			}
+			getViewDescriptors(container: ViewContainer): IViewDescriptorCollection {
+				throw new Error('Method not implemented.');
+			}
+		};
+
 		let manageConnectionAction: OEManageConnectionAction = new OEManageConnectionAction(OEManageConnectionAction.ID,
-			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, undefined);
+			OEManageConnectionAction.LABEL, connectionManagementService.object, capabilitiesService, instantiationService.object, objectExplorerService.object, viewsService);
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
