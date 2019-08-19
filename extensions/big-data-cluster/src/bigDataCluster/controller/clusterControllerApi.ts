@@ -62,7 +62,7 @@ export async function getBdcStatus(
 	username: string,
 	password: string,
 	ignoreSslVerification?: boolean
-): Promise<IClusterStatusResponse> {
+): Promise<IBdcStatusResponse> {
 
 	if (!url) {
 		return undefined;
@@ -72,13 +72,13 @@ export async function getBdcStatus(
 	const bdcApi = new BdcApiWrapper(username, password, url, ignoreSslVerification);
 
 	try {
-		const clusterStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
+		const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
 		return {
-			response: clusterStatus.response,
-			bdcStatus: clusterStatus.body
+			response: bdcStatus.response,
+			bdcStatus: bdcStatus.body
 		};
 	} catch (error) {
-		throw new ControllerError(error, localize('bdc.error.getClusterStatus', "Error retrieving BDC status from {0}", url));
+		throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", url));
 	}
 }
 
@@ -109,7 +109,7 @@ export interface IEndPointsResponse {
 	endPoints: EndpointModel[];
 }
 
-export interface IClusterStatusResponse {
+export interface IBdcStatusResponse {
 	response: IHttpResponse;
 	bdcStatus: BdcStatusModel;
 }
