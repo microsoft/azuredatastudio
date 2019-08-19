@@ -72,8 +72,6 @@ export class TabbedPanel extends Disposable {
 	private _collapsed = false;
 	private _headerVisible: boolean;
 	private _styleElement: HTMLStyleElement;
-	private n: number = 0;
-	private disposables: IDisposable[] = [];
 
 	private _onTabChange = new Emitter<PanelTabIdentifier>();
 	public onTabChange: Event<PanelTabIdentifier> = this._onTabChange.event;
@@ -104,7 +102,7 @@ export class TabbedPanel extends Disposable {
 		this.body = DOM.$('.tabBody');
 		this.body.setAttribute('role', 'tabpanel');
 		this.parent.appendChild(this.body);
-		this.disposables.push(DOM.addDisposableListener(this.header, DOM.EventType.FOCUS, e => this.focusCurrentTab()));
+		this._register(DOM.addDisposableListener(this.header, DOM.EventType.FOCUS, e => this.focusCurrentTab()));
 	}
 
 	public dispose() {
@@ -113,7 +111,6 @@ export class TabbedPanel extends Disposable {
 		this.body.remove();
 		this.parent.remove();
 		this._styleElement.remove();
-		this.disposables.forEach(x => x.dispose());
 	}
 
 	public contains(tab: IPanelTab): boolean {
