@@ -29,7 +29,6 @@ import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/tr
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 
 /**
  *  Provides actions for the server tree elements
@@ -107,7 +106,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getBuiltinConnectionActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
-		this.addNewQueryNotebookActions(context, actions);
 
 		if (this._connectionManagementService.isProfileConnected(context.profile)) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
@@ -163,7 +161,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				isAvailableDatabaseNode = true;
-				this.addNewQueryNotebookActions(context, actions);
 			} else {
 				return actions;
 			}
@@ -183,14 +180,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		}
 
 		return actions;
-	}
-
-	private addNewQueryNotebookActions(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			// Workaround for #6397 right-click and run New Notebook connects to wrong server. Use notebook action instead of generic command action
-			let notebookAction = this._instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL);
-			actions.push(notebookAction);
-		}
 	}
 
 	private addBackupAction(context: ObjectExplorerContext, actions: IAction[]): void {

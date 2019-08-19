@@ -6,7 +6,7 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { EditorDescriptor, IEditorRegistry, Extensions as EditorExtensions } from 'vs/workbench/browser/editor';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor, registerAction } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, registerAction, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 
 import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
@@ -23,6 +23,16 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
 import { IWindowService } from 'vs/platform/windows/common/windows';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { ConnectedContext } from 'azdata';
+import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -47,6 +57,51 @@ actionRegistry.registerWorkbenchAction(
 	),
 	NewNotebookAction.LABEL
 );
+
+const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: DE_NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const connectedContext: ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+	}
+});
+
+// New Notebook
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: '0_query',
+	order: 3,
+	command: {
+		id: DE_NEW_NOTEBOOK_COMMAND_ID,
+		title: localize('newNotebook', "New Notebook")
+	},
+	when: ContextKeyExpr.and(NodeContextKey.IsConnectable,
+		MssqlNodeContext.IsDatabaseOrServer,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName))
+});
+
+const OE_NEW_NOTEBOOK_COMMAND_ID = 'objectExplorer.newNotebook';
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: OE_NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, args: ObjectExplorerActionsContext) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const connectedContext: ConnectedContext = { connectionProfile: args.connectionProfile };
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
+	group: '0_query',
+	order: 3,
+	command: {
+		id: OE_NEW_NOTEBOOK_COMMAND_ID,
+		title: localize('newQuery', "New Notebook")
+	},
+	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+});
 
 registerAction({
 	id: 'workbench.action.setWorkspaceAndOpen',

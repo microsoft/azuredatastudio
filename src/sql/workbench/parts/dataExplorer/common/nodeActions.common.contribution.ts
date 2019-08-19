@@ -7,8 +7,8 @@ import { localize } from 'vs/nls';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
-	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, REFRESH_COMMAND_ID,
-	NEW_NOTEBOOK_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
+	DISCONNECT_COMMAND_ID, REFRESH_COMMAND_ID,
+	SCHEMA_COMPARE_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
 	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID, PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
 } from './nodeCommands.common';
 import { ContextKeyExpr, ContextKeyRegexExpr, ContextKeyNotEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
@@ -50,20 +50,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('refresh', "Refresh")
 	},
 	when: NodeContextKey.IsConnectable
-});
-
-
-// New Notebook
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 3,
-	command: {
-		id: NEW_NOTEBOOK_COMMAND_ID,
-		title: localize('newNotebook', "New Notebook")
-	},
-	when: ContextKeyExpr.and(NodeContextKey.IsConnectable,
-		MssqlNodeContext.IsDatabaseOrServer,
-		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName))
 });
 
 // Data-Tier Application Wizard
