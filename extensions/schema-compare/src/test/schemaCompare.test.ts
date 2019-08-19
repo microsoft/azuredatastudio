@@ -7,6 +7,7 @@
 
 import * as should from 'should';
 import * as azdata from 'azdata';
+import * as mssql from '../../../mssql';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
@@ -32,8 +33,8 @@ const mockConnectionProfile: azdata.IConnectionProfile = {
 const mocksource: string = 'source.dacpac';
 const mocktarget: string = 'target.dacpac';
 
-const mockSourceEndpoint: azdata.SchemaCompareEndpointInfo = {
-	endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+const mockSourceEndpoint: mssql.SchemaCompareEndpointInfo = {
+	endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 	serverDisplayName: '',
 	serverName: '',
 	databaseName: '',
@@ -42,8 +43,8 @@ const mockSourceEndpoint: azdata.SchemaCompareEndpointInfo = {
 	connectionDetails: undefined
 };
 
-const mockTargetEndpoint: azdata.SchemaCompareEndpointInfo = {
-	endpointType: azdata.SchemaCompareEndpointType.Dacpac,
+const mockTargetEndpoint: mssql.SchemaCompareEndpointInfo = {
+	endpointType: mssql.SchemaCompareEndpointType.Dacpac,
 	serverDisplayName: '',
 	serverName: '',
 	databaseName: '',
@@ -67,7 +68,6 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 describe('SchemaCompareResult.start', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
-		azdata.dataprotocol.registerSchemaCompareServicesProvider(sc);
 
 		let result = new SchemaCompareMainWindow();
 		await result.start(null);
