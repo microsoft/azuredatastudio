@@ -70,7 +70,7 @@ interface ISharedProcessInitData {
 	logLevel: LogLevel;
 }
 
-const eventPrefix = 'monacoworkbench';
+const eventPrefix = product.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench'; // {{ SQL CARBON EDIT }}
 
 class MainProcessService implements IMainProcessService {
 	constructor(private server: Server, private mainRouter: StaticRouter) { }
@@ -150,7 +150,7 @@ async function main(server: Server, initData: ISharedProcessInitData, configurat
 
 		let appInsightsAppender: ITelemetryAppender | null = NullAppender;
 		if (!extensionDevelopmentLocationURI && !environmentService.args['disable-telemetry'] && product.enableTelemetry) {
-			if (product.aiConfig && product.aiConfig.asimovKey && isBuilt) {
+			if (product.aiConfig && product.aiConfig.asimovKey) {
 				appInsightsAppender = new AppInsightsAppender(eventPrefix, null, product.aiConfig.asimovKey, telemetryLogService);
 				disposables.add(toDisposable(() => appInsightsAppender!.flush())); // Ensure the AI appender is disposed so that it flushes remaining data
 			}
