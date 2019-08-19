@@ -88,6 +88,8 @@ export class FileBrowserDialog extends Modal {
 		this._treeContainer = DOM.append(this._body, DOM.$('.tree-view'));
 
 		let tableContainer: HTMLElement = DOM.append(DOM.append(this._body, DOM.$('.option-section')), DOM.$('table.file-table-content'));
+		tableContainer.setAttribute('role', 'presentation');
+
 		let pathLabel = localize('filebrowser.filepath', "Selected path");
 		let pathBuilder = DialogHelper.appendRow(tableContainer, pathLabel, 'file-input-label', 'file-input-box');
 		this._filePathInputBox = new InputBox(pathBuilder, this._contextViewService, {
