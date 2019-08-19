@@ -80,7 +80,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		this._overlay.className = 'overlayWidgets monaco-editor';
 		this._overlay.style.width = '100%';
 		this._overlay.style.zIndex = '4';
-		parent.appendChild(this._overlay);
 
 		this._findState = new FindReplaceState();
 		this._findState.onFindReplaceStateChange(e => this._onFindStateChange(e));
@@ -93,6 +92,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 			this._contextKeyService,
 			this._themeService
 		);
+		this._finder.getDomNode().style.visibility = 'hidden';
 	}
 
     /**
@@ -120,6 +120,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		const parentElement = this.getContainer();
 
 		super.setInput(input, options, CancellationToken.None);
+		DOM.clearNode(parentElement);
+		parentElement.appendChild(this._overlay);
 
 		if (!input.hasBootstrapped) {
 			let container = DOM.$<HTMLElement>('.notebookEditor');
@@ -170,6 +172,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public addOverlayWidget(widget: IOverlayWidget): void {
 		let domNode = widget.getDomNode();
 		domNode.style.right = '28px';
+		domNode.style.top = '34px';
 		this._overlay.appendChild(domNode);
 		this._findState.change({ isRevealed: false }, false);
 	}
@@ -195,10 +198,10 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 		if (e.isRevealed) {
 			if (this._findState.isRevealed) {
-				this._finder.getDomNode().style.top = '0px';
+				this._finder.getDomNode().style.visibility = 'visible';
 				this._updateFinderMatchState();
 			} else {
-				this._finder.getDomNode().style.top = '';
+				this._finder.getDomNode().style.visibility = 'hidden';
 			}
 		}
 
