@@ -31,7 +31,7 @@ if (context.RunTest) {
 		suiteSetup(async function () {
 			let attempts: number = 20;
 			while (attempts > 0) {
-				schemaCompareService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.mssql)).schemaCompare;
+				schemaCompareService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).schemaCompare;
 				if (schemaCompareService) {
 					break;
 				}
@@ -119,7 +119,7 @@ class SchemaCompareTester {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.mssql)).dacFx;
+			let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 			assert(dacfxService, 'DacFx Service Provider is not available');
 			let result1 = await dacfxService.deployDacpac(dacpac1, sourceDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 			let result2 = await dacfxService.deployDacpac(dacpac2, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
@@ -199,7 +199,7 @@ class SchemaCompareTester {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			let dacfxService = (vscode.extensions.getExtension('mssql').exports as mssql.mssql).dacFx;
+			let dacfxService = (vscode.extensions.getExtension('mssql').exports as mssql.IExtension).dacFx;
 			assert(dacfxService, 'DacFx Service Provider is not available');
 			let result = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database2.dacpac'), targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 
@@ -257,7 +257,7 @@ class SchemaCompareTester {
 		assert(schemaCompareResult.errorMessage === null, `Expected: there should be no error. Actual Error message: "${schemaCompareResult.errorMessage}"`);
 		assert(schemaCompareResult.success === true, `Expected: success in schema compare, Actual: Failure`);
 		assert(schemaCompareResult.differences.length === 4, `Expected: 4 differences. Actual differences: "${schemaCompareResult.differences.length}"`);
-		assert(schemaCompareResult.operationId === operationId, `Operation Id Expected to be same as passed. Expected : ${operationId}, Actual ${schemaCompareResult.operationId}`)
+		assert(schemaCompareResult.operationId === operationId, `Operation Id Expected to be same as passed. Expected : ${operationId}, Actual ${schemaCompareResult.operationId}`);
 	}
 
 	private async assertScriptGenerationResult(resultstatus: azdata.ResultStatus, server: string, database: string): Promise<void> {

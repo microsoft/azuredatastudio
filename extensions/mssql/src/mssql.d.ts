@@ -23,7 +23,7 @@ export const enum extension {
 /**
 * The APIs provided by Mssql extension
 */
-export interface mssql {
+export interface IExtension {
 	/**
 	 * Gets the object explorer API that supports querying over the connections supported by this extension
 	 *
