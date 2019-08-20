@@ -106,7 +106,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
-		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
@@ -170,7 +170,7 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
-		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
@@ -212,7 +212,7 @@ describe('BookTreeViewProvider.getBooks', function (): void {
 		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
-		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
@@ -269,7 +269,7 @@ describe('BookTreeViewProvider.getSections', function (): void {
 		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
-		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
