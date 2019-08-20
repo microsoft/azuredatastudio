@@ -30,7 +30,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.workspaceFolders || [], extensionContext);
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider));
 	extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(bookTreeViewProvider));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (resource) => bookTreeViewProvider.openBook(resource, extensionContext)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (resource) => bookTreeViewProvider.openBook(resource, extensionContext, true)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebookAsUntitled', (resource) => bookTreeViewProvider.openNotebookAsUntitled(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource)));
