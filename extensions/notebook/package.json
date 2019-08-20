@@ -344,12 +344,20 @@
 				}
 			]
 		},
-		"views": {
-			"explorer": [
+		"viewsContainers": {
+      "activitybar": [
+        {
+          "id": "books-explorer",
+          "title": "Jupyter Books",
+          "icon": "resources/dark/open_notebook_inverse.svg"
+        }
+      ]
+    },
+    "views": {
+      "books-explorer": [
 				{
 					"id": "bookTreeView",
-					"name": "Books",
-					"when": "bookOpened && notebookQuality != stable"
+					"name": "Books"
 				}
 			]
 		}
