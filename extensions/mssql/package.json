@@ -10,6 +10,7 @@
     "vscode": "*"
   },
   "main": "./out/main",
+  "typings": "./src/mssql",
   "extensionDependencies": [
     "vscode.sql"
   ],
@@ -25,6 +26,7 @@
     "figures": "^2.0.0",
     "find-remove": "1.2.1",
     "fs-extra": "^3.0.1",
+    "kerberos": "^1.1.2",
     "request": "^2.88.0",
     "request-promise": "^4.2.2",
     "service-downloader": "github:anthonydresser/service-downloader#0.1.6",
@@ -947,5 +949,8 @@
         }
       ]
     }
+  },
+  "devDependencies": {
+    "@types/kerberos": "^1.1.0"
   }
 }

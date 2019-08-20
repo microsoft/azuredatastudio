@@ -52,9 +52,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 		const features_mssql: azdata.DataProviderType[] = [
 			azdata.DataProviderType.AgentServicesProvider,
-			azdata.DataProviderType.DacFxServicesProvider,
-			azdata.DataProviderType.IconProvider,
-			azdata.DataProviderType.SchemaCompareServicesProvider
+			azdata.DataProviderType.IconProvider
 		];
 
 		features_mssql.push(...commonFeatures);

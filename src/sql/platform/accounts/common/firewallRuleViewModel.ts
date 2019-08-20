@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
  */
 export class FirewallRuleViewModel {
 	public isIPAddressSelected: boolean;
-	public selectedAccount: azdata.Account;
+	public selectedAccount: azdata.Account | undefined;
 
 	private _defaultIPAddress: string;
 	private _defaultFromSubnetIPRange: string;

@@ -102,6 +102,13 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
 		this._button.title = this.title;
+
+		// Button's ariaLabel gets set to the label by default.
+		// We only want to override that if buttonComponent's ariaLabel is set explicitly.
+		if (this.ariaLabel) {
+			this._button.ariaLabel = this.ariaLabel;
+		}
+
 		if (this.width) {
 			this._button.setWidth(this.convertSize(this.width.toString()));
 		}
@@ -175,4 +182,11 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
 	}
 
+	private get ariaLabel(): string {
+		return this.getPropertyOrDefault<azdata.ButtonProperties, string>((properties) => properties.ariaLabel, '');
+	}
+
+	private set ariaLabel(newValue: string) {
+		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, ariaLabel) => { properties.ariaLabel = ariaLabel; }, newValue);
+	}
 }
