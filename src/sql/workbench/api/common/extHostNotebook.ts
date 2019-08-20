@@ -289,7 +289,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let serverManager = notebookManager.serverManager;
 			if (!serverManager) {
-				return Promise.reject(new Error(localize('noServerManager', 'Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noServerManager', "Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(serverManager);
 		});
@@ -299,7 +299,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let contentManager = notebookManager.contentManager;
 			if (!contentManager) {
-				return Promise.reject(new Error(localize('noContentManager', 'Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noContentManager', "Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(contentManager);
 		});
@@ -309,7 +309,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let sessionManager = notebookManager.sessionManager;
 			if (!sessionManager) {
-				return Promise.reject(new Error(localize('noSessionManager', 'Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noSessionManager', "Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(sessionManager);
 		});

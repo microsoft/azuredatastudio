@@ -32,12 +32,6 @@ class LogOutputChannels extends Disposable implements IWorkbenchContribution {
 		this.registerLogChannel(Constants.sharedLogChannelId, nls.localize('sharedLog', "Shared"), URI.file(join(environmentService.logsPath, `sharedprocess.log`)));
 		this.registerLogChannel(Constants.rendererLogChannelId, nls.localize('rendererLog', "Window"), URI.file(join(environmentService.logsPath, `renderer${environmentService.configuration.windowId}.log`)));
 
-		// {{SQL CARBON EDIT}} @anthonydresser 05/19/19 investigate, this should be in the extension
-		let toolsServiceLogFile: string = join(environmentService.logsPath, '..', '..', 'mssql', `sqltools_${Date.now()}.log`);
-		console.log(`SqlTools Log file is: ${toolsServiceLogFile}`);
-		this.registerLogChannel(Constants.sqlToolsLogChannellId, nls.localize('sqlToolsLog', "Log (SqlTools)"), URI.file(toolsServiceLogFile));
-		// {{SQL CARBON EDIT}} - End
-
 		const registerTelemetryChannel = (level: LogLevel) => {
 			if (level === LogLevel.Trace && !Registry.as<IOutputChannelRegistry>(OutputExt.OutputChannels).getChannel(Constants.telemetryLogChannelId)) {
 				this.registerLogChannel(Constants.telemetryLogChannelId, nls.localize('telemetryLog', "Telemetry"), URI.file(join(environmentService.logsPath, `telemetry.log`)));

@@ -118,8 +118,11 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
 		}
 		actions.push(this._instantiationService.createInstance(DeleteConnectionAction, DeleteConnectionAction.ID, DeleteConnectionAction.DELETE_CONNECTION_LABEL, context.profile));
-		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
 
+		// Contribute refresh action for scriptable objects via contribution
+		if (!this.isScriptableObject(context)) {
+			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
+		}
 		return actions;
 	}
 
@@ -180,7 +183,10 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			this.addRestoreAction(context, actions);
 		}
 
-		actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, treeNode));
+		// Contribute refresh action for scriptable objects via contribution
+		if (!this.isScriptableObject(context)) {
+			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
+		}
 
 		return actions;
 	}
@@ -204,6 +210,15 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
 			actions.push(this._instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL));
 		}
+	}
+
+	private isScriptableObject(context: ObjectExplorerContext): boolean {
+		if (context.treeNode) {
+			if (NodeType.SCRIPTABLE_OBJECTS.includes(context.treeNode.nodeTypeId)) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
 

@@ -89,7 +89,7 @@ export default class AccountStore implements IAccountStore {
 		activeOperation = activeOperation.then(op);
 
 		// Add a catch at the end to make sure we can continue after any errors
-		activeOperation = activeOperation.then(null, (err) => {
+		activeOperation = activeOperation.then(undefined, (err) => {
 			// TODO: Log the error
 		});
 
@@ -107,7 +107,7 @@ export default class AccountStore implements IAccountStore {
 				accountAdded: false,
 				accountModified: false,
 				accountRemoved: false,
-				changedAccount: null,
+				changedAccount: undefined,
 				updatedAccounts: accounts
 			};
 		}
@@ -135,7 +135,7 @@ export default class AccountStore implements IAccountStore {
 			accountAdded: false,
 			accountModified: false,
 			accountRemoved: match >= 0,
-			changedAccount: null,
+			changedAccount: undefined,
 			updatedAccounts: accounts
 		};
 	}
@@ -149,7 +149,7 @@ export default class AccountStore implements IAccountStore {
 				accountAdded: false,
 				accountModified: false,
 				accountRemoved: false,
-				changedAccount: null,
+				changedAccount: undefined,
 				updatedAccounts: accounts
 			};
 		}

@@ -52,6 +52,9 @@ export abstract class BasePage {
 			return undefined;
 		}
 
+		// reverse list so that most recent connections are first
+		cons.reverse();
+
 		let count = -1;
 		let idx = -1;
 
@@ -89,6 +92,15 @@ export abstract class BasePage {
 		} else {
 			this.deleteServerValues();
 		}
+
+		// only leave unique server connections
+		values = values.reduce((uniqueValues, conn) => {
+			let exists = uniqueValues.find(x => x.displayName === conn.displayName);
+			if (!exists) {
+				uniqueValues.push(conn);
+			}
+			return uniqueValues;
+		}, []);
 
 		return values;
 	}

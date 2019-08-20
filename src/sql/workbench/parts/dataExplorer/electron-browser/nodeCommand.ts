@@ -22,7 +22,7 @@ export const SCRIPT_AS_DELETE_COMMAND_ID = 'dataExplorer.scriptAsDelete';
 export const SCRIPT_AS_SELECT_COMMAND_ID = 'dataExplorer.scriptAsSelect';
 export const SCRIPT_AS_EXECUTE_COMMAND_ID = 'dataExplorer.scriptAsExecute';
 export const SCRIPT_AS_ALTER_COMMAND_ID = 'dataExplorer.scriptAsAlter';
-export const EDIT_DATA_COMMAND_ID = 'dataExplorer.scriptAsAlter';
+export const EDIT_DATA_COMMAND_ID = 'dataExplorer.scriptAsEdit';
 
 // Script as Create
 CommandsRegistry.registerCommand({

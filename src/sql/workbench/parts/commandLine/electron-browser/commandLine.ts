@@ -92,7 +92,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 		let connectedContext: azdata.ConnectedContext = undefined;
 		if (profile) {
 			if (this._notificationService) {
-				this._notificationService.status(localize('connectingLabel', 'Connecting: {0}', profile.serverName), { hideAfter: 2500 });
+				this._notificationService.status(localize('connectingLabel', "Connecting: {0}", profile.serverName), { hideAfter: 2500 });
 			}
 			try {
 				await this._connectionManagementService.connectIfNotConnected(profile, 'connection', true);
@@ -106,7 +106,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 		}
 		if (commandName) {
 			if (this._notificationService) {
-				this._notificationService.status(localize('runningCommandLabel', 'Running command: {0}', commandName), { hideAfter: 2500 });
+				this._notificationService.status(localize('runningCommandLabel', "Running command: {0}", commandName), { hideAfter: 2500 });
 			}
 			await this._commandService.executeCommand(commandName, connectedContext);
 		} else if (profile) {
@@ -119,7 +119,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 			else {
 				// Default to showing new query
 				if (this._notificationService) {
-					this._notificationService.status(localize('openingNewQueryLabel', 'Opening new query: {0}', profile.serverName), { hideAfter: 2500 });
+					this._notificationService.status(localize('openingNewQueryLabel', "Opening new query: {0}", profile.serverName), { hideAfter: 2500 });
 				}
 				try {
 					await TaskUtilities.newQuery(profile,

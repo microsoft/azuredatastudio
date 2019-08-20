@@ -26,17 +26,17 @@ export function generateGuid(): string {
 	return oct.substr(0, 8) + '-' + oct.substr(9, 4) + '-4' + oct.substr(13, 3) + '-' + clockSequenceHi + oct.substr(16, 3) + '-' + oct.substr(19, 12);
 }
 
-export function showErrorMessage(error: any): void {
+export function showErrorMessage(error: any, prefixText?: string): void {
 	if (error) {
-		let text: string = undefined;
+		let text: string = prefixText || '';
 		if (typeof error === 'string') {
-			text = error as string;
+			text += error as string;
 		} else if (typeof error === 'object' && error !== null) {
 			let message = error.message;
 			let code = error.code || error.errno;
-			text = (code ? `${code} ` : '') + message;
+			text += `${message}${code ? ` (${code})` : ''}`;
 		} else {
-			text = `${error}`;
+			text += `${error}`;
 		}
 		vscode.window.showErrorMessage(text);
 	}

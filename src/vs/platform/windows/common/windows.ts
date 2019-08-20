@@ -96,12 +96,12 @@ export interface IWindowsService {
 
 	_serviceBrand: any;
 
-	onWindowOpen: Event<number>;
-	onWindowFocus: Event<number>;
-	onWindowBlur: Event<number>;
-	onWindowMaximize: Event<number>;
-	onWindowUnmaximize: Event<number>;
-	onRecentlyOpenedChange: Event<void>;
+	readonly onWindowOpen: Event<number>;
+	readonly onWindowFocus: Event<number>;
+	readonly onWindowBlur: Event<number>;
+	readonly onWindowMaximize: Event<number>;
+	readonly onWindowUnmaximize: Event<number>;
+	readonly onRecentlyOpenedChange: Event<void>;
 
 	// Dialogs
 	pickFileFolderAndOpen(options: INativeOpenDialogOptions): Promise<void>;
@@ -303,7 +303,7 @@ export function getTitleBarStyle(configurationService: IConfigurationService, en
 			return 'native'; // native tabs on sierra do not work with custom title style
 		}
 
-		const useSimpleFullScreen = false; //isMacintosh && configuration.nativeFullScreen === false;
+		const useSimpleFullScreen = isMacintosh && configuration.nativeFullScreen === false;
 		if (useSimpleFullScreen) {
 			return 'native'; // simple fullscreen does not work well with custom title style (https://github.com/Microsoft/vscode/issues/63291)
 		}
@@ -426,6 +426,7 @@ export interface IWindowConfiguration extends ParsedArgs {
 	folderUri?: ISingleFolderWorkspaceIdentifier;
 
 	remoteAuthority?: string;
+	connectionToken?: string;
 
 	zoomLevel?: number;
 	fullscreen?: boolean;

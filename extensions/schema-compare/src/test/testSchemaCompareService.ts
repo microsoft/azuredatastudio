@@ -4,8 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as mssql from '../../../mssql';
 
-export class SchemaCompareTestService implements azdata.SchemaCompareServicesProvider {
+export class SchemaCompareTestService implements mssql.ISchemaCompareService {
 
 	testOperationId: string = 'Test Operation Id';
 
@@ -13,8 +14,8 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
-		let result: azdata.SchemaCompareOptionsResult = {
+	schemaCompareGetDefaultOptions(): Thenable<mssql.SchemaCompareOptionsResult> {
+		let result: mssql.SchemaCompareOptionsResult = {
 			defaultDeploymentOptions: undefined,
 			success: true,
 			errorMessage: ''
@@ -23,21 +24,21 @@ export class SchemaCompareTestService implements azdata.SchemaCompareServicesPro
 		return Promise.resolve(result);
 	}
 
-	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
+	schemaCompareIncludeExcludeNode(operationId: string, diffEntry: mssql.DiffEntry, IncludeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
+	schemaCompareOpenScmp(filePath: string): Thenable<mssql.SchemaCompareOpenScmpResult> {
 		throw new Error('Method not implemented.');
 	}
 
 
-	schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
+	schemaCompareSaveScmp(sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: mssql.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: mssql.SchemaCompareObjectId[], excludedTargetObjects: mssql.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
 		throw new Error('Method not implemented.');
 	}
 
-	schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> {
-		let result: azdata.SchemaCompareResult = {
+	schemaCompare(operationId: string, sourceEndpointInfo: mssql.SchemaCompareEndpointInfo, targetEndpointInfo: mssql.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode): Thenable<mssql.SchemaCompareResult> {
+		let result: mssql.SchemaCompareResult = {
 			operationId: this.testOperationId,
 			areEqual: true,
 			differences: [],

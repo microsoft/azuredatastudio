@@ -1133,6 +1133,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('forceFitColumns', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(v: string) {
+		this.setProperty('title', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1182,6 +1189,13 @@ class DropDownWrapper extends ComponentWrapper implements azdata.DropDownCompone
 	}
 	public set fireOnTextChange(v: boolean) {
 		this.setProperty('fireOnTextChange', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
 	}
 
 	public get onValueChanged(): vscode.Event<any> {

@@ -10,7 +10,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
-import { ModalFooterStyle } from 'sql/workbench/browser/modal/modal';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -20,6 +19,7 @@ import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/com
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import * as cr from 'vs/platform/theme/common/colorRegistry';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
 import * as lifecycle from 'vs/base/common/lifecycle';
@@ -32,6 +32,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { ITheme } from 'vs/platform/theme/common/themeService';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -270,6 +271,7 @@ export class BackupComponent {
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], this.contextViewService);
+		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
 		this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox.selectedOptions.length > 0) {
 				const key = e.keyCode;
@@ -350,7 +352,7 @@ export class BackupComponent {
 		this.mediaDescriptionBox.disable();
 
 		this.registerListeners();
-		this.updateTheme();
+		this.updateTheme(this.themeService.getTheme());
 	}
 
 	ngAfterViewInit() {
@@ -549,17 +551,21 @@ export class BackupComponent {
 			this.backupRetainDaysChanged(days);
 		}));
 
-		this._toDispose.push(this.themeService.onDidColorThemeChange(e => this.updateTheme()));
+		this._toDispose.push(this.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 	}
 
 	// Update theming that is specific to backup dialog
-	private updateTheme(): void {
+	private updateTheme(theme: ITheme): void {
 		// set modal footer style
 		let footerHtmlElement: HTMLElement = <HTMLElement>this.modalFooterElement.nativeElement;
-		footerHtmlElement.style.backgroundColor = ModalFooterStyle.backgroundColor;
-		footerHtmlElement.style.borderTopWidth = ModalFooterStyle.borderTopWidth;
-		footerHtmlElement.style.borderTopStyle = ModalFooterStyle.borderTopStyle;
-		footerHtmlElement.style.borderTopColor = ModalFooterStyle.borderTopColor;
+		const backgroundColor = theme.getColor(cr.foreground);
+		const border = theme.getColor(cr.contrastBorder) ? theme.getColor(cr.contrastBorder).toString() : null;
+		const footerBorderTopWidth = border ? '1px' : null;
+		const footerBorderTopStyle = border ? 'solid' : null;
+		footerHtmlElement.style.backgroundColor = backgroundColor ? backgroundColor.toString() : null;
+		footerHtmlElement.style.borderTopWidth = footerBorderTopWidth;
+		footerHtmlElement.style.borderTopStyle = footerBorderTopStyle;
+		footerHtmlElement.style.borderTopColor = border;
 	}
 
 	private addButtonClickHandler(button: Button, handler: () => void) {

@@ -71,7 +71,6 @@ export class RemoteExtensionHostClient extends Disposable implements IExtensionH
 
 	public start(): Promise<IMessagePassingProtocol> {
 		const options: IConnectionOptions = {
-			isBuilt: this._environmentService.isBuilt,
 			commit: this._productService.commit,
 			socketFactory: this._socketFactory,
 			addressProvider: {
@@ -184,6 +183,7 @@ export class RemoteExtensionHostClient extends Disposable implements IExtensionH
 			const r: IInitData = {
 				commit: this._productService.commit,
 				version: this._productService.version,
+				vscodeVersion: this._productService.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 				parentPid: remoteExtensionHostData.pid,
 				environment: {
 					isExtensionDevelopmentDebug,

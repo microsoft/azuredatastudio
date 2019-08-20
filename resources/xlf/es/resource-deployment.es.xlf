@@ -144,7 +144,7 @@
       </trans-unit>
       <trans-unit id="deploymentDialog.OKButtonText">
         <source xml:lang="en">Open Notebook</source>
-        <target state="translated">Abra Notebook</target>
+        <target state="translated">Abrir Notebook</target>
       </trans-unit>
       <trans-unit id="deploymentDialog.toolNameColumnHeader">
         <source xml:lang="en">Tool</source>

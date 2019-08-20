@@ -63,9 +63,9 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 		}
 	}
 
-	addHdfsConnection(options: IHdfsOptions): void {
+	public async addHdfsConnection(options: IHdfsOptions): Promise<void> {
 		let displayName = `${options.user}@${options.host}:${options.port}`;
-		let fileSource = FileSourceFactory.instance.createHdfsFileSource(options);
+		let fileSource = await FileSourceFactory.instance.createHdfsFileSource(options);
 		this.addConnection(displayName, fileSource);
 	}
 

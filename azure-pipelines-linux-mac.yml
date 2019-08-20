@@ -14,6 +14,7 @@ steps:
     sudo chmod +x /etc/init.d/xvfb
     sudo update-rc.d xvfb defaults
     sudo service xvfb start
+    sudo apt-get install -y libkrb5-dev
     # sh -e /etc/init.d/xvfb start
     # sleep 3
   displayName: 'Linux preinstall'
@@ -35,9 +36,9 @@ steps:
     yarn tslint
   displayName: 'Run TSLint'
 
-# - script: |
-#     yarn strict-null-check
-#   displayName: 'Run Strict Null Check'
+- script: |
+    yarn strict-null-check
+  displayName: 'Run Strict Null Check'
 
 - script: |
     yarn compile

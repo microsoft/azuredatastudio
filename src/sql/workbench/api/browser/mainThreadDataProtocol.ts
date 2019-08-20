@@ -24,8 +24,6 @@ import { IProfilerService } from 'sql/workbench/services/profiler/common/interfa
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { ISchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 /**
@@ -55,9 +53,7 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IDacFxService private _dacFxService: IDacFxService,
-		@ISchemaCompareService private _schemaCompareService: ISchemaCompareService,
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
@@ -134,11 +130,11 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 				return self._proxy.$disposeQuery(handle, ownerUri);
 			},
 			saveResults(requestParams: azdata.SaveResultsRequestParams): Thenable<azdata.SaveResultRequestResult> {
-				let serializationProvider = self._serializationService.getSerializationFeatureMetadataProvider(requestParams.ownerUri);
-				if (serializationProvider && serializationProvider.enabled) {
+				let saveResultsFeatureInfo = self._serializationService.getSaveResultsFeatureMetadataProvider(requestParams.ownerUri);
+				if (saveResultsFeatureInfo && saveResultsFeatureInfo.enabled) {
 					return self._proxy.$saveResults(handle, requestParams);
 				}
-				else if (serializationProvider && !serializationProvider.enabled) {
+				else if (saveResultsFeatureInfo && !saveResultsFeatureInfo.enabled) {
 					return self._serializationService.disabledSaveAs();
 				}
 				else {
@@ -441,59 +437,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		return undefined;
 	}
 
-	public $registerDacFxServicesProvider(providerId: string, handle: number): Promise<any> {
+	public $registerSerializationProvider(providerId: string, handle: number): Promise<any> {
 		const self = this;
-		this._dacFxService.registerProvider(providerId, <azdata.DacFxServicesProvider>{
-			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
+		this._serializationService.registerProvider(providerId, <azdata.SerializationProvider>{
+			startSerialization(requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> {
+				return self._proxy.$startSerialization(handle, requestParams);
 			},
-			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
+			continueSerialization(requestParams: azdata.SerializeDataContinueRequestParams): Thenable<azdata.SerializeDataResult> {
+				return self._proxy.$continueSerialization(handle, requestParams);
 			},
-			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
-			},
-			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
-			},
-			generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$generateDeployScript(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			},
-			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
-				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
-			schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
-				return self._proxy.$schemaCompare(handle, operationId, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
-			},
-			schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
-			},
-			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
-			},
-			schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
-				return self._proxy.$schemaCompareGetDefaultOptions(handle);
-			},
-			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
-			},
-			schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
-				return self._proxy.$schemaCompareOpenScmp(handle, filePath);
-			},
-			schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareSaveScmp(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions, scmpFilePath, excludedSourceObjects, excludedTargetObjects);
-			},
-			schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareCancel(handle, operationId);
-			}
 		});
 
 		return undefined;

@@ -14,7 +14,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 export class AutoOAuthDialogController {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _autoOAuthDialog: AutoOAuthDialog;
-	private _providerId: string;
+	private _providerId?: string;
 	private _userCode: string;
 	private _uri: string;
 
@@ -22,15 +22,13 @@ export class AutoOAuthDialogController {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService
-	) {
-		this._providerId = null;
-	}
+	) { }
 
 	/**
 	 * Open auto OAuth dialog
 	 */
 	public openAutoOAuthDialog(providerId: string, title: string, message: string, userCode: string, uri: string): Thenable<void> {
-		if (this._providerId !== null) {
+		if (this._providerId !== undefined) {
 			// If a oauth flyout is already open, return an error
 			const errorMessage = localize('oauthFlyoutIsAlreadyOpen', "Cannot start auto OAuth. An auto OAuth is already in progress.");
 			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
@@ -60,16 +58,16 @@ export class AutoOAuthDialogController {
 	 */
 	public closeAutoOAuthDialog(): void {
 		this._autoOAuthDialog.close();
-		this._providerId = null;
+		this._providerId = undefined;
 	}
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private handleOnCancel(): void {
-		this._accountManagementService.cancelAutoOAuthDeviceCode(this._providerId);
+		this._accountManagementService.cancelAutoOAuthDeviceCode(this._providerId!); // this should be always true
 	}
 
 	private handleOnClose(): void {
-		this._providerId = null;
+		this._providerId = undefined;
 	}
 
 	private handleOnAddAccount(): void {

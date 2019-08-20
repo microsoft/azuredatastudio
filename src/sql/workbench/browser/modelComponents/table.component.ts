@@ -208,12 +208,27 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
+		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
 		for (let col in this._checkboxColumns) {
 			this.registerCheckboxPlugin(this._checkboxColumns[col]);
+		}
+
+		if (this.ariaRowCount === -1) {
+			this._table.removeAriaRowCount();
+		}
+		else {
+			this._table.ariaRowCount = this.ariaRowCount;
+		}
+
+		if (this.ariaColumnCount === -1) {
+			this._table.removeAriaColumnCount();
+		}
+		else {
+			this._table.ariaColumnCount = this.ariaColumnCount;
 		}
 
 		this.layoutTable();
@@ -285,5 +300,17 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get forceFitColumns() {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
+	}
+
+	public get title() {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
+	}
+
+	public get ariaRowCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaRowCount, -1);
+	}
+
+	public get ariaColumnCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
 	}
 }
