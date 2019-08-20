@@ -90,7 +90,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openBook', 'Open book {0} failed: {1}',
+			vscode.window.showErrorMessage(localize('openBook', "Open book {0} failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -106,7 +106,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showTextDocument(doc);
 			}
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openNotebookError', 'Open file {0} failed: {1}',
+			vscode.window.showErrorMessage(localize('openNotebookError', "Open file {0} failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -137,7 +137,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				});
 			});
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openUntitledNotebookError', 'Open file {0} as untitled failed: {1}',
+			vscode.window.showErrorMessage(localize('openUntitledNotebookError', "Open file {0} as untitled failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -166,7 +166,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			vscode.env.openExternal(vscode.Uri.parse(resource));
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openExternalLinkError', 'Open link {0} failed: {1}',
+			vscode.window.showErrorMessage(localize('openExternalLinkError', "Open link {0} failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -205,7 +205,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					tableOfContents: this.flattenArray(tableOfContents),
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
-					collapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
@@ -214,7 +214,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				);
 				books.push(book);
 			} catch (e) {
-				vscode.window.showErrorMessage(localize('openConfigFileError', 'Open file {0} failed: {1}',
+				vscode.window.showErrorMessage(localize('openConfigFileError', "Open file {0} failed: {1}",
 					path.join(root, '_config.yml'),
 					e instanceof Error ? e.message : e));
 			}
@@ -233,7 +233,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						tableOfContents: tableOfContents,
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink,
-						collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
+						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -254,7 +254,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Notebook,
-							collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
+							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -273,7 +273,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							tableOfContents: tableOfContents,
 							page: sections[i],
 							type: BookTreeItemType.Markdown,
-							collapsibleState: vscode.TreeItemCollapsibleState.Collapsed
+							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -282,7 +282,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						);
 						notebooks.push(markdown);
 					} else {
-						vscode.window.showErrorMessage(localize('missingFileError', 'Missing file : {0}', sections[i].title));
+						vscode.window.showErrorMessage(localize('missingFileError', "Missing file : {0}", sections[i].title));
 					}
 				}
 			} else {
