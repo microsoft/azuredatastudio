@@ -10,8 +10,8 @@ import * as DOM from 'vs/base/browser/dom';
 import { IAction } from 'vs/base/common/actions';
 import { IActionOptions, ActionBar } from 'vs/base/browser/ui/actionbar/actionbar';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { KeyCode, KeyMod } from 'vs/base/common/keyCodes';
-import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { Color } from 'vs/base/common/color';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import * as map from 'vs/base/common/map';
@@ -47,7 +47,7 @@ export interface IPanelTab {
 interface IInternalPanelTab {
 	tab: IPanelTab;
 	header: HTMLElement;
-	disposables: IDisposable[];
+	disposables: DisposableStore;
 	label: HTMLElement;
 	body?: HTMLElement;
 	destroyTabBody?: boolean;
@@ -119,7 +119,7 @@ export class TabbedPanel extends Disposable {
 
 	public pushTab(tab: IPanelTab, index?: number, destroyTabBody?: boolean): PanelTabIdentifier {
 		let internalTab = { tab } as IInternalPanelTab;
-		internalTab.disposables = [];
+		internalTab.disposables = new DisposableStore();
 		internalTab.destroyTabBody = destroyTabBody;
 		this._tabMap.set(tab.identifier, internalTab);
 		this._createTab(internalTab, index);
@@ -158,12 +158,12 @@ export class TabbedPanel extends Disposable {
 				tab.tab.tabSelectedHandler();
 			}
 		};
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => {
+		tab.disposables.add(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.CLICK, e => {
 			this.showTab(tab.tab.identifier);
 			invokeTabSelectedHandler();
 		}));
 
-		tab.disposables.push(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
+		tab.disposables.add(DOM.addDisposableListener(tabHeaderElement, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
 			let event = new StandardKeyboardEvent(e);
 			if (event.equals(KeyCode.Enter)) {
 				this.showTab(tab.tab.identifier);
@@ -265,7 +265,7 @@ export class TabbedPanel extends Disposable {
 		if (actualTab.body && actualTab.body.remove) {
 			actualTab.body.remove();
 		}
-		dispose(actualTab.disposables);
+		actualTab.disposables.dispose();
 		this._tabMap.delete(tab);
 		let index = this._tabOrder.findIndex(t => t === tab);
 		this._tabOrder.splice(index, 1);
