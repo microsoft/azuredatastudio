@@ -15,9 +15,6 @@ module.exports = withDefaults({
 		main: './src/main.ts'
 	},
 	externals: {
-		'dataprotocol-client': 'commonjs dataprotocol-client',
-		'vscode-languageclient': 'commonjs vscode-languageclient',
-		'vscode-extension-telemetry': 'commonjs vscode-extension-telemetry',
-		'request': 'commonjs request',
+		kerberos: "commonjs kerberos"
 	}
 });

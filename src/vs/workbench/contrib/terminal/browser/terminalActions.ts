@@ -993,28 +993,10 @@ export class ClearSelectionTerminalAction extends Action {
 	}
 }
 
-export class AllowWorkspaceShellTerminalCommand extends Action {
+export class ManageWorkspaceShellPermissionsTerminalCommand extends Action {
 
-	public static readonly ID = TERMINAL_COMMAND_ID.WORKSPACE_SHELL_ALLOW;
-	public static readonly LABEL = nls.localize('workbench.action.terminal.allowWorkspaceShell', "Allow Workspace Shell Configuration");
-
-	constructor(
-		id: string, label: string,
-		@ITerminalService private readonly terminalService: ITerminalService
-	) {
-		super(id, label);
-	}
-
-	public run(event?: any): Promise<any> {
-		this.terminalService.setWorkspaceShellAllowed(true);
-		return Promise.resolve(undefined);
-	}
-}
-
-export class DisallowWorkspaceShellTerminalCommand extends Action {
-
-	public static readonly ID = TERMINAL_COMMAND_ID.WORKSPACE_SHELL_DISALLOW;
-	public static readonly LABEL = nls.localize('workbench.action.terminal.disallowWorkspaceShell', "Disallow Workspace Shell Configuration");
+	public static readonly ID = TERMINAL_COMMAND_ID.MANAGE_WORKSPACE_SHELL_PERMISSIONS;
+	public static readonly LABEL = nls.localize('workbench.action.terminal.manageWorkspaceShellPermissions', "Manage Workspace Shell Permissions");
 
 	constructor(
 		id: string, label: string,
@@ -1023,9 +1005,8 @@ export class DisallowWorkspaceShellTerminalCommand extends Action {
 		super(id, label);
 	}
 
-	public run(event?: any): Promise<any> {
-		this.terminalService.setWorkspaceShellAllowed(false);
-		return Promise.resolve(undefined);
+	public async run(event?: any): Promise<any> {
+		await this.terminalService.manageWorkspaceShellPermissions();
 	}
 }
 
@@ -1168,7 +1149,7 @@ export class ScrollToPreviousCommandAction extends Action {
 
 	public run(): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
-		if (instance) {
+		if (instance && instance.commandTracker) {
 			instance.commandTracker.scrollToPreviousCommand();
 			instance.focus();
 		}
@@ -1189,7 +1170,7 @@ export class ScrollToNextCommandAction extends Action {
 
 	public run(): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
-		if (instance) {
+		if (instance && instance.commandTracker) {
 			instance.commandTracker.scrollToNextCommand();
 			instance.focus();
 		}
@@ -1210,7 +1191,7 @@ export class SelectToPreviousCommandAction extends Action {
 
 	public run(): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
-		if (instance) {
+		if (instance && instance.commandTracker) {
 			instance.commandTracker.selectToPreviousCommand();
 			instance.focus();
 		}
@@ -1231,7 +1212,7 @@ export class SelectToNextCommandAction extends Action {
 
 	public run(): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
-		if (instance) {
+		if (instance && instance.commandTracker) {
 			instance.commandTracker.selectToNextCommand();
 			instance.focus();
 		}
@@ -1252,7 +1233,7 @@ export class SelectToPreviousLineAction extends Action {
 
 	public run(): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
-		if (instance) {
+		if (instance && instance.commandTracker) {
 			instance.commandTracker.selectToPreviousLine();
 			instance.focus();
 		}
@@ -1273,7 +1254,7 @@ export class SelectToNextLineAction extends Action {
 
 	public run(): Promise<any> {
 		const instance = this.terminalService.getActiveInstance();
-		if (instance) {
+		if (instance && instance.commandTracker) {
 			instance.commandTracker.selectToNextLine();
 			instance.focus();
 		}

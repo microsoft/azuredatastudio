@@ -228,7 +228,7 @@ suite('SQL ConnectionStatusManager tests', () => {
 		//Verify database name changed after connection is complete
 		connections.updateDatabaseName(summary);
 		connectionStatus = connections.findConnection(connection3Id);
-		let ownerUriWithDbName = Utils.generateUriWithPrefix(connectionStatus.connectionProfile, 'connection://');
+		let ownerUriWithDbName = Utils.generateUriWithPrefix(connectionStatus.connectionProfile, 'connection:');
 
 		//The uri assigned to connection without db name should be the original one
 		let connectionWitDbStatus = connections.getOriginalOwnerUri(ownerUriWithDbName);

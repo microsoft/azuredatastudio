@@ -11,8 +11,9 @@ import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
 import { IconPath, BdcItemType } from '../constants';
-import { IEndPoint, IControllerError, getEndPoints } from '../controller/clusterControllerApi';
+import { getEndPoints } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
+import { EndpointModel } from '../controller/apiGenerated';
 
 const localize = nls.loadMessageBundle();
 
@@ -118,7 +119,7 @@ export class ControllerRootNode extends ControllerTreeNode {
 		username: string,
 		password: string,
 		rememberPassword: boolean,
-		masterInstance?: IEndPoint
+		masterInstance?: EndpointModel
 	): void {
 		let controllerNode = this.getExistingControllerNode(url, username);
 		if (controllerNode) {
@@ -203,7 +204,7 @@ export class ControllerNode extends ControllerTreeNode {
 		}
 	}
 
-	private static toIpAndPort(url: string): string {
+	public static toIpAndPort(url: string): string {
 		if (!url) {
 			return;
 		}

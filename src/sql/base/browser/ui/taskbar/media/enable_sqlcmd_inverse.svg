@@ -1,1 +1,12 @@
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"><defs><style>.cls-1{fill:#fff;}</style></defs><title>connect_inverse</title><path id="path1" class="cls-1" d="M7.67,5.75H9l0,4.51H7.64Zm-3.47,3H5.36l0,2.41c0,1.88,1.23,3.42,2.76,3.43h.31c1.54,0,2.8-1.51,2.82-3.38l0-2.41h1.16l0,2.41c0,2.66-1.8,4.8-4,4.78H8.1c-2.18,0-3.93-2.19-3.91-4.84ZM5.7,1.12A3.53,3.53,0,0,1,8.22,0h.31c2.18,0,3.93,2.19,3.91,4.85l0,2.41H11.26l0-2.41c0-1.88-1.23-3.41-2.76-3.43H8.21C6.67,1.44,5.41,3,5.39,4.84l0,2.41H4.22l0-2.41A5.28,5.28,0,0,1,5.7,1.12Z"/></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16">
+  <title>ADS_SQLCMD_Mode</title>
+  <path d="M6,10H3v1H6Z" fill="#fff"/>
+  <rect x="3" y="6" width="10" height="1" fill="#fff"/>
+  <path d="M10,9l6,3.5L10,16Zm1,1.742v3.516L14.016,12.5Z" fill="#fff"/>
+  <path d="M1,15H9V14H2V5H14v5.175l1,.584V1H1M14,4H2V2H14Z" fill="#fff"/>
+  <polygon points="11.985 9 13 9 13 8 11 8 11 8.425 11.985 9" fill="#fff"/>
+  <rect x="3" y="8" width="6" height="1" fill="#fff"/>
+  <rect x="7" y="10" width="2" height="1" fill="#fff"/>
+  <rect x="3" y="12" width="6" height="1" fill="#fff"/>
+  <rect width="16" height="16" fill="none"/>
+</svg>
