@@ -98,12 +98,6 @@ async function createSqlClusterConnInfo(sqlConnInfo: azdata.IConnectionProfile |
 	if (authType && authType.toLowerCase() !== constants.integratedAuth) {
 		clusterConnInfo.options[constants.userPropName] = 'root'; //should be the same user as sql master
 		clusterConnInfo.options[constants.passwordPropName] = credentials.password;
-	} else {
-		// Hack: for now, we need to use gateway-0 for integrated auth
-		let sqlDnsName: string = sqlConnInfo.options['server'].split(',')[0];
-		let parts = sqlDnsName.split('.');
-		parts[0] = 'gateway-0';
-		clusterConnInfo.options[constants.hostPropName] = parts.join('.');
 	}
 	clusterConnInfo = connToConnectionParam(clusterConnInfo);
 
