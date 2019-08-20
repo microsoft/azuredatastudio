@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
@@ -30,13 +30,11 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
  * Main thread class for handling data protocol management registration.
  */
 @extHostNamedCustomer(SqlMainContext.MainThreadDataProtocol)
-export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
+export class MainThreadDataProtocol extends Disposable implements MainThreadDataProtocolShape {
 
 	private _proxy: ExtHostDataProtocolShape;
 
-	private _toDispose: IDisposable[];
-
-	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null);
+	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -55,16 +53,13 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
+		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
 		}
 		if (this._connectionManagementService) {
-			this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e), this, this._toDispose);
+			this._register(this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e)));
 		}
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	public $registerConnectionProvider(providerId: string, handle: number): Promise<any> {
