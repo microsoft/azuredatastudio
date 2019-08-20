@@ -192,7 +192,7 @@ export class ControllerNode extends ControllerTreeNode {
 		}
 
 		try {
-			let response = await getEndPoints(this._clusterName, this._url, this._username, this._password, true);
+			let response = await getEndPoints(this._url, this._username, this._password, true);
 			if (response && response.endPoints) {
 				let master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
 				this.addSqlMasterNode(master.endpoint, master.description);
