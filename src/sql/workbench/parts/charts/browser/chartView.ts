@@ -200,7 +200,7 @@ export class ChartView extends Disposable implements IPanelView {
 	private buildOptions() {
 		// The first element in the disposables list is for the chart type: the master dropdown that controls other option controls.
 		// whiling rebuilding the options we should not dispose it, otherwise it would react to the theme change event
-		if (this.optionDisposables.length > 1) {
+		if (this.optionDisposables.length > 1) { // this logic needs to be rewritten
 			dispose(this.optionDisposables.slice(1));
 			this.optionDisposables.splice(1);
 		}
