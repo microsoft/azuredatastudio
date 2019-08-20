@@ -85,7 +85,6 @@ export interface IHdfsOptions {
 export interface IRequestParams {
 	auth?: IHttpAuthentication;
 	isKerberos?: boolean;
-	cookie?: any;
 	/**
 	 * Timeout in milliseconds to wait for response
 	 */
