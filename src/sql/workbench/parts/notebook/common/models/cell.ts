@@ -401,7 +401,6 @@ export class CellModel implements ICellModel {
 
 	private sendChangeToNotebook(change: NotebookChangeType): void {
 		if (this._options && this._options.notebook) {
-			console.log('Before cellChange: ' + Date.now());
 			this._options.notebook.onCellChange(this, change);
 		}
 	}

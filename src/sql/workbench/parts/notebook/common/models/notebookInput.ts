@@ -43,26 +43,24 @@ export class NotebookEditorModel extends EditorModel {
 		@ITextFileService private textFileService: ITextFileService
 	) {
 		super();
-		if (this.notebookService && this.notebookService.onNotebookEditorAdd) {
-			this._register(this.notebookService.onNotebookEditorAdd(notebook => {
-				if (notebook.id === this.notebookUri.toString()) {
-					// Hook to content change events
-					notebook.modelReady.then((model) => {
-						if (!this.changeEventsHookedUp) {
-							this.changeEventsHookedUp = true;
-							this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
-							this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
-							this._register(notebook.model.onActiveCellChanged((cell) => {
-								if (cell) {
-									this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
-									this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
-								}
-							}));
-						}
-					}, err => undefined);
-				}
-			}));
-		}
+		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
+			if (notebook.id === this.notebookUri.toString()) {
+				// Hook to content change events
+				notebook.modelReady.then((model) => {
+					if (!this.changeEventsHookedUp) {
+						this.changeEventsHookedUp = true;
+						this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
+						this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
+						this._register(notebook.model.onActiveCellChanged((cell) => {
+							if (cell) {
+								this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
+								this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
+							}
+						}));
+					}
+				}, err => undefined);
+			}
+		}));
 
 		if (this.textEditorModel instanceof UntitledEditorModel) {
 			this._register(this.textEditorModel.onDidChangeDirty(e => this.setDirty(this.textEditorModel.isDirty())));
@@ -131,19 +129,19 @@ export class NotebookEditorModel extends EditorModel {
 				if (contentChange && contentChange.cells && contentChange.cells[0]) {
 					if (type === NotebookChangeType.CellSourceUpdated) {
 						// starting "
-						let node = this.notebookTextFileModel.getCellNodeByGuid(this.textEditorModel, contentChange.cells[0].cellGuid);
-						if (node) {
+						let cellNode = this.notebookTextFileModel.getCellNodeByGuid(this.textEditorModel, contentChange.cells[0].cellGuid);
+						if (cellNode) {
 							// now, convert the range to leverage offsets in the json
 							if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
 								contentChange.modelContentChangedEvent.changes.forEach(change => {
 									let convertedRange: IRange = {
-										startLineNumber: change.range.startLineNumber + node.startLineNumber - 1,
-										endLineNumber: change.range.endLineNumber + node.startLineNumber - 1,
-										startColumn: change.range.startColumn + node.startColumn,
-										endColumn: change.range.endColumn + node.startColumn
+										startLineNumber: change.range.startLineNumber + cellNode.startLineNumber - 1,
+										endLineNumber: change.range.endLineNumber + cellNode.startLineNumber - 1,
+										startColumn: change.range.startColumn + cellNode.startColumn,
+										endColumn: change.range.endColumn + cellNode.startColumn
 									};
 									// Need to subtract one because the first " takes up one character
-									let startSpaces: string = ' '.repeat(node.startColumn - 1);
+									let startSpaces: string = ' '.repeat(cellNode.startColumn - 1);
 									this.textEditorModel.textEditorModel.applyEdits([{
 										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
 										text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
@@ -189,10 +187,12 @@ export class NotebookEditorModel extends EditorModel {
 							while (this.textEditorModel.textEditorModel.getLineContent(executionCountMatch.range.endLineNumber)[endExecutionCountColumn + 1]) {
 								endExecutionCountColumn++;
 							}
-							this.textEditorModel.textEditorModel.applyEdits([{
-								range: new Range(executionCountMatch.range.startLineNumber, beginExecutionCountColumn, executionCountMatch.range.endLineNumber, endExecutionCountColumn),
-								text: contentChange.cells[0].executionCount.toString()
-							}]);
+							if (contentChange.cells[0].executionCount) {
+								this.textEditorModel.textEditorModel.applyEdits([{
+									range: new Range(executionCountMatch.range.startLineNumber, beginExecutionCountColumn, executionCountMatch.range.endLineNumber, endExecutionCountColumn),
+									text: contentChange.cells[0].executionCount.toString()
+								}]);
+							}
 							return;
 						}
 					}

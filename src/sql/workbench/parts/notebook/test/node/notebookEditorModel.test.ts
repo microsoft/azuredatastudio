@@ -31,7 +31,8 @@ import { ITextFileService } from 'vs/workbench/services/textfile/common/textfile
 import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
-import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
+import { Emitter } from 'vs/base/common/event';
+import { INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
 
 
 class ServiceAccessor {
@@ -102,6 +103,8 @@ suite('Notebook Editor Model', function (): void {
 		};
 	});
 
+	let mockOnNotebookEditorAddEvent = new Emitter<INotebookEditor>();
+	mockNotebookService.setup(s => s.onNotebookEditorAdd).returns(() => mockOnNotebookEditorAddEvent.event);
 
 	setup(() => {
 		accessor = instantiationService.createInstance(ServiceAccessor);

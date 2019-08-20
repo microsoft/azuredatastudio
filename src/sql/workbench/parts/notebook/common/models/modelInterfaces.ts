@@ -344,7 +344,6 @@ export interface INotebookModel {
 	 */
 	readonly onActiveCellChanged: Event<ICellModel>;
 
-
 	/**
 	 * The trusted mode of the Notebook
 	 */
@@ -555,7 +554,6 @@ export namespace notebookConstants {
 }
 
 export interface INotebookContentsEditable {
-
 	cells: nb.ICellContents[];
 	metadata: nb.INotebookMetadata;
 	nbformat: number;
