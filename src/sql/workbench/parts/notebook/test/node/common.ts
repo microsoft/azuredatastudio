@@ -11,6 +11,8 @@ import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/commo
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { Range, IRange } from 'vs/editor/common/core/range';
+import { IModelDecoration } from 'vs/editor/common/model';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -122,6 +124,18 @@ export class NotebookModelStub implements INotebookModel {
 		throw new Error('Method not implemented.');
 	}
 	getFindIndex(): number {
+		throw new Error('Method not implemented.');
+	}
+	getDecorationRange(id: string): Range | null {
+		throw new Error('Method not implemented.');
+	}
+	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[] {
+		throw new Error('Method not implemented.');
+	}
+	getLineMaxColumn(lineNumber: number): number {
+		throw new Error('Method not implemented.');
+	}
+	getLineCount(): number {
 		throw new Error('Method not implemented.');
 	}
 	onFindCountChange: Event<number>;

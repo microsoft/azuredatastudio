@@ -27,6 +27,8 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { getErrorMessage } from 'vs/base/common/errors';
 import * as types from 'vs/base/common/types';
+import { Range, IRange } from 'vs/editor/common/core/range';
+import { IModelDecoration } from 'vs/editor/common/model';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -1144,5 +1146,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	getFindCount(): number {
 		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
+	}
+
+	public getDecorationRange(id: string): Range | null {
+		return undefined;
+	}
+
+	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[] {
+		return undefined;
+	}
+
+	getLineMaxColumn(lineNumber: number): number {
+		return undefined;
+	}
+
+	getLineCount(): number {
+		return undefined;
 	}
 }

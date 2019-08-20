@@ -25,14 +25,15 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/note
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookModel, NotebookFindPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
 import { IDisposable } from 'vs/base/common/lifecycle';
-
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
+import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
@@ -46,6 +47,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 	private _notebookModel: INotebookModel;
 	private _findCountChangeListener: IDisposable;
+	private _findPosition: NotebookFindPosition;
+	private readonly _decorations: FindDecorations;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -58,7 +61,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
-
+		this._decorations = new FindDecorations(this);
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPrevious, this);
 	}
@@ -67,9 +70,27 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this.input as NotebookInput;
 	}
 
+	public getPosition(): NotebookFindPosition {
+		return this._findPosition;
+	}
+
+	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
+		return undefined;
+	}
+
+	public deltaDecorations(oldDecorations: string[], newDecorations: IModelDeltaDecoration[]): string[] {
+		return undefined;
+	}
+
 	async setNotebookModel(): Promise<void> {
 		let notebookEditorModel = await this.notebookInput.resolve();
 		this._notebookModel = notebookEditorModel.getNotebookModel();
+	}
+
+	public getNotebookModel(): INotebookModel {
+		// let notebookEditorModel = await this.notebookInput.resolve();
+		// return notebookEditorModel.getNotebookModel();
+		return this._notebookModel;
 	}
 
     /**
@@ -160,7 +181,8 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public getConfiguration() {
 		return {
 			layoutInfo: {
-				width: this._currentDimensions ? this._currentDimensions.width : 0
+				width: this._currentDimensions ? this._currentDimensions.width : 0,
+				height: this._currentDimensions ? this._currentDimensions.height : 0
 			}
 		};
 	}
@@ -204,6 +226,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 						if (p) {
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
+							this._findPosition = p;
 						}
 					});
 				} else {
@@ -229,12 +252,14 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
 			this._updateFinderMatchState();
+			this._findPosition = p;
 		}, er => { });
 	}
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
 			this._updateFinderMatchState();
+			this._findPosition = p;
 		}, er => { });
 	}
 

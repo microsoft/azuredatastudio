@@ -22,6 +22,8 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { Range, IRange } from 'vs/editor/common/core/range';
+import { IModelDecoration } from 'vs/editor/common/model';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -418,6 +420,33 @@ export interface INotebookModel {
 	find(exp: string, maxMatches?: number): Promise<NotebookFindPosition>;
 
 	clearFind(): void;
+
+	/**
+	 * Get the range associated with a decoration.
+	 * @param id The decoration id.
+	 * @return The decoration range or null if the decoration was not found.
+	 */
+	getDecorationRange(id: string): Range | null;
+
+	/**
+	 * Gets all the decorations in a range as an array. Only `startLineNumber` and `endLineNumber` from `range` are used for filtering.
+	 * So for now it returns all the decorations on the same line as `range`.
+	 * @param range The range to search in
+	 * @param ownerId If set, it will ignore decorations belonging to other owners.
+	 * @param filterOutValidation If set, it will ignore decorations specific to validation (i.e. warnings, errors).
+	 * @return An array with the decorations
+	 */
+	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[];
+
+	/**
+	 * Get the maximum legal column for line at `lineNumber`
+	 */
+	getLineMaxColumn(lineNumber: number): number;
+
+	/**
+	 * Get the number of lines in the model.
+	 */
+	getLineCount(): number;
 
 	onFindCountChange: Event<number>;
 }
