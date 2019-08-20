@@ -11,6 +11,7 @@ import { NotebookService } from './services/notebookService';
 import { ResourceTypeService } from './services/resourceTypeService';
 import { PlatformService } from './services/platformService';
 import * as nls from 'vscode-nls';
+import { DeployClusterWizard } from './ui/deployClusterWizard/deployClusterWizard';
 
 const localize = nls.loadMessageBundle();
 
@@ -45,7 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
 		openDialog('sql-bdc');
 	});
 	vscode.commands.registerCommand('azdata.resource.deploy', () => {
-		openDialog('sql-bdc');
+		const wizard = new DeployClusterWizard(context);
+		wizard.open();
 	});
 }
 

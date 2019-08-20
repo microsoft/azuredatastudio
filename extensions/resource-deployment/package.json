@@ -225,7 +225,7 @@
           "displayName": "%bdc-deployment-target%",
           "values": [
             {
-              "name": "aks",
+              "name": "new-aks",
               "displayName": "%bdc-deployment-target-aks%"
             },
             {
@@ -241,6 +241,9 @@
       ],
       "providers": [
         {
+          "wizard": {
+            "deployment-type": ""
+          },
           "dialog": {
             "title": "%bdc-new-aks-dialog-title%",
             "name": "bdc-new-aks-dialog",
@@ -343,7 +346,7 @@
               "name": "azdata"
             }
           ],
-          "when": "target=aks&&version=bdc2019"
+          "when": "target=new-aks&&version=bdc2019"
         },
         {
           "dialog": {

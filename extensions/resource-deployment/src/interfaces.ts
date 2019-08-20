@@ -98,3 +98,9 @@ export interface ITool {
 	readonly description: string;
 	readonly type: ToolType;
 }
+
+export enum BdcDeploymentType {
+	NewAKS = 'new-aks',
+	ExistingAKS = 'existing-aks',
+	ExistingKubeAdm = 'existing-kubeadm'
+}
