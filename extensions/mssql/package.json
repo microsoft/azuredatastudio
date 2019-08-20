@@ -10,6 +10,7 @@
     "vscode": "*"
   },
   "main": "./out/main",
+  "typings": "./src/mssql",
   "extensionDependencies": [
     "vscode.sql"
   ],

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
@@ -24,21 +24,17 @@ import { IProfilerService } from 'sql/workbench/services/profiler/common/interfa
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
-import { IDacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { ISchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 
 /**
  * Main thread class for handling data protocol management registration.
  */
 @extHostNamedCustomer(SqlMainContext.MainThreadDataProtocol)
-export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
+export class MainThreadDataProtocol extends Disposable implements MainThreadDataProtocolShape {
 
 	private _proxy: ExtHostDataProtocolShape;
 
-	private _toDispose: IDisposable[];
-
-	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null);
+	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -55,20 +51,15 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ITaskService private _taskService: ITaskService,
 		@IProfilerService private _profilerService: IProfilerService,
 		@ISerializationService private _serializationService: ISerializationService,
-		@IFileBrowserService private _fileBrowserService: IFileBrowserService,
-		@IDacFxService private _dacFxService: IDacFxService,
-		@ISchemaCompareService private _schemaCompareService: ISchemaCompareService,
+		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
+		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
 		}
 		if (this._connectionManagementService) {
-			this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e), this, this._toDispose);
+			this._register(this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e)));
 		}
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	public $registerConnectionProvider(providerId: string, handle: number): Promise<any> {
@@ -435,64 +426,6 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		this._capabilitiesService.registerProvider(<azdata.CapabilitiesProvider>{
 			getServerCapabilities(client: azdata.DataProtocolClientCapabilities): Thenable<azdata.DataProtocolServerCapabilities> {
 				return self._proxy.$getServerCapabilities(handle, client);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerDacFxServicesProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._dacFxService.registerProvider(providerId, <azdata.DacFxServicesProvider>{
-			exportBacpac(databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$exportBacpac(handle, databaseName, packageFilePath, ownerUri, taskExecutionMode);
-			},
-			importBacpac(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$importBacpac(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			},
-			extractDacpac(databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$extractDacpac(handle, databaseName, packageFilePath, applicationName, applicationVersion, ownerUri, taskExecutionMode);
-			},
-			deployDacpac(packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$deployDacpac(handle, packageFilePath, databaseName, upgradeExisting, ownerUri, taskExecutionMode);
-			},
-			generateDeployScript(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> {
-				return self._proxy.$generateDeployScript(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			},
-			generateDeployPlan(packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> {
-				return self._proxy.$generateDeployPlan(handle, packageFilePath, databaseName, ownerUri, taskExecutionMode);
-			}
-		});
-
-		return undefined;
-	}
-
-	public $registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any> {
-		const self = this;
-		this._schemaCompareService.registerProvider(providerId, <azdata.SchemaCompareServicesProvider>{
-			schemaCompare(operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> {
-				return self._proxy.$schemaCompare(handle, operationId, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, schemaComapareOptions);
-			},
-			schemaCompareGenerateScript(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareGenerateScript(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
-			},
-			schemaComparePublishChanges(operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaComparePublishChanges(handle, operationId, targetServerName, targetDatabaseName, taskExecutionMode);
-			},
-			schemaCompareGetDefaultOptions(): Thenable<azdata.SchemaCompareOptionsResult> {
-				return self._proxy.$schemaCompareGetDefaultOptions(handle);
-			},
-			schemaCompareIncludeExcludeNode(operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareIncludeExcludeNode(handle, operationId, diffEntry, includeRequest, taskExecutionMode);
-			},
-			schemaCompareOpenScmp(filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> {
-				return self._proxy.$schemaCompareOpenScmp(handle, filePath);
-			},
-			schemaCompareSaveScmp(sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareSaveScmp(handle, sourceEndpointInfo, targetEndpointInfo, taskExecutionMode, deploymentOptions, scmpFilePath, excludedSourceObjects, excludedTargetObjects);
-			},
-			schemaCompareCancel(operationId: string): Thenable<azdata.ResultStatus> {
-				return self._proxy.$schemaCompareCancel(handle, operationId);
 			}
 		});
 

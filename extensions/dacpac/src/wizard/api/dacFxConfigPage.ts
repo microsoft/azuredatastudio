@@ -45,8 +45,10 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
+		const serverDropDownTitle = isTargetServer ? localize('dacFx.targetServerDropdownTitle', "Target Server") : localize('dacFx.sourceServerDropdownTitle', "Source Server");
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
+			required: true,
+			ariaLabel: serverDropDownTitle
 		}).component();
 
 		// Handle server changes
@@ -56,12 +58,9 @@ export abstract class DacFxConfigPage extends BasePage {
 			await this.populateDatabaseDropdown();
 		});
 
-		let targetServerTitle = localize('dacFx.targetServerDropdownTitle', 'Target Server');
-		let sourceServerTitle = localize('dacFx.sourceServerDropdownTitle', 'Source Server');
-
 		return {
 			component: this.serverDropdown,
-			title: isTargetServer ? targetServerTitle : sourceServerTitle
+			title: serverDropDownTitle
 		};
 	}
 
@@ -85,6 +84,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true
 		}).component();
 
+		this.databaseTextBox.ariaLabel = localize('dacfx.databaseAriaLabel', "Database");
 		this.databaseTextBox.onTextChanged(async () => {
 			this.model.database = this.databaseTextBox.value;
 		});
@@ -96,7 +96,10 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		const databaseDropdownTitle = localize('dacFx.sourceDatabaseDropdownTitle', "Source Database");
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			ariaLabel: databaseDropdownTitle
+		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -109,9 +112,10 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true
 		}).component();
 
+
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.sourceDatabaseDropdownTitle', 'Source Database')
+			title: databaseDropdownTitle
 		};
 	}
 
@@ -155,6 +159,7 @@ export abstract class DacFxConfigPage extends BasePage {
 				required: true
 			}).component();
 
+		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
 		}).component();
