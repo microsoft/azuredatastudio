@@ -24,7 +24,7 @@ export interface ExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem) : void {
+export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem): void {
 	should(book.title).equal(expectedBook.title);
 	should(book.uri).equal(expectedBook.url);
 	if (expectedBook.previousUri || expectedBook.nextUri) {
@@ -111,7 +111,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		};
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
-		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 150));
+		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 	});
 
