@@ -30,9 +30,8 @@ import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/commo
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
 import { Range } from 'vs/editor/common/core/range';
-
 import { nb } from 'azdata';
-
+import { EmptyFuture } from 'sql/workbench/services/notebook/common/sessionManager';
 
 
 class ServiceAccessor {
@@ -49,8 +48,7 @@ let defaultUri = URI.file('/some/path.ipynb');
 suite('Notebook Editor Model', function (): void {
 	let notebookManagers = [new NotebookManagerStub()];
 	let notebookModel: NotebookModel;
-	let instantiationService: IInstantiationService = workbenchInstantiationService();
-
+	const instantiationService: IInstantiationService = workbenchInstantiationService();
 	let accessor: ServiceAccessor;
 	let defaultModelOptions: INotebookModelOptions;
 	const logService = new NullLogService();
@@ -60,7 +58,6 @@ suite('Notebook Editor Model', function (): void {
 	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 	queryConnectionService.callBase = true;
 	const capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
-
 	let mockModelFactory = TypeMoq.Mock.ofType(ModelFactory);
 	mockModelFactory.callBase = true;
 	mockModelFactory.setup(f => f.createCell(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
@@ -84,6 +81,7 @@ suite('Notebook Editor Model', function (): void {
 	let mockNotebookService: TypeMoq.Mock<NotebookService>;
 	mockNotebookService = TypeMoq.Mock.ofType(NotebookService, undefined, new TestLifecycleService(), undefined, undefined, undefined, instantiationService, new MockContextKeyService(),
 		undefined, undefined, undefined, undefined, undefined, undefined, TestEnvironmentService);
+
 	mockNotebookService.setup(s => s.findNotebookEditor(TypeMoq.It.isAny())).returns(() => {
 		return {
 			cells: undefined,
@@ -121,7 +119,6 @@ suite('Notebook Editor Model', function (): void {
 			layoutChanged: undefined,
 			capabilitiesService: capabilitiesService.object
 		};
-
 	});
 
 	teardown(() => {
@@ -140,7 +137,7 @@ suite('Notebook Editor Model', function (): void {
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(2)).equal('    "metadata": {},');
 	});
 
-	test('should replace entire text model for cell add (0 -> 1 cells)', async function (): Promise<void> {
+	test('should replace entire text model for add cell (0 -> 1 cells)', async function (): Promise<void> {
 		await createNewNotebookModel();
 		let notebookEditorModel = await createTextEditorModel(this);
 
@@ -505,6 +502,44 @@ suite('Notebook Editor Model', function (): void {
 			should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25 + i * 21)).equal('            "execution_count": 0');
 			should(notebookEditorModel.editorModel.textEditorModel.getLineContent(26 + i * 21)).startWith('        }');
 		}
+	});
+
+	test('should not replace entire text model for output changes', async function (): Promise<void> {
+		await createNewNotebookModel();
+		let notebookEditorModel = await createTextEditorModel(this);
+		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
+
+		let newCell = notebookModel.addCell(CellTypes.Code);
+
+		let contentChange: NotebookContentChange = {
+			changeType: NotebookChangeType.CellsModified,
+			cells: [newCell],
+			cellIndex: 0
+		};
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		should(notebookEditorModel.lastEditFullReplacement).equal(true);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(14)).equal('            "outputs": [');
+
+		newCell[<any>'_outputs'] = newCell.outputs.concat(newCell.outputs);
+
+		contentChange = {
+			changeType: NotebookChangeType.CellOutputUpdated,
+			cells: [newCell]
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(8)).equal('            "source": [');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(12)).equal('                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(14)).equal('            "outputs": [');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(23)).equal('                }, {');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(31)).equal('}');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(32)).equal('            ],');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(33)).equal('            "execution_count": 0');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(34)).equal('        }');
+
+		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
 
 	async function createNewNotebookModel() {

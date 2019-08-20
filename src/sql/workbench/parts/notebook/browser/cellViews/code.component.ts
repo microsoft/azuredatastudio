@@ -222,9 +222,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.modelContentChangedEvent = e;
-			let start = Date.now();
 			this.cellModel.source = this._editorModel.getValue();
-			console.log('Editor model value took  ' + (Date.now() - start) + ' ms');
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 			// TODO see if there's a better way to handle reassessing size.

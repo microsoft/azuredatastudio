@@ -125,13 +125,11 @@ export class NotebookEditorModel extends EditorModel {
 			// Request serialization so trusted state is preserved but don't update the model
 			this.sendNotebookSerializationStateChange();
 		} else {
-			let start1 = Date.now();
 			let notebookModel = this.getNotebookModel();
 
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
 				if (contentChange && contentChange.cells && contentChange.cells[0]) {
 					if (type === NotebookChangeType.CellSourceUpdated) {
-						let start = Date.now();
 						// starting "
 						let node = this.notebookTextFileModel.getCellNodeByGuid(this.textEditorModel, contentChange.cells[0].cellGuid);
 						if (node) {
@@ -146,21 +144,15 @@ export class NotebookEditorModel extends EditorModel {
 									};
 									// Need to subtract one because the first " takes up one character
 									let startSpaces: string = ' '.repeat(node.startColumn - 1);
-									console.log('fast edit');
 									this.textEditorModel.textEditorModel.applyEdits([{
 										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
 										text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
 									}]);
-									console.log('cell edited in ' + (Date.now() - start) + 'ms');
-
-									console.log('Model updated in ' + (Date.now() - start1) + 'ms');
 								});
 								return;
 							}
 						}
 					} else if (type === NotebookChangeType.CellOutputUpdated) {
-						let start = Date.now();
-						console.log('cell output updated');
 						if (Array.isArray(contentChange.cells[0].outputs) && contentChange.cells[0].outputs.length > 0) {
 							let newOutput = JSON.stringify(contentChange.cells[0].outputs[contentChange.cells[0].outputs.length - 1], undefined, '    ');
 							if (contentChange.cells[0].outputs.length > 1) {
@@ -174,15 +166,10 @@ export class NotebookEditorModel extends EditorModel {
 									range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
 									text: newOutput
 								}]);
-								console.log('fast cell updated in ' + (Date.now() - start) + 'ms');
 								return;
 							}
 						}
 					} else if (type === NotebookChangeType.CellOutputCleared) {
-						let start = Date.now();
-						console.log('cell output cleared');
-						// let outputStartNode = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
-						// if (outputStartNode) {
 						let outputEndRange = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
 						let outputStartRange = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
 						if (outputStartRange && outputEndRange) {
@@ -190,14 +177,10 @@ export class NotebookEditorModel extends EditorModel {
 								range: new Range(outputStartRange.startLineNumber, outputStartRange.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
 								text: ''
 							}]);
-							console.log('fast cell cleared in ' + (Date.now() - start) + 'ms');
 							return;
 						}
 						// }
 					} else if (type === NotebookChangeType.CellExecuted) {
-						let start = Date.now();
-						console.log('cell executed');
-
 						let executionCountMatch = this.notebookTextFileModel.getExecutionCountRange(this.textEditorModel, contentChange.cells[0].cellGuid);
 						if (executionCountMatch && executionCountMatch.range) {
 							// Execution count can be between 0 and n characters long
@@ -210,16 +193,12 @@ export class NotebookEditorModel extends EditorModel {
 								range: new Range(executionCountMatch.range.startLineNumber, beginExecutionCountColumn, executionCountMatch.range.endLineNumber, endExecutionCountColumn),
 								text: contentChange.cells[0].executionCount.toString()
 							}]);
-							console.log('fast cell executed in ' + (Date.now() - start) + 'ms');
 							return;
 						}
 					}
 				}
-				console.log('slow edit');
-				let start = Date.now();
 				this.replaceEntireTextEditorModel(notebookModel, type);
 				this._lastEditFullReplacement = true;
-				console.log('slow cell updated in ' + (Date.now() - start) + 'ms');
 				// After we replace all of the text editor model, attempt calculation again for active cell source to prevent
 				// future unnecessary use of the "slow" form of editing
 				if (type === NotebookChangeType.CellsModified || type === NotebookChangeType.CellSourceUpdated) {

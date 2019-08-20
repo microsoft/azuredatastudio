@@ -1000,12 +1000,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	onCellChange(cell: ICellModel, change: NotebookChangeType): void {
-		let start = Date.now();
 		let changeInfo: NotebookContentChange = {
 			changeType: change,
 			cells: [cell]
 		};
-		console.log('it took ' + (Date.now() - start) + ' ms to create array');
 		switch (change) {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:

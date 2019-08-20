@@ -168,7 +168,6 @@ export class CellModel implements ICellModel {
 		newSource = this.getMultilineSource(newSource);
 		if (this._source !== newSource) {
 			this._source = newSource;
-			let start = Date.now();
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 		}
 		this._modelContentChangedEvent = undefined;
