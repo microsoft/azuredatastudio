@@ -4,19 +4,19 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
-import { IToolsService } from './toolsService';
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { IPlatformService } from './platformService';
-import * as nls from 'vscode-nls';
-import { NotebookInputDialog } from '../ui/notebookInputDialog';
-import { INotebookService } from './notebookService';
 import * as cp from 'child_process';
-import * as https from 'https';
-import * as path from 'path';
-import * as os from 'os';
 import * as fs from 'fs';
+import * as https from 'https';
+import * as os from 'os';
+import * as path from 'path';
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
+import { INotebookService } from './notebookService';
+import { IPlatformService } from './platformService';
+import { IToolsService } from './toolsService';
+import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
+import { NotebookInputDialog } from '../ui/notebookInputDialog';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {

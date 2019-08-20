@@ -3,7 +3,7 @@
 	"extension-description": "Provides a notebook-based experience to deploy Microsoft SQL Server",
 	"deploy-sql-image-command-name": "Deploy SQL Server on Docker…",
 	"deploy-sql-bdc-command-name": "Deploy SQL Server big data cluster…",
-	"deploy-resource-command-name": "Open deployment dialog",
+	"deploy-resource-command-name": "Open SQL Server deployment dialog",
 	"deploy-resource-command-category": "Deployment",
 	"resource-type-sql-image-display-name": "SQL Server container image",
 	"resource-type-sql-image-description": "Run SQL Server container image with Docker",
@@ -48,5 +48,5 @@
 	"bdc-data-size-field": "Capacity for data (GB)",
 	"bdc-log-size-field": "Capacity for logs (GB)",
 	"resource-type-sql-windows-setup-display-name": "SQL Server on Windows",
-	"resource-type-sql-windows-setup-description": "Run SQL Server on Windows, select a version and get started."
+	"resource-type-sql-windows-setup-description": "Run SQL Server on Windows, select a version to get started."
 }

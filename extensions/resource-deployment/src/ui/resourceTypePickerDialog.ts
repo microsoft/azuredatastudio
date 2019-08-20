@@ -5,12 +5,12 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { IResourceTypeService } from '../services/resourceTypeService';
 import * as vscode from 'vscode';
-import { ResourceType, DeploymentProvider } from '../interfaces';
-import { IToolsService } from '../services/toolsService';
+import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
+import { ResourceType, DeploymentProvider } from '../interfaces';
+import { IResourceTypeService } from '../services/resourceTypeService';
+import { IToolsService } from '../services/toolsService';
 
 const localize = nls.loadMessageBundle();
 

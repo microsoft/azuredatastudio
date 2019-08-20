@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { NotebookInfo } from '../interfaces';
-import { isString } from 'util';
 import * as path from 'path';
+import { isString } from 'util';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { IPlatformService } from './platformService';
+import { NotebookInfo } from '../interfaces';
 const localize = nls.loadMessageBundle();
 
 export interface INotebookService {
@@ -35,7 +35,7 @@ export class NotebookService implements INotebookService {
 			this.showNotebookAsUntitled(notebookFullPath);
 		}
 		else {
-			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookPath));
+			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', "The notebook {0} does not exist", notebookPath));
 		}
 	}
 

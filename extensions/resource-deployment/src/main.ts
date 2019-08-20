@@ -4,15 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import vscode = require('vscode');
-import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
-import { ToolsService } from './services/toolsService';
-import { NotebookService } from './services/notebookService';
-import { ResourceTypeService } from './services/resourceTypeService';
-import { PlatformService } from './services/platformService';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogInfo } from './interfaces';
+import { NotebookService } from './services/notebookService';
+import { PlatformService } from './services/platformService';
+import { ResourceTypeService } from './services/resourceTypeService';
+import { ToolsService } from './services/toolsService';
 import { NotebookInputDialog } from './ui/notebookInputDialog';
+import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
 
 const localize = nls.loadMessageBundle();
 
