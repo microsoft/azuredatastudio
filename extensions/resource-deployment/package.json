@@ -226,7 +226,7 @@
           "values": [
             {
               "name": "new-aks",
-              "displayName": "%bdc-deployment-target-aks%"
+              "displayName": "%bdc-deployment-target-new-aks%"
             },
             {
               "name": "existing-aks",

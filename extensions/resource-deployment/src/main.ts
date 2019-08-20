@@ -46,8 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
 		openDialog('sql-bdc');
 	});
 	vscode.commands.registerCommand('azdata.resource.deploy', () => {
-		const wizard = new DeployClusterWizard(context);
-		wizard.open();
+		openDialog('sql-bdc');
 	});
 }
 
