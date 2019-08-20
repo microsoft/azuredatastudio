@@ -101,7 +101,8 @@ export class SchemaCompareMainWindow {
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300
+				height: 300,
+				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
