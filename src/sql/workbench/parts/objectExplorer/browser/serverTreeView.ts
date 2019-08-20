@@ -10,7 +10,7 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -39,14 +39,13 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 /**
  * ServerTreeview implements the dynamic tree view.
  */
-export class ServerTreeView {
+export class ServerTreeView extends Disposable {
 
 	public messages: HTMLElement;
 	private _buttonSection: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: ITree;
-	private _toDispose: IDisposable[] = [];
 	private _onSelectionOrFocusChange: Emitter<void>;
 	private _actionProvider: ServerTreeActionProvider;
 
@@ -59,6 +58,7 @@ export class ServerTreeView {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ICapabilitiesService capabilitiesService: ICapabilitiesService
 	) {
+		super();
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
 			ActiveConnectionsFilterAction,
 			ActiveConnectionsFilterAction.ID,
@@ -133,35 +133,35 @@ export class ServerTreeView {
 			this._buttonSection = append(container, $('.button-section'));
 			const connectButton = new Button(this._buttonSection);
 			connectButton.label = localize('serverTree.addConnection', "Add Connection");
-			this._toDispose.push(attachButtonStyler(connectButton, this._themeService));
-			this._toDispose.push(connectButton.onDidClick(() => {
+			this._register(attachButtonStyler(connectButton, this._themeService));
+			this._register(connectButton.onDidClick(() => {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-		this._tree = TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService);
+		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService));
 		//this._tree.setInput(undefined);
-		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
-		this._toDispose.push(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
-		this._toDispose.push(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
+		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
+		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
+		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
 
 		// Theme styler
-		this._toDispose.push(attachListStyler(this._tree, this._themeService));
+		this._register(attachListStyler(this._tree, this._themeService));
 
 		// Refresh Tree when these events are emitted
-		this._toDispose.push(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
+		this._register(this._connectionManagementService.onAddConnectionProfile((newProfile: IConnectionProfile) => {
 			this.handleAddConnectionProfile(newProfile);
 		}));
-		this._toDispose.push(this._connectionManagementService.onDeleteConnectionProfile(() => {
+		this._register(this._connectionManagementService.onDeleteConnectionProfile(() => {
 			this.refreshTree();
 		}));
-		this._toDispose.push(this._connectionManagementService.onDisconnect((connectionParams) => {
+		this._register(this._connectionManagementService.onDisconnect((connectionParams) => {
 			if (this.isObjectExplorerConnectionUri(connectionParams.connectionUri)) {
 				this.deleteObjectExplorerNodeAndRefreshTree(connectionParams.connectionProfile);
 			}
 		}));
 
 		if (this._objectExplorerService && this._objectExplorerService.onUpdateObjectExplorerNodes) {
-			this._toDispose.push(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
+			this._register(this._objectExplorerService.onUpdateObjectExplorerNodes(args => {
 				if (args.errorMessage) {
 					this.showError(args.errorMessage);
 				}
@@ -510,13 +510,5 @@ export class ServerTreeView {
 	 */
 	public isExpanded(element: TreeNode | ConnectionProfile): boolean {
 		return this._tree.isExpanded(element);
-	}
-
-	/**
-	 * dispose the server tree view
-	 */
-	public dispose(): void {
-		this._tree.dispose();
-		this._toDispose = dispose(this._toDispose);
 	}
 }

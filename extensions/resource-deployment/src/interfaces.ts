@@ -30,11 +30,14 @@ export interface DeploymentProvider {
 	title: string;
 	dialog: DialogInfo;
 	notebook: string | NotebookInfo;
+	downloadUrl: string;
+	webPageUrl: string;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
 export interface DialogInfo {
+	notebook: string | NotebookInfo;
 	title: string;
 	name: string;
 	tabs: DialogTabInfo[];

@@ -40,12 +40,17 @@
         "command": "azdata.resource.deploy",
         "title": "%deploy-resource-command-name%",
         "category": "%deploy-resource-command-category%"
+      },
+      {
+        "command": "azdata.openNotebookInputDialog",
+        "title": "Open notebook input dialog",
+        "category": "Notebook"
       }
     ],
     "menus": {
       "commandPalette": [
         {
-          "command": "azdata.resource.deploy",
+          "command": "azdata.openNotebookInputDialog",
           "when": "false"
         }
       ],
@@ -56,6 +61,10 @@
         },
         {
           "command": "azdata.resource.sql-bdc.deploy",
+          "group": "secondary"
+        },
+        {
+          "command": "azdata.resource.deploy",
           "group": "secondary"
         }
       ]
@@ -94,6 +103,7 @@
       "providers": [
         {
           "dialog": {
+            "notebook": "%sql-2017-docker-notebook%",
             "title": "%docker-sql-2017-title%",
             "name": "docker-sql-2017-dialog",
             "tabs": [
@@ -135,7 +145,6 @@
               }
             ]
           },
-          "notebook": "%sql-2017-docker-notebook%",
           "requiredTools": [
             {
               "name": "docker"
@@ -145,6 +154,7 @@
         },
         {
           "dialog": {
+            "notebook": "%sql-2019-docker-notebook%",
             "title": "%docker-sql-2019-title%",
             "name": "docker-sql-2019-dialog",
             "tabs": [
@@ -186,7 +196,6 @@
               }
             ]
           },
-          "notebook": "%sql-2019-docker-notebook%",
           "requiredTools": [
             {
               "name": "docker"
@@ -245,6 +254,7 @@
             "deployment-type": ""
           },
           "dialog": {
+            "notebook": "%bdc-2019-aks-notebook%",
             "title": "%bdc-new-aks-dialog-title%",
             "name": "bdc-new-aks-dialog",
             "tabs": [
@@ -334,7 +344,6 @@
               }
             ]
           },
-          "notebook": "%bdc-2019-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -350,6 +359,7 @@
         },
         {
           "dialog": {
+            "notebook": "%bdc-2019-existing-aks-notebook%",
             "title": "%bdc-existing-aks-dialog-title%",
             "name": "bdc-existing-aks-dialog",
             "tabs": [
@@ -389,7 +399,6 @@
               }
             ]
           },
-          "notebook": "%bdc-2019-existing-aks-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -404,6 +413,7 @@
           "dialog": {
             "title": "%bdc-existing-kubeadm-dialog-title%",
             "name": "bdc-existing-kubeadm-dialog",
+            "notebook": "%bdc-2019-existing-kubeadm-notebook%",
             "tabs": [
               {
                 "title": "",
@@ -464,7 +474,6 @@
               }
             ]
           },
-          "notebook": "%bdc-2019-existing-kubeadm-notebook%",
           "requiredTools": [
             {
               "name": "kubectl"
@@ -474,6 +483,46 @@
             }
           ],
           "when": "target=existing-kubeadm&&version=bdc2019"
+        }
+      ]
+    },
+    {
+      "name": "sql-windows-setup",
+      "displayName": "%resource-type-sql-windows-setup-display-name%",
+      "description": "%resource-type-sql-windows-setup-description%",
+      "platforms": [
+        "win32"
+      ],
+      "icon": {
+        "light": "./images/sql_server.svg",
+        "dark": "./images/sql_server_inverse.svg"
+      },
+      "options": [
+        {
+          "name": "version",
+          "displayName": "%version-display-name%",
+          "values": [
+            {
+              "name": "sql2017",
+              "displayName": "%sql-2017-display-name%"
+            },
+            {
+              "name": "sql2019",
+              "displayName": "%sql-2019-display-name%"
+            }
+          ]
+        }
+      ],
+      "providers": [
+        {
+          "downloadUrl": "https://go.microsoft.com/fwlink/?linkid=853016",
+          "requiredTools": [],
+          "when": "version=sql2017"
+        },
+        {
+          "webPageUrl": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-ctp",
+          "requiredTools": [],
+          "when": "version=sql2019"
         }
       ]
     }

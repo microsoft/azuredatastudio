@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as azdata from 'azdata';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -24,7 +23,7 @@ export enum ScriptOperation {
 }
 
 export interface IScriptingService {
-	_serviceBrand: any;
+	_serviceBrand: ServiceIdentifier<IScriptingService>;
 
 	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult>;
 
@@ -51,9 +50,7 @@ export interface IScriptingService {
 
 export class ScriptingService implements IScriptingService {
 
-	public _serviceBrand: any;
-
-	private disposables: IDisposable[] = [];
+	public _serviceBrand: ServiceIdentifier<IScriptingService>;
 
 	private _providers: { [handle: string]: azdata.ScriptingProvider; } = Object.create(null);
 
@@ -112,9 +109,5 @@ export class ScriptingService implements IScriptingService {
 	public isProviderRegistered(providerId: string): boolean {
 		let provider = this._providers[providerId];
 		return !!provider;
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }

@@ -24,6 +24,7 @@ import { isUndefinedOrNull } from 'vs/base/common/types';
 import { ILanguageMagic } from 'sql/workbench/services/notebook/common/notebookService';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { URI } from 'vs/base/common/uri';
+import { getUriPrefix, uriPrefixes } from 'sql/platform/connection/common/utils';
 
 export const sqlKernelError: string = localize("sqlKernelError", "SQL kernel error");
 export const MAX_ROWS = 5000;
@@ -162,6 +163,7 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	private _future: SQLFuture;
 	private _executionCount: number = 0;
 	private _magicToExecutorMap = new Map<string, ExternalScriptMagic>();
+	private _connectionPath: string;
 
 	constructor(private _path: string,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -174,12 +176,36 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	) {
 		super();
 		this.initMagics();
+		this.setConnectionPath();
 	}
 
 	private initMagics(): void {
 		for (let magic of languageMagics) {
 			let scriptMagic = new ExternalScriptMagic(magic.language);
 			this._magicToExecutorMap.set(magic.magic, scriptMagic);
+		}
+	}
+
+	private setConnectionPath(): void {
+		if (this._path) {
+			let prefix = getUriPrefix(this._path);
+			if (!prefix || prefix === uriPrefixes.connection) {
+				this._connectionPath = uriPrefixes.notebook.concat(this._path);
+			} else if (prefix !== uriPrefixes.notebook) {
+				try {
+					let uri = URI.parse(this._path);
+					if (uri && uri.scheme) {
+						this._connectionPath = uri.toString().replace(uri.scheme, uriPrefixes.notebook);
+					}
+				} catch {
+					// Ignore exceptions from URI parsing
+				} finally {
+					// If _connectionPath hasn't been set yet, set _connectionPath to _path as a last resort
+					if (!this._connectionPath) {
+						this._connectionPath = this._path;
+					}
+				}
+			}
 		}
 	}
 
@@ -252,8 +278,8 @@ class SqlKernel extends Disposable implements nb.IKernel {
 			}
 			this._queryRunner.runQuery(code);
 		} else if (this._currentConnection && this._currentConnectionProfile) {
-			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._path);
-			this._connectionManagementService.connect(this._currentConnectionProfile, this._path).then((result) => {
+			this._queryRunner = this._instantiationService.createInstance(QueryRunner, this._connectionPath);
+			this._connectionManagementService.connect(this._currentConnectionProfile, this._connectionPath).then((result) => {
 				this.addQueryEventListeners(this._queryRunner);
 				this._queryRunner.runQuery(code);
 			});
@@ -332,10 +358,10 @@ class SqlKernel extends Disposable implements nb.IKernel {
 	}
 
 	public async disconnect(): Promise<void> {
-		if (this._path) {
-			if (this._connectionManagementService.isConnected(this._path)) {
+		if (this._connectionPath) {
+			if (this._connectionManagementService.isConnected(this._connectionPath)) {
 				try {
-					await this._connectionManagementService.disconnect(this._path);
+					await this._connectionManagementService.disconnect(this._connectionPath);
 				} catch (err) {
 					this.logService.error(err);
 				}
