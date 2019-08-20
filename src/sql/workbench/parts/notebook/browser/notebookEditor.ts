@@ -181,15 +181,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this._actionMap[id];
 	}
 
-	public changeActiveCell(cell: ICellModel) {
-		if (cell !== this._notebookModel.activeCell) {
-			if (this._notebookModel.activeCell) {
-				this._notebookModel.activeCell.active = false;
-			}
-			this._notebookModel.activeCell = cell;
-			this._notebookModel.activeCell.active = true;
-		}
-	}
 
 	private async _onFindStateChange(e: FindReplaceStateChangedEvent): Promise<void> {
 		await this.setNotebookModel();
@@ -211,7 +202,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 				if (this._findState.searchString) {
 					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
 						if (p) {
-							this.changeActiveCell(p.cell);
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
 						}
@@ -238,14 +228,12 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
-			this.changeActiveCell(p.cell);
 			this._updateFinderMatchState();
 		}, er => { });
 	}
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
-			this.changeActiveCell(p.cell);
 			this._updateFinderMatchState();
 		}, er => { });
 	}

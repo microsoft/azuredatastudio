@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
-import { INotebookFindPosition, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookFindPosition, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/parts/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
@@ -78,9 +78,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
-	private _findArray: Array<INotebookFindPosition>;
+	private _findArray: Array<NotebookFindPosition>;
 	private _findIndex: number;
-	private _findCount: number;
 	private _onFindCountChange = new Emitter<number>();
 	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 	public requestConnectionHandler: () => Promise<boolean>;
@@ -364,7 +363,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	private updateActiveCell(cell: ICellModel) {
+	private updateActiveCell(cell: ICellModel): void {
 		if (this._activeCell) {
 			this._activeCell.active = false;
 		}
@@ -1024,7 +1023,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
-	findNext(): Thenable<INotebookFindPosition> {
+	findNext(): Thenable<NotebookFindPosition> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === this._findArray.length - 1) {
 				this._findIndex = 0;
@@ -1037,7 +1036,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	findPrevious(): Thenable<INotebookFindPosition> {
+	findPrevious(): Thenable<NotebookFindPosition> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === 0) {
 				this._findIndex = this._findArray.length - 1;
@@ -1050,12 +1049,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	find(exp: string, maxMatches?: number): Promise<INotebookFindPosition> {
-		this._findArray = new Array<INotebookFindPosition>();
+	find(exp: string, maxMatches?: number): Promise<NotebookFindPosition> {
+		this._findArray = new Array<NotebookFindPosition>();
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
-			return new Promise<INotebookFindPosition>((resolve) => {
+			return new Promise<NotebookFindPosition>((resolve) => {
 				const disp = this.onFindCountChange(e => {
 					resolve(this._findArray[e - 1]);
 					disp.dispose();
@@ -1068,31 +1067,43 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	private _startSearch(exp: string, maxMatches: number = 0): void {
-	let searchFn = (cell: ICellModel, exp: string): INotebookFindPosition[] => {
-			let findPositions: INotebookFindPosition[] = [];
+		let searchFn = (cell: ICellModel, exp: string): NotebookFindPosition[] => {
+			let findPositions: NotebookFindPosition[] = [];
 			let cellVal = cell.source;
-			this._findCount = 0;
+			let index: number;
+			let start: number;
+			let end: number;
 			if (cellVal) {
-				if (typeof cellVal === 'string' && cellVal.toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
-					this._findCount++;
-					let position: INotebookFindPosition = {
-						cell: cell,
-						lineNumber: undefined,
-						startColumnNumber: undefined,
-						endColumnNumber: undefined
-					};
-					findPositions = findPositions.concat(position);
+				if (typeof cellVal === 'string') {
+					index = 0;
+					while (cellVal.substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+						start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
+						end = start + exp.length;
+						let position: NotebookFindPosition = {
+							cell: cell,
+							lineNumber: 0,
+							startColumnNumber: start,
+							endColumnNumber: end
+						};
+						this.highlight(position);
+						findPositions = findPositions.concat(position);
+						index = end;
+					}
 				} else {
 					for (let j = 0; j < cellVal.length; j++) {
-						if (cellVal[j].toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
-							this._findCount++;
-							let position: INotebookFindPosition = {
+						index = 0;
+						while (cellVal[j].substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
+							start = cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
+							end = start + exp.length;
+							let position: NotebookFindPosition = {
 								cell: cell,
 								lineNumber: j,
-								startColumnNumber: undefined,
-								endColumnNumber: undefined
+								startColumnNumber: start,
+								endColumnNumber: end
 							};
-						findPositions = findPositions.concat(position);
+							this.highlight(position);
+							findPositions = findPositions.concat(position);
+							index = end;
 						}
 					}
 				}
@@ -1117,8 +1128,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	highlight(position: NotebookFindPosition): void {
+
+	}
+
 	clearFind(): void {
-		this._findArray = new Array<INotebookFindPosition>();
+		this._findArray = new Array<NotebookFindPosition>();
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 	}
