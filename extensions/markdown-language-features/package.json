@@ -24,8 +24,9 @@
 		"onCommand:markdown.showLockedPreviewToSide",
 		"onCommand:markdown.showSource",
 		"onCommand:markdown.showPreviewSecuritySelector",
-		"onWebviewPanel:markdown.preview",
-		"onCommand:notebook.showPreview"
+		"onCommand:markdown.render",
+		"onCommand:notebook.showPreview",
+		"onWebviewPanel:markdown.preview"
 	],
 	"contributes": {
 		"commands": [

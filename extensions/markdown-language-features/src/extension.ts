@@ -83,7 +83,7 @@ function registerMarkdownCommands(
 	commandManager.register(new commands.ShowPreviewSecuritySelectorCommand(previewSecuritySelector, previewManager));
 	commandManager.register(new commands.OpenDocumentLinkCommand(engine));
 	commandManager.register(new commands.ToggleLockCommand(previewManager));
-	// {{SQL CARBON EDIT}}
-	commandManager.register(new commands.ShowNotebookPreview(engine));
+	commandManager.register(new commands.ShowNotebookPreview(engine));	// {{SQL CARBON EDIT}}
+	commandManager.register(new commands.RenderDocument(engine));
 	return commandManager;
 }

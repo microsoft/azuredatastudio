@@ -118,7 +118,7 @@ export class MarkdownEngine {
 		return md;
 	}
 
-	private tokenize(
+	private tokenizeDocument(
 		document: SkinnyTextDocument,
 		config: MarkdownItConfig,
 		engine: MarkdownIt
@@ -131,25 +131,30 @@ export class MarkdownEngine {
 		this.currentDocument = document.uri;
 		this._slugCount = new Map<string, number>();
 
-		const text = document.getText();
-		const tokens = engine.parse(text.replace(UNICODE_NEWLINE_REGEX, ''), {});
+		const tokens = this.tokenizeString(document.getText(), engine);
 		this._tokenCache.update(document, config, tokens);
 		return tokens;
 	}
 
-	// {{SQL CARBON EDIT}} - Add renderText method
-	public async renderText(document: vscode.Uri, text: string): Promise<string> {
+	public async renderText(document: vscode.Uri, text: string): Promise<string> {	// {{SQL CARBON EDIT}} - Add renderText method
 		const config = this.getConfig(document);
 		const engine = await this.getEngine(config);
 		this.currentDocument = document;
 		return engine.render(text, config);
 	}
-	// {{SQL CARBON EDIT}} - End
 
-	public async render(document: SkinnyTextDocument): Promise<string> {
-		const config = this.getConfig(document.uri);
+	private tokenizeString(text: string, engine: MarkdownIt) {
+		return engine.parse(text.replace(UNICODE_NEWLINE_REGEX, ''), {});
+	}
+
+	public async render(document: SkinnyTextDocument | string): Promise<string> {
+		const config = this.getConfig(typeof document === 'string' ? undefined : document.uri);
 		const engine = await this.getEngine(config);
-		return engine.renderer.render(this.tokenize(document, config, engine), {
+		const tokens = typeof document === 'string'
+			? this.tokenizeString(document, engine)
+			: this.tokenizeDocument(document, config, engine);
+
+		return engine.renderer.render(tokens, {
 			...(engine as any).options,
 			...config
 		}, {});
@@ -158,14 +163,14 @@ export class MarkdownEngine {
 	public async parse(document: SkinnyTextDocument): Promise<Token[]> {
 		const config = this.getConfig(document.uri);
 		const engine = await this.getEngine(config);
-		return this.tokenize(document, config, engine);
+		return this.tokenizeDocument(document, config, engine);
 	}
 
 	public cleanCache(): void {
 		this._tokenCache.clean();
 	}
 
-	private getConfig(resource: vscode.Uri): MarkdownItConfig {
+	private getConfig(resource?: vscode.Uri): MarkdownItConfig {
 		const config = vscode.workspace.getConfiguration('markdown', resource);
 		return {
 			breaks: config.get<boolean>('preview.breaks', false),
