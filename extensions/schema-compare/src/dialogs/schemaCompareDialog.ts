@@ -294,8 +294,8 @@ export class SchemaCompareDialog {
 		} else {
 			this.sourceFileButton = view.modelBuilder.button().withProperties({
 				label: '•••',
-				title: localize('schemaCompare.selectTargetFile', "Select target file"),
-				ariaLabel: localize('schemaCompare.selectTargetFile', "Select target file")
+				title: localize('schemaCompare.selectSourceFile', "Select source file"),
+				ariaLabel: localize('schemaCompare.selectSourceFile', "Select source file")
 			}).component();
 		}
 
