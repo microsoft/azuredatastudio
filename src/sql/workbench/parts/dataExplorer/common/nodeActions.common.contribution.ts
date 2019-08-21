@@ -7,7 +7,7 @@ import { localize } from 'vs/nls';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import {
-	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, NEW_QUERY_COMMAND_ID, REFRESH_COMMAND_ID,
+	DISCONNECT_COMMAND_ID, MANAGE_COMMAND_ID, REFRESH_COMMAND_ID,
 	NEW_NOTEBOOK_COMMAND_ID, SCHEMA_COMPARE_COMMAND_ID, DATA_TIER_WIZARD_COMMAND_ID,
 	IMPORT_COMMAND_ID, BACKUP_COMMAND_ID, RESTORE_COMMAND_ID, PROFILER_COMMAND_ID, GENERATE_SCRIPTS_COMMAND_ID, PROPERTIES_COMMAND_ID
 } from './nodeCommands.common';
@@ -40,29 +40,6 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsDatabaseOrServer)
 });
-
-// New Query
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 2,
-	command: {
-		id: NEW_QUERY_COMMAND_ID,
-		title: localize('newQuery', "New Query")
-	},
-	when: MssqlNodeContext.IsDatabaseOrServer
-});
-
-// Manage
-MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
-	group: 'connection',
-	order: 1,
-	command: {
-		id: MANAGE_COMMAND_ID,
-		title: localize('manage', "Manage")
-	},
-	when: MssqlNodeContext.IsDatabaseOrServer
-});
-
 
 // Refresh
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {

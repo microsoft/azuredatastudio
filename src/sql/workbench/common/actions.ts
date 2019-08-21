@@ -41,32 +41,6 @@ export interface ManageActionContext extends BaseActionContext {
 	uri: string;
 }
 
-// --- actions
-export class NewQueryAction extends Task {
-	public static ID = 'newQuery';
-	public static LABEL = nls.localize('newQueryAction.newQuery', "New Query");
-	public static ICON = 'new-query';
-
-	constructor() {
-		super({
-			id: NewQueryAction.ID,
-			title: NewQueryAction.LABEL,
-			iconPath: undefined,
-			iconClass: NewQueryAction.ICON
-		});
-	}
-
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
-		return TaskUtilities.newQuery(
-			profile,
-			accessor.get<IConnectionManagementService>(IConnectionManagementService),
-			accessor.get<IQueryEditorService>(IQueryEditorService),
-			accessor.get<IObjectExplorerService>(IObjectExplorerService),
-			accessor.get<IEditorService>(IEditorService)
-		).then();
-	}
-}
-
 export const BackupFeatureName = 'backup';
 
 export class BackupAction extends Task {
