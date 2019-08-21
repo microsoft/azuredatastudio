@@ -290,6 +290,9 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 //backup
 import 'sql/workbench/parts/backup/browser/backup.contribution';
 
+//extensions
+import 'sql/workbench/parts/dataExplorer/common/extensions.contribution';
+
 //restore
 import 'sql/workbench/parts/restore/browser/restore.contribution';
 
