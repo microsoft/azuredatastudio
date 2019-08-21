@@ -12,10 +12,9 @@ import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from '
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
 
-import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
+import { CustomTreeViewPanel, CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
 import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 
 interface IUserFriendlyViewDescriptor {
