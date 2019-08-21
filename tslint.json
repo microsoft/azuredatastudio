@@ -194,6 +194,12 @@
 				]
 			},
 			{
+				"target": "**/vs/workbench/contrib/tasks/browser/terminalTaskSystem.ts",
+				"allowed": [
+					"process"
+				]
+			},
+			{
 				"target": "**/{vs,sql}/**/{common,browser}/**",
 				"allowed": [ /* none */]
 			}
@@ -204,6 +210,12 @@
 				"target": "**/{vs,sql}/**/test/{common,node,electron-main}/**",
 				"allowed": [
 					"document",
+					"HTMLElement"
+				]
+			},
+			{
+				"target": "**/vs/workbench/contrib/terminal/common/{terminal.ts,terminalService.ts}",
+				"allowed": [
 					"HTMLElement"
 				]
 			},
