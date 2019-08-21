@@ -190,7 +190,8 @@ export class SchemaCompareDialog {
 		this.schemaCompareTab.registerContent(async view => {
 			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareResult.sourceEndpointInfo ? this.schemaCompareResult.sourceEndpointInfo.packageFilePath : '',
-				width: 275
+				width: 275,
+				ariaLabel: localize('schemaCompareDialog.sourceTextBox', "Source file")
 			}).component();
 
 			this.sourceTextBox.onTextChanged((e) => {
@@ -199,7 +200,8 @@ export class SchemaCompareDialog {
 
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareResult.targetEndpointInfo ? this.schemaCompareResult.targetEndpointInfo.packageFilePath : '',
-				width: 275
+				width: 275,
+				ariaLabel: localize('schemaCompareDialog.targetTextBox', "Target file")
 			}).component();
 
 			this.targetTextBox.onTextChanged(() => {
@@ -464,7 +466,8 @@ export class SchemaCompareDialog {
 		this.sourceServerDropdown = view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.sourceServerDropdown', "Source Server")
 			}
 		).component();
 		this.sourceServerDropdown.onValueChanged(async (value) => {
@@ -489,7 +492,8 @@ export class SchemaCompareDialog {
 		this.targetServerDropdown = view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.targetServerDropdown', "Target Server")
 			}
 		).component();
 		this.targetServerDropdown.onValueChanged(async (value) => {
@@ -586,7 +590,8 @@ export class SchemaCompareDialog {
 		this.sourceDatabaseDropdown = view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.sourceDatabaseDropdown', "Source Database")
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged((value) => {
@@ -605,6 +610,7 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.targetDatabaseDropdown', "Target Database")
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged((value) => {
