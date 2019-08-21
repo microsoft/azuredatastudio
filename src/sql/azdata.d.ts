@@ -1398,6 +1398,13 @@ declare module 'azdata' {
 		executeDatabase: string;
 	}
 
+	export interface AgentNotebookMaterializedInfo {
+		materializedId: number;
+		targetDatabase: string;
+		materializedName: string;
+		favorite: boolean;
+	}
+
 	export interface AgentJobScheduleInfo {
 		id: number;
 		name: string;
@@ -1500,7 +1507,8 @@ declare module 'azdata' {
 
 	export interface AgentNotebookHistoryInfo extends AgentJobHistoryInfo {
 		materializedNotebookId: number;
-		materializedNotebookErrorFlag: number;
+		materializedNotebookName: string;
+		materializedNotebookPin: boolean;
 		materializedNotebookErrorInfo: string;
 	}
 
@@ -1709,6 +1717,8 @@ declare module 'azdata' {
 		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
 		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
 		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
+		updateNotebookMaterializedName(ownerUri: string, materializedId: number, targetDatabase: string, name: string): Thenable<ResultStatus>;
+		updateNotebookMaterializedPin(ownerUri: string, materializedId: number, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
 
 		// Job Step management methods
 		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;

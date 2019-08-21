@@ -596,6 +596,30 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
+		let updateNotebookMaterializedName = (ownerUri: string, notebookMaterializedId: number, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> => {
+			let params: contracts.UpdateAgentNotebookRunNameParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, materializedId: notebookMaterializedId, materializedNotebookName: name };
+			return client.sendRequest(contracts.UpdateAgentNotebookRunNameRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.UpdateAgentNotebookRunNameRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		let updateNotebookMaterializedPin = (ownerUri: string, notebookMaterializedId: number, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> => {
+			let params: contracts.UpdateAgentNotebookRunPinParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, materializedId: notebookMaterializedId, materializedNotebookPin: pin };
+			return client.sendRequest(contracts.UpdateAgentNotebookRunPinRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.UpdateAgentNotebookRunPinRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
 
 
 		// Alert management methods
@@ -912,6 +936,8 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			getTemplateNotebook,
 			createNotebook,
 			updateNotebook,
+			updateNotebookMaterializedName,
+			updateNotebookMaterializedPin,
 			deleteNotebook,
 			getAlerts,
 			createAlert,

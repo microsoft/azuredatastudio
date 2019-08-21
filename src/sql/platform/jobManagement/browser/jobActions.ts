@@ -669,4 +669,53 @@ export class DeleteNotebookAction extends Action {
 		);
 		return Promise.resolve(true);
 	}
+
+}
+
+export class PinNotebookMaterializedAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin Notebook");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(PinNotebookMaterializedAction.ID, PinNotebookMaterializedAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.toggleNotebookPin(actionInfo.history, true);
+		return Promise.resolve(true);
+	}
+}
+
+export class UnpinNotebookMaterializedAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.unpinNotebook', "Unpin Notebook");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(UnpinNotebookMaterializedAction.ID, UnpinNotebookMaterializedAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.toggleNotebookPin(actionInfo.history, false);
+		return Promise.resolve(true);
+	}
+}
+
+export class RenameNotebookMaterializedAction extends Action {
+	public static ID = 'notebookaction.openTemplate';
+	public static LABEL = nls.localize('notebookaction.renameNotebook', "Rename");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService,
+	) {
+		super(RenameNotebookMaterializedAction.ID, RenameNotebookMaterializedAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.renameNotebook(actionInfo.history);
+		return Promise.resolve(true);
+	}
 }

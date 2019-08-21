@@ -124,6 +124,20 @@ export interface UpdateAgentNotebookParams {
 	templateFilePath: string;
 }
 
+export interface UpdateAgentNotebookRunPinParams {
+	ownerUri: string;
+	targetDatabase: string;
+	materializedId: number;
+	materializedNotebookPin: boolean;
+}
+
+export interface UpdateAgentNotebookRunNameParams {
+	ownerUri: string;
+	targetDatabase: string;
+	materializedId: number;
+	materializedNotebookName: string;
+}
+
 export interface DeleteAgentNotebookParams {
 	ownerUri: string;
 	notebook: azdata.AgentNotebookInfo;
@@ -273,8 +287,16 @@ export namespace AgentNotebookMaterializedRequest {
 	export const type = new RequestType<AgentNotebookMaterializedParams, azdata.AgentNotebookMaterializedResult, void, void>('agent/notebookmaterialized');
 }
 
+export namespace UpdateAgentNotebookRunNameRequest {
+	export const type = new RequestType<UpdateAgentNotebookRunNameParams, azdata.UpdateAgentNotebookResult, void, void>('agent/notebookname');
+}
+
+export namespace UpdateAgentNotebookRunPinRequest {
+	export const type = new RequestType<UpdateAgentNotebookRunPinParams, azdata.ResultStatus, void, void>('agent/notebookpin');
+}
+
 export namespace AgentNotebookTemplateRequest {
-	export const type = new RequestType<AgentNotebookTemplateParams, azdata.AgentNotebookTemplateResult, void, void>('agent/notebooktemplate');
+	export const type = new RequestType<AgentNotebookTemplateParams, azdata.ResultStatus, void, void>('agent/notebooktemplate');
 }
 
 export namespace CreateAgentNotebookRequest {

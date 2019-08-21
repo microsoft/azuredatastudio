@@ -93,6 +93,18 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
+	public updateNotebookMaterializedName(connectionUri: string, materializedId: number, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.updateNotebookMaterializedName(connectionUri, materializedId, targetDatabase, name);
+		});
+	}
+
+	public updateNotebookMaterializedPin(connectionUri: string, materializedId: number, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.updateNotebookMaterializedPin(connectionUri, materializedId, targetDatabase, pin);
+		});
+	}
+
 	// Alerts
 	public getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 		return this._runAction(connectionUri, (runner) => {

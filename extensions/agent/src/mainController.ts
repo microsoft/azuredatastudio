@@ -109,7 +109,6 @@ export class MainController {
 				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
 				vscode.workspace.openTextDocument(tempfilePath).then((document) => {
 					let initialContent = document.getText();
-					console.log(initialContent);
 					azdata.nb.showNotebookDocument(uri, {
 						preview: false,
 						initialContent: initialContent,

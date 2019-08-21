@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, EditJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, EditJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -37,11 +37,14 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
 import { View } from 'vs/editor/browser/view/viewImpl';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
+import { QuickInputService } from 'vs/workbench/browser/parts/quickinput/quickInput';
+import { IQuickInput, IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export const DASHBOARD_SELECTOR: string = 'notebookhistory-component';
 export class GridSection {
 	title: string;
 	histories: azdata.AgentNotebookHistoryInfo[];
+	contextMenuType: number;
 }
 @Component({
 	selector: DASHBOARD_SELECTOR,
@@ -86,6 +89,8 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 	private _grids: GridSection[] = [];
 
+
+
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _cd: ChangeDetectorRef,
 		@Inject(forwardRef(() => CommonServiceInterface)) commonService: CommonServiceInterface,
@@ -97,7 +102,8 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		@Inject(ICommandService) private _commandService: ICommandService,
 		@Inject(IKeybindingService) keybindingService: IKeybindingService,
 		@Inject(IDashboardService) dashboardService: IDashboardService,
-		@Inject(ITelemetryService) private _telemetryService: ITelemetryService
+		@Inject(ITelemetryService) private _telemetryService: ITelemetryService,
+		@Inject(IQuickInputService) private _quickInputService: IQuickInputService
 	) {
 		super(commonService, dashboardService, contextMenuService, keybindingService, instantiationService, _agentViewComponent);
 		let notebookCacheObjectMap = this._jobManagementService.notebookCacheObjectMap;
@@ -381,7 +387,42 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		});
 	}
 
-	public openHistoryContextMenu(event: MouseEvent, history: azdata.AgentNotebookHistoryInfo) {
+	public renameNotebook(history: azdata.AgentNotebookHistoryInfo) {
+		const defaultDateTime = new Date(history.runDate).toLocaleDateString() + ' ' + new Date(history.runDate).toLocaleTimeString();
+		let notebookRunName = (history.materializedNotebookName === '') ? defaultDateTime : history.materializedNotebookName;
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
+		let materializedNotebookId = history.materializedNotebookId;
+		this._quickInputService.input({ placeHolder: notebookRunName }).then(async (value) => {
+			if (value) {
+				if (!/\S/.test(value)) {
+					value = '';
+				}
+				this._jobManagementService.updateNotebookMaterializedName(ownerUri, materializedNotebookId, targetDatabase, value).then(async (result) => {
+					if (result) {
+						history.materializedNotebookName = value;
+						this._cd.detectChanges();
+					}
+				});
+			}
+		});
+	}
+
+	public toggleNotebookPin(history: azdata.AgentNotebookHistoryInfo, pin: boolean) {
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
+		let materializedNotebookId = history.materializedNotebookId;
+		this._jobManagementService.updateNotebookMaterializedPin(ownerUri, materializedNotebookId, targetDatabase, pin).then(async (result) => {
+			if (result) {
+				history.materializedNotebookPin = pin;
+				this.createGrid();
+				this._cd.detectChanges();
+			}
+
+		});
+	}
+
+	public openHistoryContextMenu(event: MouseEvent, history: azdata.AgentNotebookHistoryInfo, contextMenuType: number) {
 		let anchor = {
 			x: event.clientX,
 			y: event.clientY
@@ -394,7 +435,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		};
 		this._contextMenuService.showContextMenu({
 			getAnchor: () => anchor,
-			getActions: () => gridActions,
+			getActions: () => (contextMenuType === 1) ? this.getPinnedGridActions() : this.getGridActions(),
 			getKeyBinding: (action) => this._keybindingFor(action),
 			getActionsContext: () => (actionContext)
 		});
@@ -402,17 +443,30 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 	protected getGridActions(): IAction[] {
 		const openNotebookAction = this._instantiationService.createInstance(OpenMaterializedNotebookAction);
+		const renameNotebookAction = this._instantiationService.createInstance(RenameNotebookMaterializedAction);
+		const pinNotebookAction = this._instantiationService.createInstance(PinNotebookMaterializedAction);
 		return [
-			openNotebookAction
+			openNotebookAction,
+			renameNotebookAction,
+			pinNotebookAction
 		];
 	}
 
+	protected getPinnedGridActions(): IAction[] {
+		const openNotebookAction = this._instantiationService.createInstance(OpenMaterializedNotebookAction);
+		const renameNotebookAction = this._instantiationService.createInstance(RenameNotebookMaterializedAction);
+		const unpinNotebookAction = this._instantiationService.createInstance(UnpinNotebookMaterializedAction);
+		return [
+			openNotebookAction,
+			renameNotebookAction,
+			unpinNotebookAction
+		];
+	}
 
-
-	public historyFilter(histories: azdata.AgentNotebookHistoryInfo[], minTime: number, maxTime: number) {
+	public historyFilter(histories: azdata.AgentNotebookHistoryInfo[], minTime: number, maxTime: number, pin: boolean) {
 		let resultHistory: azdata.AgentNotebookHistoryInfo[] = histories.filter(function (h) {
 			let historyDateTime = (new Date().getTime() - new Date(h.runDate.replace('T', ' ')).getTime()) / 1000;
-			if (historyDateTime >= minTime && historyDateTime <= maxTime) {
+			if (historyDateTime >= minTime && historyDateTime <= maxTime && h.materializedNotebookPin === pin) {
 				return true;
 			}
 			return false;
@@ -420,6 +474,22 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		resultHistory.sort((h1, h2) =>
 			(new Date(h1.runDate) > new Date(h2.runDate) ? -1 : 1));
 		return (resultHistory.length > 0) ? resultHistory : null;
+	}
+
+	public createdTooltip(history: azdata.AgentNotebookHistoryInfo) {
+		let tooltipString: string;
+		tooltipString = history.materializedNotebookName;
+		let dateOptions = {
+			weekday: 'long',
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
+		};
+		tooltipString += '\nDate created: ' + new Date(history.runDate).toLocaleDateString(undefined, dateOptions);
+		if (/\S/.test(history.materializedNotebookErrorInfo)) {
+			tooltipString += '\nNotebook error: ' + history.materializedNotebookErrorInfo;
+		}
+		return tooltipString;
 	}
 
 	public createGrid() {
@@ -438,12 +508,19 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			min: 2592001,
 			max: 31557600
 		}];
-		// Grids for this week
+
 		this._grids = [];
+		// Pushing the pinned notebooks grid
+		this._grids.push({
+			title: 'Pinned',
+			histories: this.historyFilter(histories, 0, Number.MAX_VALUE, true),
+			contextMenuType: 1
+		});
 		gridTitle.forEach((title, index) => {
 			let grid = new GridSection();
 			grid.title = title;
-			grid.histories = this.historyFilter(histories, gridPeriods[index].min, gridPeriods[index].max);
+			grid.histories = this.historyFilter(histories, gridPeriods[index].min, gridPeriods[index].max, false);
+			grid.contextMenuType = 0;
 			this._grids.push(grid);
 		});
 	}

@@ -30,6 +30,8 @@ export interface IJobManagementService {
 	getMaterialziedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult>;
 	getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult>;
 	deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus>;
+	updateNotebookMaterializedName(connectionUri: string, materializedId: number, targetDatabase: string, name: string);
+	updateNotebookMaterializedPin(connectionUri: string, materializedId: number, targetDatabase: string, pin: boolean);
 
 	getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult>;
 	deleteAlert(connectionUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus>;
