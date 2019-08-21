@@ -578,6 +578,7 @@ export class WebHDFS {
 		let initRedirectedStream = () => {
 			// After redirect, create valid stream to correct location
 			// and pipe the intermediate stream to it, unblocking the data flow
+			params.headers['content-type'] = 'application/octet-stream';
 			let upload = request(params, (err, res, bo) => {
 				if (err || this.isError(res)) {
 					emitError(replyStream, this.parseError(res, bo, err));
