@@ -327,4 +327,8 @@ export class Dropdown extends Disposable {
 	public get enabled(): boolean {
 		return this._input.isEnabled();
 	}
+
+	public set ariaLabel(val: string) {
+		this._input.setAriaLabel(val);
+	}
 }
