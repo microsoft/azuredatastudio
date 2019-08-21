@@ -251,7 +251,8 @@
       "providers": [
         {
           "wizard": {
-            "deployment-type": ""
+            "type": "new-aks",
+            "notebook": "%bdc-2019-aks-notebook%"
           },
           "dialog": {
             "notebook": "%bdc-2019-aks-notebook%",
@@ -358,6 +359,10 @@
           "when": "target=new-aks&&version=bdc2019"
         },
         {
+          "wizard": {
+            "type": "existing-aks",
+            "notebook": "%bdc-2019-existing-aks-notebook%"
+          },
           "dialog": {
             "notebook": "%bdc-2019-existing-aks-notebook%",
             "title": "%bdc-existing-aks-dialog-title%",
@@ -410,6 +415,10 @@
           "when": "target=existing-aks&&version=bdc2019"
         },
         {
+          "wizard": {
+            "type": "existing-kubeadm",
+            "notebook": "%bdc-2019-existing-kubeadm-notebook%"
+          },
           "dialog": {
             "title": "%bdc-existing-kubeadm-dialog-title%",
             "name": "bdc-existing-kubeadm-dialog",

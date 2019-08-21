@@ -8,7 +8,7 @@ import { SummaryPage } from './pages/summaryPage';
 import { WizardBase } from '../wizardBase';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { BdcDeploymentType } from '../../interfaces';
+import { WizardInfo, BdcDeploymentType } from '../../interfaces';
 import { WizardPageBase } from '../wizardPageBase';
 import { ToolsPage } from './pages/toolsPage';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
@@ -18,12 +18,12 @@ import { TargetClusterContextPage } from './pages/targetClusterPage';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
-	constructor(private _deploymentType: BdcDeploymentType) {
+	constructor(private wizardInfo: WizardInfo) {
 		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server big data cluster"));
 	}
 
 	public get deploymentType(): BdcDeploymentType {
-		return this._deploymentType;
+		return this.wizardInfo.type;
 	}
 
 	protected initialize(): void {

@@ -34,7 +34,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
-	initializeDialog() {
+	initialize() {
 		let tab = azdata.window.createTab('');
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;

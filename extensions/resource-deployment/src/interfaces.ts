@@ -32,8 +32,14 @@ export interface DeploymentProvider {
 	notebook: string | NotebookInfo;
 	downloadUrl: string;
 	webPageUrl: string;
+	wizard: WizardInfo;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
+}
+
+export interface WizardInfo {
+	notebook: string | NotebookInfo;
+	type: BdcDeploymentType;
 }
 
 export interface DialogInfo {
@@ -45,15 +51,24 @@ export interface DialogInfo {
 
 export interface DialogTabInfo {
 	title: string;
-	sections: DialogSectionInfo[];
+	sections: SectionInfo[];
 }
 
-export interface DialogSectionInfo {
+export interface WizardPageInfo {
+	sections: SectionInfo[];
+}
+
+export interface SectionInfo {
 	title: string;
-	fields: DialogFieldInfo[];
+	fields: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
+	rows: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
 }
 
-export interface DialogFieldInfo {
+export interface RowInfo {
+	fields: FieldInfo[];
+}
+
+export interface FieldInfo {
 	label: string;
 	variableName: string;
 	type: FieldType;
@@ -66,6 +81,8 @@ export interface DialogFieldInfo {
 	options: string[];
 	placeHolder: string;
 	userName?: string; //needed for sql server's password complexity requirement check, password can not include the login name.
+	labelWidth?: string;
+	inputWidth?: string;
 }
 
 export enum FieldType {

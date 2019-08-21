@@ -16,6 +16,7 @@ import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
+import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { NotebookInputDialog } from '../ui/notebookInputDialog';
 const localize = nls.loadMessageBundle();
 
@@ -195,7 +196,10 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
-		if (provider.dialog) {
+		if (provider.wizard) {
+			const wizard = new DeployClusterWizard(provider.wizard);
+			wizard.open();
+		} else if (provider.dialog) {
 			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);
 			dialog.open();
 		} else if (provider.notebook) {

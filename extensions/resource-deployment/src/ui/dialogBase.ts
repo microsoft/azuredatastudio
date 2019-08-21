@@ -16,10 +16,10 @@ export abstract class DialogBase {
 		this._dialogObject.cancelButton.onClick(() => this.onCancel());
 	}
 
-	protected abstract initializeDialog(): void;
+	protected abstract initialize(): void;
 
 	public open(): void {
-		this.initializeDialog();
+		this.initialize();
 		azdata.window.openDialog(this._dialogObject);
 	}
 

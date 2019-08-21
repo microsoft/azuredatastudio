@@ -16,7 +16,7 @@
 	"sql-2019-docker-notebook": "./notebooks/docker/2019/deploy-sql2019-image.ipynb",
 	"bdc-2019-display-name": "SQL Server 2019 CTP big data cluster",
 	"bdc-deployment-target": "Deployment target",
-	"bdc-deployment-target-aks": "New Azure Kubernetes Service Cluster",
+	"bdc-deployment-target-new-aks": "New Azure Kubernetes Service Cluster",
 	"bdc-deployment-target-existing-aks": "Existing Azure Kubernetes Service Cluster",
 	"bdc-deployment-target-existing-kubeadm": "Existing Kubernetes Cluster (kubeadm)",
 	"bdc-2019-aks-notebook": "./notebooks/bdc/2019/deploy-bdc-aks.ipynb",
