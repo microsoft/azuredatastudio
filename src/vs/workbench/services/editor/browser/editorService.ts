@@ -289,7 +289,7 @@ export class EditorService extends Disposable implements EditorServiceImpl {
 						targetGroup = group;
 						break;
 					}
-					if (group.isOpened(input)) {
+					if (group.isOpened(input) && !targetGroup) {
 						targetGroup = group;
 					}
 				}
