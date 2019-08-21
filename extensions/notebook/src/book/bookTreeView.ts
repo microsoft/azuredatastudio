@@ -33,10 +33,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this.initialze(workspaceFolders, null, extensionContext);
 	}
 
-	private initialze(workspaceFolders: vscode.WorkspaceFolder[], resource: string, context: vscode.ExtensionContext): void {
+	private initialze(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
 		let workspacePaths: string[] = [];
-		if (resource) {
-			workspacePaths.push(resource);
+		if (bookPath) {
+			workspacePaths.push(bookPath);
 		}
 		else if (workspaceFolders) {
 			workspacePaths = workspaceFolders.map(a => a.uri.fsPath);
@@ -68,17 +68,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._onReadAllTOCFiles.fire();
 	}
 
-	async openBook(resource: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
+	async openBook(bookPath: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
 		try {
-			this.getTableOfContentFiles([resource]).then(res => {
+			this.getTableOfContentFiles([bookPath]).then(res => {
 				let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 				vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer').then(res => {
 					this._openAsUntitled = openAsUntitled;
 					let books = this.getBooks();
 					if (books && books.length > 0) {
-						bookViewer.reveal(books[0], { expand: 3, focus: true, select: true });
-						const readmeMarkdown: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.md'));
-						const readmeNotebook: string = path.join(resource, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
+						bookViewer.reveal(books[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+						const readmeMarkdown: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.md'));
+						const readmeNotebook: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
 						if (fs.existsSync(readmeMarkdown)) {
 							vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
 						}
@@ -91,7 +91,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openBook', "Open book {0} failed: {1}",
-				resource,
+				bookPath,
 				e instanceof Error ? e.message : e));
 		}
 	}

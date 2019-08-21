@@ -208,6 +208,10 @@
 				{
 					"command": "jupyter.cmd.managePackages",
 					"when": "false"
+        },
+        {
+					"command": "books.SQL19Preview",
+          "when": "sql19Preview && notebookQuality != stable"
 				}
 			],
 			"touchBar": [

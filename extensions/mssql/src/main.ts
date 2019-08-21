@@ -69,9 +69,6 @@ export async function activate(context: vscode.ExtensionContext): Promise<mssql>
 	context.subscriptions.push(bookContributionProvider);
 
 	registerBooksWidget(bookContributionProvider);
-	vscode.commands.registerCommand('books.SQL19Preview', async (context) => {
-		vscode.commands.executeCommand('bookTreeView.openBook', bookContributionProvider.contributions[0].path, true);
-	});
 
 	// initalize client last so we don't have features stuck behind it
 	const server = new SqlToolsServer();
