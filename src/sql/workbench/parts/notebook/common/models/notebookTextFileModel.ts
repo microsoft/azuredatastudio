@@ -3,10 +3,12 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Range } from 'vs/editor/common/core/range';
+import { Range, IRange } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { FindMatch } from 'vs/editor/common/model';
+import { NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 
 export class NotebookTextFileModel {
 	private sourceMap: Map<string, Range>;
@@ -123,6 +125,104 @@ export class NotebookTextFileModel {
 			this.cellGuidMatches = undefined;
 			this.activeCellGuid = guid;
 		}
+	}
+
+	public transformAndApplyEditForSourceUpdate(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
+		let cellGuidRange = this.getCellNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid);
+
+		// convert the range to leverage offsets in the json
+		if (contentChange && contentChange.modelContentChangedEvent && this.areRangePropertiesAllSet(cellGuidRange)) {
+			contentChange.modelContentChangedEvent.changes.forEach(change => {
+				let convertedRange: IRange = {
+					startLineNumber: change.range.startLineNumber + cellGuidRange.startLineNumber - 1,
+					endLineNumber: change.range.endLineNumber + cellGuidRange.startLineNumber - 1,
+					startColumn: change.range.startColumn + cellGuidRange.startColumn,
+					endColumn: change.range.endColumn + cellGuidRange.startColumn
+				};
+				// Need to subtract one because we're going from 1-based to 0-based
+				let startSpaces: string = ' '.repeat(cellGuidRange.startColumn - 1);
+				textEditorModel.textEditorModel.applyEdits([{
+					range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
+					text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
+				}]);
+			});
+		} else {
+			return false;
+		}
+		return true;
+	}
+
+	public transformAndApplyEditForOutputUpdate(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
+		if (Array.isArray(contentChange.cells[0].outputs) && contentChange.cells[0].outputs.length > 0) {
+			let newOutput = JSON.stringify(contentChange.cells[0].outputs[contentChange.cells[0].outputs.length - 1], undefined, '    ');
+			if (contentChange.cells[0].outputs.length > 1) {
+				newOutput = ', '.concat(newOutput);
+			} else {
+				newOutput = '\n'.concat(newOutput).concat('\n');
+			}
+			let range = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
+			if (range) {
+				textEditorModel.textEditorModel.applyEdits([{
+					range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
+					text: newOutput
+				}]);
+			}
+		} else {
+			return false;
+		}
+		return true;
+	}
+
+	public transformAndApplyEditForCellUpdated(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
+		let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
+		if (executionCountMatch && executionCountMatch.range) {
+			// Execution count can be between 0 and n characters long
+			let beginExecutionCountColumn = executionCountMatch.range.endColumn;
+			let endExecutionCountColumn = beginExecutionCountColumn + 1;
+			while (textEditorModel.textEditorModel.getLineContent(executionCountMatch.range.endLineNumber)[endExecutionCountColumn + 1]) {
+				endExecutionCountColumn++;
+			}
+			if (contentChange.cells[0].executionCount) {
+				textEditorModel.textEditorModel.applyEdits([{
+					range: new Range(executionCountMatch.range.startLineNumber, beginExecutionCountColumn, executionCountMatch.range.endLineNumber, endExecutionCountColumn),
+					text: contentChange.cells[0].executionCount.toString()
+				}]);
+			} else {
+				// This is a special case when cells are canceled; there will be no execution count included
+				return true;
+			}
+		} else {
+			return false;
+		}
+		return true;
+	}
+
+	public transformAndApplyEditForClearOutput(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
+		let outputEndRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
+		let outputStartRange = this.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
+		if (outputStartRange && outputEndRange) {
+			textEditorModel.textEditorModel.applyEdits([{
+				range: new Range(outputStartRange.startLineNumber, outputStartRange.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
+				text: ''
+			}]);
+			return true;
+		}
+		return false;
+	}
+
+	public replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType, textEditorModel: TextFileEditorModel | UntitledEditorModel) {
+		let content = JSON.stringify(notebookModel.toJSON(type), undefined, '    ');
+		let model = textEditorModel.textEditorModel;
+		let endLine = model.getLineCount();
+		let endCol = model.getLineMaxColumn(endLine);
+		textEditorModel.textEditorModel.applyEdits([{
+			range: new Range(1, 1, endLine, endCol),
+			text: content
+		}]);
+	}
+
+	private areRangePropertiesAllSet(range: Range) {
+		return range.startLineNumber && range.startColumn && range.endLineNumber && range.endColumn;
 	}
 
 	private findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): boolean {

@@ -124,78 +124,30 @@ export class NotebookEditorModel extends EditorModel {
 			this.sendNotebookSerializationStateChange();
 		} else {
 			let notebookModel = this.getNotebookModel();
-
+			let editAppliedSuccessfully = false;
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
 				if (contentChange && contentChange.cells && contentChange.cells[0]) {
 					if (type === NotebookChangeType.CellSourceUpdated) {
-						// starting "
-						let cellNode = this.notebookTextFileModel.getCellNodeByGuid(this.textEditorModel, contentChange.cells[0].cellGuid);
-						if (cellNode) {
-							// now, convert the range to leverage offsets in the json
-							if (contentChange.modelContentChangedEvent && contentChange.modelContentChangedEvent.changes.length) {
-								contentChange.modelContentChangedEvent.changes.forEach(change => {
-									let convertedRange: IRange = {
-										startLineNumber: change.range.startLineNumber + cellNode.startLineNumber - 1,
-										endLineNumber: change.range.endLineNumber + cellNode.startLineNumber - 1,
-										startColumn: change.range.startColumn + cellNode.startColumn,
-										endColumn: change.range.endColumn + cellNode.startColumn
-									};
-									// Need to subtract one because the first " takes up one character
-									let startSpaces: string = ' '.repeat(cellNode.startColumn - 1);
-									this.textEditorModel.textEditorModel.applyEdits([{
-										range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-										text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
-									}]);
-								});
-								return;
-							}
+						if (this.notebookTextFileModel.transformAndApplyEditForSourceUpdate(contentChange, this.textEditorModel)) {
+							editAppliedSuccessfully = true;
 						}
 					} else if (type === NotebookChangeType.CellOutputUpdated) {
-						if (Array.isArray(contentChange.cells[0].outputs) && contentChange.cells[0].outputs.length > 0) {
-							let newOutput = JSON.stringify(contentChange.cells[0].outputs[contentChange.cells[0].outputs.length - 1], undefined, '    ');
-							if (contentChange.cells[0].outputs.length > 1) {
-								newOutput = ', '.concat(newOutput);
-							} else {
-								newOutput = '\n'.concat(newOutput).concat('\n');
-							}
-							let range = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
-							if (range) {
-								this.textEditorModel.textEditorModel.applyEdits([{
-									range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
-									text: newOutput
-								}]);
-								return;
-							}
+						if (this.notebookTextFileModel.transformAndApplyEditForOutputUpdate(contentChange, this.textEditorModel)) {
+							editAppliedSuccessfully = true;
 						}
 					} else if (type === NotebookChangeType.CellOutputCleared) {
-						let outputEndRange = this.notebookTextFileModel.getEndOfOutputs(this.textEditorModel, contentChange.cells[0].cellGuid);
-						let outputStartRange = this.notebookTextFileModel.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
-						if (outputStartRange && outputEndRange) {
-							this.textEditorModel.textEditorModel.applyEdits([{
-								range: new Range(outputStartRange.startLineNumber, outputStartRange.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
-								text: ''
-							}]);
-							return;
+						if (this.notebookTextFileModel.transformAndApplyEditForClearOutput(contentChange, this.textEditorModel)) {
+							editAppliedSuccessfully = true;
 						}
-						// }
 					} else if (type === NotebookChangeType.CellExecuted) {
-						let executionCountMatch = this.notebookTextFileModel.getExecutionCountRange(this.textEditorModel, contentChange.cells[0].cellGuid);
-						if (executionCountMatch && executionCountMatch.range) {
-							// Execution count can be between 0 and n characters long
-							let beginExecutionCountColumn = executionCountMatch.range.endColumn;
-							let endExecutionCountColumn = beginExecutionCountColumn + 1;
-							while (this.textEditorModel.textEditorModel.getLineContent(executionCountMatch.range.endLineNumber)[endExecutionCountColumn + 1]) {
-								endExecutionCountColumn++;
-							}
-							if (contentChange.cells[0].executionCount) {
-								this.textEditorModel.textEditorModel.applyEdits([{
-									range: new Range(executionCountMatch.range.startLineNumber, beginExecutionCountColumn, executionCountMatch.range.endLineNumber, endExecutionCountColumn),
-									text: contentChange.cells[0].executionCount.toString()
-								}]);
-							}
-							return;
+						if (this.notebookTextFileModel.transformAndApplyEditForCellUpdated(contentChange, this.textEditorModel)) {
+							editAppliedSuccessfully = true;
 						}
 					}
+				}
+				// If edit was already applied, skip replacing entire text model
+				if (editAppliedSuccessfully) {
+					return;
 				}
 				this.replaceEntireTextEditorModel(notebookModel, type);
 				this._lastEditFullReplacement = true;
@@ -203,21 +155,13 @@ export class NotebookEditorModel extends EditorModel {
 				// future unnecessary use of the "slow" form of editing
 				if (type === NotebookChangeType.CellsModified || type === NotebookChangeType.CellSourceUpdated) {
 					this.notebookTextFileModel.updateSourceMap(this.textEditorModel, contentChange.cells[0].cellGuid);
-					this.notebookTextFileModel.updateOutputBeginMap(this.textEditorModel, contentChange.cells[0].cellGuid);
 				}
 			}
 		}
 	}
 
 	public replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType) {
-		let content = JSON.stringify(notebookModel.toJSON(type), undefined, '    ');
-		let model = this.textEditorModel.textEditorModel;
-		let endLine = model.getLineCount();
-		let endCol = model.getLineMaxColumn(endLine);
-		this.textEditorModel.textEditorModel.applyEdits([{
-			range: new Range(1, 1, endLine, endCol),
-			text: content
-		}]);
+		this.notebookTextFileModel.replaceEntireTextEditorModel(notebookModel, type, this.textEditorModel);
 	}
 
 	private sendNotebookSerializationStateChange(): void {

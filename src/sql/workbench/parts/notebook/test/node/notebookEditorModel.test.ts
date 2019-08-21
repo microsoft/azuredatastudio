@@ -46,6 +46,8 @@ class ServiceAccessor {
 
 let defaultUri = URI.file('/some/path.ipynb');
 
+// Note: these tests are intentionally written to be extremely brittle and break on any changes to notebook/cell serialization changes.
+// If any of these tests fail, it is likely that notebook editor rehydration will fail with cryptic JSON messages.
 suite('Notebook Editor Model', function (): void {
 	let notebookManagers = [new NotebookManagerStub()];
 	let notebookModel: NotebookModel;
@@ -197,6 +199,28 @@ suite('Notebook Editor Model', function (): void {
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25)).equal('            "execution_count": 1');
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(26)).equal('        }');
 
+		should(notebookEditorModel.lastEditFullReplacement).equal(false);
+
+		newCell.executionCount = 10;
+		contentChange = {
+			changeType: NotebookChangeType.CellExecuted,
+			cells: [newCell],
+			cellIndex: 0
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25)).equal('            "execution_count": 10');
+		should(notebookEditorModel.lastEditFullReplacement).equal(false);
+
+		newCell.executionCount = 15;
+		contentChange = {
+			changeType: NotebookChangeType.CellExecuted,
+			cells: [newCell],
+			cellIndex: 0
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25)).equal('            "execution_count": 15');
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
 
@@ -541,6 +565,47 @@ suite('Notebook Editor Model', function (): void {
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(32)).equal('            ],');
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(33)).equal('            "execution_count": 0');
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(34)).equal('        }');
+
+		should(notebookEditorModel.lastEditFullReplacement).equal(false);
+	});
+
+	test('should not replace entire text model for output changes (1st update)', async function (): Promise<void> {
+		await createNewNotebookModel();
+		let notebookEditorModel = await createTextEditorModel(this);
+		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
+
+		let newCell = notebookModel.addCell(CellTypes.Code);
+		let previousOutputs = newCell.outputs;
+		// clear outputs
+		newCell[<any>'_outputs'] = [];
+
+		let contentChange: NotebookContentChange = {
+			changeType: NotebookChangeType.CellsModified,
+			cells: [newCell],
+			cellIndex: 0
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		should(notebookEditorModel.lastEditFullReplacement).equal(true);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(14)).equal('            "outputs": [],');
+
+		// add output
+		newCell[<any>'_outputs'] = previousOutputs;
+
+		contentChange = {
+			changeType: NotebookChangeType.CellOutputUpdated,
+			cells: [newCell]
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(8)).equal('            "source": [');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(12)).equal('                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(14)).equal('            "outputs": [');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(23)).equal('}');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25)).equal('            "execution_count": 0');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(26)).equal('        }');
 
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
