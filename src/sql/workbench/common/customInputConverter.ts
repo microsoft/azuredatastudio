@@ -43,7 +43,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			//QueryInput
 			uri = getQueryEditorFileUri(input);
 			if (uri) {
-				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
+				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString(true));
 				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
 				return queryInput;
 			}

@@ -217,6 +217,20 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this.registerCheckboxPlugin(this._checkboxColumns[col]);
 		}
 
+		if (this.ariaRowCount === -1) {
+			this._table.removeAriaRowCount();
+		}
+		else {
+			this._table.ariaRowCount = this.ariaRowCount;
+		}
+
+		if (this.ariaColumnCount === -1) {
+			this._table.removeAriaColumnCount();
+		}
+		else {
+			this._table.ariaColumnCount = this.ariaColumnCount;
+		}
+
 		this.layoutTable();
 		this.validate();
 	}
@@ -290,5 +304,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get title() {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
+	}
+
+	public get ariaRowCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaRowCount, -1);
+	}
+
+	public get ariaColumnCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
 	}
 }

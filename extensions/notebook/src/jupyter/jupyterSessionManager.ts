@@ -7,7 +7,7 @@ import { nb, ServerInfo, connection, IConnectionProfile } from 'azdata';
 import { Session, Kernel } from '@jupyterlab/services';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
-import { Uri } from 'vscode';
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
@@ -247,16 +247,9 @@ export class JupyterSession implements nb.ISession {
 				if (!clusterEndpoint) {
 					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server big data cluster master instance.")));
 				}
-				if (this.isIntegratedAuth(connection)) {
-					// Hack: for now, we need to use gateway-0 for integrated auth
-					let sqlDnsName: string = connection.options['server'].split(',')[0];
-					let parts = sqlDnsName.split('.');
-					parts[0] = 'gateway-0';
-					connection.options[KNOX_ENDPOINT_SERVER] = parts.join('.');
-				} else {
-					connection.options[KNOX_ENDPOINT_SERVER] = clusterEndpoint.ipAddress;
-				}
-				connection.options[KNOX_ENDPOINT_PORT] = clusterEndpoint.port;
+				let hostAndPort = utils.getHostAndPortFromEndpoint(clusterEndpoint.endpoint);
+				connection.options[KNOX_ENDPOINT_SERVER] = hostAndPort.host;
+				connection.options[KNOX_ENDPOINT_PORT] = hostAndPort.port;
 				connection.options[USER] = DEFAULT_CLUSTER_USER_NAME;
 			}
 			else {
@@ -265,7 +258,7 @@ export class JupyterSession implements nb.ISession {
 			this.setHostAndPort(':', connection);
 			this.setHostAndPort(',', connection);
 
-			let server = Uri.parse(utils.getLivyUrl(connection.options[KNOX_ENDPOINT_SERVER], connection.options[KNOX_ENDPOINT_PORT])).toString();
+			let server = vscode.Uri.parse(utils.getLivyUrl(connection.options[KNOX_ENDPOINT_SERVER], connection.options[KNOX_ENDPOINT_PORT])).toString();
 			let doNotCallChangeEndpointParams = this.isIntegratedAuth(connection) ?
 				`%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`
 				: `%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${connection.options['password']} --server=${server} --auth=Basic_Access`;
@@ -316,7 +309,7 @@ export class JupyterSession implements nb.ISession {
 		if (!serverInfo || !serverInfo.options) {
 			return undefined;
 		}
-		let endpoints: utils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
+		let endpoints: utils.IEndpoint[] = utils.getClusterEndpoints(serverInfo);
 		if (!endpoints || endpoints.length === 0) {
 			return undefined;
 		}

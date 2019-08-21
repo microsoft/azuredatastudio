@@ -49,7 +49,6 @@ import 'vs/workbench/services/extensionManagement/node/extensionManagementServic
 import 'vs/workbench/services/accessibility/node/accessibilityService';
 import 'vs/workbench/services/remote/node/tunnelService';
 import 'vs/workbench/services/backup/node/backupFileService';
-import 'vs/workbench/services/opener/electron-browser/openerService';
 import 'vs/workbench/services/credentials/node/credentialsService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -70,7 +69,7 @@ import { IIssueService } from 'vs/platform/issue/node/issue';
 import { IssueService } from 'vs/platform/issue/electron-browser/issueService';
 import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { WorkspacesService } from 'vs/platform/workspaces/electron-browser/workspacesService';
-import { IMenubarService } from 'vs/platform/menubar/common/menubar';
+import { IMenubarService } from 'vs/platform/menubar/node/menubar';
 import { MenubarService } from 'vs/platform/menubar/electron-browser/menubarService';
 import { IURLService } from 'vs/platform/url/common/url';
 import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
@@ -119,8 +118,6 @@ import { IScriptingService, ScriptingService } from 'sql/platform/scripting/comm
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
-import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { ISchemaCompareService, SchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -196,8 +193,6 @@ registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
-registerSingleton(IDacFxService, DacFxService);
-registerSingleton(ISchemaCompareService, SchemaCompareService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 // {{SQL CARBON EDIT}} - End
 

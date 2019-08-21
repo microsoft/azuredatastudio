@@ -7,12 +7,16 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as mssql from '../../../mssql';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareOptionsDialog {
+
+	//#region Localized strings
+
 	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'OK');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
@@ -245,8 +249,10 @@ export class SchemaCompareOptionsDialog {
 	private static readonly descriptionDropObjectsNotInSource: string = localize('SchemaCompare.Description.DropObjectsNotInSource', 'Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.');
 	private static readonly descriptionIgnoreColumnOrder: string = localize('SchemaCompare.Description.IgnoreColumnOrder', 'Specifies whether differences in table column order should be ignored or updated when you publish to a database.');
 
+	//#endregion
+
 	public dialog: azdata.window.Dialog;
-	public deploymentOptions: azdata.DeploymentOptions;
+	public deploymentOptions: mssql.DeploymentOptions;
 
 	private generalOptionsTab: azdata.window.DialogTab;
 	private objectTypesTab: azdata.window.DialogTab;
@@ -261,7 +267,7 @@ export class SchemaCompareOptionsDialog {
 	private objectsLookup = {};
 	private disposableListeners: vscode.Disposable[] = [];
 
-	private excludedObjectTypes: azdata.SchemaObjectType[] = [];
+	private excludedObjectTypes: mssql.SchemaObjectType[] = [];
 	private optionsChanged: boolean = false;
 
 	private optionsLabels: string[] = [
@@ -413,7 +419,7 @@ export class SchemaCompareOptionsDialog {
 		SchemaCompareOptionsDialog.ServerTriggers
 	].sort();
 
-	constructor(defaultOptions: azdata.DeploymentOptions, private schemaComparison: SchemaCompareMainWindow) {
+	constructor(defaultOptions: mssql.DeploymentOptions, private schemaComparison: SchemaCompareMainWindow) {
 		this.deploymentOptions = defaultOptions;
 	}
 
@@ -465,7 +471,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async reset() {
-		let service = await azdata.dataprotocol.getProvider<azdata.SchemaCompareServicesProvider>('MSSQL', azdata.DataProviderType.SchemaCompareServicesProvider);
+		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
@@ -580,7 +586,8 @@ export class SchemaCompareOptionsDialog {
 					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
-			]
+			],
+			ariaRowCount: data.length
 		});
 	}
 
@@ -603,7 +610,8 @@ export class SchemaCompareOptionsDialog {
 					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
-			]
+			],
+			ariaRowCount: data.length
 		});
 	}
 
@@ -1111,139 +1119,139 @@ export class SchemaCompareOptionsDialog {
 	private GetSchemaCompareIncludedObjectsUtil(label): boolean {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
-				return !isNullOrUndefined(this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Aggregates)) ? false : true;
+				return !isNullOrUndefined(this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Aggregates)) ? false : true;
 			case SchemaCompareOptionsDialog.ApplicationRoles:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ApplicationRoles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ApplicationRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.Assemblies:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Assemblies)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Assemblies)) ? false : true;
 			case SchemaCompareOptionsDialog.AssemblyFiles:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.AssemblyFiles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.AssemblyFiles)) ? false : true;
 			case SchemaCompareOptionsDialog.AsymmetricKeys:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.AsymmetricKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.AsymmetricKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.BrokerPriorities:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.BrokerPriorities)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.BrokerPriorities)) ? false : true;
 			case SchemaCompareOptionsDialog.Certificates:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Certificates)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Certificates)) ? false : true;
 			case SchemaCompareOptionsDialog.ColumnEncryptionKeys:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ColumnEncryptionKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ColumnEncryptionKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.ColumnMasterKeys:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ColumnMasterKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ColumnMasterKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.Contracts:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Contracts)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Contracts)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseOptions:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseOptions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.DatabaseOptions)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseRoles:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseRoles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.DatabaseRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseTriggers:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseTriggers)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.DatabaseTriggers)) ? false : true;
 			case SchemaCompareOptionsDialog.Defaults:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Defaults)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Defaults)) ? false : true;
 			case SchemaCompareOptionsDialog.ExtendedProperties:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExtendedProperties)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExtendedProperties)) ? false : true;
 			case SchemaCompareOptionsDialog.ExternalDataSources:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalDataSources)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalDataSources)) ? false : true;
 			case SchemaCompareOptionsDialog.ExternalFileFormats:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalFileFormats)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalFileFormats)) ? false : true;
 			case SchemaCompareOptionsDialog.ExternalTables:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ExternalTables)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ExternalTables)) ? false : true;
 			case SchemaCompareOptionsDialog.Filegroups:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Filegroups)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Filegroups)) ? false : true;
 			case SchemaCompareOptionsDialog.Files:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Files)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Files)) ? false : true;
 			case SchemaCompareOptionsDialog.FileTables:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.FileTables)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.FileTables)) ? false : true;
 			case SchemaCompareOptionsDialog.FullTextCatalogs:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.FullTextCatalogs)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.FullTextCatalogs)) ? false : true;
 			case SchemaCompareOptionsDialog.FullTextStoplists:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.FullTextStoplists)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.FullTextStoplists)) ? false : true;
 			case SchemaCompareOptionsDialog.MessageTypes:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.MessageTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.MessageTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.PartitionFunctions:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.PartitionFunctions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.PartitionFunctions)) ? false : true;
 			case SchemaCompareOptionsDialog.PartitionSchemes:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.PartitionSchemes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.PartitionSchemes)) ? false : true;
 			case SchemaCompareOptionsDialog.Permissions:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Permissions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Permissions)) ? false : true;
 			case SchemaCompareOptionsDialog.Queues:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Queues)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Queues)) ? false : true;
 			case SchemaCompareOptionsDialog.RemoteServiceBindings:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.RemoteServiceBindings)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.RemoteServiceBindings)) ? false : true;
 			case SchemaCompareOptionsDialog.RoleMembership:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.RoleMembership)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.RoleMembership)) ? false : true;
 			case SchemaCompareOptionsDialog.Rules:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Rules)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Rules)) ? false : true;
 			case SchemaCompareOptionsDialog.ScalarValuedFunctions:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ScalarValuedFunctions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ScalarValuedFunctions)) ? false : true;
 			case SchemaCompareOptionsDialog.SearchPropertyLists:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.SearchPropertyLists)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.SearchPropertyLists)) ? false : true;
 			case SchemaCompareOptionsDialog.SecurityPolicies:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.SecurityPolicies)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.SecurityPolicies)) ? false : true;
 			case SchemaCompareOptionsDialog.Sequences:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Sequences)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Sequences)) ? false : true;
 			case SchemaCompareOptionsDialog.Services:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Services)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Services)) ? false : true;
 			case SchemaCompareOptionsDialog.Signatures:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Signatures)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Signatures)) ? false : true;
 			case SchemaCompareOptionsDialog.StoredProcedures:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.StoredProcedures)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.StoredProcedures)) ? false : true;
 			case SchemaCompareOptionsDialog.SymmetricKeys:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.SymmetricKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.SymmetricKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.Synonyms:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Synonyms)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Synonyms)) ? false : true;
 			case SchemaCompareOptionsDialog.Tables:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Tables)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Tables)) ? false : true;
 			case SchemaCompareOptionsDialog.TableValuedFunctions:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.TableValuedFunctions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.TableValuedFunctions)) ? false : true;
 			case SchemaCompareOptionsDialog.UserDefinedDataTypes:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.UserDefinedDataTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.UserDefinedDataTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.UserDefinedTableTypes:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.UserDefinedTableTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.UserDefinedTableTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.ClrUserDefinedTypes:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ClrUserDefinedTypes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ClrUserDefinedTypes)) ? false : true;
 			case SchemaCompareOptionsDialog.Users:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Users)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Users)) ? false : true;
 			case SchemaCompareOptionsDialog.Views:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Views)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Views)) ? false : true;
 			case SchemaCompareOptionsDialog.XmlSchemaCollections:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.XmlSchemaCollections)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.XmlSchemaCollections)) ? false : true;
 			case SchemaCompareOptionsDialog.Audits:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Audits)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Audits)) ? false : true;
 			case SchemaCompareOptionsDialog.Credentials:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Credentials)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Credentials)) ? false : true;
 			case SchemaCompareOptionsDialog.CryptographicProviders:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.CryptographicProviders)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.CryptographicProviders)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseAuditSpecifications:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseAuditSpecifications)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.DatabaseAuditSpecifications)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseEncryptionKeys:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseEncryptionKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.DatabaseEncryptionKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.DatabaseScopedCredentials:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.DatabaseScopedCredentials)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.DatabaseScopedCredentials)) ? false : true;
 			case SchemaCompareOptionsDialog.Endpoints:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Endpoints)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Endpoints)) ? false : true;
 			case SchemaCompareOptionsDialog.ErrorMessages:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ErrorMessages)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ErrorMessages)) ? false : true;
 			case SchemaCompareOptionsDialog.EventNotifications:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.EventNotifications)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.EventNotifications)) ? false : true;
 			case SchemaCompareOptionsDialog.EventSessions:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.EventSessions)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.EventSessions)) ? false : true;
 			case SchemaCompareOptionsDialog.LinkedServerLogins:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.LinkedServerLogins)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.LinkedServerLogins)) ? false : true;
 			case SchemaCompareOptionsDialog.LinkedServers:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.LinkedServers)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.LinkedServers)) ? false : true;
 			case SchemaCompareOptionsDialog.Logins:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Logins)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Logins)) ? false : true;
 			case SchemaCompareOptionsDialog.MasterKeys:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.MasterKeys)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.MasterKeys)) ? false : true;
 			case SchemaCompareOptionsDialog.Routes:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.Routes)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.Routes)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerAuditSpecifications:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerAuditSpecifications)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ServerAuditSpecifications)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerRoleMembership:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerRoleMembership)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ServerRoleMembership)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerRoles:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerRoles)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ServerRoles)) ? false : true;
 			case SchemaCompareOptionsDialog.ServerTriggers:
-				return (this.deploymentOptions.excludeObjectTypes.find(x => x === azdata.SchemaObjectType.ServerTriggers)) ? false : true;
+				return (this.deploymentOptions.excludeObjectTypes.find(x => x === mssql.SchemaObjectType.ServerTriggers)) ? false : true;
 		}
 		return false;
 	}
@@ -1252,337 +1260,337 @@ export class SchemaCompareOptionsDialog {
 		switch (label) {
 			case SchemaCompareOptionsDialog.Aggregates:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Aggregates);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Aggregates);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ApplicationRoles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ApplicationRoles);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ApplicationRoles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Assemblies:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Assemblies);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Assemblies);
 				}
 				return;
 			case SchemaCompareOptionsDialog.AssemblyFiles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.AssemblyFiles);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.AssemblyFiles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.AsymmetricKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.AsymmetricKeys);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.AsymmetricKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.BrokerPriorities:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.BrokerPriorities);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.BrokerPriorities);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Certificates:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Certificates);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Certificates);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ColumnEncryptionKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ColumnEncryptionKeys);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ColumnEncryptionKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ColumnMasterKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ColumnMasterKeys);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ColumnMasterKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Contracts:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Contracts);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Contracts);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseOptions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseOptions);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.DatabaseOptions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseRoles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseRoles);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.DatabaseRoles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseTriggers:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseTriggers);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.DatabaseTriggers);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Defaults:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Defaults);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Defaults);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExtendedProperties:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExtendedProperties);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExtendedProperties);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExternalDataSources:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExternalDataSources);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExternalDataSources);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExternalFileFormats:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExternalFileFormats);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExternalFileFormats);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ExternalTables:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ExternalTables);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ExternalTables);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Filegroups:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Filegroups);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Filegroups);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Files:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Files);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Files);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FileTables:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.FileTables);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.FileTables);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FullTextCatalogs:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.FullTextCatalogs);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.FullTextCatalogs);
 				}
 				return;
 			case SchemaCompareOptionsDialog.FullTextStoplists:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.FullTextStoplists);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.FullTextStoplists);
 				}
 				return;
 			case SchemaCompareOptionsDialog.MessageTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.MessageTypes);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.MessageTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.PartitionFunctions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.PartitionFunctions);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.PartitionFunctions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.PartitionSchemes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.PartitionSchemes);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.PartitionSchemes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Permissions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Permissions);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Permissions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Queues:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Queues);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Queues);
 				}
 				return;
 			case SchemaCompareOptionsDialog.RemoteServiceBindings:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.RemoteServiceBindings);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.RemoteServiceBindings);
 				}
 				return;
 			case SchemaCompareOptionsDialog.RoleMembership:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.RoleMembership);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.RoleMembership);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Rules:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Rules);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Rules);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ScalarValuedFunctions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ScalarValuedFunctions);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ScalarValuedFunctions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.SearchPropertyLists:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.SearchPropertyLists);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.SearchPropertyLists);
 				}
 				return;
 			case SchemaCompareOptionsDialog.SecurityPolicies:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.SecurityPolicies);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.SecurityPolicies);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Sequences:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Sequences);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Sequences);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Services:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Services);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Services);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Signatures:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Signatures);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Signatures);
 				}
 				return;
 			case SchemaCompareOptionsDialog.StoredProcedures:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.StoredProcedures);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.StoredProcedures);
 				}
 				return;
 			case SchemaCompareOptionsDialog.SymmetricKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.SymmetricKeys);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.SymmetricKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Synonyms:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Synonyms);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Synonyms);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Tables:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Tables);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Tables);
 				}
 				return;
 			case SchemaCompareOptionsDialog.TableValuedFunctions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.TableValuedFunctions);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.TableValuedFunctions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.UserDefinedDataTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.UserDefinedDataTypes);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.UserDefinedDataTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.UserDefinedTableTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.UserDefinedTableTypes);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.UserDefinedTableTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ClrUserDefinedTypes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ClrUserDefinedTypes);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ClrUserDefinedTypes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Users:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Users);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Users);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Views:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Views);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Views);
 				}
 				return;
 			case SchemaCompareOptionsDialog.XmlSchemaCollections:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.XmlSchemaCollections);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.XmlSchemaCollections);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Audits:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Audits);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Audits);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Credentials:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Credentials);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Credentials);
 				}
 				return;
 			case SchemaCompareOptionsDialog.CryptographicProviders:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.CryptographicProviders);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.CryptographicProviders);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseAuditSpecifications:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseAuditSpecifications);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.DatabaseAuditSpecifications);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseEncryptionKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseEncryptionKeys);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.DatabaseEncryptionKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.DatabaseScopedCredentials:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.DatabaseScopedCredentials);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.DatabaseScopedCredentials);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Endpoints:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Endpoints);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Endpoints);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ErrorMessages:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ErrorMessages);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ErrorMessages);
 				}
 				return;
 			case SchemaCompareOptionsDialog.EventNotifications:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.EventNotifications);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.EventNotifications);
 				}
 				return;
 			case SchemaCompareOptionsDialog.EventSessions:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.EventSessions);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.EventSessions);
 				}
 				return;
 			case SchemaCompareOptionsDialog.LinkedServerLogins:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.LinkedServerLogins);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.LinkedServerLogins);
 				}
 				return;
 			case SchemaCompareOptionsDialog.LinkedServers:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.LinkedServers);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.LinkedServers);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Logins:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Logins);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Logins);
 				}
 				return;
 			case SchemaCompareOptionsDialog.MasterKeys:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.MasterKeys);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.MasterKeys);
 				}
 				return;
 			case SchemaCompareOptionsDialog.Routes:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.Routes);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.Routes);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerAuditSpecifications:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerAuditSpecifications);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ServerAuditSpecifications);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerRoleMembership:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerRoleMembership);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ServerRoleMembership);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerRoles:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerRoles);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ServerRoles);
 				}
 				return;
 			case SchemaCompareOptionsDialog.ServerTriggers:
 				if (!included) {
-					this.excludedObjectTypes.push(azdata.SchemaObjectType.ServerTriggers);
+					this.excludedObjectTypes.push(mssql.SchemaObjectType.ServerTriggers);
 				}
 				return;
 		}

@@ -63,7 +63,7 @@ export class RestoreDialog extends Modal {
 	private _scriptButton: Button;
 	private _restoreButton: Button;
 	private _closeButton: Button;
-	private _optionsMap: { [name: string]: Widget } = {};
+	private _optionsMap: { [name: string]: SelectBox | InputBox | Checkbox } = {};
 	private _restoreLabel: string;
 	private _restoreTitle: string;
 	private _databaseTitle: string;
@@ -250,6 +250,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
 		this._restorePlanTable = new Table<Slick.SlickData>(this._restorePlanTableContainer,
 			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
+		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 		this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
 
@@ -339,7 +340,7 @@ export class RestoreDialog extends Modal {
 					DOM.append(c, generalTab);
 				},
 				layout: () => { },
-				focus: () => generalTab.focus()
+				focus: () => this._restoreFromSelectBox ? this._restoreFromSelectBox.focus() : generalTab.focus()
 			}
 		});
 
@@ -351,7 +352,7 @@ export class RestoreDialog extends Modal {
 				render: c => {
 					c.appendChild(fileContentElement);
 				},
-				focus: () => fileContentElement.focus()
+				focus: () => this._optionsMap[this._relocateDatabaseFilesOption] ? this._optionsMap[this._relocateDatabaseFilesOption].focus() : fileContentElement.focus()
 			}
 		});
 
@@ -363,7 +364,7 @@ export class RestoreDialog extends Modal {
 				render: c => {
 					c.appendChild(optionsContentElement);
 				},
-				focus: () => optionsContentElement.focus()
+				focus: () => this._optionsMap[this._withReplaceDatabaseOption] ? this._optionsMap[this._withReplaceDatabaseOption].focus() : optionsContentElement.focus()
 			}
 		});
 

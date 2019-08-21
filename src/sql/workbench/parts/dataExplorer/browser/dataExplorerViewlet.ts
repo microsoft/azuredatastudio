@@ -5,7 +5,6 @@
 
 import { localize } from 'vs/nls';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { IAction } from 'vs/base/common/actions';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { append, $, addClass, toggleClass, Dimension } from 'vs/base/browser/dom';
@@ -27,6 +26,24 @@ import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/la
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IMenuService, MenuId } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ShowViewletAction } from 'vs/workbench/browser/viewlet';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+
+// Viewlet Action
+export class OpenDataExplorerViewletAction extends ShowViewletAction {
+	public static ID = VIEWLET_ID;
+	public static LABEL = localize('showDataExplorer', "Show Connections");
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewletService viewletService: IViewletService,
+		@IEditorGroupsService editorGroupService: IEditorGroupsService,
+		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService
+	) {
+		super(id, label, VIEWLET_ID, viewletService, editorGroupService, layoutService);
+	}
+}
 
 export class DataExplorerViewletViewsContribution implements IWorkbenchContribution {
 
@@ -56,13 +73,11 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 	private root: HTMLElement;
 
 	private dataSourcesBox: HTMLElement;
-	private disposables: IDisposable[] = [];
 
 	constructor(
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IInstantiationService instantiationService: IInstantiationService,
-		@IViewletService private viewletService: IViewletService,
 		@IThemeService themeService: IThemeService,
 		@IStorageService storageService: IStorageService,
 		@IWorkspaceContextService contextService: IWorkspaceContextService,
@@ -125,10 +140,5 @@ export class DataExplorerViewlet extends ViewContainerViewlet {
 		let viewletPanel = this.instantiationService.createInstance(viewDescriptor.ctorDescriptor.ctor, options) as ViewletPanel;
 		this._register(viewletPanel);
 		return viewletPanel;
-	}
-
-	dispose(): void {
-		this.disposables = dispose(this.disposables);
-		super.dispose();
 	}
 }
