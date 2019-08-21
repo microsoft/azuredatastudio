@@ -219,8 +219,8 @@ async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promis
 		providerId: JUPYTER_NOTEBOOK_PROVIDER,
 		preview: false,
 		defaultKernel: {
-			name: 'pyspark3kernel',
-			display_name: 'PySpark3',
+			name: 'pysparkkernel',
+			display_name: 'PySpark',
 			language: 'python'
 		}
 	});

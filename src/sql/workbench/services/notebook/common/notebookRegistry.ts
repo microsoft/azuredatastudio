@@ -113,7 +113,7 @@ let notebookLanguageMagicType: IJSONSchema = {
 			type: 'string'
 		},
 		kernels: {
-			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, pyspark3, sql"),
+			description: localize('carbon.extension.contributes.notebook.kernels', "Optional set of kernels this is valid for, e.g. python3, pyspark, sql"),
 			oneOf: [
 				{ type: 'string' },
 				{

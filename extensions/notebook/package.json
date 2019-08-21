@@ -301,14 +301,6 @@
 			],
 			"standardKernels": [
 				{
-					"name": "pyspark3kernel",
-					"displayName": "PySpark3",
-					"connectionProviderIds": [
-						"HADOOP_KNOX",
-						"MSSQL"
-					]
-				},
-				{
 					"name": "pysparkkernel",
 					"displayName": "PySpark",
 					"connectionProviderIds": [
