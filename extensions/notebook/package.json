@@ -136,7 +136,7 @@
 				"title": "%title.reinstallNotebookDependencies%"
 			},
       {
-        "command": "books.SQL19Preview",
+        "command": "books.sqlserver2019",
         "title": "%title.SQL19PreviewBook%",
         "category": "%books-preview-category%"
       }
@@ -210,8 +210,8 @@
 					"when": "false"
         },
         {
-					"command": "books.SQL19Preview",
-          "when": "sql19Preview && notebookQuality != stable"
+					"command": "books.sqlserver2019",
+          "when": "sqlserver2019 && notebookQuality != stable"
 				}
 			],
 			"touchBar": [

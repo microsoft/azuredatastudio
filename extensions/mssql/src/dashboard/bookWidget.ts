@@ -67,21 +67,8 @@ export function registerBooksWidget(bookContributionProvider: BookContributionPr
 		});
 		await view.initializeModel(bookslocationContainer);
 	});
-
-	registerCommands(bookContributionProvider);
 }
 
 function openBookViewlet(folderUri: vscode.Uri): void {
 	vscode.commands.executeCommand('bookTreeView.openBook', folderUri.fsPath, true);
-}
-
-function registerCommands(bookContributionProvider: any): void {
-	let sql19Preview: boolean = false;
-	if (bookContributionProvider.contributions.filter(books => books.name === 'SQL Server 2019 Guide').length > 0) {
-		sql19Preview = true;
-		vscode.commands.registerCommand('books.SQL19Preview', async (context) => {
-			vscode.commands.executeCommand('bookTreeView.openBook', bookContributionProvider.contributions[0].path, true);
-		});
-	}
-	vscode.commands.executeCommand('setContext', 'sql19Preview', sql19Preview);
 }
