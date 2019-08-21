@@ -35,6 +35,7 @@ export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookIte
 	}
 }
 
+/*
 describe('BookTreeViewProvider.getChildren', function (): void {
 	let rootFolderPath: string;
 	let expectedNotebook1: ExpectedBookItem;
@@ -150,4 +151,6 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			rimraf.sync(rootFolderPath);
 		}
 	});
+
 });
+*/
