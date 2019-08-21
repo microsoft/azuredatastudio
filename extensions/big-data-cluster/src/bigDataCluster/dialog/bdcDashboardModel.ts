@@ -5,43 +5,66 @@
 
 'use strict';
 
-import { IBdcStatus, IStatus, IServiceStatus } from '../controller/clusterControllerApi';
+import * as vscode from 'vscode';
+import { getBdcStatus, getEndPoints } from '../controller/clusterControllerApi';
+import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
+import { showErrorMessage } from '../utils';
 
 export class BdcDashboardModel {
 
-	private _clusterStatus: IBdcStatus;
+	private _bdcStatus: BdcStatusModel;
+	private _endpoints: EndpointModel[] = [];
+	private readonly _onDidUpdateEndpoints = new vscode.EventEmitter<EndpointModel[]>();
+	private readonly _onDidUpdateBdcStatus = new vscode.EventEmitter<BdcStatusModel>();
+	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
+	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 
-	constructor(public clusterName: string, url: string, username: string, password: string) {
-
+	constructor(public clusterName: string, private url: string, private username: string, private password: string) {
+		this.refresh();
 	}
 
-	public get clusterStatus(): IStatus {
-		return { healthStatus: 'Warning detected', state: 'ready' };
+	public get bdcStatus(): BdcStatusModel | undefined {
+		return this._bdcStatus;
 	}
 
-	public get serviceStatus(): IServiceStatus[] {
-		return [
-			{ serviceName: 'SQL Server', status: { state: 'Ready', healthStatus: 'Warning' }, resources: undefined },
-			{ serviceName: 'HDFS', status: { state: 'Ready', healthStatus: 'Healthy' }, resources: undefined },
-			{ serviceName: 'Spark', status: { state: 'Ready', healthStatus: 'Healthy' }, resources: undefined },
-			{ serviceName: 'Control', status: { state: 'Ready', healthStatus: 'Healthy' }, resources: undefined },
-			{ serviceName: 'Gateway', status: { state: 'Ready', healthStatus: 'Healthy' }, resources: undefined },
-			{ serviceName: 'App', status: { state: 'Ready', healthStatus: 'Healthy' }, resources: undefined }
-		];
+	public get serviceEndpoints(): EndpointModel[] {
+		return this._endpoints || [];
 	}
 
-	public get serviceEndpoints(): { serviceName: string, hyperlink?: string, isHyperlink: boolean, ipAddress?: string, port?: string }[] {
-		return [
-			{ serviceName: 'SQL Server Master Instance', ipAddress: '10.91.134.112', port: '31433', isHyperlink: false },
-			{ serviceName: 'Controller', ipAddress: '10.91.134.112', port: '31433', isHyperlink: false },
-			{ serviceName: 'HDFS/Spark Gateway', ipAddress: '10.91.134.112', port: '31433', isHyperlink: false },
-			{ serviceName: 'Spark Job Management', hyperlink: 'https://10.91.134.112:30443/gateway/default/yarn', isHyperlink: true },
-			{ serviceName: 'Grafana Dashboard', hyperlink: 'https://10.91.134.112/grafana/d/wZx3OUdmz', isHyperlink: true },
-			{ serviceName: 'Kibana Dashboard', hyperlink: 'https://10.91.134.112/kibana/app/kibana#/discover', isHyperlink: true },
-		];
+	public async refresh(): Promise<void> {
+		await Promise.all([
+			getBdcStatus(this.url, this.username, this.password, true).then(response => {
+				this._bdcStatus = response.bdcStatus;
+				this._onDidUpdateBdcStatus.fire(this.bdcStatus);
+			}),
+			getEndPoints(this.url, this.username, this.password, true).then(response => {
+				this._endpoints = response.endPoints || [];
+				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
+			})
+		]).catch(error => showErrorMessage(error));
 	}
+}
 
-	public refresh(): void {
+export enum Endpoint {
+	gateway = 'gateway',
+	sparkHistory = 'spark-history',
+	yarnUi = 'yarn-ui',
+	appProxy = 'app-proxy',
+	mgmtproxy = 'mgmtproxy',
+	managementProxy = 'management-proxy',
+	logsui = 'logsui',
+	metricsui = 'metricsui',
+	controller = 'controller',
+	sqlServerMaster = 'sql-server-master',
+	webhdfs = 'webhdfs',
+	livy = 'livy'
+}
 
-	}
+export enum Service {
+	sql = 'sql',
+	hdfs = 'hdfs',
+	spark = 'spark',
+	control = 'control',
+	gateway = 'gateway',
+	app = 'app'
 }

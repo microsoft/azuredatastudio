@@ -8,14 +8,14 @@
 import 'mocha';
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as mssql from '../../mssql/src/api/mssqlapis';
+import * as mssql from '../../mssql';
 import * as utils from './utils';
 import * as uuid from 'uuid';
 import { context } from './testContext';
 import assert = require('assert');
 import { getStandaloneServer, TestServerProfile, getBdcServer } from './testConfig';
 
-let cmsService: mssql.CmsService;
+let cmsService: mssql.ICmsService;
 let server: TestServerProfile;
 let connectionId: string;
 let ownerUri: string;
@@ -31,8 +31,7 @@ if (context.RunTest) {
 		setup(async function () {
 			// Set up CMS provider
 			if (!cmsService) {
-				let api: mssql.MssqlExtensionApi = await vscode.extensions.getExtension('Microsoft.mssql').activate();
-				cmsService = await api.getCmsServiceProvider();
+				cmsService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).cmsService;
 				assert(cmsService !== undefined);
 			}
 

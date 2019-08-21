@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { NotebookInfo } from '../interfaces';
-import { isString } from 'util';
 import * as path from 'path';
+import { isString } from 'util';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { IPlatformService } from './platformService';
+import { NotebookInfo } from '../interfaces';
 const localize = nls.loadMessageBundle();
 
 export interface INotebookService {
@@ -26,13 +26,16 @@ export class NotebookService implements INotebookService {
 	 * @param notebook the path of the notebook
 	 */
 	launchNotebook(notebook: string | NotebookInfo): void {
-		const notebookRelativePath = this.getNotebook(notebook);
-		const notebookFullPath = path.join(this.extensionPath, notebookRelativePath);
-		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
+		const notebookPath = this.getNotebook(notebook);
+		const notebookFullPath = path.join(this.extensionPath, notebookPath);
+		if (notebookPath && this.platformService.fileExists(notebookPath)) {
+			this.showNotebookAsUntitled(notebookPath);
+		}
+		else if (notebookPath && this.platformService.fileExists(notebookFullPath)) {
 			this.showNotebookAsUntitled(notebookFullPath);
 		}
 		else {
-			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookFullPath));
+			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', "The notebook {0} does not exist", notebookPath));
 		}
 	}
 

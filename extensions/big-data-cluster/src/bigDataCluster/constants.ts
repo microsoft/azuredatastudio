@@ -23,6 +23,8 @@ export class IconPath {
 	public static controllerNode: { dark: string, light: string };
 	public static folderNode: { dark: string, light: string };
 	public static sqlMasterNode: { dark: string, light: string };
+	public static copy: { dark: string, light: string };
+	public static refresh: { dark: string, light: string };
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPath.extensionContext = extensionContext;
@@ -37,6 +39,14 @@ export class IconPath {
 		IconPath.sqlMasterNode = {
 			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/sql_bigdata_cluster_inverse.svg'),
 			light: IconPath.extensionContext.asAbsolutePath('resources/light/sql_bigdata_cluster.svg')
+		};
+		IconPath.copy = {
+			light: IconPath.extensionContext.asAbsolutePath('resources/light/copy.svg'),
+			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/copy_inverse.svg')
+		};
+		IconPath.refresh = {
+			light: IconPath.extensionContext.asAbsolutePath('resources/light/refresh.svg'),
+			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/refresh_inverse.svg')
 		};
 	}
 }

@@ -42,10 +42,12 @@ export interface IQueryEditorStateChange {
 	resultsVisibleChange?: boolean;
 	executingChange?: boolean;
 	connectingChange?: boolean;
+	sqlCmdModeChanged?: boolean;
 }
 
 export class QueryEditorState extends Disposable {
 	private _connected = false;
+	private _isSqlCmdMode = false;
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
@@ -95,6 +97,17 @@ export class QueryEditorState extends Disposable {
 
 	public get executing(): boolean {
 		return this._executing;
+	}
+
+	public set isSqlCmdMode(val: boolean) {
+		if (val !== this._isSqlCmdMode) {
+			this._isSqlCmdMode = val;
+			this._onChange.fire({ sqlCmdModeChanged: true });
+		}
+	}
+
+	public get isSqlCmdMode(): boolean {
+		return this._isSqlCmdMode;
 	}
 }
 
@@ -181,7 +194,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	// Getters for private properties
-	public get uri(): string { return this.getResource().toString(); }
+	public get uri(): string { return this.getResource().toString(true); }
 	public get sql(): UntitledEditorInput { return this._sql; }
 	public get results(): QueryResultsInput { return this._results; }
 	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }

@@ -11,23 +11,37 @@ import { IContextViewService } from 'vs/platform/contextview/browser/contextView
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import Severity from 'vs/base/common/severity';
 import { append, $ } from 'vs/base/browser/dom';
 
-import { ISelectionData } from 'azdata';
+import { ISelectionData, QueryExecutionOptions } from 'azdata';
 import {
 	IConnectionManagementService,
 	IConnectionParams,
 	INewConnectionParams,
 	ConnectionType,
-	RunQueryOnConnectionMode
+	RunQueryOnConnectionMode,
+	IConnectionCompletionOptions,
+	IConnectableInput
 } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
+import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
+import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { getCurrentGlobalConnection } from 'sql/workbench/browser/taskUtilities';
+import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { OEAction } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
+import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 /**
  * Action class that query-based Actions will extend. This base class automatically handles activating and
@@ -97,6 +111,83 @@ export abstract class QueryTaskbarAction extends Action {
 	}
 }
 
+export function openNewQuery(accessor: ServicesAccessor, profile?: IConnectionProfile, initalContent?: string, onConnection?: RunQueryOnConnectionMode): Promise<void> {
+	const editorService = accessor.get(IEditorService);
+	const queryEditorService = accessor.get(IQueryEditorService);
+	const objectExplorerService = accessor.get(IObjectExplorerService);
+	const connectionManagementService = accessor.get(IConnectionManagementService);
+	if (!profile) {
+		profile = getCurrentGlobalConnection(objectExplorerService, connectionManagementService, editorService);
+	}
+	return queryEditorService.newSqlEditor(initalContent).then((owner: IConnectableInput) => {
+		// Connect our editor to the input connection
+		let options: IConnectionCompletionOptions = {
+			params: { connectionType: ConnectionType.editor, runQueryOnCompletion: onConnection, input: owner },
+			saveTheConnection: false,
+			showDashboard: false,
+			showConnectionDialogOnError: true,
+			showFirewallRuleOnError: true
+		};
+		if (profile) {
+			return connectionManagementService.connect(profile, owner.uri, options).then();
+		}
+		return undefined;
+	});
+}
+
+// --- actions
+export class NewQueryTask extends Task {
+	public static ID = 'newQuery';
+	public static LABEL = nls.localize('newQueryTask.newQuery', "New Query");
+	public static ICON = 'new-query';
+
+	constructor() {
+		super({
+			id: NewQueryTask.ID,
+			title: NewQueryTask.LABEL,
+			iconPath: undefined,
+			iconClass: NewQueryTask.ICON
+		});
+	}
+
+	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
+		return openNewQuery(accessor, profile);
+	}
+}
+
+export const OE_NEW_QUERY_ACTION_ID = 'objectExplorer.newQuery';
+
+CommandsRegistry.registerCommand(OE_NEW_QUERY_ACTION_ID, (accessor: ServicesAccessor, actionContext: any) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	return instantiationService.createInstance(OEAction, NewQueryTask.ID, NewQueryTask.LABEL).run(actionContext);
+});
+
+export const DE_NEW_QUERY_COMMAND_ID = 'dataExplorer.newQuery';
+
+// New Query
+CommandsRegistry.registerCommand({
+	id: DE_NEW_QUERY_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		if (args.$treeItem) {
+			const queryEditorService = accessor.get(IQueryEditorService);
+			const connectionService = accessor.get(IConnectionManagementService);
+			const capabilitiesService = accessor.get(ICapabilitiesService);
+			return queryEditorService.newSqlEditor().then((owner: IConnectableInput) => {
+				// Connect our editor to the input connection
+				let options: IConnectionCompletionOptions = {
+					params: { connectionType: ConnectionType.editor, input: owner },
+					saveTheConnection: false,
+					showDashboard: false,
+					showConnectionDialogOnError: true,
+					showFirewallRuleOnError: true
+				};
+				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), owner.uri, options);
+			});
+		}
+		return Promise.resolve(true);
+	}
+});
+
 /**
  * Action class that runs a query in the active SQL text document.
  */
@@ -108,8 +199,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 	constructor(
 		editor: QueryEditor,
 		@IQueryModelService protected readonly queryModelService: IQueryModelService,
-		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
-		@IExtensionTipsService private readonly extensionTipsService: IExtensionTipsService
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
 	) {
 		super(connectionManagementService, editor, RunQueryAction.ID, RunQueryAction.EnabledClass);
 		this.label = nls.localize('runQueryLabel', "Run");
@@ -415,6 +505,61 @@ export class ListDatabasesAction extends QueryTaskbarAction {
 	}
 }
 
+/**
+ * Action class that toggles SQLCMD mode for the editor
+ */
+export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
+
+	public static EnableSqlcmdClass = 'enablesqlcmd';
+	public static DisableSqlcmdClass = 'disablesqlcmd';
+	public static ID = 'ToggleSqlCmdModeAction';
+
+	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD Mode");
+	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD Mode");
+	constructor(
+		editor: QueryEditor,
+		private _isSqlCmdMode: boolean,
+		@IQueryManagementService protected readonly queryManagementService: IQueryManagementService,
+		@IConfigurationService protected readonly configurationService: IConfigurationService,
+		@IConnectionManagementService connectionManagementService: IConnectionManagementService
+	) {
+		super(connectionManagementService, editor, ToggleSqlCmdModeAction.ID, undefined);
+	}
+
+	public get isSqlCmdMode(): boolean {
+		return this._isSqlCmdMode;
+	}
+
+	public set isSqlCmdMode(value: boolean) {
+		this._isSqlCmdMode = value;
+		this.updateLabelAndIcon();
+	}
+
+	private updateLabelAndIcon(): void {
+		// show option to disable sql cmd mode if already enabled
+		this.label = this.isSqlCmdMode ? this._disablesqlcmdLabel : this._enablesqlcmdLabel;
+		this.isSqlCmdMode ? this.updateCssClass(ToggleSqlCmdModeAction.DisableSqlcmdClass) : this.updateCssClass(ToggleSqlCmdModeAction.EnableSqlcmdClass);
+	}
+
+	private setSqlCmdModeFalse() {
+
+	}
+
+	public run(): Promise<void> {
+		const toSqlCmdState = !this.isSqlCmdMode; // input.state change triggers event that changes this.isSqlCmdMode, so store it before using
+		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
+
+		// set query options
+		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
+		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
+		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
+
+		// set intellisense options
+		toSqlCmdState ? this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL') : this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL');
+		return Promise.resolve(null);
+	}
+}
+
 /*
  * Action item that handles the dropdown (combobox) that lists the available databases.
  * Based off StartDebugActionItem.
@@ -424,7 +569,6 @@ export class ListDatabasesActionItem implements IActionViewItem {
 
 	public actionRunner: IActionRunner;
 	private _toDispose: IDisposable[];
-	private _context: any;
 	private _currentDatabaseName: string;
 	private _isConnected: boolean;
 	private _databaseListDropdown: HTMLElement;
@@ -481,7 +625,6 @@ export class ListDatabasesActionItem implements IActionViewItem {
 	}
 
 	public setActionContext(context: any): void {
-		this._context = context;
 	}
 
 	public isEnabled(): boolean {

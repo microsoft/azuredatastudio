@@ -10,9 +10,10 @@ import { ExplorerManageAction, CustomExecuteCommandAction } from 'sql/workbench/
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
-import { BackupAction, RestoreAction, NewQueryAction } from 'sql/workbench/common/actions';
+import { BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
+import { NewQueryTask } from 'sql/workbench/parts/query/browser/queryActions';
 
 const explorerSchema: IJSONSchema = {
 	type: 'object',
@@ -40,7 +41,7 @@ CommandsRegistry.registerCommand(ExplorerRestoreActionID, (accessor, context) =>
 const ExplorerNewQueryActionID = 'explorer.query';
 CommandsRegistry.registerCommand(ExplorerNewQueryActionID, (accessor, context) => {
 	const instantiationService = accessor.get(IInstantiationService);
-	instantiationService.createInstance(CustomExecuteCommandAction, NewQueryAction.ID, NewQueryAction.LABEL).run(context);
+	instantiationService.createInstance(CustomExecuteCommandAction, NewQueryTask.ID, NewQueryTask.LABEL).run(context);
 });
 
 const ExplorerNotebookActionID = 'explorer.notebook';
@@ -61,7 +62,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
 	command: {
 		id: ExplorerNewQueryActionID,
-		title: NewQueryAction.LABEL
+		title: NewQueryTask.LABEL
 	},
 	when: ItemContextKey.ItemType.isEqualTo('database'),
 	order: 1
