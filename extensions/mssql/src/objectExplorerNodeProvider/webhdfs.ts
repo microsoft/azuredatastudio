@@ -13,7 +13,7 @@ import * as auth from '../util/auth';
 import { IHdfsOptions, IRequestParams } from './fileSources';
 
 const localize = nls.loadMessageBundle();
-const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', 'Invalid Data Structure');
+const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', "Invalid Data Structure");
 
 export class WebHDFS {
 	private _requestParams: IRequestParams;
@@ -29,7 +29,7 @@ export class WebHDFS {
 			.filter(p => !opts.hasOwnProperty(p) || !opts[p]);
 		if (missingProps && missingProps.length > 0) {
 			throw new Error(localize('webhdfs.missingProperties',
-				'Unable to create WebHDFS client due to missing options: ${0}', missingProps.join(', ')));
+				"Unable to create WebHDFS client due to missing options: ${0}", missingProps.join(', ')));
 		}
 
 		this._requestParams = requestParams || {};
@@ -46,7 +46,7 @@ export class WebHDFS {
 
 	private checkArgDefined(argName: string, argValue: any): void {
 		if (!argValue) {
-			throw new Error(localize('webhdfs.undefinedArgument', '\'${0}\' is undefined.', argName));
+			throw new Error(localize('webhdfs.undefinedArgument', "'${0}' is undefined.", argName));
 		}
 	}
 
@@ -77,11 +77,11 @@ export class WebHDFS {
 	private toStatusMessage(statusCode: number): string {
 		let statusMessage: string = undefined;
 		switch (statusCode) {
-			case 400: statusMessage = localize('webhdfs.httpError400', 'Bad Request'); break;
-			case 401: statusMessage = localize('webhdfs.httpError401', 'Unauthorized'); break;
-			case 403: statusMessage = localize('webhdfs.httpError403', 'Forbidden'); break;
-			case 404: statusMessage = localize('webhdfs.httpError404', 'Not Found'); break;
-			case 500: statusMessage = localize('webhdfs.httpError500', 'Internal Server Error'); break;
+			case 400: statusMessage = localize('webhdfs.httpError400', "Bad Request");break;
+			case 401: statusMessage = localize('webhdfs.httpError401', "Unauthorized"); break;
+			case 403: statusMessage = localize('webhdfs.httpError403', "Forbidden"); break;
+			case 404: statusMessage = localize('webhdfs.httpError404', "Not Found"); break;
+			case 500: statusMessage = localize('webhdfs.httpError500', "Internal Server Error"); break;
 			// TODO: define more messages here
 			default: break;
 		}
@@ -138,7 +138,7 @@ export class WebHDFS {
 		return statusMessage && remoteExceptionMessage ?
 			`${statusMessage} (${remoteExceptionMessage})` :
 			statusMessage || remoteExceptionMessage || messageFromError ||
-			localize('webhdfs.unknownError', 'Unknown Error');
+			localize('webhdfs.unknownError', "Unknown Error");
 	}
 
 	/**
@@ -236,7 +236,7 @@ export class WebHDFS {
 				callback(undefined, response);
 			}
 			else {
-				let hdfsError = new HdfsError(localize('webhdfs.unexpectedRedirect', 'Unexpected Redirect'), response && response.statusCode, response && response.statusMessage, this.getRemoteExceptionMessage(body || response.body), error);
+				let hdfsError = new HdfsError(localize('webhdfs.unexpectedRedirect', "Unexpected Redirect"), response && response.statusCode, response && response.statusMessage, this.getRemoteExceptionMessage(body || response.body), error);
 				callback(hdfsError, response);
 			}
 		});
