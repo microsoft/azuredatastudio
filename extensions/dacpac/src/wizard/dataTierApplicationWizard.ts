@@ -371,7 +371,7 @@ export class DataTierApplicationWizard {
 	}
 
 	private static async getService(providerName: string): Promise<mssql.IDacFxService> {
-		const service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).dacFx;
+		const service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
 		return service;
 	}
 }

@@ -84,7 +84,7 @@ export class CmsUtils {
 	// CMS APIs
 	public async getCmsService(): Promise<mssql.ICmsService> {
 		if (!this._cmsService) {
-			this._cmsService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).cmsService;
+			this._cmsService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).cmsService;
 		}
 		return this._cmsService;
 	}
