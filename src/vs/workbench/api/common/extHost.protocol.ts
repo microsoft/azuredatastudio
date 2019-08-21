@@ -939,6 +939,7 @@ export interface ISuggestDataDto {
 	k/* commitCharacters */?: string[];
 	l/* additionalTextEdits */?: ISingleEditOperation[];
 	m/* command */?: modes.Command;
+	n/* deprecated */?: boolean;
 	// not-standard
 	x?: ChainedCacheId;
 }
