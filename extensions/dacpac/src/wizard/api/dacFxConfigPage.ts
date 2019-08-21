@@ -156,7 +156,8 @@ export abstract class DacFxConfigPage extends BasePage {
 			component => isValidBasename(component.value)
 		)
 			.withProperties({
-				required: true
+				required: true,
+				ariaLive: 'polite'
 			}).component();
 
 		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
