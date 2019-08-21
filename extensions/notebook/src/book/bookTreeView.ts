@@ -11,6 +11,7 @@ import * as yaml from 'js-yaml';
 import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
+import { isEditorTitleFree } from '../common/utils';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
@@ -70,25 +71,30 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openBook(bookPath: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
 		try {
-			this.getTableOfContentFiles([bookPath]).then(res => {
-				let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
-				vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer').then(res => {
-					this._openAsUntitled = openAsUntitled;
-					let books = this.getBooks();
-					if (books && books.length > 0) {
-						bookViewer.reveal(books[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-						const readmeMarkdown: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.md'));
-						const readmeNotebook: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
-						if (fs.existsSync(readmeMarkdown)) {
-							vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
+			// Check if the book is already open in viewlet.
+			if (this._tableOfContentPaths.indexOf(path.join(bookPath, '_data', 'toc.yml').replace(/\\/g, '/')) > -1 && this._allNotebooks.size > 0) {
+				vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer');
+			}
+			else {
+				this.getTableOfContentFiles([bookPath]).then(res => {
+					let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
+					vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer').then(res => {
+						this._openAsUntitled = openAsUntitled;
+						let books = this.getBooks();
+						if (books && books.length > 0) {
+							bookViewer.reveal(books[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+							const readmeMarkdown: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.md'));
+							const readmeNotebook: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
+							if (fs.existsSync(readmeMarkdown)) {
+								vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
+							}
+							else if (fs.existsSync(readmeNotebook)) {
+								vscode.workspace.openTextDocument(readmeNotebook);
+							}
 						}
-						else if (fs.existsSync(readmeNotebook)) {
-							vscode.workspace.openTextDocument(readmeNotebook);
-						}
-					}
+					});
 				});
-			});
-
+			}
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openBook', "Open book {0} failed: {1}",
 				bookPath,
@@ -330,7 +336,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			const suffix = idx === 0 ? '' : `-${idx}`;
 			title = `${baseName}${suffix}`;
 			idx++;
-		} while (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
+		} while (!isEditorTitleFree(title));
 
 		return title;
 	}
