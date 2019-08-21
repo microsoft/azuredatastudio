@@ -162,6 +162,8 @@ export abstract class DacFxConfigPage extends BasePage {
 		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
+			title: localize('dacfx.selectFile', "Select file"),
+			ariaLabel: localize('dacfx.selectFile', "Select file")
 		}).component();
 	}
 

@@ -16,7 +16,7 @@ import { ApiWrapper } from './apiWrapper';
 import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
-import { mssql } from './mssql';
+import { IExtension } from './mssql';
 import { OpenSparkJobSubmissionDialogCommand, OpenSparkJobSubmissionDialogFromFileCommand, OpenSparkJobSubmissionDialogTask } from './sparkFeature/dialog/dialogCommands';
 import { OpenSparkYarnHistoryTask } from './sparkFeature/historyTask';
 import { MssqlObjectExplorerNodeProvider, mssqlOutputChannel } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
@@ -32,7 +32,7 @@ import { SqlToolsServer } from './sqlToolsServer';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
 
-export async function activate(context: vscode.ExtensionContext): Promise<mssql> {
+export async function activate(context: vscode.ExtensionContext): Promise<IExtension> {
 	// lets make sure we support this platform first
 	let supported = await Utils.verifyPlatform();
 

@@ -5,14 +5,12 @@
 'use strict';
 
 import * as azdata from 'azdata';
-import * as nls from 'vscode-nls';
-import { IResourceTypeService } from '../services/resourceTypeService';
 import * as vscode from 'vscode';
-import { ResourceType, DeploymentProvider } from '../interfaces';
-import { IToolsService } from '../services/toolsService';
-import { INotebookService } from '../services/notebookService';
+import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
-import { DeploymentDialog } from './deploymentDialog';
+import { ResourceType, DeploymentProvider } from '../interfaces';
+import { IResourceTypeService } from '../services/resourceTypeService';
+import { IToolsService } from '../services/toolsService';
 
 const localize = nls.loadMessageBundle();
 
@@ -26,12 +24,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 
-	constructor(context: vscode.ExtensionContext,
-		private notebookService: INotebookService,
+	constructor(private extensionContext: vscode.ExtensionContext,
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
-		super(context, localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
+		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
@@ -156,11 +153,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private updateTools(): void {
 		const tools = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
-		this._toolsTable.height = 25 * tools.length + headerRowHeight;
-		this._toolsTable.data = tools.map(toolRef => {
-			const tool = this.toolsService.getToolByName(toolRef.name)!;
-			return [tool.displayName, tool.description];
-		});
+		this._toolsTable.height = 25 * Math.max(tools.length, 1) + headerRowHeight;
+		if (tools.length === 0) {
+			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
+		} else {
+			this._toolsTable.data = tools.map(toolRef => {
+				const tool = this.toolsService.getToolByName(toolRef.name)!;
+				return [tool.displayName, tool.description];
+			});
+		}
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
@@ -175,13 +176,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private onComplete(): void {
-		const provider = this.getCurrentProvider();
-		if (provider.dialog) {
-			const dialog = new DeploymentDialog(this.extensionContext, this.notebookService, provider);
-			dialog.open();
-		} else {
-			this.notebookService.launchNotebook(provider.notebook);
-		}
+		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 		this.dispose();
 	}
 }
