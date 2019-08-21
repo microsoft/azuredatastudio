@@ -1066,6 +1066,12 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 	public set checked(v: boolean) {
 		this.setProperty('checked', v);
 	}
+	public get focused(): boolean {
+		return this.properties['focused'];
+	}
+	public set focused(v: boolean) {
+		this.setProperty('focused', v);
+	}
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
