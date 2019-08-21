@@ -13,8 +13,6 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
-export const VIEWLET_ID = 'workbench.view.connections';
-
 /**
  * Options for the actions that could happen after connecting is complete
  */

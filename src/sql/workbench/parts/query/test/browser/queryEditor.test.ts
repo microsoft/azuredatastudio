@@ -54,7 +54,7 @@ suite('SQL QueryEditor Tests', () => {
 			return new Promise((resolve) => resolve(mockEditor));
 		});
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
-			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined, undefined)));
+			return new Promise((resolve) => resolve(new RunQueryAction(undefined, undefined, undefined)));
 		});
 		// Setup hook to capture calls to create the listDatabase action
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((classDef, editor, action) => {
@@ -64,7 +64,7 @@ suite('SQL QueryEditor Tests', () => {
 				}
 			}
 			// Default
-			return new RunQueryAction(undefined, undefined, undefined, undefined);
+			return new RunQueryAction(undefined, undefined, undefined);
 		});
 
 		// Mock EditorDescriptorService to give us a mock editor description
@@ -269,7 +269,7 @@ suite('SQL QueryEditor Tests', () => {
 
 			queryActionInstantiationService.setup(x => x.createInstance(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns((input) => {
 				// Default
-				return new RunQueryAction(undefined, undefined, undefined, undefined);
+				return new RunQueryAction(undefined, undefined, undefined);
 			});
 
 			// Setup hook to capture calls to create the listDatabase action
@@ -280,7 +280,7 @@ suite('SQL QueryEditor Tests', () => {
 						return item;
 					}
 					// Default
-					return new RunQueryAction(undefined, undefined, undefined, undefined);
+					return new RunQueryAction(undefined, undefined, undefined);
 				});
 
 			let fileInput = new UntitledEditorInput(URI.parse('file://testUri'), false, '', '', '', instantiationService.object, undefined, undefined);
