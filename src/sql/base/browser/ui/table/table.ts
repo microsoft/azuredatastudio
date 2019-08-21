@@ -343,4 +343,20 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public setTableTitle(title: string): void {
 		this._tableContainer.title = title;
 	}
+
+	public removeAriaRowCount(): void {
+		this._tableContainer.removeAttribute('aria-rowcount');
+	}
+
+	public set ariaRowCount(value: number) {
+		this._tableContainer.setAttribute('aria-rowcount', value.toString());
+	}
+
+	public removeAriaColumnCount(): void {
+		this._tableContainer.removeAttribute('aria-colcount');
+	}
+
+	public set ariaColumnCount(value: number) {
+		this._tableContainer.setAttribute('aria-colcount', value.toString());
+	}
 }

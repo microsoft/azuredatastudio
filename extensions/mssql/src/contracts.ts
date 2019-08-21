@@ -7,7 +7,7 @@ import { NotificationType, RequestType } from 'vscode-languageclient';
 import { ITelemetryEventProperties, ITelemetryEventMeasures } from './telemetry';
 import * as azdata from 'azdata';
 import { ConnectParams } from 'dataprotocol-client/lib/protocol';
-import { ListRegisteredServersResult } from './api/mssqlapis';
+import * as mssql from './mssql';
 
 // ------------------------------- < Telemetry Sent Event > ------------------------------------
 
@@ -440,27 +440,27 @@ export interface GenerateDeployPlanParams {
 }
 
 export namespace ExportRequest {
-	export const type = new RequestType<ExportParams, azdata.DacFxResult, void, void>('dacfx/export');
+	export const type = new RequestType<ExportParams, mssql.DacFxResult, void, void>('dacfx/export');
 }
 
 export namespace ImportRequest {
-	export const type = new RequestType<ImportParams, azdata.DacFxResult, void, void>('dacfx/import');
+	export const type = new RequestType<ImportParams, mssql.DacFxResult, void, void>('dacfx/import');
 }
 
 export namespace ExtractRequest {
-	export const type = new RequestType<ExtractParams, azdata.DacFxResult, void, void>('dacfx/extract');
+	export const type = new RequestType<ExtractParams, mssql.DacFxResult, void, void>('dacfx/extract');
 }
 
 export namespace DeployRequest {
-	export const type = new RequestType<DeployParams, azdata.DacFxResult, void, void>('dacfx/deploy');
+	export const type = new RequestType<DeployParams, mssql.DacFxResult, void, void>('dacfx/deploy');
 }
 
 export namespace GenerateDeployScriptRequest {
-	export const type = new RequestType<GenerateDeployScriptParams, azdata.DacFxResult, void, void>('dacfx/generateDeploymentScript');
+	export const type = new RequestType<GenerateDeployScriptParams, mssql.DacFxResult, void, void>('dacfx/generateDeploymentScript');
 }
 
 export namespace GenerateDeployPlanRequest {
-	export const type = new RequestType<GenerateDeployPlanParams, azdata.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
+	export const type = new RequestType<GenerateDeployPlanParams, mssql.GenerateDeployPlanResult, void, void>('dacfx/generateDeployPlan');
 }
 // ------------------------------- < DacFx > ------------------------------------
 
@@ -502,11 +502,11 @@ export interface RegisteredServerParamsBase {
 }
 
 export namespace CreateCentralManagementServerRequest {
-	export const type = new RequestType<CreateCentralManagementServerParams, ListRegisteredServersResult, void, void>('cms/createCms');
+	export const type = new RequestType<CreateCentralManagementServerParams, mssql.ListRegisteredServersResult, void, void>('cms/createCms');
 }
 
 export namespace ListRegisteredServersRequest {
-	export const type = new RequestType<ListRegisteredServersParams, ListRegisteredServersResult, void, void>('cms/listRegisteredServers');
+	export const type = new RequestType<ListRegisteredServersParams, mssql.ListRegisteredServersResult, void, void>('cms/listRegisteredServers');
 }
 
 export namespace AddRegisteredServerRequest {
@@ -529,10 +529,10 @@ export namespace RemoveServerGroupRequest {
 // ------------------------------- <Schema Compare> -----------------------------
 export interface SchemaCompareParams {
 	operationId: string;
-	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
-	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
+	targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	taskExecutionMode: TaskExecutionMode;
-	deploymentOptions: azdata.DeploymentOptions;
+	deploymentOptions: mssql.DeploymentOptions;
 }
 
 export interface SchemaCompareGenerateScriptParams {
@@ -555,7 +555,7 @@ export interface SchemaCompareGetOptionsParams {
 
 export interface SchemaCompareNodeParams {
 	operationId: string;
-	diffEntry: azdata.DiffEntry;
+	diffEntry: mssql.DiffEntry;
 	includeRequest: boolean;
 	taskExecutionMode: TaskExecutionMode;
 }
@@ -565,13 +565,13 @@ export interface SchemaCompareOpenScmpParams {
 }
 
 export interface SchemaCompareSaveScmpParams {
-	sourceEndpointInfo: azdata.SchemaCompareEndpointInfo;
-	targetEndpointInfo: azdata.SchemaCompareEndpointInfo;
+	sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
+	targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	taskExecutionMode: TaskExecutionMode;
-	deploymentOptions: azdata.DeploymentOptions;
+	deploymentOptions: mssql.DeploymentOptions;
 	scmpFilePath: string;
-	excludedSourceObjects: azdata.SchemaCompareObjectId[];
-	excludedTargetObjects: azdata.SchemaCompareObjectId[];
+	excludedSourceObjects: mssql.SchemaCompareObjectId[];
+	excludedTargetObjects: mssql.SchemaCompareObjectId[];
 }
 
 export interface SchemaCompareCancelParams {
@@ -579,7 +579,7 @@ export interface SchemaCompareCancelParams {
 }
 
 export namespace SchemaCompareRequest {
-	export const type = new RequestType<SchemaCompareParams, azdata.SchemaCompareResult, void, void>('schemaCompare/compare');
+	export const type = new RequestType<SchemaCompareParams, mssql.SchemaCompareResult, void, void>('schemaCompare/compare');
 }
 
 export namespace SchemaCompareGenerateScriptRequest {
@@ -591,7 +591,7 @@ export namespace SchemaComparePublishChangesRequest {
 }
 
 export namespace SchemaCompareGetDefaultOptionsRequest {
-	export const type = new RequestType<SchemaCompareGetOptionsParams, azdata.SchemaCompareOptionsResult, void, void>('schemaCompare/getDefaultOptions');
+	export const type = new RequestType<SchemaCompareGetOptionsParams, mssql.SchemaCompareOptionsResult, void, void>('schemaCompare/getDefaultOptions');
 }
 
 export namespace SchemaCompareIncludeExcludeNodeRequest {

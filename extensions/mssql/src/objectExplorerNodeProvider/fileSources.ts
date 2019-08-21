@@ -16,7 +16,6 @@ import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
 import { WebHDFS, HdfsError } from './webhdfs';
-import * as auth from '../util/auth';
 
 const localize = nls.loadMessageBundle();
 
@@ -123,10 +122,6 @@ export class FileSourceFactory {
 			let agent = new https.Agent(agentOptions);
 			requestParams['agent'] = agent;
 
-		}
-		if (requestParams.isKerberos) {
-			let kerberosToken = await auth.authenticateKerberos(options.host);
-			requestParams.headers = { Authorization: `Negotiate ${kerberosToken}` };
 		}
 		return new HdfsFileSource(WebHDFS.createClient(options, requestParams));
 	}

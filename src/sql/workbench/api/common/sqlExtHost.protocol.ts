@@ -469,78 +469,6 @@ export abstract class ExtHostDataProtocolShape {
 	$getCredentials(handle: number, connectionUri: string): Thenable<azdata.GetCredentialsResult> { throw ni(); }
 
 	/**
-	 * DacFx export bacpac
-	 */
-	$exportBacpac(handle: number, databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx import bacpac
-	 */
-	$importBacpac(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx extract dacpac
-	 */
-	$extractDacpac(handle: number, databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx deploy dacpac
-	 */
-	$deployDacpac(handle: number, packageFilePath: string, databaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx generate deploy script
-	 */
-	$generateDeployScript(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> { throw ni(); }
-
-	/**
-	 * DacFx generate deploy plan
-	 */
-	$generateDeployPlan(handle: number, packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> { throw ni(); }
-
-	/**
-	 * Schema compare
-	 */
-	$schemaCompare(handle: number, operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, schemaComapareOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> { throw ni(); }
-
-	/**
-	 * Schema compare generate script
-	 */
-	$schemaCompareGenerateScript(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
-	 * Schema compare publish changes
-	 */
-	$schemaComparePublishChanges(handle: number, operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.SchemaCompareResult> { throw ni(); }
-
-	/**
-	 * Schema compare get default options
-	 */
-	$schemaCompareGetDefaultOptions(handle: number): Thenable<azdata.SchemaCompareOptionsResult> { throw ni(); }
-
-
-	/**
-	 * Schema compare Include node
-	 */
-	$schemaCompareIncludeExcludeNode(handle: number, operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
-	 * Schema compare open scmp
-	 */
-	$schemaCompareOpenScmp(handle: number, filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> { throw ni(); }
-
-
-	/**
-	 * Schema compare save scmp
-	 */
-	$schemaCompareSaveScmp(handle: number, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
-	 * Schema compare cancel
-	 */
-	$schemaCompareCancel(handle: number, operationId: string): Thenable<azdata.ResultStatus> { throw ni(); }
-
-	/**
 	 * Serialization start request
 	 */
 	$startSerialization(handle: number, requestParams: azdata.SerializeDataStartRequestParams): Thenable<azdata.SerializeDataResult> { throw ni(); }
@@ -611,8 +539,6 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 	$registerCapabilitiesServiceProvider(providerId: string, handle: number): Promise<any>;
 	$registerAdminServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerAgentServicesProvider(providerId: string, handle: number): Promise<any>;
-	$registerDacFxServicesProvider(providerId: string, handle: number): Promise<any>;
-	$registerSchemaCompareServicesProvider(providerId: string, handle: number): Promise<any>;
 	$registerSerializationProvider(providerId: string, handle: number): Promise<any>;
 	$unregisterProvider(handle: number): Promise<any>;
 	$onConnectionComplete(handle: number, connectionInfoSummary: azdata.ConnectionInfoSummary): void;

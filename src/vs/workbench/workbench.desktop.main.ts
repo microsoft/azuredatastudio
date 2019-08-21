@@ -49,7 +49,6 @@ import 'vs/workbench/services/extensionManagement/node/extensionManagementServic
 import 'vs/workbench/services/accessibility/node/accessibilityService';
 import 'vs/workbench/services/remote/node/tunnelService';
 import 'vs/workbench/services/backup/node/backupFileService';
-import 'vs/workbench/services/opener/electron-browser/openerService';
 import 'vs/workbench/services/credentials/node/credentialsService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -70,10 +69,11 @@ import { IIssueService } from 'vs/platform/issue/node/issue';
 import { IssueService } from 'vs/platform/issue/electron-browser/issueService';
 import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { WorkspacesService } from 'vs/platform/workspaces/electron-browser/workspacesService';
-import { IMenubarService } from 'vs/platform/menubar/common/menubar';
+import { IMenubarService } from 'vs/platform/menubar/node/menubar';
 import { MenubarService } from 'vs/platform/menubar/electron-browser/menubarService';
 import { IURLService } from 'vs/platform/url/common/url';
 import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
+import { StaticExtensionsService, IStaticExtensionsService } from 'vs/workbench/services/extensions/common/staticExtensions';
 
 registerSingleton(IClipboardService, ClipboardService, true);
 registerSingleton(IRequestService, RequestService, true);
@@ -86,6 +86,7 @@ registerSingleton(IIssueService, IssueService);
 registerSingleton(IWorkspacesService, WorkspacesService);
 registerSingleton(IMenubarService, MenubarService);
 registerSingleton(IURLService, RelayURLService);
+registerSingleton(IStaticExtensionsService, class extends StaticExtensionsService { constructor() { super([]); } });
 
 //#endregion
 
@@ -117,8 +118,6 @@ import { IScriptingService, ScriptingService } from 'sql/platform/scripting/comm
 import { IAdminService, AdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementService } from 'sql/platform/jobManagement/common/jobManagementService';
-import { IDacFxService, DacFxService } from 'sql/platform/dacfx/common/dacFxService';
-import { ISchemaCompareService, SchemaCompareService } from 'sql/platform/schemaCompare/common/schemaCompareService';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
@@ -194,8 +193,6 @@ registerSingleton(IInsightsDialogService, InsightsDialogService);
 registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
-registerSingleton(IDacFxService, DacFxService);
-registerSingleton(ISchemaCompareService, SchemaCompareService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 // {{SQL CARBON EDIT}} - End
 
@@ -269,13 +266,13 @@ import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-import 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
-import 'sql/workbench/parts/dataExplorer/browser/dataExplorerExtensionPoint';
 import 'sql/workbench/parts/dataExplorer/common/nodeActions.common.contribution';
-import 'sql/workbench/parts/dataExplorer/electron-browser/nodeActions.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
+
+// Scripting
+import 'sql/workbench/parts/scripting/electron-browser/scripting.contribution';
 
 // query editor
 import 'sql/workbench/parts/query/browser/query.contribution';
@@ -293,7 +290,6 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';
 import 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
-import 'sql/workbench/parts/objectExplorer/electron-browser/objectExplorerScripting.contribution';
 import 'sql/platform/accounts/browser/accountManagement.contribution';
 
 // dashboard
@@ -307,16 +303,15 @@ import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/charts/type
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/countInsight.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/imageInsight.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/views/tableInsight.contribution';
-import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
-/* Tasks */
-import 'sql/workbench/common/actions.contribution';
 /* Widgets */
 import 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.common.contribution';
 import 'sql/workbench/parts/dashboard/electron-browser/widgets/explorer/explorerWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
-import 'sql/workbench/parts/dashboard/browser/dashboardConfig.contribution';
+import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
+/* Tasks */
+import 'sql/workbench/common/actions.contribution';
 /* Model-based Views */
 import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */

@@ -69,7 +69,9 @@ export class CustomTreeViewPanel extends ViewletPanel {
 	}
 
 	renderBody(container: HTMLElement): void {
-		this.treeView.show(container);
+		if (this.treeView instanceof CustomTreeView) {
+			this.treeView.show(container);
+		}
 	}
 
 	layoutBody(height: number, width: number): void {
@@ -756,7 +758,7 @@ class TreeRenderer extends Disposable implements ITreeRenderer<ITreeItem, FuzzyS
 			templateData.resourceLabel.setResource({ name: label, description }, { title, hideIcon: true, extraClasses: ['custom-view-tree-node-item-resourceLabel'], matches: createMatches(element.filterData) });
 		}
 
-		templateData.icon.style.backgroundImage = iconUrl ? `url('${DOM.asDomUri(iconUrl).toString(true)}')` : '';
+		templateData.icon.style.backgroundImage = iconUrl ? DOM.asCSSUrl(iconUrl) : '';
 		DOM.toggleClass(templateData.icon, 'custom-view-tree-node-item-icon', !!iconUrl);
 		templateData.actionBar.context = <TreeViewItemHandleArg>{ $treeViewId: this.treeViewId, $treeItemHandle: node.handle };
 		templateData.actionBar.push(this.menus.getResourceActions(node), { icon: true, label: false });

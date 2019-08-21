@@ -553,15 +553,17 @@ export interface MainThreadWebviewsShape extends IDisposable {
 	$unregisterSerializer(viewType: string): void;
 }
 
-export interface WebviewPanelViewState {
-	readonly active: boolean;
-	readonly visible: boolean;
-	readonly position: EditorViewColumn;
+export interface WebviewPanelViewStateData {
+	[handle: string]: {
+		readonly active: boolean;
+		readonly visible: boolean;
+		readonly position: EditorViewColumn;
+	};
 }
 
 export interface ExtHostWebviewsShape {
 	$onMessage(handle: WebviewPanelHandle, message: any): void;
-	$onDidChangeWebviewPanelViewState(handle: WebviewPanelHandle, newState: WebviewPanelViewState): void;
+	$onDidChangeWebviewPanelViewStates(newState: WebviewPanelViewStateData): void;
 	$onDidDisposeWebviewPanel(handle: WebviewPanelHandle): Promise<void>;
 	$deserializeWebviewPanel(newWebviewHandle: WebviewPanelHandle, viewType: string, title: string, state: any, position: EditorViewColumn, options: modes.IWebviewOptions & modes.IWebviewPanelOptions): Promise<void>;
 }
@@ -719,8 +721,8 @@ export interface MainThreadDebugServiceShape extends IDisposable {
 	$customDebugAdapterRequest(id: DebugSessionUUID, command: string, args: any): Promise<any>;
 	$appendDebugConsole(value: string): void;
 	$startBreakpointEvents(): void;
-	$registerBreakpoints(breakpoints: Array<ISourceMultiBreakpointDto | IFunctionBreakpointDto>): Promise<void>;
-	$unregisterBreakpoints(breakpointIds: string[], functionBreakpointIds: string[]): Promise<void>;
+	$registerBreakpoints(breakpoints: Array<ISourceMultiBreakpointDto | IFunctionBreakpointDto | IDataBreakpointDto>): Promise<void>;
+	$unregisterBreakpoints(breakpointIds: string[], functionBreakpointIds: string[], dataBreakpointIds: string[]): Promise<void>;
 }
 
 export interface IOpenUriOptions {
@@ -745,7 +747,7 @@ export interface ExtHostConfigurationShape {
 }
 
 export interface ExtHostDiagnosticsShape {
-
+	$acceptMarkersChange(data: [UriComponents, IMarkerData[]][]): void;
 }
 
 export interface ExtHostDocumentContentProvidersShape {
@@ -1203,6 +1205,13 @@ export interface IFunctionBreakpointDto extends IBreakpointDto {
 	functionName: string;
 }
 
+export interface IDataBreakpointDto extends IBreakpointDto {
+	type: 'data';
+	dataId: string;
+	canPersist: boolean;
+	label: string;
+}
+
 export interface ISourceBreakpointDto extends IBreakpointDto {
 	type: 'source';
 	uri: UriComponents;
@@ -1211,9 +1220,9 @@ export interface ISourceBreakpointDto extends IBreakpointDto {
 }
 
 export interface IBreakpointsDeltaDto {
-	added?: Array<ISourceBreakpointDto | IFunctionBreakpointDto>;
+	added?: Array<ISourceBreakpointDto | IFunctionBreakpointDto | IDataBreakpointDto>;
 	removed?: string[];
-	changed?: Array<ISourceBreakpointDto | IFunctionBreakpointDto>;
+	changed?: Array<ISourceBreakpointDto | IFunctionBreakpointDto | IDataBreakpointDto>;
 }
 
 export interface ISourceMultiBreakpointDto {

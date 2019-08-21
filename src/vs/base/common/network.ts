@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { URI } from 'vs/base/common/uri';
+
 export namespace Schemas {
 
 	/**
@@ -47,6 +49,8 @@ export namespace Schemas {
 
 	export const vscodeRemote: string = 'vscode-remote';
 
+	export const vscodeRemoteResource: string = 'vscode-remote-resource';
+
 	export const userData: string = 'vscode-userdata';
 }
 
@@ -68,6 +72,18 @@ class RemoteAuthoritiesImpl {
 
 	public setConnectionToken(authority: string, connectionToken: string): void {
 		this._connectionTokens[authority] = connectionToken;
+	}
+
+	public rewrite(authority: string, path: string): URI {
+		const host = this._hosts[authority];
+		const port = this._ports[authority];
+		const connectionToken = this._connectionTokens[authority];
+		return URI.from({
+			scheme: Schemas.vscodeRemoteResource,
+			authority: `${host}:${port}`,
+			path: `/vscode-remote2`,
+			query: `path=${encodeURIComponent(path)}&tkn=${encodeURIComponent(connectionToken)}`
+		});
 	}
 }
 

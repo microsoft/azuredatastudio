@@ -41,6 +41,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { getThemeTypeSelector, DARK, HIGH_CONTRAST, LIGHT } from 'vs/platform/theme/common/themeService';
 import { InMemoryUserDataProvider } from 'vs/workbench/services/userData/common/inMemoryUserDataProvider';
 import { registerWindowDriver } from 'vs/platform/driver/browser/driver';
+import { StaticExtensionsService, IStaticExtensionsService } from 'vs/workbench/services/extensions/common/staticExtensions';
 
 class CodeRendererMain extends Disposable {
 
@@ -145,6 +146,10 @@ class CodeRendererMain extends Disposable {
 		const fileService = this._register(new FileService(logService));
 		serviceCollection.set(IFileService, fileService);
 
+		// Static Extensions
+		const staticExtensions = new StaticExtensionsService(this.configuration.staticExtensions || []);
+		serviceCollection.set(IStaticExtensionsService, staticExtensions);
+
 		let userDataProvider: IFileSystemProvider | undefined = this.configuration.userDataProvider;
 		const connection = remoteAgentService.getConnection();
 		if (connection) {
@@ -199,7 +204,7 @@ class CodeRendererMain extends Disposable {
 				version: '1.38.0-unknown',
 				nameLong: 'Unknown',
 				extensionAllowedProposedApi: [],
-			}, ...{ urlProtocol: '', enableTelemetry: false }
+			}, ...{ urlProtocol: '' }
 		};
 		return { _serviceBrand: undefined, ...productConfiguration };
 	}

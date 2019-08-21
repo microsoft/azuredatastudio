@@ -5,11 +5,10 @@
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import {
-	IConnectableInput, IConnectionManagementService,
+	IConnectionManagementService,
 	IConnectionCompletionOptions, ConnectionType,
 	RunQueryOnConnectionMode, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
@@ -21,39 +20,6 @@ import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiS
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
-
-export function newQuery(
-	connectionProfile: IConnectionProfile,
-	connectionService: IConnectionManagementService,
-	queryEditorService: IQueryEditorService,
-	objectExplorerService: IObjectExplorerService,
-	workbenchEditorService: IEditorService,
-	sqlContent?: string,
-	executeOnOpen: RunQueryOnConnectionMode = RunQueryOnConnectionMode.none
-): Promise<void> {
-	return new Promise<void>((resolve) => {
-		if (!connectionProfile) {
-			connectionProfile = getCurrentGlobalConnection(objectExplorerService, connectionService, workbenchEditorService);
-		}
-		queryEditorService.newSqlEditor(sqlContent).then((owner: IConnectableInput) => {
-			// Connect our editor to the input connection
-			let options: IConnectionCompletionOptions = {
-				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: executeOnOpen, input: owner },
-				saveTheConnection: false,
-				showDashboard: false,
-				showConnectionDialogOnError: true,
-				showFirewallRuleOnError: true
-			};
-			if (connectionProfile) {
-				connectionService.connect(connectionProfile, owner.uri, options).then(() => {
-					resolve();
-				});
-			} else {
-				resolve();
-			}
-		});
-	});
-}
 
 export function replaceConnection(oldUri: string, newUri: string, connectionService: IConnectionManagementService): Promise<IConnectionResult> {
 	return new Promise<IConnectionResult>((resolve, reject) => {

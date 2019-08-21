@@ -1597,8 +1597,6 @@ declare module 'sqlops' {
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
-		DacFxServicesProvider = 'DacFxServicesProvider',
-		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider'
