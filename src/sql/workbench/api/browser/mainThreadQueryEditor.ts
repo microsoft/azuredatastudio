@@ -9,16 +9,15 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
-export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
+export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
 
 	private _proxy: ExtHostQueryEditorShape;
-	private _toDispose: IDisposable[];
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -27,14 +26,10 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 		@IEditorService private _editorService: IEditorService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService
 	) {
+		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostQueryEditor);
 		}
-		this._toDispose = [];
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	public $connect(fileUri: string, connectionId: string): Thenable<void> {
@@ -83,7 +78,7 @@ export class MainThreadQueryEditor implements MainThreadQueryEditorShape {
 	}
 
 	public $registerQueryInfoListener(handle: number, providerId: string): void {
-		this._toDispose.push(this._queryModelService.onQueryEvent(event => {
+		this._register(this._queryModelService.onQueryEvent(event => {
 			this._proxy.$onQueryEvent(handle, event.uri, event);
 		}));
 	}

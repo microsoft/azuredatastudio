@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import * as azdata from 'azdata';
 
@@ -13,7 +12,7 @@ export const SERVICE_ID = 'metadataService';
 export const IMetadataService = createDecorator<IMetadataService>(SERVICE_ID);
 
 export interface IMetadataService {
-	_serviceBrand: any;
+	_serviceBrand: ServiceIdentifier<IMetadataService>;
 
 	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata>;
 
@@ -31,9 +30,7 @@ export interface IMetadataService {
 
 export class MetadataService implements IMetadataService {
 
-	public _serviceBrand: any;
-
-	private _disposables: IDisposable[] = [];
+	public _serviceBrand: ServiceIdentifier<IMetadataService>;
 
 	private _providers: { [handle: string]: azdata.MetadataProvider; } = Object.create(null);
 
@@ -93,9 +90,5 @@ export class MetadataService implements IMetadataService {
 	 */
 	public registerProvider(providerId: string, provider: azdata.MetadataProvider): void {
 		this._providers[providerId] = provider;
-	}
-
-	public dispose(): void {
-		this._disposables = dispose(this._disposables);
 	}
 }

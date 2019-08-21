@@ -17,13 +17,11 @@ export async function resolveCommonProperties(commit: string | undefined, versio
 
 	// {{SQL CARBON EDIT}}
 	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
-	// result['common.machineId'] = machineId;
 	result['common.machineId'] = '';
-	// // __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	// result['sessionID'] = uuid.generateUuid() + Date.now();
+	// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['sessionID'] = '';
 
-	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	result['commitHash'] = '';
 	// __GDPR__COMMON__ "version" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['version'] = version;
