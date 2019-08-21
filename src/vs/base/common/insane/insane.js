@@ -1,5 +1,5 @@
 /*
-The MIT License (MIT)
+The Source EULA (MIT)
 
 Copyright © 2015 Nicolas Bevacqua
 
