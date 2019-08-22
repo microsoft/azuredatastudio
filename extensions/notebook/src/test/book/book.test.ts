@@ -10,10 +10,9 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as rimraf from 'rimraf';
 import * as os from 'os';
+import * as uuid from 'uuid';
 import { BookTreeViewProvider } from '../../book/bookTreeView';
 import { BookTreeItem } from '../../book/bookTreeItem';
-
-const SEED = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
 
 export interface ExpectedBookItem {
 	title: string;
@@ -50,11 +49,9 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let notebook1: BookTreeItem;
 
 	this.beforeAll(async () => {
-		let testFolder = '';
-		for (let i = 0; i < 8; i++) {
-			testFolder += SEED.charAt(Math.floor(Math.random() * SEED.length));
-		}
-		rootFolderPath = path.join(os.tmpdir(), 'BookTestData_' + testFolder);
+		console.log('Generating random rootFolderPath...');
+		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+		console.log('Random rootFolderPath generated.');
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
@@ -94,6 +91,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 			title: 'Test Book'
 		};
+		console.log('Creating temporary folders and files...');
 		await fs.mkdir(rootFolderPath);
 		await fs.mkdir(dataFolderPath);
 		await fs.mkdir(contentFolderPath);
@@ -103,6 +101,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		await fs.writeFile(notebook2File, '');
 		await fs.writeFile(notebook3File, '');
 		await fs.writeFile(markdownFile, '');
+		console.log('Temporary folders and files created.');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		let folder: vscode.WorkspaceFolder = {
 			uri: vscode.Uri.file(rootFolderPath),
