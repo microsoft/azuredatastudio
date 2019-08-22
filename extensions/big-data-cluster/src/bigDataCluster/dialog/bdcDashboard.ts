@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { IconPath } from '../constants';
+import { IconPathHelper } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { EndpointModel, BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
@@ -61,20 +61,20 @@ export class BdcDashboard {
 			const refreshButton = modelView.modelBuilder.button()
 				.withProperties({
 					label: localize('bdc.dashboard.refreshButton', "Refresh"),
-					iconPath: IconPath.refresh,
-					height: '50'
+					iconPath: IconPathHelper.refresh,
+					height: '50px'
 				}).component();
 
 			refreshButton.onDidClick(() => this.model.refresh());
 
-			const openTroubleshootNotebook = modelView.modelBuilder.button()
+			const openTroubleshootNotebookButton = modelView.modelBuilder.button()
 				.withProperties({
 					label: localize('bdc.dashboard.troubleshootButton', "Troubleshoot"),
-					iconPath: IconPath.notebook,
-					height: '50'
+					iconPath: IconPathHelper.notebook,
+					height: '50px'
 				}).component();
 
-			openTroubleshootNotebook.onDidClick(() => {
+			openTroubleshootNotebookButton.onDidClick(() => {
 				vscode.commands.executeCommand('mssqlCluster.task.openNotebook');
 			});
 
@@ -82,7 +82,7 @@ export class BdcDashboard {
 				.withToolbarItems(
 					[
 						{ component: refreshButton },
-						{ component: openTroubleshootNotebook }
+						{ component: openTroubleshootNotebookButton }
 					]
 				).component();
 

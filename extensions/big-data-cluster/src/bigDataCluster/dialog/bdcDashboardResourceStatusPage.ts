@@ -140,11 +140,11 @@ export class BdcDashboardResourceStatusPage {
 			return;
 		}
 
-		this.lastUpdatedLabel.updateProperty('value',
+		this.lastUpdatedLabel.value =
 			localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
 				this.model.bdcStatusLastUpdated ?
 					`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
-					: '-'));
+					: '-');
 
 		this.instanceHealthStatusRowsContainer.clearItems();
 		this.metricsAndLogsRowsContainer.clearItems();

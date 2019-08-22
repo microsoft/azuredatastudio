@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { IconPath } from '../constants';
+import { IconPathHelper } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getHealthStatusIcon, getEndpointDisplayText, getServiceNameDisplayText, Endpoint } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
 
@@ -186,17 +186,16 @@ export class BdcDashboardOverviewPage {
 		if (!this.initialized || !bdcStatus) {
 			return;
 		}
-
-		this.lastUpdatedLabel.updateProperty('value',
+		this.lastUpdatedLabel.value =
 			localize('bdc.dashboard.lastUpdated', "Last Updated : {0}",
 				this.model.bdcStatusLastUpdated ?
 					`${this.model.bdcStatusLastUpdated.toLocaleDateString()} ${this.model.bdcStatusLastUpdated.toLocaleTimeString()}`
-					: '-'));
+					: '-');
 
 		this.clusterStateLoadingComponent.loading = false;
 		this.clusterHealthStatusLoadingComponent.loading = false;
-		this.clusterStateLoadingComponent.component.updateProperty('value', getStateDisplayText(bdcStatus.state));
-		this.clusterHealthStatusLoadingComponent.component.updateProperty('value', getHealthStatusDisplayText(bdcStatus.healthStatus));
+		(<azdata.TextComponent>this.clusterStateLoadingComponent.component).value = getStateDisplayText(bdcStatus.state);
+		(<azdata.TextComponent>this.clusterHealthStatusLoadingComponent.component).value = getHealthStatusDisplayText(bdcStatus.healthStatus);
 
 		if (bdcStatus.services) {
 			this.serviceStatusRowContainer.clearItems();
@@ -249,7 +248,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden' } });
 	}
 	const copyValueCell = modelBuilder.button().component();
-	copyValueCell.iconPath = IconPath.copy;
+	copyValueCell.iconPath = IconPathHelper.copy;
 	copyValueCell.onDidClick(() => {
 		// vscode.env.clipboard.writeText(hyperlink);
 	});
