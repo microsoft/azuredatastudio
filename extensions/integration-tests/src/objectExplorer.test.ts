@@ -65,7 +65,7 @@ class ObjectExplorerTester {
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbContextMenuTest(): Promise<void> {
 		const server = await getAzureServer();
-		const expectedActions = ['Refresh', 'New Query', 'Manage', 'New Notebook', 'Disconnect', 'Delete Connection', 'Data-tier Application wizard', 'Launch Profiler'];
+		const expectedActions = ['Disconnect', 'Delete Connection', 'Refresh', 'New Query', 'Manage', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
 		await this.verifyContextMenu(server, expectedActions);
 	}
 
@@ -89,10 +89,10 @@ class ObjectExplorerTester {
 		let expectedActions: string[];
 		// Properties comes from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Refresh', 'New Query', 'Manage', 'New Notebook', 'Disconnect', 'Delete Connection', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
+			expectedActions = ['Disconnect', 'Delete Connection', 'Refresh', 'New Query', 'Manage', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler', 'Properties'];
 		}
 		else {
-			expectedActions = ['Refresh', 'New Query', 'Manage', 'New Notebook', 'Disconnect', 'Delete Connection', 'Data-tier Application wizard', 'Launch Profiler'];
+			expectedActions = ['Disconnect', 'Delete Connection', 'Refresh', 'New Query', 'Manage', 'New Notebook', 'Data-tier Application wizard', 'Launch Profiler'];
 		}
 		await this.verifyContextMenu(server, expectedActions);
 	}
