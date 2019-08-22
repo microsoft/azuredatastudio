@@ -558,7 +558,7 @@ export class SQLFuture extends Disposable implements FutureInternal {
 		}
 		for (const row of d.resultSubset.rows) {
 			htmlString += '<tr>';
-			for (let i = 0; i <= columns.length; i++) {
+			for (let i = 0; i < columns.length; i++) {
 				htmlString += '<td>' + escape(row[i].displayValue) + '</td>';
 			}
 			htmlString += '</tr>';
