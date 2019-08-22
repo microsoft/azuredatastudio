@@ -1146,6 +1146,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('title', v);
 	}
 
+	public get moveFocusOutWithTab(): boolean {
+		return this.properties['moveFocusOutWithTab'];
+	}
+	public set moveFocusOutWithTab(v: boolean) {
+		this.setProperty('moveFocusOutWithTab', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
