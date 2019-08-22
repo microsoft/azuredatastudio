@@ -194,7 +194,7 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	}
 
 	// Getters for private properties
-	public get uri(): string { return this.getResource().toString(); }
+	public get uri(): string { return this.getResource().toString(true); }
 	public get sql(): UntitledEditorInput { return this._sql; }
 	public get results(): QueryResultsInput { return this._results; }
 	public updateSelection(selection: ISelectionData): void { this._updateSelection.fire(selection); }

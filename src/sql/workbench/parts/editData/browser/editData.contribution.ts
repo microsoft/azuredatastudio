@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { EditDataEditor } from 'sql/workbench/parts/editData/browser/editDataEditor';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { EditorDescriptor, IEditorRegistry, Extensions } from 'vs/workbench/browser/editor';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';

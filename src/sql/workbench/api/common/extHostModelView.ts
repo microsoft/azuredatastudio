@@ -767,6 +767,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		this.setProperty('ariaLabel', v);
 	}
 
+	public get ariaLive(): string {
+		return this.properties['ariaLive'];
+	}
+	public set ariaLive(v: string) {
+		this.setProperty('ariaLabel', v);
+	}
+
 	public get placeHolder(): string {
 		return this.properties['placeHolder'];
 	}
@@ -1066,6 +1073,12 @@ class RadioButtonWrapper extends ComponentWrapper implements azdata.RadioButtonC
 	public set checked(v: boolean) {
 		this.setProperty('checked', v);
 	}
+	public get focused(): boolean {
+		return this.properties['focused'];
+	}
+	public set focused(v: boolean) {
+		this.setProperty('focused', v);
+	}
 
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
@@ -1138,6 +1151,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 	}
 	public set title(v: string) {
 		this.setProperty('title', v);
+	}
+
+	public get moveFocusOutWithTab(): boolean {
+		return this.properties['moveFocusOutWithTab'];
+	}
+	public set moveFocusOutWithTab(v: boolean) {
+		this.setProperty('moveFocusOutWithTab', v);
 	}
 
 	public get onRowSelected(): vscode.Event<any> {

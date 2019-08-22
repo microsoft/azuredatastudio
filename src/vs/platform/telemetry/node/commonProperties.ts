@@ -14,15 +14,25 @@ const productObject = product;
 
 export async function resolveCommonProperties(commit: string | undefined, version: string | undefined, machineId: string | undefined, installSourcePath: string, product?: string): Promise<{ [name: string]: string | undefined; }> {
 	const result: { [name: string]: string | undefined; } = Object.create(null);
-
 	// {{SQL CARBON EDIT}}
-	// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
-	result['common.machineId'] = '';
-	// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	result['sessionID'] = '';
+	if (productObject.quality !== 'stable') {
+		// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
+		result['common.machineId'] = machineId;
+		// __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		result['sessionID'] = uuid.generateUuid() + Date.now();
+		// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		result['commitHash'] = commit;
+	} else {
+		// __GDPR__COMMON__ "common.machineId" : { "endPoint": "MacAddressHash", "classification": "EndUserPseudonymizedInformation", "purpose": "FeatureInsight" }
+		// result['common.machineId'] = machineId;
+		result['common.machineId'] = '';
+		// // __GDPR__COMMON__ "sessionID" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		// result['sessionID'] = uuid.generateUuid() + Date.now();
+		result['sessionID'] = '';
+		// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		result['commitHash'] = '';
+	}
 
-	// __GDPR__COMMON__ "commitHash" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	result['commitHash'] = '';
 	// __GDPR__COMMON__ "version" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
 	result['version'] = version;
 	// __GDPR__COMMON__ "common.platformVersion" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
@@ -34,9 +44,8 @@ export async function resolveCommonProperties(commit: string | undefined, versio
 	// __GDPR__COMMON__ "common.nodeArch" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
 	result['common.nodeArch'] = process.arch;
 	// __GDPR__COMMON__ "common.product" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	// {{SQL CARBON EDIT}}
-	result['common.product'] = productObject.nameShort || 'desktop';
-	result['common.application.name'] = productObject.nameLong;
+	result['common.product'] = productObject.nameShort || 'desktop'; // {{SQL CARBON EDIT}}
+	result['common.application.name'] = productObject.nameLong; // {{SQL CARBON EDIT}}
 
 	// dynamic properties which value differs on each call
 	let seq = 0;

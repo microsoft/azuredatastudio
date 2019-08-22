@@ -3,23 +3,90 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import {
-	SCRIPT_AS_SELECT_COMMAND_ID, EDIT_DATA_COMMAND_ID, SCRIPT_AS_CREATE_COMMAND_ID,
-	SCRIPT_AS_EXECUTE_COMMAND_ID, SCRIPT_AS_ALTER_COMMAND_ID, SCRIPT_AS_DELETE_COMMAND_ID,
-	REFRESH_OE_COMMAND_ID
-} from 'sql/workbench/parts/objectExplorer/electron-browser/objectExplorerScriptingActions';
-import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
+import * as commands from 'sql/workbench/parts/scripting/electron-browser/scriptingActions';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
 import { localize } from 'vs/nls';
-import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
+
+//#region -- Data Explorer
+// Script as Create
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 3,
+	command: {
+		id: commands.SCRIPT_AS_CREATE_COMMAND_ID,
+		title: localize('scriptAsCreate', "Script as Create")
+	},
+	when: MssqlNodeContext.CanScriptAsCreateOrDelete
+});
+
+// Script as Delete
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 4,
+	command: {
+		id: commands.SCRIPT_AS_DELETE_COMMAND_ID,
+		title: localize('scriptAsDelete', "Script as Drop")
+	},
+	when: MssqlNodeContext.CanScriptAsCreateOrDelete
+});
+
+// Script as Select
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 1,
+	command: {
+		id: commands.SCRIPT_AS_SELECT_COMMAND_ID,
+		title: localize('scriptAsSelect', "Select Top 1000")
+	},
+	when: MssqlNodeContext.CanScriptAsSelect
+});
+
+// Script as Execute
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 5,
+	command: {
+		id: commands.SCRIPT_AS_EXECUTE_COMMAND_ID,
+		title: localize('scriptAsExecute', "Script as Execute")
+	},
+	when: MssqlNodeContext.CanScriptAsExecute
+});
+
+// Script as Alter
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 5,
+	command: {
+		id: commands.SCRIPT_AS_ALTER_COMMAND_ID,
+		title: localize('scriptAsAlter', "Script as Alter")
+	},
+	when: MssqlNodeContext.CanScriptAsAlter
+});
+
+// Edit Data
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: 'connection',
+	order: 2,
+	command: {
+		id: commands.EDIT_DATA_COMMAND_ID,
+		title: localize('editData', "Edit Data")
+	},
+	when: MssqlNodeContext.CanEditData
+});
+//#endregion
+
+//#region -- Object Explorer
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 1,
 	command: {
-		id: SCRIPT_AS_SELECT_COMMAND_ID,
+		id: commands.OE_SCRIPT_AS_SELECT_COMMAND_ID,
 		title: localize('scriptSelect', "Select Top 1000")
 	},
 	when: ContextKeyExpr.or(TreeNodeContextKey.NodeType.isEqualTo('Table'), TreeNodeContextKey.NodeType.isEqualTo('View'))
@@ -29,7 +96,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 2,
 	command: {
-		id: EDIT_DATA_COMMAND_ID,
+		id: commands.OE_EDIT_DATA_COMMAND_ID,
 		title: localize('editData', "Edit Data")
 	},
 	when: TreeNodeContextKey.NodeType.isEqualTo('Table')
@@ -39,7 +106,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 3,
 	command: {
-		id: SCRIPT_AS_CREATE_COMMAND_ID,
+		id: commands.OE_SCRIPT_AS_CREATE_COMMAND_ID,
 		title: localize('scriptCreate', "Script as Create")
 	},
 	when: ContextKeyExpr.or(
@@ -59,7 +126,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 6,
 	command: {
-		id: SCRIPT_AS_EXECUTE_COMMAND_ID,
+		id: commands.OE_SCRIPT_AS_EXECUTE_COMMAND_ID,
 		title: localize('scriptExecute', "Script as Execute")
 	},
 	when: ContextKeyExpr.and(ConnectionContextKey.Provider.isEqualTo('MSSQL'), TreeNodeContextKey.NodeType.isEqualTo('StoredProcedure'))
@@ -69,7 +136,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 5,
 	command: {
-		id: SCRIPT_AS_ALTER_COMMAND_ID,
+		id: commands.OE_SCRIPT_AS_ALTER_COMMAND_ID,
 		title: localize('scriptAlter', "Script as Alter")
 	},
 	when:
@@ -99,7 +166,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 4,
 	command: {
-		id: SCRIPT_AS_DELETE_COMMAND_ID,
+		id: commands.OE_SCRIPT_AS_DELETE_COMMAND_ID,
 		title: localize('scriptDelete', "Script as Drop")
 	},
 	when: ContextKeyExpr.or(
@@ -119,7 +186,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: 'scripting',
 	order: 7,
 	command: {
-		id: REFRESH_OE_COMMAND_ID,
+		id: commands.OE_REFRESH_COMMAND_ID,
 		title: localize('refreshNode', "Refresh")
 	},
 	when: ContextKeyExpr.or(
@@ -134,3 +201,5 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.ScalarValuedFunction),
 		TreeNodeContextKey.NodeType.isEqualTo(NodeType.TableValuedFunction))
 });
+
+//#endregion

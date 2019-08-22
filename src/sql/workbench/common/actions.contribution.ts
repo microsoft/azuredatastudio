@@ -12,7 +12,6 @@ import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platf
 
 new Actions.BackupAction().registerTask();
 new Actions.RestoreAction().registerTask();
-new Actions.NewQueryAction().registerTask();
 new Actions.ConfigureDashboardAction().registerTask();
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({

@@ -302,7 +302,7 @@ export class Main {
 	}
 }
 
-const eventPrefix = 'monacoworkbench';
+const eventPrefix = product.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench';
 
 export async function main(argv: ParsedArgs): Promise<void> {
 	const services = new ServiceCollection();

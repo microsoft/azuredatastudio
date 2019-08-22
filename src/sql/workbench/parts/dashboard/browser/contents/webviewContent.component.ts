@@ -17,7 +17,7 @@ import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 
 import * as azdata from 'azdata';
-import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
+import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
 
 @Component({
 	template: '',
