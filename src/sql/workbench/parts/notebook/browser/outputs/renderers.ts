@@ -478,15 +478,7 @@ namespace Private {
 		let anchors = node.getElementsByTagName('a');
 		for (let i = 0; i < anchors.length; i++) {
 			let path = anchors[i].href || '';
-			let isLocal: boolean;
-			if (path.length > 0) {
-				isLocal = resolver && resolver.isLocal
-					? resolver.isLocal(path)
-					: URLExt.isLocal(path);
-			} else {
-				// Empty string, so default to local
-				isLocal = true;
-			}
+			let isLocal = isPathLocal(path, resolver);
 			if (isLocal) {
 				anchors[i].target = '_self';
 			} else {
@@ -573,15 +565,7 @@ namespace Private {
 		resolver: IRenderMime.IResolver
 	): Promise<void> {
 		let source = node.getAttribute(name) || '';
-		let isLocal: boolean;
-		if (source.length > 0) {
-			isLocal = resolver.isLocal
-				? resolver.isLocal(source)
-				: URLExt.isLocal(source);
-		} else {
-			// Empty string, so default to local
-			isLocal = true;
-		}
+		let isLocal = isPathLocal(source, resolver);
 		if (!source || !isLocal) {
 			return Promise.resolve(undefined);
 		}
@@ -618,15 +602,7 @@ namespace Private {
 		// Get the link path without the location prepended.
 		// (e.g. "./foo.md#Header 1" vs "http://localhost:8888/foo.md#Header 1")
 		let href = anchor.getAttribute('href') || '';
-		let isLocal: boolean;
-		if (href.length > 0) {
-			isLocal = resolver.isLocal
-				? resolver.isLocal(href)
-				: URLExt.isLocal(href);
-		} else {
-			// Empty string, so default to local
-			isLocal = true;
-		}
+		let isLocal = isPathLocal(href, resolver);
 		// Bail if it is not a file-like url.
 		if (!href || !isLocal) {
 			return Promise.resolve(undefined);
@@ -662,5 +638,18 @@ namespace Private {
 				// just make it an empty link.
 				anchor.href = '';
 			});
+	}
+
+	function isPathLocal(path: string, resolver: IRenderMime.IResolver): boolean {
+		let isLocal: boolean;
+		if (path && path.length > 0) {
+			isLocal = resolver.isLocal
+				? resolver.isLocal(path)
+				: URLExt.isLocal(path);
+		} else {
+			// Empty string, so default to local
+			isLocal = true;
+		}
+		return isLocal;
 	}
 }
