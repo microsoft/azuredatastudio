@@ -37,7 +37,7 @@ suite('Cell Model', function (): void {
 		cell.setOverrideLanguage('sql');
 		should(cell.language).equal('sql');
 		cell.source = 'abcd';
-		should(cell.source).equal(['abcd']);
+		should(JSON.stringify(cell.source)).equal(JSON.stringify(['abcd']));
 	});
 
 	test('Should match ICell values if defined', async function (): Promise<void> {
@@ -55,7 +55,7 @@ suite('Cell Model', function (): void {
 		};
 		let cell = factory.createCell(cellData, undefined);
 		should(cell.cellType).equal(cellData.cell_type);
-		should(cell.source).equal(cellData.source);
+		should(JSON.stringify(cell.source)).equal(JSON.stringify([cellData.source]));
 		should(cell.outputs).have.length(1);
 		should(cell.outputs[0].output_type).equal('stream');
 		should((<nb.IStreamResult>cell.outputs[0]).text).equal('Some output');
@@ -163,8 +163,8 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(false);
-		should(cell.source).equal('print(1)');
+		should(Array.isArray(cell.source)).equal(true);
+		should(JSON.stringify(cell.source)).equal(JSON.stringify(['print(1)']));
 	});
 
 	test('Should allow source of type string with newline and split it', async function (): Promise<void> {
@@ -241,8 +241,8 @@ suite('Cell Model', function (): void {
 			mimetype: ''
 		});
 		let cell = factory.createCell(cellData, { notebook: notebookModel, isTrusted: false });
-		should(Array.isArray(cell.source)).equal(false);
-		should(cell.source).equal('');
+		should(Array.isArray(cell.source)).equal(true);
+		should(JSON.stringify(cell.source)).equal(JSON.stringify(['']));
 	});
 
 	suite('Model Future handling', function (): void {

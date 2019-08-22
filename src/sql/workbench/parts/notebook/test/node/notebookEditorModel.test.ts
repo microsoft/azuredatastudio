@@ -222,6 +222,17 @@ suite('Notebook Editor Model', function (): void {
 		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25)).equal('            "execution_count": 15');
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
+
+		newCell.executionCount = 105;
+		contentChange = {
+			changeType: NotebookChangeType.CellExecuted,
+			cells: [newCell],
+			cellIndex: 0
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellExecuted);
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(25)).equal('            "execution_count": 105');
+		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
 
 	test('should not replace entire text model for clear output', async function (): Promise<void> {

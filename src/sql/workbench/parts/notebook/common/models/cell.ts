@@ -68,7 +68,8 @@ export class CellModel implements ICellModel {
 		} else {
 			this._isTrusted = false;
 		}
-		this._cellGuid = generateUuid();
+		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
+		this._cellGuid = this._cellGuid ? this.cellGuid : generateUuid();
 		this.createUri();
 	}
 
@@ -192,9 +193,6 @@ export class CellModel implements ICellModel {
 	}
 
 	public get cellGuid(): string {
-		if (!this._cellGuid) {
-			this._cellGuid = generateUuid();
-		}
 		return this._cellGuid;
 	}
 
@@ -284,24 +282,22 @@ export class CellModel implements ICellModel {
 					}
 				}
 				let content = this.source;
-				if (content) {
+				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
-					if (content) {
-						let future = await kernel.requestExecute({
-							code: content,
-							stop_on_error: true
-						}, false);
-						this.setFuture(future as FutureInternal);
-						this.fireExecutionStateChanged();
-						// For now, await future completion. Later we should just track and handle cancellation based on model notifications
-						let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
-						if (result && result.content) {
-							this.executionCount = result.content.execution_count;
-							if (result.content.status !== 'ok') {
-								// TODO track error state
-								return false;
-							}
+					let future = await kernel.requestExecute({
+						code: content,
+						stop_on_error: true
+					}, false);
+					this.setFuture(future as FutureInternal);
+					this.fireExecutionStateChanged();
+					// For now, await future completion. Later we should just track and handle cancellation based on model notifications
+					let result: nb.IExecuteReplyMsg = <nb.IExecuteReplyMsg><any>await future.done;
+					if (result && result.content) {
+						this.executionCount = result.content.execution_count;
+						if (result.content.status !== 'ok') {
+							// TODO track error state
+							return false;
 						}
 					}
 				}
@@ -379,11 +375,8 @@ export class CellModel implements ICellModel {
 	}
 
 	public clearOutputs(): void {
-		let originalOutputLength = this._outputs.length;
 		this._outputs = [];
-		if (originalOutputLength !== 0) {
-			this.fireOutputsChanged();
-		}
+		this.fireOutputsChanged();
 	}
 
 	private fireOutputsChanged(shouldScroll: boolean = false): void {

@@ -54,7 +54,6 @@ export class NotebookEditorModel extends EditorModel {
 						this._register(notebook.model.onActiveCellChanged((cell) => {
 							if (cell) {
 								this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
-								this.notebookTextFileModel.updateSourceMap(this.textEditorModel, cell.cellGuid);
 							}
 						}));
 					}
@@ -149,13 +148,14 @@ export class NotebookEditorModel extends EditorModel {
 				if (editAppliedSuccessfully) {
 					return;
 				}
+				console.log('SLOWWWWWWWW');
 				this.replaceEntireTextEditorModel(notebookModel, type);
 				this._lastEditFullReplacement = true;
-				// After we replace all of the text editor model, attempt calculation again for active cell source to prevent
-				// future unnecessary use of the "slow" form of editing
-				if (type === NotebookChangeType.CellsModified || type === NotebookChangeType.CellSourceUpdated) {
-					this.notebookTextFileModel.updateSourceMap(this.textEditorModel, contentChange.cells[0].cellGuid);
-				}
+				// // After we replace all of the text editor model, attempt calculation again for active cell source to prevent
+				// // future unnecessary use of the "slow" form of editing
+				// if (type === NotebookChangeType.CellsModified || type === NotebookChangeType.CellSourceUpdated && contentChange.cells && contentChange.cells[0] && contentChange.cells[0].cellGuid) {
+				// 	this.notebookTextFileModel.updateSourceMap(this.textEditorModel, contentChange.cells[0].cellGuid);
+				// }
 			}
 		}
 	}

@@ -11,107 +11,14 @@ import { NotebookContentChange, INotebookModel } from 'sql/workbench/parts/noteb
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 
 export class NotebookTextFileModel {
-	private sourceMap: Map<string, Range>;
-	private outputBeginMap: Map<string, Range>;
+	// save active cell's line/column in editor model for the beginning of the source property
+	private sourceBeginRange: Range;
+	// save active cell's line/column in editor model for the beginning of the output property
+	private outputBeginRange: Range;
+	// save active cell guid
 	private activeCellGuid: string;
-	private cellGuidMatches: FindMatch[];
 
 	constructor() {
-		this.sourceMap = new Map<string, Range>();
-		this.outputBeginMap = new Map<string, Range>();
-	}
-
-	public updateSourceMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
-		if (!cellGuid) {
-			return;
-		}
-		this.sourceMap.clear();
-
-		if (this.findOrSetCellGuidMatch(textEditorModel, cellGuid)) {
-			let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: this.cellGuidMatches[0].range.startLineNumber, column: this.cellGuidMatches[0].range.startColumn }, false, true, undefined, true);
-			if (!sourceBefore || !sourceBefore.range) {
-				return;
-			}
-			let firstQuoteOfSource = textEditorModel.textEditorModel.findNextMatch('"', { lineNumber: sourceBefore.range.startLineNumber, column: sourceBefore.range.endColumn }, false, true, undefined, true);
-			this.sourceMap.set(cellGuid, firstQuoteOfSource.range);
-		} else {
-			return;
-		}
-	}
-
-	public updateOutputBeginMap(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
-		if (!cellGuid) {
-			return undefined;
-		}
-		this.outputBeginMap.clear();
-		if (this.findOrSetCellGuidMatch(textEditorModel, cellGuid)) {
-			let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: this.cellGuidMatches[0].range.endLineNumber, column: this.cellGuidMatches[0].range.endColumn }, false, true, undefined, true);
-			if (!outputsBegin || !outputsBegin.range) {
-				return undefined;
-			}
-			this.outputBeginMap.set(cellGuid, outputsBegin.range);
-		} else {
-			return undefined;
-		}
-	}
-
-	public getEndOfOutputs(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
-		let outputsBegin = this.outputBeginMap.get(cellGuid);
-		if (!outputsBegin || !textEditorModel.textEditorModel.getLineContent(outputsBegin.startLineNumber).trim().includes('output')) {
-			this.updateOutputBeginMap(textEditorModel, cellGuid);
-			outputsBegin = this.outputBeginMap.get(cellGuid);
-			if (!outputsBegin) {
-				return undefined;
-			}
-		}
-		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
-		if (!outputsEnd || outputsEnd.length < 2) {
-			return undefined;
-		}
-		// single line output
-		if (outputsBegin.endLineNumber === outputsEnd[1].startLineNumber) {
-			// Adding 1 to startColumn to replace text starting one character after '['
-			return {
-				startColumn: outputsEnd[0].startColumn + 1,
-				startLineNumber: outputsEnd[0].startLineNumber,
-				endColumn: outputsEnd[0].endColumn,
-				endLineNumber: outputsEnd[0].endLineNumber
-			};
-		} else {
-			// Last 2 lines in multi-line output will look like the following:
-			// "                }"
-			// "            ],"
-			if (textEditorModel.textEditorModel.getLineContent(outputsEnd[1].endLineNumber - 1).trim() === '}') {
-				return {
-					startColumn: textEditorModel.textEditorModel.getLineFirstNonWhitespaceColumn(outputsEnd[1].endLineNumber - 1) + 1,
-					startLineNumber: outputsEnd[1].endLineNumber - 1,
-					endColumn: outputsEnd[1].endColumn - 1,
-					endLineNumber: outputsEnd[1].endLineNumber
-				};
-			}
-			return undefined;
-		}
-	}
-
-	public getExecutionCountRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
-		let endOutputRange = this.getEndOfOutputs(textEditorModel, cellGuid);
-		if (endOutputRange && endOutputRange.endLineNumber) {
-			return textEditorModel.textEditorModel.findNextMatch('"execution_count": ', { lineNumber: endOutputRange.endLineNumber, column: endOutputRange.endColumn }, false, true, undefined, true);
-		}
-		return undefined;
-	}
-
-	public getCellNodeByGuid(textEditorModel: TextFileEditorModel | UntitledEditorModel, guid: string) {
-		if (this.sourceMap.get(guid)) {
-			return this.sourceMap.get(guid);
-		} else {
-			this.updateSourceMap(textEditorModel, guid);
-			return this.sourceMap.get(guid);
-		}
-	}
-
-	public getOutputNodeByGuid(guid: string) {
-		return this.outputBeginMap.get(guid);
 	}
 
 	public get ActiveCellGuid(): string {
@@ -120,9 +27,8 @@ export class NotebookTextFileModel {
 
 	public set ActiveCellGuid(guid: string) {
 		if (this.activeCellGuid !== guid) {
-			this.sourceMap.clear();
-			this.outputBeginMap.clear();
-			this.cellGuidMatches = undefined;
+			this.sourceBeginRange = undefined;
+			this.outputBeginRange = undefined;
 			this.activeCellGuid = guid;
 		}
 	}
@@ -131,7 +37,7 @@ export class NotebookTextFileModel {
 		let cellGuidRange = this.getCellNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid);
 
 		// convert the range to leverage offsets in the json
-		if (contentChange && contentChange.modelContentChangedEvent && this.areRangePropertiesAllSet(cellGuidRange)) {
+		if (contentChange && contentChange.modelContentChangedEvent && this.areRangePropertiesPopulated(cellGuidRange)) {
 			contentChange.modelContentChangedEvent.changes.forEach(change => {
 				let convertedRange: IRange = {
 					startLineNumber: change.range.startLineNumber + cellGuidRange.startLineNumber - 1,
@@ -141,6 +47,9 @@ export class NotebookTextFileModel {
 				};
 				// Need to subtract one because we're going from 1-based to 0-based
 				let startSpaces: string = ' '.repeat(cellGuidRange.startColumn - 1);
+				// The text here transforms a string from 'This is a string\n this is another string' to:
+				//     This is a string
+				//     this is another string
 				textEditorModel.textEditorModel.applyEdits([{
 					range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
 					text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
@@ -179,7 +88,7 @@ export class NotebookTextFileModel {
 			// Execution count can be between 0 and n characters long
 			let beginExecutionCountColumn = executionCountMatch.range.endColumn;
 			let endExecutionCountColumn = beginExecutionCountColumn + 1;
-			while (textEditorModel.textEditorModel.getLineContent(executionCountMatch.range.endLineNumber)[endExecutionCountColumn + 1]) {
+			while (textEditorModel.textEditorModel.getLineContent(executionCountMatch.range.endLineNumber)[endExecutionCountColumn - 1]) {
 				endExecutionCountColumn++;
 			}
 			if (contentChange.cells[0].executionCount) {
@@ -198,8 +107,14 @@ export class NotebookTextFileModel {
 	}
 
 	public transformAndApplyEditForClearOutput(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
+		if (!textEditorModel || !contentChange || !contentChange.cells || !contentChange.cells[0] || !contentChange.cells[0].cellGuid) {
+			return false;
+		}
+		if (!this.getOutputNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid)) {
+			this.updateOutputBeginRange(textEditorModel, contentChange.cells[0].cellGuid);
+		}
 		let outputEndRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
-		let outputStartRange = this.getOutputNodeByGuid(contentChange.cells[0].cellGuid);
+		let outputStartRange = this.getOutputNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid);
 		if (outputStartRange && outputEndRange) {
 			textEditorModel.textEditorModel.applyEdits([{
 				range: new Range(outputStartRange.startLineNumber, outputStartRange.endColumn, outputEndRange.endLineNumber, outputEndRange.endColumn),
@@ -221,17 +136,121 @@ export class NotebookTextFileModel {
 		}]);
 	}
 
-	private areRangePropertiesAllSet(range: Range) {
-		return range.startLineNumber && range.startColumn && range.endLineNumber && range.endColumn;
+	private areRangePropertiesPopulated(range: Range) {
+		return range && range.startLineNumber && range.startColumn && range.endLineNumber && range.endColumn;
 	}
 
-	private findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): boolean {
-		if (!this.cellGuidMatches || this.cellGuidMatches.length < 1 || !textEditorModel.textEditorModel.getLineContent(this.cellGuidMatches[0].range.endLineNumber).trim().includes(cellGuid)) {
-			this.cellGuidMatches = textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
-			if (!this.cellGuidMatches || this.cellGuidMatches.length < 1) {
-				return false;
+	private findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): FindMatch[] {
+		if (!textEditorModel || !cellGuid) {
+			return undefined;
+		}
+		return textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
+	}
+
+	// Find the beginning of a cell's source in the text editor model
+	private updateSourceBeginRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
+		if (!cellGuid) {
+			return;
+		}
+		this.sourceBeginRange = undefined;
+
+		let cellGuidMatches = this.findOrSetCellGuidMatch(textEditorModel, cellGuid);
+		if (cellGuidMatches && cellGuidMatches.length > 0) {
+			let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: cellGuidMatches[0].range.startLineNumber, column: cellGuidMatches[0].range.startColumn }, false, true, undefined, true);
+			if (!sourceBefore || !sourceBefore.range) {
+				return;
+			}
+			let firstQuoteOfSource = textEditorModel.textEditorModel.findNextMatch('"', { lineNumber: sourceBefore.range.startLineNumber, column: sourceBefore.range.endColumn }, false, true, undefined, true);
+			this.sourceBeginRange = firstQuoteOfSource.range;
+		} else {
+			return;
+		}
+	}
+
+	// Find the beginning of a cell's outputs in the text editor model
+	private updateOutputBeginRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
+		if (!cellGuid) {
+			return undefined;
+		}
+		this.outputBeginRange = undefined;
+
+		let cellGuidMatches = this.findOrSetCellGuidMatch(textEditorModel, cellGuid);
+		if (cellGuidMatches && cellGuidMatches.length > 0) {
+			let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: cellGuidMatches[0].range.endLineNumber, column: cellGuidMatches[0].range.endColumn }, false, true, undefined, true);
+			if (!outputsBegin || !outputsBegin.range) {
+				return undefined;
+			}
+			this.outputBeginRange = outputsBegin.range;
+		} else {
+			return undefined;
+		}
+	}
+
+	// Find the end of a cell's outputs in the text editor model
+	// This will be used as a starting point for any future outputs
+	private getEndOfOutputs(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
+		let outputsBegin;
+		if (this.activeCellGuid === cellGuid) {
+			outputsBegin = this.outputBeginRange;
+		}
+		if (!outputsBegin || !textEditorModel.textEditorModel.getLineContent(outputsBegin.startLineNumber).trim().includes('output')) {
+			this.updateOutputBeginRange(textEditorModel, cellGuid);
+			outputsBegin = this.outputBeginRange;
+			if (!outputsBegin) {
+				return undefined;
 			}
 		}
-		return true;
+		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
+		if (!outputsEnd || outputsEnd.length < 2) {
+			return undefined;
+		}
+		// single line output [i.e. no outputs exist for a cell]
+		if (outputsBegin.endLineNumber === outputsEnd[1].startLineNumber) {
+			// Adding 1 to startColumn to replace text starting one character after '['
+			return {
+				startColumn: outputsEnd[0].startColumn + 1,
+				startLineNumber: outputsEnd[0].startLineNumber,
+				endColumn: outputsEnd[0].endColumn,
+				endLineNumber: outputsEnd[0].endLineNumber
+			};
+		} else {
+			// Last 2 lines in multi-line output will look like the following:
+			// "                }"
+			// "            ],"
+			if (textEditorModel.textEditorModel.getLineContent(outputsEnd[1].endLineNumber - 1).trim() === '}') {
+				return {
+					startColumn: textEditorModel.textEditorModel.getLineFirstNonWhitespaceColumn(outputsEnd[1].endLineNumber - 1) + 1,
+					startLineNumber: outputsEnd[1].endLineNumber - 1,
+					endColumn: outputsEnd[1].endColumn - 1,
+					endLineNumber: outputsEnd[1].endLineNumber
+				};
+			}
+			return undefined;
+		}
+	}
+
+	// Determine what text needs to be replaced when execution counts are updated
+	private getExecutionCountRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string) {
+		let endOutputRange = this.getEndOfOutputs(textEditorModel, cellGuid);
+		if (endOutputRange && endOutputRange.endLineNumber) {
+			return textEditorModel.textEditorModel.findNextMatch('"execution_count": ', { lineNumber: endOutputRange.endLineNumber, column: endOutputRange.endColumn }, false, true, undefined, true);
+		}
+		return undefined;
+	}
+
+	// Find a cell's location, given its cellGuid
+	// If it doesn't exist (e.g. it's not the active cell), attempt to find it
+	private getCellNodeByGuid(textEditorModel: TextFileEditorModel | UntitledEditorModel, guid: string) {
+		if (this.activeCellGuid !== guid) {
+			this.updateSourceBeginRange(textEditorModel, guid);
+		}
+		return this.sourceBeginRange;
+	}
+
+	private getOutputNodeByGuid(textEditorModel: TextFileEditorModel | UntitledEditorModel, guid: string) {
+		if (this.activeCellGuid !== guid) {
+			this.updateOutputBeginRange(textEditorModel, guid);
+		}
+		return this.outputBeginRange;
 	}
 }
