@@ -87,6 +87,7 @@
   "devDependencies": {
     "7zip": "0.0.6",
     "@types/chart.js": "^2.7.31",
+    "@types/cookie": "^0.3.3",
     "@types/htmlparser2": "^3.7.31",
     "@types/keytar": "^4.4.0",
     "@types/mocha": "2.2.39",
