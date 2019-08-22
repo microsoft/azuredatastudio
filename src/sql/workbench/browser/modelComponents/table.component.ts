@@ -21,7 +21,7 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { CheckboxSelectColumn, ICheckboxCellActionEventArgs, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 
 @Component({
@@ -213,8 +213,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		for (let col in this._checkboxColumns) {
-			this.registerCheckboxPlugin(this._checkboxColumns[col]);
+		for (const col of this._checkboxColumns) {
+			this.registerCheckboxPlugin(col);
 		}
 
 		if (this.ariaRowCount === -1) {
