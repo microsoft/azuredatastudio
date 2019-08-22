@@ -69,7 +69,7 @@ export class CellModel implements ICellModel {
 			this._isTrusted = false;
 		}
 		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
-		this._cellGuid = this._cellGuid ? this.cellGuid : generateUuid();
+		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
 	}
 
@@ -625,7 +625,7 @@ export class CellModel implements ICellModel {
 			if (sourceMultiline.length === 1) {
 				return [source];
 			} else if (sourceMultiline.length === 0) {
-				return source;
+				return [];
 			}
 			// Otherwise, add back all of the newlines here
 			// Note: for Windows machines that require '/r/n',
