@@ -10,13 +10,10 @@
 		"SsmsMin.exe"
 	],
 	"retry": {
-		"enabled": true,
-		"options": {
-			"retries": 15,
-			"factor": 2,
-			"minTimeout": 1000,
-			"maxTimeout": 300000,
-			"randomize": false
-		}
+		"retries": 15,
+		"factor": 2,
+		"minTimeout": 1000,
+		"maxTimeout": 300000,
+		"randomize": false
 	}
 }
