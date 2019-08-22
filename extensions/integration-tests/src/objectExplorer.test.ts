@@ -108,9 +108,18 @@ class ObjectExplorerTester {
 		const node = nodes[index];
 		const actions = await azdata.objectexplorer.getNodeActions(node.connectionId, node.nodePath);
 
+		let containsAll = true;
+		for(const action of expectedActions){
+			if (!containsAll) { return; }
+			if (actions.indexOf(action) < 0) {
+				containsAll = false;
+				break;
+			}
+		}
+
 		const expectedString = expectedActions.join(',');
 		const actualString = actions.join(',');
-		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+		assert(expectedActions.length === actions.length && containsAll, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 
 	async verifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
