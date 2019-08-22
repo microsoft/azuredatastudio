@@ -16,7 +16,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { INotebookModel, IContentManager, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-import { Range, IRange } from 'vs/editor/common/core/range';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { Schemas } from 'vs/base/common/network';
 import { ITextFileService, ISaveOptions, StateChange } from 'vs/workbench/services/textfile/common/textfiles';
@@ -32,9 +31,9 @@ import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/common/model
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
 export class NotebookEditorModel extends EditorModel {
-	private dirty: boolean;
-	private changeEventsHookedUp: boolean = false;
-	private notebookTextFileModel: NotebookTextFileModel = new NotebookTextFileModel();
+	private _dirty: boolean;
+	private _changeEventsHookedUp: boolean = false;
+	private _notebookTextFileModel: NotebookTextFileModel = new NotebookTextFileModel();
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
@@ -47,13 +46,13 @@ export class NotebookEditorModel extends EditorModel {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
 				notebook.modelReady.then((model) => {
-					if (!this.changeEventsHookedUp) {
-						this.changeEventsHookedUp = true;
+					if (!this._changeEventsHookedUp) {
+						this._changeEventsHookedUp = true;
 						this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
 						this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
 						this._register(notebook.model.onActiveCellChanged((cell) => {
 							if (cell) {
-								this.notebookTextFileModel.ActiveCellGuid = cell.cellGuid;
+								this._notebookTextFileModel.activeCellGuid = cell.cellGuid;
 							}
 						}));
 					}
@@ -71,7 +70,7 @@ export class NotebookEditorModel extends EditorModel {
 				}
 			}));
 		}
-		this.dirty = this.textEditorModel.isDirty();
+		this._dirty = this.textEditorModel.isDirty();
 	}
 
 	public get contentString(): string {
@@ -88,10 +87,10 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public setDirty(dirty: boolean): void {
-		if (this.dirty === dirty) {
+		if (this._dirty === dirty) {
 			return;
 		}
-		this.dirty = dirty;
+		this._dirty = dirty;
 		this._onDidChangeDirty.fire();
 	}
 
@@ -127,19 +126,19 @@ export class NotebookEditorModel extends EditorModel {
 			if (notebookModel && this.textEditorModel && this.textEditorModel.textEditorModel) {
 				if (contentChange && contentChange.cells && contentChange.cells[0]) {
 					if (type === NotebookChangeType.CellSourceUpdated) {
-						if (this.notebookTextFileModel.transformAndApplyEditForSourceUpdate(contentChange, this.textEditorModel)) {
+						if (this._notebookTextFileModel.transformAndApplyEditForSourceUpdate(contentChange, this.textEditorModel)) {
 							editAppliedSuccessfully = true;
 						}
 					} else if (type === NotebookChangeType.CellOutputUpdated) {
-						if (this.notebookTextFileModel.transformAndApplyEditForOutputUpdate(contentChange, this.textEditorModel)) {
+						if (this._notebookTextFileModel.transformAndApplyEditForOutputUpdate(contentChange, this.textEditorModel)) {
 							editAppliedSuccessfully = true;
 						}
 					} else if (type === NotebookChangeType.CellOutputCleared) {
-						if (this.notebookTextFileModel.transformAndApplyEditForClearOutput(contentChange, this.textEditorModel)) {
+						if (this._notebookTextFileModel.transformAndApplyEditForClearOutput(contentChange, this.textEditorModel)) {
 							editAppliedSuccessfully = true;
 						}
 					} else if (type === NotebookChangeType.CellExecuted) {
-						if (this.notebookTextFileModel.transformAndApplyEditForCellUpdated(contentChange, this.textEditorModel)) {
+						if (this._notebookTextFileModel.transformAndApplyEditForCellUpdated(contentChange, this.textEditorModel)) {
 							editAppliedSuccessfully = true;
 						}
 					}
@@ -155,7 +154,7 @@ export class NotebookEditorModel extends EditorModel {
 	}
 
 	public replaceEntireTextEditorModel(notebookModel: INotebookModel, type: NotebookChangeType) {
-		this.notebookTextFileModel.replaceEntireTextEditorModel(notebookModel, type, this.textEditorModel);
+		this._notebookTextFileModel.replaceEntireTextEditorModel(notebookModel, type, this.textEditorModel);
 	}
 
 	private sendNotebookSerializationStateChange(): void {
