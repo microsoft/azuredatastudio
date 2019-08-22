@@ -1146,6 +1146,20 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('title', v);
 	}
 
+	public get ariaRowCount(): number {
+		return this.properties['ariaRowCount'];
+	}
+	public set ariaRowCount(v: number) {
+		this.setProperty('ariaRowCount', v);
+	}
+
+	public get ariaColumnCount(): number {
+		return this.properties['ariaColumnCount'];
+	}
+	public set ariaColumnCount(v: number) {
+		this.setProperty('ariaColumnCount', v);
+	}
+
 	public get moveFocusOutWithTab(): boolean {
 		return this.properties['moveFocusOutWithTab'];
 	}
@@ -1315,6 +1329,13 @@ class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
 	}
 	public set title(v: string) {
 		this.setProperty('title', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {
