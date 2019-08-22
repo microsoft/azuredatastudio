@@ -74,13 +74,13 @@ export class TreeUpdateUtils {
 			treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService, providers);
 		}
 		const previousTreeInput: any = tree.getInput();
-		return tree.setInput(treeInput).then(async () => {
+		return tree.setInput(treeInput).then(() => {
 			if (previousTreeInput instanceof Disposable) {
 				previousTreeInput.dispose();
 			}
 			// Make sure to expand all folders that where expanded in the previous session
 			if (targetsToExpand) {
-				await tree.expandAll(targetsToExpand);
+				tree.expandAll(targetsToExpand);
 			}
 			if (selectedElement) {
 				tree.select(selectedElement);
@@ -118,10 +118,10 @@ export class TreeUpdateUtils {
 		let treeInput = TreeUpdateUtils.getTreeInput(connectionManagementService);
 		if (treeInput) {
 			if (treeInput !== tree.getInput()) {
-				return tree.setInput(treeInput).then(async () => {
+				return tree.setInput(treeInput).then(() => {
 					// Make sure to expand all folders that where expanded in the previous session
 					if (targetsToExpand) {
-						await tree.expandAll(targetsToExpand);
+						tree.expandAll(targetsToExpand);
 					}
 					if (selectedElement) {
 						tree.select(selectedElement);

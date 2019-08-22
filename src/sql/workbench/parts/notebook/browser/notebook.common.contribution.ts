@@ -8,7 +8,7 @@ import { SyncDescriptor } from 'vs/platform/instantiation/common/descriptors';
 import { IWorkbenchActionRegistry, Extensions } from 'vs/workbench/common/actions';
 import { SyncActionDescriptor, registerAction, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { KeyMod } from 'vs/editor/common/standalone/standaloneBase';

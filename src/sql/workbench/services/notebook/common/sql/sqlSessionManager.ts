@@ -556,10 +556,10 @@ export class SQLFuture extends Disposable implements FutureInternal {
 			}
 			htmlString += '</tr>';
 		}
-		for (let row in d.resultSubset.rows) {
+		for (const row of d.resultSubset.rows) {
 			htmlString += '<tr>';
-			for (let column in columns) {
-				htmlString += '<td>' + escape(d.resultSubset.rows[row][column].displayValue) + '</td>';
+			for (let i = 0; i <= columns.length; i++) {
+				htmlString += '<td>' + escape(row[i].displayValue) + '</td>';
 			}
 			htmlString += '</tr>';
 		}

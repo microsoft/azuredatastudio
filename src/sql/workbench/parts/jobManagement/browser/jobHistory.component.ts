@@ -14,7 +14,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import {
 	JobHistoryController, JobHistoryDataSource,

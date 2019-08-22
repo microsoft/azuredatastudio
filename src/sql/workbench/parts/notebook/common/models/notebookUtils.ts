@@ -18,11 +18,6 @@ export function isStream(output: nb.ICellOutput): output is nb.IStreamResult {
 	return output.output_type === 'stream';
 }
 
-export function getUserHome(): string {
-	return process.env.HOME || process.env.USERPROFILE;
-}
-
-
 export function getProvidersForFileName(fileName: string, notebookService: INotebookService): string[] {
 	let fileExt = path.extname(fileName);
 	let providers: string[];
