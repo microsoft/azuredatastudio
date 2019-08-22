@@ -6,12 +6,14 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { IconPath } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { EndpointModel, BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
+import { getHealthStatusDot, getServiceNameDisplayText } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
@@ -65,7 +67,24 @@ export class BdcDashboard {
 
 			refreshButton.onDidClick(() => this.model.refresh());
 
-			const toolbarContainer = modelView.modelBuilder.toolbarContainer().withToolbarItems([{ component: refreshButton }]).component();
+			const openTroubleshootNotebook = modelView.modelBuilder.button()
+				.withProperties({
+					label: localize('bdc.dashboard.troubleshootButton', "Troubleshoot"),
+					iconPath: IconPath.notebook,
+					height: '50'
+				}).component();
+
+			openTroubleshootNotebook.onDidClick(() => {
+				vscode.commands.executeCommand('mssqlCluster.task.openNotebook');
+			});
+
+			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
+				.withToolbarItems(
+					[
+						{ component: refreshButton },
+						{ component: openTroubleshootNotebook }
+					]
+				).component();
 
 			rootContainer.addItem(toolbarContainer, { flex: '0 0 auto' });
 
@@ -143,7 +162,7 @@ export class BdcDashboard {
 		if (this.initialized && !this.serviceTabsCreated && services) {
 			// Add a nav item for each service
 			services.forEach(s => {
-				const navItem = createServiceNavTab(this.modelView.modelBuilder, getFriendlyServiceName(s.serviceName));
+				const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
 				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
 				navItem.onDidClick(() => {
 					this.mainAreaContainer.removeItem(this.currentPage);
@@ -157,28 +176,11 @@ export class BdcDashboard {
 	}
 }
 
-function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceName: string): azdata.DivContainer {
-	const navItem = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).component();
-	navItem.addItem(modelBuilder.text().withProperties({ value: serviceName }).component(), { CSSStyles: { 'user-select': 'text' } });
-	return navItem;
-}
-
-function getFriendlyServiceName(serviceName: string): string {
-	serviceName = serviceName || '';
-	switch (serviceName.toLowerCase()) {
-		case 'sql':
-			return localize('bdc.dashboard.sql', "SQL Server");
-		case 'hdfs':
-			return localize('bdc.dashboard.hdfs', "HDFS");
-		case 'spark':
-			return localize('bdc.dashboard.spark', "Spark");
-		case 'control':
-			return localize('bdc.dashboard.control', "Control");
-		case 'gateway':
-			return localize('bdc.dashboard.gateway', "Gateway");
-		case 'app':
-			return localize('bdc.dashboard.app', "App");
-		default:
-			return serviceName;
-	}
+function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): azdata.DivContainer {
+	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).component();
+	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
+	innerContainer.addItem(modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component(), { flex: '0 0 auto' });
+	innerContainer.addItem(modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component(), { flex: '0 0 auto' });
+	div.addItem(innerContainer);
+	return div;
 }

@@ -25,6 +25,9 @@ export class IconPath {
 	public static sqlMasterNode: { dark: string, light: string };
 	public static copy: { dark: string, light: string };
 	public static refresh: { dark: string, light: string };
+	public static status_ok: { dark: string, light: string };
+	public static status_warning: { dark: string, light: string };
+	public static notebook: { dark: string, light: string };
 
 	public static setExtensionContext(extensionContext: vscode.ExtensionContext) {
 		IconPath.extensionContext = extensionContext;
@@ -47,6 +50,18 @@ export class IconPath {
 		IconPath.refresh = {
 			light: IconPath.extensionContext.asAbsolutePath('resources/light/refresh.svg'),
 			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/refresh_inverse.svg')
+		};
+		IconPath.status_ok = {
+			light: IconPath.extensionContext.asAbsolutePath('resources/light/status_ok_light.svg'),
+			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/status_ok_dark.svg')
+		};
+		IconPath.status_warning = {
+			light: IconPath.extensionContext.asAbsolutePath('resources/light/status_warning_light.svg'),
+			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/status_warning_dark.svg')
+		};
+		IconPath.notebook = {
+			light: IconPath.extensionContext.asAbsolutePath('resources/light/notebook.svg'),
+			dark: IconPath.extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
 		};
 	}
 }
