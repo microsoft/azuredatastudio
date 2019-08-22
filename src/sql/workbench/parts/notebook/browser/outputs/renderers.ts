@@ -478,10 +478,15 @@ namespace Private {
 		let anchors = node.getElementsByTagName('a');
 		for (let i = 0; i < anchors.length; i++) {
 			let path = anchors[i].href || '';
-			const isLocal =
-				resolver && resolver.isLocal
+			let isLocal: boolean;
+			if (path.length > 0) {
+				isLocal = resolver && resolver.isLocal
 					? resolver.isLocal(path)
 					: URLExt.isLocal(path);
+			} else {
+				// Empty string, so default to local
+				isLocal = true;
+			}
 			if (isLocal) {
 				anchors[i].target = '_self';
 			} else {
@@ -568,9 +573,15 @@ namespace Private {
 		resolver: IRenderMime.IResolver
 	): Promise<void> {
 		let source = node.getAttribute(name) || '';
-		const isLocal = resolver.isLocal
-			? resolver.isLocal(source)
-			: URLExt.isLocal(source);
+		let isLocal: boolean;
+		if (source.length > 0) {
+			isLocal = resolver.isLocal
+				? resolver.isLocal(source)
+				: URLExt.isLocal(source);
+		} else {
+			// Empty string, so default to local
+			isLocal = true;
+		}
 		if (!source || !isLocal) {
 			return Promise.resolve(undefined);
 		}
@@ -607,9 +618,15 @@ namespace Private {
 		// Get the link path without the location prepended.
 		// (e.g. "./foo.md#Header 1" vs "http://localhost:8888/foo.md#Header 1")
 		let href = anchor.getAttribute('href') || '';
-		const isLocal = resolver.isLocal
-			? resolver.isLocal(href)
-			: URLExt.isLocal(href);
+		let isLocal: boolean;
+		if (href.length > 0) {
+			isLocal = resolver.isLocal
+				? resolver.isLocal(href)
+				: URLExt.isLocal(href);
+		} else {
+			// Empty string, so default to local
+			isLocal = true;
+		}
 		// Bail if it is not a file-like url.
 		if (!href || !isLocal) {
 			return Promise.resolve(undefined);
