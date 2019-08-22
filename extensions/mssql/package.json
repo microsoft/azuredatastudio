@@ -407,7 +407,7 @@
               "name": "%title.endpoints%",
               "row": 1,
               "col": 0,
-              "rowspan": 1.5,
+              "rowspan": 2.5,
               "colspan": 2,
               "widget": {
                 "modelview": {

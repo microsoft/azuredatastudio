@@ -2955,6 +2955,7 @@ declare module 'azdata' {
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
 		ariaLabel?: string;
+		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
 		required?: boolean;
@@ -3008,6 +3009,7 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
+		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -3035,6 +3037,7 @@ declare module 'azdata' {
 		label?: string;
 		value?: string;
 		checked?: boolean;
+		focused?: boolean;
 	}
 
 	export interface TextComponentProperties {
