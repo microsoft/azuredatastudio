@@ -37,7 +37,7 @@ export class NotebookTextFileModel {
 		let cellGuidRange = this.getCellNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid);
 
 		// convert the range to leverage offsets in the json
-		if (contentChange && contentChange.modelContentChangedEvent && this.areRangePropertiesPopulated(cellGuidRange)) {
+		if (contentChange && contentChange.modelContentChangedEvent && areRangePropertiesPopulated(cellGuidRange)) {
 			contentChange.modelContentChangedEvent.changes.forEach(change => {
 				let convertedRange: IRange = {
 					startLineNumber: change.range.startLineNumber + cellGuidRange.startLineNumber - 1,
@@ -137,17 +137,6 @@ export class NotebookTextFileModel {
 		}]);
 	}
 
-	private areRangePropertiesPopulated(range: Range) {
-		return range && range.startLineNumber && range.startColumn && range.endLineNumber && range.endColumn;
-	}
-
-	private findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): FindMatch[] {
-		if (!textEditorModel || !cellGuid) {
-			return undefined;
-		}
-		return textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
-	}
-
 	// Find the beginning of a cell's source in the text editor model
 	private updateSourceBeginRange(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): void {
 		if (!cellGuid) {
@@ -155,7 +144,7 @@ export class NotebookTextFileModel {
 		}
 		this._sourceBeginRange = undefined;
 
-		let cellGuidMatches = this.findOrSetCellGuidMatch(textEditorModel, cellGuid);
+		let cellGuidMatches = findOrSetCellGuidMatch(textEditorModel, cellGuid);
 		if (cellGuidMatches && cellGuidMatches.length > 0) {
 			let sourceBefore = textEditorModel.textEditorModel.findPreviousMatch('"source": [', { lineNumber: cellGuidMatches[0].range.startLineNumber, column: cellGuidMatches[0].range.startColumn }, false, true, undefined, true);
 			if (!sourceBefore || !sourceBefore.range) {
@@ -175,7 +164,7 @@ export class NotebookTextFileModel {
 		}
 		this._outputBeginRange = undefined;
 
-		let cellGuidMatches = this.findOrSetCellGuidMatch(textEditorModel, cellGuid);
+		let cellGuidMatches = findOrSetCellGuidMatch(textEditorModel, cellGuid);
 		if (cellGuidMatches && cellGuidMatches.length > 0) {
 			let outputsBegin = textEditorModel.textEditorModel.findNextMatch('"outputs": [', { lineNumber: cellGuidMatches[0].range.endLineNumber, column: cellGuidMatches[0].range.endColumn }, false, true, undefined, true);
 			if (!outputsBegin || !outputsBegin.range) {
@@ -254,4 +243,16 @@ export class NotebookTextFileModel {
 		}
 		return this._outputBeginRange;
 	}
+
+}
+
+function areRangePropertiesPopulated(range: Range) {
+	return range && range.startLineNumber && range.startColumn && range.endLineNumber && range.endColumn;
+}
+
+function findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel, cellGuid: string): FindMatch[] {
+	if (!textEditorModel || !cellGuid) {
+		return undefined;
+	}
+	return textEditorModel.textEditorModel.findMatches(cellGuid, false, false, true, undefined, true);
 }
