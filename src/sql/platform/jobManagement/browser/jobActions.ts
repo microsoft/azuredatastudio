@@ -580,16 +580,10 @@ export class NewNotebookJobAction extends Action {
 		super(NewNotebookJobAction.ID, NewNotebookJobAction.LABEL, 'newStepIcon');
 	}
 
-	public run(context: IJobActionInfo): Promise<boolean> {
+	public async run(context: IJobActionInfo): Promise<boolean> {
 		let component = context.component as NotebooksViewComponent;
-		return new Promise<boolean>(async (resolve, reject) => {
-			try {
-				await component.openCreateNotebookDialog();
-				resolve(true);
-			} catch (e) {
-				reject(e);
-			}
-		});
+		await component.openCreateNotebookDialog();
+		return true;
 	}
 }
 

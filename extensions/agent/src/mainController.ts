@@ -20,6 +20,7 @@ import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 import { JobData } from './data/jobData';
 import { AgentUtils } from './agentUtils';
 import { NotebookDialog } from './dialogs/notebookDialog';
+import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -99,13 +100,12 @@ export class MainController {
 		});
 		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string) => {
 			const tempfilePath = path.join(os.tmpdir(), filename + '.ipynb');
-			if (fs.existsSync(tempfilePath)) {
-				fs.unlinkSync(tempfilePath);
+
+			if (await promisify(fs.exists)(tempfilePath)) {
+				await promisify(fs.unlink)(tempfilePath);
 			}
-			fs.writeFile(tempfilePath, jsonNotebook, function (err) {
-				if (err) {
-					return console.log(err);
-				}
+			try {
+				await promisify(fs.writeFile)(tempfilePath, jsonNotebook);
 				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
 				vscode.workspace.openTextDocument(tempfilePath).then((document) => {
 					let initialContent = document.getText();
@@ -115,8 +115,10 @@ export class MainController {
 						initialDirtyState: false
 					});
 				});
-			});
-			//await azdata.nb.showNotebookDocument(uri);
+			}
+			catch (e) {
+				console.log(e);
+			}
 		});
 		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo) => {
 			if (!this.notebookDialog || (this.notebookDialog && !this.notebookDialog.isOpen)) {

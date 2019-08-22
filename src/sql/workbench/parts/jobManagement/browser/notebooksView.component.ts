@@ -186,7 +186,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		jQuery(this._gridEl.nativeElement).empty();
 		jQuery(this.actionBarContainer.nativeElement).empty();
 		this.initActionBar();
-		this._table = new Table(this._gridEl.nativeElement, { columns }, options);
+		this._table = this._register(new Table(this._gridEl.nativeElement, { columns }, options));
 		this._table.grid.setData(this.dataView, true);
 		this._table.grid.onClick.subscribe((e, args) => {
 			let notebook = self.getNotebook(args);
@@ -211,10 +211,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 					self.notebooks = result.notebooks;
 					self._notebookCacheObject.notebooks = self.notebooks;
 					self.onNotebooksAvailable(result.notebooks);
-				} else {
-					// TODO: handle error
 				}
-
 				this._showProgressWheel = false;
 				if (this.isVisible) {
 					this._cd.detectChanges();

@@ -218,11 +218,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		}
 		return false;
 	}
-	// let sortedRows = jobHistoryRows.sort((row1, row2) => {
-	// 	let date1 = new Date(row1.runDate).getTime();
-	// 	let date2 = new Date(row2.runDate).getTime();
-	// 	return date2 - date1;
-	// });
 
 	private toggleCollapse(): void {
 		let arrow: HTMLElement = jQuery('.resultsViewCollapsible').get(0);
