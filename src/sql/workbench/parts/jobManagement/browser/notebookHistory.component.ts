@@ -14,18 +14,12 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, EditJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
-import {
-	JobHistoryController, JobHistoryDataSource,
-	JobHistoryRenderer, JobHistoryFilter, JobHistoryModel, JobHistoryRow
-} from 'sql/workbench/parts/jobManagement/browser/jobHistoryTree';
+import { JobHistoryRow } from 'sql/workbench/parts/jobManagement/browser/jobHistoryTree';
 import { JobStepsViewRow } from 'sql/workbench/parts/jobManagement/browser/jobStepsViewTree';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { ScrollbarVisibility } from 'vs/base/common/scrollable';
 import { IAction } from 'vs/base/common/actions';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
@@ -35,10 +29,7 @@ import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardServi
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { View } from 'vs/editor/browser/view/viewImpl';
-import { themeColorFromId } from 'vs/platform/theme/common/themeService';
-import { QuickInputService } from 'vs/workbench/browser/parts/quickinput/quickInput';
-import { IQuickInput, IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
+import { IQuickInputService } from 'vs/platform/quickinput/common/quickInput';
 
 export const DASHBOARD_SELECTOR: string = 'notebookhistory-component';
 export class GridSection {
