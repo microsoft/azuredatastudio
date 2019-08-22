@@ -2970,6 +2970,7 @@ declare module 'azdata' {
 		label?: string;
 		value?: string;
 		checked?: boolean;
+		focused?: boolean;
 	}
 
 	export interface TextComponentProperties {
