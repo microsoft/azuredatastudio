@@ -1,5 +1,5 @@
 {
-	"downloadUrl": "https://sqlopsextensions1.blob.core.windows.net/tools/ssmsmin/{#version#}/{#fileName#}",
+	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/tools/ssmsmin/{#version#}/{#fileName#}",
 	"version": "15.0.18124.0",
 	"downloadFileNames": {
 		"Windows_64": "SsmsMin-15.0.18124.0-win-x64.zip",
