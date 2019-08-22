@@ -138,7 +138,7 @@ import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthSer
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
 import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
+import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';

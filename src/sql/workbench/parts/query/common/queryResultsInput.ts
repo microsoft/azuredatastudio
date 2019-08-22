@@ -5,7 +5,6 @@
 
 import { localize } from 'vs/nls';
 import { EditorInput } from 'vs/workbench/common/editor';
-import { Emitter } from 'vs/base/common/event';
 
 import { TopOperationsState } from 'sql/workbench/parts/queryPlan/common/topOperationsState';
 import { ChartState } from 'sql/workbench/parts/charts/common/interfaces';
@@ -15,15 +14,15 @@ import { GridPanelState } from 'sql/workbench/parts/query/common/gridPanelState'
 import { QueryModelViewState } from 'sql/workbench/parts/query/common/modelViewTab/modelViewState';
 
 export class ResultsViewState {
-	public gridPanelState: GridPanelState = new GridPanelState();
-	public messagePanelState: MessagePanelState = new MessagePanelState();
-	public chartState: ChartState = new ChartState();
-	public queryPlanState: QueryPlanState = new QueryPlanState();
-	public topOperationsState = new TopOperationsState();
-	public dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
+	public readonly gridPanelState: GridPanelState = new GridPanelState();
+	public readonly messagePanelState: MessagePanelState = new MessagePanelState();
+	public readonly chartState: ChartState = new ChartState();
+	public readonly queryPlanState: QueryPlanState = new QueryPlanState();
+	public readonly topOperationsState = new TopOperationsState();
+	public readonly dynamicModelViewTabsState: Map<string, QueryModelViewState> = new Map<string, QueryModelViewState>();
 
 	public activeTab: string;
-	public visibleTabs: Set<string> = new Set<string>();
+	public readonly visibleTabs: Set<string> = new Set<string>();
 
 	dispose() {
 		this.gridPanelState.dispose();
@@ -43,19 +42,6 @@ export class ResultsViewState {
  */
 export class QueryResultsInput extends EditorInput {
 
-	// Tracks if the editor that holds this input should be visible (i.e. true if a query has been run)
-	private _visible: boolean;
-
-	// Tracks if the editor has holds this input has has bootstrapped angular yet
-	private _hasBootstrapped: boolean;
-
-	// Holds the HTML content for the editor when the editor discards this input and loads another
-	private _editorContainer: HTMLElement;
-	public css: HTMLStyleElement;
-
-	public readonly onRestoreViewStateEmitter = new Emitter<void>();
-	public readonly onSaveViewStateEmitter = new Emitter<void>();
-
 	private _state = new ResultsViewState();
 
 	public get state(): ResultsViewState {
@@ -64,8 +50,6 @@ export class QueryResultsInput extends EditorInput {
 
 	constructor(private _uri: string) {
 		super();
-		this._visible = false;
-		this._hasBootstrapped = false;
 	}
 
 	close() {
@@ -98,25 +82,8 @@ export class QueryResultsInput extends EditorInput {
 		return false;
 	}
 
-	public setBootstrappedTrue(): void {
-		this._hasBootstrapped = true;
-	}
-
 	public dispose(): void {
-		this._disposeContainer();
 		super.dispose();
-	}
-
-	private _disposeContainer() {
-		if (!this._editorContainer) {
-			return;
-		}
-
-		let parentContainer = this._editorContainer.parentNode;
-		if (parentContainer) {
-			parentContainer.removeChild(this._editorContainer);
-			this._editorContainer = null;
-		}
 	}
 
 	//// Properties
@@ -125,29 +92,7 @@ export class QueryResultsInput extends EditorInput {
 		return 'workbench.query.queryResultsInput';
 	}
 
-	set container(container: HTMLElement) {
-		this._disposeContainer();
-		this._editorContainer = container;
-	}
-
-	get container(): HTMLElement {
-		return this._editorContainer;
-	}
-
-	get hasBootstrapped(): boolean {
-		return this._hasBootstrapped;
-	}
-
-	get visible(): boolean {
-		return this._visible;
-	}
-
-	set visible(visible: boolean) {
-		this._visible = visible;
-	}
-
 	get uri(): string {
 		return this._uri;
 	}
-
 }

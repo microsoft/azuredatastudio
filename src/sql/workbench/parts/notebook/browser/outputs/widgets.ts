@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as renderers from './renderers';
-import { IRenderMime } from '../../common/models/renderMimeInterfaces';
+import { IRenderMime } from '../models/renderMimeInterfaces';
 import { ReadonlyJSONObject } from '../../common/models/jsonext';
 import * as tableRenderers from 'sql/workbench/parts/notebook/browser/outputs/tableRenderers';
 
