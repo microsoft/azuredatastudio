@@ -23,7 +23,7 @@ import { localize } from 'vs/nls';
 import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { Range, IRange } from 'vs/editor/common/core/range';
-import { IModelDecoration } from 'vs/editor/common/model';
+import { IModelDecoration, FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -413,13 +413,15 @@ export interface INotebookModel {
 
 	getFindIndex(): number;
 
-	findNext(): Thenable<NotebookFindPosition>;
+	findNext(): Thenable<NotebookRange>;
 
-	findPrevious(): Thenable<NotebookFindPosition>;
+	findPrevious(): Thenable<NotebookRange>;
 
-	find(exp: string, maxMatches?: number): Promise<NotebookFindPosition>;
+	find(exp: string, maxMatches?: number): Promise<NotebookRange>;
 
 	clearFind(): void;
+
+	findArray: NotebookRange[];
 
 	/**
 	 * Get the range associated with a decoration.
@@ -438,6 +440,7 @@ export interface INotebookModel {
 	 */
 	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[];
 
+	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null;
 	/**
 	 * Get the maximum legal column for line at `lineNumber`
 	 */
@@ -448,14 +451,27 @@ export interface INotebookModel {
 	 */
 	getLineCount(): number;
 
+	findMatches: FindMatch[];
+
 	onFindCountChange: Event<number>;
+
 }
 
-export interface NotebookFindPosition {
+export class NotebookRange extends Range {
 	cell: ICellModel;
-	lineNumber: number;
-	startColumnNumber: number;
-	endColumnNumber: number;
+
+	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
+		super(startLineNumber, startColumn, endLineNumber, endColumn);
+		this.cell = cell;
+	}
+}
+
+export interface NotebookPosition {
+	readonly cell: ICellModel;
+	readonly lineNumber: number;
+	readonly startColumnNumber: number;
+	readonly endColumnNumber: number;
+
 }
 
 export interface NotebookContentChange {

@@ -25,15 +25,18 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/note
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, NotebookFindPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookModel, NotebookPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorVisibleContext } from 'sql/workbench/services/notebook/common/notebookContext';
-import { IDisposable } from 'vs/base/common/lifecycle';
-import { IModelDecorationsChangeAccessor, IModelDeltaDecoration } from 'vs/editor/common/model';
+import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, FindMatch } from 'vs/editor/common/model';
 import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
+import { Range } from 'vs/editor/common/core/range';
+import { TimeoutTimer } from 'vs/base/common/async';
+
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public static ID: string = 'workbench.editor.notebookEditor';
@@ -47,8 +50,11 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 	private _notebookModel: INotebookModel;
 	private _findCountChangeListener: IDisposable;
-	private _findPosition: NotebookFindPosition;
+	private _findPosition: NotebookPosition;
 	private readonly _decorations: FindDecorations;
+	private readonly _toDispose = new DisposableStore();
+	private _isDisposed: boolean;
+	private readonly _startSearchingTimer: TimeoutTimer;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -61,21 +67,35 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
+		this._isDisposed = false;
+		this._startSearchingTimer = new TimeoutTimer();
 		this._decorations = new FindDecorations(this);
+		this._toDispose.add(this._decorations);
+		this._decorations.setStartPosition(this.getPosition());
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
 		this._actionMap[ACTION_IDS.FIND_PREVIOUS] = this._instantiationService.createInstance(NotebookFindPrevious, this);
+	}
+
+	public dispose(): void {
+		this._isDisposed = true;
+		dispose(this._startSearchingTimer);
+		this._toDispose.dispose();
 	}
 
 	public get notebookInput(): NotebookInput {
 		return this.input as NotebookInput;
 	}
 
-	public getPosition(): NotebookFindPosition {
+	public getPosition(): NotebookPosition {
 		return this._findPosition;
 	}
 
 	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
-		return undefined;
+		if (!this._notebookModel) {
+			// callback will not be called
+			return null;
+		}
+		return this._notebookModel.changeDecorations(callback, undefined);
 	}
 
 	public deltaDecorations(oldDecorations: string[], newDecorations: IModelDeltaDecoration[]): string[] {
@@ -222,13 +242,25 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		if (e.searchString) {
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
+					let findScope = this._decorations.getFindScope();
+					if (findScope !== null) {
+						if (findScope.startLineNumber !== findScope.endLineNumber) {
+							if (findScope.endColumn === 1) {
+								findScope = new Range(findScope.startLineNumber, 1, findScope.endLineNumber - 1, this._notebookModel.getLineMaxColumn(findScope.endLineNumber - 1));
+							} else {
+								// multiline find scope => expand to line starts / ends
+								findScope = new Range(findScope.startLineNumber, 1, findScope.endLineNumber, this._notebookModel.getLineMaxColumn(findScope.endLineNumber));
+							}
+						}
+					}
 					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
 						if (p) {
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
-							this._findPosition = p;
+							// this._findPosition = p;
 						}
 					});
+					this._decorations.set(this._notebookModel.findMatches, findScope);
 				} else {
 					this._notebookModel.clearFind();
 				}
@@ -252,14 +284,14 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
 			this._updateFinderMatchState();
-			this._findPosition = p;
+			// this._findPosition = p;
 		}, er => { });
 	}
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
 			this._updateFinderMatchState();
-			this._findPosition = p;
+			// this._findPosition = p;
 		}, er => { });
 	}
 

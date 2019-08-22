@@ -5,7 +5,7 @@
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
-import { NotebookFindPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookRange, NotebookPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Range } from 'vs/editor/common/core/range';
 import { FindMatch, IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
@@ -20,7 +20,7 @@ export class FindDecorations implements IDisposable {
 	private _findScopeDecorationId: string | null;
 	private _rangeHighlightDecorationId: string | null;
 	private _highlightedDecorationId: string | null;
-	private _startPosition: NotebookFindPosition;
+	private _startPosition: NotebookPosition;
 
 	constructor(editor: NotebookEditor) {
 		this._editor = editor;
@@ -54,18 +54,18 @@ export class FindDecorations implements IDisposable {
 		return this._decorations.length;
 	}
 
-	public async getFindScope(): Promise<Range | null> {
+	public getFindScope(): Range | null {
 		if (this._findScopeDecorationId) {
 			return this._editor.getNotebookModel().getDecorationRange(this._findScopeDecorationId);
 		}
 		return null;
 	}
 
-	public getStartPosition(): NotebookFindPosition {
+	public getStartPosition(): NotebookPosition {
 		return this._startPosition;
 	}
 
-	public setStartPosition(newStartPosition: NotebookFindPosition): void {
+	public setStartPosition(newStartPosition: NotebookPosition): void {
 		this._startPosition = newStartPosition;
 		this.setCurrentFindMatch(null);
 	}
@@ -204,7 +204,7 @@ export class FindDecorations implements IDisposable {
 		});
 	}
 
-	public matchBeforePosition(position: NotebookFindPosition): Range | null {
+	public matchBeforePosition(position: NotebookPosition): Range | null {
 		if (this._decorations.length === 0) {
 			return null;
 		}
@@ -226,7 +226,7 @@ export class FindDecorations implements IDisposable {
 		return this._editor.getNotebookModel().getDecorationRange(this._decorations[this._decorations.length - 1]);
 	}
 
-	public matchAfterPosition(position: NotebookFindPosition): Range | null {
+	public matchAfterPosition(position: NotebookPosition): Range | null {
 		if (this._decorations.length === 0) {
 			return null;
 		}

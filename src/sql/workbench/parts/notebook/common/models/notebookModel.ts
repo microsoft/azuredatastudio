@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
 
-import { NotebookFindPosition, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookRange, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, NotebookPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/parts/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
@@ -25,10 +25,16 @@ import { uriPrefixes } from 'sql/platform/connection/common/utils';
 import { keys } from 'vs/base/common/map';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { getErrorMessage } from 'vs/base/common/errors';
+import { getErrorMessage, onUnexpectedError } from 'vs/base/common/errors';
 import * as types from 'vs/base/common/types';
 import { Range, IRange } from 'vs/editor/common/core/range';
-import { IModelDecoration } from 'vs/editor/common/model';
+import * as model from 'vs/editor/common/model';
+import { IntervalNode } from 'vs/editor/common/model/intervalTree';
+import { DecorationsTrees, DidChangeDecorationsEmitter, ModelDecorationOptions } from 'vs/editor/common/model/textModel';
+import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { PieceTreeTextBufferBuilder } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
+import { VSBufferReadableStream, VSBuffer } from 'vs/base/common/buffer';
+import { CharCode } from 'vs/base/common/charCode';
 
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
@@ -43,6 +49,105 @@ export enum MessageLevel {
 export class ErrorInfo {
 	constructor(public readonly message: string, public readonly severity: MessageLevel) {
 	}
+}
+
+let MODEL_ID = 0;
+
+/**
+ * Produces 'a'-'z', followed by 'A'-'Z'... followed by 'a'-'z', etc.
+ */
+function singleLetter(result: number): string {
+	const LETTERS_CNT = (CharCode.Z - CharCode.A + 1);
+
+	result = result % (2 * LETTERS_CNT);
+
+	if (result < LETTERS_CNT) {
+		return String.fromCharCode(CharCode.a + result);
+	}
+
+	return String.fromCharCode(CharCode.A + result - LETTERS_CNT);
+}
+
+const invalidFunc = () => { throw new Error(`Invalid change accessor`); };
+
+function _normalizeOptions(options: model.IModelDecorationOptions): ModelDecorationOptions {
+	if (options instanceof ModelDecorationOptions) {
+		return options;
+	}
+	return ModelDecorationOptions.createDynamic(options);
+}
+
+function createTextBufferBuilder() {
+	return new PieceTreeTextBufferBuilder();
+}
+
+export function createTextBufferFactory(text: string): model.ITextBufferFactory {
+	const builder = createTextBufferBuilder();
+	builder.acceptChunk(text);
+	return builder.finish();
+}
+
+interface ITextStream {
+	on(event: 'data', callback: (data: string) => void): void;
+	on(event: 'error', callback: (err: Error) => void): void;
+	on(event: 'end', callback: () => void): void;
+	on(event: string, callback: any): void;
+}
+
+export function createTextBufferFactoryFromStream(stream: ITextStream, filter?: (chunk: string) => string, validator?: (chunk: string) => Error | undefined): Promise<model.ITextBufferFactory>;
+export function createTextBufferFactoryFromStream(stream: VSBufferReadableStream, filter?: (chunk: VSBuffer) => VSBuffer, validator?: (chunk: VSBuffer) => Error | undefined): Promise<model.ITextBufferFactory>;
+export function createTextBufferFactoryFromStream(stream: ITextStream | VSBufferReadableStream, filter?: (chunk: any) => string | VSBuffer, validator?: (chunk: any) => Error | undefined): Promise<model.ITextBufferFactory> {
+	return new Promise<model.ITextBufferFactory>((resolve, reject) => {
+		const builder = createTextBufferBuilder();
+
+		let done = false;
+
+		stream.on('data', (chunk: string | VSBuffer) => {
+			if (validator) {
+				const error = validator(chunk);
+				if (error) {
+					done = true;
+					reject(error);
+				}
+			}
+
+			if (filter) {
+				chunk = filter(chunk);
+			}
+
+			builder.acceptChunk((typeof chunk === 'string') ? chunk : chunk.toString());
+		});
+
+		stream.on('error', (error) => {
+			if (!done) {
+				done = true;
+				reject(error);
+			}
+		});
+
+		stream.on('end', () => {
+			if (!done) {
+				done = true;
+				resolve(builder.finish());
+			}
+		});
+	});
+}
+
+export function createTextBufferFactoryFromSnapshot(snapshot: model.ITextSnapshot): model.ITextBufferFactory {
+	let builder = createTextBufferBuilder();
+
+	let chunk: string | null;
+	while (typeof (chunk = snapshot.read()) === 'string') {
+		builder.acceptChunk(chunk);
+	}
+
+	return builder.finish();
+}
+
+export function createTextBuffer(value: string | model.ITextBufferFactory, defaultEOL: model.DefaultEndOfLine): model.ITextBuffer {
+	const factory = (typeof value === 'string' ? createTextBufferFactory(value) : value);
+	return factory.create(defaultEOL);
 }
 
 export class NotebookModel extends Disposable implements INotebookModel {
@@ -80,12 +185,25 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
-	private _findArray: Array<NotebookFindPosition>;
+	private _findArray: Array<NotebookRange>;
 	private _findIndex: number;
 	private _onFindCountChange = new Emitter<number>();
 	public get onFindCountChange(): Event<number> { return this._onFindCountChange.event; }
 	public requestConnectionHandler: () => Promise<boolean>;
+	private _isDisposed: boolean;
+	private _versionId: number;
+	private _buffer: model.ITextBuffer;
+	public readonly id: string;
 
+	//#region Decorations
+	private readonly _onDidChangeDecorations: DidChangeDecorationsEmitter = this._register(new DidChangeDecorationsEmitter());
+	public readonly onDidChangeDecorations: Event<IModelDecorationsChangedEvent> = this._onDidChangeDecorations.event;
+
+	private readonly _instanceId: string;
+	private _lastDecorationId: number;
+	private _decorations: { [decorationId: string]: IntervalNode; };
+	private _decorationsTree: DecorationsTrees;
+	//#endregion
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
 		public connectionProfile: IConnectionProfile | undefined,
@@ -104,6 +222,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			this._notebookOptions.layoutChanged(() => this._layoutChanged.fire());
 		}
 		this._defaultKernel = _notebookOptions.defaultKernel;
+		this._isDisposed = false;
+		this._instanceId = singleLetter(MODEL_ID);
+		this._lastDecorationId = 0;
+		this._decorations = Object.create(null);
+		this._decorationsTree = new DecorationsTrees();
+		// Generate a new unique model id
+		MODEL_ID++;
+		this.id = '$model' + MODEL_ID;
+
+		// this._buffer = createTextBuffer('', creationOptions.defaultEOL);
 	}
 
 	public get notebookManagers(): INotebookManager[] {
@@ -797,6 +925,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this.disconnectAttachToConnections();
 		this.handleClosed();
 		this._findArray = [];
+		this._isDisposed = true;
 	}
 
 	public async handleClosed(): Promise<void> {
@@ -1025,7 +1154,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
-	findNext(): Thenable<NotebookFindPosition> {
+	findNext(): Thenable<NotebookRange> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === this._findArray.length - 1) {
 				this._findIndex = 0;
@@ -1038,7 +1167,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	findPrevious(): Thenable<NotebookFindPosition> {
+	findPrevious(): Thenable<NotebookRange> {
 		if (this._findArray && this._findArray.length !== 0) {
 			if (this._findIndex === 0) {
 				this._findIndex = this._findArray.length - 1;
@@ -1051,12 +1180,12 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	find(exp: string, maxMatches?: number): Promise<NotebookFindPosition> {
-		this._findArray = new Array<NotebookFindPosition>();
+	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
+		this._findArray = new Array<NotebookRange>();
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 		if (exp) {
-			return new Promise<NotebookFindPosition>((resolve) => {
+			return new Promise<NotebookRange>((resolve) => {
 				const disp = this.onFindCountChange(e => {
 					resolve(this._findArray[e - 1]);
 					disp.dispose();
@@ -1068,9 +1197,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
+	public get findMatches(): model.FindMatch[] {
+		let findMatches: model.FindMatch[] = [];
+		this._findArray.forEach(element => {
+			findMatches = findMatches.concat(new model.FindMatch(element, null));
+		});
+		return findMatches;
+	}
+
+	public get findArray(): NotebookRange[] {
+		return this.findArray;
+	}
+
 	private _startSearch(exp: string, maxMatches: number = 0): void {
-		let searchFn = (cell: ICellModel, exp: string): NotebookFindPosition[] => {
-			let findPositions: NotebookFindPosition[] = [];
+		let searchFn = (cell: ICellModel, exp: string): NotebookRange[] => {
+			let findResults: NotebookRange[] = [];
 			let cellVal = cell.source;
 			let index: number;
 			let start: number;
@@ -1081,14 +1222,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					while (cellVal.substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
 						start = cellVal.substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
 						end = start + exp.length;
-						let position: NotebookFindPosition = {
-							cell: cell,
-							lineNumber: 0,
-							startColumnNumber: start,
-							endColumnNumber: end
-						};
-						this.highlight(position);
-						findPositions = findPositions.concat(position);
+						let range = new NotebookRange(cell, 0, start, 0, end);
+						findResults = findResults.concat(range);
 						index = end;
 					}
 				} else {
@@ -1097,20 +1232,14 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						while (cellVal[j].substr(index).toLocaleLowerCase().includes(exp.toLocaleLowerCase())) {
 							start = cellVal[j].substr(index).toLocaleLowerCase().indexOf(exp.toLocaleLowerCase()) + index;
 							end = start + exp.length;
-							let position: NotebookFindPosition = {
-								cell: cell,
-								lineNumber: j,
-								startColumnNumber: start,
-								endColumnNumber: end
-							};
-							this.highlight(position);
-							findPositions = findPositions.concat(position);
+							let range = new NotebookRange(cell, j, start, j, end);
+							findResults = findResults.concat(range);
 							index = end;
 						}
 					}
 				}
 			}
-			return findPositions;
+			return findResults;
 		};
 		for (let i = 0; i < this.cells.length; i++) {
 			const item = this.cells[i];
@@ -1130,12 +1259,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	highlight(position: NotebookFindPosition): void {
-
-	}
-
 	clearFind(): void {
-		this._findArray = new Array<NotebookFindPosition>();
+		this._findArray = new Array<NotebookRange>();
 		this._findIndex = 0;
 		this._onFindCountChange.fire(this._findArray.length);
 	}
@@ -1152,7 +1277,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return undefined;
 	}
 
-	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[] {
+	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): model.IModelDecoration[] {
 		return undefined;
 	}
 
@@ -1162,5 +1287,241 @@ export class NotebookModel extends Disposable implements INotebookModel {
 
 	getLineCount(): number {
 		return undefined;
+	}
+
+	//#region Decorations
+
+	public getVersionId(): number {
+		this._assertNotDisposed();
+		return this._versionId;
+	}
+
+	public isDisposed(): boolean {
+		return this._isDisposed;
+	}
+
+	private _assertNotDisposed(): void {
+		if (this._isDisposed) {
+			throw new Error('Model is disposed!');
+		}
+	}
+
+	public changeDecorations<T>(callback: (changeAccessor: model.IModelDecorationsChangeAccessor) => T, ownerId: number = 0): T | null {
+		this._assertNotDisposed();
+
+		try {
+			this._onDidChangeDecorations.beginDeferredEmit();
+			return this._changeDecorations(ownerId, callback);
+		} finally {
+			this._onDidChangeDecorations.endDeferredEmit();
+		}
+	}
+
+	private _changeDecorations<T>(ownerId: number, callback: (changeAccessor: model.IModelDecorationsChangeAccessor) => T): T | null {
+		let changeAccessor: model.IModelDecorationsChangeAccessor = {
+			addDecoration: (range: IRange, options: model.IModelDecorationOptions): string => {
+				this._onDidChangeDecorations.fire();
+				return this._deltaDecorationsImpl(ownerId, [], [{ range: range, options: options }])[0];
+			},
+			changeDecoration: (id: string, newRange: IRange): void => {
+				this._onDidChangeDecorations.fire();
+				this._changeDecorationImpl(id, newRange);
+			},
+			changeDecorationOptions: (id: string, options: model.IModelDecorationOptions) => {
+				this._onDidChangeDecorations.fire();
+				this._changeDecorationOptionsImpl(id, _normalizeOptions(options));
+			},
+			removeDecoration: (id: string): void => {
+				this._onDidChangeDecorations.fire();
+				this._deltaDecorationsImpl(ownerId, [id], []);
+			},
+			deltaDecorations: (oldDecorations: string[], newDecorations: model.IModelDeltaDecoration[]): string[] => {
+				if (oldDecorations.length === 0 && newDecorations.length === 0) {
+					// nothing to do
+					return [];
+				}
+				this._onDidChangeDecorations.fire();
+				return this._deltaDecorationsImpl(ownerId, oldDecorations, newDecorations);
+			}
+		};
+		let result: T | null = null;
+		try {
+			result = callback(changeAccessor);
+		} catch (e) {
+			onUnexpectedError(e);
+		}
+		// Invalidate change accessor
+		changeAccessor.addDecoration = invalidFunc;
+		changeAccessor.changeDecoration = invalidFunc;
+		changeAccessor.changeDecorationOptions = invalidFunc;
+		changeAccessor.removeDecoration = invalidFunc;
+		changeAccessor.deltaDecorations = invalidFunc;
+		return result;
+	}
+
+	/**
+	 * Validates `range` is within buffer bounds, but allows it to sit in between surrogate pairs, etc.
+	 * Will try to not allocate if possible.
+	 */
+	private _validateRangeRelaxedNoAllocations(range: IRange): Range {
+		const linesCount = this._buffer.getLineCount();
+
+		const initialStartLineNumber = range.startLineNumber;
+		const initialStartColumn = range.startColumn;
+		let startLineNumber: number;
+		let startColumn: number;
+
+		if (initialStartLineNumber < 1) {
+			startLineNumber = 1;
+			startColumn = 1;
+		} else if (initialStartLineNumber > linesCount) {
+			startLineNumber = linesCount;
+			startColumn = this.getLineMaxColumn(startLineNumber);
+		} else {
+			startLineNumber = initialStartLineNumber | 0;
+			if (initialStartColumn <= 1) {
+				startColumn = 1;
+			} else {
+				const maxColumn = this.getLineMaxColumn(startLineNumber);
+				if (initialStartColumn >= maxColumn) {
+					startColumn = maxColumn;
+				} else {
+					startColumn = initialStartColumn | 0;
+				}
+			}
+		}
+
+		const initialEndLineNumber = range.endLineNumber;
+		const initialEndColumn = range.endColumn;
+		let endLineNumber: number;
+		let endColumn: number;
+
+		if (initialEndLineNumber < 1) {
+			endLineNumber = 1;
+			endColumn = 1;
+		} else if (initialEndLineNumber > linesCount) {
+			endLineNumber = linesCount;
+			endColumn = this.getLineMaxColumn(endLineNumber);
+		} else {
+			endLineNumber = initialEndLineNumber | 0;
+			if (initialEndColumn <= 1) {
+				endColumn = 1;
+			} else {
+				const maxColumn = this.getLineMaxColumn(endLineNumber);
+				if (initialEndColumn >= maxColumn) {
+					endColumn = maxColumn;
+				} else {
+					endColumn = initialEndColumn | 0;
+				}
+			}
+		}
+
+		if (
+			initialStartLineNumber === startLineNumber
+			&& initialStartColumn === startColumn
+			&& initialEndLineNumber === endLineNumber
+			&& initialEndColumn === endColumn
+			&& range instanceof Range
+			&& !(range instanceof Selection)
+		) {
+			return range;
+		}
+
+		return new Range(startLineNumber, startColumn, endLineNumber, endColumn);
+	}
+
+	private _changeDecorationImpl(decorationId: string, _range: IRange): void {
+		const node = this._decorations[decorationId];
+		if (!node) {
+			return;
+		}
+		const range = this._validateRangeRelaxedNoAllocations(_range);
+		const startOffset = this._buffer.getOffsetAt(range.startLineNumber, range.startColumn);
+		const endOffset = this._buffer.getOffsetAt(range.endLineNumber, range.endColumn);
+
+		this._decorationsTree.delete(node);
+		node.reset(this.getVersionId(), startOffset, endOffset, range);
+		this._decorationsTree.insert(node);
+	}
+
+	private _changeDecorationOptionsImpl(decorationId: string, options: ModelDecorationOptions): void {
+		const node = this._decorations[decorationId];
+		if (!node) {
+			return;
+		}
+
+		const nodeWasInOverviewRuler = (node.options.overviewRuler && node.options.overviewRuler.color ? true : false);
+		const nodeIsInOverviewRuler = (options.overviewRuler && options.overviewRuler.color ? true : false);
+
+		if (nodeWasInOverviewRuler !== nodeIsInOverviewRuler) {
+			// Delete + Insert due to an overview ruler status change
+			this._decorationsTree.delete(node);
+			node.setOptions(options);
+			this._decorationsTree.insert(node);
+		} else {
+			node.setOptions(options);
+		}
+	}
+
+	private _deltaDecorationsImpl(ownerId: number, oldDecorationsIds: string[], newDecorations: model.IModelDeltaDecoration[]): string[] {
+		// const versionId = this.getVersionId();
+		const versionId = 1;
+
+		const oldDecorationsLen = oldDecorationsIds.length;
+		let oldDecorationIndex = 0;
+
+		const newDecorationsLen = newDecorations.length;
+		let newDecorationIndex = 0;
+
+		let result = new Array<string>(newDecorationsLen);
+		while (oldDecorationIndex < oldDecorationsLen || newDecorationIndex < newDecorationsLen) {
+
+			let node: IntervalNode | null = null;
+
+			if (oldDecorationIndex < oldDecorationsLen) {
+				// (1) get ourselves an old node
+				do {
+					node = this._decorations[oldDecorationsIds[oldDecorationIndex++]];
+				} while (!node && oldDecorationIndex < oldDecorationsLen);
+
+				// (2) remove the node from the tree (if it exists)
+				if (node) {
+					this._decorationsTree.delete(node);
+				}
+			}
+
+			if (newDecorationIndex < newDecorationsLen) {
+				// (3) create a new node if necessary
+				if (!node) {
+					const internalDecorationId = (++this._lastDecorationId);
+					const decorationId = `${this._instanceId};${internalDecorationId}`;
+					node = new IntervalNode(decorationId, 0, 0);
+					this._decorations[decorationId] = node;
+				}
+
+				// (4) initialize node
+				const newDecoration = newDecorations[newDecorationIndex];
+				const range = this._validateRangeRelaxedNoAllocations(newDecoration.range);
+				const options = _normalizeOptions(newDecoration.options);
+				const startOffset = this._buffer.getOffsetAt(range.startLineNumber, range.startColumn);
+				const endOffset = this._buffer.getOffsetAt(range.endLineNumber, range.endColumn);
+
+				node.ownerId = ownerId;
+				node.reset(versionId, startOffset, endOffset, range);
+				node.setOptions(options);
+
+				this._decorationsTree.insert(node);
+
+				result[newDecorationIndex] = node.id;
+
+				newDecorationIndex++;
+			} else {
+				if (node) {
+					delete this._decorations[node.id];
+				}
+			}
+		}
+
+		return result;
 	}
 }

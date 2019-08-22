@@ -6,13 +6,13 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { NotebookFindPosition, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookRange, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, NotebookPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IStandardKernelWithProvider } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
 import { Range, IRange } from 'vs/editor/common/core/range';
-import { IModelDecoration } from 'vs/editor/common/model';
+import { IModelDecoration, FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 
 export class NotebookModelStub implements INotebookModel {
 	constructor(private _languageInfo?: nb.ILanguageInfo) {
@@ -108,13 +108,13 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
-	findNext(): Thenable<NotebookFindPosition> {
+	findNext(): Thenable<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
-	findPrevious(): Thenable<NotebookFindPosition> {
+	findPrevious(): Thenable<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
-	find(exp: string, maxMatches?: number): Promise<NotebookFindPosition> {
+	find(exp: string, maxMatches?: number): Promise<NotebookRange> {
 		throw new Error('Method not implemented.');
 	}
 	clearFind(): void {
@@ -132,13 +132,18 @@ export class NotebookModelStub implements INotebookModel {
 	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[] {
 		throw new Error('Method not implemented.');
 	}
+	changeDecorations<T>(callback: (changeAccessor: IModelDecorationsChangeAccessor) => T, ownerId: number): T | null {
+		throw new Error('Method not implemented.');
+	}
 	getLineMaxColumn(lineNumber: number): number {
 		throw new Error('Method not implemented.');
 	}
 	getLineCount(): number {
 		throw new Error('Method not implemented.');
 	}
+	findMatches: FindMatch[];
 	onFindCountChange: Event<number>;
+	findArray: NotebookRange[];
 }
 
 export class NotebookManagerStub implements INotebookManager {
