@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 'use strict';
+import * as azdata from 'azdata';
 
 export interface ResourceType {
 	name: string;
@@ -52,37 +53,47 @@ export interface DialogInfo {
 export interface DialogTabInfo {
 	title: string;
 	sections: SectionInfo[];
+	labelWidth?: string;
+	inputWidth?: string;
 }
 
 export interface WizardPageInfo {
 	sections: SectionInfo[];
+	labelWidth?: string;
+	inputWidth?: string;
 }
 
 export interface SectionInfo {
 	title: string;
-	fields: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
-	rows: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
+	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
+	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
+	labelWidth?: string;
+	inputWidth?: string;
 }
 
 export interface RowInfo {
 	fields: FieldInfo[];
+	labelWidth?: string;
+	inputWidth?: string;
 }
 
 export interface FieldInfo {
 	label: string;
 	variableName: string;
 	type: FieldType;
-	defaultValue: string;
-	confirmationRequired: boolean;
-	confirmationLabel: string;
+	defaultValue?: string;
+	confirmationRequired?: boolean;
+	confirmationLabel?: string;
 	min?: number;
 	max?: number;
 	required: boolean;
-	options: string[];
-	placeHolder: string;
-	userName?: string; //needed for sql server's password complexity requirement check, password can not include the login name.
+	options?: string[] | azdata.CategoryValue[];
+	placeHolder?: string;
+	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
 	labelWidth?: string;
 	inputWidth?: string;
+	description?: string;
+	useCustomValidator?: boolean;
 }
 
 export enum FieldType {

@@ -9,13 +9,13 @@ import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
 import { DialogInfo } from '../interfaces';
-import { validator, initializeDialog, Model } from './modelViewUtils';
+import { Validator, initializeDialog, InputComponents } from './modelViewUtils';
 
 const localize = nls.loadMessageBundle();
 
 export class NotebookInputDialog extends DialogBase {
 
-	private model: Model = {};
+	private inputComponents: InputComponents = {};
 
 	constructor(private notebookService: INotebookService,
 		private dialogInfo: DialogInfo) {
@@ -26,8 +26,8 @@ export class NotebookInputDialog extends DialogBase {
 
 	protected initialize() {
 		const self = this;
-		const validators: validator[] = [];
-		initializeDialog(this._dialogObject, this.dialogInfo, validators, this.model, this._toDispose);
+		const validators: Validator[] = [];
+		initializeDialog(this._dialogObject, this.dialogInfo, validators, this.inputComponents, this._toDispose);
 		this._dialogObject.registerCloseValidator(() => {
 			const messages: string[] = [];
 			validators.forEach(validator => {
@@ -46,8 +46,8 @@ export class NotebookInputDialog extends DialogBase {
 	}
 
 	private onComplete(): void {
-		Object.keys(this.model).forEach(key => {
-			process.env[key] = this.model[key];
+		Object.keys(this.inputComponents).forEach(key => {
+			process.env[key] = <string>this.inputComponents[key].value;
 		});
 		this.notebookService.launchNotebook(this.dialogInfo.notebook);
 		this.dispose();

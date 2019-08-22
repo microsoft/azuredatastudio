@@ -3,11 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as azdata from 'azdata';
-import { WizardPageBase } from '../../wizardPageBase';
-import { DeployClusterWizard } from '../deployClusterWizard';
 import * as nls from 'vscode-nls';
-
+import { DeployClusterWizard } from '../deployClusterWizard';
+import { SectionInfo } from '../../../interfaces';
+import { initializeWizardPage, Validator } from '../../modelViewUtils';
+import { WizardPageBase } from '../../wizardPageBase';
 const localize = nls.loadMessageBundle();
 
 export class ToolsPage extends WizardPageBase<DeployClusterWizard> {
@@ -15,8 +15,9 @@ export class ToolsPage extends WizardPageBase<DeployClusterWizard> {
 		super(localize('deployCluster.ToolsPageTitle', "Required tools"), '', wizard);
 	}
 
-	protected initialize(view: azdata.ModelView): Thenable<void> {
-		const form = view.modelBuilder.formContainer().withFormItems([]).component();
-		return view.initializeModel(form);
+	protected initialize(): void {
+		const validators: Validator[] = [];
+		const sectionInfoArray: SectionInfo[] = [];
+		initializeWizardPage(this.pageObject, this.wizard.wizardObject, sectionInfoArray, validators, this.wizard.InputComponents, this.wizard.toDispose);
 	}
 }

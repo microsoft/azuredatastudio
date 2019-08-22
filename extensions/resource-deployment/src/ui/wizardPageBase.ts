@@ -5,9 +5,17 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import { Validator } from './modelViewUtils';
 
 export abstract class WizardPageBase<T> {
 	private _page: azdata.window.WizardPage;
+	private _validators: Validator[] = [];
+
+	constructor(title: string, description: string, private _wizard: T) {
+		this._page = azdata.window.createWizardPage(title);
+		this._page.description = description;
+		this.initialize();
+	}
 
 	public get pageObject(): azdata.window.WizardPage {
 		return this._page;
@@ -17,17 +25,13 @@ export abstract class WizardPageBase<T> {
 		return this._wizard;
 	}
 
-	constructor(title: string, description: string, private _wizard: T) {
-		this._page = azdata.window.createWizardPage(title);
-		this._page.description = description;
-		this._page.registerContent((view: azdata.ModelView) => {
-			return this.initialize(view);
-		});
-	}
-
-	protected abstract initialize(view: azdata.ModelView): Thenable<void>;
-
 	public onEnter(): void { }
 
 	public onLeave(): void { }
+
+	protected abstract initialize(): void;
+
+	protected get validators(): Validator[] {
+		return this._validators;
+	}
 }

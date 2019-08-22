@@ -7,20 +7,22 @@
 import * as azdata from 'azdata';
 import { Disposable } from 'vscode';
 import { WizardPageBase } from './wizardPageBase';
+import { InputComponents } from './modelViewUtils';
 
 export abstract class WizardBase<T> {
-
-	public wizardObject: azdata.window.Wizard;
 	private customButtons: azdata.window.Button[] = [];
 	private pages: WizardPageBase<T>[] = [];
 
-	private toDispose: Disposable[] = [];
+	public InputComponents: InputComponents = {};
+	public wizardObject: azdata.window.Wizard;
+	public toDispose: Disposable[] = [];
 
 	constructor(title: string) {
 		this.wizardObject = azdata.window.createWizard(title);
 	}
 
 	public open(): Thenable<void> {
+		const self = this;
 		this.initialize();
 		this.wizardObject.customButtons = this.customButtons;
 		this.toDispose.push(this.wizardObject.onPageChanged((e) => {
@@ -31,6 +33,9 @@ export abstract class WizardBase<T> {
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(() => {
+			Object.keys(self.InputComponents).forEach(key => {
+				process.env[key] = <string>self.InputComponents[key].value;
+			});
 			this.onOk();
 			this.dispose();
 		}));
