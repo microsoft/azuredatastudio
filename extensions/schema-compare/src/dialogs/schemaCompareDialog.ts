@@ -376,9 +376,11 @@ export class SchemaCompareDialog {
 		// if source is currently a db, show it in the server and db dropdowns
 		if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			databaseRadioButton.checked = true;
+			databaseRadioButton.focused = true;
 			this.sourceIsDacpac = false;
 		} else {
 			dacpacRadioButton.checked = true;
+			dacpacRadioButton.focused = true;
 			this.sourceIsDacpac = true;
 		}
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
