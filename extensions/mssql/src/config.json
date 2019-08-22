@@ -1,5 +1,5 @@
 {
-	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice/releases/download/v{#version#}/microsoft.sqltools.servicelayer-{#fileName#}",
+	"downloadUrl": "https://github.com/Microsoft/sqltoolsservice1/releases/download/v{#version#}/microsoft.sqltools.servicelayer-{#fileName#}",
 	"version": "2.0.0-release.4",
 	"downloadFileNames": {
 		"Windows_86": "win-x86-netcoreapp2.2.zip",
@@ -15,5 +15,15 @@
 		"Ubuntu_16": "rhel-x64-netcoreapp2.2.tar.gz"
 	},
 	"installDirectory": "../sqltoolsservice/{#platform#}/{#version#}",
-	"executableFiles": ["MicrosoftSqlToolsServiceLayer.exe", "MicrosoftSqlToolsServiceLayer"]
+	"executableFiles": ["MicrosoftSqlToolsServiceLayer.exe", "MicrosoftSqlToolsServiceLayer"],
+	"retry": {
+		"enabled": true,
+		"options": {
+			"retries": 15,
+			"factor": 2,
+			"minTimeout": 1000,
+			"maxTimeout": 300000,
+			"randomize": false
+		}
+	}
 }
