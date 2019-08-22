@@ -5236,10 +5236,15 @@ declare namespace monaco.languages {
 		TypeParameter = 25
 	}
 
+	export enum SymbolKindTag {
+		Deprecated = 1
+	}
+
 	export interface DocumentSymbol {
 		name: string;
 		detail: string;
 		kind: SymbolKind;
+		kindTags: SymbolKindTag[];
 		containerName?: string;
 		range: IRange;
 		selectionRange: IRange;
