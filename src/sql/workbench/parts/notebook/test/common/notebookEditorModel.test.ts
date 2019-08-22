@@ -12,9 +12,8 @@ import { CellModel } from 'sql/workbench/parts/notebook/common/models/cell';
 import { CellTypes, NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
 import { INotebookModelOptions, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import { NotebookEditorModel } from 'sql/workbench/parts/notebook/common/models/notebookInput';
+import { NotebookEditorModel } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
-import { NotebookManagerStub } from 'sql/workbench/parts/notebook/test/node/common';
 import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
 import { URI } from 'vs/base/common/uri';
 import { toResource } from 'vs/base/test/common/utils';
@@ -32,7 +31,7 @@ import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestT
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
-import { INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
 
 
 class ServiceAccessor {
@@ -42,6 +41,13 @@ class ServiceAccessor {
 		@IModelService public modelService: IModelService
 	) {
 	}
+}
+
+class NotebookManagerStub implements INotebookManager {
+	providerId: string;
+	contentManager: nb.ContentManager;
+	sessionManager: nb.SessionManager;
+	serverManager: nb.ServerManager;
 }
 
 let defaultUri = URI.file('/some/path.ipynb');

@@ -985,7 +985,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	/**
 	 * Serialize the model to JSON.
 	 */
-	toJSON(type?: NotebookChangeType): nb.INotebookContents {
+	toJSON(): nb.INotebookContents {
 		let cells: nb.ICellContents[] = this.cells.map(c => c.toJSON());
 		let metadata = Object.create(null) as nb.INotebookMetadata;
 		// TODO update language and kernel when these change
