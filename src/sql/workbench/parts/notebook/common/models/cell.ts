@@ -22,6 +22,7 @@ import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
 let modelId = 0;
 
+
 export class CellModel implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string | string[];
@@ -451,17 +452,20 @@ export class CellModel implements ICellModel {
 				if (result && result.data && result.data['text/html']) {
 					let model = (this as CellModel).options.notebook as NotebookModel;
 					if (model.activeConnection) {
-						let endpoint = this.getKnoxEndpoint(model.activeConnection);
-						let host = endpoint && endpoint.ipAddress ? endpoint.ipAddress : model.activeConnection.serverName;
-						let port = endpoint && endpoint.port ? ':' + endpoint.port.toString() : defaultPort;
-						let html = result.data['text/html'];
-						// CTP 3.1 and earlier Spark link
-						html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
-						// CTP 3.2 and later spark link
-						html = this.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
-						// Driver link
-						html = this.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
-						(<nb.IDisplayResult>output).data['text/html'] = html;
+						let gatewayEndpointInfo = this.getGatewayEndpoint(model.activeConnection);
+						if (gatewayEndpointInfo) {
+							let hostAndIp = notebookUtils.getHostAndPortFromEndpoint(gatewayEndpointInfo.endpoint);
+							let host = gatewayEndpointInfo && hostAndIp.host ? hostAndIp.host : model.activeConnection.serverName;
+							let port = gatewayEndpointInfo && hostAndIp.port ? ':' + hostAndIp.port : defaultPort;
+							let html = result.data['text/html'];
+							// CTP 3.1 and earlier Spark link
+							html = this.rewriteUrlUsingRegex(/(https?:\/\/master.*\/proxy)(.*)/g, html, host, port, yarnUi);
+							// CTP 3.2 and later spark link
+							html = this.rewriteUrlUsingRegex(/(https?:\/\/sparkhead.*\/proxy)(.*)/g, html, host, port, yarnUi);
+							// Driver link
+							html = this.rewriteUrlUsingRegex(/(https?:\/\/storage.*\/containerlogs)(.*)/g, html, host, port, driverLog);
+							(<nb.IDisplayResult>output).data['text/html'] = html;
+						}
 					}
 				}
 			}
@@ -579,22 +583,20 @@ export class CellModel implements ICellModel {
 
 	// Get Knox endpoint from IConnectionProfile
 	// TODO: this will be refactored out into the notebooks extension as a contribution point
-	private getKnoxEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
+	private getGatewayEndpoint(activeConnection: IConnectionProfile): notebookUtils.IEndpoint {
 		let endpoint;
 		if (this._connectionManagementService && activeConnection && activeConnection.providerName.toLowerCase() === notebookConstants.SQL_CONNECTION_PROVIDER.toLowerCase()) {
 			let serverInfo: ServerInfo = this._connectionManagementService.getServerInfo(activeConnection.id);
-			if (serverInfo && serverInfo.options && serverInfo.options['clusterEndpoints']) {
-				let endpoints: notebookUtils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
+			if (serverInfo) {
+				let endpoints: notebookUtils.IEndpoint[] = notebookUtils.getClusterEndpoints(serverInfo);
 				if (endpoints && endpoints.length > 0) {
-					endpoint = endpoints.find(ep => {
-						let serviceName: string = ep.serviceName.toLowerCase();
-						return serviceName === 'knox' || serviceName === 'gateway';
-					});
+					endpoint = endpoints.find(ep => ep.serviceName.toLowerCase() === notebookUtils.hadoopEndpointNameGateway);
 				}
 			}
 		}
 		return endpoint;
 	}
+
 
 	private getMultilineSource(source: string | string[]): string | string[] {
 		if (typeof source === 'string') {
