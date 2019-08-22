@@ -30,12 +30,12 @@ import * as types from 'vs/base/common/types';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import * as model from 'vs/editor/common/model';
 import { IntervalNode } from 'vs/editor/common/model/intervalTree';
-import { DecorationsTrees, DidChangeDecorationsEmitter, ModelDecorationOptions } from 'vs/editor/common/model/textModel';
+import { DecorationsTrees, DidChangeDecorationsEmitter, ModelDecorationOptions, TextModel } from 'vs/editor/common/model/textModel';
 import { IModelDecorationsChangedEvent } from 'vs/editor/common/model/textModelEvents';
 import { PieceTreeTextBufferBuilder } from 'vs/editor/common/model/pieceTreeTextBuffer/pieceTreeTextBufferBuilder';
 import { VSBufferReadableStream, VSBuffer } from 'vs/base/common/buffer';
 import { CharCode } from 'vs/base/common/charCode';
-
+import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
 * warning, or informational message. Default is error.
@@ -192,6 +192,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	public requestConnectionHandler: () => Promise<boolean>;
 	private _isDisposed: boolean;
 	private _versionId: number;
+	private _options: model.TextModelResolvedOptions;
 	private _buffer: model.ITextBuffer;
 	public readonly id: string;
 
@@ -203,6 +204,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _lastDecorationId: number;
 	private _decorations: { [decorationId: string]: IntervalNode; };
 	private _decorationsTree: DecorationsTrees;
+	public static DEFAULT_CREATION_OPTIONS: model.ITextModelCreationOptions = {
+		isForSimpleWidget: false,
+		tabSize: EDITOR_MODEL_DEFAULTS.tabSize,
+		indentSize: EDITOR_MODEL_DEFAULTS.indentSize,
+		insertSpaces: EDITOR_MODEL_DEFAULTS.insertSpaces,
+		detectIndentation: false,
+		defaultEOL: model.DefaultEndOfLine.LF,
+		trimAutoWhitespace: EDITOR_MODEL_DEFAULTS.trimAutoWhitespace,
+		largeFileOptimizations: EDITOR_MODEL_DEFAULTS.largeFileOptimizations,
+	};
 	//#endregion
 	constructor(
 		private _notebookOptions: INotebookModelOptions,
@@ -231,7 +242,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		MODEL_ID++;
 		this.id = '$model' + MODEL_ID;
 
-		// this._buffer = createTextBuffer('', creationOptions.defaultEOL);
+		this._buffer = createTextBuffer('', NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		this._options = TextModel.resolveOptions(this._buffer, NotebookModel.DEFAULT_CREATION_OPTIONS);
+		const bufferLineCount = this._buffer.getLineCount();
+		const bufferTextLength = this._buffer.getValueLengthInRange(new Range(1, 1, bufferLineCount, this._buffer.getLineLength(bufferLineCount) + 1), model.EndOfLinePreference.TextDefined);
+
 	}
 
 	public get notebookManagers(): INotebookManager[] {
