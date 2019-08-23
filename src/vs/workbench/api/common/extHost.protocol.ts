@@ -940,7 +940,7 @@ export interface ISuggestDataDto {
 	k/* commitCharacters */?: string[];
 	l/* additionalTextEdits */?: ISingleEditOperation[];
 	m/* command */?: modes.Command;
-	n/* kindModifier */?: modes.CompletionItemKindTag[];
+	n/* kindModifier */?: modes.CompletionItemTag[];
 	// not-standard
 	x?: ChainedCacheId;
 }
