@@ -21,7 +21,7 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 		<div style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
 			<p [innerHTML]="getValue()" [ngStyle]="this.CSSStyles"></p>
 			<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
-			<div *ngIf="description" tabindex="0" class="tooltip">
+			<div *ngIf="description" tabindex="0" class="tooltip" [attr.aria-label]="description">
 				<div class="tooltiptext" [innerHTML]="description"></div>
 			</div>
 		<div>`

@@ -39,6 +39,6 @@
 	background-color: #050505;
 }
 
-.vs-dark .tooltip:focus .tooltiptext, .tooltip:hover .tooltiptext {
+.tooltip:focus .tooltiptext, .tooltip:hover .tooltiptext {
 	visibility: visible;
 }
