@@ -7,43 +7,39 @@ import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
+import { IViewsService } from 'vs/workbench/common/views';
 
 export class RefreshAction extends Action {
 
 	public static ID = 'objectExplorer.refresh';
 	public static LABEL = localize('connectionTree.refresh', "Refresh");
-	private _tree: ITree;
 
 	constructor(
 		id: string,
 		label: string,
-		tree: ITree,
-		private element: IConnectionProfile | TreeNode,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
+		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
+		@IViewsService private readonly _viewsService: IViewsService
 	) {
 		super(id, label);
-		this._tree = tree;
 	}
-	public run(): Promise<boolean> {
+	public async run(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
 		let treeNode: TreeNode;
-		if (this.element instanceof ConnectionProfile) {
-			let connection: ConnectionProfile = this.element;
+		if (actionContext.isConnectionNode) {
+			let connection = new ConnectionProfile(this.capabilitiesService, actionContext.connectionProfile);
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 				if (treeNode === undefined) {
@@ -52,16 +48,17 @@ export class RefreshAction extends Action {
 					});
 				}
 			}
-		} else if (this.element instanceof TreeNode) {
-			treeNode = this.element;
+		} else {
+			treeNode = await this._objectExplorerService.getTreeNode(actionContext.connectionProfile.id, actionContext.nodeInfo.nodePath);
 		}
 
 		if (treeNode) {
-			return this._tree.collapse(this.element).then(() => {
+			const view = await this._viewsService.openView(ConnectionViewletPanel.ID) as ConnectionViewletPanel;
+			const tree = view.serversTree;
+			return tree.collapse(treeNode).then(() => {
 				return this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
-
-					return this._tree.refresh(this.element).then(() => {
-						return this._tree.expand(this.element);
+					return tree.refresh(treeNode).then(() => {
+						return tree.expand(treeNode);
 					}, refreshError => {
 						return Promise.resolve(true);
 					});
@@ -90,25 +87,22 @@ export class DisconnectConnectionAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _connectionProfile: ConnectionProfile,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IErrorMessageService private _errorMessageService: IErrorMessageService
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);
 	}
 
 	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
 		return new Promise<boolean>((resolve, reject) => {
-			if (!this._connectionProfile) {
+			if (!actionContext.connectionProfile) {
 				resolve(true);
 			}
-			if (this._connectionManagementService.isProfileConnected(this._connectionProfile)) {
-				let profileImpl = this._connectionProfile as ConnectionProfile;
+			if (this._connectionManagementService.isProfileConnected(actionContext.connectionProfile)) {
+				let profileImpl = actionContext.connectionProfile as ConnectionProfile;
 				if (profileImpl) {
 					profileImpl.isDisconnecting = true;
 				}
-				this._connectionManagementService.disconnect(this._connectionProfile).then((value) => {
+				this._connectionManagementService.disconnect(actionContext.connectionProfile).then((value) => {
 					if (profileImpl) {
 						profileImpl.isDisconnecting = false;
 					}

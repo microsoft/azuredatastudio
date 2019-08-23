@@ -79,16 +79,14 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			tree: tree,
 			profile: profile,
 			treeNode: node
-		}, (context) => this.getBuiltinConnectionActions(context));
+		});
 	}
 
-	private getAllActions(context: ObjectExplorerContext, getDefaultActions: (context: ObjectExplorerContext) => IAction[]) {
+	private getAllActions(context: ObjectExplorerContext) {
 		// Create metadata needed to get a useful set of actions
 		let scopedContextService = this.getContextKeyService(context);
 		let menu = this.menuService.createMenu(MenuId.ObjectExplorerItemContext, scopedContextService);
 
-		// Fill in all actions
-		let actions = getDefaultActions(context);
 		let options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
 		fillInActions(groups, actions, false);
@@ -147,25 +145,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	 * Return actions for OE elements
 	 */
 	private getObjectExplorerNodeActions(context: ObjectExplorerContext): IAction[] {
-		return this.getAllActions(context, (context) => this.getBuiltInNodeActions(context));
-	}
-
-	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {
-		let actions: IAction[] = [];
-		let treeNode = context.treeNode;
-		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
-			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
-			} else {
-				return actions;
-			}
-		}
-
-		// Contribute refresh action for scriptable objects via contribution
-		if (!this.isScriptableObject(context)) {
-			actions.push(this._instantiationService.createInstance(RefreshAction, RefreshAction.ID, RefreshAction.LABEL, context.tree, context.profile));
-		}
-
-		return actions;
+		return this.getAllActions(context);
 	}
 
 	private isScriptableObject(context: ObjectExplorerContext): boolean {

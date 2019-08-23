@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 
@@ -18,7 +17,7 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export class ObjectExplorerActionsContext implements azdata.ObjectExplorerContext {
-	public connectionProfile: azdata.IConnectionProfile;
+	public connectionProfile: IConnectionProfile;
 	public nodeInfo: azdata.NodeInfo;
 	public isConnectionNode: boolean = false;
 }
