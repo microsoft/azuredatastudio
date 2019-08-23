@@ -10,8 +10,6 @@ import * as nls from 'vs/nls';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IConfigurationRegistry, Extensions as ConfigExtensions } from 'vs/platform/configuration/common/configurationRegistry';
 
-new Actions.BackupAction().registerTask();
-new Actions.RestoreAction().registerTask();
 new Actions.ConfigureDashboardAction().registerTask();
 
 Registry.as<IConfigurationRegistry>(ConfigExtensions.Configuration).registerConfiguration({
