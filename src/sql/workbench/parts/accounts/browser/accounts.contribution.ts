@@ -28,7 +28,7 @@ class AccountsStatusBarContributions extends Disposable implements IWorkbenchCon
 		this._register(
 			this.statusbarService.addEntry({
 				command: 'workbench.actions.modal.linkedAccount',
-				text: '$(person-filled)'
+				text: '$(person)'
 			},
 				'status.accountList',
 				localize('status.problems', "Problems"),
