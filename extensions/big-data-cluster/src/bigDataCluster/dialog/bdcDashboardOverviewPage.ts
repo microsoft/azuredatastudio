@@ -229,6 +229,14 @@ function createServiceStatusRow(modelBuilder: azdata.ModelBuilder, container: az
 	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
 	serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': overviewHealthStatusCellWidth, 'min-width': overviewHealthStatusCellWidth } });
 
+	if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
+		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
+		viewDetailsButton.onDidClick(() => {
+			vscode.window.showErrorMessage(serviceStatus.details);
+		});
+		serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+	}
+
 	container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
 }
 
