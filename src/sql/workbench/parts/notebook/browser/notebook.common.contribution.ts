@@ -161,7 +161,7 @@ configurationRegistry.registerConfiguration({
 /**
 * Explorer viewlet id.
 */
-export const VIEWLET_ID = 'bookTreeView'; //'workbench.view.extension.books-explorer';
+export const VIEWLET_ID = 'bookTreeView';
 /**
 * Explorer viewlet container.
 */
