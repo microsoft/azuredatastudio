@@ -7,7 +7,6 @@ export const DeploymentProfile = 'AZDATA_NB_VAR_DEPLOYMENT_PROFILE';
 export const ClusterName = 'AZDATA_NB_VAR_CLUSTER_NAME';
 export const AdminUserName = 'AZDATA_NB_VAR_ADMIN_USERNAME';
 export const AdminPassword = 'AZDATA_NB_VAR_ADMIN_PASSWORD';
-export const ConfirmPassword = 'BDC_CONFIRM_PASSWORD';
 export const AuthenticationMode = 'AZDATA_NB_VAR_AUTHENTICATION_MODE';
 export const DistinguishedName = 'AZDATA_NB_VAR_AD_DN';
 export const AdminPrincipals = 'AZDATA_NB_VAR_AD_ADMIN_PRINCIPALS';

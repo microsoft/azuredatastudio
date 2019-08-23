@@ -64,11 +64,11 @@ export function createSection(container: azdata.window.Dialog | azdata.window.Wi
 	const inputWidth = sectionInfo.inputWidth || defaultInputWidth;
 	const components: azdata.Component[] = [];
 	if (sectionInfo.fields) {
-		processFields(sectionInfo.fields, components, container, view, validators, inputComponents, disposables, labelWidth, inputWidth);
+		processFields(sectionInfo.fields, components, container, view, validators, inputComponents, disposables, labelWidth, inputWidth, sectionInfo.labelOnLeft);
 	} else if (sectionInfo.rows) {
 		sectionInfo.rows.forEach(rowInfo => {
 			const rowItems: azdata.Component[] = [];
-			processFields(rowInfo.fields, rowItems, container, view, validators, inputComponents, disposables, labelWidth, inputWidth);
+			processFields(rowInfo.fields, rowItems, container, view, validators, inputComponents, disposables, labelWidth, inputWidth, sectionInfo.labelOnLeft);
 			const row = createRow(view, rowItems);
 			components.push(row);
 		});
@@ -76,16 +76,26 @@ export function createSection(container: azdata.window.Dialog | azdata.window.Wi
 	return view.modelBuilder.groupContainer().withItems(components).withLayout({ header: sectionInfo.title, collapsible: true, collapsed: false }).component();
 }
 
-function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], container: azdata.window.Dialog | azdata.window.Wizard, view: azdata.ModelView, validators: Validator[], inputComponents: InputComponents, disposables: vscode.Disposable[], defaultLabelWidth: string, defaultInputWidth: string): void {
+function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], container: azdata.window.Dialog | azdata.window.Wizard, view: azdata.ModelView, validators: Validator[], inputComponents: InputComponents, disposables: vscode.Disposable[], defaultLabelWidth: string, defaultInputWidth: string, labelOnLeft?: boolean): void {
 	fieldInfoArray.forEach(fieldInfo => {
 		fieldInfo.labelWidth = fieldInfo.labelWidth || defaultLabelWidth;
 		fieldInfo.inputWidth = fieldInfo.inputWidth || defaultInputWidth;
+		fieldInfo.labelOnLeft = fieldInfo.labelOnLeft === undefined ? labelOnLeft : fieldInfo.labelOnLeft;
 		processField(view, components, fieldInfo, inputComponents, validators, disposables, container);
 	});
 }
 
 function createRow(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
 	return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+}
+
+function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, labelOnLeft?: boolean) {
+	if (labelOnLeft) {
+		const row = createRow(view, [label, input]);
+		components.push(row);
+	} else {
+		components.push(label, input);
+	}
 }
 
 
@@ -111,15 +121,10 @@ function processField(view: azdata.ModelView, components: azdata.Component[], fi
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", fieldInfo.type));
 	}
 }
-function createLabelComponent(view: azdata.ModelView, label: string, description?: string, isRequired: boolean = false, labelWidth?: string): azdata.FlexContainer {
-	const labelGroup = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', width: labelWidth }).component();
-	if (isRequired) {
-		const indicator = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: '*' }).component();
-		labelGroup.addItem(indicator, { CSSStyles: { 'color': 'red', 'margin-right': '5px' } });
-	}
-	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: label }).component();
-	labelGroup.addItem(text);
-	return labelGroup;
+function createLabelComponent(view: azdata.ModelView, label: string, description?: string, isRequired?: boolean, labelWidth?: string): azdata.TextComponent {
+	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: label, description: description, requiredIndicator: isRequired }).component();
+	text.width = labelWidth;
+	return text;
 }
 
 function processOptionsTypeField(view: azdata.ModelView, fieldInfo: FieldInfo, components: azdata.Component[], inputComponents: InputComponents, disposables: vscode.Disposable[]): void {
@@ -127,7 +132,7 @@ function processOptionsTypeField(view: azdata.ModelView, fieldInfo: FieldInfo, c
 	const dropdown = view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({ values: fieldInfo.options, value: fieldInfo.defaultValue }).component();
 	dropdown.width = fieldInfo.inputWidth;
 	inputComponents[fieldInfo.variableName] = dropdown;
-	components.push(label, dropdown);
+	addLabelInputPairToContainer(view, components, label, dropdown, fieldInfo.labelOnLeft);
 }
 
 function processDateTimeTextField(view: azdata.ModelView, fieldInfo: FieldInfo, components: azdata.Component[], inputComponents: InputComponents, disposables: vscode.Disposable[]): void {
@@ -138,7 +143,7 @@ function processDateTimeTextField(view: azdata.ModelView, fieldInfo: FieldInfo, 
 	}).component();
 	input.width = fieldInfo.inputWidth;
 	inputComponents[fieldInfo.variableName] = input;
-	components.push(label, input);
+	addLabelInputPairToContainer(view, components, label, input, fieldInfo.labelOnLeft);
 }
 
 function processNumberField(view: azdata.ModelView, fieldInfo: FieldInfo, components: azdata.Component[], inputComponents: InputComponents, disposables: vscode.Disposable[]): void {
@@ -148,7 +153,7 @@ function processNumberField(view: azdata.ModelView, fieldInfo: FieldInfo, compon
 	}).component();
 	input.width = fieldInfo.inputWidth;
 	inputComponents[fieldInfo.variableName] = input;
-	components.push(label, input);
+	addLabelInputPairToContainer(view, components, label, input, fieldInfo.labelOnLeft);
 }
 
 function processTextField(view: azdata.ModelView, fieldInfo: FieldInfo, components: azdata.Component[], inputComponents: InputComponents, disposables: vscode.Disposable[]): void {
@@ -158,7 +163,7 @@ function processTextField(view: azdata.ModelView, fieldInfo: FieldInfo, componen
 	}).component();
 	input.width = fieldInfo.inputWidth;
 	inputComponents[fieldInfo.variableName] = input;
-	components.push(label, input);
+	addLabelInputPairToContainer(view, components, label, input, fieldInfo.labelOnLeft);
 }
 
 function processPasswordField(view: azdata.ModelView, fieldInfo: FieldInfo, components: azdata.Component[], inputComponents: InputComponents, validators: Validator[], disposables: vscode.Disposable[], container: azdata.window.Dialog | azdata.window.Wizard): void {
@@ -168,7 +173,7 @@ function processPasswordField(view: azdata.ModelView, fieldInfo: FieldInfo, comp
 	}).component();
 	passwordInput.width = fieldInfo.inputWidth;
 	inputComponents[fieldInfo.variableName] = passwordInput;
-	components.push(passwordLabel, passwordInput);
+	addLabelInputPairToContainer(view, components, passwordLabel, passwordInput, fieldInfo.labelOnLeft);
 
 	if (fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(fieldInfo.label);
@@ -188,7 +193,8 @@ function processPasswordField(view: azdata.ModelView, fieldInfo: FieldInfo, comp
 		const confirmPasswordLabel = createLabelComponent(view, fieldInfo.confirmationLabel!, '', true, fieldInfo.labelWidth);
 		const confirmPasswordInput = view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({ ariaLabel: fieldInfo.confirmationLabel, inputType: 'password', required: !fieldInfo.useCustomValidator }).component();
 		confirmPasswordInput.width = fieldInfo.inputWidth;
-		components.push(confirmPasswordLabel, confirmPasswordInput);
+
+		addLabelInputPairToContainer(view, components, confirmPasswordLabel, confirmPasswordInput, fieldInfo.labelOnLeft);
 		validators.push((): { valid: boolean, message: string } => {
 			const passwordMatches = passwordInput.value === confirmPasswordInput.value;
 			return { valid: passwordMatches, message: passwordNotMatchMessage };

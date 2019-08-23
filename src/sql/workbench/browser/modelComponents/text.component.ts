@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/radioButton';
+import 'vs/css!./media/text';
 import {
 	Component, Input, Inject, ChangeDetectorRef, forwardRef,
 	OnDestroy, AfterViewInit, ElementRef, SecurityContext
@@ -18,7 +18,13 @@ import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles"></p>`
+		<div style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
+			<p [innerHTML]="getValue()" [ngStyle]="this.CSSStyles"></p>
+			<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
+			<div *ngIf="description" tabindex="0" class="tooltip">
+				<div class="tooltiptext" [innerHTML]="description"></div>
+			</div>
+		<div>`
 })
 export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -55,6 +61,22 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 
 	public get value(): string {
 		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.value, '');
+	}
+
+	public set description(newValue: string) {
+		this.setPropertyFromUI<azdata.TextComponentProperties, string>((properties, value) => { properties.description = value; }, newValue);
+	}
+
+	public get description(): string {
+		return this.getPropertyOrDefault<azdata.TextComponentProperties, string>((props) => props.description, '');
+	}
+
+	public set requiredIndicator(newValue: boolean) {
+		this.setPropertyFromUI<azdata.TextComponentProperties, boolean>((properties, value) => { properties.requiredIndicator = value; }, newValue);
+	}
+
+	public get requiredIndicator(): boolean {
+		return this.getPropertyOrDefault<azdata.TextComponentProperties, boolean>((props) => props.requiredIndicator, false);
 	}
 
 	public getValue(): SafeHtml {

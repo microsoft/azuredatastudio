@@ -69,6 +69,7 @@ export interface SectionInfo {
 	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
 	labelWidth?: string;
 	inputWidth?: string;
+	labelOnLeft?: boolean; // label position. true: label on the left side of field, false: label on top of field, default is false.
 }
 
 export interface RowInfo {
@@ -94,6 +95,7 @@ export interface FieldInfo {
 	inputWidth?: string;
 	description?: string;
 	useCustomValidator?: boolean;
+	labelOnLeft?: boolean; // overwrite the labelOnLeft of SectionInfo.
 }
 
 export enum FieldType {

@@ -1,0 +1,44 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.tooltip {
+	background-size: 12px 12px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+	width: 12px;
+	height: 12px;
+	margin-left: 5px;
+}
+
+.vs .tooltip {
+	background-image: url('info.svg')
+}
+
+.vs-dark .tooltip, .hc-black .tooltip {
+	background-image: url('info_inverse.svg')
+}
+
+.tooltip .tooltiptext {
+	visibility: hidden;
+	text-align: left;
+	border-radius: 5px;
+	width: 200px;
+	padding: 5px;
+	position: absolute;
+	z-index: 1;
+	margin-left: 14px;
+}
+
+.vs .tooltip .tooltiptext {
+	background-color: #f5f5f5;
+}
+
+.vs-dark .tooltip .tooltiptext, .hc-black .tooltip .tooltiptext {
+	background-color: #050505;
+}
+
+.vs-dark .tooltip:focus .tooltiptext, .tooltip:hover .tooltiptext {
+	visibility: visible;
+}

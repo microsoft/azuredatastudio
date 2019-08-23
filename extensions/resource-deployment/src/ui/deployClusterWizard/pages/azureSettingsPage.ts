@@ -22,69 +22,46 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		const self = this;
 		const azureSection: SectionInfo = {
 			title: '',
-			rows: [
+			labelOnLeft: true,
+			fields: [
 				{
-					fields: [
-						{
-							type: FieldType.Text,
-							label: localize('deployCluster.SubscriptionField', "Subscription id"),
-							required: false,
-							variableName: WizardConstants.SubscriptionId,
-							placeHolder: localize('deployCluster.SubscriptionPlaceholder', "Use my default Azure subscription")
-						}
-					]
+					type: FieldType.Text,
+					label: localize('deployCluster.SubscriptionField', "Subscription id"),
+					required: false,
+					variableName: WizardConstants.SubscriptionId,
+					placeHolder: localize('deployCluster.SubscriptionPlaceholder', "Use my default Azure subscription")
 				}, {
-					fields: [
-						{
-							type: FieldType.DateTimeText,
-							label: localize('deployCluster.ResourceGroupName', "New resource group name"),
-							required: true,
-							variableName: WizardConstants.ResourceGroup,
-							defaultValue: 'mssql-'
-						}
-					]
+					type: FieldType.DateTimeText,
+					label: localize('deployCluster.ResourceGroupName', "New resource group name"),
+					required: true,
+					variableName: WizardConstants.ResourceGroup,
+					defaultValue: 'mssql-'
 				}, {
-					fields: [
-						{
-							type: FieldType.Text,
-							label: localize('deployCluster.Region', "Region"),
-							required: true,
-							variableName: WizardConstants.Region,
-							defaultValue: 'eastus'
-						}
-					]
+					type: FieldType.Text,
+					label: localize('deployCluster.Region', "Region"),
+					required: true,
+					variableName: WizardConstants.Region,
+					defaultValue: 'eastus'
 				}, {
-					fields: [
-						{
-							type: FieldType.DateTimeText,
-							label: localize('deployCluster.AksName', "AKS cluster name"),
-							required: true,
-							variableName: WizardConstants.AksName,
-							defaultValue: 'mssql-',
-						}
-					]
+					type: FieldType.DateTimeText,
+					label: localize('deployCluster.AksName', "AKS cluster name"),
+					required: true,
+					variableName: WizardConstants.AksName,
+					defaultValue: 'mssql-',
 				}, {
-					fields: [
-						{
-							type: FieldType.Number,
-							label: localize('deployCluster.VMCount', "VM count"),
-							required: true,
-							variableName: WizardConstants.VMCount,
-							defaultValue: '5',
-							min: 1,
-							max: 999
-						}
-					]
+					type: FieldType.Number,
+					label: localize('deployCluster.VMCount', "VM count"),
+					required: true,
+					variableName: WizardConstants.VMCount,
+					defaultValue: '5',
+					min: 1,
+					max: 999
 				}, {
-					fields: [
-						{
-							type: FieldType.Text,
-							label: localize('deployCluster.VMSize', "VM size"),
-							required: true,
-							variableName: WizardConstants.VMSize,
-							defaultValue: 'Standard_E4s_v3'
-						}
-					]
+					type: FieldType.Text,
+					label: localize('deployCluster.VMSize', "VM size"),
+					required: true,
+					variableName: WizardConstants.VMSize,
+					defaultValue: 'Standard_E4s_v3'
 				}
 			]
 		};
