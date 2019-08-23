@@ -294,7 +294,7 @@ export class NotebookInput extends EditorInput {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
 				textOrUntitledEditorModel = await textEditorModelReference.object.load();
 			}
-			this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel);
+			this._model = this._register(this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel));
 			this.hookDirtyListener(this._model.onDidChangeDirty, () => this._onDidChangeDirty.fire());
 			return this._model;
 		}
