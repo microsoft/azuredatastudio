@@ -11,8 +11,12 @@ import * as yaml from 'js-yaml';
 import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
+import { isEditorTitleFree } from '../common/utils';
 import * as nls from 'vscode-nls';
+import { promisify } from 'util';
+
 const localize = nls.loadMessageBundle();
+const existsAsync = promisify(fs.exists);
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';
@@ -27,17 +31,29 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	// For testing
 	private _errorMessage: string;
 	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
+	private _openAsUntitled: boolean;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		this.getTableOfContentFiles(workspaceFolders).then(() => undefined, (err) => { console.log(err); });
-		this._extensionContext = extensionContext;
+		this.initialze(workspaceFolders, null, extensionContext);
+	}
+
+	private initialze(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
+		let workspacePaths: string[] = [];
+		if (bookPath) {
+			workspacePaths.push(bookPath);
+		}
+		else if (workspaceFolders) {
+			workspacePaths = workspaceFolders.map(a => a.uri.fsPath);
+		}
+		this.getTableOfContentFiles(workspacePaths).then(() => undefined, (err) => { console.log(err); });
+		this._extensionContext = context;
 	}
 
 	public get onReadAllTOCFiles(): vscode.Event<void> {
 		return this._onReadAllTOCFiles.event;
 	}
 
-	async getTableOfContentFiles(workspaceFolders: vscode.WorkspaceFolder[]): Promise<void> {
+	async getTableOfContentFiles(workspacePaths: string[]): Promise<void> {
 		let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 		let maxDepth = notebookConfig[maxBookSearchDepth];
 		// Use default value if user enters an invalid value
@@ -46,7 +62,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 			maxDepth = undefined;
 		}
-		let workspacePaths: string[] = workspaceFolders.map(a => a.uri.fsPath);
 		for (let workspacePath of workspacePaths) {
 			let p = path.join(workspacePath, '**', '_data', 'toc.yml').replace(/\\/g, '/');
 			let tableOfContentPaths = await glob(p, { deep: maxDepth });
@@ -57,12 +72,50 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._onReadAllTOCFiles.fire();
 	}
 
+	async openBook(bookPath: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
+		try {
+			// Check if the book is already open in viewlet.
+			if (this._tableOfContentPaths.indexOf(path.join(bookPath, '_data', 'toc.yml').replace(/\\/g, '/')) > -1 && this._allNotebooks.size > 0) {
+				vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer');
+			}
+			else {
+				await this.getTableOfContentFiles([bookPath]);
+				let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
+				await vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer');
+				this._openAsUntitled = openAsUntitled;
+				let books = this.getBooks();
+				if (books && books.length > 0) {
+					bookViewer.reveal(books[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+					const readmeMarkdown: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.md'));
+					const readmeNotebook: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
+					const markdownExists = await existsAsync(readmeMarkdown);
+					const notebookExists = await existsAsync(readmeNotebook);
+					if (markdownExists) {
+						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
+					}
+					else if (notebookExists) {
+						vscode.workspace.openTextDocument(readmeNotebook);
+					}
+				}
+			}
+		} catch (e) {
+			vscode.window.showErrorMessage(localize('openBookError', "Open book {0} failed: {1}",
+				bookPath,
+				e instanceof Error ? e.message : e));
+		}
+	}
+
 	async openNotebook(resource: string): Promise<void> {
 		try {
-			let doc = await vscode.workspace.openTextDocument(resource);
-			vscode.window.showTextDocument(doc);
+			if (this._openAsUntitled) {
+				this.openNotebookAsUntitled(resource);
+			}
+			else {
+				let doc = await vscode.workspace.openTextDocument(resource);
+				vscode.window.showTextDocument(doc);
+			}
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openNotebookError', 'Open file {0} failed: {1}',
+			vscode.window.showErrorMessage(localize('openNotebookError', "Open file {0} failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -78,6 +131,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					e instanceof Error ? e.message : e));
 			}
 		});
+	}
+
+	openNotebookAsUntitled(resource: string): void {
+		try {
+			let untitledFileName: vscode.Uri = this.getUntitledNotebookUri(resource);
+			vscode.workspace.openTextDocument(resource).then((document) => {
+				let initialContent = document.getText();
+				azdata.nb.showNotebookDocument(untitledFileName, {
+					connectionProfile: null,
+					initialContent: initialContent,
+					initialDirtyState: false
+				});
+			});
+		} catch (e) {
+			vscode.window.showErrorMessage(localize('openUntitledNotebookError', "Open file {0} as untitled failed: {1}",
+				resource,
+				e instanceof Error ? e.message : e));
+		}
 	}
 
 	private runThrottledAction(resource: string, action: () => void) {
@@ -103,7 +174,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		try {
 			vscode.env.openExternal(vscode.Uri.parse(resource));
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openExternalLinkError', 'Open link {0} failed: {1}',
+			vscode.window.showErrorMessage(localize('openExternalLinkError', "Open link {0} failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -145,7 +216,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					root: root,
 					tableOfContents: this.flattenArray(tableOfContents, config.title),
 					page: tableOfContents,
-					type: BookTreeItemType.Book
+					type: BookTreeItemType.Book,
+					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
@@ -172,7 +244,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						root: root,
 						tableOfContents: tableOfContents,
 						page: sections[i],
-						type: BookTreeItemType.ExternalLink
+						type: BookTreeItemType.ExternalLink,
+						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -192,7 +265,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							root: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
-							type: BookTreeItemType.Notebook
+							type: BookTreeItemType.Notebook,
+							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -201,13 +275,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						);
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
+						if (this._openAsUntitled) {
+							this._allNotebooks.set(path.basename(pathToNotebook, '.ipynb'), notebook);
+						}
 					} else if (fs.existsSync(pathToMarkdown)) {
 						let markdown = new BookTreeItem({
 							title: sections[i].title,
 							root: root,
 							tableOfContents: tableOfContents,
 							page: sections[i],
-							type: BookTreeItemType.Markdown
+							type: BookTreeItemType.Markdown,
+							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -234,8 +312,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		if (notebook) {
 			result = {
 				hasNavigation: true,
-				previous: notebook.previousUri ? vscode.Uri.file(notebook.previousUri) : undefined,
-				next: notebook.nextUri ? vscode.Uri.file(notebook.nextUri) : undefined
+				previous: notebook.previousUri ? this._openAsUntitled ? vscode.Uri.parse(notebook.previousUri).with({ scheme: 'untitled' }) : vscode.Uri.file(notebook.previousUri) : undefined,
+				next: notebook.nextUri ? this._openAsUntitled ? vscode.Uri.parse(notebook.nextUri).with({ scheme: 'untitled' }) : vscode.Uri.file(notebook.nextUri) : undefined
 			};
 		} else {
 			result = {
@@ -254,4 +332,28 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public get tableOfContentPaths() {
 		return this._tableOfContentPaths;
 	}
+	getUntitledNotebookUri(resource: string): vscode.Uri {
+		let title = this.findNextUntitledFileName(resource);
+		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
+		if (!this._allNotebooks.get(untitledFileName.fsPath)) {
+			let notebook = this._allNotebooks.get(resource);
+			this._allNotebooks.set(untitledFileName.fsPath, notebook);
+		}
+		return untitledFileName;
+	}
+
+	findNextUntitledFileName(filePath: string): string {
+		const fileExtension = path.extname(filePath);
+		const baseName = path.basename(filePath, fileExtension);
+		let idx = 0;
+		let title = `${baseName}`;
+		do {
+			const suffix = idx === 0 ? '' : `-${idx}`;
+			title = `${baseName}${suffix}`;
+			idx++;
+		} while (!isEditorTitleFree(title));
+
+		return title;
+	}
+
 }
