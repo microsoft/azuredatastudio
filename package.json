@@ -77,7 +77,7 @@
     "vscode-ripgrep": "^1.5.6",
     "vscode-sqlite3": "4.0.8",
     "vscode-textmate": "^4.2.2",
-    "xterm": "3.15.0-beta99",
+    "xterm": "3.15.0-beta101",
     "xterm-addon-search": "0.2.0-beta5",
     "xterm-addon-web-links": "0.1.0-beta10",
     "yauzl": "^2.9.2",
@@ -87,6 +87,7 @@
   "devDependencies": {
     "7zip": "0.0.6",
     "@types/chart.js": "^2.7.31",
+    "@types/cookie": "^0.3.3",
     "@types/htmlparser2": "^3.7.31",
     "@types/keytar": "^4.4.0",
     "@types/mocha": "2.2.39",
