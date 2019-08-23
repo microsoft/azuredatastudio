@@ -81,16 +81,6 @@ export interface IConnectionManagementService {
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
 
 	/**
-	 * Opens the add server group dialog
-	 */
-	showCreateServerGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void>;
-
-	/**
-	 * Opens the edit server group dialog
-	 */
-	showEditServerGroupDialog(group: ConnectionProfileGroup): Promise<void>;
-
-	/**
 	 * Load the password and opens a new connection
 	 */
 	connect(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult>;
