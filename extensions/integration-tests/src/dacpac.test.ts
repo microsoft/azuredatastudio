@@ -36,7 +36,7 @@ if (context.RunTest) {
 			const databaseName = 'ADS_deployDacpac_' + now.getTime().toString();
 
 			try {
-				const dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.mssql)).dacFx;
+				const dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 				assert(dacfxService, 'DacFx Service Provider is not available');
 
 				// Deploy dacpac
@@ -72,7 +72,7 @@ if (context.RunTest) {
 			const databaseName = 'ADS_importBacpac_' + now.getTime().toString();
 
 			try {
-				let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.mssql)).dacFx;
+				let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 				assert(dacfxService, 'DacFx Service Provider is not available');
 
 				// Import bacpac

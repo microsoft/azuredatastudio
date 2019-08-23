@@ -14,7 +14,7 @@
 		"textLinkActiveForeground": "#3062d6",
 
 		//Button control
-		"button.background": "#0078d7cc",
+		"button.background": "#007ACC",
 		"button.foreground": "#ffffff",
 		"button.hoverBackground": "#0078d7",
 

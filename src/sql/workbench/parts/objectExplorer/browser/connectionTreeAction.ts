@@ -304,40 +304,6 @@ export class RecentConnectionsFilterAction extends Action {
 	}
 }
 
-export class NewQueryAction extends Action {
-	public static ID = 'registeredServers.newQuery';
-	public static LABEL = localize('registeredServers.newQuery', "New Query");
-	private _connectionProfile: IConnectionProfile;
-	get connectionProfile(): IConnectionProfile {
-		return this._connectionProfile;
-	}
-	set connectionProfile(profile: IConnectionProfile) {
-		this._connectionProfile = profile;
-	}
-
-	constructor(
-		id: string,
-		label: string,
-		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IEditorService protected _workbenchEditorService: IEditorService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
-	) {
-		super(id, label);
-		this.class = 'extension-action update';
-	}
-
-	public run(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
-		if (actionContext instanceof ObjectExplorerActionsContext) {
-			this._connectionProfile = new ConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
-		}
-
-		TaskUtilities.newQuery(this._connectionProfile, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this._workbenchEditorService);
-		return Promise.resolve(true);
-	}
-}
-
 /**
  * Actions to delete a server/group
  */

@@ -553,15 +553,17 @@ export interface MainThreadWebviewsShape extends IDisposable {
 	$unregisterSerializer(viewType: string): void;
 }
 
-export interface WebviewPanelViewState {
-	readonly active: boolean;
-	readonly visible: boolean;
-	readonly position: EditorViewColumn;
+export interface WebviewPanelViewStateData {
+	[handle: string]: {
+		readonly active: boolean;
+		readonly visible: boolean;
+		readonly position: EditorViewColumn;
+	};
 }
 
 export interface ExtHostWebviewsShape {
 	$onMessage(handle: WebviewPanelHandle, message: any): void;
-	$onDidChangeWebviewPanelViewState(handle: WebviewPanelHandle, newState: WebviewPanelViewState): void;
+	$onDidChangeWebviewPanelViewStates(newState: WebviewPanelViewStateData): void;
 	$onDidDisposeWebviewPanel(handle: WebviewPanelHandle): Promise<void>;
 	$deserializeWebviewPanel(newWebviewHandle: WebviewPanelHandle, viewType: string, title: string, state: any, position: EditorViewColumn, options: modes.IWebviewOptions & modes.IWebviewPanelOptions): Promise<void>;
 }
@@ -745,7 +747,7 @@ export interface ExtHostConfigurationShape {
 }
 
 export interface ExtHostDiagnosticsShape {
-
+	$acceptMarkersChange(data: [UriComponents, IMarkerData[]][]): void;
 }
 
 export interface ExtHostDocumentContentProvidersShape {
@@ -937,6 +939,7 @@ export interface ISuggestDataDto {
 	k/* commitCharacters */?: string[];
 	l/* additionalTextEdits */?: ISingleEditOperation[];
 	m/* command */?: modes.Command;
+	n/* deprecated */?: boolean;
 	// not-standard
 	x?: ChainedCacheId;
 }
@@ -1285,6 +1288,10 @@ export interface ExtHostLogServiceShape {
 	$setLevel(level: LogLevel): void;
 }
 
+export interface MainThreadLogShape {
+	$log(file: UriComponents, level: LogLevel, args: any[]): void;
+}
+
 export interface ExtHostOutputServiceShape {
 	$setVisibleChannel(channelId: string | null): void;
 }
@@ -1327,6 +1334,7 @@ export const MainContext = {
 	MainThreadKeytar: createMainId<MainThreadKeytarShape>('MainThreadKeytar'),
 	MainThreadLanguageFeatures: createMainId<MainThreadLanguageFeaturesShape>('MainThreadLanguageFeatures'),
 	MainThreadLanguages: createMainId<MainThreadLanguagesShape>('MainThreadLanguages'),
+	MainThreadLog: createMainId<MainThreadLogShape>('MainThread'),
 	MainThreadMessageService: createMainId<MainThreadMessageServiceShape>('MainThreadMessageService'),
 	MainThreadOutputService: createMainId<MainThreadOutputServiceShape>('MainThreadOutputService'),
 	MainThreadProgress: createMainId<MainThreadProgressShape>('MainThreadProgress'),

@@ -14,6 +14,9 @@ import { isNullOrUndefined } from 'util';
 const localize = nls.loadMessageBundle();
 
 export class SchemaCompareOptionsDialog {
+
+	//#region Localized strings
+
 	private static readonly OkButtonText: string = localize('SchemaCompareOptionsDialog.Ok', 'OK');
 	private static readonly CancelButtonText: string = localize('SchemaCompareOptionsDialog.Cancel', 'Cancel');
 	private static readonly ResetButtonText: string = localize('SchemaCompareOptionsDialog.Reset', 'Reset');
@@ -246,6 +249,8 @@ export class SchemaCompareOptionsDialog {
 	private static readonly descriptionDropObjectsNotInSource: string = localize('SchemaCompare.Description.DropObjectsNotInSource', 'Specifies whether objects that do not exist in the database snapshot (.dacpac) file will be dropped from the target database when you publish to a database.  This value takes precedence over DropExtendedProperties.');
 	private static readonly descriptionIgnoreColumnOrder: string = localize('SchemaCompare.Description.IgnoreColumnOrder', 'Specifies whether differences in table column order should be ignored or updated when you publish to a database.');
 
+	//#endregion
+
 	public dialog: azdata.window.Dialog;
 	public deploymentOptions: mssql.DeploymentOptions;
 
@@ -466,7 +471,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async reset() {
-		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).schemaCompare;
+		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;
@@ -581,7 +586,8 @@ export class SchemaCompareOptionsDialog {
 					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
-			]
+			],
+			ariaRowCount: data.length
 		});
 	}
 
@@ -604,7 +610,8 @@ export class SchemaCompareOptionsDialog {
 					cssClass: 'no-borders align-with-header',
 					width: 50
 				}
-			]
+			],
+			ariaRowCount: data.length
 		});
 	}
 

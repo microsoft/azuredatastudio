@@ -20,7 +20,8 @@ import { ApplicationInsights } from '@microsoft/applicationinsights-web';
 export class WebTelemetryAppender implements ITelemetryAppender {
 	private _aiClient?: ApplicationInsights;
 
-	constructor(aiKey: string, private _logService: ILogService) {
+	constructor(aiKey: string, private _logService: ILogService
+		, @IWorkbenchEnvironmentService private _environmentService: IWorkbenchEnvironmentService) { // {{ SQL CARBON EDIT }}
 		const initConfig = {
 			config: {
 				instrumentationKey: aiKey,
@@ -44,8 +45,10 @@ export class WebTelemetryAppender implements ITelemetryAppender {
 		data = validateTelemetryData(data);
 		this._logService.trace(`telemetry/${eventName}`, data);
 
+		// {{ SQL CARBON EDIT }}
+		const eventPrefix = this._environmentService.appQuality !== 'stable' ? 'adsworkbench/' : 'monacoworkbench/';
 		this._aiClient.trackEvent({
-			name: 'monacoworkbench/' + eventName,
+			name: eventPrefix + eventName,
 			properties: data.properties,
 			measurements: data.measurements
 		});
@@ -82,7 +85,7 @@ export class TelemetryService extends Disposable implements ITelemetryService {
 		const aiKey = productService.aiConfig && productService.aiConfig.asimovKey;
 		if (!environmentService.isExtensionDevelopment && !environmentService.args['disable-telemetry'] && !!productService.enableTelemetry && !!aiKey) {
 			const config: ITelemetryServiceConfig = {
-				appender: combinedAppender(new WebTelemetryAppender(aiKey, logService), new LogAppender(logService)),
+				appender: combinedAppender(new WebTelemetryAppender(aiKey, logService, environmentService), new LogAppender(logService)),
 				commonProperties: resolveWorkbenchCommonProperties(storageService, productService.commit, productService.version, environmentService.configuration.machineId, environmentService.configuration.remoteAuthority),
 				piiPaths: [environmentService.appRoot]
 			};
