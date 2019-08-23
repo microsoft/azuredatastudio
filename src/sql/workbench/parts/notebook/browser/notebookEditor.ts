@@ -36,6 +36,7 @@ import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, FindMatch } fro
 import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
 import { Range } from 'vs/editor/common/core/range';
 import { TimeoutTimer } from 'vs/base/common/async';
+import { Selection } from 'vs/editor/common/core/selection';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
@@ -261,11 +262,25 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 						}
 					});
 					this._decorations.set(this._notebookModel.findMatches, findScope);
+					this._findState.changeMatchInfo(
+						this._decorations.getCurrentMatchesPosition(this.getSelection()),
+						this._decorations.getCount(),
+						undefined
+					);
 				} else {
 					this._notebookModel.clearFind();
 				}
 			}
 		}
+	}
+
+	public getSelection(): Selection | null {
+		if (!this._notebookModel) {
+			return null;
+		}
+		// temp
+		return null;
+		// return this._notebookModel.cursor.getSelection();
 	}
 
 	public toggleSearch(reveal: boolean): void {
