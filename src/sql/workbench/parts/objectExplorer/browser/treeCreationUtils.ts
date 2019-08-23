@@ -11,7 +11,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ServerTreeRenderer } from 'sql/workbench/parts/objectExplorer/browser/serverTreeRenderer';
 import { ServerTreeDataSource } from 'sql/workbench/parts/objectExplorer/browser/serverTreeDataSource';
 import { ServerTreeController } from 'sql/workbench/parts/objectExplorer/browser/serverTreeController';
-import { ServerTreeActionProvider } from 'sql/workbench/parts/objectExplorer/browser/serverTreeActionProvider';
 import { DefaultFilter, DefaultAccessibilityProvider, DefaultController } from 'vs/base/parts/tree/browser/treeDefaults';
 import { IController } from 'vs/base/parts/tree/browser/tree';
 import { ServerTreeDragAndDrop, RecentConnectionsDragAndDrop } from 'sql/workbench/parts/objectExplorer/browser/dragAndDropController';
@@ -44,9 +43,8 @@ export class TreeCreationUtils {
 	public static createRegisteredServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
 
 		const dataSource = instantiationService.createInstance(ServerTreeDataSource);
-		const actionProvider = instantiationService.createInstance(ServerTreeActionProvider);
 		const renderer = instantiationService.createInstance(ServerTreeRenderer, false);
-		const controller = instantiationService.createInstance(ServerTreeController, actionProvider);
+		const controller = instantiationService.createInstance(ServerTreeController);
 		const dnd = instantiationService.createInstance(ServerTreeDragAndDrop);
 		const filter = new DefaultFilter();
 		const sorter = undefined;

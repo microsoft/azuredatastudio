@@ -703,7 +703,6 @@ export interface MainThreadObjectExplorerShape extends IDisposable {
 	$isExpanded(connectionId: string, nodePath: string): Thenable<boolean>;
 	$findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<azdata.NodeInfo[]>;
 	$refresh(connectionId: string, nodePath: string): Thenable<azdata.NodeInfo>;
-	$getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
 	$getSessionConnectionProfile(sessionId: string): Thenable<azdata.IConnectionProfile>;
 }
 

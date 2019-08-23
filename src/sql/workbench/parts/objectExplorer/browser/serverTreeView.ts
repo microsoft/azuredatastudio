@@ -10,7 +10,7 @@ import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -31,7 +31,6 @@ import { attachButtonStyler } from 'sql/platform/theme/common/styler';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { SERVER_GROUP_CONFIG, SERVER_GROUP_AUTOEXPAND_CONFIG } from 'sql/workbench/parts/objectExplorer/common/serverGroup.contribution';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { ServerTreeActionProvider } from 'sql/workbench/parts/objectExplorer/browser/serverTreeActionProvider';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -47,7 +46,6 @@ export class ServerTreeView extends Disposable {
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: ITree;
 	private _onSelectionOrFocusChange: Emitter<void>;
-	private _actionProvider: ServerTreeActionProvider;
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -66,7 +64,6 @@ export class ServerTreeView extends Disposable {
 			this);
 		this._treeSelectionHandler = this._instantiationService.createInstance(TreeSelectionHandler);
 		this._onSelectionOrFocusChange = new Emitter();
-		this._actionProvider = this._instantiationService.createInstance(ServerTreeActionProvider);
 		capabilitiesService.onCapabilitiesRegistered(() => {
 			if (this._connectionManagementService.hasRegisteredServers()) {
 				this.refreshTree();
@@ -88,10 +85,6 @@ export class ServerTreeView extends Disposable {
 	 */
 	public get onSelectionOrFocusChange(): Event<void> {
 		return this._onSelectionOrFocusChange.event;
-	}
-
-	public get treeActionProvider(): ServerTreeActionProvider {
-		return this._actionProvider;
 	}
 
 	public get tree(): ITree {

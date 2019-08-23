@@ -61,10 +61,6 @@ export class MainThreadObjectExplorer extends Disposable implements MainThreadOb
 		return this._objectExplorerService.refreshNodeInView(connectionId, nodePath).then(node => node.toNodeInfo());
 	}
 
-	public $getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
-		return this._objectExplorerService.getNodeActions(connectionId, nodePath);
-	}
-
 	public $getSessionConnectionProfile(sessionId: string): Thenable<azdata.IConnectionProfile> {
 		return Promise.resolve(this._objectExplorerService.getSessionConnectionProfile(sessionId));
 	}

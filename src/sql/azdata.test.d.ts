@@ -12,11 +12,4 @@ declare module 'azdata' {
 	export namespace extensions {
 		export function install(vsixPath: string): Thenable<string>;
 	}
-
-	export namespace objectexplorer {
-		/**
-		 * get object explorer node context menu actions
-		 */
-		export function getNodeActions(connectionId: string, nodePath: string): Thenable<string[]>;
-	}
 }

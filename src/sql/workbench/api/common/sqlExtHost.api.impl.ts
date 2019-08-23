@@ -194,9 +194,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<azdata.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
 				},
-				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
-					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
-				},
 				getSessionConnectionProfile(sessionId: string): Thenable<azdata.IConnectionProfile> {
 					return extHostObjectExplorer.$getSessionConnectionProfile(sessionId);
 				}
@@ -615,9 +612,6 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				},
 				findNodes(connectionId: string, type: string, schema: string, name: string, database: string, parentObjectNames: string[]): Thenable<sqlops.objectexplorer.ObjectExplorerNode[]> {
 					return extHostObjectExplorer.$findNodes(connectionId, type, schema, name, database, parentObjectNames);
-				},
-				getNodeActions(connectionId: string, nodePath: string): Thenable<string[]> {
-					return extHostObjectExplorer.$getNodeActions(connectionId, nodePath);
 				},
 				getSessionConnectionProfile(sessionId: string): Thenable<sqlops.IConnectionProfile> {
 					return extHostObjectExplorer.$getSessionConnectionProfile(sessionId);
