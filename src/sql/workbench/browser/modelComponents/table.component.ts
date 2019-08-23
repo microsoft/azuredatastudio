@@ -229,9 +229,7 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		for (const col of this._checkboxColumns) {
-			this.registerCheckboxPlugin(col);
-		}
+		Object.keys(this._checkboxColumns).forEach(col => this.registerCheckboxPlugin(this._checkboxColumns[col]));
 
 		if (this.ariaRowCount === -1) {
 			this._table.removeAriaRowCount();
