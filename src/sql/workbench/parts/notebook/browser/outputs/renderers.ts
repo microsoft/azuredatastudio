@@ -643,7 +643,7 @@ namespace Private {
 	function isPathLocal(path: string, resolver: IRenderMime.IResolver): boolean {
 		let isLocal: boolean;
 		if (path && path.length > 0) {
-			isLocal = resolver.isLocal
+			isLocal = resolver && resolver.isLocal
 				? resolver.isLocal(path)
 				: URLExt.isLocal(path);
 		} else {
