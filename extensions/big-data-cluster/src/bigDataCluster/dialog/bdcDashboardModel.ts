@@ -14,6 +14,8 @@ export class BdcDashboardModel {
 
 	private _bdcStatus: BdcStatusModel;
 	private _endpoints: EndpointModel[] = [];
+	private _bdcStatusLastUpdated: Date;
+	private _endpointsLastUpdated: Date;
 	private readonly _onDidUpdateEndpoints = new vscode.EventEmitter<EndpointModel[]>();
 	private readonly _onDidUpdateBdcStatus = new vscode.EventEmitter<BdcStatusModel>();
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
@@ -31,40 +33,26 @@ export class BdcDashboardModel {
 		return this._endpoints || [];
 	}
 
+	public get bdcStatusLastUpdated(): Date {
+		return this._bdcStatusLastUpdated;
+	}
+
+	public get endpointsLastUpdated(): Date {
+		return this._endpointsLastUpdated;
+	}
+
 	public async refresh(): Promise<void> {
 		await Promise.all([
 			getBdcStatus(this.url, this.username, this.password, true).then(response => {
 				this._bdcStatus = response.bdcStatus;
+				this._bdcStatusLastUpdated = new Date();
 				this._onDidUpdateBdcStatus.fire(this.bdcStatus);
 			}),
 			getEndPoints(this.url, this.username, this.password, true).then(response => {
 				this._endpoints = response.endPoints || [];
+				this._endpointsLastUpdated = new Date();
 				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
 			})
 		]).catch(error => showErrorMessage(error));
 	}
-}
-
-export enum Endpoint {
-	gateway = 'gateway',
-	sparkHistory = 'spark-history',
-	yarnUi = 'yarn-ui',
-	appProxy = 'app-proxy',
-	mgmtproxy = 'mgmtproxy',
-	managementProxy = 'management-proxy',
-	logsui = 'logsui',
-	metricsui = 'metricsui',
-	controller = 'controller',
-	sqlServerMaster = 'sql-server-master',
-	webhdfs = 'webhdfs',
-	livy = 'livy'
-}
-
-export enum Service {
-	sql = 'sql',
-	hdfs = 'hdfs',
-	spark = 'spark',
-	control = 'control',
-	gateway = 'gateway',
-	app = 'app'
 }
