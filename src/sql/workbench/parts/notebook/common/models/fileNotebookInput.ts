@@ -9,7 +9,7 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 
 export class FileNotebookInput extends NotebookInput {
 	public static ID: string = 'workbench.editorinputs.fileNotebookInput';

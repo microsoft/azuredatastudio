@@ -11,11 +11,8 @@ import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionT
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
 import * as Constants from 'sql/platform/connection/common/constants';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ipcRenderer as ipc } from 'electron';
@@ -27,20 +24,21 @@ import { URI } from 'vs/base/common/uri';
 import { ILogService } from 'vs/platform/log/common/log';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
 
 export class CommandLineWorkbenchContribution implements IWorkbenchContribution {
 
 	constructor(
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
 		@IEnvironmentService environmentService: IEnvironmentService,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IEditorService private _editorService: IEditorService,
-		@ICommandService private _commandService: ICommandService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@INotificationService private _notificationService: INotificationService,
-		@ILogService private logService: ILogService
+		@IEditorService private readonly _editorService: IEditorService,
+		@ICommandService private readonly _commandService: ICommandService,
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@INotificationService private readonly _notificationService: INotificationService,
+		@ILogService private readonly logService: ILogService,
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		if (ipc) {
 			ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
@@ -122,11 +120,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 					this._notificationService.status(localize('openingNewQueryLabel', "Opening new query: {0}", profile.serverName), { hideAfter: 2500 });
 				}
 				try {
-					await TaskUtilities.newQuery(profile,
-						this._connectionManagementService,
-						this._queryEditorService,
-						this._objectExplorerService,
-						this._editorService);
+					await this.instantiationService.invokeFunction(openNewQuery, profile);
 				} catch (error) {
 					this.logService.warn('unable to open query editor ' + error);
 					// Note: we are intentionally swallowing this error.

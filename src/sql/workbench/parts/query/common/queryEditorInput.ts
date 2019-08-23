@@ -36,10 +36,12 @@ export interface IQueryEditorStateChange {
 	resultsVisibleChange?: boolean;
 	executingChange?: boolean;
 	connectingChange?: boolean;
+	sqlCmdModeChanged?: boolean;
 }
 
 export class QueryEditorState extends Disposable {
 	private _connected = false;
+	private _isSqlCmdMode = false;
 	private _resultsVisible = false;
 	private _executing = false;
 	private _connecting = false;
@@ -89,6 +91,17 @@ export class QueryEditorState extends Disposable {
 
 	public get executing(): boolean {
 		return this._executing;
+	}
+
+	public set isSqlCmdMode(val: boolean) {
+		if (val !== this._isSqlCmdMode) {
+			this._isSqlCmdMode = val;
+			this._onChange.fire({ sqlCmdModeChanged: true });
+		}
+	}
+
+	public get isSqlCmdMode(): boolean {
+		return this._isSqlCmdMode;
 	}
 }
 
@@ -144,7 +157,7 @@ export abstract class QueryEditorInput extends EditorInput implements IConnectab
 	}
 
 	// Getters for private properties
-	public get uri(): string { return this.getResource().toString(); }
+	public get uri(): string { return this.getResource().toString(true); }
 	public get text(): EditorInput { return this._text; }
 	public get results(): QueryResultsInput { return this._results; }
 	// Description is shown beside the tab name in the combobox of open editors

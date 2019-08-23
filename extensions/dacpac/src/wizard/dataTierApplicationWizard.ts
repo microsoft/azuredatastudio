@@ -15,6 +15,7 @@ import { ExtractConfigPage } from './pages/extractConfigPage';
 import { ImportConfigPage } from './pages/importConfigPage';
 import { DacFxDataModel } from './api/models';
 import { BasePage } from './api/basePage';
+import * as mssql from '../../../mssql';
 
 const localize = nls.loadMessageBundle();
 const msSqlProvider = 'MSSQL';
@@ -66,6 +67,16 @@ export enum ExportOperationPath {
 	summary
 }
 
+export enum PageName {
+	selectOperation = 'selectOperation',
+	deployConfig = 'deployConfig',
+	deployPlan = 'deployPlan',
+	extractConfig = 'extractConfig',
+	importConfig = 'importConfig',
+	exportConfig = 'exportConfig',
+	summary = 'summary'
+}
+
 export class DataTierApplicationWizard {
 	public wizard: azdata.window.Wizard;
 	private connection: azdata.connection.ConnectionProfile;
@@ -107,13 +118,13 @@ export class DataTierApplicationWizard {
 		let importConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.importConfigPageName', 'Select Import Bacpac Settings'));
 		let exportConfigWizardPage = azdata.window.createWizardPage(localize('dacFx.exportConfigPageName', 'Select Export Bacpac Settings'));
 
-		this.pages.set('selectOperation', new Page(selectOperationWizardPage));
-		this.pages.set('deployConfig', new Page(deployConfigWizardPage));
-		this.pages.set('deployPlan', new Page(deployPlanWizardPage));
-		this.pages.set('extractConfig', new Page(extractConfigWizardPage));
-		this.pages.set('importConfig', new Page(importConfigWizardPage));
-		this.pages.set('exportConfig', new Page(exportConfigWizardPage));
-		this.pages.set('summary', new Page(summaryWizardPage));
+		this.pages.set(PageName.selectOperation, new Page(selectOperationWizardPage));
+		this.pages.set(PageName.deployConfig, new Page(deployConfigWizardPage));
+		this.pages.set(PageName.deployPlan, new Page(deployPlanWizardPage));
+		this.pages.set(PageName.extractConfig, new Page(extractConfigWizardPage));
+		this.pages.set(PageName.importConfig, new Page(importConfigWizardPage));
+		this.pages.set(PageName.exportConfig, new Page(exportConfigWizardPage));
+		this.pages.set(PageName.summary, new Page(summaryWizardPage));
 
 		selectOperationWizardPage.registerContent(async (view) => {
 			let selectOperationDacFxPage = new SelectOperationPage(this, selectOperationWizardPage, this.model, view);
@@ -126,37 +137,37 @@ export class DataTierApplicationWizard {
 
 		deployConfigWizardPage.registerContent(async (view) => {
 			let deployConfigDacFxPage = new DeployConfigPage(this, deployConfigWizardPage, this.model, view);
-			this.pages.get('deployConfig').dacFxPage = deployConfigDacFxPage;
+			this.pages.get(PageName.deployConfig).dacFxPage = deployConfigDacFxPage;
 			await deployConfigDacFxPage.start();
 		});
 
 		deployPlanWizardPage.registerContent(async (view) => {
 			let deployPlanDacFxPage = new DeployPlanPage(this, deployPlanWizardPage, this.model, view);
-			this.pages.get('deployPlan').dacFxPage = deployPlanDacFxPage;
+			this.pages.get(PageName.deployPlan).dacFxPage = deployPlanDacFxPage;
 			await deployPlanDacFxPage.start();
 		});
 
 		extractConfigWizardPage.registerContent(async (view) => {
 			let extractConfigDacFxPage = new ExtractConfigPage(this, extractConfigWizardPage, this.model, view);
-			this.pages.get('extractConfig').dacFxPage = extractConfigDacFxPage;
+			this.pages.get(PageName.extractConfig).dacFxPage = extractConfigDacFxPage;
 			await extractConfigDacFxPage.start();
 		});
 
 		importConfigWizardPage.registerContent(async (view) => {
 			let importConfigDacFxPage = new ImportConfigPage(this, importConfigWizardPage, this.model, view);
-			this.pages.get('importConfig').dacFxPage = importConfigDacFxPage;
+			this.pages.get(PageName.importConfig).dacFxPage = importConfigDacFxPage;
 			await importConfigDacFxPage.start();
 		});
 
 		exportConfigWizardPage.registerContent(async (view) => {
 			let exportConfigDacFxPage = new ExportConfigPage(this, exportConfigWizardPage, this.model, view);
-			this.pages.get('exportConfig').dacFxPage = exportConfigDacFxPage;
+			this.pages.get(PageName.exportConfig).dacFxPage = exportConfigDacFxPage;
 			await exportConfigDacFxPage.start();
 		});
 
 		summaryWizardPage.registerContent(async (view) => {
 			let summaryDacFxPage = new DacFxSummaryPage(this, summaryWizardPage, this.model, view);
-			this.pages.get('summary').dacFxPage = summaryDacFxPage;
+			this.pages.get(PageName.summary).dacFxPage = summaryDacFxPage;
 			await summaryDacFxPage.start();
 		});
 
@@ -312,26 +323,26 @@ export class DataTierApplicationWizard {
 		if (idx === 1) {
 			switch (this.selectedOperation) {
 				case Operation.deploy: {
-					page = this.pages.get('deployConfig');
+					page = this.pages.get(PageName.deployConfig);
 					break;
 				}
 				case Operation.extract: {
-					page = this.pages.get('extractConfig');
+					page = this.pages.get(PageName.extractConfig);
 					break;
 				}
 				case Operation.import: {
-					page = this.pages.get('importConfig');
+					page = this.pages.get(PageName.importConfig);
 					break;
 				}
 				case Operation.export: {
-					page = this.pages.get('exportConfig');
+					page = this.pages.get(PageName.exportConfig);
 					break;
 				}
 			}
 		} else if (this.isSummaryPage(idx)) {
-			page = this.pages.get('summary');
+			page = this.pages.get(PageName.summary);
 		} else if ((this.selectedOperation === Operation.deploy || this.selectedOperation === Operation.generateDeployScript) && idx === DeployOperationPath.deployPlan) {
-			page = this.pages.get('deployPlan');
+			page = this.pages.get(PageName.deployPlan);
 		}
 
 		return page;
@@ -359,8 +370,8 @@ export class DataTierApplicationWizard {
 		return result.report;
 	}
 
-	private static async getService(providerName: string): Promise<azdata.DacFxServicesProvider> {
-		const service = azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>(providerName, azdata.DataProviderType.DacFxServicesProvider);
+	private static async getService(providerName: string): Promise<mssql.IDacFxService> {
+		const service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).dacFx;
 		return service;
 	}
 }

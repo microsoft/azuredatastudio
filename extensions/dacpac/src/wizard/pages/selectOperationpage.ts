@@ -7,7 +7,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, Operation, DeployOperationPath, ExtractOperationPath, ImportOperationPath, ExportOperationPath } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, Operation, DeployOperationPath, ExtractOperationPath, ImportOperationPath, ExportOperationPath, PageName } from '../dataTierApplicationWizard';
 import { BasePage } from '../api/basePage';
 
 const localize = nls.loadMessageBundle();
@@ -53,6 +53,7 @@ export class SelectOperationPage extends BasePage {
 
 		// default have the first radio button checked
 		this.deployRadioButton.checked = true;
+		this.deployRadioButton.focused = true;
 		this.instance.setDoneButton(Operation.deploy);
 		return true;
 	}
@@ -72,9 +73,9 @@ export class SelectOperationPage extends BasePage {
 			this.removePages();
 
 			//add deploy pages
-			let configPage = this.instance.pages.get('deployConfig');
+			let configPage = this.instance.pages.get(PageName.deployConfig);
 			this.instance.wizard.addPage(configPage.wizardPage, DeployOperationPath.deployOptions);
-			let deployPlanPage = this.instance.pages.get('deployPlan');
+			let deployPlanPage = this.instance.pages.get(PageName.deployPlan);
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
 			this.addSummaryPage(DeployOperationPath.summary);
 
@@ -99,7 +100,7 @@ export class SelectOperationPage extends BasePage {
 			this.removePages();
 
 			// add the extract page
-			let page = this.instance.pages.get('extractConfig');
+			let page = this.instance.pages.get(PageName.extractConfig);
 			this.instance.wizard.addPage(page.wizardPage, ExtractOperationPath.options);
 			this.addSummaryPage(ExtractOperationPath.summary);
 
@@ -124,7 +125,7 @@ export class SelectOperationPage extends BasePage {
 			this.removePages();
 
 			// add the import page
-			let page = this.instance.pages.get('importConfig');
+			let page = this.instance.pages.get(PageName.importConfig);
 			this.instance.wizard.addPage(page.wizardPage, ImportOperationPath.options);
 			this.addSummaryPage(ImportOperationPath.summary);
 
@@ -149,7 +150,7 @@ export class SelectOperationPage extends BasePage {
 			this.removePages();
 
 			// add the export pages
-			let page = this.instance.pages.get('exportConfig');
+			let page = this.instance.pages.get(PageName.exportConfig);
 			this.instance.wizard.addPage(page.wizardPage, ExportOperationPath.options);
 			this.addSummaryPage(ExportOperationPath.summary);
 
@@ -171,7 +172,7 @@ export class SelectOperationPage extends BasePage {
 	}
 
 	private addSummaryPage(index: number) {
-		let summaryPage = this.instance.pages.get('summary');
+		let summaryPage = this.instance.pages.get(PageName.summary);
 		this.instance.wizard.addPage(summaryPage.wizardPage, index);
 	}
 

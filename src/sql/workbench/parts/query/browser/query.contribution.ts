@@ -14,7 +14,6 @@ import { KeyMod, KeyCode, KeyChord } from 'vs/base/common/keyCodes';
 import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ContextKeyExpr, ContextKeyEqualsExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
-import { isMacintosh } from 'vs/base/common/platform';
 
 import { QueryEditor } from 'sql/workbench/parts/query/browser/queryEditor';
 import { QueryResultsEditor } from 'sql/workbench/parts/query/browser/queryResultsEditor';
@@ -41,6 +40,12 @@ import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensio
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
 import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
+import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/parts/query/browser/queryActions';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { ManageActionContext } from 'sql/workbench/common/actions';
+import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -75,6 +80,44 @@ Registry.as<IEditorRegistry>(EditorExtensions.Editors)
 
 const actionRegistry = <IWorkbenchActionRegistry>Registry.as(Extensions.WorkbenchActions);
 
+new NewQueryTask().registerTask();
+
+MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
+	group: '0_query',
+	order: 0,
+	command: {
+		id: OE_NEW_QUERY_ACTION_ID,
+		title: localize('newQuery', "New Query")
+	},
+	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+});
+
+// New Query
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: '0_query',
+	order: 0,
+	command: {
+		id: DE_NEW_QUERY_COMMAND_ID,
+		title: localize('newQuery', "New Query")
+	},
+	when: MssqlNodeContext.IsDatabaseOrServer
+});
+
+const ExplorerNewQueryActionID = 'explorer.query';
+CommandsRegistry.registerCommand(ExplorerNewQueryActionID, (accessor, context: ManageActionContext) => {
+	const commandService = accessor.get(ICommandService);
+	return commandService.executeCommand(NewQueryTask.ID, context.profile);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerNewQueryActionID,
+		title: NewQueryTask.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('database'),
+	order: 1
+});
+
 // Query Actionsr
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
@@ -86,15 +129,12 @@ actionRegistry.registerWorkbenchAction(
 	RunQueryKeyboardAction.LABEL
 );
 
-// Touch Bar
-if (isMacintosh) {
-	// Only show Run Query if the active editor is a query editor.
-	MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
-		command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
-		group: 'query',
-		when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
-	});
-}
+// Only show Run Query if the active editor is a query editor.
+MenuRegistry.appendMenuItem(MenuId.TouchBarContext, {
+	command: { id: RunQueryKeyboardAction.ID, title: RunQueryKeyboardAction.LABEL },
+	group: 'query',
+	when: ContextKeyEqualsExpr.create('activeEditor', 'workbench.editor.queryEditor')
+});
 
 actionRegistry.registerWorkbenchAction(
 	new SyncActionDescriptor(
@@ -272,7 +312,7 @@ KeybindingsRegistry.registerCommandAndKeybindingRule({
 });
 
 // Intellisense and other configuration options
-let registryProperties = {
+const registryProperties = {
 	'sql.saveAsCsv.includeHeaders': {
 		'type': 'boolean',
 		'description': localize('sql.saveAsCsv.includeHeaders', "[Optional] When true, column headers are included when saving results as CSV"),
@@ -492,7 +532,7 @@ let registryProperties = {
 };
 
 // Setup keybindings
-let initialShortcuts = [
+const initialShortcuts = [
 	{ name: 'sp_help', primary: KeyMod.Alt + KeyCode.F2 },
 	// Note: using Ctrl+Shift+N since Ctrl+N is used for "open editor at index" by default. This means it's different from SSMS
 	{ name: 'sp_who', primary: KeyMod.WinCtrl + KeyMod.Shift + KeyCode.KEY_1 },
@@ -524,7 +564,7 @@ for (let i = 0; i < 9; i++) {
 }
 
 // Register the query-related configuration options
-let configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
+const configurationRegistry = <IConfigurationRegistry>Registry.as(ConfigExtensions.Configuration);
 configurationRegistry.registerConfiguration({
 	'id': 'sqlEditor',
 	'title': 'SQL Editor',

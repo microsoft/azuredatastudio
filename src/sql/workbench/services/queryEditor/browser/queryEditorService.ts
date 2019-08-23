@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
-import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { UntitledQueryEditorInput } from 'sql/workbench/parts/query/common/untitledQueryEditorInput';
@@ -17,10 +16,10 @@ import { URI } from 'vs/base/common/uri';
 import * as paths from 'vs/base/common/extpath';
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IFileService } from 'vs/platform/files/common/files';
 import { replaceConnection } from 'sql/workbench/browser/taskUtilities';
+import { QueryEditorInput } from 'sql/workbench/parts/query/common/queryEditorInput';
 
 /**
  * Service wrapper for opening and creating SQL documents as sql editor inputs
@@ -34,8 +33,7 @@ export class QueryEditorService implements IQueryEditorService {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IConfigurationService private _configurationService: IConfigurationService,
-		@IFileService private readonly fileService: IFileService
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 	}
 
@@ -151,13 +149,7 @@ export class QueryEditorService implements IQueryEditorService {
 		let counter = 1;
 		// Get document name and check if it exists
 		let filePath = prefixFileName(counter);
-		while (await this.fileService.exists(URI.file(filePath))) {
-			counter++;
-			filePath = prefixFileName(counter);
-		}
-
-		let untitledEditors = this._untitledEditorService.getAll();
-		while (untitledEditors.find(x => x.getName().toUpperCase() === filePath.toUpperCase())) {
+		while (this._untitledEditorService.exists(URI.from({ scheme: Schemas.untitled, path: filePath }))) {
 			counter++;
 			filePath = prefixFileName(counter);
 		}

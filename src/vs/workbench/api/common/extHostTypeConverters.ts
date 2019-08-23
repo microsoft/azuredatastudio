@@ -113,6 +113,15 @@ export namespace DiagnosticTag {
 		}
 		return undefined;
 	}
+	export function to(value: MarkerTag): vscode.DiagnosticTag | undefined {
+		switch (value) {
+			case MarkerTag.Unnecessary:
+				return types.DiagnosticTag.Unnecessary;
+			case MarkerTag.Deprecated:
+				return types.DiagnosticTag.Deprecated;
+		}
+		return undefined;
+	}
 }
 
 export namespace Diagnostic {
@@ -126,6 +135,15 @@ export namespace Diagnostic {
 			relatedInformation: value.relatedInformation && value.relatedInformation.map(DiagnosticRelatedInformation.from),
 			tags: Array.isArray(value.tags) ? coalesce(value.tags.map(DiagnosticTag.from)) : undefined,
 		};
+	}
+
+	export function to(value: IMarkerData): vscode.Diagnostic {
+		const res = new types.Diagnostic(Range.to(value), value.message, DiagnosticSeverity.to(value.severity));
+		res.source = value.source;
+		res.code = value.code;
+		res.relatedInformation = value.relatedInformation && value.relatedInformation.map(DiagnosticRelatedInformation.to);
+		res.tags = value.tags && coalesce(value.tags.map(DiagnosticTag.to));
+		return res;
 	}
 }
 
@@ -564,7 +582,8 @@ export namespace DocumentSymbol {
 			detail: info.detail,
 			range: Range.from(info.range),
 			selectionRange: Range.from(info.selectionRange),
-			kind: SymbolKind.from(info.kind)
+			kind: SymbolKind.from(info.kind),
+			kindTags: []
 		};
 		if (info.children) {
 			result.children = info.children.map(from);
@@ -660,6 +679,21 @@ export namespace CompletionContext {
 			triggerKind: CompletionTriggerKind.to(context.triggerKind),
 			triggerCharacter: context.triggerCharacter
 		};
+	}
+}
+
+export namespace CompletionItemKindModifier {
+
+	export function from(kind: types.CompletionItemKindModifier): modes.CompletionItemKindModifier {
+		switch (kind) {
+			case types.CompletionItemKindModifier.Deprecated: return modes.CompletionItemKindModifier.Deprecated;
+		}
+	}
+
+	export function to(kind: modes.CompletionItemKindModifier): types.CompletionItemKindModifier {
+		switch (kind) {
+			case modes.CompletionItemKindModifier.Deprecated: return types.CompletionItemKindModifier.Deprecated;
+		}
 	}
 }
 

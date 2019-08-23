@@ -53,6 +53,7 @@ import 'vs/workbench/browser/parts/views/views';
 
 //#region --- workbench services
 
+import 'vs/workbench/services/extensions/common/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
 import 'vs/workbench/services/decorations/browser/decorationsService';
@@ -81,8 +82,6 @@ import { IExtensionGalleryService } from 'vs/platform/extensionManagement/common
 import { ContextViewService } from 'vs/platform/contextview/browser/contextViewService';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IListService, ListService } from 'vs/platform/list/browser/listService';
-import { OpenerService } from 'vs/editor/browser/services/openerService';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IEditorWorkerService } from 'vs/editor/common/services/editorWorkerService';
 import { EditorWorkerServiceImpl } from 'vs/editor/common/services/editorWorkerServiceImpl';
 import { MarkerDecorationsService } from 'vs/editor/common/services/markerDecorationsServiceImpl';
@@ -99,11 +98,12 @@ import { IMenuService } from 'vs/platform/actions/common/actions';
 import { MenuService } from 'vs/platform/actions/common/menuService';
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { DownloadService } from 'vs/platform/download/common/downloadService';
+import { OpenerService } from 'vs/editor/browser/services/openerService';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
 registerSingleton(IContextViewService, ContextViewService, true);
 registerSingleton(IListService, ListService, true);
-registerSingleton(IOpenerService, OpenerService, true);
 registerSingleton(IEditorWorkerService, EditorWorkerServiceImpl);
 registerSingleton(IMarkerDecorationsService, MarkerDecorationsService);
 registerSingleton(IMarkerService, MarkerService, true);
@@ -112,6 +112,7 @@ registerSingleton(IModelService, ModelServiceImpl, true);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService);
 registerSingleton(IMenuService, MenuService, true);
 registerSingleton(IDownloadService, DownloadService, true);
+registerSingleton(IOpenerService, OpenerService, true);
 
 //#endregion
 
@@ -127,9 +128,7 @@ import 'vs/workbench/contrib/telemetry/browser/telemetry.contribution';
 // Preferences
 import 'vs/workbench/contrib/preferences/browser/preferences.contribution';
 import 'vs/workbench/contrib/preferences/browser/keybindingsEditorContribution';
-import { IPreferencesSearchService } from 'vs/workbench/contrib/preferences/common/preferences';
-import { PreferencesSearchService } from 'vs/workbench/contrib/preferences/browser/preferencesSearch';
-registerSingleton(IPreferencesSearchService, PreferencesSearchService, true);
+import 'vs/workbench/contrib/preferences/browser/preferencesSearch';
 
 // Logs
 import 'vs/workbench/contrib/logs/common/logs.contribution';
@@ -196,6 +195,7 @@ import 'vs/workbench/contrib/relauncher/common/relauncher.contribution';
 
 // Remote
 import 'vs/workbench/contrib/remote/common/remote.contribution';
+import 'vs/workbench/contrib/remote/browser/remote';
 
 // Emmet
 // import 'vs/workbench/contrib/emmet/browser/emmet.contribution'; {{SQL CARBON EDIT}}
@@ -231,5 +231,11 @@ import 'vs/workbench/contrib/callHierarchy/browser/callHierarchy.contribution';
 
 // Outline
 import 'vs/workbench/contrib/outline/browser/outline.contribution';
+
+// Experiments
+import 'vs/workbench/contrib/experiments/browser/experiments.contribution';
+
+// Send a Smile
+import 'vs/workbench/contrib/feedback/browser/feedback.contribution';
 
 //#endregion

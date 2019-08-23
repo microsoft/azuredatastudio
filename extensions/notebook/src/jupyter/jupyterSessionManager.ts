@@ -7,7 +7,7 @@ import { nb, ServerInfo, connection, IConnectionProfile } from 'azdata';
 import { Session, Kernel } from '@jupyterlab/services';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
-import { Uri } from 'vscode';
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
@@ -55,10 +55,11 @@ const configBase = {
 
 const KNOX_ENDPOINT_SERVER = 'host';
 const KNOX_ENDPOINT_PORT = 'knoxport';
-const KNOX_ENDPOINT_KNOX = 'knox';
 const KNOX_ENDPOINT_GATEWAY = 'gateway';
 const SQL_PROVIDER = 'MSSQL';
 const USER = 'user';
+const AUTHTYPE = 'authenticationType';
+const INTEGRATED_AUTH = 'integrated';
 const DEFAULT_CLUSTER_USER_NAME = 'root';
 
 export class JupyterSessionManager implements nb.SessionManager {
@@ -242,14 +243,13 @@ export class JupyterSession implements nb.ISession {
 
 			//Update server info with bigdata endpoint - Unified Connection
 			if (connection.providerName === SQL_PROVIDER) {
-				let clusterEndpoint: utils.IEndpoint =
-					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_KNOX) ||
-					await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
+				let clusterEndpoint: utils.IEndpoint = await this.getClusterEndpoint(connection.id, KNOX_ENDPOINT_GATEWAY);
 				if (!clusterEndpoint) {
 					return Promise.reject(new Error(localize('connectionNotValid', "Spark kernels require a connection to a SQL Server big data cluster master instance.")));
 				}
-				connection.options[KNOX_ENDPOINT_SERVER] = clusterEndpoint.ipAddress;
-				connection.options[KNOX_ENDPOINT_PORT] = clusterEndpoint.port;
+				let hostAndPort = utils.getHostAndPortFromEndpoint(clusterEndpoint.endpoint);
+				connection.options[KNOX_ENDPOINT_SERVER] = hostAndPort.host;
+				connection.options[KNOX_ENDPOINT_PORT] = hostAndPort.port;
 				connection.options[USER] = DEFAULT_CLUSTER_USER_NAME;
 			}
 			else {
@@ -258,14 +258,19 @@ export class JupyterSession implements nb.ISession {
 			this.setHostAndPort(':', connection);
 			this.setHostAndPort(',', connection);
 
-			let server = Uri.parse(utils.getLivyUrl(connection.options[KNOX_ENDPOINT_SERVER], connection.options[KNOX_ENDPOINT_PORT])).toString();
-			let doNotCallChangeEndpointParams =
-				`%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${connection.options['password']} --server=${server} --auth=Basic_Access`;
+			let server = vscode.Uri.parse(utils.getLivyUrl(connection.options[KNOX_ENDPOINT_SERVER], connection.options[KNOX_ENDPOINT_PORT])).toString();
+			let doNotCallChangeEndpointParams = this.isIntegratedAuth(connection) ?
+				`%_do_not_call_change_endpoint --server=${server} --auth=Kerberos`
+				: `%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${connection.options['password']} --server=${server} --auth=Basic_Access`;
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
 			}, true);
 			await future.done;
 		}
+	}
+
+	private isIntegratedAuth(connection: IConnectionProfile): boolean {
+		return connection.options[AUTHTYPE] && connection.options[AUTHTYPE].toLowerCase() === INTEGRATED_AUTH.toLowerCase();
 	}
 
 	private isSparkKernel(kernelName: string): boolean {
@@ -304,7 +309,7 @@ export class JupyterSession implements nb.ISession {
 		if (!serverInfo || !serverInfo.options) {
 			return undefined;
 		}
-		let endpoints: utils.IEndpoint[] = serverInfo.options['clusterEndpoints'];
+		let endpoints: utils.IEndpoint[] = utils.getClusterEndpoints(serverInfo);
 		if (!endpoints || endpoints.length === 0) {
 			return undefined;
 		}

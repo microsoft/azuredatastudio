@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-function entrypoint (name) {
+function entrypoint(name) {
 	return [{ name: name, include: [], exclude: ['vs/css', 'vs/nls'] }];
 }
 
@@ -22,6 +22,8 @@ exports.serviceWorker = [{
 	append: ['vs/workbench/contrib/resources/browser/resourceServiceWorkerMain'],
 	dest: 'vs/workbench/contrib/resources/browser/resourceServiceWorkerMain.js'
 }];
+
+exports.workerExtensionHost = [entrypoint('vs/workbench/services/extensions/worker/extensionHostWorker')];
 
 exports.workbench = require('./vs/workbench/buildfile').collectModules(['vs/workbench/workbench.desktop.main']);
 exports.workbenchWeb = entrypoint('vs/workbench/workbench.web.api');
