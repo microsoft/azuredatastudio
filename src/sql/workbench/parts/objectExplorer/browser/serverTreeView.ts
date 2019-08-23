@@ -171,13 +171,13 @@ export class ServerTreeView extends Disposable {
 			}));
 		}
 
-		return new Promise<void>(async (resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			this.refreshTree();
 			const root = <ConnectionProfileGroup>this._tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -270,9 +270,9 @@ export class ServerTreeView extends Disposable {
 		if (connection) {
 			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(async () => {
-					await this._tree.collapse(conn);
-					return this._tree.refresh(conn);
+				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
+					this._tree.collapse(conn);
+					this._tree.refresh(conn);
 				});
 			}
 		}
@@ -342,10 +342,10 @@ export class ServerTreeView extends Disposable {
 			} else {
 				treeInput = filteredResults[0];
 			}
-			this._tree.setInput(treeInput).then(async () => {
+			this._tree.setInput(treeInput).then(() => {
 				if (isHidden(this.messages)) {
 					this._tree.getFocus();
-					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+					this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 				} else {
 					this._tree.clearFocus();
 				}
@@ -374,10 +374,10 @@ export class ServerTreeView extends Disposable {
 		// Add all connections to tree root and set tree input
 		const treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
-		this._tree.setInput(treeInput).then(async () => {
+		this._tree.setInput(treeInput).then(() => {
 			if (isHidden(this.messages)) {
 				this._tree.getFocus();
-				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 			} else {
 				this._tree.clearFocus();
 			}
