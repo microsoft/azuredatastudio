@@ -16,7 +16,7 @@ export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
 	private _lastClicked: any[];
-	private _clickTimer: NodeJS.Timer = undefined;
+	private _clickTimer: any = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
