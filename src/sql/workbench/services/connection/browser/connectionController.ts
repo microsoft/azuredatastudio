@@ -15,9 +15,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { ConnectionWidget } from 'sql/workbench/services/connection/browser/connectionWidget';
+import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 
 export class ConnectionController implements IConnectionComponentController {
-	private _connectionManagementService: IConnectionManagementService;
 	private _advancedController: AdvancedPropertiesController;
 	private _model: IConnectionProfile;
 	private _providerName: string;
@@ -28,12 +28,13 @@ export class ConnectionController implements IConnectionComponentController {
 	protected _databaseCache = new Map<string, string[]>();
 
 	constructor(
-		connectionManagementService: IConnectionManagementService,
 		connectionProperties: ConnectionProviderProperties,
 		callback: IConnectionComponentCallbacks,
 		providerName: string,
-		@IInstantiationService protected _instantiationService: IInstantiationService) {
-		this._connectionManagementService = connectionManagementService;
+		@IConnectionManagementService protected readonly _connectionManagementService: IConnectionManagementService,
+		@IInstantiationService protected readonly _instantiationService: IInstantiationService,
+		@IServerGroupController protected readonly _serverGroupController: IServerGroupController
+	) {
 		this._callback = callback;
 		this._providerOptions = connectionProperties.connectionOptions;
 		let specialOptions = this._providerOptions.filter(
@@ -89,7 +90,7 @@ export class ConnectionController implements IConnectionComponentController {
 	}
 
 	protected onCreateNewServerGroup(): void {
-		this._connectionManagementService.showCreateServerGroupDialog({
+		this._serverGroupController.showCreateGroupDialog({
 			onAddGroup: (groupName) => this._connectionWidget.updateServerGroup(this.getAllServerGroups(), groupName),
 			onClose: () => this._connectionWidget.focusOnServerGroup()
 		});

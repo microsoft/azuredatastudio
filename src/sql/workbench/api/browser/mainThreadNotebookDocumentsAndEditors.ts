@@ -16,6 +16,7 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as types from 'vs/base/common/types';
+import * as fs from 'fs';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -701,13 +702,25 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.next, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.next, {});
+					}
 				}
 			},
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.previous, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.previous, {});
+					}
 				}
 			}
 		});
