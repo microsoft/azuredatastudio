@@ -143,7 +143,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				newRanges.push(current);
 				continue;
 			}
-			let newRange: Slick.Range;
+			let newRange: Slick.Range = undefined;
 
 			// if the ranges are the same.
 			if (current.fromRow === range.fromRow &&
@@ -192,7 +192,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		};
 	}
 
-	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range) {
+	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range>  {
 		let result = this.mergeSelections(ranges, range);
 		let newRanges = result.newRanges;
 
