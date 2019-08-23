@@ -16,6 +16,7 @@ import * as nls from 'vscode-nls';
 import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
+const existsAsync = promisify(fs.exists);
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';
@@ -29,7 +30,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _resource: string;
 	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	private _openAsUntitled: boolean;
-	readonly existsAsync = promisify(fs.exists);
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
 		this.initialze(workspaceFolders, null, extensionContext);
@@ -86,8 +86,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					bookViewer.reveal(books[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 					const readmeMarkdown: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.md'));
 					const readmeNotebook: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
-					const markdownExists = await this.existsAsync(readmeMarkdown);
-					const notebookExists = await this.existsAsync(readmeNotebook);
+					const markdownExists = await existsAsync(readmeMarkdown);
+					const notebookExists = await existsAsync(readmeNotebook);
 					if (markdownExists) {
 						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
 					}
