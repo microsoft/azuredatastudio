@@ -77,7 +77,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		private _connectionStore: ConnectionStore,
 		private _connectionStatusManager: ConnectionStatusManager,
 		@IConnectionDialogService private _connectionDialogService: IConnectionDialogService,
-		@IServerGroupController private _serverGroupController: IServerGroupController,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IEditorService private _editorService: IEditorService,
 		@ITelemetryService private _telemetryService: ITelemetryService,
@@ -198,34 +197,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}, dialogError => {
 				this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
 				reject(dialogError);
-			});
-		});
-	}
-
-	/**
-	 * Opens the add server group dialog
-	 */
-	public showCreateServerGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void> {
-		let self = this;
-		return new Promise<void>((resolve, reject) => {
-			self._serverGroupController.showCreateGroupDialog(self, callbacks).then(() => {
-				resolve();
-			}, error => {
-				reject();
-			});
-		});
-	}
-
-	/**
-	 * Opens the edit server group dialog
-	 */
-	public showEditServerGroupDialog(group: ConnectionProfileGroup): Promise<void> {
-		let self = this;
-		return new Promise<void>((resolve, reject) => {
-			self._serverGroupController.showEditGroupDialog(self, group).then(() => {
-				resolve();
-			}, error => {
-				reject();
 			});
 		});
 	}
