@@ -25,7 +25,7 @@ import { ResolvedKeybinding } from 'vs/base/common/keyCodes';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
@@ -54,7 +54,7 @@ export abstract class GridParentComponent {
 	protected dataService: DataService;
 	protected actionProvider: actions.GridActionProvider;
 
-	protected toDispose: IDisposable[];
+	protected toDispose = new DisposableStore();
 
 
 	// Context keys to set when keybindings are available
@@ -97,7 +97,6 @@ export abstract class GridParentComponent {
 		protected queryEditorService: IQueryEditorService,
 		protected logService: ILogService
 	) {
-		this.toDispose = [];
 	}
 
 	protected baseInit(): void {
@@ -177,7 +176,7 @@ export abstract class GridParentComponent {
 	 */
 	protected subscribeWithDispose<T>(subject: Subject<T>, event: (value: any) => void): void {
 		let sub: Subscription = subject.subscribe(event);
-		this.toDispose.push(subscriptionToDisposable(sub));
+		this.toDispose.add(subscriptionToDisposable(sub));
 	}
 
 	private bindKeys(contextKeyService: IContextKeyService): void {
@@ -186,7 +185,7 @@ export abstract class GridParentComponent {
 			this.queryEditorVisible.set(true);
 
 			let gridContextKeyService = this.contextKeyService.createScoped(this._el.nativeElement);
-			this.toDispose.push(gridContextKeyService);
+			this.toDispose.add(gridContextKeyService);
 			this.resultsVisibleContextKey = ResultsVisibleContext.bindTo(gridContextKeyService);
 			this.resultsVisibleContextKey.set(true);
 
@@ -196,7 +195,7 @@ export abstract class GridParentComponent {
 	}
 
 	protected baseDestroy(): void {
-		this.toDispose = dispose(this.toDispose);
+		this.toDispose.dispose();
 	}
 
 	protected toggleResultPane(): void {

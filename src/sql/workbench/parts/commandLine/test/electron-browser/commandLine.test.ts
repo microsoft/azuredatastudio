@@ -110,13 +110,12 @@ suite('commandLineService tests', () => {
 			capabilitiesService,
 			connectionManagementService,
 			undefined,
-			undefined,
-			undefined,
 			editorService,
 			commandService,
 			configurationService,
 			undefined,
-			logService
+			logService,
+			undefined
 		);
 	}
 

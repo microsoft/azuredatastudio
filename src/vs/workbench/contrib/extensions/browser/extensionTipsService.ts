@@ -47,7 +47,7 @@ import { timeout } from 'vs/base/common/async';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry'; // {{SQL CARBON EDIT}}
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys'; // {{SQL CARBON EDIT}}
 import { IWorkspaceStatsService } from 'vs/workbench/contrib/stats/common/workspaceStats';
-import { Platform, setImmediate } from 'vs/base/common/platform';
+import { setImmediate, isWeb } from 'vs/base/common/platform';
 import { platform, env as processEnv } from 'vs/base/common/process';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 
@@ -534,8 +534,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 			return false;
 		}
 
-		const id = recommendationsToSuggest[0];
-		const tip = this._importantExeBasedRecommendations[id];
+		const extensionId = recommendationsToSuggest[0];
+		const tip = this._importantExeBasedRecommendations[extensionId];
 		const message = localize('exeRecommended', "The '{0}' extension is recommended as you have {1} installed on your system.", tip.friendlyName!, tip.exeFriendlyName || basename(tip.windowsPath!));
 
 		this.notificationService.prompt(Severity.Info, message,
@@ -548,8 +548,8 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 						"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 					}
 					*/
-					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'install', extensionId: name });
-					this.instantiationService.createInstance(InstallRecommendedExtensionAction, id).run();
+					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'install', extensionId });
+					this.instantiationService.createInstance(InstallRecommendedExtensionAction, extensionId).run();
 				}
 			}, {
 				label: localize('showRecommendations', "Show Recommendations"),
@@ -560,7 +560,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
 					*/
-					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'show', extensionId: name });
+					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'show', extensionId });
 
 					const recommendationsAction = this.instantiationService.createInstance(ShowRecommendedExtensionsAction, ShowRecommendedExtensionsAction.ID, localize('showRecommendations', "Show Recommendations"));
 					recommendationsAction.run();
@@ -570,14 +570,14 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 				label: choiceNever,
 				isSecondary: true,
 				run: () => {
-					this.addToImportantRecommendationsIgnore(id);
+					this.addToImportantRecommendationsIgnore(extensionId);
 					/* __GDPR__
 						"exeExtensionRecommendations:popup" : {
 							"userReaction" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" },
 							"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
 					*/
-					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId: name });
+					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'neverShowAgain', extensionId });
 					this.notificationService.prompt(
 						Severity.Info,
 						localize('ignoreExtensionRecommendations', "Do you want to ignore all extension recommendations?"),
@@ -600,7 +600,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 							"extensionId": { "classification": "PublicNonPersonalData", "purpose": "FeatureInsight" }
 						}
 					*/
-					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'cancelled', extensionId: name });
+					this.telemetryService.publicLog('exeExtensionRecommendations:popup', { userReaction: 'cancelled', extensionId });
 				}
 			}
 		);
@@ -996,7 +996,7 @@ export class ExtensionTipsService extends Disposable implements IExtensionTipsSe
 	 * If user has any of the tools listed in this.productService.exeBasedExtensionTips, fetch corresponding recommendations
 	 */
 	private async fetchExecutableRecommendations(important: boolean): Promise<void> {
-		if (Platform.Web) {
+		if (isWeb) {
 			return;
 		}
 

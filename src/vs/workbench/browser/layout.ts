@@ -46,6 +46,9 @@ enum Settings {
 	PANEL_POSITION = 'workbench.panel.defaultLocation',
 
 	ZEN_MODE_RESTORE = 'zenMode.restore',
+
+	// TODO @misolori update this when finished
+	OCTICONS_UPDATE_ENABLED = 'workbench.octiconsUpdate.enabled',
 }
 
 enum Storage {
@@ -173,6 +176,11 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			wasSideBarVisible: false,
 			wasPanelVisible: false,
 			transitionDisposables: new DisposableStore()
+		},
+
+		// TODO @misolori update this when finished
+		octiconsUpdate: {
+			enabled: false
 		}
 	};
 
@@ -314,6 +322,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		const newMenubarVisibility = this.configurationService.getValue<MenuBarVisibility>(Settings.MENUBAR_VISIBLE);
 		this.setMenubarVisibility(newMenubarVisibility, !!skipLayout);
 
+		// TODO @misolori update this when finished
+		const newOcticonsUpdate = this.configurationService.getValue<boolean>(Settings.OCTICONS_UPDATE_ENABLED);
+		this.setOcticonsUpdate(newOcticonsUpdate);
+
 	}
 
 	private setSideBarPosition(position: Position): void {
@@ -425,6 +437,10 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 
 		// Zen mode enablement
 		this.state.zenMode.restore = this.storageService.getBoolean(Storage.ZEN_MODE_ENABLED, StorageScope.WORKSPACE, false) && this.configurationService.getValue(Settings.ZEN_MODE_RESTORE);
+
+		// TODO @misolori update this when finished
+		this.state.octiconsUpdate.enabled = this.configurationService.getValue<boolean>(Settings.OCTICONS_UPDATE_ENABLED);
+		this.setOcticonsUpdate(this.state.octiconsUpdate.enabled);
 
 	}
 
@@ -601,10 +617,13 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 			// To properly reset line numbers we need to read the configuration for each editor respecting it's uri.
 			if (!lineNumbers && isCodeEditor(editor) && editor.hasModel()) {
 				const model = editor.getModel();
-				this.configurationService.getValue('editor.lineNumbers', { resource: model.uri });
-			} else {
-				editor.updateOptions({ lineNumbers });
+				lineNumbers = this.configurationService.getValue('editor.lineNumbers', { resource: model.uri });
 			}
+			if (!lineNumbers) {
+				lineNumbers = this.configurationService.getValue('editor.lineNumbers');
+			}
+
+			editor.updateOptions({ lineNumbers });
 		});
 
 		// Check if zen mode transitioned to full screen and if now we are out of zen mode
@@ -727,6 +746,19 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 				this.workbenchGrid.layout();
 			}
 		}
+	}
+
+	// TODO @misolori update this when finished
+	private setOcticonsUpdate(enabled: boolean): void {
+		this.state.octiconsUpdate.enabled = enabled;
+
+		// Update DOM
+		if (enabled) {
+			document.body.dataset.octiconsUpdate = 'enabled';
+		} else {
+			document.body.dataset.octiconsUpdate = '';
+		}
+
 	}
 
 	protected createWorkbenchLayout(instantiationService: IInstantiationService): void {
@@ -1263,4 +1295,3 @@ export abstract class Layout extends Disposable implements IWorkbenchLayoutServi
 		this.disposed = true;
 	}
 }
-

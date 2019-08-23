@@ -23,7 +23,7 @@ export interface ExpectedBookItem {
 	nextUri?: string | undefined;
 }
 
-export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem) : void {
+export function equalBookItems(book: BookTreeItem, expectedBook: ExpectedBookItem): void {
 	should(book.title).equal(expectedBook.title);
 	should(book.uri).equal(expectedBook.url);
 	if (expectedBook.previousUri || expectedBook.nextUri) {
@@ -49,7 +49,9 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	let notebook1: BookTreeItem;
 
 	this.beforeAll(async () => {
+		console.log('Generating random rootFolderPath...');
 		rootFolderPath = path.join(os.tmpdir(), `BookTestData_${uuid.v4()}`);
+		console.log('Random rootFolderPath generated.');
 		let dataFolderPath = path.join(rootFolderPath, '_data');
 		let contentFolderPath = path.join(rootFolderPath, 'content');
 		let configFile = path.join(rootFolderPath, '_config.yml');
@@ -89,6 +91,7 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 			sections: [expectedNotebook1, expectedMarkdown, expectedExternalLink],
 			title: 'Test Book'
 		};
+		console.log('Creating temporary folders and files...');
 		await fs.mkdir(rootFolderPath);
 		await fs.mkdir(dataFolderPath);
 		await fs.mkdir(contentFolderPath);
@@ -98,16 +101,19 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 		await fs.writeFile(notebook2File, '');
 		await fs.writeFile(notebook3File, '');
 		await fs.writeFile(markdownFile, '');
+		console.log('Temporary folders and files created.');
 		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
 		let folder: vscode.WorkspaceFolder = {
 			uri: vscode.Uri.file(rootFolderPath),
 			name: '',
 			index: 0
 		};
+		console.log('Creating BookTreeViewProvider...');
 		bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
 		let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 		let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 		await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
+		console.log('BookTreeViewProvider successfully created.');
 	});
 
 	it('should return all book nodes when element is undefined', async function (): Promise<void> {
@@ -141,9 +147,11 @@ describe('BookTreeViewProvider.getChildren', function (): void {
 	});
 
 	this.afterAll(async function () {
+		console.log('Removing temporary files...');
 		if (fs.existsSync(rootFolderPath)) {
 			rimraf.sync(rootFolderPath);
 		}
+		console.log('Successfully removed temporary files.');
 	});
 });
 

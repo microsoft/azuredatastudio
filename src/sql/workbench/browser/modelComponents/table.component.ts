@@ -21,8 +21,10 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { CheckboxSelectColumn, ICheckboxCellActionEventArgs, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 
 @Component({
 	selector: 'modelview-table',
@@ -136,6 +138,20 @@ export default class TableComponent extends ComponentBase implements IComponent,
 					args: e
 				});
 			}));
+
+			this._table.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+				if (this.moveFocusOutWithTab) {
+					let event = new StandardKeyboardEvent(e);
+					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+						e.stopImmediatePropagation();
+						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
+
+					} else if (event.equals(KeyCode.Tab)) {
+						e.stopImmediatePropagation();
+						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).nextElementSibling).focus();
+					}
+				}
+			});
 		}
 	}
 
@@ -213,8 +229,20 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		for (let col in this._checkboxColumns) {
-			this.registerCheckboxPlugin(this._checkboxColumns[col]);
+		Object.keys(this._checkboxColumns).forEach(col => this.registerCheckboxPlugin(this._checkboxColumns[col]));
+
+		if (this.ariaRowCount === -1) {
+			this._table.removeAriaRowCount();
+		}
+		else {
+			this._table.ariaRowCount = this.ariaRowCount;
+		}
+
+		if (this.ariaColumnCount === -1) {
+			this._table.removeAriaColumnCount();
+		}
+		else {
+			this._table.ariaColumnCount = this.ariaColumnCount;
 		}
 
 		this.layoutTable();
@@ -290,5 +318,21 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get title() {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
+	}
+
+	public get ariaRowCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaRowCount, -1);
+	}
+
+	public get ariaColumnCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
+	}
+
+	public set moveFocusOutWithTab(newValue: boolean) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
+	}
+
+	public get moveFocusOutWithTab(): boolean {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
 	}
 }

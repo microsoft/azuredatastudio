@@ -3,8 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import * as azdata from 'azdata';
@@ -40,7 +39,7 @@ export interface SerializeDataParams {
 }
 
 export interface ISerializationService {
-	_serviceBrand: any;
+	_serviceBrand: ServiceIdentifier<ISerializationService>;
 
 	registerProvider(providerId: string, provider: azdata.SerializationProvider): void;
 
@@ -62,9 +61,7 @@ function getBatchSize(totalRows: number, currentIndex: number): number {
 
 export class SerializationService implements ISerializationService {
 
-	_serviceBrand: any;
-
-	private disposables: IDisposable[] = [];
+	_serviceBrand: ServiceIdentifier<ISerializationService>;
 
 	private providers: { providerId: string, provider: azdata.SerializationProvider }[] = [];
 
@@ -196,9 +193,5 @@ export class SerializationService implements ISerializationService {
 			isLastBatch: isLastBatch
 		};
 		return continueSerializeRequest;
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }

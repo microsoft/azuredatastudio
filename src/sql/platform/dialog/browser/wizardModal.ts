@@ -82,7 +82,7 @@ export class WizardModal extends Modal {
 		}
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
-		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1), true, true);
+		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);
 		this._generateScriptButton = this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
 		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false, true);
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
@@ -164,7 +164,7 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	private async showPage(index: number, validate: boolean = true): Promise<void> {
+	private async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
 			this.done(validate);
@@ -175,7 +175,7 @@ export class WizardModal extends Modal {
 		}
 		this._dialogPanes.forEach((dialogPane, page) => {
 			if (page === pageToShow) {
-				dialogPane.show();
+				dialogPane.show(focus);
 			} else {
 				dialogPane.hide();
 			}
@@ -227,14 +227,14 @@ export class WizardModal extends Modal {
 			'wizard-navigation',
 			{
 				wizard: this._wizard,
-				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage)
+				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage, true)
 			},
 			undefined,
 			() => undefined);
 	}
 
 	public open(): void {
-		this.showPage(0, false);
+		this.showPage(0, false, true);
 		this.show();
 	}
 
@@ -292,7 +292,7 @@ export class WizardModal extends Modal {
 			this.done();
 		} else {
 			if (this._nextButton.enabled) {
-				this.showPage(this._wizard.currentPage + 1);
+				this.showPage(this._wizard.currentPage + 1, true, true);
 			}
 		}
 	}

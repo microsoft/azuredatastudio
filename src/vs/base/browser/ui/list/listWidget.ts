@@ -647,7 +647,6 @@ export class MouseController<T> implements IDisposable {
 			}
 
 			const newSelection = disjunction(rangeSelection, relativeComplement(selection, contiguousRange));
-			this.list.setFocus([focus]);
 			this.list.setSelection(newSelection, e.browserEvent);
 
 		} else if (this.isSelectionSingleChangeEvent(e)) {
@@ -1306,6 +1305,14 @@ export class List<T> implements ISpliceable<T>, IDisposable {
 
 	set scrollTop(scrollTop: number) {
 		this.view.setScrollTop(scrollTop);
+	}
+
+	get scrollLeft(): number {
+		return this.view.getScrollLeft();
+	}
+
+	set scrollLeft(scrollLeft: number) {
+		this.view.setScrollLeftt(scrollLeft);
 	}
 
 	get scrollHeight(): number {
