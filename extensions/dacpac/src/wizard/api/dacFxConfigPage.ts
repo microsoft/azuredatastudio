@@ -45,8 +45,10 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createServerDropdown(isTargetServer: boolean): Promise<azdata.FormComponent> {
+		const serverDropDownTitle = isTargetServer ? localize('dacFx.targetServerDropdownTitle', "Target Server") : localize('dacFx.sourceServerDropdownTitle', "Source Server");
 		this.serverDropdown = this.view.modelBuilder.dropDown().withProperties({
-			required: true
+			required: true,
+			ariaLabel: serverDropDownTitle
 		}).component();
 
 		// Handle server changes
@@ -56,12 +58,9 @@ export abstract class DacFxConfigPage extends BasePage {
 			await this.populateDatabaseDropdown();
 		});
 
-		let targetServerTitle = localize('dacFx.targetServerDropdownTitle', 'Target Server');
-		let sourceServerTitle = localize('dacFx.sourceServerDropdownTitle', 'Source Server');
-
 		return {
 			component: this.serverDropdown,
-			title: isTargetServer ? targetServerTitle : sourceServerTitle
+			title: serverDropDownTitle
 		};
 	}
 
@@ -85,6 +84,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true
 		}).component();
 
+		this.databaseTextBox.ariaLabel = localize('dacfx.databaseAriaLabel', "Database");
 		this.databaseTextBox.onTextChanged(async () => {
 			this.model.database = this.databaseTextBox.value;
 		});
@@ -96,7 +96,10 @@ export abstract class DacFxConfigPage extends BasePage {
 	}
 
 	protected async createDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		const databaseDropdownTitle = localize('dacFx.sourceDatabaseDropdownTitle', "Source Database");
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			ariaLabel: databaseDropdownTitle
+		}).component();
 
 		// Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -109,9 +112,10 @@ export abstract class DacFxConfigPage extends BasePage {
 			required: true
 		}).component();
 
+
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.sourceDatabaseDropdownTitle', 'Source Database')
+			title: databaseDropdownTitle
 		};
 	}
 
@@ -132,7 +136,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			if (!(this.instance.selectedOperation === Operation.deploy && !this.model.upgradeExisting)) {
 				this.model.database = values[0].name;
 			}
-			// filename shouldn't change for deploy because the file exists and isn't being generated like for extract and export
+			// filename shouldn't change for deploy because the file exists and isn't being generated as for extract and export
 			if (this.instance.selectedOperation !== Operation.deploy) {
 				this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
 				this.fileTextBox.value = this.model.filePath;
@@ -152,11 +156,15 @@ export abstract class DacFxConfigPage extends BasePage {
 			component => isValidBasename(component.value)
 		)
 			.withProperties({
-				required: true
+				required: true,
+				ariaLive: 'polite'
 			}).component();
 
+		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
 		this.fileButton = this.view.modelBuilder.button().withProperties({
 			label: '•••',
+			title: localize('dacfx.selectFile', "Select file"),
+			ariaLabel: localize('dacfx.selectFile', "Select file")
 		}).component();
 	}
 

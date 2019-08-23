@@ -7,7 +7,7 @@ import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 
 import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
@@ -73,7 +73,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
-	private _clientSessionListeners: IDisposable[] = [];
+	private _clientSessionListeners = new DisposableStore(); // should this be registered?
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
@@ -486,12 +486,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private updateActiveClientSession(clientSession: IClientSession) {
 		this.clearClientSessionListeners();
 		this._activeClientSession = clientSession;
-		this._clientSessionListeners.push(this._activeClientSession.kernelChanged(e => this._kernelChangedEmitter.fire(e)));
+		this._clientSessionListeners.add(this._activeClientSession.kernelChanged(e => this._kernelChangedEmitter.fire(e)));
 	}
 
 	private clearClientSessionListeners() {
-		this._clientSessionListeners.forEach(listener => listener.dispose());
-		this._clientSessionListeners = [];
+		this._clientSessionListeners.clear();
 	}
 
 	public setDefaultKernelAndProviderId() {

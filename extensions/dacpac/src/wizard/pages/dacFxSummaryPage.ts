@@ -130,8 +130,8 @@ export class DacFxSummaryPage extends BasePage {
 					cssClass: 'align-with-header'
 				}],
 			width: 700,
-			height: 200
+			height: 200,
+			moveFocusOutWithTab: true
 		});
 	}
 }
-

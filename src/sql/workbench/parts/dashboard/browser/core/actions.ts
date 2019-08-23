@@ -7,7 +7,6 @@ import { Action, IAction } from 'vs/base/common/actions';
 import * as nls from 'vs/nls';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
-import { IDisposable } from 'vs/base/common/lifecycle';
 
 import { IAngularEventingService, AngularEventType, IAngularEvent } from 'sql/platform/angularEventing/common/angularEventingService';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
@@ -157,8 +156,6 @@ export class AddFeatureTabAction extends Action {
 	private static readonly LABEL = nls.localize('addFeatureAction.openInstalledFeatures', "Open installed features");
 	private static readonly ICON = 'new';
 
-	private _disposables: IDisposable[] = [];
-
 	constructor(
 		private _dashboardTabs: Array<IDashboardTab>,
 		private _openedTabs: Array<IDashboardTab>,
@@ -167,17 +164,12 @@ export class AddFeatureTabAction extends Action {
 		@IAngularEventingService private _angularEventService: IAngularEventingService
 	) {
 		super(AddFeatureTabAction.ID, AddFeatureTabAction.LABEL, AddFeatureTabAction.ICON);
-		this._disposables.push(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
+		this._register(subscriptionToDisposable(this._angularEventService.onAngularEvent(this._uri, (event) => this.handleDashboardEvent(event))));
 	}
 
 	run(): Promise<boolean> {
 		this._newDashboardTabService.showDialog(this._dashboardTabs, this._openedTabs, this._uri);
 		return Promise.resolve(true);
-	}
-
-	dispose() {
-		super.dispose();
-		this._disposables.forEach((item) => item.dispose());
 	}
 
 	private handleDashboardEvent(event: IAngularEvent): void {

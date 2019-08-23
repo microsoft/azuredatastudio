@@ -13,9 +13,6 @@ import {
 	DisconnectConnectionAction, AddServerAction,
 	DeleteConnectionAction, RefreshAction, EditServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
-import {
-	ManageConnectionAction, OEAction
-} from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -23,15 +20,11 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
-import { NewQueryAction, BackupAction, RestoreAction } from 'sql/workbench/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
-import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 
 /**
  *  Provides actions for the server tree elements
@@ -42,8 +35,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
 		@IQueryManagementService private _queryManagementService: IQueryManagementService,
-		@IScriptingService private _scriptingService: IScriptingService,
-		@IContextMenuService private contextMenuService: IContextMenuService,
 		@IMenuService private menuService: IMenuService,
 		@IContextKeyService private _contextKeyService: IContextKeyService
 	) {
@@ -111,8 +102,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 
 	private getBuiltinConnectionActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
-		actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
-		this.addNewQueryNotebookActions(context, actions);
 
 		if (this._connectionManagementService.isProfileConnected(context.profile)) {
 			actions.push(this._instantiationService.createInstance(DisconnectConnectionAction, DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, context.profile));
@@ -164,23 +153,11 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 	private getBuiltInNodeActions(context: ObjectExplorerContext): IAction[] {
 		let actions: IAction[] = [];
 		let treeNode = context.treeNode;
-		let isAvailableDatabaseNode = false;
 		if (TreeUpdateUtils.isDatabaseNode(treeNode)) {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
-				isAvailableDatabaseNode = true;
-				actions.push(this._instantiationService.createInstance(ManageConnectionAction, ManageConnectionAction.ID, ManageConnectionAction.LABEL, context.tree));
-				this.addNewQueryNotebookActions(context, actions);
 			} else {
 				return actions;
 			}
-		}
-
-		let serverInfo = this._connectionManagementService.getServerInfo(context.profile.id);
-		let isCloud = serverInfo && serverInfo.isCloud;
-
-		if (isAvailableDatabaseNode && !isCloud) {
-			this.addBackupAction(context, actions);
-			this.addRestoreAction(context, actions);
 		}
 
 		// Contribute refresh action for scriptable objects via contribution
@@ -189,27 +166,6 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		}
 
 		return actions;
-	}
-
-	private addNewQueryNotebookActions(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			actions.push(this._instantiationService.createInstance(OEAction, NewQueryAction.ID, NewQueryAction.LABEL));
-			// Workaround for #6397 right-click and run New Notebook connects to wrong server. Use notebook action instead of generic command action
-			let notebookAction = this._instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL);
-			actions.push(notebookAction);
-		}
-	}
-
-	private addBackupAction(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			actions.push(this._instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL));
-		}
-	}
-
-	private addRestoreAction(context: ObjectExplorerContext, actions: IAction[]): void {
-		if (this._queryManagementService.isProviderRegistered(context.profile.providerName)) {
-			actions.push(this._instantiationService.createInstance(OEAction, RestoreAction.ID, RestoreAction.LABEL));
-		}
 	}
 
 	private isScriptableObject(context: ObjectExplorerContext): boolean {

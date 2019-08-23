@@ -1,7 +1,6 @@
 /// <reference path="globals/core-js/index.d.ts" />
 /// <reference path="globals/jqueryui/index.d.ts" />
 /// <reference path="globals/slickgrid/index.d.ts" />
-/// <reference path="globals/systemjs/index.d.ts" />
 /// <reference path="globals/underscore/index.d.ts" />
 /// <reference path="globals/zone.js/index.d.ts" />
 /// <reference path="modules/@angular/common/index.d.ts" />

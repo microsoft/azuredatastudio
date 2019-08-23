@@ -70,7 +70,7 @@ interface ISharedProcessInitData {
 	logLevel: LogLevel;
 }
 
-const eventPrefix = 'monacoworkbench';
+const eventPrefix = product.quality !== 'stable' ? 'adsworkbench' : 'monacoworkbench'; // {{ SQL CARBON EDIT }}
 
 class MainProcessService implements IMainProcessService {
 	constructor(private server: Server, private mainRouter: StaticRouter) { }

@@ -53,6 +53,7 @@ export class SelectOperationPage extends BasePage {
 
 		// default have the first radio button checked
 		this.deployRadioButton.checked = true;
+		this.deployRadioButton.focused = true;
 		this.instance.setDoneButton(Operation.deploy);
 		return true;
 	}

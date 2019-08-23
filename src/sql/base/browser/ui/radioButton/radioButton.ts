@@ -81,6 +81,14 @@ export class RadioButton extends Widget {
 
 	public set label(val: string) {
 		this._label.innerText = val;
+		this.inputElement.setAttribute('aria-label', val);
 	}
 
+	public focus(): void {
+		this.inputElement.focus();
+	}
+
+	public blur(): void {
+		this.inputElement.blur();
+	}
 }

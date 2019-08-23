@@ -12,13 +12,15 @@ import { EOL } from 'os';
 import { ResourceTypeService } from '../services/resourceTypeService';
 import { IPlatformService } from '../services/platformService';
 import { ToolsService } from '../services/toolsService';
+import { NotebookService } from '../services/notebookService';
 
 suite('Resource Type Service Tests', function (): void {
 
 	test('test resource types', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
 		const toolsService = new ToolsService();
-		const resourceTypeService = new ResourceTypeService(mockPlatformService.object, toolsService);
+		const notebookService = new NotebookService(mockPlatformService.object, '');
+		const resourceTypeService = new ResourceTypeService(mockPlatformService.object, toolsService, notebookService);
 		// index 0: platform name, index 1: number of expected resource types
 		const platforms: { platform: string; resourceTypeCount: number }[] = [
 			{ platform: 'win32', resourceTypeCount: 2 },
