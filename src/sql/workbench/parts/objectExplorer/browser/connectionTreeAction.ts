@@ -225,8 +225,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private view: ServerTreeView,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		private view: ServerTreeView
 	) {
 		super(id, label);
 		this.class = ActiveConnectionsFilterAction.enabledClass;

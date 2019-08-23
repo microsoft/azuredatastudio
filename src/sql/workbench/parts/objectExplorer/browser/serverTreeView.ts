@@ -9,8 +9,8 @@ import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiati
 import Severity from 'vs/base/common/severity';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
-import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { Disposable } from 'vs/base/common/lifecycle';
+import { ITree, ContextMenuEvent } from 'vs/base/parts/tree/browser/tree';
+import { Disposable, dispose } from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -21,7 +21,6 @@ import { ConnectionProfile } from 'sql/platform/connection/common/connectionProf
 import * as ConnectionUtils from 'sql/platform/connection/common/utils';
 import { ActiveConnectionsFilterAction } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
@@ -34,6 +33,19 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { isHidden } from 'sql/base/browser/dom';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
+import { DefaultFilter, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
+import { ServerTreeDataSource } from 'sql/workbench/parts/objectExplorer/browser/serverTreeDataSource';
+import { ServerTreeRenderer } from 'sql/workbench/parts/objectExplorer/browser/serverTreeRenderer';
+import { ServerTreeController } from 'sql/workbench/parts/objectExplorer/browser/serverTreeController';
+import { ServerTreeDragAndDrop } from 'sql/workbench/parts/objectExplorer/browser/dragAndDropController';
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IAction } from 'vs/base/common/actions';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { memoize } from 'vs/base/common/decorators';
+import { IMenu, MenuId, IMenuService } from 'vs/platform/actions/common/actions';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -44,7 +56,7 @@ export class ServerTreeView extends Disposable {
 	private _buttonSection: HTMLElement;
 	private _treeSelectionHandler: TreeSelectionHandler;
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
-	private _tree: ITree;
+	private _tree: Tree;
 	private _onSelectionOrFocusChange: Emitter<void>;
 
 	constructor(
@@ -54,7 +66,10 @@ export class ServerTreeView extends Disposable {
 		@IThemeService private _themeService: IThemeService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IConfigurationService private _configurationService: IConfigurationService,
-		@ICapabilitiesService capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService capabilitiesService: ICapabilitiesService,
+		@IContextMenuService private readonly contextMenuService: IContextMenuService,
+		@IMenuService private readonly menuService: IMenuService,
+		@IContextKeyService private readonly contextKeyService: IContextKeyService
 	) {
 		super();
 		this._activeConnectionsFilterAction = this._instantiationService.createInstance(
@@ -131,11 +146,26 @@ export class ServerTreeView extends Disposable {
 				this._connectionManagementService.showConnectionDialog();
 			}));
 		}
-		this._tree = this._register(TreeCreationUtils.createRegisteredServersTree(container, this._instantiationService));
+
+		const dataSource = this._instantiationService.createInstance(ServerTreeDataSource);
+		const renderer = this._instantiationService.createInstance(ServerTreeRenderer, false);
+		const controller = this._instantiationService.createInstance(ServerTreeController);
+		const dnd = this._instantiationService.createInstance(ServerTreeDragAndDrop);
+		const filter = new DefaultFilter();
+		const sorter = undefined;
+		const accessibilityProvider = new DefaultAccessibilityProvider();
+
+		this._tree = new Tree(container, { dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider },
+			{
+				indentPixels: 10,
+				twistiePixels: 20,
+				ariaLabel: localize('treeCreation.regTreeAriaLabel', "Servers")
+			});
 		//this._tree.setInput(undefined);
 		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 		this._register(this._tree.onDidBlur(() => this._onSelectionOrFocusChange.fire()));
 		this._register(this._tree.onDidChangeFocus(() => this._onSelectionOrFocusChange.fire()));
+		this._register(controller.onContextMenuEvent(e => this.onContextMenu(e)));
 
 		// Theme styler
 		this._register(attachListStyler(this._tree, this._themeService));
@@ -178,6 +208,42 @@ export class ServerTreeView extends Disposable {
 				resolve();
 			} else {
 				resolve();
+			}
+		});
+	}
+
+	private setContextkeys(element: TreeNode | ConnectionProfileGroup | ConnectionProfile): void {
+
+	}
+
+	// Memoized locals
+	@memoize private get contributedContextMenu(): IMenu {
+		const contributedContextMenu = this.menuService.createMenu(MenuId.ObjectExplorerItemContext, this.contextKeyService);
+		this._register(contributedContextMenu);
+		return contributedContextMenu;
+	}
+
+	private onContextMenu(event: { element: any, event: ContextMenuEvent }): void {
+		const stat = event.element;
+
+		// update dynamic contexts
+		this.setContextkeys(stat);
+
+		const actions: IAction[] = [];
+		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, undefined, actions, this.contextMenuService);
+
+		this.contextMenuService.showContextMenu({
+			getAnchor: () => ({ x: event.event.posx, y: event.event.posy }),
+			getActions: () => actions,
+			onHide: (wasCancelled?: boolean) => {
+				if (wasCancelled) {
+					this.tree.domFocus();
+				}
+
+				dispose(actionsDisposable);
+			},
+			getActionsContext: () => {
+				return {} as ObjectExplorerActionsContext;
 			}
 		});
 	}

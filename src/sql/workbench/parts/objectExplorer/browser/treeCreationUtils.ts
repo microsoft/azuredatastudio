@@ -36,25 +36,4 @@ export class TreeCreationUtils {
 				ariaLabel: nls.localize('treeAriaLabel', "Recent Connections")
 			});
 	}
-
-	/**
-	 * Create a Servers viewlet tree
-	 */
-	public static createRegisteredServersTree(treeContainer: HTMLElement, instantiationService: IInstantiationService): Tree {
-
-		const dataSource = instantiationService.createInstance(ServerTreeDataSource);
-		const renderer = instantiationService.createInstance(ServerTreeRenderer, false);
-		const controller = instantiationService.createInstance(ServerTreeController);
-		const dnd = instantiationService.createInstance(ServerTreeDragAndDrop);
-		const filter = new DefaultFilter();
-		const sorter = undefined;
-		const accessibilityProvider = new DefaultAccessibilityProvider();
-
-		return new Tree(treeContainer, { dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider },
-			{
-				indentPixels: 10,
-				twistiePixels: 20,
-				ariaLabel: nls.localize('treeCreation.regTreeAriaLabel', "Servers")
-			});
-	}
 }
