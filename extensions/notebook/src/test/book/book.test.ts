@@ -183,7 +183,7 @@ describe('BookTreeViewProvider.getTableOfContentFiles', function (): void {
 	});
 
 	it('should ignore toc.yml files not in _data folder', function(): void {
-		bookTreeViewProvider.getTableOfContentFiles([folder]);
+		bookTreeViewProvider.getTableOfContentFiles([folder.uri.toString()]);
 		for (let p of bookTreeViewProvider.tableOfContentPaths) {
 			should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 		}
