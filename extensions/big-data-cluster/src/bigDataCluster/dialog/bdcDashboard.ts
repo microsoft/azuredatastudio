@@ -75,7 +75,7 @@ export class BdcDashboard {
 				}).component();
 
 			openTroubleshootNotebookButton.onDidClick(() => {
-				vscode.commands.executeCommand('mssqlCluster.task.openNotebook');
+				vscode.commands.executeCommand('books.sqlserver2019');
 			});
 
 			const toolbarContainer = modelView.modelBuilder.toolbarContainer()
@@ -130,6 +130,9 @@ export class BdcDashboard {
 				this.currentPage = overviewPage;
 			});
 			this.navContainer.addItem(overviewNavItem, { flex: '0 0 auto' });
+
+			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', 'Cluster Details'), CSSStyles: { 'margin-block-end': '0px' } }).component();
+			this.navContainer.addItem(clusterDetailsHeader, { CSSStyles: { 'user-select': 'none', 'font-weight': 'bold', 'border-bottom': 'solid 1px #ccc', 'margin-bottom': '10px' } });
 
 			await modelView.initializeModel(rootContainer);
 
