@@ -3062,6 +3062,7 @@ declare module 'azdata' {
 		editable?: boolean;
 		fireOnTextChange?: boolean;
 		ariaLabel?: string;
+		required?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {

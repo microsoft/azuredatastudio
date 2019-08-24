@@ -5,16 +5,13 @@
 'use strict';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as azdata from 'azdata';
-import { JobData } from '../data/jobData';
-import { JobStepDialog } from './jobStepDialog';
 import { PickScheduleDialog } from './pickScheduleDialog';
-import { AlertDialog } from './alertDialog';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
-import { JobStepData } from '../data/jobStepData';
 import { NotebookData } from '../data/notebookData';
-
+import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -30,8 +27,8 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	// Notebook details strings
 	private readonly NotebookDetailsSeparatorTitle: string = localize('notebookDialog.notebookSection', "Notebook Details");
 	private readonly TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', 'Notebook Path');
-	private readonly TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Metadata Database');
-	private readonly ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execute Database');
+	private readonly TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Storage Database');
+	private readonly ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execution Database');
 
 	// Job details string
 	private readonly JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
@@ -92,6 +89,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			let validationResult = this.model.validate();
 			if (!validationResult.valid) {
 				// TODO: Show Error Messages
+				this.dialog.message = { text: validationResult.errorMessages[0] };
 				console.error(validationResult.errorMessages.join(','));
 			}
 
@@ -106,14 +104,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					width: 400,
 					inputType: 'text'
 				}).component();
-			this.templateFilePathBox.onTextChanged(() => {
-				if (this.templateFilePathBox.value && this.templateFilePathBox.value.length > 0) {
-					this.dialog.okButton.enabled = true;
-				}
-				else {
-					this.dialog.okButton.enabled = false;
-				}
-			});
 			this.openTemplateFileButton = view.modelBuilder.button()
 				.withProperties({
 					label: '...',
@@ -126,7 +116,8 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 				if (e) {
 					this.templateFilePathBox.value = e.filePath;
 					if (!this.isEdit) {
-						this.nameTextBox.value = path.basename(e.filePath);
+						let fileName = path.basename(e.filePath).split('.').slice(0, -1).join('.');
+						this.nameTextBox.value = fileName;
 					}
 				}
 			});
@@ -146,6 +137,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown().component();
 			this.executeDatabaseDropDown = view.modelBuilder.dropDown().component();
 			let databases = await AgentUtils.getDatabases(this.ownerUri);
+			databases.unshift('Select Database');
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
@@ -157,9 +149,11 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			}).component();
 			this.executeDatabaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
-					value: '',
+					value: databases[0],
 					values: databases
 				}).component();
+			this.targetDatabaseDropDown.required = true;
+			this.executeDatabaseDropDown.required = true;
 			this.descriptionTextBox = view.modelBuilder.inputBox().withProperties({
 				multiline: true,
 				height: 50
@@ -174,6 +168,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					this.model.name = this.nameTextBox.value;
 				}
 			});
+
 			this.ownerTextBox = view.modelBuilder.inputBox().component();
 			this.schedulesTable = view.modelBuilder.table()
 				.withProperties({

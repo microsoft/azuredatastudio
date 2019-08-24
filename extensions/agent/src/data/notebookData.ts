@@ -7,6 +7,8 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import { promisify } from 'util';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 
@@ -52,6 +54,7 @@ export class NotebookData implements IAgentDialogData {
 	public executeDatabase: string;
 	public templateId: number;
 	public templatePath: string;
+	public static jobLists: azdata.AgentJobInfo[];
 
 	constructor(
 		ownerUri: string,
@@ -128,6 +131,10 @@ export class NotebookData implements IAgentDialogData {
 			displayName: this.NotebookCompletionActionCondition_Always,
 			name: azdata.JobCompletionActionCondition.Always.toString()
 		}];
+
+		this._agentService.getJobs(this.ownerUri).then((value) => {
+			NotebookData.jobLists = value.jobs;
+		});
 	}
 
 	public async save() {
@@ -157,11 +164,30 @@ export class NotebookData implements IAgentDialogData {
 
 	public validate(): { valid: boolean, errorMessages: string[] } {
 		let validationErrors: string[] = [];
-
 		if (!(this.name && this.name.trim())) {
 			validationErrors.push(this.CreateNotebookErrorMessage_NameIsEmpty);
 		}
+		if (!(this.templatePath && this.name.trim())) {
 
+			validationErrors.push('Template path cannot be blank');
+		}
+		if (!fs.existsSync(this.templatePath)) {
+			validationErrors.push('Invalid template path');
+		}
+		if (this.targetDatabase === 'Select Database') {
+			validationErrors.push('Select storage database');
+		}
+		if (this.executeDatabase === 'Select Database') {
+			validationErrors.push('Select execution database');
+		}
+		if (NotebookData.jobLists) {
+			for (let i = 0; i < NotebookData.jobLists.length; i++) {
+				if (this.name === NotebookData.jobLists[i].name) {
+					validationErrors.push('Job with similar name already exists');
+					break;
+				}
+			}
+		}
 		return {
 			valid: validationErrors.length === 0,
 			errorMessages: validationErrors
