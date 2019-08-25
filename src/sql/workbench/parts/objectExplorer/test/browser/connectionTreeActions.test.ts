@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
-	RefreshAction, AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
+	AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
 	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
 }
 	from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
@@ -209,8 +209,6 @@ suite('SQL Connection Tree Action tests', () => {
 	});
 
 	test('ActiveConnectionsFilterAction - test if view is called to display filtered results', (done) => {
-		let connectionManagementService = createConnectionManagementService(true, undefined);
-
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 			return new Promise((resolve) => resolve({}));
@@ -219,15 +217,13 @@ suite('SQL Connection Tree Action tests', () => {
 		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
-		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object, connectionManagementService.object);
+		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object);
 		connectionTreeAction.run().then((value) => {
 			serverTreeView.verify(x => x.showFilteredTree('active'), TypeMoq.Times.once());
 		}).then(() => done(), (err) => done(err));
 	});
 
 	test('ActiveConnectionsFilterAction - test if view is called refresh results if action is toggled', (done) => {
-		let connectionManagementService = createConnectionManagementService(true, undefined);
-
 		let instantiationService = TypeMoq.Mock.ofType(InstantiationService, TypeMoq.MockBehavior.Loose);
 		instantiationService.setup(x => x.createInstance(TypeMoq.It.isAny())).returns((input) => {
 			return new Promise((resolve) => resolve({}));
@@ -236,7 +232,7 @@ suite('SQL Connection Tree Action tests', () => {
 		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
-		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object, connectionManagementService.object);
+		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object);
 		connectionTreeAction.isSet = true;
 		connectionTreeAction.run().then((value) => {
 			serverTreeView.verify(x => x.refreshTree(), TypeMoq.Times.once());

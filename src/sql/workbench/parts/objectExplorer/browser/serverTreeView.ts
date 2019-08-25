@@ -41,11 +41,15 @@ import { ServerTreeController } from 'sql/workbench/parts/objectExplorer/browser
 import { ServerTreeDragAndDrop } from 'sql/workbench/parts/objectExplorer/browser/dragAndDropController';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
-import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { createAndFillInContextMenuActions, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { memoize } from 'vs/base/common/decorators';
 import { IMenu, MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
+import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
+import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
+import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
 /**
  * ServerTreeview implements the dynamic tree view.
@@ -58,6 +62,10 @@ export class ServerTreeView extends Disposable {
 	private _activeConnectionsFilterAction: ActiveConnectionsFilterAction;
 	private _tree: Tree;
 	private _onSelectionOrFocusChange: Emitter<void>;
+
+	private connectionContextKey = this._instantiationService.createInstance(ConnectionContextKey);
+	private treeNodeContextKey = this._instantiationService.createInstance(TreeNodeContextKey);
+	private serverInfoContextKey = this._instantiationService.createInstance(ServerInfoContextKey);
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -213,7 +221,39 @@ export class ServerTreeView extends Disposable {
 	}
 
 	private setContextkeys(element: TreeNode | ConnectionProfileGroup | ConnectionProfile): void {
+		if (element instanceof TreeNode) {
+			const profile = element.getConnectionProfile();
+			const serverInfo = this._connectionManagementService.getServerInfo(profile.id);
+			this.treeNodeContextKey.set(element);
+			this.connectionContextKey.set(profile);
+			this.serverInfoContextKey.set(serverInfo);
+		} else if (element instanceof ConnectionProfileGroup) {
+			this.connectionContextKey.reset();
+			this.serverInfoContextKey.reset();
+			this.treeNodeContextKey.reset();
+		} else {
+			const serverInfo = this._connectionManagementService.getServerInfo(element.id);
+			const node = new TreeNode(NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
+			this.connectionContextKey.set(element);
+			this.serverInfoContextKey.set(serverInfo);
+			this.treeNodeContextKey.set(node);
+		}
+	}
 
+	private createContext(element: TreeNode | ConnectionProfileGroup | ConnectionProfile): ObjectExplorerActionsContext {
+		const context = new ObjectExplorerActionsContext();
+		if (element instanceof TreeNode) {
+			context.connectionProfile = element.getConnectionProfile().toIConnectionProfile(); //why?
+			context.connectionProfile.databaseName = element.getDatabaseName(); //why?
+			context.nodeInfo = element.toNodeInfo();
+		} else if (element instanceof ConnectionProfileGroup) {
+			return element as any; //why?
+		} else {
+			context.connectionProfile = element.toIConnectionProfile();
+			context.isConnectionNode = true;
+		}
+
+		return context;
 	}
 
 	// Memoized locals
@@ -224,13 +264,17 @@ export class ServerTreeView extends Disposable {
 	}
 
 	private onContextMenu(event: { element: any, event: ContextMenuEvent }): void {
-		const stat = event.element;
+		const element = event.element;
 
 		// update dynamic contexts
-		this.setContextkeys(stat);
+		this.setContextkeys(element);
 
 		const actions: IAction[] = [];
-		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, undefined, actions, this.contextMenuService);
+		const options = { arg: undefined, shouldForwardArgs: true };
+		const groups = this.contributedContextMenu.getActions(options);
+		fillInActions(groups, actions, false);
+
+		const context = this.createContext(element);
 
 		this.contextMenuService.showContextMenu({
 			getAnchor: () => ({ x: event.event.posx, y: event.event.posy }),
@@ -239,12 +283,8 @@ export class ServerTreeView extends Disposable {
 				if (wasCancelled) {
 					this.tree.domFocus();
 				}
-
-				dispose(actionsDisposable);
 			},
-			getActionsContext: () => {
-				return {} as ObjectExplorerActionsContext;
-			}
+			getActionsContext: () => context
 		});
 	}
 

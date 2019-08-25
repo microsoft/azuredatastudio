@@ -10,75 +10,8 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
-import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
-import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
-import { IViewsService } from 'vs/workbench/common/views';
-
-export class RefreshAction extends Action {
-
-	public static ID = 'objectExplorer.refresh';
-	public static LABEL = localize('connectionTree.refresh', "Refresh");
-
-	constructor(
-		id: string,
-		label: string,
-		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private readonly _objectExplorerService: IObjectExplorerService,
-		@IErrorMessageService private readonly _errorMessageService: IErrorMessageService,
-		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
-		@IViewsService private readonly _viewsService: IViewsService
-	) {
-		super(id, label);
-	}
-	public async run(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
-		let treeNode: TreeNode;
-		if (actionContext.isConnectionNode) {
-			let connection = new ConnectionProfile(this.capabilitiesService, actionContext.connectionProfile);
-			if (this._connectionManagementService.isConnected(undefined, connection)) {
-				treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
-				if (treeNode === undefined) {
-					this._objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile()).then(() => {
-						treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
-					});
-				}
-			}
-		} else {
-			treeNode = await this._objectExplorerService.getTreeNode(actionContext.connectionProfile.id, actionContext.nodeInfo.nodePath);
-		}
-
-		if (treeNode) {
-			const view = await this._viewsService.openView(ConnectionViewletPanel.ID) as ConnectionViewletPanel;
-			const tree = view.serversTree;
-			return tree.collapse(treeNode).then(() => {
-				return this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
-					return tree.refresh(treeNode).then(() => {
-						return tree.expand(treeNode);
-					}, refreshError => {
-						return Promise.resolve(true);
-					});
-				}, error => {
-					this.showError(error);
-					return Promise.resolve(true);
-				});
-			}, collapseError => {
-				return Promise.resolve(true);
-			});
-		}
-		return Promise.resolve(true);
-	}
-
-	private showError(errorMessage: string) {
-		if (this._errorMessageService) {
-			this._errorMessageService.showDialog(Severity.Error, '', errorMessage);
-		}
-	}
-}
 
 export class DisconnectConnectionAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
