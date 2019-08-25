@@ -8,10 +8,11 @@ import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/object
 import { ITreeItem } from 'sql/workbench/common/views';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IContextKey, IContextKeyService, RawContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -36,11 +37,11 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	private _nodeContextUtils: MssqlNodeContext;
 
 	constructor(
-		@IContextKeyService private contextKeyService: IContextKeyService,
-		@IOEShimService private oeService: IOEShimService,
-		@IQueryManagementService queryManagementService: IQueryManagementService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
+		@IContextKeyService private readonly contextKeyService: IContextKeyService,
+		@IOEShimService private readonly oeService: IOEShimService,
+		@IConnectionManagementService private readonly connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService,
+		@IInstantiationService instantiationService: IInstantiationService
 	) {
 		super();
 
@@ -49,14 +50,15 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._viewIdKey = NodeContextKey.ViewId.bindTo(contextKeyService);
 		this._viewItemKey = NodeContextKey.ViewItem.bindTo(contextKeyService);
 		this._nodeContextKey = NodeContextKey.Node.bindTo(contextKeyService);
-		this._connectionContextKey = new ConnectionContextKey(contextKeyService, queryManagementService);
+		this._connectionContextKey = instantiationService.createInstance(ConnectionContextKey);
 	}
 
 	set(value: INodeContextValue) {
 		if (value.node && value.node.payload) {
 			this._connectableKey.set(true);
 			this._connectedKey.set(this.oeService.isNodeConnected(value.viewId, value.node));
-			this._connectionContextKey.set(value.node.payload);
+			const connectionProfile = new ConnectionProfile(this.capabilitiesService, value.node.payload);
+			this._connectionContextKey.set(connectionProfile);
 		} else {
 			this._connectableKey.set(false);
 			this._connectedKey.set(false);

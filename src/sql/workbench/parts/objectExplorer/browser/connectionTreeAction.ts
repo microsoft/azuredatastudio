@@ -11,7 +11,7 @@ import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serve
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
-import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 
 export class DisconnectConnectionAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
@@ -122,18 +122,39 @@ export class EditServerGroupAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private _group: ConnectionProfileGroup,
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
 	) {
 		super(id, label);
 		this.class = 'edit-server-group-action';
 	}
 
-	public run(): Promise<boolean> {
-		this._connectionManagementService.showEditServerGroupDialog(this._group);
+	public run(group: ConnectionProfileGroup): Promise<boolean> {
+		this._connectionManagementService.showEditServerGroupDialog(group);
 		return Promise.resolve(true);
 	}
 }
+
+/**
+ * Actions to delete a server/group
+ */
+export class DeleteConnectionGroupAction extends Action {
+	public static ID = 'registeredServers.deleteConnectionGroup';
+	public static LABEL = localize('deleteConnectionGroup', "Delete Group");
+
+	constructor(
+		id: string,
+		label: string,
+		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+	) {
+		super(id, label);
+	}
+
+	public run(group: ConnectionProfileGroup): Promise<boolean> {
+		this._connectionManagementService.deleteConnectionGroup(group);
+		return Promise.resolve(true);
+	}
+}
+
 
 /**
  * Display active connections in the tree
@@ -235,35 +256,20 @@ export class RecentConnectionsFilterAction extends Action {
  */
 export class DeleteConnectionAction extends Action {
 	public static ID = 'registeredServers.deleteConnection';
-	public static DELETE_CONNECTION_LABEL = localize('deleteConnection', "Delete Connection");
-	public static DELETE_CONNECTION_GROUP_LABEL = localize('deleteConnectionGroup', "Delete Group");
+	public static LABEL = localize('deleteConnection', "Delete Connection");
 
 	constructor(
 		id: string,
 		label: string,
-		private element: IConnectionProfile | ConnectionProfileGroup,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super(id, label);
-		this.class = 'delete-connection-action';
-		if (element instanceof ConnectionProfileGroup && element.id === UNSAVED_GROUP_ID) {
-			this.enabled = false;
-		}
-
-		if (element instanceof ConnectionProfile) {
-			let parent: ConnectionProfileGroup = element.parent;
-			if (parent && parent.id === UNSAVED_GROUP_ID) {
-				this.enabled = false;
-			}
-		}
 	}
 
-	public run(): Promise<boolean> {
-		if (this.element instanceof ConnectionProfile) {
-			this._connectionManagementService.deleteConnection(this.element);
-		} else if (this.element instanceof ConnectionProfileGroup) {
-			this._connectionManagementService.deleteConnectionGroup(this.element);
-		}
+	public run(context: ObjectExplorerActionsContext): Promise<boolean> {
+		const profile = new ConnectionProfile(this.capabilitiesService, context.connectionProfile);
+		this._connectionManagementService.deleteConnection(profile);
 		return Promise.resolve(true);
 	}
 }

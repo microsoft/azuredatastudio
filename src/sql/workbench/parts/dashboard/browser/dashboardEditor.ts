@@ -114,7 +114,7 @@ export class DashboardEditor extends BaseEditor {
 		const serverInfo = this._connMan.getConnectionInfo(this.input.uri).serverInfo;
 		this._dashboardService.changeToDashboard({ profile, serverInfo });
 		const scopedContextService = this._contextKeyService.createScoped(input.container);
-		const connectionContextKey = new ConnectionContextKey(scopedContextService, this.queryManagementService);
+		const connectionContextKey = this.instantiationService.createInstance(ConnectionContextKey, scopedContextService);
 		connectionContextKey.set(input.connectionProfile);
 
 		const params: IDashboardComponentParams = {

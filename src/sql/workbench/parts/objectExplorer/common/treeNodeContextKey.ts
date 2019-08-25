@@ -6,6 +6,8 @@
 import { RawContextKey, IContextKeyService, IContextKey } from 'vs/platform/contextkey/common/contextkey';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 
+export const isServerGroup = new RawContextKey<boolean>('isServerGroup', false);
+
 export class TreeNodeContextKey implements IContextKey<TreeNode> {
 
 	static NodeType = new RawContextKey<string>('nodeType', undefined);

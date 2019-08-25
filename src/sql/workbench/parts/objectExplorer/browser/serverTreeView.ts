@@ -41,13 +41,13 @@ import { ServerTreeController } from 'sql/workbench/parts/objectExplorer/browser
 import { ServerTreeDragAndDrop } from 'sql/workbench/parts/objectExplorer/browser/dragAndDropController';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IAction } from 'vs/base/common/actions';
-import { createAndFillInContextMenuActions, fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { createAndFillInContextMenuActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
 import { memoize } from 'vs/base/common/decorators';
 import { IMenu, MenuId, IMenuService } from 'vs/platform/actions/common/actions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { TreeNodeContextKey, isServerGroup } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 
@@ -66,6 +66,7 @@ export class ServerTreeView extends Disposable {
 	private connectionContextKey = this._instantiationService.createInstance(ConnectionContextKey);
 	private treeNodeContextKey = this._instantiationService.createInstance(TreeNodeContextKey);
 	private serverInfoContextKey = this._instantiationService.createInstance(ServerInfoContextKey);
+	private isServerGroupContextKey = isServerGroup.bindTo(this.contextKeyService);
 
 	constructor(
 		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
@@ -93,6 +94,7 @@ export class ServerTreeView extends Disposable {
 				this._treeSelectionHandler.onTreeActionStateChange(false);
 			}
 		});
+
 		this.registerCommands();
 	}
 
@@ -227,16 +229,19 @@ export class ServerTreeView extends Disposable {
 			this.treeNodeContextKey.set(element);
 			this.connectionContextKey.set(profile);
 			this.serverInfoContextKey.set(serverInfo);
+			this.isServerGroupContextKey.set(false);
 		} else if (element instanceof ConnectionProfileGroup) {
 			this.connectionContextKey.reset();
 			this.serverInfoContextKey.reset();
 			this.treeNodeContextKey.reset();
+			this.isServerGroupContextKey.set(true);
 		} else {
 			const serverInfo = this._connectionManagementService.getServerInfo(element.id);
 			const node = new TreeNode(NodeType.Server, '', false, '', '', '', undefined, undefined, undefined, undefined);
 			this.connectionContextKey.set(element);
 			this.serverInfoContextKey.set(serverInfo);
 			this.treeNodeContextKey.set(node);
+			this.isServerGroupContextKey.set(false);
 		}
 	}
 
@@ -270,9 +275,7 @@ export class ServerTreeView extends Disposable {
 		this.setContextkeys(element);
 
 		const actions: IAction[] = [];
-		const options = { arg: undefined, shouldForwardArgs: true };
-		const groups = this.contributedContextMenu.getActions(options);
-		fillInActions(groups, actions, false);
+		const actionsDisposable = createAndFillInContextMenuActions(this.contributedContextMenu, { shouldForwardArgs: true }, actions, this.contextMenuService);
 
 		const context = this.createContext(element);
 
@@ -283,6 +286,8 @@ export class ServerTreeView extends Disposable {
 				if (wasCancelled) {
 					this.tree.domFocus();
 				}
+
+				dispose(actionsDisposable);
 			},
 			getActionsContext: () => context
 		});
