@@ -500,7 +500,7 @@ suite.skip('ExtensionsTipsService Test', () => { // {{SQL CARBON EDIT}} skip sui
 		const storageSetterTarget = sinon.spy();
 		const changeHandlerTarget = sinon.spy();
 		const ignoredExtensionId = 'Some.Extension';
-		instantiationService.stub(IStorageService, <Partial<IStorageService>>{
+		instantiationService.stub(IStorageService, <any>{ // {{SQL CARBON EDIT}} strict-null-checks?
 			get: (a: string, b: StorageScope, c?: boolean) => a === 'extensionsAssistant/ignored_recommendations' ? '["ms-vscode.vscode"]' : c,
 			store: (...args: any[]) => {
 				storageSetterTarget(...args);
