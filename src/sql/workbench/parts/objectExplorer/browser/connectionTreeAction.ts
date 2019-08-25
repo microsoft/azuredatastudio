@@ -20,7 +20,8 @@ export class DisconnectConnectionAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService private readonly _connectionManagementService: IConnectionManagementService,
+		@ICapabilitiesService private readonly capabilitiesService: ICapabilitiesService
 	) {
 		super(id, label);
 	}
@@ -30,18 +31,13 @@ export class DisconnectConnectionAction extends Action {
 			if (!actionContext.connectionProfile) {
 				resolve(true);
 			}
-			if (this._connectionManagementService.isProfileConnected(actionContext.connectionProfile)) {
-				let profileImpl = actionContext.connectionProfile as ConnectionProfile;
-				if (profileImpl) {
-					profileImpl.isDisconnecting = true;
-				}
+			const profile = new ConnectionProfile(this.capabilitiesService, actionContext.connectionProfile);
+			if (this._connectionManagementService.isProfileConnected(profile)) {
+				profile.isDisconnecting = true;
 				this._connectionManagementService.disconnect(actionContext.connectionProfile).then((value) => {
-					if (profileImpl) {
-						profileImpl.isDisconnecting = false;
-					}
+					profile.isDisconnecting = false;
 					resolve(true);
-				}
-				).catch(disconnectError => {
+				}).catch(disconnectError => {
 					reject(disconnectError);
 				});
 			} else {

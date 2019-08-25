@@ -9,7 +9,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import {
 	AddServerAction, DeleteConnectionAction, DisconnectConnectionAction,
-	ActiveConnectionsFilterAction, RecentConnectionsFilterAction
+	ActiveConnectionsFilterAction, RecentConnectionsFilterAction, DeleteConnectionGroupAction
 }
 	from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
 import { TestConnectionManagementService } from 'sql/platform/connection/test/common/testConnectionManagementService';
@@ -188,7 +188,7 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, connection);
 
-		let changeConnectionAction = new DisconnectConnectionAction(DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, connectionManagementService.object);
+		let changeConnectionAction = new DisconnectConnectionAction(DisconnectConnectionAction.ID, DisconnectConnectionAction.LABEL, connectionManagementService.object, new TestCapabilitiesService());
 
 		let actionContext = new ObjectExplorerActionsContext();
 		actionContext.connectionProfile = connection.toIConnectionProfile();
@@ -293,11 +293,11 @@ suite('SQL Connection Tree Action tests', () => {
 			id: 'testId'
 		});
 		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
-			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
-			connection,
-			connectionManagementService.object);
+			DeleteConnectionAction.LABEL,
+			connectionManagementService.object,
+			new TestCapabilitiesService());
 
-		connectionAction.run().then((value) => {
+		connectionAction.run({ connectionProfile: connection, nodeInfo: undefined, isConnectionNode: true }).then((value) => {
 			connectionManagementService.verify(x => x.deleteConnection(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		}).then(() => done(), (err) => done(err));
 
@@ -307,44 +307,14 @@ suite('SQL Connection Tree Action tests', () => {
 		let isConnectedReturnValue: boolean = false;
 		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, undefined);
 		let conProfGroup = new ConnectionProfileGroup('testGroup', undefined, 'testGroup', undefined, undefined);
-		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
-			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
-			conProfGroup,
+		let connectionAction: DeleteConnectionGroupAction = new DeleteConnectionGroupAction(DeleteConnectionGroupAction.ID,
+			DeleteConnectionAction.LABEL,
 			connectionManagementService.object);
 
-		connectionAction.run().then((value) => {
+		connectionAction.run(conProfGroup).then((value) => {
 			connectionManagementService.verify(x => x.deleteConnectionGroup(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
 		}).then(() => done(), (err) => done(err));
 
-	});
-
-	test('DeleteConnectionAction - delete should not be called if connect is an unsaved connection', (done) => {
-		let isConnectedReturnValue: boolean = false;
-		let connectionManagementService = createConnectionManagementService(isConnectedReturnValue, undefined);
-
-		let connection: ConnectionProfile = new ConnectionProfile(capabilitiesService, {
-			connectionName: 'Test',
-			savePassword: false,
-			groupFullName: 'testGroup',
-			serverName: 'testServerName',
-			databaseName: 'testDatabaseName',
-			authenticationType: 'integrated',
-			password: 'test',
-			userName: 'testUsername',
-			groupId: undefined,
-			providerName: mssqlProviderName,
-			options: {},
-			saveProfile: true,
-			id: 'testId'
-		});
-		connection.parent = new ConnectionProfileGroup(LocalizedConstants.unsavedGroupLabel, undefined, UNSAVED_GROUP_ID, undefined, undefined);
-		let connectionAction: DeleteConnectionAction = new DeleteConnectionAction(DeleteConnectionAction.ID,
-			DeleteConnectionAction.DELETE_CONNECTION_LABEL,
-			connection,
-			connectionManagementService.object);
-
-		assert.equal(connectionAction.enabled, false, 'delete action should be disabled.');
-		done();
 	});
 
 	test('RefreshConnectionAction - refresh should be called if connection status is connect', (done) => {
