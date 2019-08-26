@@ -1,7 +1,6 @@
 {
 	"description": "Support for managing SQL Server big data clusters",
 	"text.sqlServerBigDataClusters": "SQL Server big data clusters",
-	"text.sqlServerBigDataClustersEnabledConfig.description":"Whether the SQL Server big data clusters data explorer view is enabled",
 	"command.addController.title": "Connect to Controller",
 	"command.deleteController.title" : "Delete",
 	"command.refreshController.title" : "Refresh",

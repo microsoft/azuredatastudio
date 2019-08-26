@@ -24,8 +24,7 @@
 			"sqlBigDataCluster": [
 				{
 					"id": "sqlBigDataCluster",
-					"name": "%text.sqlServerBigDataClusters%",
-					"when": "config.bigDataClusters.enabled"
+					"name": "%text.sqlServerBigDataClusters%"
 				}
 			]
 		},
@@ -72,17 +71,6 @@
 					"group": "navigation@3"
 				}
 			]
-		},
-		"configuration": {
-			"type": "object",
-			"title": "%text.sqlServerBigDataClusters%",
-			"properties": {
-				"bigDataClusters.enabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "%text.sqlServerBigDataClustersEnabledConfig.description%"
-				}
-			}
 		},
 		"commands": [
 			{
