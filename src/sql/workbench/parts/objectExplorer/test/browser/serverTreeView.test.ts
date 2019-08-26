@@ -13,6 +13,10 @@ import { TestStorageService } from 'vs/workbench/test/workbenchTestServices';
 
 import * as TypeMoq from 'typemoq';
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 
 suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 
@@ -22,11 +26,15 @@ suite('ServerTreeView onAddConnectionProfile handler tests', () => {
 	let capabilitiesService = new TestCapabilitiesService();
 
 	setup(() => {
-		let instantiationService = new TestInstantiationService();
+		const contextKeyService = new MockContextKeyService();
 		let mockConnectionManagementService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Strict, {}, {}, new TestStorageService());
 		mockConnectionManagementService.setup(x => x.getConnectionGroups()).returns(x => []);
 		mockConnectionManagementService.setup(x => x.hasRegisteredServers()).returns(() => true);
-		// serverTreeView = new ServerTreeView(mockConnectionManagementService.object, instantiationService, undefined, undefined, undefined, undefined, capabilitiesService);
+		let instantiationService = new TestInstantiationService();
+		instantiationService.set(ICapabilitiesService, capabilitiesService);
+		instantiationService.set(IContextKeyService, contextKeyService);
+		instantiationService.set(IConnectionManagementService, mockConnectionManagementService.object);
+		serverTreeView = instantiationService.createInstance(ServerTreeView);
 		let tree = <Tree>{
 			clearSelection() { },
 			getSelection() { },

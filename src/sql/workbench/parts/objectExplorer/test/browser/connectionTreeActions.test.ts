@@ -33,6 +33,10 @@ import { $ } from 'vs/base/browser/dom';
 import { OEManageConnectionAction } from 'sql/workbench/parts/dashboard/browser/dashboardActions';
 import { IViewsService, IView, ViewContainer, IViewDescriptorCollection } from 'vs/workbench/common/views';
 import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { TestContextService } from 'vs/workbench/test/workbenchTestServices';
+import { MockContextKeyService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
+import { RefreshAction } from 'sql/workbench/parts/objectExplorer/browser/actions';
+import { ConnectionViewletPanel } from 'sql/workbench/parts/dataExplorer/browser/connectionViewletPanel';
 
 suite('SQL Connection Tree Action tests', () => {
 	let errorMessageService: TypeMoq.Mock<TestErrorMessageService>;
@@ -214,7 +218,7 @@ suite('SQL Connection Tree Action tests', () => {
 			return new Promise((resolve) => resolve({}));
 		});
 
-		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
+		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object);
@@ -229,7 +233,7 @@ suite('SQL Connection Tree Action tests', () => {
 			return new Promise((resolve) => resolve({}));
 		});
 
-		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
+		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: ActiveConnectionsFilterAction = new ActiveConnectionsFilterAction(ActiveConnectionsFilterAction.ID, ActiveConnectionsFilterAction.LABEL, serverTreeView.object);
@@ -247,7 +251,7 @@ suite('SQL Connection Tree Action tests', () => {
 			return new Promise((resolve) => resolve({}));
 		});
 
-		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
+		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: RecentConnectionsFilterAction = new RecentConnectionsFilterAction(RecentConnectionsFilterAction.ID, RecentConnectionsFilterAction.LABEL, serverTreeView.object, connectionManagementService.object);
@@ -264,7 +268,7 @@ suite('SQL Connection Tree Action tests', () => {
 			return new Promise((resolve) => resolve({}));
 		});
 
-		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService);
+		let serverTreeView = TypeMoq.Mock.ofType(ServerTreeView, TypeMoq.MockBehavior.Strict, undefined, instantiationService.object, undefined, undefined, undefined, undefined, capabilitiesService, undefined, undefined, new MockContextKeyService());
 		serverTreeView.setup(x => x.showFilteredTree(TypeMoq.It.isAnyString()));
 		serverTreeView.setup(x => x.refreshTree());
 		let connectionTreeAction: RecentConnectionsFilterAction = new RecentConnectionsFilterAction(RecentConnectionsFilterAction.ID, RecentConnectionsFilterAction.LABEL, serverTreeView.object, connectionManagementService.object);
@@ -386,21 +390,26 @@ suite('SQL Connection Tree Action tests', () => {
 		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		tree.setup(x => x.collapse(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
-		// let connectionAction: RefreshAction = new RefreshAction(RefreshAction.ID,
-		// 	RefreshAction.LABEL,
-		// 	connectionManagementService.object,
-		// 	objectExplorerService.object,
-		// 	undefined);
+		const viewsService: Partial<IViewsService> = {
+			openView: (id) => Promise.resolve({ serversTree: tree.object, id })
+		};
+		let connectionAction = new RefreshAction(RefreshAction.ID,
+			RefreshAction.LABEL,
+			connectionManagementService.object,
+			objectExplorerService.object,
+			undefined,
+			new TestCapabilitiesService(),
+			viewsService as IViewsService);
 
-		// connectionAction.run().then((value) => {
-		// 	connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		// 	objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		// 	objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		// 	tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		// 	tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		// }).then(() => done(), (err) => {
-		// 	done(err);
-		// });
+		connectionAction.run({ isConnectionNode: true, connectionProfile: connection, nodeInfo: undefined }).then((value) => {
+			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+		}).then(() => done(), (err) => {
+			done(err);
+		});
 	});
 
 	test('RefreshConnectionAction - refresh should not be called if connection status is not connect', (done) => {
@@ -471,21 +480,24 @@ suite('SQL Connection Tree Action tests', () => {
 
 		tree.setup(x => x.refresh(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
 		tree.setup(x => x.expand(TypeMoq.It.isAny())).returns(() => Promise.resolve(null));
-		// let connectionAction: RefreshAction = new RefreshAction(RefreshAction.ID,
-		// 	RefreshAction.LABEL,
-		// 	tree.object,
-		// 	connection,
-		// 	connectionManagementService.object,
-		// 	objectExplorerService.object,
-		// 	undefined);
+		const viewsService: Partial<IViewsService> = {
+			openView: (id) => Promise.resolve({ serversTree: tree.object, id })
+		};
+		let connectionAction = new RefreshAction(RefreshAction.ID,
+			RefreshAction.LABEL,
+			connectionManagementService.object,
+			objectExplorerService.object,
+			undefined,
+			new TestCapabilitiesService(),
+			viewsService as IViewsService);
 
-		// connectionAction.run().then((value) => {
-		// 	connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
-		// 	objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
-		// 	objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
-		// 	tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
-		// 	tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
-		// }).then(() => done(), (err) => done(err));
+		connectionAction.run({ isConnectionNode: true, connectionProfile: connection, nodeInfo: undefined }).then((value) => {
+			connectionManagementService.verify(x => x.isConnected(undefined, TypeMoq.It.isAny()), TypeMoq.Times.atLeastOnce());
+			objectExplorerService.verify(x => x.getObjectExplorerNode(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+			objectExplorerService.verify(x => x.refreshTreeNode(TypeMoq.It.isAny(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+			tree.verify(x => x.refresh(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+			tree.verify(x => x.expand(TypeMoq.It.isAny()), TypeMoq.Times.exactly(0));
+		}).then(() => done(), (err) => done(err));
 	});
 
 });
