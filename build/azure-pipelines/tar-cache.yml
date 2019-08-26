@@ -1,0 +1,16 @@
+steps:
+- task: CopyFiles@2
+  inputs:
+    contents: |
+      '**/node_modules'
+      '!**/node_modules/**/node_modules'
+    targetFolder: $(Agent.TempDirectory)/cache_staging
+
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: '$(Agent.TempDirectory)/cache_staging'
+    includeRootFolder: false
+    archiveType: 'tar'
+    tarCompression: 'gz'
+    archiveFile: $(Agent.TempDirectory)/cache/tmp_cache.tar.gz
+  displayName: Tar cache
