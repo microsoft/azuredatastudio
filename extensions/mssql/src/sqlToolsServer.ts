@@ -19,6 +19,7 @@ import { SchemaCompareService } from './schemaCompare/schemaCompareService';
 import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
+import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 
 const baseConfig = require('./config.json');
 
@@ -46,6 +47,9 @@ export class SqlToolsServer {
 				setTimeout(() => {
 					statusView.hide();
 				}, 1500);
+				vscode.commands.registerCommand('mssql.loadCompletionExtension', (params: CompletionExtensionParams) => {
+					this.client.sendRequest(CompletionExtLoadRequest.type, params);
+				});
 				Telemetry.sendTelemetryEvent('startup/LanguageClientStarted', {
 					installationTime: String(installationComplete - installationStart),
 					processStartupTime: String(processEnd - processStart),

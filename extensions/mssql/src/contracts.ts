@@ -528,3 +528,26 @@ export namespace SerializeDataContinueRequest {
 	export const type = new RequestType<azdata.SerializeDataContinueRequestParams, azdata.SerializeDataResult, void, void>('serialize/continue');
 }
 // ------------------------------- <Serialization> -----------------------------
+
+// ------------------------------- < Load Completion Extension Request > ------------------------------------
+/**
+ * Completion extension load parameters
+ */
+export class CompletionExtensionParams {
+	/// <summary>
+	/// Absolute path for the assembly containing the completion extension
+	/// </summary>
+	public assemblyPath: string;
+	/// <summary>
+	/// The type name for the completion extension
+	/// </summary>
+	public typeName: string;
+	/// <summary>
+	/// Property bag for initializing the completion extension
+	/// </summary>
+	public properties: {};
+}
+
+export namespace CompletionExtLoadRequest {
+	export const type = new RequestType<CompletionExtensionParams, boolean, void, void>('completion/extLoad');
+}
