@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import { BdcStatusModel, ResourceStatusModel } from '../controller/apiGenerated';
 import { BdcDashboardResourceStatusPage } from './bdcDashboardResourceStatusPage';
 import { BdcDashboardModel } from './bdcDashboardModel';
+import { getHealthStatusDot } from '../utils';
 
 export class BdcServiceStatusPage {
 
@@ -75,7 +76,7 @@ export class BdcServiceStatusPage {
 	private createResourceNavTabs(resources: ResourceStatusModel[]) {
 		if (this.initialized && !this.resourceTabsCreated) {
 			resources.forEach(resource => {
-				const resourceHeaderTab = createResourceHeaderTab(this.modelView, resource.resourceName);
+				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
 				resourceHeaderTab.onDidClick(() => {
 					this.changeSelectedTabPage(resourceStatusPage);
@@ -92,12 +93,15 @@ export class BdcServiceStatusPage {
 
 /**
  * Creates a single resource header tab
- * @param view TheModelView used to construct the object
+ * @param modelBuilder The ModelBuilder used to construct the object
  * @param title The text to display in the tab
  */
-function createResourceHeaderTab(view: azdata.ModelView, title: string): azdata.DivContainer {
-	const resourceHeaderTab = view.modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ CSSStyles: { 'text-align': 'center' } }).component();
-	const resourceHeaderLabel = view.modelBuilder.text().withProperties({ value: title, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	resourceHeaderTab.addItem(resourceHeaderLabel);
+function createResourceHeaderTab(modelBuilder: azdata.ModelBuilder, resourceStatus: ResourceStatusModel): azdata.DivContainer {
+	const resourceHeaderTab = modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).component();
+	const innerContainer = modelBuilder.flexContainer().withLayout({ width: '100px', height: '25px', flexFlow: 'row' }).component();
+	innerContainer.addItem(modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right' } }).component(), { flex: '0 0 auto' });
+	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'text-align': 'left' } }).component();
+	innerContainer.addItem(resourceHeaderLabel);
+	resourceHeaderTab.addItem(innerContainer);
 	return resourceHeaderTab;
 }

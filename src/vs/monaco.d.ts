@@ -4790,7 +4790,7 @@ declare namespace monaco.languages {
 		Snippet = 25
 	}
 
-	export enum CompletionItemKindModifier {
+	export enum CompletionItemTag {
 		Deprecated = 1
 	}
 
@@ -4826,7 +4826,7 @@ declare namespace monaco.languages {
 		 * A modifier to the `kind` which affect how the item
 		 * is rendered, e.g. Deprecated is rendered with a strikeout
 		 */
-		kindModifier?: CompletionItemKindModifier;
+		tags?: ReadonlyArray<CompletionItemTag>;
 		/**
 		 * A human-readable string with additional information
 		 * about this item, like type or symbol information.
@@ -5236,10 +5236,15 @@ declare namespace monaco.languages {
 		TypeParameter = 25
 	}
 
+	export enum SymbolTag {
+		Deprecated = 1
+	}
+
 	export interface DocumentSymbol {
 		name: string;
 		detail: string;
 		kind: SymbolKind;
+		tags: ReadonlyArray<SymbolTag>;
 		containerName?: string;
 		range: IRange;
 		selectionRange: IRange;

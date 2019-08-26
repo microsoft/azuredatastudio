@@ -599,7 +599,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
 				getChildren: treeNode => this.getChildren(treeNode),
 				isExpanded: treeNode => this.isExpanded(treeNode),
-				setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
+				setNodeExpandedState: (treeNode, expandedState) => this.setNodeExpandedState(treeNode, expandedState),
 				setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
 			});
 		node.childProvider = nodeInfo.childProvider;

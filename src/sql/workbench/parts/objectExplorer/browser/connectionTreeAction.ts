@@ -12,6 +12,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 
 export class DisconnectConnectionAction extends Action {
 	public static ID = 'objectExplorer.disconnect';
@@ -96,14 +97,14 @@ export class AddServerGroupAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
 		this.class = 'add-server-group-action';
 	}
 
 	public run(): Promise<boolean> {
-		this._connectionManagementService.showCreateServerGroupDialog();
+		this.serverGroupController.showCreateGroupDialog();
 		return Promise.resolve(true);
 	}
 }
@@ -118,14 +119,14 @@ export class EditServerGroupAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
 		this.class = 'edit-server-group-action';
 	}
 
 	public run(group: ConnectionProfileGroup): Promise<boolean> {
-		this._connectionManagementService.showEditServerGroupDialog(group);
+		this.serverGroupController.showEditGroupDialog(group);
 		return Promise.resolve(true);
 	}
 }

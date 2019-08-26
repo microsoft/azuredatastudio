@@ -73,14 +73,6 @@ export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
 }
 
-function proposedApiFunction<T>(extension: IExtensionDescription, fn: T): T {
-	if (extension.enableProposedApi) {
-		return fn;
-	} else {
-		return throwProposedApiError.bind(null, extension) as any as T;
-	}
-}
-
 /**
  * This method instantiates and returns the extension API surface
  */
@@ -208,7 +200,8 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					});
 				});
 			},
-			registerDiffInformationCommand: proposedApiFunction(extension, (id: string, callback: (diff: vscode.LineChange[], ...args: any[]) => any, thisArg?: any): vscode.Disposable => {
+			registerDiffInformationCommand: (id: string, callback: (diff: vscode.LineChange[], ...args: any[]) => any, thisArg?: any): vscode.Disposable => {
+				checkProposedApiEnabled(extension);
 				return extHostCommands.registerCommand(true, id, async (...args: any[]): Promise<any> => {
 					const activeTextEditor = extHostEditors.getActiveTextEditor();
 					if (!activeTextEditor) {
@@ -219,7 +212,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 					const diff = await extHostEditors.getDiffInformation(activeTextEditor.id);
 					callback.apply(thisArg, [diff, ...args]);
 				});
-			}),
+			},
 			executeCommand<T>(id: string, ...args: any[]): Thenable<T> {
 				return extHostCommands.executeCommand<T>(id, ...args);
 			},
@@ -236,6 +229,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get appName() { return initData.environment.appName; },
 			get appRoot() { return initData.environment.appRoot!.fsPath; },
 			get uriScheme() { return initData.environment.appUriScheme; },
+			createAppUri(options?) {
+				checkProposedApiEnabled(extension);
+				return extHostUrls.createAppUri(extension.identifier, options);
+			},
 			get logLevel() {
 				checkProposedApiEnabled(extension);
 				return typeConverters.LogLevel.to(extHostLogService.getLevel());
@@ -531,9 +528,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			registerWebviewPanelSerializer: (viewType: string, serializer: vscode.WebviewPanelSerializer) => {
 				return extHostWebviews.registerWebviewPanelSerializer(viewType, serializer);
 			},
-			registerDecorationProvider: proposedApiFunction(extension, (provider: vscode.DecorationProvider) => {
+			registerDecorationProvider(provider: vscode.DecorationProvider) {
+				checkProposedApiEnabled(extension);
 				return extHostDecorations.registerDecorationProvider(provider, extension.identifier);
-			}),
+			},
 			registerUriHandler(handler: vscode.UriHandler) {
 				return extHostUrls.registerUriHandler(extension.identifier, handler);
 			},
@@ -546,8 +544,14 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 		};
 
 		// namespace: workspace
+		let warnedRootPathDeprecated = false;
 		const workspace: typeof vscode.workspace = {
 			get rootPath() {
+				if (extension.isUnderDevelopment && !warnedRootPathDeprecated) {
+					warnedRootPathDeprecated = true;
+					console.warn(`[Deprecation Warning] 'workspace.rootPath' is deprecated and should no longer be used. Please use 'workspace.workspaceFolders' instead. More details: https://aka.ms/vscode-eliminating-rootpath`);
+				}
+
 				return extHostWorkspace.getPath();
 			},
 			set rootPath(value) {
@@ -668,24 +672,30 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			get fs() {
 				return extHostFileSystem.fileSystem;
 			},
-			registerFileSearchProvider: proposedApiFunction(extension, (scheme: string, provider: vscode.FileSearchProvider) => {
+			registerFileSearchProvider: (scheme: string, provider: vscode.FileSearchProvider) => {
+				checkProposedApiEnabled(extension);
 				return extHostSearch.registerFileSearchProvider(scheme, provider);
-			}),
-			registerTextSearchProvider: proposedApiFunction(extension, (scheme: string, provider: vscode.TextSearchProvider) => {
+			},
+			registerTextSearchProvider: (scheme: string, provider: vscode.TextSearchProvider) => {
+				checkProposedApiEnabled(extension);
 				return extHostSearch.registerTextSearchProvider(scheme, provider);
-			}),
-			registerRemoteAuthorityResolver: proposedApiFunction(extension, (authorityPrefix: string, resolver: vscode.RemoteAuthorityResolver) => {
+			},
+			registerRemoteAuthorityResolver: (authorityPrefix: string, resolver: vscode.RemoteAuthorityResolver) => {
+				checkProposedApiEnabled(extension);
 				return extensionService.registerRemoteAuthorityResolver(authorityPrefix, resolver);
-			}),
-			registerResourceLabelFormatter: proposedApiFunction(extension, (formatter: vscode.ResourceLabelFormatter) => {
+			},
+			registerResourceLabelFormatter: (formatter: vscode.ResourceLabelFormatter) => {
+				checkProposedApiEnabled(extension);
 				return extHostLabelService.$registerResourceLabelFormatter(formatter);
-			}),
-			onDidRenameFile: proposedApiFunction(extension, (listener: (e: vscode.FileRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
+			},
+			onDidRenameFile: (listener: (e: vscode.FileRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
+				checkProposedApiEnabled(extension);
 				return extHostFileSystemEvent.onDidRenameFile(listener, thisArg, disposables);
-			}),
-			onWillRenameFile: proposedApiFunction(extension, (listener: (e: vscode.FileWillRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
+			},
+			onWillRenameFile: (listener: (e: vscode.FileWillRenameEvent) => any, thisArg?: any, disposables?: vscode.Disposable[]) => {
+				checkProposedApiEnabled(extension);
 				return extHostFileSystemEvent.getOnWillRenameFileEvent(extension)(listener, thisArg, disposables);
-			})
+			}
 		};
 
 		// namespace: scm
@@ -810,6 +820,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			CommentMode: extHostTypes.CommentMode,
 			CompletionItem: extHostTypes.CompletionItem,
 			CompletionItemKind: extHostTypes.CompletionItemKind,
+			CompletionItemTag: extHostTypes.CompletionItemTag,
 			CompletionList: extHostTypes.CompletionList,
 			CompletionTriggerKind: extHostTypes.CompletionTriggerKind,
 			ConfigurationTarget: extHostTypes.ConfigurationTarget,
@@ -864,6 +875,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			StatusBarAlignment: extHostTypes.StatusBarAlignment,
 			SymbolInformation: extHostTypes.SymbolInformation,
 			SymbolKind: extHostTypes.SymbolKind,
+			SymbolTag: extHostTypes.SymbolTag,
 			Task: extHostTypes.Task,
 			Task2: extHostTypes.Task,
 			TaskGroup: extHostTypes.TaskGroup,
