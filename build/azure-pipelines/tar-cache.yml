@@ -1,9 +1,10 @@
 steps:
 - task: CopyFiles@2
   inputs:
+    sourceFolder: $(Build.SourcesDirectory)
     contents: |
-      '**\node_modules\**'
-      '!**\node_modules\**\node_modules\**'
+      **/node_modules/**
+      !**/node_modules/**/node_modules/**
     targetFolder: $(Agent.TempDirectory)/cache_staging
   displayName: Prepare tar
   condition: ne(variables['CACHE_RESTORED'], true)
