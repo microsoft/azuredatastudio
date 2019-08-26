@@ -7,8 +7,8 @@ steps:
 - task: CacheBeta@0
   inputs:
     key: $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock | !**/node_modules/**/yarn.lock | !**/.*/**/yarn.lock
-    path: 'node_modules'
-    cacheHitVar: CacheRestored
+    path: './node_modules'
+    cacheHitVar: CACHE_RESTORED
 
 - script: |
     yarn --frozen-lockfile
