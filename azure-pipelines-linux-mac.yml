@@ -22,13 +22,24 @@ steps:
 
 - task: CacheBeta@0
   inputs:
-    key: yarn | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    path: $(YARN_CACHE_FOLDER)
+    key: yarn2 | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
+    path: tmp_cache.tar.gz
+    cacheHitVar: CACHE_RESTORED
   displayName: Cache Yarn packages
 
 - script: |
-    yarn --frozen-lockfile --cache-folder $(YARN_CACHE_FOLDER)
+    gunzip tmp_cache.tar.gz
+    tar -xvf tmp_cache.tar.gz
+  displayName: Untaring cache
+  condition: eq(variables['CACHE_RESTORED'], true)
+
+- script: |
+    yarn --frozen-lockfile
   displayName: Install Dependencies
+
+- script: |
+    tar -cvzf tmp_cache.tar.gz node_modules
+  displayName: Tar cache
 
 - script: |
     yarn gulp electron-x64
