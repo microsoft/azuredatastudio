@@ -31,6 +31,7 @@ steps:
   inputs:
     archiveFilePatterns: '$(Agent.TempDirectory)/cache/tmp_cache.tar.gz'
     destinationFolder: '$(Build.SourcesDirectory)'
+    cleanDestinationFolder: false
   displayName: Untaring cache
   condition: eq(variables['CACHE_RESTORED'], true)
 
