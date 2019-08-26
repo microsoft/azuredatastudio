@@ -8,7 +8,7 @@ import * as assert from 'assert';
 import * as TypeMoq from 'typemoq';
 import { EventVerifierSingle } from 'sqltest/utils/eventVerifier';
 import { Emitter } from 'vs/base/common/event';
-import { AccountPicker } from 'sql/platform/accounts/browser/accountPicker';
+import { AccountPicker } from 'sql/platform/accounts/browser/accountPickerImpl';
 import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
 import { AccountPickerViewModel } from 'sql/platform/accounts/common/accountPickerViewModel';
 import { TestAccountManagementService } from 'sql/platform/accounts/test/common/testAccountManagementService';

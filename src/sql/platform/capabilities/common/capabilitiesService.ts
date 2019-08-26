@@ -3,13 +3,11 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { ConnectionManagementInfo } from 'sql/platform/connection/common/connectionManagementInfo';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
 import * as azdata from 'sqlops';
 
 import { Event } from 'vs/base/common/event';
-import { IAction } from 'vs/base/common/actions';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export const SERVICE_ID = 'capabilitiesService';
@@ -48,11 +46,6 @@ export interface ICapabilitiesService {
 	 * Register a capabilities provider
 	 */
 	registerProvider(provider: azdata.CapabilitiesProvider): void;
-
-	/**
-	 * Returns true if the feature is available for given connection
-	 */
-	isFeatureAvailable(action: IAction, connectionManagementInfo: ConnectionManagementInfo): boolean;
 
 	/**
 	 * When new capabilities are registered, it emits the @see ProviderFeatures, which can be used to get the new capabilities

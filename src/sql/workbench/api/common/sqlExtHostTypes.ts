@@ -325,8 +325,6 @@ export enum DataProviderType {
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
-	DacFxServicesProvider = 'DacFxServicesProvider',
-	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 	IconProvider = 'IconProvider',
 	SerializationProvider = 'SerializationProvider'
@@ -583,92 +581,6 @@ export class ConnectionProfile {
 	static createFrom(options: any[]): ConnectionProfile {
 		throw new Error('Method not implemented');
 	}
-}
-
-export enum SchemaUpdateAction {
-	Delete = 0,
-	Change = 1,
-	Add = 2
-}
-
-export enum SchemaDifferenceType {
-	Object = 0,
-	Property = 1
-}
-
-export enum SchemaCompareEndpointType {
-	Database = 0,
-	Dacpac = 1
-}
-
-export enum SchemaObjectType {
-	Aggregates = 0,
-	ApplicationRoles = 1,
-	Assemblies = 2,
-	AssemblyFiles = 3,
-	AsymmetricKeys = 4,
-	BrokerPriorities = 5,
-	Certificates = 6,
-	ColumnEncryptionKeys = 7,
-	ColumnMasterKeys = 8,
-	Contracts = 9,
-	DatabaseOptions = 10,
-	DatabaseRoles = 11,
-	DatabaseTriggers = 12,
-	Defaults = 13,
-	ExtendedProperties = 14,
-	ExternalDataSources = 15,
-	ExternalFileFormats = 16,
-	ExternalTables = 17,
-	Filegroups = 18,
-	Files = 19,
-	FileTables = 20,
-	FullTextCatalogs = 21,
-	FullTextStoplists = 22,
-	MessageTypes = 23,
-	PartitionFunctions = 24,
-	PartitionSchemes = 25,
-	Permissions = 26,
-	Queues = 27,
-	RemoteServiceBindings = 28,
-	RoleMembership = 29,
-	Rules = 30,
-	ScalarValuedFunctions = 31,
-	SearchPropertyLists = 32,
-	SecurityPolicies = 33,
-	Sequences = 34,
-	Services = 35,
-	Signatures = 36,
-	StoredProcedures = 37,
-	SymmetricKeys = 38,
-	Synonyms = 39,
-	Tables = 40,
-	TableValuedFunctions = 41,
-	UserDefinedDataTypes = 42,
-	UserDefinedTableTypes = 43,
-	ClrUserDefinedTypes = 44,
-	Users = 45,
-	Views = 46,
-	XmlSchemaCollections = 47,
-	Audits = 48,
-	Credentials = 49,
-	CryptographicProviders = 50,
-	DatabaseAuditSpecifications = 51,
-	DatabaseEncryptionKeys = 52,
-	DatabaseScopedCredentials = 53,
-	Endpoints = 54,
-	ErrorMessages = 55,
-	EventNotifications = 56,
-	EventSessions = 57,
-	LinkedServerLogins = 58,
-	LinkedServers = 59,
-	Logins = 60,
-	MasterKeys = 61,
-	Routes = 62,
-	ServerAuditSpecifications = 63,
-	ServerRoleMembership = 64,
-	ServerRoles = 65,
-	ServerTriggers = 66
 }
 
 export enum ColumnType {

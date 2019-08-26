@@ -881,6 +881,11 @@ declare module 'vscode' {
 		/**
 		 * An event that when fired will signal that the pty is closed and dispose of the terminal.
 		 *
+		 * A number can be used to provide an exit code for the terminal. Exit codes must be
+		 * positive and a non-zero exit codes signals failure which shows a notification for a
+		 * regular terminal and allows dependent tasks to proceed when used with the
+		 * `CustomExecution2` API.
+		 *
 		 * **Example:** Exit the terminal when "y" is pressed, otherwise show a notification.
 		 * ```typescript
 		 * const writeEmitter = new vscode.EventEmitter<string>();
@@ -899,7 +904,7 @@ declare module 'vscode' {
 		 * };
 		 * vscode.window.createTerminal({ name: 'Exit example', pty });
 		 */
-		onDidClose?: Event<void>;
+		onDidClose?: Event<void | number>;
 
 		/**
 		 * Implement to handle when the pty is open and ready to start firing events.
@@ -1030,15 +1035,6 @@ declare module 'vscode' {
 		 */
 		constructor(label: TreeItemLabel, collapsibleState?: TreeItemCollapsibleState);
 	}
-
-	export interface TreeViewOptions2<T> extends TreeViewOptions<T> {
-		/**
-		 * Whether the tree supports multi-select. When the tree supports multi-select and a command is executed from the tree,
-		 * the first argument to the command is the tree item that the command was executed on and the second argument is an
-		 * array containing the other selected tree items.
-		 */
-		canSelectMany?: boolean;
-	}
 	//#endregion
 
 	//#region CustomExecution
@@ -1142,34 +1138,83 @@ declare module 'vscode' {
 
 	//#endregion
 
-	//#region Webview Resource Roots
+	//#region Joh - CompletionItemTag, https://github.com/microsoft/vscode/issues/23927
 
-	export interface Webview {
+	export enum SymbolTag {
+		Deprecated = 1
+	}
+
+	export interface SymbolInformation {
 		/**
-		 * Convert a uri for the local file system to one that can be used inside webviews.
 		 *
-		 * Webviews cannot directly load resoruces from the workspace or local file system using `file:` uris. The
-		 * `toWebviewResource` function takes a local `file:` uri and converts it into a uri that can be used inside of
-		 * a webview to load the same resource:
-		 *
-		 * ```ts
-		 * webview.html = `<img src="${webview.toWebviewResource(vscode.Uri.file('/Users/codey/workspace/cat.gif'))}">`
-		 * ```
 		 */
-		toWebviewResource(localResource: Uri): Uri;
+		tags?: ReadonlyArray<SymbolTag>;
+	}
+
+	export interface DocumentSymbol {
+		/**
+		 *
+		 */
+		tags?: ReadonlyArray<SymbolTag>;
+	}
+
+	export enum CompletionItemTag {
+		Deprecated = 1
+	}
+
+	export interface CompletionItem {
 
 		/**
-		 * Content security policy source for webview resources.
 		 *
-		 * This is the origin that should be used in a content security policy rule:
-		 *
-		 * ```
-		 * img-src https: ${webview.cspSource} ...;
-		 * ```
 		 */
-		readonly cspSource: string;
+		tags?: ReadonlyArray<CompletionItemTag>;
 	}
 
 	//#endregion
 
+	// #region Ben - extension auth flow (desktop+web)
+
+	export interface AppUriOptions {
+		payload?: {
+			path?: string;
+			query?: string;
+			fragment?: string;
+		};
+	}
+
+	export namespace env {
+
+		/**
+		 * Creates a Uri that - if opened in a browser - will result in a
+		 * registered [UriHandler](#UriHandler) to fire. The handler's
+		 * Uri will be configured with the path, query and fragment of
+		 * [AppUriOptions](#AppUriOptions) if provided, otherwise it will be empty.
+		 *
+		 * Extensions should not make any assumptions about the resulting
+		 * Uri and should not alter it in anyway. Rather, extensions can e.g.
+		 * use this Uri in an authentication flow, by adding the Uri as
+		 * callback query argument to the server to authenticate to.
+		 *
+		 * Note: If the server decides to add additional query parameters to the Uri
+		 * (e.g. a token or secret), it will appear in the Uri that is passed
+		 * to the [UriHandler](#UriHandler).
+		 *
+		 * **Example** of an authentication flow:
+		 * ```typescript
+		 * vscode.window.registerUriHandler({
+		 *   handleUri(uri: vscode.Uri): vscode.ProviderResult<void> {
+		 *     if (uri.path === '/did-authenticate') {
+		 *       console.log(uri.toString());
+		 *     }
+		 *   }
+		 * });
+		 *
+		 * const callableUri = await vscode.env.createAppUri({ payload: { path: '/did-authenticate' } });
+		 * await vscode.env.openExternal(callableUri);
+		 * ```
+		 */
+		export function createAppUri(options?: AppUriOptions): Thenable<Uri>;
+	}
+
+	//#endregion
 }

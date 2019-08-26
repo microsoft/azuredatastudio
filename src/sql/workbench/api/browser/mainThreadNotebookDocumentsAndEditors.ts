@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as path from 'vs/base/common/path';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IExtHostContext, IUndoStopOptions } from 'vs/workbench/api/common/extHost.protocol';
@@ -16,13 +16,14 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as types from 'vs/base/common/types';
+import * as fs from 'fs';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
-import { INotebookService, INotebookEditor, IProviderInfo } from 'sql/workbench/services/notebook/common/notebookService';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
+import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
 import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
@@ -320,7 +321,7 @@ class MainThreadNotebookDocumentAndEditorStateComputer extends Disposable {
 export class MainThreadNotebookDocumentsAndEditors extends Disposable implements MainThreadNotebookDocumentsAndEditorsShape {
 	private _proxy: ExtHostNotebookDocumentsAndEditorsShape;
 	private _notebookEditors = new Map<string, MainThreadNotebookEditor>();
-	private _modelToDisposeMap = new Map<string, IDisposable[]>();
+	private _modelToDisposeMap = new Map<string, DisposableStore>();
 	constructor(
 		extHostContext: IExtHostContext,
 		@IUntitledEditorService private _untitledEditorService: IUntitledEditorService,
@@ -558,11 +559,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			return;
 		}
 		removedDocuments.forEach(removedDoc => {
-			let listeners = this._modelToDisposeMap.get(removedDoc.toString());
-			if (listeners && listeners.length) {
-				listeners.forEach(listener => {
-					listener.dispose();
-				});
+			const store = this._modelToDisposeMap.get(removedDoc.toString());
+			if (store) {
+				store.dispose();
 				this._modelToDisposeMap.delete(removedDoc.toString());
 			}
 		});
@@ -574,9 +573,9 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		}
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
-			this._modelToDisposeMap.set(editor.uri.toString(), [editor.contentChanged((e) => {
-				this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
-			})]);
+			const store = new DisposableStore();
+			store.add(editor.contentChanged((e) => this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor))));
+			this._modelToDisposeMap.set(editor.uri.toString(), store);
 		});
 	}
 
@@ -680,13 +679,13 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 	}
 
 	private async doChangeKernel(editor: MainThreadNotebookEditor, displayName: string): Promise<boolean> {
-		let listeners = this._modelToDisposeMap.get(editor.id);
+		const store = this._modelToDisposeMap.get(editor.id);
 		editor.model.changeKernel(displayName);
 		return new Promise((resolve) => {
-			listeners.push(editor.model.kernelChanged((kernel) => {
+			store.add(editor.model.kernelChanged((kernel) => {
 				resolve(true);
 			}));
-			this._modelToDisposeMap.set(editor.id, listeners);
+			this._modelToDisposeMap.set(editor.id, store);
 		});
 	}
 
@@ -700,13 +699,25 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.next, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.next, {});
+					}
 				}
 			},
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.previous, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.previous, {});
+					}
 				}
 			}
 		});

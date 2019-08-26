@@ -83,7 +83,7 @@ export class FindWidget extends Widget implements IOverlayWidget, IHorizontalSas
 
 	private _resizeSash: Sash;
 
-	private searchTimeoutHandle: NodeJS.Timer;
+	private searchTimeoutHandle: any;
 
 	constructor(
 		tableController: ITableController,

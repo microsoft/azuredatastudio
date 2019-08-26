@@ -30,8 +30,8 @@ import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { IDimension } from 'vs/platform/layout/browser/layoutService';
 
 // {{SQL CARBON EDIT}}
-import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
+import { OpenDataExplorerViewletAction } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 
 const $ = dom.$;
 
