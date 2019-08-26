@@ -308,9 +308,7 @@ suite('Files - TextFileService', () => {
 		targetModel.dispose();
 	}
 
-	// {{SQL CARBON EDIT}}
-	/*
-	suite('Hot Exit', () => {
+	suite.skip('Hot Exit', () => { // {{SQL CARBON EDIT}} skip suite
 		suite('"onExit" setting', () => {
 			test('should hot exit on non-Mac (reason: CLOSE, windows: single, workspace)', function () {
 				return hotExitTest.call(this, HotExitConfiguration.ON_EXIT, ShutdownReason.CLOSE, false, true, !!platform.isMacintosh);
@@ -443,6 +441,4 @@ suite('Files - TextFileService', () => {
 			assert.equal(veto, shouldVeto);
 		}
 	});
-	// {{SQL CARBON EDIT}}
-	*/
 });
