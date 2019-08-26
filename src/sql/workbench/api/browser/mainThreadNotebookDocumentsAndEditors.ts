@@ -626,6 +626,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
+			case NotebookChangeType.CellOutputCleared:
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
 			case NotebookChangeType.TrustChanged:
@@ -654,7 +655,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						cell_type: cell.cellType,
 						execution_count: cell.executionCount,
 						metadata: {
-							language: cell.language
+							language: cell.language,
+							azdata_cell_guid: cell.cellGuid
 						},
 						source: undefined,
 						outputs: [...cell.outputs]
@@ -669,7 +671,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					cell_type: cells.cellType,
 					execution_count: undefined,
 					metadata: {
-						language: cells.language
+						language: cells.language,
+						azdata_cell_guid: cells.cellGuid
 					},
 					source: undefined
 				}
