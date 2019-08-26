@@ -332,7 +332,7 @@ class FileServiceProvider extends Disposable {
 
 		const inp = instantiationService.createInstance(ResourceEditorInput, 'name', 'description', URI.parse('my://resource-delegate'), undefined);
 		const delegate = instantiationService.createInstance(DelegatingEditorService);
-		delegate.setEditorOpenHandler((group: IEditorGroup, input: IEditorInput, options?: EditorOptions) => {
+		delegate.setEditorOpenHandler((delegate, group: IEditorGroup, input: IEditorInput, options?: EditorOptions) => {
 			assert.strictEqual(input, inp);
 
 			done();
