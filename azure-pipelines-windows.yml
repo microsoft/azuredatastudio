@@ -6,7 +6,7 @@ steps:
 
 - task: CacheBeta@0
   inputs:
-    key: yarn | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock | !**/node_modules/**/yarn.lock | !**/.*/**/yarn.lock'
+    key: yarn | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
     path: $(YARN_CACHE_FOLDER)
   displayName: Cache Yarn packages
 
