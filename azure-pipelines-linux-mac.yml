@@ -20,22 +20,14 @@ steps:
   displayName: 'Linux preinstall'
   condition: eq(variables['Agent.OS'], 'Linux')
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- task: CacheBeta@0
   inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
+    key: $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock | !**/node_modules/**/yarn.lock | !**/.*/**/yarn.lock
+    path: $(YARN_CACHE_FOLDER)
 
 - script: |
     yarn
-  displayName: 'Install'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
+  displayName: 'Yarn Install'
 
 - script: |
     yarn gulp electron-x64

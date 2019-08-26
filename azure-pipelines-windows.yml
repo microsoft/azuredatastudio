@@ -4,23 +4,14 @@ steps:
     versionSpec: '10.15.1'
   displayName: 'Install Node.js'
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+- task: CacheBeta@0
   inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
+    key: $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock | !**/node_modules/**/yarn.lock | !**/.*/**/yarn.lock
+    path: $(YARN_CACHE_FOLDER)
 
 - script: |
     yarn
   displayName: 'Yarn Install'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
-
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
 - script: |
     yarn gulp electron-x64
