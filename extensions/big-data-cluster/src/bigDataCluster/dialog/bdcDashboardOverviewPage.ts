@@ -10,7 +10,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { IconPathHelper } from '../constants';
-import { getStateDisplayText, getHealthStatusDisplayText, getHealthStatusIcon, getEndpointDisplayText, getServiceNameDisplayText, Endpoint } from '../utils';
+import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
 
 const localize = nls.loadMessageBundle();
@@ -20,7 +20,7 @@ const overviewServiceNameCellWidth = '100px';
 const overviewStateCellWidth = '75px';
 const overviewHealthStatusCellWidth = '100px';
 
-const serviceEndpointRowServiceNameCellWidth = '125px';
+const serviceEndpointRowServiceNameCellWidth = '175px';
 const serviceEndpointRowEndpointCellWidth = '350px';
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
@@ -246,15 +246,15 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 	endPointRow.addItem(nameCell, { CSSStyles: { 'width': serviceEndpointRowServiceNameCellWidth, 'min-width': serviceEndpointRowServiceNameCellWidth, 'user-select': 'text', 'text-align': 'center' } });
 	if (isHyperlink) {
 		const endpointCell = modelBuilder.hyperlink()
-			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px', 'padding-left': '10px' } })
+			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px' } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'color': '#0078d4', 'text-decoration': 'underline', 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'color': '#0078d4', 'text-decoration': 'underline', 'overflow': 'hidden', 'padding-left': '10px' } });
 	}
 	else {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'padding-left': '10px' } })
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden', 'padding-left': '10px' } });
 	}
 	const copyValueCell = modelBuilder.button().component();
 	copyValueCell.iconPath = IconPathHelper.copy;
