@@ -22,7 +22,7 @@ steps:
 
 - task: CacheBeta@0
   inputs:
-    key: yarn2 | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
+    key: yarn3 | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
     path: $(Agent.TempDirectory)/tmp_cache.tar.gz
     cacheHitVar: CACHE_RESTORED
   displayName: Cache Yarn packages
