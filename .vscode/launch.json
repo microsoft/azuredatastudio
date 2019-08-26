@@ -207,16 +207,23 @@
 			]
 		},
 		{
-			"name": "Search and Renderer processes",
+			"name": "Debug Renderer and search processes",
 			"configurations": [
 				"Launch azuredatastudio",
 				"Attach to Search Process"
 			]
 		},
 		{
-			"name": "Renderer and Extension Host processes",
+			"name": "Debug Renderer and Extension Host processes",
 			"configurations": [
 				"Launch azuredatastudio",
+				"Attach to Extension Host"
+			]
+		},
+		{
+			"name": "Attach Renderer and Extension Host",
+			"configurations": [
+				"Attach to azuredatastudio",
 				"Attach to Extension Host"
 			]
 		}
