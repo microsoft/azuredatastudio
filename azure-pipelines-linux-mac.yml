@@ -42,7 +42,6 @@ steps:
 
 - template: build/azure-pipelines/tar-cache.yml
   displayName: Tar cache
-  condition: ne(variables['CACHE_RESTORED'], true)
 
 - script: |
     yarn gulp electron-x64
