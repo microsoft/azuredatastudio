@@ -88,6 +88,7 @@ export class DeployPlanPage extends DacFxConfigPage {
 		this.table.data = [];
 		await this.populateTable();
 		this.loader.loading = false;
+		this.table.focused = true;
 		return true;
 	}
 

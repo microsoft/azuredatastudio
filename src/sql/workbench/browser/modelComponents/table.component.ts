@@ -247,6 +247,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaColumnCount = this.ariaColumnCount;
 		}
 
+		if (this.focused) {
+			this._table.focus();
+		}
+
 		this.layoutTable();
 		this.validate();
 	}
@@ -336,5 +340,13 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get moveFocusOutWithTab(): boolean {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
+	}
+
+	public get focused(): boolean {
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
+	}
+
+	public set focused(newValue: boolean) {
+		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 }

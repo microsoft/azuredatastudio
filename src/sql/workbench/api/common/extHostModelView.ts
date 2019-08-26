@@ -1160,6 +1160,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('moveFocusOutWithTab', v);
 	}
 
+	public get focused(): boolean {
+		return this.properties['focused'];
+	}
+	public set focused(v: boolean) {
+		this.setProperty('focused', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1169,6 +1176,8 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		let emitter = this._emitterMap.get(ComponentEventType.onCellAction);
 		return emitter && emitter.event;
 	}
+
+
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {
