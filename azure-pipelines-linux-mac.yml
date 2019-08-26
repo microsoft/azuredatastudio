@@ -40,6 +40,8 @@ steps:
 
 - task: ArchiveFiles@2
   inputs:
+    rootFolderOrFile: 'node_modules'
+    includeRootFolder: false
     archiveTtype: 'tar'
     tarCompression: 'gz'
     archiveFile: $(Agent.TempDirectory)/tmp_cache.tar.gz
