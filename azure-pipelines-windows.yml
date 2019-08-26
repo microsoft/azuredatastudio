@@ -6,14 +6,11 @@ steps:
 
 - task: CacheBeta@0
   inputs:
-    key: $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock | !**/node_modules/**/yarn.lock | !**/.*/**/yarn.lock
-    path: '**/node_modules, !**/node_modules/**/node_modules'
-    cacheHitVar: CACHE_RESTORED
+    key: yarn | $(Agent.OS) | yarn.lock
+    path: $(YARN_CACHE_FOLDER)
+  displayName: Cache Yarn packages
 
-- script: |
-    yarn --frozen-lockfile
-  displayName: 'Yarn Install'
-  condition: and(succeeded(), ne(variables['CACHE_RESTORED'], 'true'))
+- script: yarn --frozen-lockfile
 
 - script: |
     yarn gulp electron-x64
