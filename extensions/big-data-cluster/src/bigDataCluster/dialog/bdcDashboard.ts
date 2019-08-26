@@ -139,15 +139,8 @@ export class BdcDashboard {
 			this.initialized = true;
 
 			// Now that we've created the UI load data from the model in case it already had data
-			this.handleEndpointsUpdate(this.model.serviceEndpoints);
 			this.handleBdcStatusUpdate(this.model.bdcStatus);
 		});
-	}
-
-	private handleEndpointsUpdate(endpoints: EndpointModel[]): void {
-		if (!this.initialized || !endpoints) {
-			return;
-		}
 	}
 
 	private handleBdcStatusUpdate(bdcStatus: BdcStatusModel): void {
