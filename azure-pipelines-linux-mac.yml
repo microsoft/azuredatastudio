@@ -27,7 +27,7 @@ steps:
   displayName: Cache Yarn packages
 
 - script: |
-    yarn --frozen-lockfile
+    yarn --frozen-lockfile --cache-folder $(YARN_CACHE_FOLDER)
   displayName: Install Dependencies
 
 - script: |
