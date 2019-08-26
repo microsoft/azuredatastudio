@@ -112,30 +112,30 @@ export function getEndpointDisplayText(endpointName?: string, description?: stri
 		case Endpoint.appProxy:
 			return localize('endpoint.appproxy', "Application Proxy");
 		case Endpoint.controller:
-			return localize('endpoint.controller', "Controller");
+			return localize('endpoint.controller', "Cluster Management Service");
 		case Endpoint.gateway:
-			return localize('endpoint.gateway', "HDFS/Spark Gateway");
+			return localize('endpoint.gateway', "Gateway to access HDFS files, Spark");
 		case Endpoint.managementProxy:
 			return localize('endpoint.managementproxy', "Management Proxy");
 		case Endpoint.mgmtproxy:
 			return localize('endpoint.mgmtproxy', "Management Proxy");
 		case Endpoint.sqlServerMaster:
-			return localize('endpoint.sqlServerEndpoint', "SQL Server Master Instance");
+			return localize('endpoint.sqlServerEndpoint', "SQL Server Master Instance Front-End");
 		case Endpoint.metricsui:
 			return localize('endpoint.grafana', "Metrics Dashboard");
 		case Endpoint.logsui:
 			return localize('endpoint.kibana', "Log Search Dashboard");
 		case Endpoint.yarnUi:
-			return localize('endpoint.yarnHistory', "Spark Resource Management");
+			return localize('endpoint.yarnHistory', "Spark Diagnostics and Monitoring Dashboard");
 		case Endpoint.sparkHistory:
-			return localize('endpoint.sparkHistory', "Spark Job Monitoring");
+			return localize('endpoint.sparkHistory', "Spark Jobs Management and Monitoring Dashboard");
 		case Endpoint.webhdfs:
 			return localize('endpoint.webhdfs', "HDFS File System Proxy");
 		case Endpoint.livy:
-			return localize('endpoint.livy', "Spark Proxy");
+			return localize('endpoint.livy', "Proxy for running Spark statements, jobs, applications");
 		default:
 			// Default is to use the description if one was given, otherwise worst case just fall back to using the
-			// original service name
+			// original endpoint name
 			return description && description.length > 0 ? description : endpointName;
 	}
 }
