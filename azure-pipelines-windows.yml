@@ -11,9 +11,10 @@ steps:
     cacheHitVar: CACHE_RESTORED
   displayName: Cache Yarn packages
 
-- script: |
-    gunzip $(Agent.TempDirectory)/tmp_cache.tar.gz
-    tar -xvf $(Agent.TempDirectory)/tmp_cache.tar.gz
+- task: ExtractFiles@1
+  inputs:
+    archiveFilePatterns: '$(Agent.TempDirectory)/tmp_cache.tar.gz'
+    destinationFolder: '$(Build.SourcesDirectory)'
   displayName: Untaring cache
   condition: eq(variables['CACHE_RESTORED'], true)
 
@@ -21,9 +22,13 @@ steps:
     yarn --frozen-lockfile --cache-folder $(YARN_CACHE_FOLDER)
   displayName: Install Dependencies
 
-- script: |
-    7za.exe a -ttar -so archive.tar node_modules | 7za.exe a -si $(Agent.TempDirectory)/tmp_cache.tar.gz
+- task: ArchiveFiles@2
+  inputs:
+    archiveTtype: 'tar'
+    tarCompression: 'gz'
+    archiveFile: $(Agent.TempDirectory)/tmp_cache.tar.gz
   displayName: Tar cache
+  condition: ne(variables['CACHE_RESTORED'], true)
 
 - script: |
     yarn gulp electron-x64
