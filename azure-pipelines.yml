@@ -11,6 +11,8 @@ jobs:
     vmImage: vs2017-win2016
   steps:
   - template: azure-pipelines-windows.yml
+  variables:
+    YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 # All tasks on Linux
 - job: build_all_linux
@@ -19,6 +21,8 @@ jobs:
     vmImage: 'Ubuntu 16.04'
   steps:
   - template: azure-pipelines-linux-mac.yml
+  variables:
+    YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
 
 # All tasks on macOS
 - job: build_all_darwin
@@ -27,3 +31,5 @@ jobs:
     vmImage: macos-10.13
   steps:
   - template: azure-pipelines-linux-mac.yml
+  variables:
+    YARN_CACHE_FOLDER: $(Pipeline.Workspace)/.yarn
