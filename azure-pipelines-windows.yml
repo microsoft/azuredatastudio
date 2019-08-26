@@ -26,7 +26,7 @@ steps:
   inputs:
     rootFolderOrFile: 'node_modules'
     includeRootFolder: false
-    archiveTtype: 'tar'
+    archiveType: 'tar'
     tarCompression: 'gz'
     archiveFile: $(Agent.TempDirectory)/tmp_cache.tar.gz
   displayName: Tar cache
