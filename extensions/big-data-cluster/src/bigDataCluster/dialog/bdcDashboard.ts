@@ -32,7 +32,6 @@ export class BdcDashboard {
 	private currentPage: azdata.FlexContainer;
 
 	constructor(private title: string, private model: BdcDashboardModel) {
-		this.model.onDidUpdateEndpoints(endpoints => this.handleEndpointsUpdate(endpoints));
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
 	}
 
