@@ -23,13 +23,13 @@ steps:
 - task: CacheBeta@0
   inputs:
     key: yarn2 | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    path: tmp_cache.tar.gz
+    path: $(Agent.TempDirectory)/tmp_cache.tar.gz
     cacheHitVar: CACHE_RESTORED
   displayName: Cache Yarn packages
 
 - script: |
-    gunzip tmp_cache.tar.gz
-    tar -xvf tmp_cache.tar.gz
+    gunzip $(Agent.TempDirectory)/tmp_cache.tar.gz
+    tar -xvf $(Agent.TempDirectory)/tmp_cache.tar.gz
   displayName: Untaring cache
   condition: eq(variables['CACHE_RESTORED'], true)
 
@@ -38,7 +38,7 @@ steps:
   displayName: Install Dependencies
 
 - script: |
-    tar -cvzf tmp_cache.tar.gz node_modules
+    tar -cvzf $(Agent.TempDirectory)/tmp_cache.tar.gz node_modules
   displayName: Tar cache
 
 - script: |
