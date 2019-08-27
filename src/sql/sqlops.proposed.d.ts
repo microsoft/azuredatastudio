@@ -161,6 +161,13 @@ declare module 'sqlops' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies theUI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed

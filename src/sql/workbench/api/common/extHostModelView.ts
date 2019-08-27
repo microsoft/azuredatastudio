@@ -532,6 +532,14 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('required', v);
 	}
 
+	public get CSSStyles(): { [key: string]: string } {
+		return this.properties['CSSStyles'];
+	}
+
+	public set CSSStyles(cssStyles: { [key: string]: string }) {
+		this.setProperty('CSSStyles', cssStyles);
+	}
+
 	public toComponentShape(): IComponentShape {
 		return <IComponentShape>{
 			id: this.id,
@@ -604,6 +612,11 @@ class ComponentWrapper implements azdata.Component {
 		return this.setProperty(key, value);
 	}
 
+	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
+		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
+		return this.notifyPropertyChanged();
+	}
+
 	protected notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}
@@ -625,7 +638,6 @@ class ComponentWrapper implements azdata.Component {
 			}
 		}
 	}
-
 
 	protected setDataProvider(): Thenable<void> {
 		return this._proxy.$setDataProvider(this._handle, this._id);
