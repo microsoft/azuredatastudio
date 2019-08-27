@@ -12,13 +12,15 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
+import { KeyCode } from 'vs/base/common/keyCodes';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles"></p>`
+		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles" (click)="onClick()" (keyup)="onKey($event)"></p>`
 })
 export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -68,5 +70,20 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 			}
 		}
 		return text;
+	}
+
+	private onClick() {
+		this.fireEvent({
+			eventType: ComponentEventType.onDidClick,
+			args: undefined
+		});
+	}
+
+	private onKey(e: KeyboardEvent) {
+		let event = new StandardKeyboardEvent(e);
+		if (event.equals(KeyCode.Enter) || event.equals(KeyCode.Space)) {
+			this.onClick();
+			e.stopPropagation();
+		}
 	}
 }

@@ -5,6 +5,7 @@
 
 'use strict';
 
+import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import { getBdcStatus, getEndPoints } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
@@ -55,6 +56,31 @@ export class BdcDashboardModel {
 				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
 			})
 		]).catch(error => showErrorMessage(error));
+	}
+
+	public getSqlServerMasterConnectionProfile(): azdata.IConnectionProfile | undefined {
+		const sqlServerMasterEndpoint = this.serviceEndpoints.find(e => e.name === Endpoint.sqlServerMaster);
+		if (!sqlServerMasterEndpoint) {
+			return undefined;
+		}
+
+		// We default to sa - if that doesn't work then we'll open up a connection dialog so the user can enter in
+		// the correct connection information
+		return {
+			connectionName: '',
+			serverName: sqlServerMasterEndpoint.endpoint,
+			databaseName: undefined,
+			userName: 'sa',
+			password: this.password,
+			authenticationType: '',
+			savePassword: true,
+			groupFullName: undefined,
+			groupId: undefined,
+			providerName: 'MSSQL',
+			saveProfile: true,
+			id: undefined,
+			options: {}
+		};
 	}
 }
 

@@ -693,7 +693,6 @@ class CardWrapper extends ComponentWrapper implements azdata.CardComponent {
 		super(proxy, handle, ModelComponentTypes.Card, id);
 		this.properties = {};
 		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
-		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get label(): string {
@@ -1103,6 +1102,7 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
 		super(proxy, handle, ModelComponentTypes.Text, id);
 		this.properties = {};
+		this._emitterMap.set(ComponentEventType.onDidClick, new Emitter<any>());
 	}
 
 	public get value(): string {
@@ -1111,6 +1111,12 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public set value(v: string) {
 		this.setProperty('value', v);
 	}
+
+	public get onDidClick(): vscode.Event<any> {
+		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
+		return emitter && emitter.event;
+	}
+}
 }
 
 class TableComponentWrapper extends ComponentWrapper implements azdata.TableComponent {

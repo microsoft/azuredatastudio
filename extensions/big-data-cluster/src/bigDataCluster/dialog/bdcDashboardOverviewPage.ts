@@ -213,7 +213,7 @@ export class BdcDashboardOverviewPage {
 
 		this.endpointsRowContainer.clearItems();
 		endpoints.forEach((e, i) => {
-			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
+			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});
 	}
 }
@@ -240,7 +240,7 @@ function createServiceStatusRow(modelBuilder: azdata.ModelBuilder, container: az
 	container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
 }
 
-function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, endpoint: EndpointModel, isHyperlink: boolean, isLastRow: boolean): void {
+function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, endpoint: EndpointModel, bdcModel: BdcDashboardModel, isHyperlink: boolean, isLastRow: boolean): void {
 	const endPointRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '40px' }).component();
 	const nameCell = modelBuilder.text().withProperties({ value: getEndpointDisplayText(endpoint.name, endpoint.description), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
 	endPointRow.addItem(nameCell, { CSSStyles: { 'width': serviceEndpointRowServiceNameCellWidth, 'min-width': serviceEndpointRowServiceNameCellWidth, 'user-select': 'text', 'text-align': 'center' } });
@@ -249,6 +249,20 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px' } })
 			.component();
 		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'color': '#0078d4', 'text-decoration': 'underline', 'overflow': 'hidden', 'padding-left': '10px' } });
+	}
+	else if (endpoint.name === Endpoint.sqlServerMaster) {
+		const endpointCell = modelBuilder.text()
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'cursor': 'pointer', 'color': '#0078d4', 'text-decoration': 'underline' } })
+			.component();
+		endpointCell.onDidClick(async () => {
+			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
+			const result = await azdata.connection.connect(connProfile, true, true);
+			if (!result.connected) {
+				connProfile.password = undefined;
+				azdata.connection.openConnectionDialog(undefined, connProfile);
+			}
+		});
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden', 'padding-left': '10px' } });
 	}
 	else {
 		const endpointCell = modelBuilder.text()
