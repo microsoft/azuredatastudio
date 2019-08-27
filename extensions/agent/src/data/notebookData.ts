@@ -119,10 +119,9 @@ export class NotebookData implements IAgentDialogData {
 
 	public async initialize() {
 		if (this.connection) {
-			this._agentService = await AgentUtils.getAgentService(this.connection);
-		} else {
-			this._agentService = await AgentUtils.getAgentService();
+			await AgentUtils.setupProvidersFromConnection(this.connection);
 		}
+		this._agentService = await AgentUtils.getAgentService();
 		let jobDefaults = await this._agentService.getJobDefaults(this.ownerUri);
 		if (jobDefaults && jobDefaults.success) {
 			this._jobCategories = jobDefaults.categories.map((cat) => {

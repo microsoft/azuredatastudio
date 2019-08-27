@@ -13,10 +13,13 @@ export class AgentUtils {
 	private static _connectionService: azdata.ConnectionProvider;
 	private static _queryProvider: azdata.QueryProvider;
 
-	public static async getAgentService(connection?: azdata.connection.Connection): Promise<azdata.AgentServicesProvider> {
-		if (connection) {
-			this._agentService = azdata.dataprotocol.getProvider<azdata.AgentServicesProvider>(connection.providerName, azdata.DataProviderType.AgentServicesProvider);
-		}
+	public static async setupProvidersFromConnection(connection?: azdata.connection.Connection) {
+		this._agentService = azdata.dataprotocol.getProvider<azdata.AgentServicesProvider>(connection.providerName, azdata.DataProviderType.AgentServicesProvider);
+		this._connectionService = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(connection.providerName, azdata.DataProviderType.ConnectionProvider);
+		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connection.providerName, azdata.DataProviderType.QueryProvider);
+	}
+
+	public static async getAgentService(): Promise<azdata.AgentServicesProvider> {
 		if (!AgentUtils._agentService) {
 			let currentConnection = await azdata.connection.getCurrentConnection();
 			this._agentService = azdata.dataprotocol.getProvider<azdata.AgentServicesProvider>(currentConnection.providerId, azdata.DataProviderType.AgentServicesProvider);
