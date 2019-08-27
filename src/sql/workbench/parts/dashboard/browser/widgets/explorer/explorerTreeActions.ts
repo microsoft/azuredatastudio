@@ -15,14 +15,12 @@ export class ExplorerManageAction extends ManageAction {
 		id: string, label: string,
 		@IConnectionManagementService connectionManagementService: IConnectionManagementService,
 		@IAngularEventingService angularEventingService: IAngularEventingService,
-		@IEditorProgressService private _progressService: IEditorProgressService
 	) {
 		super(id, label, connectionManagementService, angularEventingService);
 	}
 
 	public run(actionContext: ManageActionContext): Promise<boolean> {
 		const promise = super.run(actionContext);
-		this._progressService.showWhile(promise);
 		return promise;
 	}
 }
