@@ -12,12 +12,17 @@ import { BdcDashboardModel } from './bdcDashboardModel';
 import { IconPathHelper } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
-import { EndpointModel, BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
+import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
 import { getHealthStatusDot, getServiceNameDisplayText } from '../utils';
 
 const localize = nls.loadMessageBundle();
 
-const navWidth = '175px';
+const navWidth = '200px';
+
+const selectedTabCss = { 'font-weight': 'bold' };
+const unselectedTabCss = { 'font-weight': '' };
+
+type NavTab = { div: azdata.DivContainer, dot: azdata.TextComponent, text: azdata.TextComponent };
 
 export class BdcDashboard {
 
@@ -29,6 +34,8 @@ export class BdcDashboard {
 	private modelView: azdata.ModelView;
 	private mainAreaContainer: azdata.FlexContainer;
 	private navContainer: azdata.FlexContainer;
+
+	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
 	constructor(private title: string, private model: BdcDashboardModel) {
@@ -117,18 +124,26 @@ export class BdcDashboard {
 			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding-left': '10px', 'border-right': 'solid 1px #ccc' } });
 
 			// Overview nav item - this will be the initial page
-			const overviewNavItem = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).component();
-			overviewNavItem.addItem(modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component(), { CSSStyles: { 'user-select': 'text' } });
+			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component();
+			overviewNavItemText.updateCssStyles(selectedTabCss);
+			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
 			const overviewPage = new BdcDashboardOverviewPage(this.model).create(modelView);
 			this.currentPage = overviewPage;
+			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
 
-			overviewNavItem.onDidClick(() => {
+			overviewNavItemDiv.onDidClick(() => {
+				if (this.currentTab) {
+					this.currentTab.text.updateCssStyles(unselectedTabCss);
+				}
 				this.mainAreaContainer.removeItem(this.currentPage);
 				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
 				this.currentPage = overviewPage;
+				this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
+				this.currentTab.text.updateCssStyles(selectedTabCss);
 			});
-			this.navContainer.addItem(overviewNavItem, { flex: '0 0 auto' });
+			this.navContainer.addItem(overviewNavItemDiv, { flex: '0 0 auto' });
 
 			const clusterDetailsHeader = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.clusterDetails', 'Cluster Details'), CSSStyles: { 'margin-block-end': '0px' } }).component();
 			this.navContainer.addItem(clusterDetailsHeader, { CSSStyles: { 'user-select': 'none', 'font-weight': 'bold', 'border-bottom': 'solid 1px #ccc', 'margin-bottom': '10px' } });
@@ -159,23 +174,30 @@ export class BdcDashboard {
 			services.forEach(s => {
 				const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
 				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
-				navItem.onDidClick(() => {
+				navItem.div.onDidClick(() => {
+					if (this.currentTab) {
+						this.currentTab.text.updateCssStyles(unselectedTabCss);
+					}
 					this.mainAreaContainer.removeItem(this.currentPage);
 					this.mainAreaContainer.addItem(serviceStatusPage);
 					this.currentPage = serviceStatusPage;
+					this.currentTab = navItem;
+					this.currentTab.text.updateCssStyles(selectedTabCss);
 				});
-				this.navContainer.addItem(navItem, { flex: '0 0 auto' });
+				this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
 			});
 			this.serviceTabsCreated = true;
 		}
 	}
 }
 
-function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): azdata.DivContainer {
-	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).component();
+function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
+	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
-	innerContainer.addItem(modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component(), { flex: '0 0 auto' });
-	innerContainer.addItem(modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component(), { flex: '0 0 auto' });
+	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component();
+	innerContainer.addItem(dot, { flex: '0 0 auto' });
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none' } }).component();
+	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
-	return div;
+	return { div: div, dot: dot, text: text };
 }
