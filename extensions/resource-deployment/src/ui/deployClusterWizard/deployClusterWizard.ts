@@ -15,10 +15,23 @@ import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { ClusterSettingsPage } from './pages/clusterSettingsPage';
 import { ServiceSettingsPage } from './pages/serviceSettingsPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
+import { IKubeService } from '../../services/kubeService';
+import { Model } from './model';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
-	constructor(private wizardInfo: WizardInfo) {
+
+	private _model: Model = new Model();
+
+	public get model(): Model {
+		return this._model;
+	}
+
+	public get kubeService(): IKubeService {
+		return this._kubeService;
+	}
+
+	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService) {
 		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server big data cluster"));
 	}
 

@@ -18,6 +18,7 @@ import { IToolsService } from './toolsService';
 import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { NotebookInputDialog } from '../ui/notebookInputDialog';
+import { KubeService } from './kubeService';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -197,7 +198,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (provider.wizard) {
-			const wizard = new DeployClusterWizard(provider.wizard);
+			const wizard = new DeployClusterWizard(provider.wizard, new KubeService());
 			wizard.open();
 		} else if (provider.dialog) {
 			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);

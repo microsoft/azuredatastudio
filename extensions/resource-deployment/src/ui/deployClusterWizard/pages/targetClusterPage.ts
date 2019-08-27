@@ -4,10 +4,14 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as os from 'os';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { WizardPageBase } from '../../wizardPageBase';
 const localize = nls.loadMessageBundle();
+
+const ClusterRadioButtonGroupName = 'ClusterRadioGroup';
 
 export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard> {
 	private existingClusterControl: azdata.FlexContainer | undefined;
@@ -18,6 +22,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 	private configFileInput: azdata.InputBoxComponent | undefined;
 	private browseFileButton: azdata.ButtonComponent | undefined;
 	private loadDefaultKubeConfigFile: boolean = true;
+	private view: azdata.ModelView | undefined;
 
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.TargetClusterContextPageTitle', "Target cluster context"),
@@ -26,7 +31,8 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 
 	protected initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
-
+			this.view = view;
+			this.initExistingClusterControl();
 			let formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -47,19 +53,17 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 
 	public onEnter() {
 		if (this.loadDefaultKubeConfigFile) {
-			let defaultKubeConfigPath = this.wizard.model.getDefaultKubeConfigPath();
-			if (fs.existsSync(defaultKubeConfigPath)) {
-				this.loadClusterContexts(defaultKubeConfigPath);
-			}
+			let defaultKubeConfigPath = this.wizard.kubeService.getDefautConfigPath();
+			this.loadClusterContexts(defaultKubeConfigPath);
 			this.loadDefaultKubeConfigFile = false;
 		}
 
 		this.wizard.wizardObject.registerNavigationValidator((e) => {
 			if (e.lastPage > e.newPage) {
-				this.wizard.wizardObject.message = null;
+				this.wizard.wizardObject.message = { text: '' };
 				return true;
 			}
-			let clusterSelected = this.wizard.model.selectedCluster !== undefined;
+			let clusterSelected = this.wizard.model.selectedClusterContext !== undefined;
 			if (!clusterSelected) {
 				this.wizard.wizardObject.message = {
 					text: localize('bdc-create.ClusterContextNotSelectedMessage', 'Please select a cluster context.'),
@@ -73,21 +77,21 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 	private initExistingClusterControl(): void {
 		let self = this;
 		const labelWidth = '150px';
-		let configFileLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-create.kubeConfigFileLabelText', 'Kube config file path') }).component();
+		let configFileLabel = this.view!.modelBuilder.text().withProperties({ value: localize('bdc-create.kubeConfigFileLabelText', 'Kube config file path') }).component();
 		configFileLabel.width = labelWidth;
-		this.configFileInput = this.view.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
+		this.configFileInput = this.view!.modelBuilder.inputBox().withProperties({ width: '300px' }).component();
 		this.configFileInput.enabled = false;
-		this.browseFileButton = this.view.modelBuilder.button().withProperties({ label: localize('bdc-browseText', 'Browse'), width: '100px' }).component();
-		let configFileContainer = this.view.modelBuilder.flexContainer()
+		this.browseFileButton = this.view!.modelBuilder.button().withProperties({ label: localize('bdc-browseText', 'Browse'), width: '100px' }).component();
+		let configFileContainer = this.view!.modelBuilder.flexContainer()
 			.withLayout({ flexFlow: 'row', alignItems: 'baseline' })
 			.withItems([configFileLabel, this.configFileInput, this.browseFileButton], { CSSStyles: { 'margin-right': '10px' } }).component();
-		this.clusterContextsLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-clusterContextsLabelText', 'Cluster Contexts') }).component();
+		this.clusterContextsLabel = this.view!.modelBuilder.text().withProperties({ value: localize('bdc-clusterContextsLabelText', 'Cluster Contexts') }).component();
 		this.clusterContextsLabel.width = labelWidth;
-		this.errorLoadingClustersLabel = this.view.modelBuilder.text().withProperties({ value: localize('bdc-errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file') }).component();
-		this.clusterContextList = this.view.modelBuilder.divContainer().component();
-		this.clusterContextLoadingComponent = this.view.modelBuilder.loadingComponent().withItem(this.clusterContextList).component();
-		this.existingClusterControl = this.view.modelBuilder.divContainer().component();
-		let clusterContextContainer = this.view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'start' }).component();
+		this.errorLoadingClustersLabel = this.view!.modelBuilder.text().withProperties({ value: localize('bdc-errorLoadingClustersText', 'No cluster information is found in the config file or an error ocurred while loading the config file') }).component();
+		this.clusterContextList = this.view!.modelBuilder.divContainer().component();
+		this.clusterContextLoadingComponent = this.view!.modelBuilder.loadingComponent().withItem(this.clusterContextList).component();
+		this.existingClusterControl = this.view!.modelBuilder.divContainer().component();
+		let clusterContextContainer = this.view!.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'start' }).component();
 		clusterContextContainer.addItem(this.clusterContextsLabel, { flex: '0 0 auto' });
 		clusterContextContainer.addItem(this.clusterContextLoadingComponent, { flex: '0 0 auto', CSSStyles: { 'width': '400px', 'margin-left': '10px', 'margin-top': '10px' } });
 
@@ -113,7 +117,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 			if (!fileUris || fileUris.length === 0) {
 				return;
 			}
-			self.clusterContextList.clearItems();
+			self.clusterContextList!.clearItems();
 
 			let fileUri = fileUris[0];
 
@@ -122,35 +126,34 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 	}
 
 	private async loadClusterContexts(configPath: string): Promise<void> {
-		this.clusterContextLoadingComponent.loading = true;
+		this.clusterContextLoadingComponent!.loading = true;
 		let self = this;
-		this.configFileInput.value = configPath;
-		await setActiveKubeconfig(configPath);
+		this.configFileInput!.value = configPath;
 
-		let clusters = await this.wizard.model.loadClusters();
+		const clusters = await this.wizard.kubeService.getContexts(configPath);
 		if (clusters.length !== 0) {
 			let options = clusters.map(cluster => {
-				let option = this.view.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
-					label: cluster.contextName,
-					checked: cluster.active,
+				let option = this.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
+					label: cluster.name,
+					checked: cluster.isCurrent,
 					name: ClusterRadioButtonGroupName
 				}).component();
 
-				if (cluster.active) {
-					self.wizard.model.selectedCluster = cluster;
-					self.wizard.wizardObject.message = null;
+				if (cluster.isCurrent) {
+					self.wizard.model.selectedClusterContext = cluster.name;
+					self.wizard.wizardObject.message = { text: '' };
 				}
 
 				this.wizard.registerDisposable(option.onDidClick(() => {
-					self.wizard.model.selectedCluster = cluster;
-					self.wizard.wizardObject.message = null;
+					self.wizard.model.selectedClusterContext = cluster.name;
+					self.wizard.wizardObject.message = { text: '' };
 				}));
 				return option;
 			});
-			self.clusterContextList.addItems(options);
+			self.clusterContextList!.addItems(options);
 		} else {
-			self.clusterContextList.addItem(this.errorLoadingClustersLabel);
+			self.clusterContextList!.addItem(this.errorLoadingClustersLabel!);
 		}
-		this.clusterContextLoadingComponent.loading = false;
+		this.clusterContextLoadingComponent!.loading = false;
 	}
 }

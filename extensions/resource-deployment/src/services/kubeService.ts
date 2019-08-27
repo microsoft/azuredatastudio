@@ -16,7 +16,7 @@ export interface KubeClusterContext {
 
 export interface IKubeService {
 	getDefautConfigPath(): string;
-	getContexts(configFile: string): KubeClusterContext[];
+	getContexts(configFile: string): Thenable<KubeClusterContext[]>;
 }
 
 export class KubeService implements IKubeService {
@@ -24,14 +24,17 @@ export class KubeService implements IKubeService {
 		return path.join(os.homedir(), '.kube', 'config');
 	}
 
-	getContexts(configFile: string): KubeClusterContext[] {
-		return [
-			{
-				user: 'alan',
-				name: 'current-cluster',
-				cluster: 'kubernetes',
-				isCurrent: false
-			}
-		];
+	getContexts(configFile: string): Thenable<KubeClusterContext[]> {
+		const promise = new Promise<KubeClusterContext[]>(resolve => {
+			resolve([
+				{
+					user: 'alan',
+					name: 'current-cluster',
+					cluster: 'kubernetes',
+					isCurrent: false
+				}
+			]);
+		});
+		return promise;
 	}
 }
