@@ -575,7 +575,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			let modelUrl = editor.uri;
 			const store = new DisposableStore();
 			store.add(editor.contentChanged((e) => {
-				// Cell source updates are handled by vscode editor things
+				// Cell source updates are handled by vscode editor updates in main/extHost Documents
 				if (e.changeType !== NotebookChangeType.CellSourceUpdated) {
 					this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
 				}
