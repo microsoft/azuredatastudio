@@ -162,7 +162,7 @@ export class TaskService implements ITaskService {
 				this.dialogService.show(Severity.Warning, message, options).then(choice => {
 					switch (choice) {
 						case 0:
-							let timeout: NodeJS.Timer;
+							let timeout: any;
 							let isTimeout = false;
 							this.cancelAllTasks().then(() => {
 								clearTimeout(timeout);

@@ -40,8 +40,10 @@ import { ServiceCollection } from 'vs/platform/instantiation/common/serviceColle
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { defaultInsertColor, defaultRemoveColor, diffBorder, diffInserted, diffInsertedOutline, diffRemoved, diffRemovedOutline, scrollbarShadow } from 'vs/platform/theme/common/colorRegistry';
 import { ITheme, IThemeService, getThemeTypeSelector, registerThemingParticipant } from 'vs/platform/theme/common/themeService';
-// {{SQL CARBON EDIT}}
-import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper';
+import { reverseLineChanges } from 'sql/editor/browser/diffEditorHelper'; // {{SQL CARBON EDIT}}
+import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
+import { IDiffLinesChange, InlineDiffMargin } from 'vs/editor/browser/widget/inlineDiffMargin';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 interface IEditorDiffDecorations {
 	decorations: IModelDeltaDecoration[];
@@ -49,7 +51,7 @@ interface IEditorDiffDecorations {
 }
 
 interface IEditorDiffDecorationsWithZones extends IEditorDiffDecorations {
-	zones: editorBrowser.IViewZone[];
+	zones: IMyViewZone[];
 }
 
 interface IEditorsDiffDecorationsWithZones {
@@ -58,8 +60,8 @@ interface IEditorsDiffDecorationsWithZones {
 }
 
 interface IEditorsZones {
-	original: editorBrowser.IViewZone[];
-	modified: editorBrowser.IViewZone[];
+	original: IMyViewZone[];
+	modified: IMyViewZone[];
 }
 
 interface IDiffEditorWidgetStyle {
@@ -73,11 +75,16 @@ interface IDiffEditorWidgetStyle {
 
 class VisualEditorState {
 	private _zones: string[];
+	private inlineDiffMargins: InlineDiffMargin[];
 	private _zonesMap: { [zoneId: string]: boolean; };
 	private _decorations: string[];
 
-	constructor() {
+	constructor(
+		private _contextMenuService: IContextMenuService,
+		private _clipboardService: IClipboardService
+	) {
 		this._zones = [];
+		this.inlineDiffMargins = [];
 		this._zonesMap = {};
 		this._decorations = [];
 	}
@@ -111,13 +118,22 @@ class VisualEditorState {
 			for (let i = 0, length = this._zones.length; i < length; i++) {
 				viewChangeAccessor.removeZone(this._zones[i]);
 			}
+			for (let i = 0, length = this.inlineDiffMargins.length; i < length; i++) {
+				this.inlineDiffMargins[i].dispose();
+			}
 			this._zones = [];
 			this._zonesMap = {};
+			this.inlineDiffMargins = [];
 			for (let i = 0, length = newDecorations.zones.length; i < length; i++) {
-				newDecorations.zones[i].suppressMouseDown = true;
-				let zoneId = viewChangeAccessor.addZone(newDecorations.zones[i]);
+				const viewZone = <editorBrowser.IViewZone>newDecorations.zones[i];
+				viewZone.suppressMouseDown = false;
+				let zoneId = viewChangeAccessor.addZone(viewZone);
 				this._zones.push(zoneId);
 				this._zonesMap[String(zoneId)] = true;
+
+				if (newDecorations.zones[i].diff && viewZone.marginDomNode) {
+					this.inlineDiffMargins.push(new InlineDiffMargin(zoneId, viewZone.marginDomNode, editor, newDecorations.zones[i].diff!, this._contextMenuService, this._clipboardService));
+				}
 			}
 		});
 
@@ -207,7 +223,9 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		@IInstantiationService instantiationService: IInstantiationService,
 		@ICodeEditorService codeEditorService: ICodeEditorService,
 		@IThemeService themeService: IThemeService,
-		@INotificationService notificationService: INotificationService
+		@INotificationService notificationService: INotificationService,
+		@IContextMenuService contextMenuService: IContextMenuService,
+		@IClipboardService clipboardService: IClipboardService
 	) {
 		super();
 
@@ -289,8 +307,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._currentlyChangingViewZones = false;
 		this._diffComputationToken = 0;
 
-		this._originalEditorState = new VisualEditorState();
-		this._modifiedEditorState = new VisualEditorState();
+		this._originalEditorState = new VisualEditorState(contextMenuService, clipboardService);
+		this._modifiedEditorState = new VisualEditorState(contextMenuService, clipboardService);
 
 		this._isVisible = true;
 		this._isHandlingScrollEvent = false;
@@ -1278,6 +1296,7 @@ interface IMyViewZone {
 	minWidthInPx?: number;
 	domNode: HTMLElement | null;
 	marginDomNode?: HTMLElement | null;
+	diff?: IDiffLinesChange;
 }
 
 class ForeignViewZonesIterator {
@@ -1489,12 +1508,12 @@ abstract class ViewZonesComputer {
 		};
 	}
 
-	private static _ensureDomNodes(zones: IMyViewZone[]): editorBrowser.IViewZone[] {
+	private static _ensureDomNodes(zones: IMyViewZone[]): IMyViewZone[] {
 		return zones.map((z) => {
 			if (!z.domNode) {
 				z.domNode = createFakeLinesDiv();
 			}
-			return <editorBrowser.IViewZone>z;
+			return z;
 		});
 	}
 
@@ -1997,8 +2016,10 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 		let lineHeight = this.modifiedEditorConfiguration.lineHeight;
 		const typicalHalfwidthCharacterWidth = this.modifiedEditorConfiguration.fontInfo.typicalHalfwidthCharacterWidth;
 		let maxCharsPerLine = 0;
+		const originalContent: string[] = [];
 		for (let lineNumber = lineChange.originalStartLineNumber; lineNumber <= lineChange.originalEndLineNumber; lineNumber++) {
 			maxCharsPerLine = Math.max(maxCharsPerLine, this._renderOriginalLine(lineNumber - lineChange.originalStartLineNumber, this.originalModel, this.modifiedEditorConfiguration, this.modifiedEditorTabSize, lineNumber, decorations, sb));
+			originalContent.push(this.originalModel.getLineContent(lineNumber));
 
 			if (this.renderIndicators) {
 				let index = lineNumber - lineChange.originalStartLineNumber;
@@ -2025,7 +2046,14 @@ class InlineViewZonesComputer extends ViewZonesComputer {
 			heightInLines: lineChangeOriginalLength,
 			minWidthInPx: (maxCharsPerLine * typicalHalfwidthCharacterWidth),
 			domNode: domNode,
-			marginDomNode: marginDomNode
+			marginDomNode: marginDomNode,
+			diff: {
+				originalStartLineNumber: lineChange.originalStartLineNumber,
+				originalEndLineNumber: lineChange.originalEndLineNumber,
+				modifiedStartLineNumber: lineChange.modifiedStartLineNumber,
+				modifiedEndLineNumber: lineChange.modifiedEndLineNumber,
+				originalContent: originalContent
+			}
 		};
 	}
 

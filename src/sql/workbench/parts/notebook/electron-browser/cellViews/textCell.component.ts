@@ -65,7 +65,7 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 			this.toggleEditMode(false);
 		}
 		this.cellModel.active = false;
-		this._model.activeCell = undefined;
+		this._model.updateActiveCell(undefined);
 	}
 
 	private _content: string | string[];

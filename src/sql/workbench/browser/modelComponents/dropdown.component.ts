@@ -109,6 +109,7 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 		if (this.ariaLabel !== '') {
 			this._selectBox.setAriaLabel(this.ariaLabel);
+			this._editableDropdown.ariaLabel = this.ariaLabel;
 		}
 
 		if (this.editable) {

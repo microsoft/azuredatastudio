@@ -31,7 +31,6 @@ import 'vs/workbench/electron-browser/desktop.main';
 import 'vs/workbench/services/integrity/node/integrityService';
 import 'vs/workbench/services/textMate/electron-browser/textMateService';
 import 'vs/workbench/services/workspace/electron-browser/workspaceEditingService';
-import 'vs/workbench/services/extensions/common/inactiveExtensionUrlHandler';
 import 'vs/workbench/services/search/node/searchService';
 import 'vs/workbench/services/output/node/outputChannelModelService';
 import 'vs/workbench/services/textfile/node/textFileService';
@@ -50,6 +49,7 @@ import 'vs/workbench/services/accessibility/node/accessibilityService';
 import 'vs/workbench/services/remote/node/tunnelService';
 import 'vs/workbench/services/backup/node/backupFileService';
 import 'vs/workbench/services/credentials/node/credentialsService';
+import 'vs/workbench/services/url/electron-browser/urlService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
@@ -71,9 +71,6 @@ import { IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { WorkspacesService } from 'vs/platform/workspaces/electron-browser/workspacesService';
 import { IMenubarService } from 'vs/platform/menubar/node/menubar';
 import { MenubarService } from 'vs/platform/menubar/electron-browser/menubarService';
-import { IURLService } from 'vs/platform/url/common/url';
-import { RelayURLService } from 'vs/platform/url/electron-browser/urlService';
-import { StaticExtensionsService, IStaticExtensionsService } from 'vs/workbench/services/extensions/common/staticExtensions';
 
 registerSingleton(IClipboardService, ClipboardService, true);
 registerSingleton(IRequestService, RequestService, true);
@@ -85,8 +82,6 @@ registerSingleton(IUpdateService, UpdateService);
 registerSingleton(IIssueService, IssueService);
 registerSingleton(IWorkspacesService, WorkspacesService);
 registerSingleton(IMenubarService, MenubarService);
-registerSingleton(IURLService, RelayURLService);
-registerSingleton(IStaticExtensionsService, class extends StaticExtensionsService { constructor() { super([]); } });
 
 //#endregion
 
@@ -141,7 +136,7 @@ import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthSer
 import { IClipboardService as sqlIClipboardService } from 'sql/platform/clipboard/common/clipboardService';
 import { ClipboardService as sqlClipboardService } from 'sql/platform/clipboard/electron-browser/clipboardService';
 import { AccountPickerService } from 'sql/platform/accounts/browser/accountPickerService';
-import { IAccountPickerService } from 'sql/platform/accounts/common/accountPicker';
+import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
 import { IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
@@ -200,9 +195,6 @@ registerSingleton(IAdsTelemetryService, AdsTelemetryService);
 
 // Localizations
 import 'vs/workbench/contrib/localizations/browser/localizations.contribution';
-
-// Logs
-import 'vs/workbench/contrib/logs/electron-browser/logs.contribution';
 
 // Stats
 import 'vs/workbench/contrib/stats/electron-browser/workspaceStatsService';
@@ -286,6 +278,15 @@ import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
 
 //acounts
 import 'sql/workbench/parts/accounts/browser/accounts.contribution';
+
+//backup
+import 'sql/workbench/parts/backup/browser/backup.contribution';
+
+//extensions
+import 'sql/workbench/parts/dataExplorer/common/extensions.contribution';
+
+//restore
+import 'sql/workbench/parts/restore/browser/restore.contribution';
 
 import 'sql/workbench/parts/profiler/browser/profiler.contribution';
 import 'sql/workbench/parts/profiler/browser/profilerActions.contribution';

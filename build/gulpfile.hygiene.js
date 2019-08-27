@@ -135,9 +135,9 @@ const copyrightFilter = [
 	'!extensions/mssql/src/objectExplorerNodeProvider/webhdfs.ts',
 	'!src/sql/workbench/parts/notebook/browser/outputs/tableRenderers.ts',
 	'!src/sql/workbench/parts/notebook/common/models/url.ts',
-	'!src/sql/workbench/parts/notebook/common/models/renderMimeInterfaces.ts',
-	'!src/sql/workbench/parts/notebook/common/models/outputProcessor.ts',
-	'!src/sql/workbench/parts/notebook/common/models/mimemodel.ts',
+	'!src/sql/workbench/parts/notebook/browser/models/renderMimeInterfaces.ts',
+	'!src/sql/workbench/parts/notebook/browser/models/outputProcessor.ts',
+	'!src/sql/workbench/parts/notebook/browser/models/mimemodel.ts',
 	'!src/sql/workbench/parts/notebook/browser/cellViews/media/*.css',
 	'!src/sql/base/browser/ui/table/plugins/rowSelectionModel.plugin.ts',
 	'!src/sql/base/browser/ui/table/plugins/rowDetailView.ts',
@@ -252,7 +252,7 @@ gulp.task('tslint', () => {
 			.pipe(filter(tslintExtensionsFilter))
 			.pipe(gulptslint.default({ rulesDirectory: 'build/lib/tslint' }))
 			.pipe(gulptslint.default.report({ emitError: true }))
-	]);
+	]).pipe(es.through());
 });
 
 function hygiene(some) {

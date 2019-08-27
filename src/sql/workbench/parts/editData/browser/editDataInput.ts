@@ -6,7 +6,6 @@
 import { EditorInput, EditorModel, ConfirmResult, EncodingMode } from 'vs/workbench/common/editor';
 import { IConnectionManagementService, IConnectableInput, INewConnectionParams } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
-import { dispose } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import { EditSessionReadyParams } from 'azdata';
 import { URI } from 'vs/base/common/uri';
@@ -14,7 +13,7 @@ import * as nls from 'vs/nls';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import Severity from 'vs/base/common/severity';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { IEditorViewState } from 'vs/editor/common/editorCommon';
 
 /**

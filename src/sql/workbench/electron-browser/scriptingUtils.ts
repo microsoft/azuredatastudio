@@ -14,7 +14,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {

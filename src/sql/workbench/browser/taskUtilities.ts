@@ -9,12 +9,12 @@ import {
 	IConnectionCompletionOptions, ConnectionType,
 	RunQueryOnConnectionMode, IConnectionResult
 } from 'sql/platform/connection/common/connectionManagement';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
 import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { DashboardInput } from 'sql/workbench/parts/dashboard/common/dashboardInput';
+import { DashboardInput } from 'sql/workbench/parts/dashboard/browser/dashboardInput';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
@@ -55,22 +55,6 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 		} else {
 			resolve(defaultResult);
 		}
-	});
-}
-
-export function showBackup(connection: IConnectionProfile, backupUiService: IBackupUiService): Promise<void> {
-	return new Promise<void>((resolve) => {
-		backupUiService.showBackup(connection).then(() => {
-			resolve(void 0);
-		});
-	});
-}
-
-export function showRestore(connection: IConnectionProfile, restoreDialogService: IRestoreDialogController): Promise<void> {
-	return new Promise<void>((resolve) => {
-		restoreDialogService.showDialog(connection).then(() => {
-			resolve(void 0);
-		});
 	});
 }
 
