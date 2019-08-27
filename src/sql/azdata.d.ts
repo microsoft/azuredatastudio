@@ -2543,6 +2543,13 @@ declare module 'azdata' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -4448,6 +4455,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				azdata_cell_guid?: string;
 			};
 			execution_count?: number;
 			outputs?: ICellOutput[];
