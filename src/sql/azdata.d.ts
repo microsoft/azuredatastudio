@@ -2544,7 +2544,7 @@ declare module 'azdata' {
 		updateProperty(key: string, value: any): Thenable<void>;
 
 		/**
-		 * Updates the specified CSS Styles and notifies theUI
+		 * Updates the specified CSS Styles and notifies the UI
 		 * @param cssStyles The styles to update
 		 * @returns Thenable that completes once the update has been applied to the UI
 		 */
