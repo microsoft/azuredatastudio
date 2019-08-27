@@ -448,7 +448,7 @@ export class JupyterServerInstallation {
 		let installSparkMagic: string;
 		if (process.platform === constants.winPlatform || this._usingExistingPython) {
 			// Overwrite existing install of sparkmagic, since we use a custom version
-			let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
+			let cmdOptions = this._usingExistingPython ? '--user' : '';
 			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
 			if (doOnlineInstall) {
 				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} "${sparkWheel}" --no-warn-script-location`;
