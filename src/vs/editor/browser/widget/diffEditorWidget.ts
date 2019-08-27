@@ -132,7 +132,7 @@ class VisualEditorState {
 				this._zonesMap[String(zoneId)] = true;
 
 				if (newDecorations.zones[i].diff && viewZone.marginDomNode) {
-					this.inlineDiffMargins.push(new InlineDiffMargin(viewZone.marginDomNode, editor, newDecorations.zones[i].diff!, this._contextMenuService, this._clipboardService));
+					this.inlineDiffMargins.push(new InlineDiffMargin(zoneId, viewZone.marginDomNode, editor, newDecorations.zones[i].diff!, this._contextMenuService, this._clipboardService));
 				}
 			}
 		});
