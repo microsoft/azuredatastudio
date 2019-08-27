@@ -84,7 +84,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				if (fileUris) {
 					let files: IFile[] = fileUris.map(uri => uri.fsPath).map(this.mapPathsToFiles());
 					await this.executeWithProgress(
-						async (cancelToken: vscode.CancellationTokenSource) => this.writeFiles(files, folderNode, cancelToken),
+						(cancelToken: vscode.CancellationTokenSource) => this.writeFiles(files, folderNode, cancelToken),
 						localize('uploading', 'Uploading files to HDFS'), true,
 						() => this.apiWrapper.showInformationMessage(localize('uploadCanceled', 'Upload operation was canceled')));
 					if (context.type === constants.ObjectExplorerService) {
@@ -264,7 +264,7 @@ export class SaveFileCommand extends ProgressCommand {
 				});
 				if (fileUri) {
 					await this.executeWithProgress(
-						async (cancelToken: vscode.CancellationTokenSource) => this.doSaveAndOpen(fileUri, fileNode, cancelToken),
+						(cancelToken: vscode.CancellationTokenSource) => this.doSaveAndOpen(fileUri, fileNode, cancelToken),
 						localize('saving', 'Saving HDFS Files'), true,
 						() => this.apiWrapper.showInformationMessage(localize('saveCanceled', 'Save operation was canceled')));
 				}

@@ -50,6 +50,7 @@ import { first } from 'vs/base/common/arrays';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IFileService, FileSystemProviderCapabilities } from 'vs/platform/files/common/files';
 import { dispose } from 'vs/base/common/lifecycle';
+import { timeout } from 'vs/base/common/async';
 
 export class ExplorerView extends ViewletPanel {
 	static readonly ID: string = 'workbench.explorer.fileView';
@@ -240,8 +241,7 @@ export class ExplorerView extends ViewletPanel {
 			const activeFile = this.getActiveFile();
 			if (!activeFile && !focused[0].isDirectory) {
 				// Open the focused element in the editor if there is currently no file opened #67708
-				this.editorService.openEditor({ resource: focused[0].resource, options: { preserveFocus: true, revealIfVisible: true } })
-					.then(undefined, onUnexpectedError);
+				this.editorService.openEditor({ resource: focused[0].resource, options: { preserveFocus: true, revealIfVisible: true } });
 			}
 		}
 	}
@@ -522,6 +522,8 @@ export class ExplorerView extends ViewletPanel {
 
 		while (item && item.resource.toString() !== resource.toString()) {
 			await this.tree.expand(item);
+			// Tree returns too early from the expand, need to wait for next tick #77106
+			await timeout(0);
 			item = first(values(item.children), i => isEqualOrParent(resource, i.resource));
 		}
 

@@ -11,7 +11,7 @@ import { URI } from 'vs/base/common/uri';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/browser/outputs/registry';
 import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { ICellModel, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
@@ -99,7 +99,7 @@ export interface INotebookService {
 	 * sent to listeners that can act on the point-in-time notebook state
 	 * @param notebookUri the URI identifying a notebook
 	 */
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType): void;
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void;
 
 	/**
 	 *

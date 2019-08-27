@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
-import { IconPath, BdcItemType } from '../constants';
+import { IconPathHelper, BdcItemType, IconPath } from '../constants';
 import { getEndPoints } from '../controller/clusterControllerApi';
 import { showErrorMessage } from '../utils';
 import { EndpointModel } from '../controller/apiGenerated';
@@ -25,7 +25,7 @@ export abstract class ControllerTreeNode extends TreeNode {
 		private _treeChangeHandler: IControllerTreeChangeHandler,
 		private _description?: string,
 		private _nodeType?: string,
-		private _iconPath?: { dark: string, light: string }
+		private _iconPath?: IconPath
 	) {
 		super(label, parent);
 		this._description = this._description || this.label;
@@ -84,11 +84,11 @@ export abstract class ControllerTreeNode extends TreeNode {
 		this._nodeType = nodeType;
 	}
 
-	public set iconPath(iconPath: { dark: string, light: string }) {
+	public set iconPath(iconPath: IconPath) {
 		this._iconPath = iconPath;
 	}
 
-	public get iconPath(): { dark: string, light: string } {
+	public get iconPath(): IconPath {
 		return this._iconPath;
 	}
 
@@ -175,7 +175,7 @@ export class ControllerNode extends ControllerTreeNode {
 		treeChangeHandler: IControllerTreeChangeHandler,
 		description?: string,
 	) {
-		super(label, parent, treeChangeHandler, description, BdcItemType.controller, IconPath.controllerNode);
+		super(label, parent, treeChangeHandler, description, BdcItemType.controller, IconPathHelper.controllerNode);
 		this.label = label;
 		this.description = description;
 
@@ -192,7 +192,7 @@ export class ControllerNode extends ControllerTreeNode {
 		}
 
 		try {
-			let response = await getEndPoints(this._clusterName, this._url, this._username, this._password, true);
+			let response = await getEndPoints(this._url, this._username, this._password, true);
 			if (response && response.endPoints) {
 				let master = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
 				this.addSqlMasterNode(master.endpoint, master.description);
@@ -297,7 +297,7 @@ export class FolderNode extends ControllerTreeNode {
 		parent: ControllerTreeNode,
 		treeChangeHandler: IControllerTreeChangeHandler
 	) {
-		super(label, parent, treeChangeHandler, label, BdcItemType.folder, IconPath.folderNode);
+		super(label, parent, treeChangeHandler, label, BdcItemType.folder, IconPathHelper.folderNode);
 	}
 }
 
@@ -313,7 +313,7 @@ export class SqlMasterNode extends ControllerTreeNode {
 		treeChangeHandler: IControllerTreeChangeHandler,
 		description?: string,
 	) {
-		super(label, parent, treeChangeHandler, description, BdcItemType.sqlMaster, IconPath.sqlMasterNode);
+		super(label, parent, treeChangeHandler, description, BdcItemType.sqlMaster, IconPathHelper.sqlMasterNode);
 		this._username = 'sa';
 		this.label = label;
 		this.description = description;

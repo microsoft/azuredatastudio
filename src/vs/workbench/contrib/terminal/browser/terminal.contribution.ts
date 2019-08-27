@@ -72,17 +72,17 @@ configurationRegistry.registerConfiguration({
 	type: 'object',
 	properties: {
 		'terminal.integrated.automationShell.linux': {
-			markdownDescription: nls.localize('terminal.integrated.automationShell.linux', "A path that when set will override {0} and ignore {1} and {2} values for automation-related terminal usage like tasks and debug.", '`terminal.integrated.shell.linux`', '`shellArgs`', '`env`'),
+			markdownDescription: nls.localize('terminal.integrated.automationShell.linux', "A path that when set will override {0} and ignore {1} values for automation-related terminal usage like tasks and debug.", '`terminal.integrated.shell.linux`', '`shellArgs`'),
 			type: ['string', 'null'],
 			default: null
 		},
 		'terminal.integrated.automationShell.osx': {
-			markdownDescription: nls.localize('terminal.integrated.automationShell.osx', "A path that when set will override {0} and ignore {1} and {2} values for automation-related terminal usage like tasks and debug.", '`terminal.integrated.shell.osx`', '`shellArgs`', '`env`'),
+			markdownDescription: nls.localize('terminal.integrated.automationShell.osx', "A path that when set will override {0} and ignore {1} values for automation-related terminal usage like tasks and debug.", '`terminal.integrated.shell.osx`', '`shellArgs`'),
 			type: ['string', 'null'],
 			default: null
 		},
 		'terminal.integrated.automationShell.windows': {
-			markdownDescription: nls.localize('terminal.integrated.automationShell.windows', "A path that when set will override {0} and ignore {1} and {2} values for automation-related terminal usage like tasks and debug.", '`terminal.integrated.shell.windows`', '`shellArgs`', '`env`'),
+			markdownDescription: nls.localize('terminal.integrated.automationShell.windows', "A path that when set will override {0} and ignore {1} values for automation-related terminal usage like tasks and debug.", '`terminal.integrated.shell.windows`', '`shellArgs`'),
 			type: ['string', 'null'],
 			default: null
 		},
@@ -296,6 +296,11 @@ configurationRegistry.registerConfiguration({
 		},
 		'terminal.integrated.experimentalRefreshOnResume': {
 			description: nls.localize('terminal.integrated.experimentalRefreshOnResume', "An experimental setting that will refresh the terminal renderer when the system is resumed."),
+			type: 'boolean',
+			default: false
+		},
+		'terminal.integrated.experimentalUseTitleEvent': {
+			description: nls.localize('terminal.integrated.experimentalUseTitleEvent', "An experimental setting that will use the terminal title event for the dropdown title. This setting will only apply to new terminals."),
 			type: 'boolean',
 			default: false
 		}
@@ -525,7 +530,8 @@ actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FindNext, FindNe
 }, KEYBINDING_CONTEXT_TERMINAL_FOCUS), 'Terminal: Find next', category);
 actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FindNext, FindNext.ID, FindNext.LABEL, {
 	primary: KeyCode.F3,
-	mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_G, secondary: [KeyCode.F3] }
+	secondary: [KeyMod.Shift | KeyCode.Enter],
+	mac: { primary: KeyMod.CtrlCmd | KeyCode.KEY_G, secondary: [KeyCode.F3, KeyMod.Shift | KeyCode.Enter] }
 }, KEYBINDING_CONTEXT_TERMINAL_FIND_WIDGET_FOCUSED), 'Terminal: Find next');
 actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FindPrevious, FindPrevious.ID_TERMINAL_FOCUS, FindPrevious.LABEL, {
 	primary: KeyMod.Shift | KeyCode.F3,
@@ -533,7 +539,8 @@ actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FindPrevious, Fi
 }, KEYBINDING_CONTEXT_TERMINAL_FOCUS), 'Terminal: Find previous', category);
 actionRegistry.registerWorkbenchAction(new SyncActionDescriptor(FindPrevious, FindPrevious.ID, FindPrevious.LABEL, {
 	primary: KeyMod.Shift | KeyCode.F3,
-	mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_G, secondary: [KeyMod.Shift | KeyCode.F3] },
+	secondary: [KeyCode.Enter],
+	mac: { primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_G, secondary: [KeyMod.Shift | KeyCode.F3, KeyCode.Enter] },
 }, KEYBINDING_CONTEXT_TERMINAL_FIND_WIDGET_FOCUSED), 'Terminal: Find previous');
 
 

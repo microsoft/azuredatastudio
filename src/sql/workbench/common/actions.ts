@@ -4,16 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
-import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
-import { IRestoreDialogController } from 'sql/platform/restore/common/restoreService';
 import { IAngularEventingService, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogService';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
-import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
 
 import { ObjectMetadata } from 'azdata';
@@ -21,11 +14,7 @@ import { ObjectMetadata } from 'azdata';
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 import * as nls from 'vs/nls';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
-import { INotificationService } from 'vs/platform/notification/common/notification';
-import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry';
 
 export interface BaseActionContext {
@@ -39,122 +28,6 @@ export interface InsightActionContext extends BaseActionContext {
 
 export interface ManageActionContext extends BaseActionContext {
 	uri: string;
-}
-
-// --- actions
-export class NewQueryAction extends Task {
-	public static ID = 'newQuery';
-	public static LABEL = nls.localize('newQueryAction.newQuery', "New Query");
-	public static ICON = 'new-query';
-
-	constructor() {
-		super({
-			id: NewQueryAction.ID,
-			title: NewQueryAction.LABEL,
-			iconPath: undefined,
-			iconClass: NewQueryAction.ICON
-		});
-	}
-
-	public runTask(accessor: ServicesAccessor, profile: IConnectionProfile): Promise<void> {
-		return TaskUtilities.newQuery(
-			profile,
-			accessor.get<IConnectionManagementService>(IConnectionManagementService),
-			accessor.get<IQueryEditorService>(IQueryEditorService),
-			accessor.get<IObjectExplorerService>(IObjectExplorerService),
-			accessor.get<IEditorService>(IEditorService)
-		).then();
-	}
-}
-
-export const BackupFeatureName = 'backup';
-
-export class BackupAction extends Task {
-	public static readonly ID = BackupFeatureName;
-	public static readonly LABEL = nls.localize('backupAction.backup', "Backup");
-	public static readonly ICON = BackupFeatureName;
-
-	constructor() {
-		super({
-			id: BackupAction.ID,
-			title: BackupAction.LABEL,
-			iconPath: undefined,
-			iconClass: BackupAction.ICON
-		});
-	}
-
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
-		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.isPreviewFeature', "You must enable preview features in order to use backup"));
-		}
-
-		const connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
-		if (!profile) {
-			const objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
-			const workbenchEditorService = accessor.get<IEditorService>(IEditorService);
-			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
-		}
-		if (profile) {
-			const serverInfo = connectionManagementService.getServerInfo(profile.id);
-			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupported', "Backup command is not supported for Azure SQL databases."));
-			}
-
-			if (!profile.databaseName && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('backup.commandNotSupportedForServer', "Backup command is not supported in Server Context. Please select a Database and try again."));
-			}
-		}
-
-		TaskUtilities.showBackup(
-			profile,
-			accessor.get<IBackupUiService>(IBackupUiService)
-		).then();
-	}
-}
-
-export const RestoreFeatureName = 'restore';
-
-export class RestoreAction extends Task {
-	public static readonly ID = RestoreFeatureName;
-	public static readonly LABEL = nls.localize('restoreAction.restore', "Restore");
-	public static readonly ICON = RestoreFeatureName;
-
-	constructor() {
-		super({
-			id: RestoreAction.ID,
-			title: RestoreAction.LABEL,
-			iconPath: undefined,
-			iconClass: RestoreAction.ICON
-		});
-	}
-
-	runTask(accessor: ServicesAccessor, profile: IConnectionProfile): void | Promise<void> {
-		const configurationService = accessor.get<IConfigurationService>(IConfigurationService);
-		const previewFeaturesEnabled: boolean = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (!previewFeaturesEnabled) {
-			return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.isPreviewFeature', "You must enable preview features in order to use restore"));
-		}
-
-		let connectionManagementService = accessor.get<IConnectionManagementService>(IConnectionManagementService);
-		if (!profile) {
-			const objectExplorerService = accessor.get<IObjectExplorerService>(IObjectExplorerService);
-			const workbenchEditorService = accessor.get<IEditorService>(IEditorService);
-			profile = TaskUtilities.getCurrentGlobalConnection(objectExplorerService, connectionManagementService, workbenchEditorService);
-		}
-		if (profile) {
-			const serverInfo = connectionManagementService.getServerInfo(profile.id);
-			if (serverInfo && serverInfo.isCloud && profile.providerName === mssqlProviderName) {
-				return accessor.get<INotificationService>(INotificationService).info(nls.localize('restore.commandNotSupported', "Restore command is not supported for Azure SQL databases."));
-			}
-		}
-
-		TaskUtilities.showRestore(
-			profile,
-			accessor.get<IRestoreDialogController>(IRestoreDialogController)
-		).then();
-	}
 }
 
 export class ManageAction extends Action {

@@ -102,7 +102,8 @@ export class SchemaCompareMainWindow {
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300
+				height: 300,
+				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -1012,7 +1013,7 @@ export class SchemaCompareMainWindow {
 	}
 
 	private static async getService(providerName: string): Promise<mssql.ISchemaCompareService> {
-		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).schemaCompare;
+		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		return service;
 	}
 

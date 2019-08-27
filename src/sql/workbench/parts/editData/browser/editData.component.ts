@@ -45,7 +45,7 @@ export class EditDataComponent extends GridParentComponent implements OnInit, On
 	private refreshGridTimeoutInMs = 200;
 
 	// The timeout handle for the refresh grid task
-	private refreshGridTimeoutHandle: NodeJS.Timer;
+	private refreshGridTimeoutHandle: any;
 
 	// Optimized for the edit top 200 rows scenario, only need to retrieve the data once
 	// to make the scroll experience smoother

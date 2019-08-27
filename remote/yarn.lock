@@ -743,7 +743,7 @@ ms@2.0.0:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
   integrity sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
 
-nan@^2.0.0, nan@^2.12.1, nan@^2.13.2, nan@^2.14.0:
+nan@^2.0.0, nan@^2.13.2, nan@^2.14.0:
   version "2.14.0"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.0.tgz#7818f722027b2459a86f0295d434d1fc2336c52c"
   integrity sha512-INOFj37C7k3AfaNTtX8RhsTw7qRy7eLET14cROi9+5HAVbbHuIWUHEauBv5qT4Av2tWasiTY1Jw6puUNqRJXQg==
@@ -1210,12 +1210,10 @@ vscode-windows-ca-certs@0.1.0:
   dependencies:
     node-addon-api "1.6.2"
 
-vscode-windows-registry@1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/vscode-windows-registry/-/vscode-windows-registry-1.0.1.tgz#bc9f765563eb6dc1c9ad9a41f9eaacc84dfadc7c"
-  integrity sha512-q0aKXi9Py1OBdmXIJJFeJBzpPJMMUxMJNBU9FysWIXEwJyMQGEVevKzM2J3Qz/cHSc5LVqibmoUWzZ7g+97qRg==
-  dependencies:
-    nan "^2.12.1"
+vscode-windows-registry@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/vscode-windows-registry/-/vscode-windows-registry-1.0.2.tgz#b863e704a6a69c50b3098a55fbddbe595b0c124a"
+  integrity sha512-/CLLvuOSM2Vme2z6aNyB+4Omd7hDxpf4Thrt8ImxnXeQtxzel2bClJpFQvQqK/s4oaXlkBKS7LqVLeZM+uSVIA==
 
 xterm-addon-search@0.2.0-beta5:
   version "0.2.0-beta5"
@@ -1227,10 +1225,10 @@ xterm-addon-web-links@0.1.0-beta10:
   resolved "https://registry.yarnpkg.com/xterm-addon-web-links/-/xterm-addon-web-links-0.1.0-beta10.tgz#610fa9773a2a5ccd41c1c83ba0e2dd2c9eb66a23"
   integrity sha512-xfpjy0V6bB4BR44qIgZQPoCMVakxb65gMscPkHpO//QxvUxKzabV3dxOsIbeZRFkUGsWTFlvz2OoaBLoNtv5gg==
 
-xterm@3.15.0-beta99:
-  version "3.15.0-beta99"
-  resolved "https://registry.yarnpkg.com/xterm/-/xterm-3.15.0-beta99.tgz#0010a7ea5d56cbb08a1e3a525b353c96a158e7a0"
-  integrity sha512-Vm0ZWToWwO4uk/28Kqvqt9L92h5EU2z4WR9I6xcQaPIBmkJPINIARU4LWQnvaOfgFhRbpwBMveTfh8/jM97lPg==
+xterm@3.15.0-beta101:
+  version "3.15.0-beta101"
+  resolved "https://registry.yarnpkg.com/xterm/-/xterm-3.15.0-beta101.tgz#38ffa0df5a3e9bdcb1818e74fe59b2f98b0fff69"
+  integrity sha512-HRa7+FDqQ8iWBTvb1Ni+uMGILnu6k9mF7JHMHRHfWxFoQlSoGYCyfdyXlJjk68YN8GsEQREmrII6cPLiQizdEQ==
 
 yauzl@^2.9.2:
   version "2.10.0"

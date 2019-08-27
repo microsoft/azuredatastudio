@@ -30,6 +30,8 @@ export async function activate(extensionContext: vscode.ExtensionContext): Promi
 	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.workspaceFolders || [], extensionContext);
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider));
 	extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(bookTreeViewProvider));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (resource, openAsReadonly) => bookTreeViewProvider.openBook(resource, extensionContext, openAsReadonly)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebookAsUntitled', (resource) => bookTreeViewProvider.openNotebookAsUntitled(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource)));
@@ -232,12 +234,11 @@ async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promis
 				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
 
 			editor.edit(editBuilder => {
-				editBuilder.replace(0, {
+				editBuilder.insertCell({
 					cell_type: 'code',
 					source: analyzeCommand.replace('{0}', hdfsPath)
-				});
+				}, 0);
 			});
-
 		}
 	}
 }

@@ -8,8 +8,8 @@
 /* tslint:disable: triple-equals */
 /* tslint:disable: no-redundant-jsdoc */
 
-import * as localVarRequest from 'request';
-import * as http from 'http';
+import localVarRequest = require('request');
+import http = require('http');
 
 let defaultBasePath = 'https://localhost';
 
@@ -18,467 +18,469 @@ let defaultBasePath = 'https://localhost';
 // ===============================================
 
 /* tslint:disable:no-unused-variable */
-
 let primitives = [
-	"string",
-	"boolean",
-	"double",
-	"integer",
-	"long",
-	"float",
-	"number",
-	"any"
-];
+                    "string",
+                    "boolean",
+                    "double",
+                    "integer",
+                    "long",
+                    "float",
+                    "number",
+                    "any"
+                 ];
 
 class ObjectSerializer {
 
-	public static findCorrectType(data: any, expectedType: string) {
-		if (data == undefined) {
-			return expectedType;
-		} else if (primitives.indexOf(expectedType.toLowerCase()) !== -1) {
-			return expectedType;
-		} else if (expectedType === "Date") {
-			return expectedType;
-		} else {
-			if (enumsMap[expectedType]) {
-				return expectedType;
-			}
+    public static findCorrectType(data: any, expectedType: string) {
+        if (data == undefined) {
+            return expectedType;
+        } else if (primitives.indexOf(expectedType.toLowerCase()) !== -1) {
+            return expectedType;
+        } else if (expectedType === "Date") {
+            return expectedType;
+        } else {
+            if (enumsMap[expectedType]) {
+                return expectedType;
+            }
 
-			if (!typeMap[expectedType]) {
-				return expectedType; // w/e we don't know the type
-			}
+            if (!typeMap[expectedType]) {
+                return expectedType; // w/e we don't know the type
+            }
 
-			// Check the discriminator
-			let discriminatorProperty = typeMap[expectedType].discriminator;
-			if (discriminatorProperty == null) {
-				return expectedType; // the type does not have a discriminator. use it.
-			} else {
-				if (data[discriminatorProperty]) {
-					return data[discriminatorProperty]; // use the type given in the discriminator
-				} else {
-					return expectedType; // discriminator was not present (or an empty string)
-				}
-			}
-		}
-	}
+            // Check the discriminator
+            let discriminatorProperty = typeMap[expectedType].discriminator;
+            if (discriminatorProperty == null) {
+                return expectedType; // the type does not have a discriminator. use it.
+            } else {
+                if (data[discriminatorProperty]) {
+                    return data[discriminatorProperty]; // use the type given in the discriminator
+                } else {
+                    return expectedType; // discriminator was not present (or an empty string)
+                }
+            }
+        }
+    }
 
-	public static serialize(data: any, type: string) {
-		if (data == undefined) {
-			return data;
-		} else if (primitives.indexOf(type.toLowerCase()) !== -1) {
-			return data;
-		} else if (type.lastIndexOf("Array<", 0) === 0) { // string.startsWith pre es6
-			let subType: string = type.replace("Array<", ""); // Array<Type> => Type>
-			subType = subType.substring(0, subType.length - 1); // Type> => Type
-			let transformedData: any[] = [];
-			for (let index in data) {
-				let date = data[index];
-				transformedData.push(ObjectSerializer.serialize(date, subType));
-			}
-			return transformedData;
-		} else if (type === "Date") {
-			return data.toString();
-		} else {
-			if (enumsMap[type]) {
-				return data;
-			}
-			if (!typeMap[type]) { // in case we dont know the type
-				return data;
-			}
+    public static serialize(data: any, type: string) {
+        if (data == undefined) {
+            return data;
+        } else if (primitives.indexOf(type.toLowerCase()) !== -1) {
+            return data;
+        } else if (type.lastIndexOf("Array<", 0) === 0) { // string.startsWith pre es6
+            let subType: string = type.replace("Array<", ""); // Array<Type> => Type>
+            subType = subType.substring(0, subType.length - 1); // Type> => Type
+            let transformedData: any[] = [];
+            for (let index in data) {
+                let date = data[index];
+                transformedData.push(ObjectSerializer.serialize(date, subType));
+            }
+            return transformedData;
+        } else if (type === "Date") {
+            return data.toString();
+        } else {
+            if (enumsMap[type]) {
+                return data;
+            }
+            if (!typeMap[type]) { // in case we dont know the type
+                return data;
+            }
 
-			// get the map for the correct type.
-			let attributeTypes = typeMap[type].getAttributeTypeMap();
-			let instance: { [index: string]: any } = {};
-			for (let index in attributeTypes) {
-				let attributeType = attributeTypes[index];
-				instance[attributeType.baseName] = ObjectSerializer.serialize(data[attributeType.name], attributeType.type);
-			}
-			return instance;
-		}
-	}
+            // get the map for the correct type.
+            let attributeTypes = typeMap[type].getAttributeTypeMap();
+            let instance: {[index: string]: any} = {};
+            for (let index in attributeTypes) {
+                let attributeType = attributeTypes[index];
+                instance[attributeType.baseName] = ObjectSerializer.serialize(data[attributeType.name], attributeType.type);
+            }
+            return instance;
+        }
+    }
 
-	public static deserialize(data: any, type: string) {
-		// polymorphism may change the actual type.
-		type = ObjectSerializer.findCorrectType(data, type);
-		if (data == undefined) {
-			return data;
-		} else if (primitives.indexOf(type.toLowerCase()) !== -1) {
-			return data;
-		} else if (type.lastIndexOf("Array<", 0) === 0) { // string.startsWith pre es6
-			let subType: string = type.replace("Array<", ""); // Array<Type> => Type>
-			subType = subType.substring(0, subType.length - 1); // Type> => Type
-			let transformedData: any[] = [];
-			for (let index in data) {
-				let date = data[index];
-				transformedData.push(ObjectSerializer.deserialize(date, subType));
-			}
-			return transformedData;
-		} else if (type === "Date") {
-			return new Date(data);
-		} else {
-			if (enumsMap[type]) {// is Enum
-				return data;
-			}
+    public static deserialize(data: any, type: string) {
+        // polymorphism may change the actual type.
+        type = ObjectSerializer.findCorrectType(data, type);
+        if (data == undefined) {
+            return data;
+        } else if (primitives.indexOf(type.toLowerCase()) !== -1) {
+            return data;
+        } else if (type.lastIndexOf("Array<", 0) === 0) { // string.startsWith pre es6
+            let subType: string = type.replace("Array<", ""); // Array<Type> => Type>
+            subType = subType.substring(0, subType.length - 1); // Type> => Type
+            let transformedData: any[] = [];
+            for (let index in data) {
+                let date = data[index];
+                transformedData.push(ObjectSerializer.deserialize(date, subType));
+            }
+            return transformedData;
+        } else if (type === "Date") {
+            return new Date(data);
+        } else {
+            if (enumsMap[type]) {// is Enum
+                return data;
+            }
 
-			if (!typeMap[type]) { // dont know the type
-				return data;
-			}
-			let instance = new typeMap[type]();
-			let attributeTypes = typeMap[type].getAttributeTypeMap();
-			for (let index in attributeTypes) {
-				let attributeType = attributeTypes[index];
-				instance[attributeType.name] = ObjectSerializer.deserialize(data[attributeType.baseName], attributeType.type);
-			}
-			return instance;
-		}
-	}
+            if (!typeMap[type]) { // dont know the type
+                return data;
+            }
+            let instance = new typeMap[type]();
+            let attributeTypes = typeMap[type].getAttributeTypeMap();
+            for (let index in attributeTypes) {
+                let attributeType = attributeTypes[index];
+                instance[attributeType.name] = ObjectSerializer.deserialize(data[attributeType.baseName], attributeType.type);
+            }
+            return instance;
+        }
+    }
+}
+
+export class BdcStatusModel {
+    'bdcName'?: string;
+    'state'?: string;
+    'healthStatus'?: string;
+    'details'?: string;
+    'services'?: Array<ServiceStatusModel>;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "bdcName",
+            "baseName": "bdcName",
+            "type": "string"
+        },
+        {
+            "name": "state",
+            "baseName": "state",
+            "type": "string"
+        },
+        {
+            "name": "healthStatus",
+            "baseName": "healthStatus",
+            "type": "string"
+        },
+        {
+            "name": "details",
+            "baseName": "details",
+            "type": "string"
+        },
+        {
+            "name": "services",
+            "baseName": "services",
+            "type": "Array<ServiceStatusModel>"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return BdcStatusModel.attributeTypeMap;
+    }
+}
+
+export class Dashboards {
+    'nodeMetricsUrl'?: string;
+    'sqlMetricsUrl'?: string;
+    'logsUrl'?: string;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "nodeMetricsUrl",
+            "baseName": "nodeMetricsUrl",
+            "type": "string"
+        },
+        {
+            "name": "sqlMetricsUrl",
+            "baseName": "sqlMetricsUrl",
+            "type": "string"
+        },
+        {
+            "name": "logsUrl",
+            "baseName": "logsUrl",
+            "type": "string"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return Dashboards.attributeTypeMap;
+    }
 }
 
 export class EndpointModel {
-	'name'?: string;
-	'description'?: string;
-	'endpoint'?: string;
-	'ip'?: string;
-	'port'?: number;
-	'path'?: string;
-	'protocol'?: string;
-	'service'?: string;
+    'name'?: string;
+    'description'?: string;
+    'endpoint'?: string;
+    'protocol'?: string;
 
-	static discriminator: string | undefined = undefined;
+    static discriminator: string | undefined = undefined;
 
-	static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
-		{
-			"name": "name",
-			"baseName": "name",
-			"type": "string"
-		},
-		{
-			"name": "description",
-			"baseName": "description",
-			"type": "string"
-		},
-		{
-			"name": "endpoint",
-			"baseName": "endpoint",
-			"type": "string"
-		},
-		{
-			"name": "ip",
-			"baseName": "ip",
-			"type": "string"
-		},
-		{
-			"name": "port",
-			"baseName": "port",
-			"type": "number"
-		},
-		{
-			"name": "path",
-			"baseName": "path",
-			"type": "string"
-		},
-		{
-			"name": "protocol",
-			"baseName": "protocol",
-			"type": "string"
-		},
-		{
-			"name": "service",
-			"baseName": "service",
-			"type": "string"
-		}];
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "name",
+            "baseName": "name",
+            "type": "string"
+        },
+        {
+            "name": "description",
+            "baseName": "description",
+            "type": "string"
+        },
+        {
+            "name": "endpoint",
+            "baseName": "endpoint",
+            "type": "string"
+        },
+        {
+            "name": "protocol",
+            "baseName": "protocol",
+            "type": "string"
+        }    ];
 
-	static getAttributeTypeMap() {
-		return EndpointModel.attributeTypeMap;
-	}
+    static getAttributeTypeMap() {
+        return EndpointModel.attributeTypeMap;
+    }
+}
+
+export class InstanceStatusModel {
+    'instanceName'?: string;
+    'state'?: string;
+    'healthStatus'?: string;
+    'details'?: string;
+    'dashboards'?: Dashboards;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "instanceName",
+            "baseName": "instanceName",
+            "type": "string"
+        },
+        {
+            "name": "state",
+            "baseName": "state",
+            "type": "string"
+        },
+        {
+            "name": "healthStatus",
+            "baseName": "healthStatus",
+            "type": "string"
+        },
+        {
+            "name": "details",
+            "baseName": "details",
+            "type": "string"
+        },
+        {
+            "name": "dashboards",
+            "baseName": "dashboards",
+            "type": "Dashboards"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return InstanceStatusModel.attributeTypeMap;
+    }
+}
+
+export class ResourceStatusModel {
+    'resourceName'?: string;
+    'state'?: string;
+    'healthStatus'?: string;
+    'details'?: string;
+    'instances'?: Array<InstanceStatusModel>;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "resourceName",
+            "baseName": "resourceName",
+            "type": "string"
+        },
+        {
+            "name": "state",
+            "baseName": "state",
+            "type": "string"
+        },
+        {
+            "name": "healthStatus",
+            "baseName": "healthStatus",
+            "type": "string"
+        },
+        {
+            "name": "details",
+            "baseName": "details",
+            "type": "string"
+        },
+        {
+            "name": "instances",
+            "baseName": "instances",
+            "type": "Array<InstanceStatusModel>"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ResourceStatusModel.attributeTypeMap;
+    }
+}
+
+export class ServiceStatusModel {
+    'serviceName'?: string;
+    'state'?: string;
+    'healthStatus'?: string;
+    'details'?: string;
+    'resources'?: Array<ResourceStatusModel>;
+
+    static discriminator: string | undefined = undefined;
+
+    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+        {
+            "name": "serviceName",
+            "baseName": "serviceName",
+            "type": "string"
+        },
+        {
+            "name": "state",
+            "baseName": "state",
+            "type": "string"
+        },
+        {
+            "name": "healthStatus",
+            "baseName": "healthStatus",
+            "type": "string"
+        },
+        {
+            "name": "details",
+            "baseName": "details",
+            "type": "string"
+        },
+        {
+            "name": "resources",
+            "baseName": "resources",
+            "type": "Array<ResourceStatusModel>"
+        }    ];
+
+    static getAttributeTypeMap() {
+        return ServiceStatusModel.attributeTypeMap;
+    }
 }
 
 
-let enumsMap: { [index: string]: any } = {
+let enumsMap: {[index: string]: any} = {
 }
 
-let typeMap: { [index: string]: any } = {
-	"EndpointModel": EndpointModel,
+let typeMap: {[index: string]: any} = {
+    "BdcStatusModel": BdcStatusModel,
+    "Dashboards": Dashboards,
+    "EndpointModel": EndpointModel,
+    "InstanceStatusModel": InstanceStatusModel,
+    "ResourceStatusModel": ResourceStatusModel,
+    "ServiceStatusModel": ServiceStatusModel,
 }
 
 export interface Authentication {
     /**
     * Apply authentication settings to header and query params.
     */
-	applyToRequest(requestOptions: localVarRequest.Options): void;
+    applyToRequest(requestOptions: localVarRequest.Options): void;
 }
 
 export class HttpBasicAuth implements Authentication {
-	public username: string = '';
-	public password: string = '';
+    public username: string = '';
+    public password: string = '';
 
-	applyToRequest(requestOptions: localVarRequest.Options): void {
-		requestOptions.auth = {
-			username: this.username, password: this.password
-		}
-	}
+    applyToRequest(requestOptions: localVarRequest.Options): void {
+        requestOptions.auth = {
+            username: this.username, password: this.password
+        }
+    }
 }
 
 export class ApiKeyAuth implements Authentication {
-	public apiKey: string = '';
+    public apiKey: string = '';
 
-	constructor(private location: string, private paramName: string) {
-	}
+    constructor(private location: string, private paramName: string) {
+    }
 
-	applyToRequest(requestOptions: localVarRequest.Options): void {
-		if (this.location == "query") {
-			(<any>requestOptions.qs)[this.paramName] = this.apiKey;
-		} else if (this.location == "header" && requestOptions && requestOptions.headers) {
-			requestOptions.headers[this.paramName] = this.apiKey;
-		}
-	}
+    applyToRequest(requestOptions: localVarRequest.Options): void {
+        if (this.location == "query") {
+            (<any>requestOptions.qs)[this.paramName] = this.apiKey;
+        } else if (this.location == "header" && requestOptions && requestOptions.headers) {
+            requestOptions.headers[this.paramName] = this.apiKey;
+        }
+    }
 }
 
 export class OAuth implements Authentication {
-	public accessToken: string = '';
+    public accessToken: string = '';
 
-	applyToRequest(requestOptions: localVarRequest.Options): void {
-		if (requestOptions && requestOptions.headers) {
-			requestOptions.headers["Authorization"] = "Bearer " + this.accessToken;
-		}
-	}
+    applyToRequest(requestOptions: localVarRequest.Options): void {
+        if (requestOptions && requestOptions.headers) {
+            requestOptions.headers["Authorization"] = "Bearer " + this.accessToken;
+        }
+    }
 }
 
 export class VoidAuth implements Authentication {
-	public username: string = '';
-	public password: string = '';
+    public username: string = '';
+    public password: string = '';
 
-	applyToRequest(_: localVarRequest.Options): void {
-		// Do nothing
-	}
+    applyToRequest(_: localVarRequest.Options): void {
+        // Do nothing
+    }
 }
 
-export enum ClusterRouterApiApiKeys {
+export enum BdcRouterApiApiKeys {
 }
 
-export class ClusterRouterApi {
-	protected _basePath = defaultBasePath;
-	protected defaultHeaders: any = {};
-	protected _useQuerystring: boolean = false;
+export class BdcRouterApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
 
-	protected authentications = {
-		'default': <Authentication>new VoidAuth(),
-		'basicAuth': new HttpBasicAuth(),
-	}
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'basicAuth': new HttpBasicAuth(),
+    }
 
-	constructor(basePath?: string);
-	constructor(username: string, password: string, basePath?: string);
-	constructor(basePathOrUsername: string, password?: string, basePath?: string) {
-		if (password) {
-			this.username = basePathOrUsername;
-			this.password = password
-			if (basePath) {
-				this.basePath = basePath;
-			}
-		} else {
-			if (basePathOrUsername) {
-				this.basePath = basePathOrUsername
-			}
-		}
-	}
+    constructor(basePath?: string);
+    constructor(username: string, password: string, basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            this.username = basePathOrUsername;
+            this.password = password
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
 
-	set useQuerystring(value: boolean) {
-		this._useQuerystring = value;
-	}
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
 
-	set basePath(basePath: string) {
-		this._basePath = basePath;
-	}
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
 
-	get basePath() {
-		return this._basePath;
-	}
+    get basePath() {
+        return this._basePath;
+    }
 
-	public setDefaultAuthentication(auth: Authentication) {
-		this.authentications.default = auth;
-	}
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
 
-	public setApiKey(key: ClusterRouterApiApiKeys, value: string) {
-		(this.authentications as any)[ClusterRouterApiApiKeys[key]].apiKey = value;
-	}
-	set username(username: string) {
-		this.authentications.basicAuth.username = username;
-	}
+    public setApiKey(key: BdcRouterApiApiKeys, value: string) {
+        (this.authentications as any)[BdcRouterApiApiKeys[key]].apiKey = value;
+    }
+    set username(username: string) {
+        this.authentications.basicAuth.username = username;
+    }
 
-	set password(password: string) {
-		this.authentications.basicAuth.password = password;
-	}
-    /**
-     *
-     * @param clusterName
-     * @param endpointName
-     * @param {*} [options] Override http request options.
-     */
-	public endpointsByNameGet(clusterName: string, endpointName: string, options: any = {}): Promise<{ response: http.ClientResponse; body: EndpointModel; }> {
-		const localVarPath = this.basePath + '/bdc/{clusterName}/endpoints/{endpointName}'
-			.replace('{' + 'clusterName' + '}', encodeURIComponent(String(clusterName)))
-			.replace('{' + 'endpointName' + '}', encodeURIComponent(String(endpointName)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
-
-		// verify required parameter 'clusterName' is not null or undefined
-		if (clusterName === null || clusterName === undefined) {
-			throw new Error('Required parameter clusterName was null or undefined when calling endpointsByNameGet.');
-		}
-
-		// verify required parameter 'endpointName' is not null or undefined
-		if (endpointName === null || endpointName === undefined) {
-			throw new Error('Required parameter endpointName was null or undefined when calling endpointsByNameGet.');
-		}
-
-		(<any>Object).assign(localVarHeaderParams, options.headers);
-
-		let localVarUseFormData = false;
-
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: EndpointModel; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "EndpointModel");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
-    /**
-     *
-     * @param clusterName
-     * @param {*} [options] Override http request options.
-     */
-	public endpointsGet(clusterName: string, options: any = {}): Promise<{ response: http.ClientResponse; body: Array<EndpointModel>; }> {
-		const localVarPath = this.basePath + '/bdc/{clusterName}/endpoints'
-			.replace('{' + 'clusterName' + '}', encodeURIComponent(String(clusterName)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
-
-		// verify required parameter 'clusterName' is not null or undefined
-		if (clusterName === null || clusterName === undefined) {
-			throw new Error('Required parameter clusterName was null or undefined when calling endpointsGet.');
-		}
-
-		(<any>Object).assign(localVarHeaderParams, options.headers);
-
-		let localVarUseFormData = false;
-
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: Array<EndpointModel>; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "Array<EndpointModel>");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
-}
-export enum DefaultApiApiKeys {
-}
-
-export class DefaultApi {
-	protected _basePath = defaultBasePath;
-	protected defaultHeaders: any = {};
-	protected _useQuerystring: boolean = false;
-
-	protected authentications = {
-		'default': <Authentication>new VoidAuth(),
-		'basicAuth': new HttpBasicAuth(),
-	}
-
-	constructor(basePath?: string);
-	constructor(username: string, password: string, basePath?: string);
-	constructor(basePathOrUsername: string, password?: string, basePath?: string) {
-		if (password) {
-			this.username = basePathOrUsername;
-			this.password = password
-			if (basePath) {
-				this.basePath = basePath;
-			}
-		} else {
-			if (basePathOrUsername) {
-				this.basePath = basePathOrUsername
-			}
-		}
-	}
-
-	set useQuerystring(value: boolean) {
-		this._useQuerystring = value;
-	}
-
-	set basePath(basePath: string) {
-		this._basePath = basePath;
-	}
-
-	get basePath() {
-		return this._basePath;
-	}
-
-	public setDefaultAuthentication(auth: Authentication) {
-		this.authentications.default = auth;
-	}
-
-	public setApiKey(key: DefaultApiApiKeys, value: string) {
-		(this.authentications as any)[DefaultApiApiKeys[key]].apiKey = value;
-	}
-	set username(username: string) {
-		this.authentications.basicAuth.username = username;
-	}
-
-	set password(password: string) {
-		this.authentications.basicAuth.password = password;
-	}
+    set password(password: string) {
+        this.authentications.basicAuth.password = password;
+    }
     /**
      *
      * @summary Create a cluster
@@ -487,69 +489,685 @@ export class DefaultApi {
      * @param data Cluster configuration in JSON format
      * @param {*} [options] Override http request options.
      */
-	public createCluster(xRequestId: string, connection: string, data: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/bdc';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public createCluster (xRequestId: string, connection: string, data: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling createCluster.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling createCluster.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling createCluster.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling createCluster.');
+        }
 
-		// verify required parameter 'data' is not null or undefined
-		if (data === null || data === undefined) {
-			throw new Error('Required parameter data was null or undefined when calling createCluster.');
-		}
+        // verify required parameter 'data' is not null or undefined
+        if (data === null || data === undefined) {
+            throw new Error('Required parameter data was null or undefined when calling createCluster.');
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'POST',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-			body: ObjectSerializer.serialize(data, "string")
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'POST',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: ObjectSerializer.serialize(data, "string")
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     *
+     * @param endpointName
+     * @param {*} [options] Override http request options.
+     */
+    public endpointsByNameGet (endpointName: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: EndpointModel;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/endpoints/{endpointName}'
+            .replace('{' + 'endpointName' + '}', encodeURIComponent(String(endpointName)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'endpointName' is not null or undefined
+        if (endpointName === null || endpointName === undefined) {
+            throw new Error('Required parameter endpointName was null or undefined when calling endpointsByNameGet.');
+        }
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: EndpointModel;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "EndpointModel");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     *
+     * @param {*} [options] Override http request options.
+     */
+    public endpointsGet (options: any = {}) : Promise<{ response: http.ClientResponse; body: Array<EndpointModel>;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/endpoints';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
 		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: Array<EndpointModel>;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "Array<EndpointModel>");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     *
+     * @summary Get BDC status of services that contain this resource
+     * @param resourceName The name of the resource you want the services for
+     * @param xRequestId
+     * @param connection
+     * @param all Whether you want all of the instances within the given resource
+     * @param {*} [options] Override http request options.
+     */
+    public getBdcResourceStatus (resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/resources/{resourceName}/status'
+            .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
+        // verify required parameter 'resourceName' is not null or undefined
+        if (resourceName === null || resourceName === undefined) {
+            throw new Error('Required parameter resourceName was null or undefined when calling getBdcResourceStatus.');
+        }
+
+        if (all !== undefined) {
+            localVarQueryParameters['all'] = ObjectSerializer.serialize(all, "boolean");
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "BdcStatusModel");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     *
+     * @summary Get resource status within this service
+     * @param serviceName The name of the service in the BDC cluster that you want
+     * @param resourceName The name of the resource in the service that you want
+     * @param xRequestId
+     * @param connection
+     * @param all Whether you want all of the instances within the given resource
+     * @param {*} [options] Override http request options.
+     */
+    public getBdcServiceResourceStatus (serviceName: string, resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: ResourceStatusModel;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/services/{serviceName}/resources/{resourceName}/status'
+            .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
+            .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'serviceName' is not null or undefined
+        if (serviceName === null || serviceName === undefined) {
+            throw new Error('Required parameter serviceName was null or undefined when calling getBdcServiceResourceStatus.');
+        }
+
+        // verify required parameter 'resourceName' is not null or undefined
+        if (resourceName === null || resourceName === undefined) {
+            throw new Error('Required parameter resourceName was null or undefined when calling getBdcServiceResourceStatus.');
+        }
+
+        if (all !== undefined) {
+            localVarQueryParameters['all'] = ObjectSerializer.serialize(all, "boolean");
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ResourceStatusModel;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ResourceStatusModel");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     *
+     * @summary Get BDC status
+     * @param xRequestId
+     * @param connection
+     * @param all Whether you want all of the instances within the given resource
+     * @param {*} [options] Override http request options.
+     */
+    public getBdcStatus (xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/status';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        if (all !== undefined) {
+            localVarQueryParameters['all'] = ObjectSerializer.serialize(all, "boolean");
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "BdcStatusModel");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
 	}
+
+    /**
+     *
+     * @summary Get cluster config
+     * @param xRequestId
+     * @param connection
+     * @param {*} [options] Override http request options.
+     */
+    public getCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling getCluster.');
+        }
+
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling getCluster.');
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+     *
+     * @summary Get console logs
+     * @param xRequestId
+     * @param connection
+     * @param offset
+     * @param {*} [options] Override http request options.
+     */
+    public getLogs (xRequestId: string, connection: string, offset: number, options: any = {}) : Promise<{ response: http.ClientResponse; body: string;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/log';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling getLogs.');
+        }
+
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling getLogs.');
+        }
+
+        // verify required parameter 'offset' is not null or undefined
+        if (offset === null || offset === undefined) {
+            throw new Error('Required parameter offset was null or undefined when calling getLogs.');
+        }
+
+        if (offset !== undefined) {
+            localVarQueryParameters['offset'] = ObjectSerializer.serialize(offset, "number");
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: string;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "string");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum ControlRouterApiApiKeys {
+}
+
+export class ControlRouterApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'basicAuth': new HttpBasicAuth(),
+    }
+
+    constructor(basePath?: string);
+    constructor(username: string, password: string, basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            this.username = basePathOrUsername;
+            this.password = password
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: ControlRouterApiApiKeys, value: string) {
+        (this.authentications as any)[ControlRouterApiApiKeys[key]].apiKey = value;
+    }
+    set username(username: string) {
+        this.authentications.basicAuth.username = username;
+    }
+
+    set password(password: string) {
+        this.authentications.basicAuth.password = password;
+    }
+    /**
+     *
+     * @summary Get control status
+     * @param xRequestId
+     * @param connection
+     * @param {*} [options] Override http request options.
+     */
+    public getControlStatus (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/control/status';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling getControlStatus.');
+        }
+
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling getControlStatus.');
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+}
+export enum DefaultApiApiKeys {
+}
+
+export class DefaultApi {
+    protected _basePath = defaultBasePath;
+    protected defaultHeaders : any = {};
+    protected _useQuerystring : boolean = false;
+
+    protected authentications = {
+        'default': <Authentication>new VoidAuth(),
+        'basicAuth': new HttpBasicAuth(),
+    }
+
+    constructor(basePath?: string);
+    constructor(username: string, password: string, basePath?: string);
+    constructor(basePathOrUsername: string, password?: string, basePath?: string) {
+        if (password) {
+            this.username = basePathOrUsername;
+            this.password = password
+            if (basePath) {
+                this.basePath = basePath;
+            }
+        } else {
+            if (basePathOrUsername) {
+                this.basePath = basePathOrUsername
+            }
+        }
+    }
+
+    set useQuerystring(value: boolean) {
+        this._useQuerystring = value;
+    }
+
+    set basePath(basePath: string) {
+        this._basePath = basePath;
+    }
+
+    get basePath() {
+        return this._basePath;
+    }
+
+    public setDefaultAuthentication(auth: Authentication) {
+	this.authentications.default = auth;
+    }
+
+    public setApiKey(key: DefaultApiApiKeys, value: string) {
+        (this.authentications as any)[DefaultApiApiKeys[key]].apiKey = value;
+    }
+    set username(username: string) {
+        this.authentications.basicAuth.username = username;
+    }
+
+    set password(password: string) {
+        this.authentications.basicAuth.password = password;
+    }
     /**
      *
      * @summary Create a mount
@@ -560,153 +1178,146 @@ export class DefaultApi {
      * @param credentials Credentials to create the mount
      * @param {*} [options] Override http request options.
      */
-	public createMount(xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/storage/mounts';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public createMount (xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/storage/mounts';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling createMount.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling createMount.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling createMount.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling createMount.');
+        }
 
-		// verify required parameter 'remote' is not null or undefined
-		if (remote === null || remote === undefined) {
-			throw new Error('Required parameter remote was null or undefined when calling createMount.');
-		}
+        // verify required parameter 'remote' is not null or undefined
+        if (remote === null || remote === undefined) {
+            throw new Error('Required parameter remote was null or undefined when calling createMount.');
+        }
 
-		// verify required parameter 'mount' is not null or undefined
-		if (mount === null || mount === undefined) {
-			throw new Error('Required parameter mount was null or undefined when calling createMount.');
-		}
+        // verify required parameter 'mount' is not null or undefined
+        if (mount === null || mount === undefined) {
+            throw new Error('Required parameter mount was null or undefined when calling createMount.');
+        }
 
-		if (remote !== undefined) {
-			localVarQueryParameters['remote'] = ObjectSerializer.serialize(remote, "string");
-		}
+        if (remote !== undefined) {
+            localVarQueryParameters['remote'] = ObjectSerializer.serialize(remote, "string");
+        }
 
-		if (mount !== undefined) {
-			localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
-		}
+        if (mount !== undefined) {
+            localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'POST',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-			body: ObjectSerializer.serialize(credentials, "any")
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'POST',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: ObjectSerializer.serialize(credentials, "any")
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Delete a cluster
      * @param xRequestId
      * @param connection
-     * @param name
      * @param {*} [options] Override http request options.
      */
-	public deleteCluster(xRequestId: string, connection: string, name: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/bdc/{name}'
-			.replace('{' + 'name' + '}', encodeURIComponent(String(name)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public deleteCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling deleteCluster.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling deleteCluster.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling deleteCluster.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling deleteCluster.');
+        }
 
-		// verify required parameter 'name' is not null or undefined
-		if (name === null || name === undefined) {
-			throw new Error('Required parameter name was null or undefined when calling deleteCluster.');
-		}
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        let localVarUseFormData = false;
 
-		let localVarUseFormData = false;
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'DELETE',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'DELETE',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Delete a mount
@@ -715,285 +1326,72 @@ export class DefaultApi {
      * @param mount Local HDFS mount path
      * @param {*} [options] Override http request options.
      */
-	public deleteMount(xRequestId: string, connection: string, mount: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/storage/mounts';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public deleteMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/storage/mounts';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling deleteMount.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling deleteMount.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling deleteMount.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling deleteMount.');
+        }
 
-		// verify required parameter 'mount' is not null or undefined
-		if (mount === null || mount === undefined) {
-			throw new Error('Required parameter mount was null or undefined when calling deleteMount.');
-		}
+        // verify required parameter 'mount' is not null or undefined
+        if (mount === null || mount === undefined) {
+            throw new Error('Required parameter mount was null or undefined when calling deleteMount.');
+        }
 
-		if (mount !== undefined) {
-			localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
-		}
+        if (mount !== undefined) {
+            localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'DELETE',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'DELETE',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
-    /**
-     *
-     * @summary Get cluster config
-     * @param xRequestId
-     * @param connection
-     * @param name
-     * @param {*} [options] Override http request options.
-     */
-	public getCluster(xRequestId: string, connection: string, name: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/bdc/{name}'
-			.replace('{' + 'name' + '}', encodeURIComponent(String(name)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
-
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getCluster.');
-		}
-
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getCluster.');
-		}
-
-		// verify required parameter 'name' is not null or undefined
-		if (name === null || name === undefined) {
-			throw new Error('Required parameter name was null or undefined when calling getCluster.');
-		}
-
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
-
-		let localVarUseFormData = false;
-
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
-
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
-    /**
-     *
-     * @summary Get cluster status
-     * @param xRequestId
-     * @param connection
-     * @param name
-     * @param {*} [options] Override http request options.
-     */
-	public getClusterStatus(xRequestId: string, connection: string, name: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/bdc/{name}/status'
-			.replace('{' + 'name' + '}', encodeURIComponent(String(name)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
-
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getClusterStatus.');
-		}
-
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getClusterStatus.');
-		}
-
-		// verify required parameter 'name' is not null or undefined
-		if (name === null || name === undefined) {
-			throw new Error('Required parameter name was null or undefined when calling getClusterStatus.');
-		}
-
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
-
-		let localVarUseFormData = false;
-
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
-
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
-    /**
-     *
-     * @summary Get control status
-     * @param xRequestId
-     * @param connection
-     * @param name
-     * @param {*} [options] Override http request options.
-     */
-	public getControlStatus(xRequestId: string, connection: string, name: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/control/status'
-			.replace('{' + 'name' + '}', encodeURIComponent(String(name)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
-
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getControlStatus.');
-		}
-
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getControlStatus.');
-		}
-
-		// verify required parameter 'name' is not null or undefined
-		if (name === null || name === undefined) {
-			throw new Error('Required parameter name was null or undefined when calling getControlStatus.');
-		}
-
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
-
-		let localVarUseFormData = false;
-
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
-
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Get health properties with specific query
@@ -1002,72 +1400,72 @@ export class DefaultApi {
      * @param query The query in the json format for the health properties
      * @param {*} [options] Override http request options.
      */
-	public getHealthProperties(xRequestId: string, connection: string, query: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/health';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public getHealthProperties (xRequestId: string, connection: string, query: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/health';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getHealthProperties.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling getHealthProperties.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getHealthProperties.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling getHealthProperties.');
+        }
 
-		// verify required parameter 'query' is not null or undefined
-		if (query === null || query === undefined) {
-			throw new Error('Required parameter query was null or undefined when calling getHealthProperties.');
-		}
+        // verify required parameter 'query' is not null or undefined
+        if (query === null || query === undefined) {
+            throw new Error('Required parameter query was null or undefined when calling getHealthProperties.');
+        }
 
-		if (query !== undefined) {
-			localVarQueryParameters['query'] = ObjectSerializer.serialize(query, "string");
-		}
+        if (query !== undefined) {
+            localVarQueryParameters['query'] = ObjectSerializer.serialize(query, "string");
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Retrieve home page of Controller service
@@ -1075,228 +1473,135 @@ export class DefaultApi {
      * @param connection
      * @param {*} [options] Override http request options.
      */
-	public getHome(xRequestId: string, connection: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
-		const localVarPath = this.basePath + '/';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public getHome (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+        const localVarPath = this.basePath + '/api/v1';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getHome.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling getHome.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getHome.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling getHome.');
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
-     * @summary Get console logs
+     * @summary Get resource status
+     * @param bdcName The name of the BDC cluster from which you want the status
+     * @param serviceName The name of the service in the BDC cluster that you want
      * @param xRequestId
      * @param connection
-     * @param name
-     * @param offset
+     * @param all Whether you want all of the instances within the given resource
      * @param {*} [options] Override http request options.
      */
-	public getLogs(xRequestId: string, connection: string, name: string, offset: number, options: any = {}): Promise<{ response: http.ClientResponse; body: string; }> {
-		const localVarPath = this.basePath + '/bdc/{name}/log'
-			.replace('{' + 'name' + '}', encodeURIComponent(String(name)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public getPoolStatus (bdcName: string, serviceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServiceStatusModel;  }> {
+        const localVarPath = this.basePath + '/api/v1/bdc/services/{serviceName}/status'
+            .replace('{' + 'bdcName' + '}', encodeURIComponent(String(bdcName)))
+            .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getLogs.');
-		}
+        // verify required parameter 'bdcName' is not null or undefined
+        if (bdcName === null || bdcName === undefined) {
+            throw new Error('Required parameter bdcName was null or undefined when calling getPoolStatus.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getLogs.');
-		}
+        // verify required parameter 'serviceName' is not null or undefined
+        if (serviceName === null || serviceName === undefined) {
+            throw new Error('Required parameter serviceName was null or undefined when calling getPoolStatus.');
+        }
 
-		// verify required parameter 'name' is not null or undefined
-		if (name === null || name === undefined) {
-			throw new Error('Required parameter name was null or undefined when calling getLogs.');
-		}
+        if (all !== undefined) {
+            localVarQueryParameters['all'] = ObjectSerializer.serialize(all, "boolean");
+        }
 
-		// verify required parameter 'offset' is not null or undefined
-		if (offset === null || offset === undefined) {
-			throw new Error('Required parameter offset was null or undefined when calling getLogs.');
-		}
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		if (offset !== undefined) {
-			localVarQueryParameters['offset'] = ObjectSerializer.serialize(offset, "number");
-		}
+        let localVarUseFormData = false;
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		let localVarUseFormData = false;
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: string; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "string");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
-    /**
-     *
-     * @summary Get pool status
-     * @param xRequestId
-     * @param connection
-     * @param name
-     * @param poolType
-     * @param poolName
-     * @param {*} [options] Override http request options.
-     */
-	public getPoolStatus(xRequestId: string, connection: string, name: string, poolType: string, poolName: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/bdc/{name}/pools/{poolType}/{poolName}/status'
-			.replace('{' + 'name' + '}', encodeURIComponent(String(name)))
-			.replace('{' + 'poolType' + '}', encodeURIComponent(String(poolType)))
-			.replace('{' + 'poolName' + '}', encodeURIComponent(String(poolName)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
-
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling getPoolStatus.');
-		}
-
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling getPoolStatus.');
-		}
-
-		// verify required parameter 'name' is not null or undefined
-		if (name === null || name === undefined) {
-			throw new Error('Required parameter name was null or undefined when calling getPoolStatus.');
-		}
-
-		// verify required parameter 'poolType' is not null or undefined
-		if (poolType === null || poolType === undefined) {
-			throw new Error('Required parameter poolType was null or undefined when calling getPoolStatus.');
-		}
-
-		// verify required parameter 'poolName' is not null or undefined
-		if (poolName === null || poolName === undefined) {
-			throw new Error('Required parameter poolName was null or undefined when calling getPoolStatus.');
-		}
-
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
-
-		let localVarUseFormData = false;
-
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
-
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
-		this.authentications.default.applyToRequest(localVarRequestOptions);
-
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: ServiceStatusModel;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ServiceStatusModel");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Get list of all mounts
@@ -1305,67 +1610,67 @@ export class DefaultApi {
      * @param mount
      * @param {*} [options] Override http request options.
      */
-	public listMounts(xRequestId: string, connection: string, mount?: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/storage/mounts';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public listMounts (xRequestId: string, connection: string, mount?: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/storage/mounts';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling listMounts.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling listMounts.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling listMounts.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling listMounts.');
+        }
 
-		if (mount !== undefined) {
-			localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
-		}
+        if (mount !== undefined) {
+            localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'GET',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Refresh a mount
@@ -1374,72 +1679,72 @@ export class DefaultApi {
      * @param mount Local path to mount on HDFS
      * @param {*} [options] Override http request options.
      */
-	public refreshMount(xRequestId: string, connection: string, mount: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
-		const localVarPath = this.basePath + '/storage/mounts/refresh';
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public refreshMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/storage/mounts/refresh';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling refreshMount.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling refreshMount.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling refreshMount.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling refreshMount.');
+        }
 
-		// verify required parameter 'mount' is not null or undefined
-		if (mount === null || mount === undefined) {
-			throw new Error('Required parameter mount was null or undefined when calling refreshMount.');
-		}
+        // verify required parameter 'mount' is not null or undefined
+        if (mount === null || mount === undefined) {
+            throw new Error('Required parameter mount was null or undefined when calling refreshMount.');
+        }
 
-		if (mount !== undefined) {
-			localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
-		}
+        if (mount !== undefined) {
+            localVarQueryParameters['mount'] = ObjectSerializer.serialize(mount, "string");
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'POST',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'POST',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					body = ObjectSerializer.deserialize(body, "any");
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "any");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
     /**
      *
      * @summary Update the password for the given service and user
@@ -1450,78 +1755,78 @@ export class DefaultApi {
      * @param data Password and cluster name in JSON format
      * @param {*} [options] Override http request options.
      */
-	public updatePassword(xRequestId: string, connection: string, serviceName: string, serviceUsername: string, data: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
-		const localVarPath = this.basePath + '/passwords/{serviceName}/{serviceUsername}'
-			.replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
-			.replace('{' + 'serviceUsername' + '}', encodeURIComponent(String(serviceUsername)));
-		let localVarQueryParameters: any = {};
-		let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
-		let localVarFormParams: any = {};
+    public updatePassword (xRequestId: string, connection: string, serviceName: string, serviceUsername: string, data: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+        const localVarPath = this.basePath + '/api/v1/passwords/{serviceName}/{serviceUsername}'
+            .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
+            .replace('{' + 'serviceUsername' + '}', encodeURIComponent(String(serviceUsername)));
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
 
-		// verify required parameter 'xRequestId' is not null or undefined
-		if (xRequestId === null || xRequestId === undefined) {
-			throw new Error('Required parameter xRequestId was null or undefined when calling updatePassword.');
-		}
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling updatePassword.');
+        }
 
-		// verify required parameter 'connection' is not null or undefined
-		if (connection === null || connection === undefined) {
-			throw new Error('Required parameter connection was null or undefined when calling updatePassword.');
-		}
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling updatePassword.');
+        }
 
-		// verify required parameter 'serviceName' is not null or undefined
-		if (serviceName === null || serviceName === undefined) {
-			throw new Error('Required parameter serviceName was null or undefined when calling updatePassword.');
-		}
+        // verify required parameter 'serviceName' is not null or undefined
+        if (serviceName === null || serviceName === undefined) {
+            throw new Error('Required parameter serviceName was null or undefined when calling updatePassword.');
+        }
 
-		// verify required parameter 'serviceUsername' is not null or undefined
-		if (serviceUsername === null || serviceUsername === undefined) {
-			throw new Error('Required parameter serviceUsername was null or undefined when calling updatePassword.');
-		}
+        // verify required parameter 'serviceUsername' is not null or undefined
+        if (serviceUsername === null || serviceUsername === undefined) {
+            throw new Error('Required parameter serviceUsername was null or undefined when calling updatePassword.');
+        }
 
-		// verify required parameter 'data' is not null or undefined
-		if (data === null || data === undefined) {
-			throw new Error('Required parameter data was null or undefined when calling updatePassword.');
-		}
+        // verify required parameter 'data' is not null or undefined
+        if (data === null || data === undefined) {
+            throw new Error('Required parameter data was null or undefined when calling updatePassword.');
+        }
 
-		localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
-		localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
-		(<any>Object).assign(localVarHeaderParams, options.headers);
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
 
-		let localVarUseFormData = false;
+        let localVarUseFormData = false;
 
-		let localVarRequestOptions: localVarRequest.Options = {
-			method: 'PUT',
-			qs: localVarQueryParameters,
-			headers: localVarHeaderParams,
-			uri: localVarPath,
-			useQuerystring: this._useQuerystring,
-			json: true,
-			body: ObjectSerializer.serialize(data, "string")
-		};
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'PUT',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+            body: ObjectSerializer.serialize(data, "string")
+        };
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
 
-		this.authentications.default.applyToRequest(localVarRequestOptions);
+        this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		if (Object.keys(localVarFormParams).length) {
-			if (localVarUseFormData) {
-				(<any>localVarRequestOptions).formData = localVarFormParams;
-			} else {
-				localVarRequestOptions.form = localVarFormParams;
-			}
-		}
-		return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
-			localVarRequest(localVarRequestOptions, (error, response, body) => {
-				if (error) {
-					reject(error);
-				} else {
-					if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
-						resolve({ response: response, body: body });
-					} else {
-						reject({ response: response, body: body });
-					}
-				}
-			});
-		});
-	}
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
 }

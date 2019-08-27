@@ -4,12 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AppContext } from './appContext';
-import { mssql, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser } from './mssql';
+import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObjectExplorerBrowser } from './mssql';
 import * as constants from './constants';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
 
-export function createMssqlApi(context: AppContext): mssql {
+export function createMssqlApi(context: AppContext): IExtension {
 	return {
 		get cmsService() {
 			return context.getService<ICmsService>(constants.CmsService);
