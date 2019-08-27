@@ -100,6 +100,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	public updateProperty(key: string, value: any): void {
 		if (key) {
 			this.properties[key] = value;
+			this.updateStyles();
 			this.layout();
 			this.validate();
 		}
