@@ -149,7 +149,8 @@
         ],
         "aliases": [
           "Notebook"
-        ]
+        ],
+        "configuration": "./language-configuration.json"
       }
     ],
     "menus": {
@@ -353,7 +354,7 @@
         {
           "id": "books-explorer",
           "title": "Jupyter Books",
-          "icon": "resources/dark/open_notebook_inverse.svg"
+          "icon": "resources/dark/JupyterBook_2.svg"
         }
       ]
     },
