@@ -58,22 +58,6 @@ export function replaceConnection(oldUri: string, newUri: string, connectionServ
 	});
 }
 
-export function showBackup(connection: IConnectionProfile, backupUiService: IBackupUiService): Promise<void> {
-	return new Promise<void>((resolve) => {
-		backupUiService.showBackup(connection).then(() => {
-			resolve(void 0);
-		});
-	});
-}
-
-export function showRestore(connection: IConnectionProfile, restoreDialogService: IRestoreDialogController): Promise<void> {
-	return new Promise<void>((resolve) => {
-		restoreDialogService.showDialog(connection).then(() => {
-			resolve(void 0);
-		});
-	});
-}
-
 export function openInsight(query: IInsightsConfig, profile: IConnectionProfile, insightDialogService: IInsightsDialogService) {
 	insightDialogService.show(query, profile);
 }

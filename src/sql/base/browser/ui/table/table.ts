@@ -41,7 +41,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
-	private _classChangeTimeout: NodeJS.Timer;
+	private _classChangeTimeout: any;
 
 	private _onContextMenu = new Emitter<ITableMouseEvent>();
 	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;

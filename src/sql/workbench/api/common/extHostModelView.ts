@@ -532,6 +532,14 @@ class ComponentWrapper implements azdata.Component {
 		this.setProperty('required', v);
 	}
 
+	public get CSSStyles(): { [key: string]: string } {
+		return this.properties['CSSStyles'];
+	}
+
+	public set CSSStyles(cssStyles: { [key: string]: string }) {
+		this.setProperty('CSSStyles', cssStyles);
+	}
+
 	public toComponentShape(): IComponentShape {
 		return <IComponentShape>{
 			id: this.id,
@@ -604,6 +612,11 @@ class ComponentWrapper implements azdata.Component {
 		return this.setProperty(key, value);
 	}
 
+	public updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void> {
+		this.properties.CSSStyles = Object.assign(this.properties.CSSStyles || {}, cssStyles);
+		return this.notifyPropertyChanged();
+	}
+
 	protected notifyPropertyChanged(): Thenable<void> {
 		return this._proxy.$setProperties(this._handle, this._id, this.properties);
 	}
@@ -625,7 +638,6 @@ class ComponentWrapper implements azdata.Component {
 			}
 		}
 	}
-
 
 	protected setDataProvider(): Thenable<void> {
 		return this._proxy.$setDataProvider(this._handle, this._id);
@@ -764,6 +776,13 @@ class InputBoxWrapper extends ComponentWrapper implements azdata.InputBoxCompone
 		return this.properties['ariaLabel'];
 	}
 	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
+	}
+
+	public get ariaLive(): string {
+		return this.properties['ariaLive'];
+	}
+	public set ariaLive(v: string) {
 		this.setProperty('ariaLabel', v);
 	}
 
@@ -1146,6 +1165,27 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('title', v);
 	}
 
+	public get ariaRowCount(): number {
+		return this.properties['ariaRowCount'];
+	}
+	public set ariaRowCount(v: number) {
+		this.setProperty('ariaRowCount', v);
+	}
+
+	public get ariaColumnCount(): number {
+		return this.properties['ariaColumnCount'];
+	}
+	public set ariaColumnCount(v: number) {
+		this.setProperty('ariaColumnCount', v);
+	}
+
+	public get moveFocusOutWithTab(): boolean {
+		return this.properties['moveFocusOutWithTab'];
+	}
+	public set moveFocusOutWithTab(v: boolean) {
+		this.setProperty('moveFocusOutWithTab', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1308,6 +1348,13 @@ class ButtonWrapper extends ComponentWrapper implements azdata.ButtonComponent {
 	}
 	public set title(v: string) {
 		this.setProperty('title', v);
+	}
+
+	public get ariaLabel(): string {
+		return this.properties['ariaLabel'];
+	}
+	public set ariaLabel(v: string) {
+		this.setProperty('ariaLabel', v);
 	}
 
 	public get onDidClick(): vscode.Event<any> {

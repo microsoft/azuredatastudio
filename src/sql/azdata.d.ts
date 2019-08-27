@@ -2543,6 +2543,13 @@ declare module 'azdata' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -2890,6 +2897,7 @@ declare module 'azdata' {
 	export interface InputBoxProperties extends ComponentProperties {
 		value?: string;
 		ariaLabel?: string;
+		ariaLive?: string;
 		placeHolder?: string;
 		inputType?: InputBoxInputType;
 		required?: boolean;
@@ -2943,6 +2951,7 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
+		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
 	export interface FileBrowserTreeProperties extends ComponentProperties {
@@ -4446,6 +4455,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				azdata_cell_guid?: string;
 			};
 			execution_count?: number;
 			outputs?: ICellOutput[];

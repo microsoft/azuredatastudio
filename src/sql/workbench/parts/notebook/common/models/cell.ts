@@ -20,6 +20,8 @@ import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
+import { generateUuid } from 'vs/base/common/uuid';
+import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 let modelId = 0;
 
 
@@ -27,6 +29,7 @@ export class CellModel implements ICellModel {
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
+	private _cellGuid: string;
 	private _future: FutureInternal;
 	private _outputs: nb.ICellOutput[] = [];
 	private _isEditMode: boolean;
@@ -44,7 +47,8 @@ export class CellModel implements ICellModel {
 	private _onCellLoaded = new Emitter<string>();
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
-	private _metadata: { language?: string; };
+	private _metadata: { language?: string, cellGuid?: string; };
+	private _modelContentChangedEvent: IModelContentChangedEvent;
 
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
@@ -65,6 +69,8 @@ export class CellModel implements ICellModel {
 		} else {
 			this._isTrusted = false;
 		}
+		// if the fromJson() method was already called and _cellGuid was previously set, don't generate another UUID unnecessarily
+		this._cellGuid = this._cellGuid || generateUuid();
 		this.createUri();
 	}
 
@@ -166,6 +172,15 @@ export class CellModel implements ICellModel {
 			this._source = newSource;
 			this.sendChangeToNotebook(NotebookChangeType.CellSourceUpdated);
 		}
+		this._modelContentChangedEvent = undefined;
+	}
+
+	public get modelContentChangedEvent(): IModelContentChangedEvent {
+		return this._modelContentChangedEvent;
+	}
+
+	public set modelContentChangedEvent(e: IModelContentChangedEvent) {
+		this._modelContentChangedEvent = e;
 	}
 
 	public get language(): string {
@@ -176,6 +191,10 @@ export class CellModel implements ICellModel {
 			return this._language;
 		}
 		return this.options.notebook.language;
+	}
+
+	public get cellGuid(): string {
+		return this._cellGuid;
 	}
 
 	public setOverrideLanguage(newLanguage: string) {
@@ -215,7 +234,7 @@ export class CellModel implements ICellModel {
 
 	private notifyExecutionComplete(): void {
 		if (this._notebookService) {
-			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted);
+			this._notebookService.serializeNotebookStateChange(this.notebookModel.notebookUri, NotebookChangeType.CellExecuted, this);
 		}
 	}
 
@@ -233,11 +252,8 @@ export class CellModel implements ICellModel {
 	public async runCell(notificationService?: INotificationService, connectionManagementService?: IConnectionManagementService): Promise<boolean> {
 		try {
 			if (!this.active && this !== this.notebookModel.activeCell) {
-				if (this.notebookModel.activeCell) {
-					this.notebookModel.activeCell.active = false;
-				}
+				this.notebookModel.updateActiveCell(this);
 				this.active = true;
-				this.notebookModel.activeCell = this;
 			}
 
 			if (connectionManagementService) {
@@ -267,7 +283,7 @@ export class CellModel implements ICellModel {
 					}
 				}
 				let content = this.source;
-				if (content) {
+				if ((Array.isArray(content) && content.length > 0) || (!Array.isArray(content) && content)) {
 					// requestExecute expects a string for the code parameter
 					content = Array.isArray(content) ? content.join('') : content;
 					let future = await kernel.requestExecute({
@@ -370,7 +386,11 @@ export class CellModel implements ICellModel {
 			shouldScroll: !!shouldScroll
 		};
 		this._onOutputsChanged.fire(outputEvent);
-		this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
+		if (this.outputs.length !== 0) {
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputUpdated);
+		} else {
+			this.sendChangeToNotebook(NotebookChangeType.CellOutputCleared);
+		}
 	}
 
 	private sendChangeToNotebook(change: NotebookChangeType): void {
@@ -525,9 +545,10 @@ export class CellModel implements ICellModel {
 			source: this._source,
 			metadata: this._metadata || {}
 		};
+		cellJson.metadata.azdata_cell_guid = this._cellGuid;
 		if (this._cellType === CellTypes.Code) {
-			cellJson.metadata.language = this._language,
-				cellJson.outputs = this._outputs;
+			cellJson.metadata.language = this._language;
+			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
 		}
 		return cellJson as nb.ICellContents;
@@ -541,6 +562,7 @@ export class CellModel implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
+		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {
 			for (let output of cell.outputs) {
@@ -602,8 +624,10 @@ export class CellModel implements ICellModel {
 		if (typeof source === 'string') {
 			let sourceMultiline = source.split('\n');
 			// If source is one line (i.e. no '\n'), return it immediately
-			if (sourceMultiline.length <= 1) {
-				return source;
+			if (sourceMultiline.length === 1) {
+				return [source];
+			} else if (sourceMultiline.length === 0) {
+				return [];
 			}
 			// Otherwise, add back all of the newlines here
 			// Note: for Windows machines that require '/r/n',

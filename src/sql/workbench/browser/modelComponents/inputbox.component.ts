@@ -204,6 +204,9 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			}
 		}
 
+		if (this.ariaLive) {
+			input.ariaLive = this.ariaLive;
+		}
 
 		input.inputElement.required = this.required;
 	}
@@ -224,6 +227,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set ariaLabel(newValue: string) {
 		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
+	}
+
+	public get ariaLive() {
+		return this.getPropertyOrDefault<azdata.InputBoxProperties, string>((props) => props.ariaLive, '');
 	}
 
 	public get placeHolder(): string {
