@@ -140,7 +140,7 @@ export class MainController {
 				let path: string;
 				if (!ownerUri) {
 					if (azdata.nb.activeNotebookEditor.document.isDirty) {
-						vscode.window.showErrorMessage('Save file before scheduling');
+						vscode.window.showErrorMessage('Save file before scheduling', { modal: true });
 						return;
 					}
 					path = azdata.nb.activeNotebookEditor.document.fileName;
@@ -182,7 +182,7 @@ export class MainController {
 				}
 			}
 			if (!sqlConnectionsPresent) {
-				vscode.window.showErrorMessage('No Active MSSQL Connections');
+				vscode.window.showErrorMessage('No Active MSSQL Connections', { modal: true });
 				return;
 			}
 			let connectionNames: azdata.connection.Connection[] = [];
@@ -197,7 +197,7 @@ export class MainController {
 				connection = connections[connectionDisplayString.indexOf(connectionName)];
 			}
 			else {
-				vscode.window.showErrorMessage('Please select a valid connection');
+				vscode.window.showErrorMessage('Please select a valid connection', { modal: true });
 			}
 		}
 		return connection;
