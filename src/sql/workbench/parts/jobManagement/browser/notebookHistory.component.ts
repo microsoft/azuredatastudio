@@ -535,16 +535,18 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	public collapseGrid() {
 		for (let i = 0; i < this._grids.length; i++) {
 			let notebookGrid = document.getElementById('notebook-grid' + i);
-			let checkbox: any = document.getElementById('accordion' + i);
-			if (this._grids[i].style === 'none') {
-				notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
-				notebookGrid.style.display = 'none';
-				checkbox.checked = true;
-			}
-			else {
-				notebookGrid.className = 'notebook-grid ' + i;
-				notebookGrid.style.display = 'grid';
-				checkbox.checked = false;
+			if (notebookGrid) {
+				let checkbox: any = document.getElementById('accordion' + i);
+				if (this._grids[i].style === 'none') {
+					notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
+					notebookGrid.style.display = 'none';
+					checkbox.checked = true;
+				}
+				else {
+					notebookGrid.className = 'notebook-grid ' + i;
+					notebookGrid.style.display = 'grid';
+					checkbox.checked = false;
+				}
 			}
 		}
 	}

@@ -170,8 +170,20 @@ export class MainController {
 
 	public async getNotebookConnectionOwnerUri(): Promise<string> {
 		let connections = await azdata.connection.getConnections(true);
+		let sqlConnectionsPresent: boolean = false;
 		if (!connections || connections.length === 0) {
-			vscode.window.showErrorMessage('No Active Connections');
+			azdata.connection.openConnectionDialog();
+			//vscode.window.showErrorMessage('No Active Connections');
+			return;
+		}
+		for (let i = 0; i < connections.length; i++) {
+			if (connections[i].providerId === 'MSSQL') {
+				sqlConnectionsPresent = true;
+				break;
+			}
+		}
+		if (!sqlConnectionsPresent) {
+			vscode.window.showErrorMessage('No Active Sql Connections');
 			return;
 		}
 		let connectionNames: azdata.connection.ConnectionProfile[] = [];
