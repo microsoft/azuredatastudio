@@ -252,8 +252,8 @@ class ButtonImpl implements azdata.window.Button {
 	 * Focuses the button when set to "true", then the internal value is immediately reset to 'undefined'.
 	 *
 	 * @remarks
-	 * Because communication between ADS and extensions is unidirectional, that update is not communicated
-	 * to the extension.  The internal value is reset to avoid inconsistent models of where focus is.
+	 * Because communication between ADS and extensions is unidirectional, a focus change by the user is not
+	 * communicated to the extension.  The internal value is reset to avoid inconsistent models of where focus is.
 	 */
 	public set focused(focused: boolean) {
 		this._focused = focused;
