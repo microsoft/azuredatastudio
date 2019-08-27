@@ -207,6 +207,7 @@ class ButtonImpl implements azdata.window.Button {
 	private _label: string;
 	private _enabled: boolean;
 	private _hidden: boolean;
+	private _focused: boolean;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
@@ -240,6 +241,15 @@ class ButtonImpl implements azdata.window.Button {
 
 	public set hidden(hidden: boolean) {
 		this._hidden = hidden;
+		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get focused(): boolean {
+		return this._focused;
+	}
+
+	public set focused(focused: boolean) {
+		this._focused = focused;
 		this._extHostModelViewDialog.updateButton(this);
 	}
 
@@ -568,7 +578,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$setButtonDetails(handle, {
 			label: button.label,
 			enabled: button.enabled,
-			hidden: button.hidden
+			hidden: button.hidden,
+			focused: button.focused
 		});
 	}
 

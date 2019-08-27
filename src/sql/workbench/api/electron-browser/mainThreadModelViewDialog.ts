@@ -133,6 +133,7 @@ export class MainThreadModelViewDialog implements MainThreadModelViewDialogShape
 			button.label = details.label;
 			button.enabled = details.enabled;
 			button.hidden = details.hidden;
+			button.focused = details.focused;
 		}
 
 		return Promise.resolve();
