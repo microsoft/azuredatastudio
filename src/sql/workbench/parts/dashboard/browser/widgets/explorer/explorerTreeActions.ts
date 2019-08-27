@@ -6,7 +6,6 @@
 import { ManageAction, ManageActionContext } from 'sql/workbench/common/actions';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IAngularEventingService } from 'sql/platform/angularEventing/common/angularEventingService';
-import { IEditorProgressService } from 'vs/platform/progress/common/progress';
 import { ExecuteCommandAction } from 'vs/platform/actions/common/actions';
 
 export class ExplorerManageAction extends ManageAction {
