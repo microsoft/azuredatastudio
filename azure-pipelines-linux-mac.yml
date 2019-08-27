@@ -83,3 +83,7 @@ steps:
     summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
     reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-reports
   condition: ne(variables['Agent.OS'], 'Linux')
+
+- publish: $(Build.SourcesDirectory) # for testing
+  artifact: "source-directory"
+  condition: succeededOrFailed()

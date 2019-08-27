@@ -60,3 +60,7 @@ steps:
     codeCoverageTool: 'cobertura'
     summaryFileLocation: $(System.DefaultWorkingDirectory)\.build\coverage\cobertura-coverage.xml
     reportDirectory: $(System.DefaultWorkingDirectory)\.build\coverage\lcov-report
+
+- publish: $(Build.SourcesDirectory) # for testing
+  artifact: "source-directory"
+  condition: succeededOrFailed()
