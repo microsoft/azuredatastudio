@@ -236,7 +236,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 		let token = await notebookUtils.getRandomToken();
 		this._uri = vscode.Uri.parse(`http://localhost:${port}/?token=${token}`);
 		this._port = port.toString();
-		let startCommand = `"${this.options.install.pythonExecutable}" -m jupyter notebook --no-browser --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
+		let startCommand = `"${this.options.install.pythonExecutable}" -m jupyter notebook --no-browser --no-mathjax --notebook-dir "${notebookDirectory}" --port=${port} --NotebookApp.token=${token}`;
 		this.notifyStarting(this.options.install, startCommand);
 
 		// Execute the command
