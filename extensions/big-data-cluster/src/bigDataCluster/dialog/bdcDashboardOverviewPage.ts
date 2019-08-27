@@ -258,6 +258,11 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
 			const result = await azdata.connection.connect(connProfile, true, true);
 			if (!result.connected) {
+				if (result.errorMessage && result.errorMessage.length > 0) {
+					vscode.window.showErrorMessage(result.errorMessage);
+				}
+				// Clear out the password and username before connecting since those being wrong are likely the issue
+				connProfile.userName = undefined;
 				connProfile.password = undefined;
 				azdata.connection.openConnectionDialog(undefined, connProfile);
 			}
