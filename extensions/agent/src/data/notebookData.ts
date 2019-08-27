@@ -8,9 +8,10 @@ import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
-import { promisify } from 'util';
+import * as path from 'path';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
+import { NotebookDialogOptions } from '../dialogs/notebookDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -58,12 +59,12 @@ export class NotebookData implements IAgentDialogData {
 
 	constructor(
 		ownerUri: string,
-		notebookInfo: azdata.AgentNotebookInfo = undefined,
+		options: NotebookDialogOptions = undefined,
 		private _agentService: azdata.AgentServicesProvider = undefined) {
-
 		this._ownerUri = ownerUri;
 		this.enabled = true;
-		if (notebookInfo) {
+		if (options.notebookInfo) {
+			let notebookInfo = options.notebookInfo;
 			this.dialogMode = AgentDialogMode.EDIT;
 			this.name = notebookInfo.name;
 			this.originalName = notebookInfo.name;
@@ -80,6 +81,10 @@ export class NotebookData implements IAgentDialogData {
 			this.categoryType = notebookInfo.categoryType;
 			this.targetDatabase = notebookInfo.targetDatabase;
 			this.executeDatabase = notebookInfo.executeDatabase;
+		}
+		if (options.filePath) {
+			this.name = path.basename(options.filePath).split('.').slice(0, -1).join('.');
+			this.templatePath = options.filePath;
 		}
 	}
 

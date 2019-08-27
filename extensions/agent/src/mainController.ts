@@ -10,7 +10,6 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
-import * as temp from 'tmp';
 import { AlertDialog } from './dialogs/alertDialog';
 import { JobDialog } from './dialogs/jobDialog';
 import { OperatorDialog } from './dialogs/operatorDialog';
@@ -19,8 +18,9 @@ import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 import { JobData } from './data/jobData';
 import { AgentUtils } from './agentUtils';
-import { NotebookDialog } from './dialogs/notebookDialog';
+import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog';
 import { promisify } from 'util';
+import { stringify } from 'querystring';
 
 const localize = nls.loadMessageBundle();
 
@@ -120,14 +120,76 @@ export class MainController {
 				console.log(e);
 			}
 		});
-		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo) => {
-			if (!this.notebookDialog || (this.notebookDialog && !this.notebookDialog.isOpen)) {
-				this.notebookDialog = new NotebookDialog(ownerUri, notebookInfo);
+		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: any, notebookInfo: azdata.AgentNotebookInfo) => {
+
+			/*
+			There are four entry points to this commands:
+			1. Explorer context menu:
+				The first arg becomes a vscode URI
+				the second argument is undefined
+			2. Notebook toolbar:
+				both the args are undefined
+			3. Agent New Notebook Action
+				the first arg is database OwnerUri
+				the second arg is undefined
+			4. Agent Edit Notebook Action
+				the first arg is database OwnerUri
+				the second arg is notebookInfo from database
+			*/
+			if (!ownerUri && !notebookInfo) {
+				//notebook editor
+
+				ownerUri = await this.getNotebookConnectionOwnerUri();
+				if (!ownerUri) {
+					return;
+				}
+				let currentNotebook = azdata.nb.activeNotebookEditor;
+				let currentFilePath = currentNotebook.document.fileName;
+				this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ filePath: currentFilePath });
+				await this.notebookDialog.openDialog();
+			}
+			else if (!(typeof ownerUri === 'string')) {
+				let currentFilePath = ownerUri.fsPath;
+				ownerUri = await this.getNotebookConnectionOwnerUri();
+				if (!ownerUri) {
+					return;
+				}
+				this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ filePath: currentFilePath });
+				await this.notebookDialog.openDialog();
+			}
+			else {
+				if (!this.notebookDialog || (this.notebookDialog && !this.notebookDialog.isOpen)) {
+					this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ notebookInfo: notebookInfo });
+				}
 			}
 			if (!this.notebookDialog.isOpen) {
 				this.notebookDialog.dialogName ? await this.notebookDialog.openDialog(this.notebookDialog.dialogName) : await this.notebookDialog.openDialog();
 			}
 		});
+	}
+
+	public async getNotebookConnectionOwnerUri(): Promise<string> {
+		let connections = await azdata.connection.getConnections(true);
+		if (!connections || connections.length === 0) {
+			vscode.window.showErrorMessage('No Active Connections');
+			return;
+		}
+		let connectionNames: azdata.connection.ConnectionProfile[] = [];
+		let connectionDisplayString: string[] = [];
+		for (let i = 0; i < connections.length; i++) {
+			let currentConnectionString = connections[i].serverName + ' (' + connections[i].userName + ')';
+			connectionNames.push(connections[i]);
+			connectionDisplayString.push(currentConnectionString);
+		}
+		let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: 'Select a connection' });
+		if (connectionDisplayString.indexOf(connectionName) !== -1) {
+			let OwnerUri = await azdata.connection.getUriForConnection(connections[connectionDisplayString.indexOf(connectionName)].connectionId);
+			return OwnerUri;
+		}
+		else {
+			vscode.window.showErrorMessage('Please select a valid connection');
+		}
+
 	}
 
 	/**

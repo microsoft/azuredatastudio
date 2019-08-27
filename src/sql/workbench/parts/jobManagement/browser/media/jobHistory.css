@@ -33,6 +33,11 @@ notebookhistory-component .all-jobs {
 	padding-top: 10px;
 }
 
+.history-container {
+	position: relative;
+	overflow-y: auto;
+}
+
 .vs-dark .overview-container .overview-tab {
 	color: #fff;
 }
@@ -49,8 +54,13 @@ notebookhistory-component .all-jobs {
 	overflow: hidden;
 }
 
-input#accordion,
-input#accordion2 {
+input#accordion{
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+.grid-arrow{
 	position: absolute;
 	opacity: 0;
 	z-index: -1;
@@ -76,12 +86,12 @@ input#accordion2 {
 	width: 100%;
 }
 
-.vs-dark .overview-tab .accordion-content,
-.vs-dark .overview-tab .accordion2-content {
+.vs-dark .overview-tab .accordion-content {
 	background: #333333;
 }
 
-.hc-black .overview-tab .accordion-content {
+.hc-black .overview-tab .accordion-content,
+.grid-arrow {
 	background: #000000;
 	border: 1px solid #2b56f2;
 }
@@ -102,12 +112,12 @@ input#accordion2 {
 
 /* :checked */
 input#accordion:checked ~ .accordion-content,
-input#accordion2:checked {
+.grid-arrow:checked {
 	max-height: 10em;
 }
 
 input#accordion:checked ~ .accordion-content,
-input#accordion2:checked {
+.grid-arrow:checked {
 	max-height: 10em;
 }
 
@@ -354,8 +364,6 @@ notebookhistory-component
 	display: block;
 	border-radius: 0px;
 }
-.vs-dark .notebook-grid-item {
-}
 
 .notebook-grid-item > img {
 	display: block;
@@ -370,7 +378,8 @@ notebookhistory-component
 	background: #dcdcdc !important;
 }
 
-.vs-dark .notebook-grid-item:hover {
+.vs-dark .notebook-grid-item:hover,
+.hc-black .notebook-grid-item:hover {
 	background: #444444 !important;
 }
 
@@ -387,7 +396,8 @@ notebookhistory-component
 	background-repeat: no-repeat;
 }
 
-.vs-dark .notebook-grid-item > .img-success {
+.vs-dark .notebook-grid-item > .img-success,
+.hc-black .notebook-grid-item > .img-success {
 	background-image: url(./NotebookSuccess_16x_white.svg);
 	background-position: center;
 }
@@ -405,7 +415,8 @@ notebookhistory-component
 	background-repeat: no-repeat;
 }
 
-.vs-dark .notebook-grid-item > .img-failure {
+.vs-dark .notebook-grid-item > .img-failure,
+.hc-black .notebook-grid-item > .img-failure {
 	background-image: url(./NotebookFail_16x_white.svg);
 	background-position: center;
 }
@@ -423,7 +434,8 @@ notebookhistory-component
 	background-repeat: no-repeat;
 }
 
-.vs-dark .notebook-grid-item > .img-error {
+.vs-dark .notebook-grid-item > .img-error,
+.hc-black .notebook-grid-item > .img-error {
 	background-image: url(./NotebookError_16x_white.svg);
 	background-position: center;
 }
@@ -456,4 +468,9 @@ notebookhistory-component
 
 .vs-dark .grid-title {
 	background: #333333;
+}
+
+.hc-black .grid-title {
+	background: #000000;
+	border: 1px solid #2b56f2;
 }

@@ -5,15 +5,18 @@
 'use strict';
 import * as nls from 'vscode-nls';
 import * as path from 'path';
-import * as fs from 'fs';
 import * as azdata from 'azdata';
 import { PickScheduleDialog } from './pickScheduleDialog';
 import { AgentDialog } from './agentDialog';
 import { AgentUtils } from '../agentUtils';
 import { NotebookData } from '../data/notebookData';
-import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
+
+export class NotebookDialogOptions {
+	notebookInfo?: azdata.AgentNotebookInfo;
+	filePath?: string;
+}
 
 export class NotebookDialog extends AgentDialog<NotebookData>  {
 
@@ -69,14 +72,14 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private steps: azdata.AgentJobStepInfo[];
 	private schedules: azdata.AgentJobScheduleInfo[];
 
-	constructor(ownerUri: string, notebookInfo: azdata.AgentNotebookInfo = undefined) {
+	constructor(ownerUri: string, options: NotebookDialogOptions = undefined) {
 		super(
 			ownerUri,
-			new NotebookData(ownerUri, notebookInfo),
-			notebookInfo ? NotebookDialog.EditDialogTitle : NotebookDialog.CreateDialogTitle);
+			new NotebookData(ownerUri, options),
+			options.notebookInfo ? NotebookDialog.EditDialogTitle : NotebookDialog.CreateDialogTitle);
 		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
-		this.isEdit = notebookInfo ? true : false;
+		this.isEdit = options.notebookInfo ? true : false;
 		this.dialogName = this.isEdit ? this.EditJobDialogEvent : this.NewJobDialogEvent;
 	}
 
@@ -257,6 +260,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 
 			this.nameTextBox.value = this.model.name;
 			this.ownerTextBox.value = this.model.owner;
+			this.templateFilePathBox.value = this.model.templatePath;
 			if (this.isEdit) {
 				this.templateFilePathBox.placeHolder = this.model.targetDatabase + '\\' + this.model.name;
 				this.targetDatabaseDropDown.value = this.model.targetDatabase;

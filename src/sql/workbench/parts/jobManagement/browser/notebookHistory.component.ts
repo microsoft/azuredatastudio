@@ -36,6 +36,7 @@ export class GridSection {
 	title: string;
 	histories: azdata.AgentNotebookHistoryInfo[];
 	contextMenuType: number;
+	style: string;
 }
 @Component({
 	selector: DASHBOARD_SELECTOR,
@@ -161,6 +162,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			this.createGrid();
 			if (self._agentViewComponent.showNotebookHistory) {
 				self._cd.detectChanges();
+				this.collapseGrid();
 			}
 		});
 	}
@@ -197,6 +199,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			}
 			if (self._agentViewComponent.showNotebookHistory) {
 				self._cd.detectChanges();
+				this.collapseGrid();
 			}
 		}
 	}
@@ -217,6 +220,19 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			arrow.className = 'resultsViewCollapsible collapsed';
 		} else if (arrow.className === 'resultsViewCollapsible collapsed' && checkbox.checked === true) {
 			arrow.className = 'resultsViewCollapsible';
+		}
+
+	}
+
+	private toggleGridCollapse(i): void {
+		let notebookGrid = document.getElementById('notebook-grid' + i);
+		let checkbox: any = document.getElementById('accordion' + i);
+		if (notebookGrid.className === 'notebook-grid ' + i && checkbox.checked === true) {
+			notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
+			notebookGrid.style.display = 'none';
+		} else if (notebookGrid.className === 'notebook-grid ' + i + ' collapsed' && checkbox.checked === false) {
+			notebookGrid.className = 'notebook-grid ' + i;
+			notebookGrid.style.display = 'grid';
 		}
 
 	}
@@ -300,11 +316,12 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				{ action: this._openNotebookTemplateAction }
 			]);
 			this._cd.detectChanges();
-
+			this.collapseGrid();
 		} else {
 			this.loadHistory();
 		}
 		this._notebookCacheObject.prevJobID = this._agentViewComponent.notebookId;
+
 	}
 
 	public layout() {
@@ -403,6 +420,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				history.materializedNotebookPin = pin;
 				this.createGrid();
 				this._cd.detectChanges();
+				this.collapseGrid();
 			}
 
 		});
@@ -494,21 +512,41 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			min: 2592001,
 			max: 31557600
 		}];
+		let style: string[] = ['grid', 'none', 'none', 'none'];
 
 		this._grids = [];
 		// Pushing the pinned notebooks grid
 		this._grids.push({
 			title: 'Pinned',
 			histories: this.historyFilter(histories, 0, Number.MAX_VALUE, true),
-			contextMenuType: 1
+			contextMenuType: 1,
+			style: 'grid'
 		});
 		gridTitle.forEach((title, index) => {
 			let grid = new GridSection();
 			grid.title = title;
 			grid.histories = this.historyFilter(histories, gridPeriods[index].min, gridPeriods[index].max, false);
 			grid.contextMenuType = 0;
+			grid.style = style[index];
 			this._grids.push(grid);
 		});
+	}
+
+	public collapseGrid() {
+		for (let i = 0; i < this._grids.length; i++) {
+			let notebookGrid = document.getElementById('notebook-grid' + i);
+			let checkbox: any = document.getElementById('accordion' + i);
+			if (this._grids[i].style === 'none') {
+				notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
+				notebookGrid.style.display = 'none';
+				checkbox.checked = true;
+			}
+			else {
+				notebookGrid.className = 'notebook-grid ' + i;
+				notebookGrid.style.display = 'grid';
+				checkbox.checked = false;
+			}
+		}
 	}
 
 	/** GETTERS  */

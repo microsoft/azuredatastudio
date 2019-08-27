@@ -134,7 +134,7 @@
 			{
 				"command": "jupyter.reinstallDependencies",
 				"title": "%title.reinstallNotebookDependencies%"
-			}
+      }
 		],
 		"languages": [
 			{
@@ -238,7 +238,7 @@
 				{
 					"command": "jupyter.cmd.managePackages",
 					"when": "providerId == jupyter && notebook:pythonInstalled"
-				}
+        }
 			]
 		},
 		"keybindings": [
