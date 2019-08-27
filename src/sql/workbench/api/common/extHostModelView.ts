@@ -1117,7 +1117,6 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		return emitter && emitter.event;
 	}
 }
-}
 
 class TableComponentWrapper extends ComponentWrapper implements azdata.TableComponent {
 

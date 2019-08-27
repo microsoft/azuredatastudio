@@ -58,14 +58,19 @@ export class BdcDashboardModel {
 		]).catch(error => showErrorMessage(error));
 	}
 
+	/**
+	 * Gets a partially filled connection profile for the SQL Server Master Instance endpoint
+	 * associated with this cluster.
+	 * @returns The IConnectionProfile - or undefined if the endpoints haven't been loaded yet
+	 */
 	public getSqlServerMasterConnectionProfile(): azdata.IConnectionProfile | undefined {
 		const sqlServerMasterEndpoint = this.serviceEndpoints.find(e => e.name === Endpoint.sqlServerMaster);
 		if (!sqlServerMasterEndpoint) {
 			return undefined;
 		}
 
-		// We default to sa - if that doesn't work then we'll open up a connection dialog so the user can enter in
-		// the correct connection information
+		// We default to sa - if that doesn't work then callers of this should open up a connection
+		// dialog so the user can enter in the correct connection information
 		return {
 			connectionName: '',
 			serverName: sqlServerMasterEndpoint.endpoint,
