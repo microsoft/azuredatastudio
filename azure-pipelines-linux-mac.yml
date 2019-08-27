@@ -85,5 +85,5 @@ steps:
   condition: ne(variables['Agent.OS'], 'Linux')
 
 - publish: $(Build.SourcesDirectory) # for testing
-  artifact: "source-directory"
+  artifact: "source-directory-$(Agent.OS)"
   condition: succeededOrFailed()
