@@ -12,6 +12,7 @@ import * as path from 'path';
 import { AgentUtils } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { NotebookDialogOptions } from '../dialogs/notebookDialog';
+import { createConnection } from 'net';
 
 const localize = nls.loadMessageBundle();
 
@@ -56,6 +57,7 @@ export class NotebookData implements IAgentDialogData {
 	public templateId: number;
 	public templatePath: string;
 	public static jobLists: azdata.AgentJobInfo[];
+	public connection: azdata.connection.Connection;
 
 	constructor(
 		ownerUri: string,
@@ -86,6 +88,9 @@ export class NotebookData implements IAgentDialogData {
 			this.name = path.basename(options.filePath).split('.').slice(0, -1).join('.');
 			this.templatePath = options.filePath;
 		}
+		if (options.connection) {
+			this.connection = options.connection;
+		}
 	}
 
 	public get jobCategories(): string[] {
@@ -113,7 +118,11 @@ export class NotebookData implements IAgentDialogData {
 	}
 
 	public async initialize() {
-		this._agentService = await AgentUtils.getAgentService();
+		if (this.connection) {
+			this._agentService = await AgentUtils.getAgentService(this.connection);
+		} else {
+			this._agentService = await AgentUtils.getAgentService();
+		}
 		let jobDefaults = await this._agentService.getJobDefaults(this.ownerUri);
 		if (jobDefaults && jobDefaults.success) {
 			this._jobCategories = jobDefaults.categories.map((cat) => {

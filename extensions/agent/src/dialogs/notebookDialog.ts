@@ -16,6 +16,7 @@ const localize = nls.loadMessageBundle();
 export class NotebookDialogOptions {
 	notebookInfo?: azdata.AgentNotebookInfo;
 	filePath?: string;
+	connection?: azdata.connection.Connection;
 }
 
 export class NotebookDialog extends AgentDialog<NotebookData>  {

@@ -43,7 +43,11 @@
     "commands": [
       {
         "command": "agent.openNotebookDialog",
-        "title": "Schedule Notebook"
+        "title": "Schedule Notebook",
+        "icon": {
+					"dark": "resources/dark/open_notebook_inverse.svg",
+					"light": "resources/light/open_notebook.svg"
+				}
       }
     ],
     "menus": {

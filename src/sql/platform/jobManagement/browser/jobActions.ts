@@ -613,7 +613,7 @@ export class OpenTemplateNotebookAction extends Action {
 	constructor(
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'open');
+		super(OpenTemplateNotebookAction.ID, OpenTemplateNotebookAction.LABEL, 'opennotebook');
 	}
 
 	public run(actionInfo: any): Promise<boolean> {

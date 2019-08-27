@@ -160,6 +160,15 @@ input#accordion:checked ~ .accordion-content,
 	background-image: url("new_inverse.svg");
 }
 
+.vs .action-label.icon.opennotebook {
+	background-image: url("open_notebook.svg");
+}
+
+.vs-dark .action-label.icon.opennotebook,
+.hc-black .action-label.icon.newStepIcon {
+	background-image: url("open_notebook_inverse.svg");
+}
+
 jobhistory-component .hc-black .icon.edit,
 jobhistory-component .vs-dark .icon.edit,
 notebookhistory-component .hc-black .icon.edit,

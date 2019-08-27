@@ -136,72 +136,71 @@ export class MainController {
 				the first arg is database OwnerUri
 				the second arg is notebookInfo from database
 			*/
-			if (!ownerUri && !notebookInfo) {
-				//notebook editor
+			if (!ownerUri || ownerUri instanceof vscode.Uri) {
+				let path: string;
+				if (!ownerUri) {
+					if (azdata.nb.activeNotebookEditor.document.isDirty) {
+						vscode.window.showErrorMessage('Save file before scheduling');
+						return;
+					}
+					path = azdata.nb.activeNotebookEditor.document.fileName;
+				} else {
+					path = ownerUri.fsPath;
+				}
 
-				ownerUri = await this.getNotebookConnectionOwnerUri();
-				if (!ownerUri) {
-					return;
+				let connection = await this.getConnectionFromUser();
+				ownerUri = await azdata.connection.getUriForConnection(connection.connectionId);
+				this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ filePath: path, connection: connection });
+				if (!this.notebookDialog.isOpen) {
+					this.notebookDialog.dialogName ? await this.notebookDialog.openDialog(this.notebookDialog.dialogName) : await this.notebookDialog.openDialog();
 				}
-				let currentNotebook = azdata.nb.activeNotebookEditor;
-				let currentFilePath = currentNotebook.document.fileName;
-				this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ filePath: currentFilePath });
-				await this.notebookDialog.openDialog();
-			}
-			else if (!(typeof ownerUri === 'string')) {
-				let currentFilePath = ownerUri.fsPath;
-				ownerUri = await this.getNotebookConnectionOwnerUri();
-				if (!ownerUri) {
-					return;
-				}
-				this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ filePath: currentFilePath });
-				await this.notebookDialog.openDialog();
 			}
 			else {
 				if (!this.notebookDialog || (this.notebookDialog && !this.notebookDialog.isOpen)) {
 					this.notebookDialog = new NotebookDialog(ownerUri, <NotebookDialogOptions>{ notebookInfo: notebookInfo });
 				}
-			}
-			if (!this.notebookDialog.isOpen) {
-				this.notebookDialog.dialogName ? await this.notebookDialog.openDialog(this.notebookDialog.dialogName) : await this.notebookDialog.openDialog();
+				if (!this.notebookDialog.isOpen) {
+					this.notebookDialog.dialogName ? await this.notebookDialog.openDialog(this.notebookDialog.dialogName) : await this.notebookDialog.openDialog();
+				}
 			}
 		});
 	}
 
-	public async getNotebookConnectionOwnerUri(): Promise<string> {
-		let connections = await azdata.connection.getConnections(true);
-		let sqlConnectionsPresent: boolean = false;
+	public async getConnectionFromUser(): Promise<azdata.connection.Connection> {
+		let connection: azdata.connection.Connection = null;
+
+		let connections = await azdata.connection.getActiveConnections();
 		if (!connections || connections.length === 0) {
-			azdata.connection.openConnectionDialog();
-			//vscode.window.showErrorMessage('No Active Connections');
-			return;
-		}
-		for (let i = 0; i < connections.length; i++) {
-			if (connections[i].providerId === 'MSSQL') {
-				sqlConnectionsPresent = true;
-				break;
-			}
-		}
-		if (!sqlConnectionsPresent) {
-			vscode.window.showErrorMessage('No Active Sql Connections');
-			return;
-		}
-		let connectionNames: azdata.connection.ConnectionProfile[] = [];
-		let connectionDisplayString: string[] = [];
-		for (let i = 0; i < connections.length; i++) {
-			let currentConnectionString = connections[i].serverName + ' (' + connections[i].userName + ')';
-			connectionNames.push(connections[i]);
-			connectionDisplayString.push(currentConnectionString);
-		}
-		let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: 'Select a connection' });
-		if (connectionDisplayString.indexOf(connectionName) !== -1) {
-			let OwnerUri = await azdata.connection.getUriForConnection(connections[connectionDisplayString.indexOf(connectionName)].connectionId);
-			return OwnerUri;
+			connection = await azdata.connection.openConnectionDialog();
 		}
 		else {
-			vscode.window.showErrorMessage('Please select a valid connection');
+			let sqlConnectionsPresent: boolean;
+			for (let i = 0; i < connections.length; i++) {
+				if (connections[i].providerName === 'MSSQL') {
+					sqlConnectionsPresent = true;
+					break;
+				}
+			}
+			if (!sqlConnectionsPresent) {
+				vscode.window.showErrorMessage('No Active MSSQL Connections');
+				return;
+			}
+			let connectionNames: azdata.connection.Connection[] = [];
+			let connectionDisplayString: string[] = [];
+			for (let i = 0; i < connections.length; i++) {
+				let currentConnectionString = connections[i].options.server + ' (' + connections[i].options.user + ')';
+				connectionNames.push(connections[i]);
+				connectionDisplayString.push(currentConnectionString);
+			}
+			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: 'Select a connection' });
+			if (connectionDisplayString.indexOf(connectionName) !== -1) {
+				connection = connections[connectionDisplayString.indexOf(connectionName)];
+			}
+			else {
+				vscode.window.showErrorMessage('Please select a valid connection');
+			}
 		}
-
+		return connection;
 	}
 
 	/**
