@@ -5,6 +5,7 @@
 
 import * as should from 'should';
 import * as TypeMoq from 'typemoq';
+import * as os from 'os';
 
 import { TestCapabilitiesService } from 'sql/platform/capabilities/test/common/testCapabilitiesService';
 import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
@@ -297,8 +298,8 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
-				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test\nLine 2 test\nLine 3 test' }],
-				eol: '\n',
+				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test' + os.EOL + 'Line 2 test' + os.EOL + 'Line 3 test' }],
+				eol: os.EOL,
 				isFlush: false,
 				isRedoing: false,
 				isUndoing: false,
@@ -450,8 +451,8 @@ suite('Notebook Editor Model', function (): void {
 			cells: [newCell],
 			cellIndex: 0,
 			modelContentChangedEvent: {
-				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test\nLine 2 test\nLine 3 test' }],
-				eol: '\n',
+				changes: [{ range: new Range(1, 1, 1, 1), rangeLength: 0, rangeOffset: 0, text: 'This is a test' + os.EOL + 'Line 2 test' + os.EOL + 'Line 3 test' }],
+				eol: os.EOL,
 				isFlush: false,
 				isRedoing: false,
 				isUndoing: false,
