@@ -247,6 +247,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaColumnCount = this.ariaColumnCount;
 		}
 
+		if (this.ariaRole) {
+			this._table.ariaRole = this.ariaRole;
+		}
+
 		if (this.focused) {
 			this._table.focus();
 		}
@@ -332,6 +336,10 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public get ariaColumnCount(): number {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
+	}
+
+	public get ariaRole(): string {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.ariaRole, undefined);
 	}
 
 	public set moveFocusOutWithTab(newValue: boolean) {

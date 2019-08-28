@@ -359,4 +359,8 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	public set ariaColumnCount(value: number) {
 		this._tableContainer.setAttribute('aria-colcount', value.toString());
 	}
+
+	public set ariaRole(value: string) {
+		this._tableContainer.setAttribute('role', value);
+	}
 }
