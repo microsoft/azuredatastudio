@@ -1,13 +1,4 @@
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.15.1'
-  displayName: 'Install Node.js'
-
-- script: |
-    npm i -g yarn
-  displayName: 'preinstall'
-
 - script: |
     export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
     sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
@@ -20,26 +11,31 @@ steps:
   displayName: 'Linux preinstall'
   condition: eq(variables['Agent.OS'], 'Linux')
 
-- task: CacheBeta@0
+- task: NodeTool@0
   inputs:
-    key: yarn5 | $(Agent.OS) | .yarnrc | remote/.yarnrc | **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    path: $(Agent.TempDirectory)/cache
-    cacheHitVar: CACHE_RESTORED
-  displayName: Cache Yarn packages
+    versionSpec: "10.15.1"
 
-- task: ExtractFiles@1
+- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
   inputs:
-    archiveFilePatterns: '$(Agent.TempDirectory)/cache/tmp_cache.tar.gz'
-    destinationFolder: '$(Build.SourcesDirectory)'
-    cleanDestinationFolder: false
-  displayName: Untaring cache
-  condition: eq(variables['CACHE_RESTORED'], true)
+    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
+    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
+    vstsFeed: '$(ArtifactFeed)'
+
+- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
+  inputs:
+    versionSpec: "1.10.1"
 
 - script: |
     yarn --frozen-lockfile
   displayName: Install Dependencies
+  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-- template: build/azure-pipelines/tar-cache.yml
+- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+  inputs:
+    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
+    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
+    vstsFeed: '$(ArtifactFeed)'
+  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
 - script: |
     yarn gulp electron-x64
