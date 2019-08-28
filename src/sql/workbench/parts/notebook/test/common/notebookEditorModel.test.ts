@@ -28,11 +28,12 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { TextFileEditorModelManager } from 'vs/workbench/services/textfile/common/textFileEditorModelManager';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
-import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService } from 'vs/workbench/test/workbenchTestServices';
+import { TestEnvironmentService, TestLifecycleService, TestStorageService, TestTextFileService, workbenchInstantiationService, TestTextResourcePropertiesService } from 'vs/workbench/test/workbenchTestServices';
 import { Range } from 'vs/editor/common/core/range';
 import { nb } from 'azdata';
 import { Emitter } from 'vs/base/common/event';
 import { INotebookEditor, INotebookManager } from 'sql/workbench/services/notebook/common/notebookService';
+import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 
 
 class ServiceAccessor {
@@ -68,6 +69,8 @@ suite('Notebook Editor Model', function (): void {
 	const queryConnectionService = TypeMoq.Mock.ofType(ConnectionManagementService, TypeMoq.MockBehavior.Loose, memento.object, undefined, new TestStorageService());
 	queryConnectionService.callBase = true;
 	const capabilitiesService = TypeMoq.Mock.ofType(TestCapabilitiesService);
+	const configurationService = new TestConfigurationService();
+	const testResourcePropertiesService = new TestTextResourcePropertiesService(configurationService);
 	let mockModelFactory = TypeMoq.Mock.ofType(ModelFactory);
 	mockModelFactory.callBase = true;
 	mockModelFactory.setup(f => f.createCell(TypeMoq.It.isAny(), TypeMoq.It.isAny())).returns(() => {
@@ -640,6 +643,6 @@ suite('Notebook Editor Model', function (): void {
 		let textFileEditorModel = instantiationService.createInstance(TextFileEditorModel, toResource.call(self, defaultUri.toString()), 'utf8', undefined);
 		(<TextFileEditorModelManager>accessor.textFileService.models).add(textFileEditorModel.getResource(), textFileEditorModel);
 		await textFileEditorModel.load();
-		return new NotebookEditorModel(defaultUri, textFileEditorModel, mockNotebookService.object, accessor.textFileService);
+		return new NotebookEditorModel(defaultUri, textFileEditorModel, mockNotebookService.object, accessor.textFileService, testResourcePropertiesService);
 	}
 });

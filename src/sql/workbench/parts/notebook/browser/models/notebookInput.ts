@@ -27,21 +27,25 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { Deferred } from 'sql/base/common/promise';
 import { NotebookTextFileModel } from 'sql/workbench/parts/notebook/common/models/notebookTextFileModel';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 
 export class NotebookEditorModel extends EditorModel {
 	private _dirty: boolean;
 	private _changeEventsHookedUp: boolean = false;
-	private _notebookTextFileModel: NotebookTextFileModel = new NotebookTextFileModel();
+	private _notebookTextFileModel: NotebookTextFileModel;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
 		private textEditorModel: TextFileEditorModel | UntitledEditorModel,
 		@INotebookService private notebookService: INotebookService,
-		@ITextFileService private textFileService: ITextFileService
+		@ITextFileService private textFileService: ITextFileService,
+		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
+		let _eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
+		this._notebookTextFileModel = new NotebookTextFileModel(_eol);
 		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
