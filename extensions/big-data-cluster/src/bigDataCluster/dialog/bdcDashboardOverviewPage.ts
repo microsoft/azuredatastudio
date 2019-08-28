@@ -12,6 +12,7 @@ import { BdcDashboardModel } from './bdcDashboardModel';
 import { IconPathHelper } from '../constants';
 import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
+import { BdcDashboard } from './bdcDashboard';
 
 const localize = nls.loadMessageBundle();
 
@@ -38,7 +39,7 @@ export class BdcDashboardOverviewPage {
 
 	private endpointsRowContainer: azdata.FlexContainer;
 
-	constructor(private model: BdcDashboardModel) {
+	constructor(private dashboard: BdcDashboard, private model: BdcDashboardModel) {
 		this.model.onDidUpdateEndpoints(endpoints => this.handleEndpointsUpdate(endpoints));
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
 	}
@@ -201,7 +202,7 @@ export class BdcDashboardOverviewPage {
 		if (bdcStatus.services) {
 			this.serviceStatusRowContainer.clearItems();
 			bdcStatus.services.forEach((s, i) => {
-				createServiceStatusRow(this.modelBuilder, this.serviceStatusRowContainer, s, i === bdcStatus.services.length - 1);
+				this.createServiceStatusRow(this.serviceStatusRowContainer, s, i === bdcStatus.services.length - 1);
 			});
 		}
 	}
@@ -216,28 +217,31 @@ export class BdcDashboardOverviewPage {
 			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});
 	}
-}
 
-function createServiceStatusRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
-	const serviceStatusRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-	const statusIconCell = modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
-	serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': overviewIconColumnWidth, 'min-width': overviewIconColumnWidth } });
-	const nameCell = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': overviewServiceNameCellWidth, 'min-width': overviewServiceNameCellWidth, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-	const stateCell = modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
-	serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': overviewStateCellWidth, 'min-width': overviewStateCellWidth } });
-	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
-	serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': overviewHealthStatusCellWidth, 'min-width': overviewHealthStatusCellWidth } });
-
-	if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
-		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-		viewDetailsButton.onDidClick(() => {
-			vscode.window.showErrorMessage(serviceStatus.details);
+	private createServiceStatusRow(container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
+		const serviceStatusRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
+		const statusIconCell = this.modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
+		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': overviewIconColumnWidth, 'min-width': overviewIconColumnWidth } });
+		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' } }).component();
+		nameCell.onDidClick(() => {
+			this.dashboard.switchToServiceTab(serviceStatus.serviceName);
 		});
-		serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
-	}
+		serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': overviewServiceNameCellWidth, 'min-width': overviewServiceNameCellWidth, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
+		const stateCell = this.modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
+		serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': overviewStateCellWidth, 'min-width': overviewStateCellWidth } });
+		const healthStatusCell = this.modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
+		serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': overviewHealthStatusCellWidth, 'min-width': overviewHealthStatusCellWidth } });
 
-	container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
+		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
+			const viewDetailsButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
+			viewDetailsButton.onDidClick(() => {
+				vscode.window.showErrorMessage(serviceStatus.details);
+			});
+			serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+		}
+
+		container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
+	}
 }
 
 function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, endpoint: EndpointModel, bdcModel: BdcDashboardModel, isHyperlink: boolean, isLastRow: boolean): void {

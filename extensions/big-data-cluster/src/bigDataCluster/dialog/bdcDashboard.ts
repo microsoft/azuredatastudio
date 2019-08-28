@@ -38,6 +38,8 @@ export class BdcDashboard {
 	private currentTab: NavTab;
 	private currentPage: azdata.FlexContainer;
 
+	private serviceTabPageMapping: { [key: string]: { navTab: NavTab, servicePage: azdata.FlexContainer } } = {};
+
 	constructor(private title: string, private model: BdcDashboardModel) {
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
 	}
@@ -128,7 +130,7 @@ export class BdcDashboard {
 			const overviewNavItemText = modelView.modelBuilder.text().withProperties({ value: localize('bdc.dashboard.overviewNavTitle', 'Big data cluster overview') }).component();
 			overviewNavItemText.updateCssStyles(selectedTabCss);
 			overviewNavItemDiv.addItem(overviewNavItemText, { CSSStyles: { 'user-select': 'text' } });
-			const overviewPage = new BdcDashboardOverviewPage(this.model).create(modelView);
+			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
 			this.currentPage = overviewPage;
 			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
@@ -166,6 +168,25 @@ export class BdcDashboard {
 	}
 
 	/**
+	 * Switches the current navigation tab to the one corresponding to the specified service
+	 * @param serviceName The name of the service to switch to the tab of
+	 */
+	public switchToServiceTab(serviceName: string): void {
+		const tabPageMapping = this.serviceTabPageMapping[serviceName];
+		if (!tabPageMapping) {
+			return;
+		}
+		if (this.currentTab) {
+			this.currentTab.text.updateCssStyles(unselectedTabCss);
+		}
+		this.mainAreaContainer.removeItem(this.currentPage);
+		this.mainAreaContainer.addItem(tabPageMapping.servicePage);
+		this.currentPage = tabPageMapping.servicePage;
+		this.currentTab = tabPageMapping.navTab;
+		this.currentTab.text.updateCssStyles(selectedTabCss);
+	}
+
+	/**
 	 * Helper to create the navigation tabs for the services once the status has been loaded
 	 */
 	private createServiceNavTabs(services: ServiceStatusModel[]): void {
@@ -174,15 +195,9 @@ export class BdcDashboard {
 			services.forEach(s => {
 				const navItem = createServiceNavTab(this.modelView.modelBuilder, s);
 				const serviceStatusPage = new BdcServiceStatusPage(s.serviceName, this.model, this.modelView).container;
+				this.serviceTabPageMapping[s.serviceName] = { navTab: navItem, servicePage: serviceStatusPage };
 				navItem.div.onDidClick(() => {
-					if (this.currentTab) {
-						this.currentTab.text.updateCssStyles(unselectedTabCss);
-					}
-					this.mainAreaContainer.removeItem(this.currentPage);
-					this.mainAreaContainer.addItem(serviceStatusPage);
-					this.currentPage = serviceStatusPage;
-					this.currentTab = navItem;
-					this.currentTab.text.updateCssStyles(selectedTabCss);
+					this.switchToServiceTab(s.serviceName);
 				});
 				this.navContainer.addItem(navItem.div, { flex: '0 0 auto' });
 			});
