@@ -20,7 +20,7 @@ import { JobData } from './data/jobData';
 import { AgentUtils } from './agentUtils';
 import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog';
 import { promisify } from 'util';
-import { stringify } from 'querystring';
+
 
 const localize = nls.loadMessageBundle();
 
@@ -36,7 +36,7 @@ export class MainController {
 	private operatorDialog: OperatorDialog;
 	private proxyDialog: ProxyDialog;
 	private notebookDialog: NotebookDialog;
-
+	private notebookTemplateMap = new Map<string, azdata.AgentNotebookInfo>();
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
@@ -89,6 +89,11 @@ export class MainController {
 				this.operatorDialog.dialogName ? await this.operatorDialog.openDialog(this.operatorDialog.dialogName) : await this.operatorDialog.openDialog();
 			}
 		});
+
+		vscode.commands.registerCommand('agent.reuploadTemplate', async (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo) => {
+			//hello
+		});
+
 		vscode.commands.registerCommand('agent.openProxyDialog', async (ownerUri: string, proxyInfo: azdata.AgentProxyInfo, credentials: azdata.CredentialInfo[]) => {
 			if (!this.proxyDialog || (this.proxyDialog && !this.proxyDialog.isOpen)) {
 				this.proxyDialog = new ProxyDialog(ownerUri, proxyInfo, credentials);
@@ -98,28 +103,50 @@ export class MainController {
 			}
 			this.proxyDialog.dialogName ? await this.proxyDialog.openDialog(this.proxyDialog.dialogName) : await this.proxyDialog.openDialog();
 		});
-		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string) => {
+		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string, notebookInfo?: azdata.AgentNotebookInfo) => {
 			const tempfilePath = path.join(os.tmpdir(), filename + '.ipynb');
-
 			if (await promisify(fs.exists)(tempfilePath)) {
 				await promisify(fs.unlink)(tempfilePath);
 			}
 			try {
 				await promisify(fs.writeFile)(tempfilePath, jsonNotebook);
 				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
-				vscode.workspace.openTextDocument(tempfilePath).then((document) => {
+				if (notebookInfo) {
+					this.notebookTemplateMap.set(uri.fsPath, notebookInfo);
+					vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', true);
+				}
+				await vscode.workspace.openTextDocument(tempfilePath).then(async (document) => {
 					let initialContent = document.getText();
-					azdata.nb.showNotebookDocument(uri, {
+					await azdata.nb.showNotebookDocument(uri, {
 						preview: false,
 						initialContent: initialContent,
 						initialDirtyState: false
 					});
 				});
+				vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
 			}
 			catch (e) {
 				console.log(e);
 			}
 		});
+
+		azdata.nb.onDidOpenNotebookDocument(e => {
+			// if (this.notebookTemplateMap.has(e.uri.fsPath)) {
+			// 	vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', true);
+			// } else{
+			// 	vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
+			// }
+		});
+
+
+
+		vscode.window.onDidChangeVisibleTextEditors(e => {
+			let documents = e;
+			// if (this.notebookTemplateMap.has(e.uri.fsPath)) {
+			// 	this.notebookTemplateMap.delete(e.uri.fsPath);
+			// }
+		});
+
 		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: any, notebookInfo: azdata.AgentNotebookInfo) => {
 
 			/*

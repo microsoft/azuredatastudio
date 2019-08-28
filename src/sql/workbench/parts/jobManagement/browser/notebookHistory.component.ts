@@ -383,9 +383,10 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		let jobId = this._agentViewComponent.agentNotebookInfo.jobId;
+
 		this._jobManagementService.getTemplateNotebook(ownerUri, targetDatabase, jobId).then(async (result) => {
 			if (result) {
-				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', this._agentViewComponent.agentNotebookInfo.name, result.notebookTemplate);
+				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', this._agentViewComponent.agentNotebookInfo.name, result.notebookTemplate, this.agentNotebookInfo);
 			}
 		});
 	}
