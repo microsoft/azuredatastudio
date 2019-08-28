@@ -13,12 +13,10 @@ import { AddControllerNode } from './addControllerNode';
 import { ControllerRootNode, ControllerNode } from './controllerTreeNode';
 import { showErrorMessage } from '../utils';
 import { LoadingControllerNode } from './loadingControllerNode';
-import { EndpointModel } from '../controller/apiGenerated';
 
 const CredentialNamespace = 'clusterControllerCredentials';
 
 interface IControllerInfoSlim {
-	clusterName: string;
 	url: string;
 	username: string;
 	password?: string;
@@ -58,15 +56,13 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public addController(
-		clusterName: string,
 		url: string,
 		username: string,
 		password: string,
-		rememberPassword: boolean,
-		masterInstance?: EndpointModel
+		rememberPassword: boolean
 	): void {
 		this.removeNonControllerNodes();
-		this.root.addControllerNode(clusterName, url, username, password, rememberPassword, masterInstance);
+		this.root.addControllerNode(url, username, password, rememberPassword);
 		this.notifyNodeChanged();
 	}
 
@@ -120,7 +116,7 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 					password = await this.getPassword(c.url, c.username);
 				}
 				this.root.addChild(new ControllerNode(
-					c.clusterName, c.url, c.username, password, c.rememberPassword,
+					c.url, c.username, password, c.rememberPassword,
 					undefined, this.root, this, undefined
 				));
 			}
@@ -135,10 +131,9 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 	}
 
 	public async saveControllers(): Promise<void> {
-		let controllers = this.root.children.map(e => {
+		let controllers = this.root.children.map((e): IControllerInfoSlim => {
 			let controller = e as ControllerNode;
-			return <IControllerInfoSlim>{
-				clusterName: controller.clusterName,
+			return {
 				url: controller.url,
 				username: controller.username,
 				password: controller.password,
@@ -146,9 +141,8 @@ export class ControllerTreeDataProvider implements vscode.TreeDataProvider<TreeN
 			};
 		});
 
-		let controllersWithoutPassword = controllers.map(e => {
-			return <IControllerInfoSlim>{
-				clusterName: e.clusterName,
+		let controllersWithoutPassword = controllers.map((e): IControllerInfoSlim => {
+			return {
 				url: e.url,
 				username: e.username,
 				rememberPassword: e.rememberPassword

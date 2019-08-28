@@ -10,9 +10,6 @@ import * as vscode from 'vscode';
 export enum BdcItemType {
 	controllerRoot = 'bigDataClusters.itemType.controllerRootNode',
 	controller = 'bigDataClusters.itemType.controllerNode',
-	folder = 'bigDataClusters.itemType.folderNode',
-	sqlMaster = 'bigDataClusters.itemType.sqlMasterNode',
-	EndPoint = 'bigDataClusters.itemType.endPointNode',
 	addController = 'bigDataClusters.itemType.addControllerNode',
 	loadingController = 'bigDataClusters.itemType.loadingControllerNode'
 }
@@ -26,8 +23,6 @@ export class IconPathHelper {
 	private static extensionContext: vscode.ExtensionContext;
 
 	public static controllerNode: IconPath;
-	public static folderNode: IconPath;
-	public static sqlMasterNode: IconPath;
 	public static copy: IconPath;
 	public static refresh: IconPath;
 	public static status_ok: IconPath;
@@ -39,14 +34,6 @@ export class IconPathHelper {
 		IconPathHelper.controllerNode = {
 			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/bigDataCluster_controller.svg'),
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/bigDataCluster_controller.svg')
-		};
-		IconPathHelper.folderNode = {
-			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/folder_inverse.svg'),
-			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/folder.svg')
-		};
-		IconPathHelper.sqlMasterNode = {
-			dark: IconPathHelper.extensionContext.asAbsolutePath('resources/dark/sql_bigdata_cluster_inverse.svg'),
-			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/sql_bigdata_cluster.svg')
 		};
 		IconPathHelper.copy = {
 			light: IconPathHelper.extensionContext.asAbsolutePath('resources/light/copy.svg'),
