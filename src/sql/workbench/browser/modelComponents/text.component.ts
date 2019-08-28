@@ -12,7 +12,7 @@ import {
 import * as azdata from 'azdata';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
-import { IComponent, IComponentDescriptor, IModelStore } from 'sql/workbench/browser/modelComponents/interfaces';
+import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
 
 @Component({
@@ -90,5 +90,12 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 			}
 		}
 		return text;
+	}
+
+	private onClick() {
+		this.fireEvent({
+			eventType: ComponentEventType.onDidClick,
+			args: undefined
+		});
 	}
 }

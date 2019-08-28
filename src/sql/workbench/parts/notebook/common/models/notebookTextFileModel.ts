@@ -18,7 +18,7 @@ export class NotebookTextFileModel {
 	// save active cell guid
 	private _activeCellGuid: string;
 
-	constructor() {
+	constructor(private _eol: string) {
 	}
 
 	public get activeCellGuid(): string {
@@ -52,7 +52,7 @@ export class NotebookTextFileModel {
 				//     this is another string
 				textEditorModel.textEditorModel.applyEdits([{
 					range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-					text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
+					text: change.text.split(this._eol).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
 				}]);
 			});
 		} else {

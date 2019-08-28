@@ -4,13 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as path from 'vs/base/common/path';
-import { nb } from 'azdata';
+import { nb, ServerInfo } from 'azdata';
 import { DEFAULT_NOTEBOOK_PROVIDER, DEFAULT_NOTEBOOK_FILETYPE, INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { URI } from 'vs/base/common/uri';
 
 
+export const clusterEndpointsProperty = 'clusterEndpoints';
+export const hadoopEndpointNameGateway = 'gateway';
 /**
  * Test whether an output is from a stream.
  */
@@ -79,10 +82,12 @@ export interface IStandardKernelWithProvider {
 	readonly notebookProvider: string;
 }
 
+
 export interface IEndpoint {
 	serviceName: string;
-	ipAddress: string;
-	port: number;
+	description: string;
+	endpoint: string;
+	protocol: string;
 }
 
 export function tryMatchCellMagic(input: string): string {
@@ -124,4 +129,55 @@ export function convertVscodeResourceToFileInSubDirectories(htmlContent: string,
 
 export function useInProcMarkdown(configurationService: IConfigurationService): boolean {
 	return configurationService.getValue('notebook.useInProcMarkdown');
+}
+
+export function getClusterEndpoints(serverInfo: ServerInfo): IEndpoint[] | undefined {
+	let endpoints: RawEndpoint[] = serverInfo.options[clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) { return []; }
+
+	return endpoints.map(e => {
+		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
+		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
+		let updatedEndpoint: IEndpoint = {
+			serviceName: e.serviceName,
+			description: e.description,
+			endpoint: endpoint,
+			protocol: e.protocol
+		};
+		return updatedEndpoint;
+	});
+}
+
+export type HostAndIp = { host: string, port: string };
+
+export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
+	let authority = URI.parse(endpoint).authority;
+	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
+	let match = hostAndPortRegex.exec(authority);
+	if (match) {
+		return {
+			host: match[1],
+			port: match[3]
+		};
+	}
+	return {
+		host: authority,
+		port: undefined
+	};
+}
+
+interface RawEndpoint {
+	serviceName: string;
+	description?: string;
+	endpoint?: string;
+	protocol?: string;
+	ipAddress?: string;
+	port?: number;
+}
+
+export interface IEndpoint {
+	serviceName: string;
+	description: string;
+	endpoint: string;
+	protocol: string;
 }
