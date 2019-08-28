@@ -6,11 +6,9 @@
 
 import { SummaryPage } from './pages/summaryPage';
 import { WizardBase } from '../wizardBase';
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { WizardInfo, BdcDeploymentType } from '../../interfaces';
 import { WizardPageBase } from '../wizardPageBase';
-import { ToolsPage } from './pages/toolsPage';
 import { AzureSettingsPage } from './pages/azureSettingsPage';
 import { ClusterSettingsPage } from './pages/clusterSettingsPage';
 import { ServiceSettingsPage } from './pages/serviceSettingsPage';
@@ -34,15 +32,8 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 
 	protected initialize(): void {
 		this.setPages(this.getPages());
-		this.wizardObject.generateScriptButton.label = localize('deployCluster.openNotebook ', 'Open Notebook');
 		this.wizardObject.generateScriptButton.hidden = true;
 		this.wizardObject.doneButton.label = localize('deployCluster.deploy', 'Deploy');
-
-		this.registerDisposable(this.wizardObject.generateScriptButton.onClick(async () => {
-			this.wizardObject.generateScriptButton.enabled = false;
-			//TODO: replace with open notebook implementation
-			vscode.window.showInformationMessage('Open Notebook called');
-		}));
 	}
 
 	protected onCancel(): void {
@@ -55,21 +46,21 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 		const pages: WizardPageBase<DeployClusterWizard>[] = [];
 		switch (this.deploymentType) {
 			case BdcDeploymentType.NewAKS:
-				pages.push(new ToolsPage(this),
+				pages.push(
 					new AzureSettingsPage(this),
 					new ClusterSettingsPage(this),
 					new ServiceSettingsPage(this),
 					new SummaryPage(this));
 				break;
 			case BdcDeploymentType.ExistingAKS:
-				pages.push(new ToolsPage(this),
+				pages.push(
 					new TargetClusterContextPage(this),
 					new ClusterSettingsPage(this),
 					new ServiceSettingsPage(this),
 					new SummaryPage(this));
 				break;
 			case BdcDeploymentType.ExistingKubeAdm:
-				pages.push(new ToolsPage(this),
+				pages.push(
 					new TargetClusterContextPage(this),
 					new ClusterSettingsPage(this),
 					new ServiceSettingsPage(this),
