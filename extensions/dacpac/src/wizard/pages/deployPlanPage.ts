@@ -88,7 +88,6 @@ export class DeployPlanPage extends DacFxConfigPage {
 		this.table.data = [];
 		await this.populateTable();
 		this.loader.loading = false;
-		this.table.focused = true;
 		return true;
 	}
 
@@ -100,7 +99,9 @@ export class DeployPlanPage extends DacFxConfigPage {
 			data: this.getColumnData(result),
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
-			height: 300
+			height: 300,
+			ariaRole: 'alert',
+			focused: true
 		});
 
 		if (result.dataLossAlerts.size > 0) {
