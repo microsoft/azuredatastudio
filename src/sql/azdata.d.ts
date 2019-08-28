@@ -2565,7 +2565,6 @@ declare module 'azdata' {
 		title: string;
 		actions?: Component[];
 		required?: boolean;
-		ariaLive?: string;
 	}
 
 	/**
