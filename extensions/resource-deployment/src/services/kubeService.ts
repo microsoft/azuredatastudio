@@ -6,17 +6,17 @@
 
 import * as path from 'path';
 import * as os from 'os';
+import * as yamljs from 'yamljs';
+import * as fs from 'fs';
 
 export interface KubeClusterContext {
 	name: string;
-	user: string;
-	cluster: string;
-	isCurrent: boolean;
+	isCurrentContext: boolean;
 }
 
 export interface IKubeService {
 	getDefautConfigPath(): string;
-	getContexts(configFile: string): Thenable<KubeClusterContext[]>;
+	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]>;
 }
 
 export class KubeService implements IKubeService {
@@ -24,16 +24,32 @@ export class KubeService implements IKubeService {
 		return path.join(os.homedir(), '.kube', 'config');
 	}
 
-	getContexts(configFile: string): Thenable<KubeClusterContext[]> {
-		const promise = new Promise<KubeClusterContext[]>(resolve => {
-			resolve([
-				{
-					user: 'alan',
-					name: 'current-cluster',
-					cluster: 'kubernetes',
-					isCurrent: false
+	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]> {
+		const promise = new Promise<KubeClusterContext[]>((resolve, reject) => {
+			try {
+				if (fs.existsSync(configFile)) {
+					const config = yamljs.load(configFile);
+					const rawContexts = <any[]>config['contexts'];
+					const currentContext = <string>config['current-context'];
+					if (currentContext && rawContexts && rawContexts.length > 0) {
+						const contexts: KubeClusterContext[] = [];
+						rawContexts.forEach(rawContext => {
+							const name = <string>rawContext['name'];
+							if (name) {
+								contexts.push({
+									name: name,
+									isCurrentContext: name === currentContext
+								});
+							}
+						});
+						resolve(contexts);
+					}
 				}
-			]);
+				resolve([]);
+			}
+			catch (error) {
+				reject(error);
+			}
 		});
 		return promise;
 	}

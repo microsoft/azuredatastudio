@@ -537,10 +537,12 @@
     }
   ],
   "dependencies": {
-    "vscode-nls": "^4.0.0"
+    "vscode-nls": "^4.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "typemoq": "^2.1.0",
-    "vscode": "^1.1.26"
+    "vscode": "^1.1.26",
+    "@types/yamljs": "0.2.30"
   }
 }
