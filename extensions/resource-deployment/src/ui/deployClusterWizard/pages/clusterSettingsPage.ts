@@ -5,14 +5,16 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import * as WizardConstants from '../constants';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { createSection } from '../../modelViewUtils';
+import { createSection, InputComponents, setModelValues } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
+import { DeploymentProfile_VariableName, ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../model';
 const localize = nls.loadMessageBundle();
 
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
+	private inputComponents: InputComponents = {};
+
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.ClusterSettingsPageTitle', "Cluster settings"),
 			localize('deployCluster.ClusterSettingsPageDescription', "Configure the SQL Server big data cluster settings"), wizard);
@@ -28,28 +30,28 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					type: FieldType.Options,
 					label: localize('deployCluster.DeploymentProfileField', "Deployment profile"),
 					required: true,
-					variableName: WizardConstants.DeploymentProfile,
+					variableName: DeploymentProfile_VariableName,
 					defaultValue: 'aks-dev-test',
 					options: ['aks-dev-test', 'kubeadm-dev-test']
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.ClusterNameField', "Cluster name"),
 					required: true,
-					variableName: WizardConstants.ClusterName,
+					variableName: ClusterName_VariableName,
 					defaultValue: 'mssql-cluster',
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminUserNameField', "Admin username"),
 					required: true,
-					variableName: WizardConstants.AdminUserName,
+					variableName: AdminUserName_VariableName,
 					defaultValue: 'admin',
 					useCustomValidator: true
 				}, {
 					type: FieldType.SQLPassword,
 					label: localize('deployCluster.AdminPasswordField', "Password"),
 					required: true,
-					variableName: WizardConstants.AdminPassword,
+					variableName: AdminPassword_VariableName,
 					confirmationLabel: localize('deployCluster.ConfirmPassword', "Confirm password"),
 					confirmationRequired: true,
 					defaultValue: '',
@@ -59,7 +61,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					type: FieldType.Options,
 					label: localize('deployCluster.AuthenticationModeField', "Authentication mode"),
 					required: true,
-					variableName: WizardConstants.AuthenticationMode,
+					variableName: AuthenticationMode_VariableName,
 					defaultValue: 'basic',
 					options: [
 						{
@@ -84,59 +86,59 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					type: FieldType.Text,
 					label: localize('deployCluster.DistinguishedName', "Distinguished name"),
 					required: true,
-					variableName: WizardConstants.DistinguishedName,
+					variableName: DistinguishedName_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminPrincipals', "Admin principals"),
 					required: true,
-					variableName: WizardConstants.AdminPrincipals,
+					variableName: AdminPrincipals_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.UserPrincipals', "User principals"),
 					required: true,
-					variableName: WizardConstants.UserPrincipals,
+					variableName: UserPrincipals_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.UpstreamIPAddresses', "Upstream IP Addresses"),
 					required: true,
-					variableName: WizardConstants.UpstreamIPAddresses,
+					variableName: UpstreamIPAddresses_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DNSName', "DNS name"),
 					required: true,
-					variableName: WizardConstants.DnsName,
+					variableName: DnsName_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.Realm', "Realm"),
 					required: true,
-					variableName: WizardConstants.Realm,
+					variableName: Realm_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AppOnwerPrincipals', "App owner principals"),
 					required: true,
-					variableName: WizardConstants.AppOwnerPrincipals,
+					variableName: AppOwnerPrincipals_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AppReaderPrincipals', "App reader principals"),
 					required: true,
-					variableName: WizardConstants.AppReaderPrincipals,
+					variableName: AppReaderPrincipals_VariableName,
 					useCustomValidator: true
 				}
 			]
 		};
 		this.pageObject.registerContent((view: azdata.ModelView) => {
-			const basicSettingsGroup = createSection(this.wizard.wizardObject, view, basicSection, self.validators, this.wizard.InputComponents, this.wizard.toDispose);
-			const activeDirectorySettingsGroup = createSection(this.wizard.wizardObject, view, activeDirectorySection, self.validators, this.wizard.InputComponents, this.wizard.toDispose);
+			const basicSettingsGroup = createSection(this.wizard.wizardObject, view, basicSection, self.validators, this.inputComponents, this.wizard.toDispose);
+			const activeDirectorySettingsGroup = createSection(this.wizard.wizardObject, view, activeDirectorySection, self.validators, this.inputComponents, this.wizard.toDispose);
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const activeDirectoryFormItem = { title: '', component: activeDirectorySettingsGroup };
-			const authModeDropdown = <azdata.DropDownComponent>this.wizard.InputComponents[WizardConstants.AuthenticationMode];
+			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[AuthenticationMode_VariableName];
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[basicSettingsFormItem],
 				{
@@ -157,5 +159,9 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 			return view.initializeModel(form);
 		});
+	}
+
+	public onLeave() {
+		setModelValues(this.inputComponents, this.wizard.model);
 	}
 }

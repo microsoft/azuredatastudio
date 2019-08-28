@@ -7,15 +7,18 @@
 import * as azdata from 'azdata';
 import { Disposable } from 'vscode';
 import { WizardPageBase } from './wizardPageBase';
-import { InputComponents } from './modelViewUtils';
+import { WizardModel } from './deployClusterWizard/model';
 
 export abstract class WizardBase<T> {
 	private customButtons: azdata.window.Button[] = [];
 	private pages: WizardPageBase<T>[] = [];
+	private _model: WizardModel = {};
 
-	public InputComponents: InputComponents = {};
 	public wizardObject: azdata.window.Wizard;
 	public toDispose: Disposable[] = [];
+	public get model(): WizardModel {
+		return this._model;
+	}
 
 	constructor(title: string) {
 		this.wizardObject = azdata.window.createWizard(title);
@@ -33,8 +36,8 @@ export abstract class WizardBase<T> {
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(() => {
-			Object.keys(self.InputComponents).forEach(key => {
-				process.env[key] = <string>self.InputComponents[key].value;
+			Object.keys(self.model).forEach(key => {
+				process.env[key] = <string>self.model[key];
 			});
 			this.onOk();
 			this.dispose();

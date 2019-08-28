@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogInfo, FieldType, FieldInfo, SectionInfo } from '../interfaces';
+import { WizardModel } from './deployClusterWizard/model';
 
 const localize = nls.loadMessageBundle();
 
@@ -240,5 +241,18 @@ export function getInvalidSQLPasswordMessage(fieldName: string): string {
 
 export function getPasswordMismatchMessage(fieldName: string): string {
 	return localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldName);
+}
+
+export function setModelValues(inputComponents: InputComponents, model: WizardModel): void {
+	Object.keys(inputComponents).forEach(key => {
+		let value;
+		const inputValue = inputComponents[key].value;
+		if (typeof inputValue === 'string' || typeof inputValue === 'undefined') {
+			value = inputValue;
+		} else {
+			value = inputValue.name;
+		}
+		model[key] = value;
+	});
 }
 

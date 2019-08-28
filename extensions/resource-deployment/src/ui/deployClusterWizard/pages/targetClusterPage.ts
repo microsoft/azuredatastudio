@@ -10,6 +10,7 @@ import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { WizardPageBase } from '../../wizardPageBase';
 import { KubeClusterContext } from '../../../services/kubeService';
+import { ClusterContext_VariableName, KubeConfigPath_VariableName } from '../model';
 const localize = nls.loadMessageBundle();
 
 const ClusterRadioButtonGroupName = 'ClusterRadioGroup';
@@ -62,7 +63,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 				this.wizard.wizardObject.message = { text: '' };
 				return true;
 			}
-			let clusterSelected = this.wizard.model.selectedClusterContext !== undefined;
+			let clusterSelected = this.wizard.model[ClusterContext_VariableName] !== undefined;
 			if (!clusterSelected) {
 				this.wizard.wizardObject.message = {
 					text: localize('deployCluster.ClusterContextNotSelectedMessage', 'Please select a cluster context.'),
@@ -132,7 +133,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 
 	private async loadClusterContexts(configPath: string): Promise<void> {
 		this.clusterContextLoadingComponent!.loading = true;
-		this.wizard.model.selectedClusterContext = undefined;
+		this.wizard.model[ClusterContext_VariableName] = undefined;
 		this.wizard.wizardObject.message = { text: '' };
 		let self = this;
 		this.configFileInput!.value = configPath;
@@ -147,6 +148,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 			};
 		}
 		if (clusterContexts.length !== 0) {
+			self.wizard.model[KubeConfigPath_VariableName] = configPath;
 			let options = clusterContexts.map(clusterContext => {
 				let option = this.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: clusterContext.name,
@@ -155,12 +157,12 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 				}).component();
 
 				if (clusterContext.isCurrentContext) {
-					self.wizard.model.selectedClusterContext = clusterContext.name;
+					self.wizard.model[ClusterContext_VariableName] = clusterContext.name;
 					self.wizard.wizardObject.message = { text: '' };
 				}
 
 				this.wizard.registerDisposable(option.onDidClick(() => {
-					self.wizard.model.selectedClusterContext = clusterContext.name;
+					self.wizard.model[ClusterContext_VariableName] = clusterContext.name;
 					self.wizard.wizardObject.message = { text: '' };
 				}));
 				return option;

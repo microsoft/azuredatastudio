@@ -6,11 +6,13 @@
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo } from '../../../interfaces';
-import { initializeWizardPage, Validator } from '../../modelViewUtils';
+import { initializeWizardPage, Validator, InputComponents } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 const localize = nls.loadMessageBundle();
 
 export class ToolsPage extends WizardPageBase<DeployClusterWizard> {
+	private inputComponents: InputComponents = {};
+
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.ToolsPageTitle', "Required tools"), '', wizard);
 	}
@@ -18,6 +20,6 @@ export class ToolsPage extends WizardPageBase<DeployClusterWizard> {
 	protected initialize(): void {
 		const validators: Validator[] = [];
 		const sectionInfoArray: SectionInfo[] = [];
-		initializeWizardPage(this.pageObject, this.wizard.wizardObject, sectionInfoArray, validators, this.wizard.InputComponents, this.wizard.toDispose);
+		initializeWizardPage(this.pageObject, this.wizard.wizardObject, sectionInfoArray, validators, this.inputComponents, this.wizard.toDispose);
 	}
 }
