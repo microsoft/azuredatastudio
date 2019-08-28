@@ -704,10 +704,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (uri.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
-						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false, preview: true });
 					}
 					else {
-						this.doOpenEditor(result.next, {});
+						this.doOpenEditor(result.next, { preview: true });
 					}
 				}
 			},
@@ -716,10 +716,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (uri.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
-						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false, preview: true });
 					}
 					else {
-						this.doOpenEditor(result.previous, {});
+						this.doOpenEditor(result.previous, { preview: true });
 					}
 				}
 			}

@@ -112,7 +112,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			else {
 				let doc = await vscode.workspace.openTextDocument(resource);
-				vscode.window.showTextDocument(doc);
+				vscode.window.showTextDocument(doc, { preview: true });
 			}
 		} catch (e) {
 			vscode.window.showErrorMessage(localize('openNotebookError', "Open file {0} failed: {1}",
@@ -141,7 +141,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				azdata.nb.showNotebookDocument(untitledFileName, {
 					connectionProfile: null,
 					initialContent: initialContent,
-					initialDirtyState: false
+					initialDirtyState: false,
+					preview: true
 				});
 			});
 		} catch (e) {
