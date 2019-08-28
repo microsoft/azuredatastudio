@@ -39,7 +39,7 @@ configurationRegistry.registerConfiguration(dashboardConfig);
 // // Manage
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: DE_MANAGE_COMMAND_ID,
 		title: localize('manage', "Manage")
@@ -49,7 +49,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 1,
+	order: 0,
 	command: {
 		id: OE_MANAGE_COMMAND_ID,
 		title: localize('manage', "Manage")
