@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogInfo, FieldType, FieldInfo, SectionInfo } from '../interfaces';
-import { WizardModel } from './deployClusterWizard/model';
+import { WizardModel } from './model';
 
 const localize = nls.loadMessageBundle();
 

@@ -10,7 +10,7 @@ import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { WizardPageBase } from '../../wizardPageBase';
 import { KubeClusterContext } from '../../../services/kubeService';
-import { ClusterContext_VariableName, KubeConfigPath_VariableName } from '../model';
+import { ClusterContext_VariableName, KubeConfigPath_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
 const ClusterRadioButtonGroupName = 'ClusterRadioGroup';

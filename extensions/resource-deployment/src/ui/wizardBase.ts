@@ -7,7 +7,7 @@
 import * as azdata from 'azdata';
 import { Disposable } from 'vscode';
 import { WizardPageBase } from './wizardPageBase';
-import { WizardModel } from './deployClusterWizard/model';
+import { WizardModel } from './model';
 
 export abstract class WizardBase<T> {
 	private customButtons: azdata.window.Button[] = [];

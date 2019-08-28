@@ -2677,7 +2677,10 @@ declare module 'azdata' {
 		 * Matches the align-content CSS property.
 		 */
 		alignContent?: string;
-
+		/**
+		 *  Matches the flex-wrap CSS property.
+		 */
+		flexWrap?: string;
 		/**
 		 * Container Height
 		 */
@@ -2851,11 +2854,11 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentWithIcon {
+	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -2867,6 +2870,11 @@ declare module 'azdata' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';

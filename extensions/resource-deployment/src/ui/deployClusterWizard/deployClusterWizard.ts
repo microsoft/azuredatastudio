@@ -14,6 +14,8 @@ import { ClusterSettingsPage } from './pages/clusterSettingsPage';
 import { ServiceSettingsPage } from './pages/serviceSettingsPage';
 import { TargetClusterContextPage } from './pages/targetClusterPage';
 import { IKubeService } from '../../services/kubeService';
+import { IAzdataService } from '../../services/azdataService';
+import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
@@ -22,7 +24,11 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 		return this._kubeService;
 	}
 
-	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService) {
+	public get azdataService(): IAzdataService {
+		return this._azdataService;
+	}
+
+	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService) {
 		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server big data cluster"));
 	}
 
@@ -47,6 +53,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 		switch (this.deploymentType) {
 			case BdcDeploymentType.NewAKS:
 				pages.push(
+					new DeploymentProfilePage(this),
 					new AzureSettingsPage(this),
 					new ClusterSettingsPage(this),
 					new ServiceSettingsPage(this),
@@ -54,6 +61,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 				break;
 			case BdcDeploymentType.ExistingAKS:
 				pages.push(
+					new DeploymentProfilePage(this),
 					new TargetClusterContextPage(this),
 					new ClusterSettingsPage(this),
 					new ServiceSettingsPage(this),
@@ -61,6 +69,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 				break;
 			case BdcDeploymentType.ExistingKubeAdm:
 				pages.push(
+					new DeploymentProfilePage(this),
 					new TargetClusterContextPage(this),
 					new ClusterSettingsPage(this),
 					new ServiceSettingsPage(this),

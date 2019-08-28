@@ -8,36 +8,55 @@ export interface DeploymentProfile {
 	name: string;
 	defaultDataSize: number;
 	defaultLogSize: number;
-	sqlReplicas: number;
-	computeReplicas: number;
+	master: number;
+	data: number;
+	compute: number;
+	storage: number;
+	nameNode: number;
+	spark: number;
 }
 
 export interface IAzdataService {
-	getDeploymentProfiles(): DeploymentProfile[];
+	getDeploymentProfiles(): Thenable<DeploymentProfile[]>;
 }
 
 export class AzdataService implements IAzdataService {
-	getDeploymentProfiles(): DeploymentProfile[] {
-		return [
-			{
-				name: 'aks-dev-test',
-				defaultDataSize: 15,
-				defaultLogSize: 10,
-				sqlReplicas: 1,
-				computeReplicas: 2
-			}, {
-				name: 'kubeadm-dev-test',
-				defaultDataSize: 15,
-				defaultLogSize: 10,
-				sqlReplicas: 3,
-				computeReplicas: 2
-			}, {
-				name: 'kubeadm-prod',
-				defaultDataSize: 15,
-				defaultLogSize: 10,
-				sqlReplicas: 5,
-				computeReplicas: 2
-			}
-		];
+	getDeploymentProfiles(): Thenable<DeploymentProfile[]> {
+		const promise = new Promise<DeploymentProfile[]>((resolve, reject) => {
+			resolve([
+				{
+					name: 'aks-dev-test',
+					defaultDataSize: 15,
+					defaultLogSize: 10,
+					master: 1,
+					data: 1,
+					compute: 1,
+					storage: 2,
+					nameNode: 1,
+					spark: 1
+				}, {
+					name: 'kubeadm-prod',
+					defaultDataSize: 300,
+					defaultLogSize: 100,
+					master: 1,
+					data: 1,
+					compute: 1,
+					storage: 2,
+					nameNode: 1,
+					spark: 1
+				}, {
+					name: 'kubeadm-dev-test',
+					defaultDataSize: 100,
+					defaultLogSize: 50,
+					master: 1,
+					data: 1,
+					compute: 1,
+					storage: 2,
+					nameNode: 1,
+					spark: 1
+				}
+			]);
+		});
+		return promise;
 	}
 }

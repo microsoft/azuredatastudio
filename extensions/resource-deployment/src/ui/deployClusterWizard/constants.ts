@@ -24,5 +24,3 @@ export const VMSize_VariableName = 'AZDATA_NB_VAR_BDC_AZURE_VM_SIZE';
 export const VMCount_VariableName = 'AZDATA_NB_VAR_BDC_VM_COUNT';
 export const KubeConfigPath_VariableName = 'AZDATA_NB_VAR_BDC_CONFIG_PATH';
 export const ClusterContext_VariableName = 'AZDATA_NB_VAR_BDC_CLUSTER_CONTEXT';
-
-export type WizardModel = { [s: string]: string | undefined };

@@ -9,7 +9,7 @@ import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
 import { createSection, InputComponents, setModelValues } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeploymentProfile_VariableName, ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../model';
+import { DeploymentProfile_VariableName, ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
