@@ -2951,6 +2951,8 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
+		ariaRole?: string;
+		focused?: boolean;
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
