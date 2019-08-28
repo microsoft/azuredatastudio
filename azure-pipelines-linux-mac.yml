@@ -1,84 +1,84 @@
 steps:
-- script: |
-    export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
-    sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
-    sudo chmod +x /etc/init.d/xvfb
-    sudo update-rc.d xvfb defaults
-    sudo service xvfb start
-    sudo apt-get install -y libkrb5-dev
-    # sh -e /etc/init.d/xvfb start
-    # sleep 3
-  displayName: 'Linux preinstall'
-  condition: eq(variables['Agent.OS'], 'Linux')
+  - script: |
+      export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
+      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+      sudo chmod +x /etc/init.d/xvfb
+      sudo update-rc.d xvfb defaults
+      sudo service xvfb start
+      sudo apt-get install -y libkrb5-dev
+      # sh -e /etc/init.d/xvfb start
+      # sleep 3
+    displayName: "Linux preinstall"
+    condition: eq(variables['Agent.OS'], 'Linux')
 
-- task: NodeTool@0
-  inputs:
-    versionSpec: "10.15.1"
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "10.15.1"
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
-  inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
+      targetfolder: "**/node_modules, !**/node_modules/**/node_modules"
+      vstsFeed: "$(ArtifactFeed)"
 
-- task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
-  inputs:
-    versionSpec: "1.10.1"
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@2
+    inputs:
+      versionSpec: "1.10.1"
 
-- script: |
-    yarn --frozen-lockfile
-  displayName: Install Dependencies
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  - script: |
+      yarn --frozen-lockfile
+    displayName: Install Dependencies
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-- task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
-  inputs:
-    keyfile: '.yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock'
-    targetfolder: '**/node_modules, !**/node_modules/**/node_modules'
-    vstsFeed: '$(ArtifactFeed)'
-  condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    inputs:
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
+      targetfolder: "**/node_modules, !**/node_modules/**/node_modules"
+      vstsFeed: "$(ArtifactFeed)"
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-- script: |
-    yarn gulp electron-x64
-  displayName: Download Electron
+  - script: |
+      yarn gulp electron-x64
+    displayName: Download Electron
 
-- script: |
-    yarn gulp hygiene
-  displayName: Run Hygiene Checks
+  - script: |
+      yarn gulp hygiene
+    displayName: Run Hygiene Checks
 
-- script: |
-    yarn tslint
-  displayName: 'Run TSLint'
+  - script: |
+      yarn tslint
+    displayName: "Run TSLint"
 
-- script: |
-    yarn strict-null-check
-  displayName: 'Run Strict Null Check'
+  - script: |
+      yarn strict-null-check
+    displayName: "Run Strict Null Check"
 
-- script: |
-    yarn compile
-  displayName: 'Compile'
+  - script: |
+      yarn compile
+    displayName: "Compile"
 
-- script: |
-    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
-  displayName: 'Tests'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
+  - script: |
+      DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
+    displayName: "Tests"
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
-- script: |
-    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter --coverage
-  displayName: 'Tests'
-  condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
+  - script: |
+      DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter --coverage
+    displayName: "Tests"
+    condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/test-results.xml'
-  condition: succeededOrFailed()
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: "**/test-results.xml"
+    condition: succeededOrFailed()
 
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: 'cobertura'
-    summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
-    reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-reports
-  condition: ne(variables['Agent.OS'], 'Linux')
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: "cobertura"
+      summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
+      reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-reports
+    condition: ne(variables['Agent.OS'], 'Linux')
 
-- publish: $(Build.SourcesDirectory) # for testing
-  artifact: "source-directory-$(Agent.OS)"
-  condition: succeededOrFailed()
+  - publish: $(Build.SourcesDirectory) # for testing
+    artifact: "source-directory-$(Agent.OS)"
+    condition: succeededOrFailed()
