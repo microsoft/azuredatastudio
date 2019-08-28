@@ -9,6 +9,7 @@ import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textF
 import { FindMatch } from 'vs/editor/common/model';
 import { NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType } from 'sql/workbench/parts/notebook/common/models/contracts';
+import * as os from 'os';
 
 export class NotebookTextFileModel {
 	// save active cell's line/column in editor model for the beginning of the source property
@@ -52,7 +53,7 @@ export class NotebookTextFileModel {
 				//     this is another string
 				textEditorModel.textEditorModel.applyEdits([{
 					range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-					text: change.text.split('\n').join('\\n\",\n'.concat(startSpaces).concat('\"'))
+					text: change.text.split(os.EOL).join('\\n\",'.concat(os.EOL).concat(startSpaces).concat('\"'))
 				}]);
 			});
 		} else {
