@@ -3106,6 +3106,10 @@ declare module 'azdata' {
 
 	export interface TextComponent extends Component, ComponentProperties {
 		value: string;
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
@@ -3118,6 +3122,9 @@ declare module 'azdata' {
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
+		/**
+		 * An event called when the radio button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 
