@@ -34,8 +34,7 @@ export type ModeViewSaveHandler = (handle: number) => Thenable<boolean>;
 export class NotebookEditorModel extends EditorModel {
 	private _dirty: boolean;
 	private _changeEventsHookedUp: boolean = false;
-	private _eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
-	private _notebookTextFileModel: NotebookTextFileModel = new NotebookTextFileModel(this._eol);
+	private _notebookTextFileModel: NotebookTextFileModel;
 	private readonly _onDidChangeDirty: Emitter<void> = this._register(new Emitter<void>());
 	private _lastEditFullReplacement: boolean;
 	constructor(public readonly notebookUri: URI,
@@ -45,6 +44,8 @@ export class NotebookEditorModel extends EditorModel {
 		@ITextResourcePropertiesService private textResourcePropertiesService: ITextResourcePropertiesService
 	) {
 		super();
+		let _eol = this.textResourcePropertiesService.getEOL(URI.from({ scheme: Schemas.untitled }));
+		this._notebookTextFileModel = new NotebookTextFileModel(_eol);
 		this._register(this.notebookService.onNotebookEditorAdd(notebook => {
 			if (notebook.id === this.notebookUri.toString()) {
 				// Hook to content change events
