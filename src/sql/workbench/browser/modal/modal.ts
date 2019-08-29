@@ -105,6 +105,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _leftFooter: HTMLElement;
 	private _rightFooter: HTMLElement;
 	private _footerButtons: Button[];
+	private _dialogPaneBody: HTMLElement;
 
 	private _keydownListener: IDisposable;
 	private _resizeListener: IDisposable;
@@ -234,7 +235,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		const modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 
 		this._modalBodySection = DOM.append(modalContent, DOM.$(`.${modalBodyClass}`));
-		this.renderBody(this._modalBodySection);
+		this._dialogPaneBody = <HTMLElement>this.renderBody(this._modalBodySection);
 
 		// This modal footer section refers to the footer of of the dialog
 		if (!this._modalOptions.isAngular) {
@@ -252,7 +253,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Called for extended classes to render the body
 	 * @param container The parent container to attach the rendered body to
 	 */
-	protected abstract renderBody(container: HTMLElement): void;
+	protected abstract renderBody(container: HTMLElement): HTMLElement | void;
 
 	/**
 	 * Overridable to change behavior of escape key
@@ -319,13 +320,21 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set focusable elements in the modal dialog
 	 */
 	public setFocusableElements() {
-		this._focusableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		// try to find focuable element in dialog pane rather than overall bodycontainer
+		this._focusableElements = this._dialogPaneBody ?
+			this._dialogPaneBody.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
 		if (this._focusableElements && this._focusableElements.length > 0) {
 			this._firstFocusableElement = <HTMLElement>this._focusableElements[0];
 			this._lastFocusableElement = <HTMLElement>this._focusableElements[this._focusableElements.length - 1];
 		}
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+
+		// focus the first element if found
+		if (this._firstFocusableElement) {
+			this._firstFocusableElement.focus();
+		}
 	}
 
 	/**

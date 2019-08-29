@@ -77,6 +77,18 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 	};
 }
 
+/**
+ * Alterate function to provide slick grid cell with area label and plain text
+ * In this case, for no display value arialable will be set to specific string "no data available" for accessibily support for screen readers
+ */
+export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
+	let displayValue = value[columnDef.field];
+	return {
+		text: displayValue,
+		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? 'no data available' : displayValue) // so that we dont override the checkboxes etc. plugins with no data available
+	};
+}
+
 /** The following code is a rewrite over the both formatter function using dom builder
  * rather than string manipulation, which is a safer and easier method of achieving the same goal.
  * However, when electron is in "Run as node" mode, dom creation acts differently than normal and therefore

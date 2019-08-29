@@ -110,12 +110,12 @@ export class DialogModal extends Modal {
 		dialogButton.hidden ? buttonElement.element.parentElement.classList.add('dialogModal-hidden') : buttonElement.element.parentElement.classList.remove('dialogModal-hidden');
 	}
 
-	protected renderBody(container: HTMLElement): void {
+	protected renderBody(container: HTMLElement): HTMLElement {
 		const body = append(container, $('div.dialogModal-body'));
 
 		this._dialogPane = new DialogPane(this._dialog.title, this._dialog.content,
 			valid => this._dialog.notifyValidityChanged(valid), this._instantiationService, this._themeService, false);
-		this._dialogPane.createBody(body);
+		return this._dialogPane.createBody(body);
 	}
 
 	public open(): void {
