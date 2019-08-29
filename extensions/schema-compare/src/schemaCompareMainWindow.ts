@@ -69,18 +69,16 @@ export class SchemaCompareMainWindow {
 	private targetName: string;
 	private scmpSourceExcludes: mssql.SchemaCompareObjectId[];
 	private scmpTargetExcludes: mssql.SchemaCompareObjectId[];
-	private schemaCompareService: mssql.ISchemaCompareService;
 
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor(scService?: mssql.ISchemaCompareService) {
+	constructor(private schemaCompareService?: mssql.ISchemaCompareService) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Add] = localize('schemaCompare.addAction', 'Add');
 
-		this.schemaCompareService = scService ? scService : null;
 		this.editor = azdata.workspace.createModelViewEditor(localize('schemaCompare.Title', 'Schema Compare'), { retainContextWhenHidden: true, supportsSave: true, resourceName: schemaCompareResourceName });
 	}
 
