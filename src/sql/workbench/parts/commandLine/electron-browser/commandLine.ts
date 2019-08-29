@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as querystring from 'querystring';
 import * as azdata from 'azdata';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
@@ -26,8 +27,24 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
+import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
+import { parse } from 'vs/base/common/marshalling';
+import { getErrorMessage } from 'vs/base/common/errors';
+import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
-export class CommandLineWorkbenchContribution implements IWorkbenchContribution {
+const connectAuthority = 'connect';
+
+interface SqlArgs {
+	_?: string[];
+	aad?: boolean;
+	database?: string;
+	integrated?: boolean;
+	server?: string;
+	user?: string;
+	command?: string;
+	provider?: string;
+}
+export class CommandLineWorkbenchContribution implements IWorkbenchContribution, IURLHandler {
 
 	constructor(
 		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
@@ -38,7 +55,9 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 		@IConfigurationService private readonly _configurationService: IConfigurationService,
 		@INotificationService private readonly _notificationService: INotificationService,
 		@ILogService private readonly logService: ILogService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService
+		@IInstantiationService private readonly instantiationService: IInstantiationService,
+		@IURLService urlService: IURLService,
+		@IDialogService private readonly dialogService: IDialogService
 	) {
 		if (ipc) {
 			ipc.on('ads:processCommandLine', (event: any, args: ParsedArgs) => this.onLaunched(args));
@@ -46,6 +65,9 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 		// we only get the ipc from main during window reuse
 		if (environmentService) {
 			this.onLaunched(environmentService.args);
+		}
+		if (urlService) {
+			urlService.registerHandler(this);
 		}
 	}
 
@@ -69,7 +91,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 	// (null, commandName) => Launch the command with a null connection. If the command implementation needs a connection, it will need to create it.
 	// (serverName, null) => Connect object explorer and open a new query editor if no file names are passed. If file names are passed, connect their editors to the server.
 	// (null, null) => Prompt for a connection unless there are registered servers
-	public async processCommandLine(args: ParsedArgs): Promise<void> {
+	public async processCommandLine(args: SqlArgs): Promise<void> {
 		let profile: IConnectionProfile = undefined;
 		let commandName = undefined;
 		if (args) {
@@ -99,7 +121,7 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 				let updatedProfile = this._connectionManagementService.getConnectionProfileById(profile.id);
 				connectedContext = { connectionProfile: new ConnectionProfile(this._capabilitiesService, updatedProfile).toIConnectionProfile() };
 			} catch (err) {
-				this.logService.warn('Failed to connect due to error' + err.message);
+				this.logService.warn('Failed to connect due to error' + getErrorMessage(err));
 			}
 		}
 		if (commandName) {
@@ -130,6 +152,46 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 		}
 	}
 
+	async handleURL(uri: URI): Promise<boolean> {
+		// Catch file URLs
+		let authority = uri.authority.toLowerCase();
+		if (authority === connectAuthority) {
+			try {
+				let args = this.parseProtocolArgs(uri);
+				let isOpenOk = await this.confirmConnect(args);
+				if (isOpenOk) {
+					await this.processCommandLine(args);
+				}
+			} catch (err) {
+				this._notificationService.error(localize('errConnectUrl', "Could not open URL due to error {0}", getErrorMessage(err)));
+			}
+			// Handled either way
+			return true;
+		}
+
+		return false;
+	}
+
+	private async confirmConnect(args: SqlArgs): Promise<boolean> {
+		let detail = args && args.server ? localize('connectServerDetail', "This will connect to server {0}", args.server) : '';
+		const result = await this.dialogService.confirm({
+			message: localize('confirmConnect', "Are you sure you want to connect?"),
+			detail: detail,
+			primaryButton: localize('open', "&&Open"),
+			type: 'question'
+		});
+
+		if (result.confirmed) {
+			return true;
+		}
+		return false;
+	}
+
+	private parseProtocolArgs(uri: URI): SqlArgs {
+		let args: SqlArgs = querystring.parse(uri.query);
+		return args;
+	}
+
 	// If an open and connectable query editor exists for the given URI, attach it to the connection profile
 	private async processFile(uriString: string, profile: IConnectionProfile, warnOnConnectFailure: boolean): Promise<void> {
 		let activeEditor = this._editorService.editors.filter(v => v.getResource().toString() === uriString).pop();
@@ -151,11 +213,11 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution 
 		}
 	}
 
-	private readProfileFromArgs(args: ParsedArgs) {
+	private readProfileFromArgs(args: SqlArgs) {
 		let profile = new ConnectionProfile(this._capabilitiesService, null);
 		// We want connection store to use any matching password it finds
 		profile.savePassword = true;
-		profile.providerName = Constants.mssqlProviderName;
+		profile.providerName = args.provider ? args.provider : Constants.mssqlProviderName;
 		profile.serverName = args.server;
 		profile.databaseName = args.database ? args.database : '';
 		profile.userName = args.user ? args.user : '';
