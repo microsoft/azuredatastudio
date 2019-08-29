@@ -105,7 +105,6 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _leftFooter: HTMLElement;
 	private _rightFooter: HTMLElement;
 	private _footerButtons: Button[];
-	private _dialogPaneBody: HTMLElement;
 
 	private _keydownListener: IDisposable;
 	private _resizeListener: IDisposable;
@@ -235,7 +234,7 @@ export abstract class Modal extends Disposable implements IThemable {
 		const modalBodyClass = (this._modalOptions.isAngular === false ? 'modal-body' : 'modal-body-and-footer');
 
 		this._modalBodySection = DOM.append(modalContent, DOM.$(`.${modalBodyClass}`));
-		this._dialogPaneBody = <HTMLElement>this.renderBody(this._modalBodySection);
+		this.renderBody(this._modalBodySection);
 
 		// This modal footer section refers to the footer of of the dialog
 		if (!this._modalOptions.isAngular) {
@@ -253,7 +252,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Called for extended classes to render the body
 	 * @param container The parent container to attach the rendered body to
 	 */
-	protected abstract renderBody(container: HTMLElement): HTMLElement | void;
+	protected abstract renderBody(container: HTMLElement): void;
 
 	/**
 	 * Overridable to change behavior of escape key
@@ -321,8 +320,8 @@ export abstract class Modal extends Disposable implements IThemable {
 	 */
 	public setFocusableElements() {
 		// try to find focusable element in dialog pane rather than overall container
-		this._focusableElements = this._dialogPaneBody ?
-			this._dialogPaneBody.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+		this._focusableElements = this._modalBodySection ?
+			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
 			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
 		if (this._focusableElements && this._focusableElements.length > 0) {
 			this._firstFocusableElement = <HTMLElement>this._focusableElements[0];
@@ -330,8 +329,14 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+		this.focus();
+	}
 
-		// focus the first element if found
+	/**
+	 * Focuses the modal
+	 * Default behavior: focus the first focusable element
+	 */
+	protected focus() {
 		if (this._firstFocusableElement) {
 			this._firstFocusableElement.focus();
 		}
