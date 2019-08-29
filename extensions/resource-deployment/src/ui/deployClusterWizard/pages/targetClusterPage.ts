@@ -31,7 +31,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 			localize('deployCluster.TargetClusterContextPageDescription', "Select the kube config file and then select a cluster context from the list"), wizard);
 	}
 
-	protected initialize(): void {
+	public initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
 			this.initExistingClusterControl();

@@ -20,7 +20,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			localize('deployCluster.AzureSettingsPageDescription', "Configure the settings to create an Azure Kubernetes service cluster"), wizard);
 	}
 
-	protected initialize(): void {
+	public initialize(): void {
 		const self = this;
 		const azureSection: SectionInfo = {
 			title: '',
@@ -31,7 +31,8 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.SubscriptionField', "Subscription id"),
 					required: false,
 					variableName: SubscriptionId_VariableName,
-					placeHolder: localize('deployCluster.SubscriptionPlaceholder', "Use my default Azure subscription")
+					placeHolder: localize('deployCluster.SubscriptionPlaceholder', "Use my default Azure subscription"),
+					description: localize('deployCluster.SubscriptionDescription', "The default subscription will be used if you leave this field blank.")
 				}, {
 					type: FieldType.DateTimeText,
 					label: localize('deployCluster.ResourceGroupName', "New resource group name"),

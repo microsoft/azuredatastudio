@@ -9,7 +9,7 @@ import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
 import { createSection, InputComponents, setModelValues } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeploymentProfile_VariableName, ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../constants';
+import { ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
@@ -20,20 +20,13 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			localize('deployCluster.ClusterSettingsPageDescription', "Configure the SQL Server big data cluster settings"), wizard);
 	}
 
-	protected initialize(): void {
+	public initialize(): void {
 		const self = this;
 		const basicSection: SectionInfo = {
 			labelOnLeft: true,
 			title: '',
 			fields: [
 				{
-					type: FieldType.Options,
-					label: localize('deployCluster.DeploymentProfileField', "Deployment profile"),
-					required: true,
-					variableName: DeploymentProfile_VariableName,
-					defaultValue: 'aks-dev-test',
-					options: ['aks-dev-test', 'kubeadm-dev-test']
-				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.ClusterNameField', "Cluster name"),
 					required: true,

@@ -69,7 +69,7 @@ export function createSection(container: azdata.window.Dialog | azdata.window.Wi
 	} else if (sectionInfo.rows) {
 		sectionInfo.rows.forEach(rowInfo => {
 			const rowItems: azdata.Component[] = [];
-			processFields(rowInfo.fields, rowItems, container, view, validators, inputComponents, disposables, labelWidth, inputWidth, sectionInfo.labelOnLeft);
+			processFields(rowInfo.fields, rowItems, container, view, validators, inputComponents, disposables, labelWidth, inputWidth, sectionInfo.labelOnLeft, '50px');
 			const row = createRow(view, rowItems);
 			components.push(row);
 		});
@@ -77,13 +77,17 @@ export function createSection(container: azdata.window.Dialog | azdata.window.Wi
 	return view.modelBuilder.groupContainer().withItems(components).withLayout({ header: sectionInfo.title, collapsible: true, collapsed: false }).component();
 }
 
-function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], container: azdata.window.Dialog | azdata.window.Wizard, view: azdata.ModelView, validators: Validator[], inputComponents: InputComponents, disposables: vscode.Disposable[], defaultLabelWidth: string, defaultInputWidth: string, labelOnLeft?: boolean): void {
-	fieldInfoArray.forEach(fieldInfo => {
+function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], container: azdata.window.Dialog | azdata.window.Wizard, view: azdata.ModelView, validators: Validator[], inputComponents: InputComponents, disposables: vscode.Disposable[], defaultLabelWidth: string, defaultInputWidth: string, labelOnLeft?: boolean, spaceBetweenFields?: string): void {
+	for (let i = 0; i < fieldInfoArray.length; i++) {
+		const fieldInfo = fieldInfoArray[i];
 		fieldInfo.labelWidth = fieldInfo.labelWidth || defaultLabelWidth;
 		fieldInfo.inputWidth = fieldInfo.inputWidth || defaultInputWidth;
 		fieldInfo.labelOnLeft = fieldInfo.labelOnLeft === undefined ? labelOnLeft : fieldInfo.labelOnLeft;
 		processField(view, components, fieldInfo, inputComponents, validators, disposables, container);
-	});
+		if (spaceBetweenFields && i < fieldInfoArray.length - 1) {
+			components.push(view.modelBuilder.divContainer().withLayout({ width: spaceBetweenFields }).component());
+		}
+	}
 }
 
 function createRow(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {

@@ -17,7 +17,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		super(localize('deployCluster.summaryPageTitle', "Summary"), '', wizard);
 	}
 
-	protected initialize(): void {
+	public initialize(): void {
 		const validators: Validator[] = [];
 		const sectionInfoArray: SectionInfo[] = [];
 		initializeWizardPage(this.pageObject, this.wizard.wizardObject, sectionInfoArray, validators, this.inputComponents, this.wizard.toDispose);

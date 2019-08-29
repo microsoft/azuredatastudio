@@ -8,28 +8,37 @@ import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { WizardPageBase } from '../../wizardPageBase';
 import { DeploymentProfile } from '../../../services/azdataService';
+import { DeploymentProfile_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
 export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 
+	private _cards: azdata.CardComponent[] = [];
+
 	constructor(wizard: DeployClusterWizard) {
-		super(localize('deployCluster.summaryPageTitle', "Deployment profile"), '', wizard);
+		super(localize('deployCluster.summaryPageTitle', "Deployment profile"),
+			localize('deployCluster.summaryPageDescription', "Select a deployment profile"), wizard);
 	}
 
-	protected initialize(): void {
+	public initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			return this.wizard.azdataService.getDeploymentProfiles().then((profiles) => {
 				const profilesContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', flexWrap: 'wrap' }).component();
 				profiles.forEach(profile => {
 					const card = this.createProfileCard(profile, view);
 					profilesContainer.addItem(card, { flex: '0 0 auto' });
-
 				});
+				const hintText = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+					value: localize('deployCluster.ProfileHintText', "Note: The settings of the deployment profile can be customized in later steps.")
+				}).component();
 				let formBuilder = view.modelBuilder.formContainer().withFormItems(
 					[
 						{
 							title: '',
 							component: profilesContainer
+						}, {
+							title: '',
+							component: hintText
 						}
 					],
 					{
@@ -43,7 +52,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	private createProfileCard(profile: DeploymentProfile, view: azdata.ModelView): azdata.CardComponent {
-		const profileContainer = view.modelBuilder.card().withProperties<azdata.CardProperties>({
+		const card = view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
 			label: profile.name,
 			descriptions: [
@@ -78,6 +87,48 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			width: '240px',
 			height: '400px'
 		}).component();
-		return profileContainer;
+		this._cards.push(card);
+		this.wizard.registerDisposable(card.onCardSelectedChanged(() => {
+			if (card.selected) {
+				this.wizard.wizardObject.message = { text: '' };
+				this.wizard.model[DeploymentProfile_VariableName] = profile.name;
+				// clear the selected state of the previously selected card
+				this._cards.forEach(c => {
+					if (c !== card) {
+						c.selected = false;
+					}
+				});
+			} else {
+				// keep the selected state if no other card is selected
+				if (this._cards.filter(c => { return c !== card && c.selected; }).length === 0) {
+					card.selected = true;
+				}
+			}
+		}));
+
+		return card;
+	}
+
+	public onEnter() {
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			this.wizard.wizardObject.message = { text: '' };
+			if (pcInfo.newPage > pcInfo.lastPage) {
+				const isValid = this.wizard.model[DeploymentProfile_VariableName] !== undefined;
+				if (!isValid) {
+					this.wizard.wizardObject.message = {
+						text: localize('deployCluster.ProfileNotSelectedError', "Please select a deployment profile."),
+						level: azdata.window.MessageLevel.Error
+					};
+				}
+				return isValid;
+			}
+			return true;
+		});
+	}
+
+	public onLeave() {
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			return true;
+		});
 	}
 }

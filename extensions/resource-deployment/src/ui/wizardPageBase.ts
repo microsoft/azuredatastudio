@@ -14,7 +14,6 @@ export abstract class WizardPageBase<T> {
 	constructor(title: string, description: string, private _wizard: T) {
 		this._page = azdata.window.createWizardPage(title);
 		this._page.description = description;
-		this.initialize();
 	}
 
 	public get pageObject(): azdata.window.WizardPage {
@@ -29,7 +28,7 @@ export abstract class WizardPageBase<T> {
 
 	public onLeave(): void { }
 
-	protected abstract initialize(): void;
+	public abstract initialize(): void;
 
 	protected get validators(): Validator[] {
 		return this._validators;

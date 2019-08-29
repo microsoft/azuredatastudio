@@ -66,6 +66,9 @@ export abstract class WizardBase<T> {
 	protected setPages(pages: WizardPageBase<T>[]) {
 		this.wizardObject!.pages = pages.map(p => p.pageObject);
 		this.pages = pages;
+		this.pages.forEach((page) => {
+			page.initialize();
+		});
 	}
 
 	private dispose() {
