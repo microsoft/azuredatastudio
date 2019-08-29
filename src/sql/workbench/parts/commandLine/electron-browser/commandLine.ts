@@ -189,6 +189,8 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 
 	private parseProtocolArgs(uri: URI): SqlArgs {
 		let args: SqlArgs = querystring.parse(uri.query);
+		// Clear out command, not supporting arbitrary command via this path
+		args.command = undefined;
 		return args;
 	}
 
