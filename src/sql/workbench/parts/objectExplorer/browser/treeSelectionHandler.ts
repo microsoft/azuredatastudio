@@ -17,6 +17,7 @@ export class TreeSelectionHandler {
 
 	private _lastClicked: any[];
 	private _clickTimer: any = undefined;
+	private _otherTimer: any = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -43,15 +44,16 @@ export class TreeSelectionHandler {
 	}
 
 	/**
-	 * Handle selection of tree element
+	 * Handle select	ion of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
-		let sendSelectionEvent = (async (event: any, selection: any, isDoubleClick: boolean) => {
-			if (this._lastClicked === selection) {
+		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
+			// userInteraction: defensive - don't touch this something else is handling it.
+			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				await this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
 			}
 		});
 
@@ -62,25 +64,28 @@ export class TreeSelectionHandler {
 		}
 		let specificSelection = selection[0];
 
-		if (this.isMouseEvent(event)) {
+		if (this.isMouseEvent(event) || this.isKeyboardEvent(event)) {
 			if (this._lastClicked !== undefined) {
 				clearTimeout(this._clickTimer);
 				let lastSpecificClick = this._lastClicked[0];
 
 				if (lastSpecificClick === specificSelection) {
-					sendSelectionEvent(event, selection, true);
+					sendSelectionEvent(event, selection, true, true);
 					return;
 				} else {
-					sendSelectionEvent(event, this._lastClicked, false);
+					sendSelectionEvent(event, this._lastClicked, false, true);
 				}
 			}
 			this._lastClicked = selection;
 
 			this._clickTimer = setTimeout(() => {
-				sendSelectionEvent(event, selection, false);
-			}, 300);
-		} else if (this.isKeyboardEvent(event)) {
-			sendSelectionEvent(event, selection, true);
+				sendSelectionEvent(event, selection, false, true);
+			}, 400);
+		} else {
+			clearTimeout(this._otherTimer);
+			this._otherTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false, false);
+			}, 400);
 		}
 	}
 
@@ -88,7 +93,7 @@ export class TreeSelectionHandler {
 	 *
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
-	private async handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): Promise<void> {
+	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): void {
 		let connectionProfile: ConnectionProfile = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
@@ -119,7 +124,7 @@ export class TreeSelectionHandler {
 			if (TreeUpdateUtils.isAvailableDatabaseNode(treeNode)) {
 				connectionProfile = TreeUpdateUtils.getConnectionProfile(treeNode);
 				if (connectionProfile) {
-					await connectionManagementService.showDashboard(connectionProfile);
+					connectionManagementService.showDashboard(connectionProfile);
 				}
 			}
 		}
