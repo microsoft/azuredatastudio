@@ -320,7 +320,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set focusable elements in the modal dialog
 	 */
 	public setFocusableElements() {
-		// try to find focuable element in dialog pane rather than overall bodycontainer
+		// try to find focusable element in dialog pane rather than overall container
 		this._focusableElements = this._dialogPaneBody ?
 			this._dialogPaneBody.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
 			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');

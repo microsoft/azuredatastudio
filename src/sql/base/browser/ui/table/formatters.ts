@@ -80,12 +80,13 @@ export function slickGridDataItemColumnValueExtractor(value: any, columnDef: any
 /**
  * Alterate function to provide slick grid cell with area label and plain text
  * In this case, for no display value arialable will be set to specific string "no data available" for accessibily support for screen readers
+ * Set 'no data' lable only if cell is present and has no value (so that checkbox and other custom plugings do not get 'no data' label)
  */
 export function slickGridDataItemColumnValueWithNoData(value: any, columnDef: any): { text: string; ariaLabel: string; } {
 	let displayValue = value[columnDef.field];
 	return {
 		text: displayValue,
-		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? 'no data available' : displayValue) // so that we dont override the checkboxes etc. plugins with no data available
+		ariaLabel: displayValue ? escape(displayValue) : ((displayValue !== undefined) ? 'no data available' : displayValue)
 	};
 }
 
