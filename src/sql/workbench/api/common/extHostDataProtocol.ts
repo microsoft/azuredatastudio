@@ -103,7 +103,13 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		return rt;
 	}
 
-	$registerQueryProvider(provider: azdata.QueryProvider): vscode.Disposable {
+	private liveShareProviders = new Map<string, any>();
+
+	$registerQueryProvider(provider: azdata.QueryProvider, isSharedSession?: boolean): vscode.Disposable {
+		if (isSharedSession) {
+			this.liveShareProviders['QueryProvider'] = provider;
+		}
+
 		let rt = this.registerProvider(provider, DataProviderType.QueryProvider);
 		this._proxy.$registerQueryProvider(provider.providerId, provider.handle);
 		return rt;
@@ -243,6 +249,19 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 
 	// Query Management handlers
 
+	private isLiveShare(uri: string): boolean {
+		return (uri!.startsWith('vsls://'));
+	}
+
+	private liveshareProvider<P extends azdata.DataProvider>(providerName: string): P {
+		let provider = this.liveShareProviders[providerName] as P;
+		if (provider) {
+			return provider;
+		} else {
+			throw new Error(`Unfound provider ${providerName}`);
+		}
+	}
+
 	$cancelQuery(handle: number, ownerUri: string): Thenable<azdata.QueryCancelResult> {
 		return this._resolveProvider<azdata.QueryProvider>(handle).cancelQuery(ownerUri);
 	}
@@ -251,6 +270,11 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString(true);
 		}
+
+		if (this.isLiveShare(ownerUri)) {
+			return this.liveshareProvider<azdata.QueryProvider>('QueryProvider').runQuery(ownerUri, selection, runOptions);
+		}
+
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
@@ -272,6 +296,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		} else {
 			return new Promise((r) => r());
 		}
+	}
+
+	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> {
+		return new Promise((r) => r());
 	}
 
 	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {

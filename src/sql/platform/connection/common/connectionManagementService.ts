@@ -157,8 +157,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this._onLanguageFlavorChanged.event;
 	}
 
-	private _providerCount: number = 0;
-
 	// Connection Provider Registration
 	public registerProvider(providerId: string, provider: azdata.ConnectionProvider): void {
 		if (!this._providers.has(providerId)) {
@@ -1421,7 +1419,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @returns array of connections
 	 **/
 	public getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
-
 		// 1. Active Connections
 		const connections = this.getActiveConnections();
 
@@ -1450,6 +1447,20 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			}
 		}
 		return connections;
+	}
+
+	public getConnection(uri: string): ConnectionProfile {
+		const connections = this.getActiveConnections();
+		if (connections) {
+			for (let connection of connections) {
+				let connectionUri = this.getConnectionUriFromId(connection.id);
+				if (connectionUri === uri) {
+					return connection;
+				}
+			}
+		}
+
+		return undefined;
 	}
 
 	private getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
