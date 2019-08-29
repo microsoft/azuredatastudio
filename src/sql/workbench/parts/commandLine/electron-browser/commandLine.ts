@@ -44,6 +44,7 @@ interface SqlArgs {
 	command?: string;
 	provider?: string;
 }
+
 export class CommandLineWorkbenchContribution implements IWorkbenchContribution, IURLHandler {
 
 	constructor(
