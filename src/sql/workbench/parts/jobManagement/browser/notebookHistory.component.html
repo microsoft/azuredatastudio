@@ -94,7 +94,7 @@
 				<div
 					*ngFor="let history of grid.histories"
 					class="notebook-grid-item"
-					(click)="openNotebook(history)"
+					(dblclick)="openNotebook(history)"
 					title="{{ createdTooltip(history) }}"
 					(contextmenu)="
 						openHistoryContextMenu($event, history, grid.contextMenuType)

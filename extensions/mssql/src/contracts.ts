@@ -288,11 +288,11 @@ export namespace AgentNotebookMaterializedRequest {
 }
 
 export namespace UpdateAgentNotebookRunNameRequest {
-	export const type = new RequestType<UpdateAgentNotebookRunNameParams, azdata.UpdateAgentNotebookResult, void, void>('agent/notebookname');
+	export const type = new RequestType<UpdateAgentNotebookRunNameParams, azdata.UpdateAgentNotebookResult, void, void>('agent/updatenotebookname');
 }
 
 export namespace UpdateAgentNotebookRunPinRequest {
-	export const type = new RequestType<UpdateAgentNotebookRunPinParams, azdata.ResultStatus, void, void>('agent/notebookpin');
+	export const type = new RequestType<UpdateAgentNotebookRunPinParams, azdata.ResultStatus, void, void>('agent/updatenotebookpin');
 }
 
 export namespace AgentNotebookTemplateRequest {

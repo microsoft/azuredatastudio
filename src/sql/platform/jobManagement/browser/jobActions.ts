@@ -34,7 +34,7 @@ export enum JobActions {
 export class IJobActionInfo {
 	ownerUri?: string;
 	targetObject?: any;
-	component: JobManagementView;
+	component: JobManagementView | NotebookHistoryComponent;
 }
 
 // Job actions
@@ -598,10 +598,12 @@ export class EditNotebookJobAction extends Action {
 	}
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		this._commandService.executeCommand(
-			'agent.openNotebookDialog',
-			actionInfo.ownerUri,
-			actionInfo.targetObject.job);
+		if (actionInfo.component instanceof NotebookHistoryComponent) {
+			this._commandService.executeCommand(
+				'agent.openNotebookDialog',
+				actionInfo.ownerUri,
+				actionInfo.component.agentNotebookInfo);
+		}
 		return Promise.resolve(true);
 	}
 }
@@ -678,6 +680,22 @@ export class PinNotebookMaterializedAction extends Action {
 
 	public run(actionInfo: any): Promise<boolean> {
 		actionInfo.component.toggleNotebookPin(actionInfo.history, true);
+		return Promise.resolve(true);
+	}
+}
+
+export class DeleteMaterializedNotebookAction extends Action {
+	public static ID = 'notebookaction.deleteMaterializedNotebook';
+	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin Notebook");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(DeleteMaterializedNotebookAction.ID, DeleteMaterializedNotebookAction.LABEL);
+	}
+
+	public run(actionInfo: any): Promise<boolean> {
+		actionInfo.component.deleteMaterializedNotebook(actionInfo.history, true);
 		return Promise.resolve(true);
 	}
 }

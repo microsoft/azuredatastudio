@@ -122,8 +122,9 @@ export class MainController {
 						initialContent: initialContent,
 						initialDirtyState: false
 					});
+					vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
 				});
-				vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
+
 			}
 			catch (e) {
 				console.log(e);
@@ -167,7 +168,7 @@ export class MainController {
 				let path: string;
 				if (!ownerUri) {
 					if (azdata.nb.activeNotebookEditor.document.isDirty) {
-						vscode.window.showErrorMessage('Save file before scheduling', { modal: true });
+						vscode.window.showErrorMessage(localize('agent.unsavedFileSchedulingError', 'Save file before scheduling'), { modal: true });
 						return;
 					}
 					path = azdata.nb.activeNotebookEditor.document.fileName;
@@ -208,10 +209,6 @@ export class MainController {
 					break;
 				}
 			}
-			if (!sqlConnectionsPresent) {
-				vscode.window.showErrorMessage('No Active MSSQL Connections', { modal: true });
-				return;
-			}
 			let connectionNames: azdata.connection.Connection[] = [];
 			let connectionDisplayString: string[] = [];
 			for (let i = 0; i < connections.length; i++) {
@@ -219,12 +216,18 @@ export class MainController {
 				connectionNames.push(connections[i]);
 				connectionDisplayString.push(currentConnectionString);
 			}
-			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: 'Select a connection' });
+			connectionDisplayString.push(localize('agent.AddNewConnection', 'Add new connection'));
+			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: localize('agent.selectConnection', 'Select a connection') });
 			if (connectionDisplayString.indexOf(connectionName) !== -1) {
-				connection = connections[connectionDisplayString.indexOf(connectionName)];
+				if (connectionName === 'Add new connection') {
+					connection = await azdata.connection.openConnectionDialog();
+				}
+				else {
+					connection = connections[connectionDisplayString.indexOf(connectionName)];
+				}
 			}
 			else {
-				vscode.window.showErrorMessage('Please select a valid connection', { modal: true });
+				vscode.window.showErrorMessage(localize('agent.selectValidConnection', 'Please select a valid connection'), { modal: true });
 			}
 		}
 		return connection;

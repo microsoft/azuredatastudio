@@ -24,6 +24,11 @@ export class NotebookData implements IAgentDialogData {
 
 	// Error Messages
 	private readonly CreateNotebookErrorMessage_NameIsEmpty = localize('notebookData.jobNameRequired', 'Notebook name must be provided');
+	private readonly TemplatePathEmptyErrorMessage = localize('notebookData.templatePathRequired', 'Template path must be provided');
+	private readonly InvalidNotebookPathErrorMessage = localize('notebookData.invalidNotebookPath', 'Invalid notebook path');
+	private readonly SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDatabase', 'Select storage database');
+	private readonly SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', 'Select execution database');
+	private readonly JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', 'Job with similar name already exists');
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
@@ -177,26 +182,32 @@ export class NotebookData implements IAgentDialogData {
 
 	public validate(): { valid: boolean, errorMessages: string[] } {
 		let validationErrors: string[] = [];
-		if (!(this.name && this.name.trim())) {
-			validationErrors.push(this.CreateNotebookErrorMessage_NameIsEmpty);
+		if (this.dialogMode !== AgentDialogMode.EDIT) {
+			if (!(this.name && this.name.trim())) {
+				validationErrors.push(this.CreateNotebookErrorMessage_NameIsEmpty);
+			}
+			if (!(this.templatePath && this.name.trim())) {
+				validationErrors.push(this.TemplatePathEmptyErrorMessage);
+			}
+			if (!fs.existsSync(this.templatePath)) {
+				validationErrors.push(this.InvalidNotebookPathErrorMessage);
+			}
 		}
-		if (!(this.templatePath && this.name.trim())) {
-
-			validationErrors.push('Template path cannot be blank');
-		}
-		if (!fs.existsSync(this.templatePath)) {
-			validationErrors.push('Invalid template path');
+		else {
+			if (this.templatePath && this.templatePath !== '' && !fs.existsSync(this.templatePath)) {
+				validationErrors.push(this.InvalidNotebookPathErrorMessage);
+			}
 		}
 		if (this.targetDatabase === 'Select Database') {
-			validationErrors.push('Select storage database');
+			validationErrors.push(this.SelectStorageDatabaseErrorMessage);
 		}
 		if (this.executeDatabase === 'Select Database') {
-			validationErrors.push('Select execution database');
+			validationErrors.push(this.SelectExecutionDatabaseErrorMessage);
 		}
 		if (NotebookData.jobLists) {
 			for (let i = 0; i < NotebookData.jobLists.length; i++) {
 				if (this.name === NotebookData.jobLists[i].name) {
-					validationErrors.push('Job with similar name already exists');
+					validationErrors.push(this.JobWithSameNameExistsErrorMessage);
 					break;
 				}
 			}

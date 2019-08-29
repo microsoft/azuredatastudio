@@ -74,7 +74,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	private _runJobAction: RunJobAction;
 	private _stopJobAction: StopJobAction;
 	private _refreshAction: JobsRefreshAction;
-	private _editJobAction: EditJobAction;
 	private _openNotebookTemplateAction: OpenTemplateNotebookAction;
 
 	private static readonly HEADING_HEIGHT: number = 24;
@@ -128,8 +127,8 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		this._jobManagementService.getNotebookHistory(ownerUri, jobId, jobName, targetDatabase).then((result) => {
 			if (result && result.histories) {
-				this.notebookHistories = result.histories.reverse();
-				self._notebookCacheObject.setNotebookHistory(jobId, result.histories);
+				this.notebookHistories = result.histories;
+				self._notebookCacheObject.setNotebookHistory(jobId, this.notebookHistories);
 				self._notebookCacheObject.setJobSchedules(jobId, result.schedules);
 				self._notebookCacheObject.setJobSteps(jobId, result.steps);
 				this._agentViewComponent.agentNotebookInfo.jobSteps = this._notebookCacheObject.getJobSteps(jobId);
@@ -155,7 +154,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				{ action: this._stopJobAction },
 				{ action: this._refreshAction },
 				{ action: this._editNotebookJobAction },
-				{ action: this._editJobAction },
 				{ action: this._openNotebookTemplateAction }
 			]);
 
@@ -290,7 +288,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			this.createGrid();
 		}
 		let notebookHistories = this._notebookCacheObject.notebookHistories[this._agentViewComponent.notebookId];
-		this.notebookHistories = notebookHistories.reverse();
 		if (notebookHistories) {
 			if (notebookHistories.length > 0) {
 				const self = this;
@@ -312,7 +309,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				{ action: this._stopJobAction },
 				{ action: this._refreshAction },
 				{ action: this._editNotebookJobAction },
-				{ action: this._editJobAction },
 				{ action: this._openNotebookTemplateAction }
 			]);
 			this._cd.detectChanges();
@@ -345,7 +341,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		this._runJobAction = this.instantiationService.createInstance(RunJobAction);
 		this._stopJobAction = this.instantiationService.createInstance(StopJobAction);
 		this._editNotebookJobAction = this.instantiationService.createInstance(EditNotebookJobAction);
-		this._editJobAction = this.instantiationService.createInstance(EditJobAction);
 		this._refreshAction = this.instantiationService.createInstance(JobsRefreshAction);
 		this._openNotebookTemplateAction = this.instantiationService.createInstance(OpenTemplateNotebookAction);
 		let taskbar = <HTMLElement>this.actionBarContainer.nativeElement;
@@ -358,7 +353,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			{ action: this._stopJobAction },
 			{ action: this._refreshAction },
 			{ action: this._editNotebookJobAction },
-			{ action: this._editJobAction },
 			{ action: this._openNotebookTemplateAction }
 		]);
 	}
@@ -377,6 +371,10 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
 			}
 		});
+	}
+
+	public deleteMaterializedNotebook(histories: azdata.AgentNotebookHistoryInfo) {
+		//TODO: Implement deletenotebook context menu action
 	}
 
 	public openTemplateNotebook() {
@@ -468,19 +466,6 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		];
 	}
 
-	public historyFilter(histories: azdata.AgentNotebookHistoryInfo[], minTime: number, maxTime: number, pin: boolean) {
-		let resultHistory: azdata.AgentNotebookHistoryInfo[] = histories.filter(function (h) {
-			let historyDateTime = (new Date().getTime() - new Date(h.runDate.replace('T', ' ')).getTime()) / 1000;
-			if (historyDateTime >= minTime && historyDateTime <= maxTime && h.materializedNotebookPin === pin) {
-				return true;
-			}
-			return false;
-		});
-		resultHistory.sort((h1, h2) =>
-			(new Date(h1.runDate) > new Date(h2.runDate) ? -1 : 1));
-		return (resultHistory.length > 0) ? resultHistory : null;
-	}
-
 	public createdTooltip(history: azdata.AgentNotebookHistoryInfo) {
 		let tooltipString: string;
 		tooltipString = history.materializedNotebookName;
@@ -490,47 +475,65 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			month: 'long',
 			day: 'numeric'
 		};
-		tooltipString += '\nDate created: ' + new Date(history.runDate).toLocaleDateString(undefined, dateOptions);
+
+		tooltipString += '\n' + nls.localize('notebookHistory.dateCreatedTooltip', "Date Created:") + new Date(history.runDate).toLocaleDateString(undefined, dateOptions);
 		if (/\S/.test(history.materializedNotebookErrorInfo)) {
-			tooltipString += '\nNotebook error: ' + history.materializedNotebookErrorInfo;
+			tooltipString += '\n' + nls.localize('notebookHistory.notebookErrorTooltip', "Notebook Error:") + history.materializedNotebookErrorInfo;
 		}
 		return tooltipString;
 	}
 
 	public createGrid() {
 		let histories = this._notebookCacheObject.getNotebookHistory(this._agentViewComponent.notebookId);
-		let gridTitle: string[] = ['This Week', 'Last Week', 'Last Month', 'All Past Runs'];
-		let gridPeriods: any = [{
-			min: 0,
-			max: 604800
-		}, {
-			min: 604801,
-			max: 1209600
-		}, {
-			min: 1209601,
-			max: 2592000
-		}, {
-			min: 2592001,
-			max: 31557600
-		}];
-		let style: string[] = ['grid', 'none', 'none', 'none'];
-
+		histories = histories.sort((h1, h2) => {
+			return new Date(h2.runDate).getTime() - new Date(h1.runDate).getTime();
+		});
 		this._grids = [];
-		// Pushing the pinned notebooks grid
+		let tempHistory: azdata.AgentNotebookHistoryInfo[] = [];
+		for (let i = 0; i < histories.length; i++) {
+			if (histories[i].materializedNotebookPin) {
+				tempHistory.push(histories[i]);
+			}
+		}
+
 		this._grids.push({
-			title: 'Pinned',
-			histories: this.historyFilter(histories, 0, Number.MAX_VALUE, true),
+			title: nls.localize('notebookHistory.pinnedTitle', "Pinned"),
+			histories: tempHistory,
 			contextMenuType: 1,
 			style: 'grid'
 		});
-		gridTitle.forEach((title, index) => {
-			let grid = new GridSection();
-			grid.title = title;
-			grid.histories = this.historyFilter(histories, gridPeriods[index].min, gridPeriods[index].max, false);
-			grid.contextMenuType = 0;
-			grid.style = style[index];
-			this._grids.push(grid);
+		// Pushing the pinned notebooks grid
+		tempHistory = [];
+		let count = 0;
+		let i = 0;
+		for (; i < histories.length; i++) {
+			if (!histories[i].materializedNotebookPin && count < 10) {
+				tempHistory.push(histories[i]);
+				count++;
+			}
+			if (count === 10) {
+				break;
+			}
+		}
+		this._grids.push({
+			title: nls.localize('notebookHistory.recentRunsTitle', "Recent Runs"),
+			histories: tempHistory,
+			contextMenuType: 0,
+			style: 'grid'
 		});
+		tempHistory = [];
+		for (i += 1; i < histories.length; i++) {
+			if (!histories[i].materializedNotebookPin) {
+				tempHistory.push(histories[i]);
+			}
+		}
+		this._grids.push({
+			title: nls.localize('notebookHistory.pastRunsTitle', "Past Runs"),
+			histories: tempHistory,
+			contextMenuType: 0,
+			style: 'none'
+		});
+
 	}
 
 	public collapseGrid() {

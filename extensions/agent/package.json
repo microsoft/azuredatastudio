@@ -63,10 +63,6 @@
         {
           "command": "agent.openNotebookDialog",
           "when": "providerId == sql"
-        },
-        {
-          "command": "agent.reuploadTemplate",
-          "when": "agent:trackedTemplate"
         }
       ],
       "explorer/context": [

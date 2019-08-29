@@ -33,6 +33,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private readonly TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', 'Notebook Path');
 	private readonly TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Storage Database');
 	private readonly ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execution Database');
+	private readonly DefaultDropdownString: string = localize('notebookDialog.defaultDropdownString', 'Select Database');
 
 	// Job details string
 	private readonly JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
@@ -134,14 +135,14 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			let notebookPathFlexBox = view.modelBuilder.flexContainer()
 				.withLayout({
 					flexFlow: 'row',
-					width: '100%'
+					width: '100%',
 				}).withItems([this.templateFilePathBox, outputButtonContainer], {
 					flex: '1 1 50%'
 				}).component();
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown().component();
 			this.executeDatabaseDropDown = view.modelBuilder.dropDown().component();
 			let databases = await AgentUtils.getDatabases(this.ownerUri);
-			databases.unshift('Select Database');
+			databases.unshift(this.DefaultDropdownString);
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
@@ -222,19 +223,28 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 				}
 			});
 
-
 			let formModel = view.modelBuilder.formContainer()
 				.withFormItems([
 					{
 						components: [{
 							component: notebookPathFlexBox,
-							title: this.TemplateNotebookTextBoxLabel
-						}, {
+							title: this.TemplateNotebookTextBoxLabel,
+							layout: {
+								info: localize('notebookDialog.templatePath', 'Select a notebook to schedule from PC')
+							}
+						},
+						{
 							component: this.targetDatabaseDropDown,
-							title: this.TargetDatabaseDropdownLabel
+							title: this.TargetDatabaseDropdownLabel,
+							layout: {
+								info: localize('notebookDialog.targetDatabaseInfo', 'Select a database to store all notebook job metadata like template, notebook runs....')
+							}
 						}, {
 							component: this.executeDatabaseDropDown,
-							title: this.ExecuteDatabaseDropdownLabel
+							title: this.ExecuteDatabaseDropdownLabel,
+							layout: {
+								info: localize('notebookDialog.executionDatabaseInfo', 'Select a database against which notebook queries will run')
+							}
 						}],
 						title: this.NotebookDetailsSeparatorTitle
 					}, {
