@@ -180,10 +180,6 @@
 	visibility: visible;
 }
 
-.notebookEditor .hoverButton:active {
-	transform:scale(1.05);
-}
-
 .notebookEditor .hoverButton .addCodeIcon,
 .notebookEditor .hoverButton .addTextIcon {
 	display: inline-block;
