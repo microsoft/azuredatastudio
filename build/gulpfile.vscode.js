@@ -196,6 +196,7 @@ function getElectron(arch) {
 			ffmpegChromium: true,
 			keepDefaultApp: true
 		});
+
 		return gulp.src('package.json')
 			.pipe(json({ name: product.nameShort }))
 			.pipe(electron(electronOpts))
