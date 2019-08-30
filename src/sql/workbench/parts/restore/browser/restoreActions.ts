@@ -61,6 +61,7 @@ export class RestoreAction extends Task {
 
 		const capabilitiesService = accessor.get(ICapabilitiesService);
 		const instantiationService = accessor.get(IInstantiationService);
-		return instantiationService.invokeFunction(showRestore, new ConnectionProfile(capabilitiesService, profile));
+		profile = profile ? profile : new ConnectionProfile(capabilitiesService, profile);
+		return instantiationService.invokeFunction(showRestore, profile);
 	}
 }
