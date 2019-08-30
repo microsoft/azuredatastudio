@@ -37,48 +37,38 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		// const textColor = theme.getColor(editorForeground);
-		// if (textColor) {
-		// 	collector.addRule(`
-		// 		.notebookEditor .hoverButtonsContainer .hoverButton:not(:active) {
-		// 			color: ${textColor};
-		// 		}
-		// 	`);
-		// }
-
-		const background = theme.getColor(editorBackground);
-		if (background) {
+		if (buttonBackgroundColor) {
 			collector.addRule(`
+				.notebookEditor .notebook-cell.active {
+					border-color: ${buttonBackgroundColor};
+					border-width: 1px;
+				}
+				.notebookEditor .notebook-cell.active:hover {
+					border-color: ${buttonBackgroundColor};
+				}
+
 				.notebookEditor .hoverButton {
-					background-color: ${background};
+					border-color: ${buttonBackgroundColor};
 				}
 				.notebookEditor .hoverButton:active,
 				.notebookEditor .hoverButton:hover {
-					color: ${background};
+					background-color: ${buttonBackgroundColor};
+				}
+				.notebookEditor .hoverButton {
+					color: ${buttonBackgroundColor};
 				}
 			`);
 		}
 
-		// Active border
-		const activeBorder = theme.getColor(buttonBackground);
-		if (activeBorder) {
-			collector.addRule(`
-				.notebookEditor .notebook-cell.active {
-					border-color: ${activeBorder};
-					border-width: 1px;
-				}
-			`);
-
+		const backgroundColor = theme.getColor(editorBackground);
+		if (backgroundColor) {
 			collector.addRule(`
 				.notebookEditor .hoverButton {
-					border-color: ${activeBorder};
+					background-color: ${backgroundColor};
 				}
 				.notebookEditor .hoverButton:active,
 				.notebookEditor .hoverButton:hover {
-					background-color: ${activeBorder};
-				}
-				.notebookEditor .hoverButton {
-					color: ${activeBorder};
+					color: ${backgroundColor};
 				}
 			`);
 		}
@@ -95,10 +85,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 			.hc-black .notebookEditor .notebook-cell.active {
 				box-shadow: 0;
-			}
-
-			.notebookEditor .notebook-cell.active:hover {
-				border-color: ${activeBorder};
 			}
 
 			.notebookEditor .notebook-cell:hover:not(.active) {
