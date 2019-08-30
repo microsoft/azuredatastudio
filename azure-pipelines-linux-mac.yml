@@ -38,6 +38,7 @@ steps:
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
   - script: |
+      echo "env var is $(GITHUB_TOKEN)"
       yarn gulp electron-x64
     displayName: Download Electron
 
