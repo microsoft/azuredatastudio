@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorForeground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorForeground, editorBackground } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -37,11 +37,23 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		const textColor = theme.getColor(editorForeground);
-		if (textColor) {
+		// const textColor = theme.getColor(editorForeground);
+		// if (textColor) {
+		// 	collector.addRule(`
+		// 		.notebookEditor .hoverButtonsContainer .hoverButton:not(:active) {
+		// 			color: ${textColor};
+		// 		}
+		// 	`);
+		// }
+
+		const background = theme.getColor(editorBackground);
+		if (background) {
 			collector.addRule(`
-				.notebookEditor .hoverButtonsContainer .hoverButton {
-					color: ${textColor};
+				.notebookEditor .hoverButton {
+					background-color: ${background};
+				}
+				.notebookEditor .hoverButton:active {
+					color: ${background};
 				}
 			`);
 		}
@@ -57,8 +69,14 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 
 			collector.addRule(`
-				.notebookEditor .hoverButton:active {
+				.notebookEditor .hoverButton {
 					border-color: ${activeBorder};
+				}
+				.notebookEditor .hoverButton:active {
+					background-color: ${activeBorder};
+				}
+				.notebookEditor .hoverButton {
+					color: ${activeBorder};
 				}
 			`);
 		}
@@ -126,12 +144,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					{
 						background-color: ${codeBackground};
 					}`);
-
-				collector.addRule(`
-					.notebookEditor .hoverButtonsContainer .hoverButton {
-						background-color: ${codeBackground};
-					}
-				`);
 
 				// Margin background will be the same (may override some styles)
 				collector.addRule(`.notebook-cell:not(.active) code-component .monaco-editor .margin { background-color: ${codeBackground}; }`);
@@ -219,7 +231,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 
 				.hc-black .notebookEditor .hoverButton:not(:active) {
 					border-color: ${hcOutline};
-					border-radius: 0px;
 				}
 			`);
 		}
