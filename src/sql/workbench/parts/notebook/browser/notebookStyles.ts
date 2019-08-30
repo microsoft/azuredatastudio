@@ -52,7 +52,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .hoverButton {
 					background-color: ${background};
 				}
-				.notebookEditor .hoverButton:active {
+				.notebookEditor .hoverButton:active,
+				.notebookEditor .hoverButton:hover {
 					color: ${background};
 				}
 			`);
@@ -72,7 +73,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .hoverButton {
 					border-color: ${activeBorder};
 				}
-				.notebookEditor .hoverButton:active {
+				.notebookEditor .hoverButton:active,
+				.notebookEditor .hoverButton:hover {
 					background-color: ${activeBorder};
 				}
 				.notebookEditor .hoverButton {
