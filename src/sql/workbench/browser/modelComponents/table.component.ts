@@ -245,6 +245,14 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaColumnCount = this.ariaColumnCount;
 		}
 
+		if (this.ariaRole) {
+			this._table.ariaRole = this.ariaRole;
+		}
+
+		if (this.focused) {
+			this._table.focus();
+		}
+
 		this.layoutTable();
 		this.validate();
 	}
@@ -328,11 +336,23 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
 	}
 
+	public get ariaRole(): string {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.ariaRole, undefined);
+	}
+
 	public set moveFocusOutWithTab(newValue: boolean) {
 		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
 	}
 
 	public get moveFocusOutWithTab(): boolean {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
+	}
+
+	public get focused(): boolean {
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
+	}
+
+	public set focused(newValue: boolean) {
+		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 }
