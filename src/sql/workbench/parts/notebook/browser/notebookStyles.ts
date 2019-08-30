@@ -60,10 +60,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .hoverButton:active {
 					border-color: ${activeBorder};
 				}
-
-				.notebookEditor .hoverButtonsContainer .containerBackground {
-					background-color: ${activeBorder};
-				}
 			`);
 		}
 
@@ -158,6 +154,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					border-color: ${inactiveBorder};
 					border-width: 1px;
 				}
+
+				.notebookEditor .hoverButtonsContainer .containerBackground {
+					background-color: ${inactiveBorder};
+				}
 			`);
 
 			// Ensure there's always a line between editor and output
@@ -216,6 +216,7 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					outline-width: 1px;
 					outline-style: solid;
 				}
+
 				.hc-black .notebookEditor .hoverButton:not(:active) {
 					border-color: ${hcOutline};
 					border-radius: 0px;
