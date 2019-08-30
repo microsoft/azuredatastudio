@@ -197,6 +197,7 @@ function getElectron(arch) {
 			ffmpegChromium: true,
 			keepDefaultApp: true
 		});
+		fancyLog('env token ', process.env['GITHUB_TOKEN']);
 		fancyLog('Using token', electronOpts.token);
 		return gulp.src('package.json')
 			.pipe(json({ name: product.nameShort }))
