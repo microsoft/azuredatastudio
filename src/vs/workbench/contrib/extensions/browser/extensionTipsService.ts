@@ -75,7 +75,7 @@ function caseInsensitiveGet<T>(obj: { [key: string]: T }, key: string): T | unde
 
 export class ExtensionTipsService extends Disposable implements IExtensionTipsService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _fileBasedRecommendations: { [id: string]: { recommendedTime: number, sources: ExtensionRecommendationSource[] }; } = Object.create(null);
 	private _recommendations: string[] = []; // {{SQL CARBON EDIT}}

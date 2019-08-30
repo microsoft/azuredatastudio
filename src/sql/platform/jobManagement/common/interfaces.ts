@@ -13,7 +13,7 @@ export const SERVICE_ID = 'jobManagementService';
 export const IJobManagementService = createDecorator<IJobManagementService>(SERVICE_ID);
 
 export interface IJobManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onDidChange: Event<void>;
 
 	registerProvider(providerId: string, provider: azdata.AgentServicesProvider): void;

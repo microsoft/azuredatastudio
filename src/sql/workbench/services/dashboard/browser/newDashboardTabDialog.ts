@@ -8,6 +8,6 @@ import { IDashboardTab } from 'sql/platform/dashboard/browser/dashboardRegistry'
 
 export const INewDashboardTabDialogService = createDecorator<INewDashboardTabDialogService>('addNewDashboardTabService');
 export interface INewDashboardTabDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	showDialog(dashboardTabs: Array<IDashboardTab>, openedTabs: Array<IDashboardTab>, uri: string): void;
 }

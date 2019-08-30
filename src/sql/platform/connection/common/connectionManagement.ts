@@ -65,7 +65,7 @@ export const SERVICE_ID = 'connectionManagementService';
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
 export interface IConnectionManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// Event Emitters
 	onAddConnectionProfile: Event<IConnectionProfile>;

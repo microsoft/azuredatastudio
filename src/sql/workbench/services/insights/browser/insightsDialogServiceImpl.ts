@@ -12,7 +12,7 @@ import { IInsightsConfig } from 'sql/platform/dashboard/browser/insightRegistry'
 import { InsightsDialogController } from 'sql/workbench/services/insights/common/insightsDialogController';
 
 export class InsightsDialogService implements IInsightsDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _insightsDialogController: InsightsDialogController;
 	private _insightsDialogView: InsightsDialogView;
 	private _insightsDialogModel: IInsightsDialogModel;

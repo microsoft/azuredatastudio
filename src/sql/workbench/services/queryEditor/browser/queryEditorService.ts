@@ -36,7 +36,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
  */
 export class QueryEditorService implements IQueryEditorService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private static CHANGE_UNSUPPORTED_ERROR_MESSAGE = nls.localize(
 		'queryEditorServiceChangeUnsupportedError',

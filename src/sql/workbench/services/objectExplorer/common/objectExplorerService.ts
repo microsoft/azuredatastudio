@@ -31,7 +31,7 @@ export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpan
 }
 
 export interface IObjectExplorerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<azdata.ObjectExplorerSessionResponse>;
 
@@ -128,7 +128,7 @@ const errSessionCreateFailed = nls.localize('OeSessionFailedError', "Failed to c
 
 export class ObjectExplorerService implements IObjectExplorerService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private _disposables: IDisposable[] = [];
 

@@ -58,7 +58,7 @@ export interface IConnectionComponentController {
 
 export class ConnectionDialogService implements IConnectionDialogService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _connectionDialog: ConnectionDialogWidget;
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};

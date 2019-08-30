@@ -13,7 +13,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 
 export class ErrorMessageService implements IErrorMessageService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _errorDialog: ErrorMessageDialog;
 
