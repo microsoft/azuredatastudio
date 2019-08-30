@@ -41,6 +41,8 @@ steps:
       echo "env var is $(GITHUB_TOKEN)"
       yarn gulp electron-x64
     displayName: Download Electron
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - script: |
       yarn gulp hygiene
