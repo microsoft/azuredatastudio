@@ -35,6 +35,7 @@ const getElectronVersion = require('./lib/electron').getElectronVersion;
 const createAsar = require('./lib/asar').createAsar;
 const { compileBuildTask } = require('./gulpfile.compile');
 const { compileExtensionsBuildTask } = require('./gulpfile.extensions');
+const  fancyLog = require('fancy-log');
 
 const productionDependencies = deps.getProductionDependencies(path.dirname(__dirname));
 
@@ -196,7 +197,7 @@ function getElectron(arch) {
 			ffmpegChromium: true,
 			keepDefaultApp: true
 		});
-
+		fancyLog('Using token', electronOpts.token);
 		return gulp.src('package.json')
 			.pipe(json({ name: product.nameShort }))
 			.pipe(electron(electronOpts))
