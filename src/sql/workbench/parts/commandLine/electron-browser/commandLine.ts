@@ -28,7 +28,6 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
-import { parse } from 'vs/base/common/marshalling';
 import { getErrorMessage } from 'vs/base/common/errors';
 import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 
@@ -153,12 +152,16 @@ export class CommandLineWorkbenchContribution implements IWorkbenchContribution,
 		}
 	}
 
-	async handleURL(uri: URI): Promise<boolean> {
+	public async handleURL(uri: URI): Promise<boolean> {
 		// Catch file URLs
 		let authority = uri.authority.toLowerCase();
 		if (authority === connectAuthority) {
 			try {
 				let args = this.parseProtocolArgs(uri);
+				if (!args.server) {
+					this._notificationService.warn(localize('warnServerRequired', "Cannot connect as no server information was provided"));
+					return true;
+				}
 				let isOpenOk = await this.confirmConnect(args);
 				if (isOpenOk) {
 					await this.processCommandLine(args);
