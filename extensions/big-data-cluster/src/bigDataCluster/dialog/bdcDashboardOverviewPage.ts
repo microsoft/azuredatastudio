@@ -10,8 +10,9 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { IconPathHelper } from '../constants';
-import { getStateDisplayText, getHealthStatusDisplayText, getHealthStatusIcon, getEndpointDisplayText, getServiceNameDisplayText, Endpoint } from '../utils';
+import { getStateDisplayText, getHealthStatusDisplayText, getEndpointDisplayText, getHealthStatusIcon, getServiceNameDisplayText, Endpoint } from '../utils';
 import { EndpointModel, ServiceStatusModel, BdcStatusModel } from '../controller/apiGenerated';
+import { BdcDashboard } from './bdcDashboard';
 
 const localize = nls.loadMessageBundle();
 
@@ -20,7 +21,7 @@ const overviewServiceNameCellWidth = '100px';
 const overviewStateCellWidth = '75px';
 const overviewHealthStatusCellWidth = '100px';
 
-const serviceEndpointRowServiceNameCellWidth = '125px';
+const serviceEndpointRowServiceNameCellWidth = '175px';
 const serviceEndpointRowEndpointCellWidth = '350px';
 
 const hyperlinkedEndpoints = [Endpoint.metricsui, Endpoint.logsui, Endpoint.sparkHistory, Endpoint.yarnUi];
@@ -38,7 +39,7 @@ export class BdcDashboardOverviewPage {
 
 	private endpointsRowContainer: azdata.FlexContainer;
 
-	constructor(private model: BdcDashboardModel) {
+	constructor(private dashboard: BdcDashboard, private model: BdcDashboardModel) {
 		this.model.onDidUpdateEndpoints(endpoints => this.handleEndpointsUpdate(endpoints));
 		this.model.onDidUpdateBdcStatus(bdcStatus => this.handleBdcStatusUpdate(bdcStatus));
 	}
@@ -201,7 +202,7 @@ export class BdcDashboardOverviewPage {
 		if (bdcStatus.services) {
 			this.serviceStatusRowContainer.clearItems();
 			bdcStatus.services.forEach((s, i) => {
-				createServiceStatusRow(this.modelBuilder, this.serviceStatusRowContainer, s, i === bdcStatus.services.length - 1);
+				this.createServiceStatusRow(this.serviceStatusRowContainer, s, i === bdcStatus.services.length - 1);
 			});
 		}
 	}
@@ -213,48 +214,70 @@ export class BdcDashboardOverviewPage {
 
 		this.endpointsRowContainer.clearItems();
 		endpoints.forEach((e, i) => {
-			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
+			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});
+	}
+
+	private createServiceStatusRow(container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
+		const serviceStatusRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
+		const statusIconCell = this.modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
+		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': overviewIconColumnWidth, 'min-width': overviewIconColumnWidth } });
+		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' } }).component();
+		nameCell.onDidClick(() => {
+			this.dashboard.switchToServiceTab(serviceStatus.serviceName);
+		});
+		serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': overviewServiceNameCellWidth, 'min-width': overviewServiceNameCellWidth, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
+		const stateCell = this.modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
+		serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': overviewStateCellWidth, 'min-width': overviewStateCellWidth } });
+		const healthStatusCell = this.modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
+		serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': overviewHealthStatusCellWidth, 'min-width': overviewHealthStatusCellWidth } });
+
+		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
+			const viewDetailsButton = this.modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
+			viewDetailsButton.onDidClick(() => {
+				vscode.window.showErrorMessage(serviceStatus.details);
+			});
+			serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+		}
+
+		container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
 	}
 }
 
-function createServiceStatusRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, serviceStatus: ServiceStatusModel, isLastRow: boolean): void {
-	const serviceStatusRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
-	const statusIconCell = modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
-	serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': overviewIconColumnWidth, 'min-width': overviewIconColumnWidth } });
-	const nameCell = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': overviewServiceNameCellWidth, 'min-width': overviewServiceNameCellWidth, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-	const stateCell = modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
-	serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': overviewStateCellWidth, 'min-width': overviewStateCellWidth } });
-	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'text-align': 'center' } }).component();
-	serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': overviewHealthStatusCellWidth, 'min-width': overviewHealthStatusCellWidth } });
-
-	if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
-		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
-		viewDetailsButton.onDidClick(() => {
-			vscode.window.showErrorMessage(serviceStatus.details);
-		});
-		serviceStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
-	}
-
-	container.addItem(serviceStatusRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
-}
-
-function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, endpoint: EndpointModel, isHyperlink: boolean, isLastRow: boolean): void {
+function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, endpoint: EndpointModel, bdcModel: BdcDashboardModel, isHyperlink: boolean, isLastRow: boolean): void {
 	const endPointRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '40px' }).component();
 	const nameCell = modelBuilder.text().withProperties({ value: getEndpointDisplayText(endpoint.name, endpoint.description), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
 	endPointRow.addItem(nameCell, { CSSStyles: { 'width': serviceEndpointRowServiceNameCellWidth, 'min-width': serviceEndpointRowServiceNameCellWidth, 'user-select': 'text', 'text-align': 'center' } });
 	if (isHyperlink) {
 		const endpointCell = modelBuilder.hyperlink()
-			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px', 'padding-left': '10px' } })
+			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px' } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'color': '#0078d4', 'text-decoration': 'underline', 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'color': '#0078d4', 'text-decoration': 'underline', 'overflow': 'hidden', 'padding-left': '10px' } });
+	}
+	else if (endpoint.name === Endpoint.sqlServerMaster) {
+		const endpointCell = modelBuilder.text()
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'cursor': 'pointer', 'color': '#0078d4', 'text-decoration': 'underline' } })
+			.component();
+		endpointCell.onDidClick(async () => {
+			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
+			const result = await azdata.connection.connect(connProfile, true, true);
+			if (!result.connected) {
+				if (result.errorMessage && result.errorMessage.length > 0) {
+					vscode.window.showErrorMessage(result.errorMessage);
+				}
+				// Clear out the password and username before connecting since those being wrong are likely the issue
+				connProfile.userName = undefined;
+				connProfile.password = undefined;
+				azdata.connection.openConnectionDialog(undefined, connProfile);
+			}
+		});
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden', 'padding-left': '10px' } });
 	}
 	else {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'padding-left': '10px' } })
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden', 'padding-left': '10px' } });
 	}
 	const copyValueCell = modelBuilder.button().component();
 	copyValueCell.iconPath = IconPathHelper.copy;

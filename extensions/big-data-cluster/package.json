@@ -24,8 +24,7 @@
 			"sqlBigDataCluster": [
 				{
 					"id": "sqlBigDataCluster",
-					"name": "%text.sqlServerBigDataClusters%",
-					"when": "config.bigDataClusters.enabled"
+					"name": "%text.sqlServerBigDataClusters%"
 				}
 			]
 		},
@@ -58,31 +57,20 @@
 			"view/item/context": [
 				{
 					"command": "bigDataClusters.command.manageController",
-					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@1"
 				},
 				{
 					"command": "bigDataClusters.command.refreshController",
-					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@2"
 				},
 				{
 					"command": "bigDataClusters.command.deleteController",
-					"when": "viewItem == bigDataClusters.itemType.controllerNode",
+					"when": "view == sqlBigDataCluster && viewItem == bigDataClusters.itemType.controllerNode",
 					"group": "navigation@3"
 				}
 			]
-		},
-		"configuration": {
-			"type": "object",
-			"title": "%text.sqlServerBigDataClusters%",
-			"properties": {
-				"bigDataClusters.enabled": {
-					"type": "boolean",
-					"default": false,
-					"description": "%text.sqlServerBigDataClustersEnabledConfig.description%"
-				}
-			}
 		},
 		"commands": [
 			{

@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, INotebookContentsEditable } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/parts/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
@@ -56,6 +56,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onProviderIdChanged = new Emitter<string>();
 	private _activeContexts: IDefaultConnection;
 	private _trustedMode: boolean;
+	private _onActiveCellChanged = new Emitter<ICellModel>();
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
@@ -268,6 +269,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._onValidConnectionSelected.event;
 	}
 
+	public get onActiveCellChanged(): Event<ICellModel> {
+		return this._onActiveCellChanged.event;
+	}
+
 	public get standardKernels(): notebookUtils.IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
@@ -359,12 +364,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	private updateActiveCell(cell: ICellModel) {
+	public updateActiveCell(cell: ICellModel) {
 		if (this._activeCell) {
 			this._activeCell.active = false;
 		}
 		this._activeCell = cell;
-		this._activeCell.active = true;
+		if (cell) {
+			this._activeCell.active = true;
+		}
+		this._onActiveCellChanged.fire(cell);
 	}
 
 	private createCell(cellType: CellType): ICellModel {
@@ -999,8 +1007,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		switch (change) {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
-				changeInfo.changeType = NotebookChangeType.DirtyStateChanged;
 				changeInfo.isDirty = true;
+				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;
 			default:
 			// Do nothing for now
@@ -1008,10 +1016,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
-	serializationStateChanged(changeType: NotebookChangeType): void {
+	serializationStateChanged(changeType: NotebookChangeType, cell?: ICellModel): void {
 		let changeInfo: NotebookContentChange = {
 			changeType: changeType,
-			cells: undefined
+			cells: [cell]
 		};
 
 		this._contentChangedEmitter.fire(changeInfo);

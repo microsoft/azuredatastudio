@@ -19,12 +19,14 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { MenuId, IMenuService } from 'vs/platform/actions/common/actions';
+import { MenuId, IMenuService, MenuItemAction } from 'vs/platform/actions/common/actions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 import { fillInActions } from 'vs/platform/actions/browser/menuEntryActionViewItem';
+import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 /**
  *  Provides actions for the server tree elements
@@ -88,10 +90,31 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		let menu = this.menuService.createMenu(MenuId.ObjectExplorerItemContext, scopedContextService);
 
 		// Fill in all actions
-		let actions = getDefaultActions(context);
-		let options = { arg: undefined, shouldForwardArgs: true };
+		const builtIn = getDefaultActions(context);
+		const actions = [];
+		const options = { arg: undefined, shouldForwardArgs: true };
 		const groups = menu.getActions(options);
+		let insertIndex: number | undefined = 0;
+		const queryIndex = groups.findIndex(v => {
+			if (v[0] === '0_query') {
+				return true;
+			} else {
+				insertIndex += v[1].length;
+				return false;
+			}
+		});
+		insertIndex = queryIndex > -1 ? insertIndex + groups[queryIndex][1].length : undefined;
 		fillInActions(groups, actions, false);
+
+		if (insertIndex) {
+			builtIn.unshift(new Separator());
+			actions.splice(insertIndex, 0, ...builtIn);
+		} else {
+			if (actions.length > 0) {
+				builtIn.push(new Separator());
+			}
+			actions.unshift(...builtIn);
+		}
 
 		// Cleanup
 		scopedContextService.dispose();

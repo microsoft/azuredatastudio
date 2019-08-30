@@ -106,6 +106,13 @@ export class NotebookModelStub implements INotebookModel {
 	serializationStateChanged(changeType: NotebookChangeType): void {
 		throw new Error('Method not implemented.');
 	}
+	get onActiveCellChanged(): Event<ICellModel> {
+		throw new Error('Method not implemented.');
+	}
+	updateActiveCell(cell: ICellModel) {
+		throw new Error('Method not implemented.');
+	}
+
 }
 
 export class NotebookManagerStub implements INotebookManager {
