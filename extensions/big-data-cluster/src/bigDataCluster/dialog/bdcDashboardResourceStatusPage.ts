@@ -5,6 +5,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { BdcStatusModel, InstanceStatusModel } from '../controller/apiGenerated';
@@ -180,6 +181,13 @@ function createInstanceHealthStatusRow(modelBuilder: azdata.ModelBuilder, instan
 	const healthStatusCell = modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(instanceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component();
 	instanceHealthStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': healthAndStatusHealthColumnWidth, 'min-width': healthAndStatusHealthColumnWidth } });
 
+	if (instanceStatus.healthStatus !== 'healthy' && instanceStatus.details && instanceStatus.details.length > 0) {
+		const viewDetailsButton = modelBuilder.button().withProperties<azdata.ButtonProperties>({ label: localize('bdc.dashboard.viewDetails', "View Details") }).component();
+		viewDetailsButton.onDidClick(() => {
+			vscode.window.showErrorMessage(instanceStatus.details);
+		});
+		instanceHealthStatusRow.addItem(viewDetailsButton, { flex: '0 0 auto' });
+	}
 	return instanceHealthStatusRow;
 }
 

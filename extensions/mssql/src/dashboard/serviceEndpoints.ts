@@ -27,12 +27,12 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 
 		if (endpointsArray.length > 0) {
 			const grafanaEp = endpointsArray.find(e => e.serviceName === grafanaEndpointName);
-			if (grafanaEp) {
+			if (grafanaEp && grafanaEp.endpoint && grafanaEp.endpoint.indexOf('/d/wZx3OUdmz') === -1) {
 				// Update to have correct URL
 				grafanaEp.endpoint += '/d/wZx3OUdmz';
 			}
 			const kibanaEp = endpointsArray.find(e => e.serviceName === logsuiEndpointName);
-			if (kibanaEp) {
+			if (kibanaEp && kibanaEp.endpoint && kibanaEp.endpoint.indexOf('/app/kibana#/discover') === -1) {
 				// Update to have correct URL
 				kibanaEp.endpoint += '/app/kibana#/discover';
 			}

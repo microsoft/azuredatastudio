@@ -28,6 +28,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _extensionContext: vscode.ExtensionContext;
 	private _throttleTimer: any;
 	private _resource: string;
+	// For testing
+	private _errorMessage: string;
 	private _onReadAllTOCFiles: vscode.EventEmitter<void> = new vscode.EventEmitter<void>();
 	private _openAsUntitled: boolean;
 
@@ -194,8 +196,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private flattenArray(array: any[]): any[] {
-		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections)) : acc.concat(val), []);
+	private flattenArray(array: any[], title: string): any[] {
+		try {
+			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections, title)) : acc.concat(val), []);
+		} catch (e) {
+			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', title);
+		}
 	}
 
 	public getBooks(): BookTreeItem[] {
@@ -208,7 +214,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
-					tableOfContents: this.flattenArray(tableOfContents),
+					tableOfContents: this.flattenArray(tableOfContents, config.title),
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
@@ -220,15 +226,15 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				);
 				books.push(book);
 			} catch (e) {
-				vscode.window.showErrorMessage(localize('openConfigFileError', "Open file {0} failed: {1}",
-					path.join(root, '_config.yml'),
-					e instanceof Error ? e.message : e));
+				let error = e instanceof Error ? e.message : e;
+				this._errorMessage = error;
+				vscode.window.showErrorMessage(error);
 			}
 		}
 		return books;
 	}
 
-	private getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
+	public getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
@@ -288,7 +294,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						);
 						notebooks.push(markdown);
 					} else {
-						vscode.window.showErrorMessage(localize('missingFileError', "Missing file : {0}", sections[i].title));
+						let error = localize('missingFileError', 'Missing file : {0}', sections[i].title);
+						this._errorMessage = error;
+						vscode.window.showErrorMessage(error);
 					}
 				}
 			} else {
@@ -317,6 +325,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return Promise.resolve(result);
 	}
 
+	public get errorMessage() {
+		return this._errorMessage;
+	}
+
+	public get tableOfContentPaths() {
+		return this._tableOfContentPaths;
+	}
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let title = this.findNextUntitledFileName(resource);
 		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);

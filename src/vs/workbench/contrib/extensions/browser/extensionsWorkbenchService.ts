@@ -39,8 +39,8 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IProductService } from 'vs/platform/product/common/product';
 import { asDomUri } from 'vs/base/browser/dom';
 
-// {{SQL CARBON EDIT}}
-import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
+import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'; // {{SQL CARBON EDIT}}
+import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -516,7 +516,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IModeService private readonly modeService: IModeService,
-		@IProductService private readonly productService: IProductService
+		@IProductService private readonly productService: IProductService,
+		@IOpenerService private readonly openerService: IOpenerService // {{SQL CARBON EDIT}}
 	) {
 		super();
 		if (this.extensionManagementServerService.localExtensionManagementServer) {
@@ -852,7 +853,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	// {{SQL CARBON EDIT}}
 	private downloadOrBrowse(ext: IExtension): Promise<any> {
 		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
-			window.open(ext.gallery.assets.downloadPage.uri);
+			this.openerService.open(URI.parse(ext.gallery.assets.downloadPage.uri));
 			return Promise.resolve(undefined);
 		} else {
 			return this.extensionService.installFromGallery(ext.gallery);

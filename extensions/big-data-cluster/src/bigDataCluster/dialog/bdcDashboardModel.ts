@@ -8,7 +8,7 @@
 import * as vscode from 'vscode';
 import { getBdcStatus, getEndPoints } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
-import { showErrorMessage } from '../utils';
+import { showErrorMessage, Endpoint } from '../utils';
 
 export class BdcDashboardModel {
 
@@ -50,9 +50,27 @@ export class BdcDashboardModel {
 			}),
 			getEndPoints(this.url, this.username, this.password, true).then(response => {
 				this._endpoints = response.endPoints || [];
+				fixEndpoints(this._endpoints);
 				this._endpointsLastUpdated = new Date();
 				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
 			})
 		]).catch(error => showErrorMessage(error));
 	}
+}
+
+/**
+ * Applies fixes to the endpoints received so they are displayed correctly
+ * @param endpoints The endpoints received to modify
+ */
+function fixEndpoints(endpoints: EndpointModel[]) {
+	endpoints.forEach(e => {
+		if (e.name === Endpoint.metricsui && e.endpoint && e.endpoint.indexOf('/d/wZx3OUdmz') === -1) {
+			// Update to have correct URL
+			e.endpoint += '/d/wZx3OUdmz';
+		}
+		if (e.name === Endpoint.logsui && e.endpoint && e.endpoint.indexOf('/app/kibana#/discover') === -1) {
+			// Update to have correct URL
+			e.endpoint += '/app/kibana#/discover';
+		}
+	});
 }
