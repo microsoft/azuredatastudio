@@ -1,6 +1,6 @@
 trigger:
-  master
-  release/*
+  - master
+  - release/*
 
 jobs:
   - job: Windows
