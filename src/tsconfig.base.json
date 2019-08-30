@@ -2,24 +2,24 @@
 	"compilerOptions": {
 		"module": "amd",
 		"moduleResolution": "node",
-		"noImplicitAny": false, // {{SQL CARBON EDIT}}
+		"noImplicitAny": false,
 		"experimentalDecorators": true,
 		"noImplicitReturns": true,
-		"noUnusedLocals": false, // {{SQL CARBON EDIT}}
+		"noUnusedLocals": false,
 		"noImplicitThis": true,
 		"alwaysStrict": true,
 		"strictBindCallApply": true,
-		"strictNullChecks": false, // {{SQL CARBON EDIT}}
+		"strictNullChecks": false,
 		"forceConsistentCasingInFileNames": true,
 		"baseUrl": ".",
 		"paths": {
 			"vs/*": [
 				"./vs/*"
 			],
-			"sql/*": [ // {{SQL CARBON EDIT}}
+			"sql/*": [
 				"./sql/*"
 			],
-			"sqltest/*": [ // {{SQL CARBON EDIT}}
+			"sqltest/*": [
 				"./sqltest/*"
 			]
 		}
