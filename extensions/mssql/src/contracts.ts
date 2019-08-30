@@ -127,20 +127,26 @@ export interface UpdateAgentNotebookParams {
 export interface UpdateAgentNotebookRunPinParams {
 	ownerUri: string;
 	targetDatabase: string;
-	materializedId: number;
+	agentNotebookHistory: azdata.AgentNotebookHistoryInfo;
 	materializedNotebookPin: boolean;
 }
 
 export interface UpdateAgentNotebookRunNameParams {
 	ownerUri: string;
 	targetDatabase: string;
-	materializedId: number;
+	agentNotebookHistory: azdata.AgentNotebookHistoryInfo;
 	materializedNotebookName: string;
 }
 
 export interface DeleteAgentNotebookParams {
 	ownerUri: string;
 	notebook: azdata.AgentNotebookInfo;
+}
+
+export interface DeleteAgentMaterializedNotebookParams {
+	ownerUri: string;
+	targetDatabase: string;
+	agentNotebookHistory: azdata.AgentNotebookHistoryInfo;
 }
 
 // Alert management parameters
@@ -289,6 +295,10 @@ export namespace AgentNotebookMaterializedRequest {
 
 export namespace UpdateAgentNotebookRunNameRequest {
 	export const type = new RequestType<UpdateAgentNotebookRunNameParams, azdata.UpdateAgentNotebookResult, void, void>('agent/updatenotebookname');
+}
+
+export namespace DeleteMaterializedNotebookRequest {
+	export const type = new RequestType<DeleteAgentMaterializedNotebookParams, azdata.ResultStatus, void, void>('agent/deletenotebookmaterialized');
 }
 
 export namespace UpdateAgentNotebookRunPinRequest {

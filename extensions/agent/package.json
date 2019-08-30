@@ -45,24 +45,28 @@
         "command": "agent.openNotebookDialog",
         "title": "Schedule Notebook",
         "icon": {
-					"dark": "resources/dark/open_notebook_inverse.svg",
-					"light": "resources/light/open_notebook.svg"
-				}
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
       },
       {
         "command": "agent.reuploadTemplate",
         "title": "Reupload Template",
         "icon": {
-					"dark": "resources/dark/open_notebook_inverse.svg",
-					"light": "resources/light/open_notebook.svg"
-				}
+          "dark": "resources/dark/open_notebook_inverse.svg",
+          "light": "resources/light/open_notebook.svg"
+        }
       }
     ],
     "menus": {
-      "notebook/toolbar":[
+      "notebook/toolbar": [
         {
           "command": "agent.openNotebookDialog",
           "when": "providerId == sql"
+        },
+        {
+          "command": "agent.reuploadTemplate",
+          "when": "agent:trackedTemplate"
         }
       ],
       "explorer/context": [

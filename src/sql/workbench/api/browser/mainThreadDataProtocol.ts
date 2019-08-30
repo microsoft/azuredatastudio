@@ -404,11 +404,14 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
 				return self._proxy.$getMaterializedNotebook(handle, connectionUri, targetDatabase, notebookMaterializedId);
 			},
-			updateNotebookMaterializedName(connectionUri: string, materializedId: number, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
-				return self._proxy.$updateNotebookMaterializedName(handle, connectionUri, materializedId, targetDatabase, name);
+			updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedName(handle, connectionUri, agentNotebookHistory, targetDatabase, name);
 			},
-			updateNotebookMaterializedPin(connectionUri: string, materializedId: number, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
-				return self._proxy.$updateNotebookMaterializedPin(handle, connectionUri, materializedId, targetDatabase, pin);
+			deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteMaterializedNotebook(handle, connectionUri, agentNotebookHistory, targetDatabase);
+			},
+			updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedPin(handle, connectionUri, agentNotebookHistory, targetDatabase, pin);
 			},
 			getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
 				return self._proxy.$getTemplateNotebook(handle, connectionUri, targetDatabase, jobId);

@@ -27,6 +27,12 @@ const localize = nls.loadMessageBundle();
 /**
  * The main controller class that initializes the extension
  */
+export class TemplateMapObject {
+	notebookInfo: azdata.AgentNotebookInfo;
+	fileUri: vscode.Uri;
+	tempPath: string;
+	ownerUri: string;
+}
 export class MainController {
 
 	protected _context: vscode.ExtensionContext;
@@ -36,7 +42,7 @@ export class MainController {
 	private operatorDialog: OperatorDialog;
 	private proxyDialog: ProxyDialog;
 	private notebookDialog: NotebookDialog;
-	private notebookTemplateMap = new Map<string, azdata.AgentNotebookInfo>();
+	private notebookTemplateMap = new Map<string, TemplateMapObject>();
 	// PUBLIC METHODS //////////////////////////////////////////////////////
 	public constructor(context: vscode.ExtensionContext) {
 		this._context = context;
@@ -91,7 +97,22 @@ export class MainController {
 		});
 
 		vscode.commands.registerCommand('agent.reuploadTemplate', async (ownerUri: string, operatorInfo: azdata.AgentOperatorInfo) => {
-			//hello
+			let nbEditor = azdata.nb.activeNotebookEditor;
+			// await nbEditor.document.save();
+			let templateMap = this.notebookTemplateMap.get(nbEditor.document.uri.toString());
+			let vsEditor = await vscode.workspace.openTextDocument(templateMap.fileUri);
+			let content = vsEditor.getText();
+			promisify(fs.writeFile)(templateMap.tempPath, content);
+			AgentUtils.getAgentService().then(async (agentService) => {
+				let result = await agentService.updateNotebook(templateMap.ownerUri, templateMap.notebookInfo.name, templateMap.notebookInfo, templateMap.tempPath);
+				if (result.success) {
+					vscode.window.showInformationMessage(localize('agent.templateUploadSuccessful', 'Template updated successfully'));
+				}
+				else {
+					vscode.window.showInformationMessage(localize('agent.templateUploadError', 'Template update failure'));
+				}
+			});
+
 		});
 
 		vscode.commands.registerCommand('agent.openProxyDialog', async (ownerUri: string, proxyInfo: azdata.AgentProxyInfo, credentials: azdata.CredentialInfo[]) => {
@@ -103,8 +124,13 @@ export class MainController {
 			}
 			this.proxyDialog.dialogName ? await this.proxyDialog.openDialog(this.proxyDialog.dialogName) : await this.proxyDialog.openDialog();
 		});
-		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string, notebookInfo?: azdata.AgentNotebookInfo) => {
-			const tempfilePath = path.join(os.tmpdir(), filename + '.ipynb');
+
+		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string, notebookInfo?: azdata.AgentNotebookInfo, ownerUri?: string) => {
+			const tempfilePath = path.join(os.tmpdir(), 'mssql_notebooks', filename + '.ipynb');
+			if (!await promisify(fs.exists)(path.join(os.tmpdir(), 'mssql_notebooks'))) {
+				await promisify(fs.mkdir)(path.join(os.tmpdir(), 'mssql_notebooks'));
+			}
+			let editors = azdata.nb.visibleNotebookEditors;
 			if (await promisify(fs.exists)(tempfilePath)) {
 				await promisify(fs.unlink)(tempfilePath);
 			}
@@ -112,19 +138,14 @@ export class MainController {
 				await promisify(fs.writeFile)(tempfilePath, jsonNotebook);
 				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
 				if (notebookInfo) {
-					this.notebookTemplateMap.set(uri.fsPath, notebookInfo);
+					this.notebookTemplateMap.set(uri.toString(), { notebookInfo: notebookInfo, fileUri: uri, ownerUri: ownerUri, tempPath: tempfilePath });
 					vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', true);
 				}
-				await vscode.workspace.openTextDocument(tempfilePath).then(async (document) => {
-					let initialContent = document.getText();
-					await azdata.nb.showNotebookDocument(uri, {
-						preview: false,
-						initialContent: initialContent,
-						initialDirtyState: false
-					});
-					vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
+				await azdata.nb.showNotebookDocument(uri, {
+					initialContent: jsonNotebook,
+					initialDirtyState: false
 				});
-
+				vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
 			}
 			catch (e) {
 				console.log(e);

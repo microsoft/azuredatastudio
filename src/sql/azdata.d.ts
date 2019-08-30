@@ -1506,6 +1506,7 @@ declare module 'azdata' {
 		materializedNotebookName: string;
 		materializedNotebookPin: boolean;
 		materializedNotebookErrorInfo: string;
+		materializedNotebookDeleted: boolean;
 	}
 
 	export interface AgentProxyInfo {
@@ -1713,8 +1714,9 @@ declare module 'azdata' {
 		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
 		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
 		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
-		updateNotebookMaterializedName(ownerUri: string, materializedId: number, targetDatabase: string, name: string): Thenable<ResultStatus>;
-		updateNotebookMaterializedPin(ownerUri: string, materializedId: number, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
+		updateNotebookMaterializedName(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<ResultStatus>;
+		updateNotebookMaterializedPin(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
+		deleteMaterializedNotebook(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string): Thenable<ResultStatus>;
 
 		// Job Step management methods
 		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;

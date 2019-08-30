@@ -632,6 +632,7 @@ export class DeleteNotebookAction extends Action {
 		@INotificationService private _notificationService: INotificationService,
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IJobManagementService private _jobService: IJobManagementService,
+		@IInstantiationService private instantationService: IInstantiationService,
 		@ITelemetryService private _telemetryService: ITelemetryService
 	) {
 		super(DeleteNotebookAction.ID, DeleteNotebookAction.LABEL);
@@ -640,6 +641,7 @@ export class DeleteNotebookAction extends Action {
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
 		let self = this;
 		let notebook = actionInfo.targetObject.job as azdata.AgentNotebookInfo;
+		let refreshAction = this.instantationService.createInstance(JobsRefreshAction);
 		self._notificationService.prompt(
 			Severity.Info,
 			nls.localize('jobaction.deleteNotebookConfirm', "Are you sure you'd like to delete the notebook '{0}'?", notebook.name),
@@ -647,8 +649,9 @@ export class DeleteNotebookAction extends Action {
 				label: DeleteNotebookAction.LABEL,
 				run: () => {
 					this._telemetryService.publicLog(TelemetryKeys.DeleteAgentJob);
-					self._jobService.deleteNotebook(actionInfo.ownerUri, actionInfo.targetObject.job).then(result => {
+					self._jobService.deleteNotebook(actionInfo.ownerUri, actionInfo.targetObject.job).then(async (result) => {
 						if (!result || !result.success) {
+							await refreshAction.run(actionInfo);
 							let errorMessage = nls.localize("jobaction.failedToDeleteNotebook", "Could not delete notebook '{0}'.\nError: {1}",
 								notebook.name, result.errorMessage ? result.errorMessage : 'Unknown error');
 							self._errorMessageService.showDialog(Severity.Error, errorLabel, errorMessage);
@@ -670,7 +673,7 @@ export class DeleteNotebookAction extends Action {
 
 export class PinNotebookMaterializedAction extends Action {
 	public static ID = 'notebookaction.openTemplate';
-	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin Notebook");
+	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService
@@ -686,7 +689,7 @@ export class PinNotebookMaterializedAction extends Action {
 
 export class DeleteMaterializedNotebookAction extends Action {
 	public static ID = 'notebookaction.deleteMaterializedNotebook';
-	public static LABEL = nls.localize('notebookaction.pinNotebook', "Pin Notebook");
+	public static LABEL = nls.localize('notebookaction.deleteMaterializedNotebook', "Delete");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService
@@ -695,14 +698,14 @@ export class DeleteMaterializedNotebookAction extends Action {
 	}
 
 	public run(actionInfo: any): Promise<boolean> {
-		actionInfo.component.deleteMaterializedNotebook(actionInfo.history, true);
+		actionInfo.component.deleteMaterializedNotebook(actionInfo.history);
 		return Promise.resolve(true);
 	}
 }
 
 export class UnpinNotebookMaterializedAction extends Action {
-	public static ID = 'notebookaction.openTemplate';
-	public static LABEL = nls.localize('notebookaction.unpinNotebook', "Unpin Notebook");
+	public static ID = 'notebookaction.unpinNotebook';
+	public static LABEL = nls.localize('notebookaction.unpinNotebook', "Unpin");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService

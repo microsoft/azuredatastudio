@@ -93,15 +93,21 @@ export class JobManagementService implements IJobManagementService {
 		});
 	}
 
-	public updateNotebookMaterializedName(connectionUri: string, materializedId: number, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+	public deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
-			return runner.updateNotebookMaterializedName(connectionUri, materializedId, targetDatabase, name);
+			return runner.deleteMaterializedNotebook(connectionUri, agentNotebookHistory, targetDatabase);
 		});
 	}
 
-	public updateNotebookMaterializedPin(connectionUri: string, materializedId: number, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+	public updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
 		return this._runAction(connectionUri, (runner) => {
-			return runner.updateNotebookMaterializedPin(connectionUri, materializedId, targetDatabase, pin);
+			return runner.updateNotebookMaterializedName(connectionUri, agentNotebookHistory, targetDatabase, name);
+		});
+	}
+
+	public updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+		return this._runAction(connectionUri, (runner) => {
+			return runner.updateNotebookMaterializedPin(connectionUri, agentNotebookHistory, targetDatabase, pin);
 		});
 	}
 

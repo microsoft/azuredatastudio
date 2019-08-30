@@ -739,17 +739,24 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	}
 
 	/**
-	 * Get a Agent Materialized Notebook
+	 * Update a Agent Materialized Notebook Name
 	 */
-	public $updateNotebookMaterializedName(handle: number, ownerUri: string, notebookMaterializedId: number, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
-		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedName(ownerUri, notebookMaterializedId, targetDatabase, name);
+	public $updateNotebookMaterializedName(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedName(ownerUri, agentNotebookHistory, targetDatabase, name);
 	}
 
 	/**
 	 * Get a Agent Materialized Notebook
 	 */
-	public $updateNotebookMaterializedPin(handle: number, ownerUri: string, notebookMaterializedId: number, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
-		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedPin(ownerUri, notebookMaterializedId, targetDatabase, pin);
+	public $deleteMaterializedNotebook(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteMaterializedNotebook(ownerUri, agentNotebookHistory, targetDatabase);
+	}
+
+	/**
+	 * Update a Agent Materialized Notebook Pin
+	 */
+	public $updateNotebookMaterializedPin(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedPin(ownerUri, agentNotebookHistory, targetDatabase, pin);
 	}
 
 	/**

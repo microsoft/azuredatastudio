@@ -12,7 +12,7 @@ import { OnInit, Component, Inject, Input, forwardRef, ElementRef, ChangeDetecto
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, EditJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { RunJobAction, StopJobAction, JobsRefreshAction, EditNotebookJobAction, EditJobAction, OpenMaterializedNotebookAction, OpenTemplateNotebookAction, RenameNotebookMaterializedAction, PinNotebookMaterializedAction, UnpinNotebookMaterializedAction, DeleteMaterializedNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -147,7 +147,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				self._showPreviousRuns = false;
 				self._showSteps = false;
 			}
-			this._actionBar.context = { targetObject: { canEdit: true, notebook: this._agentNotebookInfo }, ownerUri: this.ownerUri, component: this };
+			this._actionBar.context = { targetObject: { canEdit: true, notebook: this._agentNotebookInfo, job: this._agentNotebookInfo }, ownerUri: this.ownerUri, component: this };
 			this._editNotebookJobAction.enabled = true;
 			this._actionBar.setContent([
 				{ action: this._runJobAction },
@@ -225,12 +225,15 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	private toggleGridCollapse(i): void {
 		let notebookGrid = document.getElementById('notebook-grid' + i);
 		let checkbox: any = document.getElementById('accordion' + i);
+		let arrow = document.getElementById('history-grid-icon' + i);
 		if (notebookGrid.className === 'notebook-grid ' + i && checkbox.checked === true) {
 			notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
 			notebookGrid.style.display = 'none';
+			arrow.className = 'resultsViewCollapsible collapsed';
 		} else if (notebookGrid.className === 'notebook-grid ' + i + ' collapsed' && checkbox.checked === false) {
 			notebookGrid.className = 'notebook-grid ' + i;
 			notebookGrid.style.display = 'grid';
+			arrow.className = 'resultsViewCollapsible';
 		}
 
 	}
@@ -373,8 +376,15 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		});
 	}
 
-	public deleteMaterializedNotebook(histories: azdata.AgentNotebookHistoryInfo) {
+	public deleteMaterializedNotebook(history: azdata.AgentNotebookHistoryInfo) {
 		//TODO: Implement deletenotebook context menu action
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
+		this._jobManagementService.deleteMaterializedNotebook(ownerUri, history, targetDatabase).then(async (result) => {
+			if (result) {
+				this.loadHistory();
+			}
+		});
 	}
 
 	public openTemplateNotebook() {
@@ -384,7 +394,7 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 
 		this._jobManagementService.getTemplateNotebook(ownerUri, targetDatabase, jobId).then(async (result) => {
 			if (result) {
-				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', this._agentViewComponent.agentNotebookInfo.name, result.notebookTemplate, this.agentNotebookInfo);
+				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', this._agentViewComponent.agentNotebookInfo.name, result.notebookTemplate, this.agentNotebookInfo, ownerUri);
 			}
 		});
 	}
@@ -400,10 +410,11 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 				if (!/\S/.test(value)) {
 					value = '';
 				}
-				this._jobManagementService.updateNotebookMaterializedName(ownerUri, materializedNotebookId, targetDatabase, value).then(async (result) => {
+				await this._jobManagementService.updateNotebookMaterializedName(ownerUri, history, targetDatabase, value).then(async (result) => {
 					if (result) {
 						history.materializedNotebookName = value;
-						this._cd.detectChanges();
+						this.loadHistory();
+
 					}
 				});
 			}
@@ -414,12 +425,10 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		let targetDatabase = this._agentViewComponent.agentNotebookInfo.targetDatabase;
 		let materializedNotebookId = history.materializedNotebookId;
-		this._jobManagementService.updateNotebookMaterializedPin(ownerUri, materializedNotebookId, targetDatabase, pin).then(async (result) => {
+		this._jobManagementService.updateNotebookMaterializedPin(ownerUri, history, targetDatabase, pin).then(async (result) => {
 			if (result) {
 				history.materializedNotebookPin = pin;
-				this.createGrid();
-				this._cd.detectChanges();
-				this.collapseGrid();
+				this.loadHistory();
 			}
 
 		});
@@ -448,10 +457,12 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		const openNotebookAction = this._instantiationService.createInstance(OpenMaterializedNotebookAction);
 		const renameNotebookAction = this._instantiationService.createInstance(RenameNotebookMaterializedAction);
 		const pinNotebookAction = this._instantiationService.createInstance(PinNotebookMaterializedAction);
+		const deleteMaterializedNotebookAction = this._instantiationService.createInstance(DeleteMaterializedNotebookAction);
 		return [
 			openNotebookAction,
 			renameNotebookAction,
-			pinNotebookAction
+			pinNotebookAction,
+			deleteMaterializedNotebookAction
 		];
 	}
 
@@ -459,16 +470,20 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 		const openNotebookAction = this._instantiationService.createInstance(OpenMaterializedNotebookAction);
 		const renameNotebookAction = this._instantiationService.createInstance(RenameNotebookMaterializedAction);
 		const unpinNotebookAction = this._instantiationService.createInstance(UnpinNotebookMaterializedAction);
+		const deleteMaterializedNotebookAction = this._instantiationService.createInstance(DeleteMaterializedNotebookAction);
 		return [
 			openNotebookAction,
 			renameNotebookAction,
-			unpinNotebookAction
+			unpinNotebookAction,
+			deleteMaterializedNotebookAction
 		];
 	}
 
 	public createdTooltip(history: azdata.AgentNotebookHistoryInfo) {
-		let tooltipString: string;
-		tooltipString = history.materializedNotebookName;
+		let tooltipString: string = '';
+		if (history.materializedNotebookName && history.materializedNotebookName !== '') {
+			tooltipString = history.materializedNotebookName;
+		}
 		let dateOptions = {
 			weekday: 'long',
 			year: 'numeric',
@@ -476,9 +491,12 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 			day: 'numeric'
 		};
 
-		tooltipString += '\n' + nls.localize('notebookHistory.dateCreatedTooltip', "Date Created:") + new Date(history.runDate).toLocaleDateString(undefined, dateOptions);
-		if (/\S/.test(history.materializedNotebookErrorInfo)) {
-			tooltipString += '\n' + nls.localize('notebookHistory.notebookErrorTooltip', "Notebook Error:") + history.materializedNotebookErrorInfo;
+		tooltipString += '\n' + nls.localize('notebookHistory.dateCreatedTooltip', "Date Created: ") + new Date(history.runDate).toLocaleDateString(undefined, dateOptions);
+		if (history.materializedNotebookErrorInfo && /\S/.test(history.materializedNotebookErrorInfo)) {
+			tooltipString += '\n' + nls.localize('notebookHistory.notebookErrorTooltip', "Notebook Error: ") + history.materializedNotebookErrorInfo;
+		}
+		if (history.runStatus === 0 && history.message && /\S/.test(history.message)) {
+			tooltipString += '\n' + nls.localize('notebookHistory.ErrorTooltip', "Job Error: ") + history.message;
 		}
 		return tooltipString;
 	}
@@ -539,20 +557,28 @@ export class NotebookHistoryComponent extends JobManagementView implements OnIni
 	public collapseGrid() {
 		for (let i = 0; i < this._grids.length; i++) {
 			let notebookGrid = document.getElementById('notebook-grid' + i);
+			let arrow = document.getElementById('history-grid-icon' + i);
 			if (notebookGrid) {
 				let checkbox: any = document.getElementById('accordion' + i);
 				if (this._grids[i].style === 'none') {
 					notebookGrid.className = 'notebook-grid ' + i + ' collapsed';
+					arrow.className = 'resultsViewCollapsible collapsed';
 					notebookGrid.style.display = 'none';
 					checkbox.checked = true;
 				}
 				else {
 					notebookGrid.className = 'notebook-grid ' + i;
 					notebookGrid.style.display = 'grid';
+					arrow.className = 'resultsViewCollapsible';
 					checkbox.checked = false;
 				}
 			}
 		}
+	}
+
+	public refreshJobs() {
+		this._agentViewComponent.refresh = true;
+		this.loadHistory();
 	}
 
 	/** GETTERS  */

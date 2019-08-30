@@ -97,7 +97,7 @@ class MainThreadNotebookEditor extends Disposable {
 		if (!input) {
 			return false;
 		}
-		return input === this.editor.notebookParams.input;
+		return input.notebookUri.toString() === this.editor.notebookParams.input.notebookUri.toString();
 	}
 
 	public applyEdits(versionIdCheck: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): boolean {
