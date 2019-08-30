@@ -29,6 +29,8 @@ steps:
       yarn --frozen-lockfile
     displayName: Install Dependencies
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
     inputs:
