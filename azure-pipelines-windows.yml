@@ -58,9 +58,3 @@ steps:
       testResultsFiles: "*-results.xml"
       searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
     condition: succeededOrFailed()
-
-  - task: PublishCodeCoverageResults@1
-    inputs:
-      codeCoverageTool: "cobertura"
-      summaryFileLocation: $(System.DefaultWorkingDirectory)\.build\coverage\cobertura-coverage.xml
-      reportDirectory: $(System.DefaultWorkingDirectory)\.build\coverage\lcov-report
