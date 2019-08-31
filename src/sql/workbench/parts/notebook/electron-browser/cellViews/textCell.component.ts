@@ -165,7 +165,8 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
 		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
-		let contentChanged = this._content !== this.cellModel.source || cellModelSourceJoined.length === 0;
+		let contentJoined = Array.isArray(this._content) ? this._content.join('') : this._content;
+		let contentChanged = contentJoined !== cellModelSourceJoined || cellModelSourceJoined.length === 0;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
 			if ((!cellModelSourceJoined) && !this.isEditMode) {
