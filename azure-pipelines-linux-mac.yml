@@ -62,9 +62,8 @@ steps:
     displayName: "Compile"
 
   - script: |
-      DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
-    displayName: "Tests"
-    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
+      DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
+    displayName: Run Unit Tests
 
   - script: |
       DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter --coverage

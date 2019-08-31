@@ -49,9 +49,8 @@ steps:
       yarn compile
     displayName: "Compile"
 
-  - script: |
-      .\scripts\test.bat --reporter mocha-junit-reporter --coverage
-    displayName: "Test"
+  - powershell: |
+      .\scripts\test.bat --tfs "Unit Tests"
 
   - task: PublishTestResults@2
     inputs:
