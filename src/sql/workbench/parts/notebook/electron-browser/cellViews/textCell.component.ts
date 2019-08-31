@@ -164,10 +164,11 @@ export class TextCellComponent extends CellView implements OnInit, OnChanges {
 	 */
 	private updatePreview(): void {
 		let trustedChanged = this.cellModel && this._lastTrustedMode !== this.cellModel.trustedMode;
-		let contentChanged = this._content !== this.cellModel.source || this.cellModel.source.length === 0;
+		let cellModelSourceJoined = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
+		let contentChanged = this._content !== this.cellModel.source || cellModelSourceJoined.length === 0;
 		if (trustedChanged || contentChanged) {
 			this._lastTrustedMode = this.cellModel.trustedMode;
-			if (!this.cellModel.source && !this.isEditMode) {
+			if ((!cellModelSourceJoined) && !this.isEditMode) {
 				this._content = localize('doubleClickEdit', "Double-click to edit");
 			} else {
 				this._content = this.cellModel.source;
