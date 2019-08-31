@@ -36,6 +36,9 @@ import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavor
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/parts/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { ManageActionContext } from 'sql/workbench/common/actions';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands
 
@@ -69,7 +72,7 @@ new NewQueryTask().registerTask();
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 	group: '0_query',
-	order: 0,
+	order: 1,
 	command: {
 		id: OE_NEW_QUERY_ACTION_ID,
 		title: localize('newQuery', "New Query")
@@ -80,12 +83,27 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 // New Query
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 	group: '0_query',
-	order: 0,
+	order: 1,
 	command: {
 		id: DE_NEW_QUERY_COMMAND_ID,
 		title: localize('newQuery', "New Query")
 	},
 	when: MssqlNodeContext.IsDatabaseOrServer
+});
+
+const ExplorerNewQueryActionID = 'explorer.query';
+CommandsRegistry.registerCommand(ExplorerNewQueryActionID, (accessor, context: ManageActionContext) => {
+	const commandService = accessor.get(ICommandService);
+	return commandService.executeCommand(NewQueryTask.ID, context.profile);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerNewQueryActionID,
+		title: NewQueryTask.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('database'),
+	order: 1
 });
 
 // Query Actions

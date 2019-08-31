@@ -27,12 +27,12 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 
 		if (endpointsArray.length > 0) {
 			const grafanaEp = endpointsArray.find(e => e.serviceName === grafanaEndpointName);
-			if (grafanaEp) {
+			if (grafanaEp && grafanaEp.endpoint && grafanaEp.endpoint.indexOf('/d/wZx3OUdmz') === -1) {
 				// Update to have correct URL
 				grafanaEp.endpoint += '/d/wZx3OUdmz';
 			}
 			const kibanaEp = endpointsArray.find(e => e.serviceName === logsuiEndpointName);
-			if (kibanaEp) {
+			if (kibanaEp && kibanaEp.endpoint && kibanaEp.endpoint.indexOf('/app/kibana#/discover') === -1) {
 				// Update to have correct URL
 				kibanaEp.endpoint += '/app/kibana#/discover';
 			}
@@ -54,7 +54,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 			}
 
 			endpointsArray = endpointsArray.map(e => {
-				e.description = getFriendlyEndpointNames(e);
+				e.description = getEndpointDisplayText(e.serviceName, e.description);
 				return e;
 			}).sort((a, b) => a.endpoint.localeCompare(b.endpoint));
 
@@ -105,44 +105,56 @@ function getCustomEndpoint(parentEndpoint: utils.IEndpoint, serviceName: string,
 	return null;
 }
 
-function getFriendlyEndpointNames(endpointInfo: utils.IEndpoint): string {
-	let friendlyName: string = endpointInfo.description || endpointInfo.serviceName;
-	switch (endpointInfo.serviceName) {
-		case 'app-proxy':
-			friendlyName = localize('approxy.description', "Application Proxy");
-			break;
-		case 'controller':
-			friendlyName = localize('controller.description', "Cluster Management Service");
-			break;
-		case 'gateway':
-			friendlyName = localize('gateway.description', "HDFS and Spark");
-			break;
-		case mgmtProxyName:
-			friendlyName = localize('mgmtproxy.description', "Management Proxy");
-			break;
-		case logsuiEndpointName:
-			friendlyName = logsuiDescription;
-			break;
-		case grafanaEndpointName:
-			friendlyName = grafanaDescription;
-			break;
-		case sparkHistoryEndpointName:
-			friendlyName = sparkHistoryDescription;
-			break;
-		case yarnUiEndpointName:
-			friendlyName = yarnHistoryDescription;
-			break;
-		case 'sql-server-master':
-			friendlyName = localize('sqlmaster.description', "SQL Server Master Instance Front-End");
-			break;
-		case 'webhdfs':
-			friendlyName = localize('webhdfs.description', "HDFS File System Proxy");
-			break;
-		case 'livy':
-			friendlyName = localize('livy.description', "Proxy for running Spark statements, jobs, applications");
-			break;
+export enum Endpoint {
+	gateway = 'gateway',
+	sparkHistory = 'spark-history',
+	yarnUi = 'yarn-ui',
+	appProxy = 'app-proxy',
+	mgmtproxy = 'mgmtproxy',
+	managementProxy = 'management-proxy',
+	logsui = 'logsui',
+	metricsui = 'metricsui',
+	controller = 'controller',
+	sqlServerMaster = 'sql-server-master',
+	webhdfs = 'webhdfs',
+	livy = 'livy'
+}
+
+/**
+ * Gets the localized text to display for a corresponding endpoint
+ * @param serviceName The endpoint name to get the display text for
+ * @param description The backup description to use if we don't have our own
+ */
+function getEndpointDisplayText(endpointName?: string, description?: string): string {
+	endpointName = endpointName || '';
+	switch (endpointName.toLowerCase()) {
+		case Endpoint.appProxy:
+			return localize('endpoint.appproxy', "Application Proxy");
+		case Endpoint.controller:
+			return localize('endpoint.controller', "Cluster Management Service");
+		case Endpoint.gateway:
+			return localize('endpoint.gateway', "Gateway to access HDFS files, Spark");
+		case Endpoint.managementProxy:
+			return localize('endpoint.managementproxy', "Management Proxy");
+		case Endpoint.mgmtproxy:
+			return localize('endpoint.mgmtproxy', "Management Proxy");
+		case Endpoint.sqlServerMaster:
+			return localize('endpoint.sqlServerEndpoint', "SQL Server Master Instance Front-End");
+		case Endpoint.metricsui:
+			return localize('endpoint.grafana', "Metrics Dashboard");
+		case Endpoint.logsui:
+			return localize('endpoint.kibana', "Log Search Dashboard");
+		case Endpoint.yarnUi:
+			return localize('endpoint.yarnHistory', "Spark Diagnostics and Monitoring Dashboard");
+		case Endpoint.sparkHistory:
+			return localize('endpoint.sparkHistory', "Spark Jobs Management and Monitoring Dashboard");
+		case Endpoint.webhdfs:
+			return localize('endpoint.webhdfs', "HDFS File System Proxy");
+		case Endpoint.livy:
+			return localize('endpoint.livy', "Proxy for running Spark statements, jobs, applications");
 		default:
-			break;
+			// Default is to use the description if one was given, otherwise worst case just fall back to using the
+			// original endpoint name
+			return description && description.length > 0 ? description : endpointName;
 	}
-	return friendlyName;
 }

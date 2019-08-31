@@ -30,7 +30,7 @@ import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEdi
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { registerNotebookThemes } from 'sql/workbench/parts/notebook/browser/notebookStyles';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
-import { notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { notebookConstants, ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { ILifecycleService } from 'vs/platform/lifecycle/common/lifecycle';
 import { SqlNotebookProvider } from 'sql/workbench/services/notebook/common/sql/sqlNotebookProvider';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
@@ -578,7 +578,7 @@ export class NotebookService extends Disposable implements INotebookService {
 		}
 	}
 
-	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType): void {
+	serializeNotebookStateChange(notebookUri: URI, changeType: NotebookChangeType, cell?: ICellModel): void {
 		if (notebookUri.scheme !== Schemas.untitled) {
 			// Conditions for saving:
 			// 1. Not untitled. They're always trusted as we open them
@@ -598,7 +598,7 @@ export class NotebookService extends Disposable implements INotebookService {
 
 		let editor = this.findNotebookEditor(notebookUri);
 		if (editor && editor.model) {
-			editor.model.serializationStateChanged(changeType);
+			editor.model.serializationStateChanged(changeType, cell);
 			// TODO add history notification if a non-untitled notebook has a state change
 		}
 	}

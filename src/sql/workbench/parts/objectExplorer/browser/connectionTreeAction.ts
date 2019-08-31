@@ -21,6 +21,7 @@ import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 
 export class RefreshAction extends Action {
 
@@ -173,14 +174,14 @@ export class AddServerGroupAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
 		this.class = 'add-server-group-action';
 	}
 
 	public run(): Promise<boolean> {
-		this._connectionManagementService.showCreateServerGroupDialog();
+		this.serverGroupController.showCreateGroupDialog();
 		return Promise.resolve(true);
 	}
 }
@@ -196,14 +197,14 @@ export class EditServerGroupAction extends Action {
 		id: string,
 		label: string,
 		private _group: ConnectionProfileGroup,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
 		this.class = 'edit-server-group-action';
 	}
 
 	public run(): Promise<boolean> {
-		this._connectionManagementService.showEditServerGroupDialog(this._group);
+		this.serverGroupController.showEditGroupDialog(this._group);
 		return Promise.resolve(true);
 	}
 }
@@ -231,8 +232,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private view: ServerTreeView,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		private view: ServerTreeView
 	) {
 		super(id, label);
 		this.class = ActiveConnectionsFilterAction.enabledClass;

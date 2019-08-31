@@ -517,7 +517,7 @@
           "when": "version=sql2017"
         },
         {
-          "webPageUrl": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-ctp",
+          "webPageUrl": "https://www.microsoft.com/evalcenter/evaluate-sql-server-2019-rc",
           "requiredTools": [],
           "when": "version=sql2019"
         }

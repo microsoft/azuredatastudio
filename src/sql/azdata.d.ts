@@ -2610,6 +2610,13 @@ declare module 'azdata' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -3011,6 +3018,8 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
+		ariaRole?: string;
+		focused?: boolean;
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
@@ -3167,6 +3176,10 @@ declare module 'azdata' {
 
 	export interface TextComponent extends Component, ComponentProperties {
 		value: string;
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
@@ -3179,6 +3192,9 @@ declare module 'azdata' {
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
+		/**
+		 * An event called when the radio button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 
@@ -4516,6 +4532,7 @@ declare module 'azdata' {
 			source: string | string[];
 			metadata?: {
 				language?: string;
+				azdata_cell_guid?: string;
 			};
 			execution_count?: number;
 			outputs?: ICellOutput[];

@@ -16,6 +16,7 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as types from 'vs/base/common/types';
+import * as fs from 'fs';
 
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
@@ -573,7 +574,12 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
 			const store = new DisposableStore();
-			store.add(editor.contentChanged((e) => this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor))));
+			store.add(editor.contentChanged((e) => {
+				// Cell source updates are handled by vscode editor updates in main/extHost Documents
+				if (e.changeType !== NotebookChangeType.CellSourceUpdated) {
+					this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
+				}
+			}));
 			this._modelToDisposeMap.set(editor.uri.toString(), store);
 		});
 	}
@@ -625,6 +631,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
 			case NotebookChangeType.DirtyStateChanged:
+			case NotebookChangeType.CellOutputCleared:
 				return NotebookChangeKind.ContentUpdated;
 			case NotebookChangeType.KernelChanged:
 			case NotebookChangeType.TrustChanged:
@@ -653,7 +660,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 						cell_type: cell.cellType,
 						execution_count: cell.executionCount,
 						metadata: {
-							language: cell.language
+							language: cell.language,
+							azdata_cell_guid: cell.cellGuid
 						},
 						source: undefined,
 						outputs: [...cell.outputs]
@@ -668,7 +676,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					cell_type: cells.cellType,
 					execution_count: undefined,
 					metadata: {
-						language: cells.language
+						language: cells.language,
+						azdata_cell_guid: cells.cellGuid
 					},
 					source: undefined
 				}
@@ -698,13 +707,25 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.next, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.next, {});
+					}
 				}
 			},
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					this.doOpenEditor(result.previous, {});
+					if (uri.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+					}
+					else {
+						this.doOpenEditor(result.previous, {});
+					}
 				}
 			}
 		});
