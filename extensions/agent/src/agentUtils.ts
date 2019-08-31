@@ -6,6 +6,9 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as fs from 'fs';
+import { promisify } from 'util';
+
 
 export class AgentUtils {
 
@@ -47,4 +50,20 @@ export class AgentUtils {
 		return this._queryProvider;
 	}
 
+}
+
+export function exists(path: string): Promise<boolean> {
+	return promisify(fs.exists)(path);
+}
+
+export function mkdir(path: string): Promise<void> {
+	return promisify(fs.mkdir)(path);
+}
+
+export function unlink(path: string): Promise<void> {
+	return promisify(fs.unlink)(path);
+}
+
+export function writeFile(path: string, data: string): Promise<void> {
+	return promisify(fs.writeFile)(path, data);
 }

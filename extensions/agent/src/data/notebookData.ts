@@ -15,20 +15,19 @@ import { NotebookDialogOptions } from '../dialogs/notebookDialog';
 import { createConnection } from 'net';
 
 const localize = nls.loadMessageBundle();
+const NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', 'When the notebook completes');
+const NotebookCompletionActionCondition_OnFailure: string = localize('notebookData.whenJobFails', 'When the notebook fails');
+const NotebookCompletionActionCondition_OnSuccess: string = localize('notebookData.whenJobSucceeds', 'When the notebook succeeds');
+
+// Error Messages
+const CreateNotebookErrorMessage_NameIsEmpty = localize('notebookData.jobNameRequired', 'Notebook name must be provided');
+const TemplatePathEmptyErrorMessage = localize('notebookData.templatePathRequired', 'Template path must be provided');
+const InvalidNotebookPathErrorMessage = localize('notebookData.invalidNotebookPath', 'Invalid notebook path');
+const SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDatabase', 'Select storage database');
+const SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', 'Select execution database');
+const JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', 'Job with similar name already exists');
 
 export class NotebookData implements IAgentDialogData {
-
-	private readonly NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', 'When the notebook completes');
-	private readonly NotebookCompletionActionCondition_OnFailure: string = localize('notebookData.whenJobFails', 'When the notebook fails');
-	private readonly NotebookCompletionActionCondition_OnSuccess: string = localize('notebookData.whenJobSucceeds', 'When the notebook succeeds');
-
-	// Error Messages
-	private readonly CreateNotebookErrorMessage_NameIsEmpty = localize('notebookData.jobNameRequired', 'Notebook name must be provided');
-	private readonly TemplatePathEmptyErrorMessage = localize('notebookData.templatePathRequired', 'Template path must be provided');
-	private readonly InvalidNotebookPathErrorMessage = localize('notebookData.invalidNotebookPath', 'Invalid notebook path');
-	private readonly SelectStorageDatabaseErrorMessage = localize('notebookData.selectStorageDatabase', 'Select storage database');
-	private readonly SelectExecutionDatabaseErrorMessage = localize('notebookData.selectExecutionDatabase', 'Select execution database');
-	private readonly JobWithSameNameExistsErrorMessage = localize('notebookData.jobExists', 'Job with similar name already exists');
 
 	private _ownerUri: string;
 	private _jobCategories: string[];
@@ -140,13 +139,13 @@ export class NotebookData implements IAgentDialogData {
 		}
 
 		this._jobCompletionActionConditions = [{
-			displayName: this.NotebookCompletionActionCondition_OnSuccess,
+			displayName: NotebookCompletionActionCondition_OnSuccess,
 			name: azdata.JobCompletionActionCondition.OnSuccess.toString()
 		}, {
-			displayName: this.NotebookCompletionActionCondition_OnFailure,
+			displayName: NotebookCompletionActionCondition_OnFailure,
 			name: azdata.JobCompletionActionCondition.OnFailure.toString()
 		}, {
-			displayName: this.NotebookCompletionActionCondition_Always,
+			displayName: NotebookCompletionActionCondition_Always,
 			name: azdata.JobCompletionActionCondition.Always.toString()
 		}];
 
@@ -184,34 +183,35 @@ export class NotebookData implements IAgentDialogData {
 		let validationErrors: string[] = [];
 		if (this.dialogMode !== AgentDialogMode.EDIT) {
 			if (!(this.name && this.name.trim())) {
-				validationErrors.push(this.CreateNotebookErrorMessage_NameIsEmpty);
+				validationErrors.push(CreateNotebookErrorMessage_NameIsEmpty);
 			}
 			if (!(this.templatePath && this.name.trim())) {
-				validationErrors.push(this.TemplatePathEmptyErrorMessage);
+				validationErrors.push(TemplatePathEmptyErrorMessage);
 			}
 			if (!fs.existsSync(this.templatePath)) {
-				validationErrors.push(this.InvalidNotebookPathErrorMessage);
+				validationErrors.push(InvalidNotebookPathErrorMessage);
+			}
+			if (NotebookData.jobLists) {
+				for (let i = 0; i < NotebookData.jobLists.length; i++) {
+					if (this.name === NotebookData.jobLists[i].name) {
+						validationErrors.push(JobWithSameNameExistsErrorMessage);
+						break;
+					}
+				}
 			}
 		}
 		else {
 			if (this.templatePath && this.templatePath !== '' && !fs.existsSync(this.templatePath)) {
-				validationErrors.push(this.InvalidNotebookPathErrorMessage);
+				validationErrors.push(InvalidNotebookPathErrorMessage);
 			}
 		}
 		if (this.targetDatabase === 'Select Database') {
-			validationErrors.push(this.SelectStorageDatabaseErrorMessage);
+			validationErrors.push(SelectStorageDatabaseErrorMessage);
 		}
 		if (this.executeDatabase === 'Select Database') {
-			validationErrors.push(this.SelectExecutionDatabaseErrorMessage);
+			validationErrors.push(SelectExecutionDatabaseErrorMessage);
 		}
-		if (NotebookData.jobLists) {
-			for (let i = 0; i < NotebookData.jobLists.length; i++) {
-				if (this.name === NotebookData.jobLists[i].name) {
-					validationErrors.push(this.JobWithSameNameExistsErrorMessage);
-					break;
-				}
-			}
-		}
+
 		return {
 			valid: validationErrors.length === 0,
 			errorMessages: validationErrors

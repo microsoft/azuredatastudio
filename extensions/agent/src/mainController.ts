@@ -17,7 +17,7 @@ import { ProxyDialog } from './dialogs/proxyDialog';
 import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 import { JobData } from './data/jobData';
-import { AgentUtils } from './agentUtils';
+import { AgentUtils, exists, mkdir, unlink, writeFile } from './agentUtils';
 import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog';
 import { promisify } from 'util';
 
@@ -127,15 +127,15 @@ export class MainController {
 
 		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string, notebookInfo?: azdata.AgentNotebookInfo, ownerUri?: string) => {
 			const tempfilePath = path.join(os.tmpdir(), 'mssql_notebooks', filename + '.ipynb');
-			if (!await promisify(fs.exists)(path.join(os.tmpdir(), 'mssql_notebooks'))) {
-				await promisify(fs.mkdir)(path.join(os.tmpdir(), 'mssql_notebooks'));
+			if (!await exists(path.join(os.tmpdir(), 'mssql_notebooks'))) {
+				await mkdir(path.join(os.tmpdir(), 'mssql_notebooks'));
 			}
 			let editors = azdata.nb.visibleNotebookEditors;
-			if (await promisify(fs.exists)(tempfilePath)) {
-				await promisify(fs.unlink)(tempfilePath);
+			if (await exists(tempfilePath)) {
+				await unlink(tempfilePath);
 			}
 			try {
-				await promisify(fs.writeFile)(tempfilePath, jsonNotebook);
+				await writeFile(tempfilePath, jsonNotebook);
 				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
 				if (notebookInfo) {
 					this.notebookTemplateMap.set(uri.toString(), { notebookInfo: notebookInfo, fileUri: uri, ownerUri: ownerUri, tempPath: tempfilePath });
@@ -150,23 +150,6 @@ export class MainController {
 			catch (e) {
 				console.log(e);
 			}
-		});
-
-		azdata.nb.onDidOpenNotebookDocument(e => {
-			// if (this.notebookTemplateMap.has(e.uri.fsPath)) {
-			// 	vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', true);
-			// } else{
-			// 	vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
-			// }
-		});
-
-
-
-		vscode.window.onDidChangeVisibleTextEditors(e => {
-			let documents = e;
-			// if (this.notebookTemplateMap.has(e.uri.fsPath)) {
-			// 	this.notebookTemplateMap.delete(e.uri.fsPath);
-			// }
 		});
 
 		vscode.commands.registerCommand('agent.openNotebookDialog', async (ownerUri: any, notebookInfo: azdata.AgentNotebookInfo) => {

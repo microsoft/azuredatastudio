@@ -228,8 +228,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 		// Notebook Management methods
-
-		let getNotebooks = (ownerUri: string): Thenable<azdata.AgentNotebooksResult> => {
+		const getNotebooks = (ownerUri: string): Thenable<azdata.AgentNotebooksResult> => {
 			let params: contracts.AgentNotebookParams = { ownerUri: ownerUri };
 			return client.sendRequest(contracts.AgentNotebooksRequest.type, params).then(
 				r => r,
@@ -240,7 +239,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let getNotebookHistory = (ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> => {
+		const getNotebookHistory = (ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> => {
 			let params: contracts.AgentNotebookHistoryParams = { ownerUri: ownerUri, jobId: jobID, jobName: jobName, targetDatabase: targetDatabase };
 
 			return client.sendRequest(contracts.AgentNotebookHistoryRequest
@@ -253,7 +252,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
-		let getMaterializedNotebook = (ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> => {
+		const getMaterializedNotebook = (ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> => {
 			let params: contracts.AgentNotebookMaterializedParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, notebookMaterializedId: notebookMaterializedId };
 			return client.sendRequest(contracts.AgentNotebookMaterializedRequest
 				.type, params).then(
@@ -265,7 +264,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
-		let getTemplateNotebook = (ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> => {
+		const getTemplateNotebook = (ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> => {
 			let params: contracts.AgentNotebookTemplateParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, jobId: jobId };
 			return client.sendRequest(contracts.AgentNotebookTemplateRequest
 				.type, params).then(
@@ -277,7 +276,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
-		let createNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.CreateAgentNotebookResult> => {
+		const createNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.CreateAgentNotebookResult> => {
 			let params: contracts.CreateAgentNotebookParams = {
 				ownerUri: ownerUri,
 				notebook: notebookInfo,
@@ -297,7 +296,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 		};
 
 
-		let updateNotebook = (ownerUri: string, originalNotebookName: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.UpdateAgentNotebookResult> => {
+		const updateNotebook = (ownerUri: string, originalNotebookName: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.UpdateAgentNotebookResult> => {
 			let params: contracts.UpdateAgentNotebookParams = {
 				ownerUri: ownerUri,
 				originalNotebookName: originalNotebookName,
@@ -317,7 +316,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> => {
+		const deleteNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentNotebookParams = {
 				ownerUri: ownerUri,
 				notebook: notebookInfo
@@ -335,7 +334,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			);
 		};
 
-		let deleteMaterializedNotebook = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> => {
+		const deleteMaterializedNotebook = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> => {
 			let params: contracts.DeleteAgentMaterializedNotebookParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, agentNotebookHistory: agentNotebookHistory };
 			return client.sendRequest(contracts.DeleteMaterializedNotebookRequest
 				.type, params).then(
@@ -347,7 +346,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
-		let updateNotebookMaterializedName = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> => {
+		const updateNotebookMaterializedName = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> => {
 			let params: contracts.UpdateAgentNotebookRunNameParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, agentNotebookHistory: agentNotebookHistory, materializedNotebookName: name };
 			return client.sendRequest(contracts.UpdateAgentNotebookRunNameRequest
 				.type, params).then(
@@ -359,7 +358,7 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				);
 		};
 
-		let updateNotebookMaterializedPin = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> => {
+		const updateNotebookMaterializedPin = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> => {
 			let params: contracts.UpdateAgentNotebookRunPinParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, agentNotebookHistory: agentNotebookHistory, materializedNotebookPin: pin };
 			return client.sendRequest(contracts.UpdateAgentNotebookRunPinRequest
 				.type, params).then(

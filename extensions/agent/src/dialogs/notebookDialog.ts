@@ -12,6 +12,32 @@ import { AgentUtils } from '../agentUtils';
 import { NotebookData } from '../data/notebookData';
 
 const localize = nls.loadMessageBundle();
+// TODO: localize
+// Top level
+const CreateDialogTitle: string = localize('notebookDialog.newJob', 'New Notebook Job');
+const EditDialogTitle: string = localize('notebookDialog.editJob', 'Edit Notebook Job');
+const GeneralTabText: string = localize('notebookDialog.general', 'General');
+const BlankJobNameErrorText: string = localize('notebookDialog.blankJobNameError', 'The name of the job cannot be blank.');
+
+// Notebook details strings
+const NotebookDetailsSeparatorTitle: string = localize('notebookDialog.notebookSection', "Notebook Details");
+const TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', 'Notebook Path');
+const TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Storage Database');
+const ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execution Database');
+const DefaultDropdownString: string = localize('notebookDialog.defaultDropdownString', 'Select Database');
+
+// Job details string
+const JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
+const NameTextBoxLabel: string = localize('notebookDialog.name', 'Name');
+const OwnerTextBoxLabel: string = localize('notebookDialog.owner', 'Owner');
+const SchedulesTopLabelString: string = localize('notebookDialog.schedulesaLabel', 'Schedules list');
+const PickScheduleButtonString: string = localize('notebookDialog.pickSchedule', 'Pick Schedule');
+const ScheduleNameLabelString: string = localize('notebookDialog.scheduleNameLabel', 'Schedule Name');
+const DescriptionTextBoxLabel: string = localize('notebookDialog.description', 'Description');
+
+// Event Name strings
+const NewJobDialogEvent: string = 'NewNotebookJobDialogOpened';
+const EditJobDialogEvent: string = 'EditNotebookJobDialogOpened';
 
 export class NotebookDialogOptions {
 	notebookInfo?: azdata.AgentNotebookInfo;
@@ -20,33 +46,6 @@ export class NotebookDialogOptions {
 }
 
 export class NotebookDialog extends AgentDialog<NotebookData>  {
-
-	// TODO: localize
-	// Top level
-	private static readonly CreateDialogTitle: string = localize('notebookDialog.newJob', 'New Notebook Job');
-	private static readonly EditDialogTitle: string = localize('notebookDialog.editJob', 'Edit Notebook Job');
-	private readonly GeneralTabText: string = localize('notebookDialog.general', 'General');
-	private readonly BlankJobNameErrorText: string = localize('notebookDialog.blankJobNameError', 'The name of the job cannot be blank.');
-
-	// Notebook details strings
-	private readonly NotebookDetailsSeparatorTitle: string = localize('notebookDialog.notebookSection', "Notebook Details");
-	private readonly TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', 'Notebook Path');
-	private readonly TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Storage Database');
-	private readonly ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execution Database');
-	private readonly DefaultDropdownString: string = localize('notebookDialog.defaultDropdownString', 'Select Database');
-
-	// Job details string
-	private readonly JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
-	private readonly NameTextBoxLabel: string = localize('notebookDialog.name', 'Name');
-	private readonly OwnerTextBoxLabel: string = localize('notebookDialog.owner', 'Owner');
-	private readonly SchedulesTopLabelString: string = localize('notebookDialog.schedulesaLabel', 'Schedules list');
-	private readonly PickScheduleButtonString: string = localize('notebookDialog.pickSchedule', 'Pick Schedule');
-	private readonly ScheduleNameLabelString: string = localize('notebookDialog.scheduleNameLabel', 'Schedule Name');
-	private readonly DescriptionTextBoxLabel: string = localize('notebookDialog.description', 'Description');
-
-	// Event Name strings
-	private readonly NewJobDialogEvent: string = 'NewNotebookJobDialogOpened';
-	private readonly EditJobDialogEvent: string = 'EditNotebookJobDialogOpened';
 
 	// UI Components
 	private generalTab: azdata.window.DialogTab;
@@ -78,15 +77,15 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 		super(
 			ownerUri,
 			new NotebookData(ownerUri, options),
-			options.notebookInfo ? NotebookDialog.EditDialogTitle : NotebookDialog.CreateDialogTitle);
+			options.notebookInfo ? EditDialogTitle : CreateDialogTitle);
 		this.steps = this.model.jobSteps ? this.model.jobSteps : [];
 		this.schedules = this.model.jobSchedules ? this.model.jobSchedules : [];
 		this.isEdit = options.notebookInfo ? true : false;
-		this.dialogName = this.isEdit ? this.EditJobDialogEvent : this.NewJobDialogEvent;
+		this.dialogName = this.isEdit ? EditJobDialogEvent : NewJobDialogEvent;
 	}
 
 	protected async initializeDialog() {
-		this.generalTab = azdata.window.createTab(this.GeneralTabText);
+		this.generalTab = azdata.window.createTab(GeneralTabText);
 		this.initializeGeneralTab();
 		this.dialog.content = [this.generalTab];
 		this.dialog.registerCloseValidator(() => {
@@ -142,7 +141,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown().component();
 			this.executeDatabaseDropDown = view.modelBuilder.dropDown().component();
 			let databases = await AgentUtils.getDatabases(this.ownerUri);
-			databases.unshift(this.DefaultDropdownString);
+			databases.unshift(DefaultDropdownString);
 			this.targetDatabaseDropDown = view.modelBuilder.dropDown()
 				.withProperties({
 					value: databases[0],
@@ -188,7 +187,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 				}).component();
 
 			this.pickScheduleButton = view.modelBuilder.button().withProperties({
-				label: this.PickScheduleButtonString,
+				label: PickScheduleButtonString,
 				width: 100
 			}).component();
 			this.removeScheduleButton = view.modelBuilder.button().withProperties({
@@ -228,41 +227,41 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 					{
 						components: [{
 							component: notebookPathFlexBox,
-							title: this.TemplateNotebookTextBoxLabel,
+							title: TemplateNotebookTextBoxLabel,
 							layout: {
 								info: localize('notebookDialog.templatePath', 'Select a notebook to schedule from PC')
 							}
 						},
 						{
 							component: this.targetDatabaseDropDown,
-							title: this.TargetDatabaseDropdownLabel,
+							title: TargetDatabaseDropdownLabel,
 							layout: {
 								info: localize('notebookDialog.targetDatabaseInfo', 'Select a database to store all notebook job metadata like template, notebook runs....')
 							}
 						}, {
 							component: this.executeDatabaseDropDown,
-							title: this.ExecuteDatabaseDropdownLabel,
+							title: ExecuteDatabaseDropdownLabel,
 							layout: {
 								info: localize('notebookDialog.executionDatabaseInfo', 'Select a database against which notebook queries will run')
 							}
 						}],
-						title: this.NotebookDetailsSeparatorTitle
+						title: NotebookDetailsSeparatorTitle
 					}, {
 						components: [{
 							component: this.nameTextBox,
-							title: this.NameTextBoxLabel
+							title: NameTextBoxLabel
 						}, {
 							component: this.ownerTextBox,
-							title: this.OwnerTextBoxLabel
+							title: OwnerTextBoxLabel
 						}, {
 							component: this.schedulesTable,
-							title: this.SchedulesTopLabelString,
+							title: SchedulesTopLabelString,
 							actions: [this.pickScheduleButton, this.removeScheduleButton]
 						}, {
 							component: this.descriptionTextBox,
-							title: this.DescriptionTextBoxLabel
+							title: DescriptionTextBoxLabel
 						}],
-						title: this.JobDetailsSeparatorTitle
+						title: JobDetailsSeparatorTitle
 					}]).withLayout({ width: '100%' }).component();
 
 			await view.initializeModel(formModel);

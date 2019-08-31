@@ -598,19 +598,10 @@ export class EditNotebookJobAction extends Action {
 	}
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		if (actionInfo.component instanceof NotebookHistoryComponent) {
-			this._commandService.executeCommand(
-				'agent.openNotebookDialog',
-				actionInfo.ownerUri,
-				actionInfo.component.agentNotebookInfo);
-
-		}
-		else {
-			this._commandService.executeCommand(
-				'agent.openNotebookDialog',
-				actionInfo.ownerUri,
-				actionInfo.targetObject.job);
-		}
+		this._commandService.executeCommand(
+			'agent.openNotebookDialog',
+			actionInfo.ownerUri,
+			actionInfo.targetObject.job);
 		return Promise.resolve(true);
 	}
 }
