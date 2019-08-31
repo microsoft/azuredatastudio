@@ -53,8 +53,10 @@ steps:
       .\scripts\test.bat --tfs "Unit Tests"
 
   - task: PublishTestResults@2
+    displayName: Publish Tests Results
     inputs:
-      testResultsFiles: "test-results.xml"
+      testResultsFiles: "*-results.xml"
+      searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
     condition: succeededOrFailed()
 
   - task: PublishCodeCoverageResults@1
