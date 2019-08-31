@@ -80,7 +80,7 @@ steps:
 
   - task: PublishCodeCoverageResults@1
     inputs:
-      codeCoverageTool: "lcov"
-      summaryFileLocation: $(System.DefaultWorkingDirectory)\.build\coverage\lcov.info
-      reportDirectory: $(System.DefaultWorkingDirectory)\.build\coverage\lcov-report
+      codeCoverageTool: 'cobertura'
+      summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
+      reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-report
     condition: ne(variables['Agent.OS'], 'Linux')

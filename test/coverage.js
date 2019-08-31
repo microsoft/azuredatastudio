@@ -60,6 +60,7 @@ exports.createReport = function (isSingle) {
 		reports.push(iReports.create('json'));
 		reports.push(iReports.create('lcov'));
 		reports.push(iReports.create('html'));
+		reports.push(iReports.create('cobertura')); // {{SQL CARBON EDIT}} add covertura
 	}
 	reports.forEach(report => tree.visit(report, context));
 };
