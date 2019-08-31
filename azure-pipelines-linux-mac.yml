@@ -64,9 +64,10 @@ steps:
   - script: |
       DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
     displayName: Run Unit Tests
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
   - script: |
-      DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter --coverage
+      DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage
     displayName: "Tests"
     condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
 

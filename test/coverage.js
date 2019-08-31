@@ -12,15 +12,12 @@ const iLibSourceMaps = require('istanbul-lib-source-maps');
 const iLibReport = require('istanbul-lib-report');
 const iReports = require('istanbul-reports');
 
-// {{SQL CARBON EDIT}}
-var SQL_TEST_GLOB = '**/test/**/*.test.js|**/sqltest/**/*.test.jss';
-
 const REPO_PATH = toUpperDriveLetter(path.join(__dirname, '..'));
 
 exports.initialize = function (loaderConfig) {
 	const instrumenter = iLibInstrument.createInstrumenter();
 	loaderConfig.nodeInstrumenter = function (contents, source) {
-		if (minimatch(source, SQL_TEST_GLOB)) { // {{SQL CARBON EDIT}}
+		if (minimatch(source, '**/test/**/*.test.js')) {
 			// tests don't get instrumented
 			return contents;
 		}
@@ -45,10 +42,9 @@ exports.createReport = function (isSingle) {
 	Object.keys(transformed.map.data).forEach((file) => {
 		const entry = transformed.map.data[file];
 		const fixedPath = fixPath(entry.path);
-		if (!fixedPath.includes('\\vs\\') && !fixedPath.includes('/vs/')) {
-			entry.data.path = fixedPath;
-			newData[fixedPath] = entry;
-		}
+		if (fixedPath.includes('\\vs\\') || fixedPath.includes('/vs/')) { return; } // {{SQL CARBON EDIT}} skip vscode files
+		entry.data.path = fixedPath;
+		newData[fixedPath] = entry;
 	});
 	transformed.map.data = newData;
 
