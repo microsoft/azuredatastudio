@@ -143,7 +143,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 				newRanges.push(current);
 				continue;
 			}
-			let newRange: Slick.Range = undefined;
+			let newRange: Slick.Range | undefined = undefined;
 
 			// if the ranges are the same.
 			if (current.fromRow === range.fromRow &&
