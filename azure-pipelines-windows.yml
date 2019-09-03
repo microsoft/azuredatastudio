@@ -17,6 +17,8 @@ steps:
       yarn --frozen-lockfile
     displayName: Install Dependencies
     condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
     inputs:
@@ -28,6 +30,8 @@ steps:
   - script: |
       yarn gulp electron-x64
     displayName: "Electron"
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - script: |
       yarn gulp hygiene

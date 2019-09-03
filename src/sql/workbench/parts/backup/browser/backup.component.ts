@@ -33,6 +33,7 @@ import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { KeyCode } from 'vs/base/common/keyCodes';
 import { ITheme } from 'vs/platform/theme/common/themeService';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -558,7 +559,7 @@ export class BackupComponent extends AngularDisposable {
 	private updateTheme(theme: ITheme): void {
 		// set modal footer style
 		let footerHtmlElement: HTMLElement = <HTMLElement>this.modalFooterElement.nativeElement;
-		const backgroundColor = theme.getColor(cr.foreground);
+		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
 		const border = theme.getColor(cr.contrastBorder) ? theme.getColor(cr.contrastBorder).toString() : null;
 		const footerBorderTopWidth = border ? '1px' : null;
 		const footerBorderTopStyle = border ? 'solid' : null;
