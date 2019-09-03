@@ -111,7 +111,7 @@ describe.skip('BookTreeViewProviderTests', function() {
 				index: 0
 			};
 			console.log('Creating BookTreeViewProvider...');
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
@@ -178,7 +178,7 @@ describe.skip('BookTreeViewProviderTests', function() {
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
@@ -220,7 +220,7 @@ describe.skip('BookTreeViewProviderTests', function() {
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
@@ -277,7 +277,7 @@ describe.skip('BookTreeViewProviderTests', function() {
 				name: '',
 				index: 0
 			};
-			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object);
+			bookTreeViewProvider = new BookTreeViewProvider([folder], mockExtensionContext.object, false, 'bookTreeView');
 			let tocRead = new Promise((resolve, reject) => bookTreeViewProvider.onReadAllTOCFiles(() => resolve()));
 			let errorCase = new Promise((resolve, reject) => setTimeout(() => resolve(), 5000));
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);

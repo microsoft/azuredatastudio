@@ -23,6 +23,7 @@ export interface BookTreeItemFormat {
 	page: any;
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
+	untitled: boolean;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
@@ -38,6 +39,9 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
+			if (book.untitled) {
+				this.contextValue = 'untitledBook';
+			}
 		} else {
 			this.setPageVariables();
 			this.setCommand();

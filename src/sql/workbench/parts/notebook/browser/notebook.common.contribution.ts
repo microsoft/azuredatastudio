@@ -158,14 +158,6 @@ configurationRegistry.registerConfiguration({
 	}
 });
 
-/**
-* Explorer viewlet id.
-*/
-export const VIEWLET_ID = 'bookTreeView';
-/**
-* Explorer viewlet container.
-*/
-export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
 registerAction({
 	id: 'workbench.books.action.focusBooksExplorer',
 	handler: async (accessor) => {
