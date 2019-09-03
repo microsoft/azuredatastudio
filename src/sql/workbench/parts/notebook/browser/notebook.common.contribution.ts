@@ -23,6 +23,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
 import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer } from 'vs/workbench/common/views';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
@@ -154,6 +155,22 @@ configurationRegistry.registerConfiguration({
 			'default': true,
 			'description': localize('notebook.inProcMarkdown', "Use in-process markdown viewer to render text cells more quickly (Experimental).")
 		}
+	}
+});
+
+/**
+* Explorer viewlet id.
+*/
+export const VIEWLET_ID = 'bookTreeView';
+/**
+* Explorer viewlet container.
+*/
+export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
+registerAction({
+	id: 'workbench.books.action.focusBooksExplorer',
+	handler: async (accessor) => {
+		const viewletService = accessor.get(IViewletService);
+		viewletService.openViewlet('workbench.view.extension.books-explorer', true);
 	}
 });
 

@@ -149,7 +149,6 @@ suite('SQL ConnectionManagementService tests', () => {
 			connectionStore.object,
 			undefined,
 			connectionDialogService.object,
-			undefined, // IServerGroupController
 			undefined, // IInstantiationService
 			workbenchEditorService.object,
 			undefined, // ITelemetryService
@@ -946,7 +945,7 @@ suite('SQL ConnectionManagementService tests', () => {
 		connectionStoreMock.setup(x => x.getConnectionProfileGroups(TypeMoq.It.isAny(), undefined)).returns(() => {
 			return [group1];
 		});
-		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
+		const connectionManagementService = new ConnectionManagementService(connectionStoreMock.object, connectionStatusManagerMock.object, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined);
 
 		// dupe connections have been seeded the numbers below already reflected the de-duped results
 
