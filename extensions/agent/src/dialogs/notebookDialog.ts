@@ -237,7 +237,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 							component: this.targetDatabaseDropDown,
 							title: TargetDatabaseDropdownLabel,
 							layout: {
-								info: localize('notebookDialog.targetDatabaseInfo', 'Select a database to store all notebook job metadata like template, notebook runs....')
+								info: localize('notebookDialog.targetDatabaseInfo', 'Select a database to store all notebook job metadata and results')
 							}
 						}, {
 							component: this.executeDatabaseDropDown,
