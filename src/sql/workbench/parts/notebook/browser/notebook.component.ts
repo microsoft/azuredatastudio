@@ -280,8 +280,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.awaitNonDefaultProvider();
 		await this._model.requestModelLoad();
 		this.detectChanges();
-		await this._model.startSession(this._model.notebookManager, undefined, true);
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
+		await this._model.startSession(this._model.notebookManager, undefined, true);
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
