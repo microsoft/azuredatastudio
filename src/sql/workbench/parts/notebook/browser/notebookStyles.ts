@@ -70,6 +70,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .hoverButton:hover {
 					color: ${backgroundColor};
 				}
+				.hc-black .notebookEditor .hoverButton:active,
+				.hc-black .notebookEditor .hoverButton:hover {
+					color: ${backgroundColor};
+				}
 			`);
 		}
 
@@ -222,6 +226,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				}
 				.hc-black .notebookEditor .hoverButton:not(:active) {
 					border-color: ${hcOutline};
+				}
+				.hc-black .notebookEditor .hoverButton:active,
+				.hc-black .notebookEditor .hoverButton:hover {
+					background-color: ${hcOutline};
 				}
 			`);
 		}
