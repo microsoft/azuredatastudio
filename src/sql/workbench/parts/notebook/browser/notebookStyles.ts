@@ -217,6 +217,9 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					outline-style: solid;
 				}
 
+				.hc-black .notebookEditor .hoverButton {
+					color: ${hcOutline};
+				}
 				.hc-black .notebookEditor .hoverButton:not(:active) {
 					border-color: ${hcOutline};
 				}
