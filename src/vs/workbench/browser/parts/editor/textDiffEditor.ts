@@ -5,7 +5,7 @@
 
 import * as nls from 'vs/nls';
 import * as objects from 'vs/base/common/objects';
-import * as types from 'vs/base/common/types';
+import { isFunction, isObject, isArray } from 'vs/base/common/types';
 import { IDiffEditor } from 'vs/editor/browser/editorBrowser';
 import { IDiffEditorOptions, IEditorOptions as ICodeEditorOptions } from 'vs/editor/common/config/editorOptions';
 import { BaseTextEditor, IEditorConfiguration } from 'vs/workbench/browser/parts/editor/textEditor';
@@ -31,7 +31,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IWindowService } from 'vs/platform/windows/common/windows';
-import { EditorActivation } from 'vs/platform/editor/common/editor';
+import { EditorActivation, IEditorOptions } from 'vs/platform/editor/common/editor';
 
 /**
  * The text editor that leverages the diff text editor for the editing experience.
@@ -85,7 +85,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
 	}
 
-	async setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
+	async setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
 
 		// Dispose previous diff navigator
 		this.diffNavigatorDisposables.clear();
@@ -116,7 +116,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 
 			// Apply Options from TextOptions
 			let optionsGotApplied = false;
-			if (options && types.isFunction((<TextEditorOptions>options).apply)) {
+			if (options && isFunction((<TextEditorOptions>options).apply)) {
 				optionsGotApplied = (<TextEditorOptions>options).apply(diffEditor, ScrollType.Immediate);
 			}
 
@@ -145,9 +145,9 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		}
 	}
 
-	setOptions(options: EditorOptions): void {
+	setOptions(options: EditorOptions | undefined): void {
 		const textOptions = <TextEditorOptions>options;
-		if (textOptions && types.isFunction(textOptions.apply)) {
+		if (textOptions && isFunction(textOptions.apply)) {
 			textOptions.apply(this.getControl(), ScrollType.Smooth);
 		}
 	}
@@ -168,7 +168,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return false;
 	}
 
-	private openAsBinary(input: EditorInput, options: EditorOptions): boolean {
+	private openAsBinary(input: EditorInput, options: EditorOptions | undefined): boolean {
 		if (input instanceof DiffEditorInput) {
 			const originalInput = input.originalInput;
 			const modifiedInput = input.modifiedInput;
@@ -189,7 +189,12 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 			// because we are triggering another openEditor() call
 			// and do not control the initial intent that resulted
 			// in us now opening as binary.
-			options.overwrite({ activation: EditorActivation.PRESERVE });
+			const preservingOptions: IEditorOptions = { activation: EditorActivation.PRESERVE };
+			if (options) {
+				options.overwrite(preservingOptions);
+			} else {
+				options = EditorOptions.create(preservingOptions);
+			}
 
 			this.editorService.openEditor(binaryDiffInput, options, this.group);
 
@@ -203,7 +208,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		const editorConfiguration = super.computeConfiguration(configuration);
 
 		// Handle diff editor specially by merging in diffEditor configuration
-		if (types.isObject(configuration.diffEditor)) {
+		if (isObject(configuration.diffEditor)) {
 			objects.mixin(editorConfiguration, configuration.diffEditor);
 		}
 
@@ -245,7 +250,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	private isFileBinaryError(error: Error[]): boolean;
 	private isFileBinaryError(error: Error): boolean;
 	private isFileBinaryError(error: Error | Error[]): boolean {
-		if (types.isArray(error)) {
+		if (isArray(error)) {
 			const errors = <Error[]>error;
 
 			return errors.some(e => this.isFileBinaryError(e));
@@ -281,7 +286,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		return super.loadTextEditorViewState(resource) as IDiffEditorViewState;  // overridden for text diff editor support
 	}
 
-	private saveTextDiffEditorViewState(input: EditorInput | null): void {
+	private saveTextDiffEditorViewState(input: EditorInput | undefined): void {
 		if (!(input instanceof DiffEditorInput)) {
 			return; // only supported for diff editor inputs
 		}
