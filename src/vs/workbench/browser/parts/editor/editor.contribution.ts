@@ -234,7 +234,7 @@ registry.registerWorkbenchAction(new SyncActionDescriptor(ChangeEOLAction, Chang
 registry.registerWorkbenchAction(new SyncActionDescriptor(ChangeEncodingAction, ChangeEncodingAction.ID, ChangeEncodingAction.LABEL), 'Change File Encoding');
 
 export class QuickOpenActionContributor extends ActionBarContributor {
-	private openToSideActionInstance: OpenToSideFromQuickOpenAction;
+	private openToSideActionInstance: OpenToSideFromQuickOpenAction | undefined;
 
 	constructor(@IInstantiationService private readonly instantiationService: IInstantiationService) {
 		super();

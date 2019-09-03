@@ -40,7 +40,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 
 	static readonly ID = TEXT_DIFF_EDITOR_ID;
 
-	private diffNavigator: DiffNavigator;
+	private diffNavigator: DiffNavigator | undefined;
 	private readonly diffNavigatorDisposables = this._register(new DisposableStore());
 
 	private reverseColor: boolean; // {{SQL CARBON EDIT}} add property
@@ -269,7 +269,7 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		super.clearInput();
 	}
 
-	getDiffNavigator(): DiffNavigator {
+	getDiffNavigator(): DiffNavigator | undefined {
 		return this.diffNavigator;
 	}
 
