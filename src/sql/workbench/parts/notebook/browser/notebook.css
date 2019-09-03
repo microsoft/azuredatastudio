@@ -144,15 +144,15 @@
 	align-items: center;
 	justify-content: center;
 	width: 100%;
-	padding: 0 20px;
-	margin: 1px auto;
+	padding: 0px 20px;
+	margin: 1px 0px;
+	box-sizing: border-box;
 }
 
 .notebookEditor .hoverButtonsContainer .containerBackground {
 	position: absolute;
 	width: inherit;
 	height: 1px;
-	opacity: 0.4;
 	z-index: 0;
 	visibility: hidden;
 }
