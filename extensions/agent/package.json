@@ -89,10 +89,5 @@
     "should": "^13.2.1",
     "typemoq": "^2.1.0",
     "vscode": "1.1.5"
-  },
-  "__metadata": {
-    "id": "10",
-    "publisherDisplayName": "Microsoft",
-    "publisherId": "Microsoft"
   }
 }

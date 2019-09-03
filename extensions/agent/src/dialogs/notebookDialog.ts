@@ -14,26 +14,27 @@ import { NotebookData } from '../data/notebookData';
 const localize = nls.loadMessageBundle();
 // TODO: localize
 // Top level
-const CreateDialogTitle: string = localize('notebookDialog.newJob', 'New Notebook Job');
-const EditDialogTitle: string = localize('notebookDialog.editJob', 'Edit Notebook Job');
-const GeneralTabText: string = localize('notebookDialog.general', 'General');
-const BlankJobNameErrorText: string = localize('notebookDialog.blankJobNameError', 'The name of the job cannot be blank.');
+const CreateDialogTitle: string = localize('notebookDialog.newJob', "New Notebook Job");
+const EditDialogTitle: string = localize('notebookDialog.editJob', "Edit Notebook Job");
+const GeneralTabText: string = localize('notebookDialog.general', "General");
+const BlankJobNameErrorText: string = localize('notebookDialog.blankJobNameError', "The name of the job cannot be blank.");
 
 // Notebook details strings
 const NotebookDetailsSeparatorTitle: string = localize('notebookDialog.notebookSection', "Notebook Details");
-const TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', 'Notebook Path');
-const TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', 'Storage Database');
-const ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', 'Execution Database');
-const DefaultDropdownString: string = localize('notebookDialog.defaultDropdownString', 'Select Database');
+const TemplateNotebookTextBoxLabel: string = localize('notebookDialog.templateNotebook', "Notebook Path");
+const TargetDatabaseDropdownLabel: string = localize('notebookDialog.targetDatabase', "Storage Database");
+const ExecuteDatabaseDropdownLabel: string = localize('notebookDialog.executeDatabase', "Execution Database");
+const DefaultDropdownString: string = localize('notebookDialog.defaultDropdownString', "Select Database");
 
 // Job details string
 const JobDetailsSeparatorTitle: string = localize('notebookDialog.jobSection', "Job Details");
-const NameTextBoxLabel: string = localize('notebookDialog.name', 'Name');
-const OwnerTextBoxLabel: string = localize('notebookDialog.owner', 'Owner');
-const SchedulesTopLabelString: string = localize('notebookDialog.schedulesaLabel', 'Schedules list');
-const PickScheduleButtonString: string = localize('notebookDialog.pickSchedule', 'Pick Schedule');
-const ScheduleNameLabelString: string = localize('notebookDialog.scheduleNameLabel', 'Schedule Name');
-const DescriptionTextBoxLabel: string = localize('notebookDialog.description', 'Description');
+const NameTextBoxLabel: string = localize('notebookDialog.name', "Name");
+const OwnerTextBoxLabel: string = localize('notebookDialog.owner', "Owner");
+const SchedulesTopLabelString: string = localize('notebookDialog.schedulesaLabel', "Schedules list");
+const PickScheduleButtonString: string = localize('notebookDialog.pickSchedule', "Pick Schedule");
+const RemoveScheduleButtonString: string = localize('notebookDialog.removeSchedule', "Remove Schedule");
+const ScheduleNameLabelString: string = localize('notebookDialog.scheduleNameLabel', "Schedule Name");
+const DescriptionTextBoxLabel: string = localize('notebookDialog.description', "Description");
 
 // Event Name strings
 const NewJobDialogEvent: string = 'NewNotebookJobDialogOpened';
@@ -191,7 +192,7 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 				width: 100
 			}).component();
 			this.removeScheduleButton = view.modelBuilder.button().withProperties({
-				label: 'Remove schedule',
+				label: RemoveScheduleButtonString,
 				width: 100
 			}).component();
 			this.pickScheduleButton.onDidClick(() => {

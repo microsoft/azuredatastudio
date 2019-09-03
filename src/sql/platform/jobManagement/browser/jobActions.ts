@@ -34,7 +34,7 @@ export enum JobActions {
 export class IJobActionInfo {
 	ownerUri?: string;
 	targetObject?: any;
-	component: JobManagementView | NotebookHistoryComponent;
+	component: JobManagementView;
 }
 
 // Job actions

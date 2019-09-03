@@ -148,7 +148,7 @@ export class MainController {
 				vscode.commands.executeCommand('setContext', 'agent:trackedTemplate', false);
 			}
 			catch (e) {
-				console.log(e);
+				vscode.window.showErrorMessage(e);
 			}
 		});
 
@@ -223,7 +223,7 @@ export class MainController {
 			connectionDisplayString.push(localize('agent.AddNewConnection', 'Add new connection'));
 			let connectionName = await vscode.window.showQuickPick(connectionDisplayString, { placeHolder: localize('agent.selectConnection', 'Select a connection') });
 			if (connectionDisplayString.indexOf(connectionName) !== -1) {
-				if (connectionName === 'Add new connection') {
+				if (connectionName === localize('agent.AddNewConnection', 'Add new connection')) {
 					connection = await azdata.connection.openConnectionDialog();
 				}
 				else {

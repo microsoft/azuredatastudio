@@ -65,7 +65,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 					const self = this;
 					this._fileInputContainer.nativeElement.onchange = () => {
 						let file = self._fileInputContainer.nativeElement.files[0];
-						console.log(file);
 						let reader = new FileReader();
 						reader.onload = (e) => {
 							let text = (<FileReader>e.target).result;
@@ -128,7 +127,6 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	protected updateIcon() {
 		if (this.iconPath) {
-			console.log('updateIconCalled');
 			if (!this._iconClass) {
 				super.updateIcon();
 				this._button.icon = this._iconClass + ' icon';
