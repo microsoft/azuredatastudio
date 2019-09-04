@@ -32,6 +32,7 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { EditorMemento } from 'vs/workbench/browser/parts/editor/baseEditor';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { EditorActivation, IEditorOptions } from 'vs/platform/editor/common/editor';
+import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 
 /**
  * The text editor that leverages the diff text editor for the editing experience.
@@ -54,7 +55,8 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 		@IThemeService themeService: IThemeService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@ITextFileService textFileService: ITextFileService,
-		@IWindowService windowService: IWindowService
+		@IWindowService windowService: IWindowService,
+		@IClipboardService private _clipboardService: IClipboardService,
 	) {
 		super(TextDiffEditor.ID, telemetryService, instantiationService, storageService, configurationService, themeService, textFileService, editorService, editorGroupService, windowService);
 	}
@@ -77,12 +79,10 @@ export class TextDiffEditor extends BaseTextEditor implements ITextDiffEditor {
 	}
 
 	createEditorControl(parent: HTMLElement, configuration: ICodeEditorOptions): IDiffEditor {
-		// {{SQL CARBON EDIT}}
-		if (this.reverseColor) {
+		if (this.reverseColor) { // {{SQL CARBON EDIT}}
 			(configuration as IDiffEditorOptions).reverse = true;
 		}
-
-		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration);
+		return this.instantiationService.createInstance(DiffEditorWidget, parent, configuration, this._clipboardService);
 	}
 
 	async setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
