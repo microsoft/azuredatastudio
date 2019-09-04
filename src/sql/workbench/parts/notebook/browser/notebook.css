@@ -151,7 +151,9 @@
 
 .notebookEditor .hoverButtonsContainer .containerBackground {
 	position: absolute;
-	width: inherit;
+	width: auto;
+	left: 20px;
+	right: 20px;
 	height: 1px;
 	z-index: 0;
 	visibility: hidden;
