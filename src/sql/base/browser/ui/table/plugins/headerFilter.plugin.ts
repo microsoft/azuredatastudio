@@ -6,6 +6,8 @@ import { localize } from 'vs/nls';
 
 import { Button } from 'sql/base/browser/ui/button/button';
 import { escape } from 'sql/base/common/strings';
+import { addDisposableListener } from 'vs/base/browser/dom';
+import { DisposableStore } from 'vs/base/common/lifecycle';
 
 interface IExtendedColumn<T> extends Slick.Column<T> {
 	filterValues?: Array<string>;
@@ -27,6 +29,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	private columnDef: IExtendedColumn<T>;
 	private buttonStyles: IButtonStyles;
 
+	private disposableStore = new DisposableStore();
+
 	public init(grid: Slick.Grid<T>): void {
 		this.grid = grid;
 		this.handler.subscribe(this.grid.onHeaderCellRendered, (e: Event, args: Slick.OnHeaderCellRenderedEventArgs<T>) => this.handleHeaderCellRendered(e, args))
@@ -36,17 +40,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.subscribe(this.grid.onKeyDown, (e: KeyboardEvent) => this.handleKeyDown(e));
 		this.grid.setColumns(this.grid.getColumns());
 
-		jQuery(document.body).bind('mousedown', this.handleBodyMouseDown);
-		jQuery(document.body).bind('keydown', this.handleKeyDown);
+		this.disposableStore.add(addDisposableListener(document.body, 'mousedown', e => this.handleBodyMouseDown(e)));
+		this.disposableStore.add(addDisposableListener(document.body, 'keydown', e => this.handleKeyDown(e)));
 	}
 
 	public destroy() {
 		this.handler.unsubscribeAll();
-		jQuery(document.body).unbind('mousedown', this.handleBodyMouseDown);
-		jQuery(document.body).unbind('keydown', this.handleKeyDown);
+		this.disposableStore.dispose();
 	}
 
-	private handleKeyDown(e: KeyboardEvent | JQuery.Event<HTMLElement, null>): void {
+	private handleKeyDown(e: KeyboardEvent): void {
 		if (this.$menu && (e.key === 'Escape' || e.keyCode === 27)) {
 			this.hideMenu();
 			e.preventDefault();
@@ -54,7 +57,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		}
 	}
 
-	private handleBodyMouseDown(e: MouseEvent | JQuery.Event<HTMLElement, null>): void {
+	private handleBodyMouseDown(e: MouseEvent): void {
 		if (this.$menu && this.$menu[0] !== e.target && !jQuery.contains(this.$menu[0], e.target as Element)) {
 			this.hideMenu();
 			e.preventDefault();
@@ -78,8 +81,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 			.addClass('slick-header-menubutton')
 			.data('column', column);
 
-		$el.bind('click', (e) => this.showFilter(e)).appendTo(args.node);
-		$el.bind('keydown', (e) => {
+		$el.bind('click', (e: KeyboardEvent) => this.showFilter(e)).appendTo(args.node);
+		$el.bind('keydown', (e: KeyboardEvent) => {
 			if (e.key === 'Enter' || e.keyCode === 13) {
 				this.showFilter(e);
 			}
@@ -146,7 +149,7 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		});
 	}
 
-	private showFilter(e: JQuery.Event<HTMLElement, null>) {
+	private showFilter(e: KeyboardEvent) {
 		const $menuButton = jQuery(e.target);
 		this.columnDef = $menuButton.data('column');
 
