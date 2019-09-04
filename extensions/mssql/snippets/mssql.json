@@ -306,7 +306,7 @@
 		"body": [
 			"-- Create a nonclustered index with or without a unique constraint",
 			"-- Or create a clustered index on table '[${1:TableName}]' in schema '[${2:dbo}]' in database '[${3:DatabaseName}]'",
-			"CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:dbo}].[${1:TableName}] ([${6:ColumnName1}] DESC /*Change sort order as needed*/",
+			"CREATE ${5:/*UNIQUE or CLUSTERED*/} INDEX IX_${4:IndexName} ON [${3:DatabaseName}].[${2:dbo}].[${1:TableName}] ([${6:ColumnName1}] DESC) /*Change sort order as needed*/",
 			"GO"
 		],
 		"description": "Create a new Index"
