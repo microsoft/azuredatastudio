@@ -83,7 +83,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 //#region -- Object Explorer
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 1,
 	command: {
 		id: commands.OE_SCRIPT_AS_SELECT_COMMAND_ID,
@@ -93,7 +93,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 2,
 	command: {
 		id: commands.OE_EDIT_DATA_COMMAND_ID,
@@ -103,7 +103,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 3,
 	command: {
 		id: commands.OE_SCRIPT_AS_CREATE_COMMAND_ID,
@@ -123,7 +123,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 6,
 	command: {
 		id: commands.OE_SCRIPT_AS_EXECUTE_COMMAND_ID,
@@ -133,7 +133,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 5,
 	command: {
 		id: commands.OE_SCRIPT_AS_ALTER_COMMAND_ID,
@@ -163,7 +163,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 4,
 	command: {
 		id: commands.OE_SCRIPT_AS_DELETE_COMMAND_ID,
@@ -183,7 +183,7 @@ MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
 });
 
 MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
-	group: 'scripting',
+	group: '0_query',
 	order: 7,
 	command: {
 		id: commands.OE_REFRESH_COMMAND_ID,
