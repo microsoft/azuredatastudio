@@ -11,6 +11,7 @@
 		"strictBindCallApply": true,
 		"strictNullChecks": false,
 		"forceConsistentCasingInFileNames": true,
+		"strictPropertyInitialization": true,
 		"baseUrl": ".",
 		"paths": {
 			"vs/*": [
