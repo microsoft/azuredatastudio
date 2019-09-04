@@ -92,7 +92,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 				delete this._selectedRowsLookup[row];
 			}
 		}
-		dict.forEach(this._selectedRowsLookup, (e) => this._grid.invalidateRow(e.key));
+		dict.forEach(this._selectedRowsLookup, (e) => this._grid.invalidateRow(Number(e.key)));
 		this._selectedRowsLookup = lookup;
 		this._grid.render();
 
