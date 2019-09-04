@@ -95,6 +95,8 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		copyString = copyString.concat(row.join('\t').concat(eol));
 	});
 
+	copyString = copyString.trimRight();
+
 	return copyString;
 }
 
