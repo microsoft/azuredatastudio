@@ -14,7 +14,7 @@ import { TestServerProfile } from './testConfig';
  * @param timeout optional timeout parameter
  * Returns connection id for a new connection
  */
-export async function connectToServer(server: TestServerProfile, timeout: number = 3000): Promise<string> {
+export async function connectToServer(server: TestServerProfile, timeout: number = 10000): Promise<string> {
 	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: server.serverName,
 		databaseName: server.database,
@@ -36,8 +36,35 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 
 	//workaround
 	//wait for OE to load
-	await new Promise(c => setTimeout(c, timeout));
+	await pollTimeout(async () => {
+		const nodes = await azdata.objectexplorer.getActiveConnectionNodes();
+		let found = nodes.some(node => {
+			return node.connectionId === result.connectionId;
+		});
+		if (found === undefined) {
+			found = false;
+		}
+		return found;
+	}, 1000, timeout);
+
 	return result.connectionId;
+}
+
+export async function pollTimeout(predicate: () => Thenable<boolean>, intervalDelay: number, timeoutTime: number): Promise<boolean> {
+	let interval: NodeJS.Timer;
+	return new Promise(pollOver => {
+		const complete = (success = false) => {
+			clearInterval(interval);
+			pollOver(success);
+		};
+		interval = setInterval(async () => {
+			const predResult = await predicate();
+			if (predResult) {
+				complete(true);
+			}
+		}, intervalDelay);
+		setTimeout(complete, timeoutTime);
+	});
 }
 
 export async function ensureConnectionViewOpened() {
