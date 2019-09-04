@@ -732,3 +732,19 @@ export class RenameNotebookMaterializedAction extends Action {
 		return Promise.resolve(true);
 	}
 }
+
+export class OpenLatestRunMaterializedNotebook extends Action {
+	public static ID = 'notebookaction.openLatestRun';
+	public static LABEL = nls.localize('notebookaction.openLatestRun', "Open Latest Run");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService,
+	) {
+		super(OpenLatestRunMaterializedNotebook.ID, OpenLatestRunMaterializedNotebook.LABEL);
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		actionInfo.component.openLatesNotebookRun(actionInfo.targetObject.job);
+		return Promise.resolve(true);
+	}
+}

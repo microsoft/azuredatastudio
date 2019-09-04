@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { EditJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction, OpenLatestRunMaterializedNotebook } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -884,8 +884,10 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		const editAction = this._instantiationService.createInstance(EditJobAction);
 		const editNotebookAction = this._instantiationService.createInstance(EditNotebookJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
+		const openLatestRunAction = this._instantiationService.createInstance(OpenLatestRunMaterializedNotebook);
 		return [
 			runJobAction,
+			openLatestRunAction,
 			editNotebookAction,
 			editAction,
 			this._instantiationService.createInstance(DeleteNotebookAction)
@@ -980,5 +982,27 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	public async openCreateNotebookDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		await this._commandService.executeCommand('agent.openNotebookDialog', ownerUri);
+	}
+
+	public async openLatesNotebookRun(notebook: azdata.AgentNotebookInfo) {
+		let notebookHistories = this._notebookCacheObject.getNotebookHistory(notebook.jobId);
+		let history: azdata.AgentNotebookHistoryInfo;
+		let minMaterializedId = Number.MIN_VALUE;
+		for (let i = 0; i < notebookHistories.length; i++) {
+			if (minMaterializedId < notebookHistories[i].materializedNotebookId) {
+				history = notebookHistories[i];
+				minMaterializedId = history.materializedNotebookId;
+			}
+		}
+		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+		let targetDatabase = notebook.targetDatabase;
+		this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, history.materializedNotebookId).then(async (result) => {
+			if (result) {
+				let regex = /:|-/gi;
+				let readableDataTimeString = history.runDate.replace(regex, '').replace(' ', '');
+				let tempNotebookFileName = notebook.name + '_' + readableDataTimeString;
+				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
+			}
+		});
 	}
 }
