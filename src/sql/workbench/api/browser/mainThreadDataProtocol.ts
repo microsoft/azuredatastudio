@@ -395,6 +395,30 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
 			},
+			getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+				return self._proxy.$getNotebooks(handle, connectionUri);
+			},
+			getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+				return self._proxy.$getNotebookHistory(handle, connectionUri, jobID, jobName, targetDatabase);
+			},
+			getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+				return self._proxy.$getMaterializedNotebook(handle, connectionUri, targetDatabase, notebookMaterializedId);
+			},
+			updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedName(handle, connectionUri, agentNotebookHistory, targetDatabase, name);
+			},
+			deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteMaterializedNotebook(handle, connectionUri, agentNotebookHistory, targetDatabase);
+			},
+			updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedPin(handle, connectionUri, agentNotebookHistory, targetDatabase, pin);
+			},
+			getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+				return self._proxy.$getTemplateNotebook(handle, connectionUri, targetDatabase, jobId);
+			},
+			deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteNotebook(handle, connectionUri, notebook);
+			},
 			getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);
 			},

@@ -20,14 +20,13 @@ import { focusBorder, foreground } from 'vs/platform/theme/common/colorRegistry'
 import { Button } from 'sql/base/browser/ui/button/button';
 import { Color } from 'vs/base/common/color';
 
-
 @Component({
 	selector: 'modelview-button',
 	template: `
 	<div>
 		<label for={{this.label}}>
 			<div #input style="width: 100%">
-				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept=".sql" style="display: none">
+				<input #fileInput *ngIf="this.isFile === true" id={{this.label}} type="file" accept="{{ this.fileType }}" style="display: none">
 			</div>
 		</label>
 	</div>
@@ -37,6 +36,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 	private _button: Button;
+	private fileType: string = '.sql';
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('fileInput', { read: ElementRef }) private _fileInputContainer: ElementRef;
@@ -71,7 +71,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 							self.fileContent = text.toString();
 							self.fireEvent({
 								eventType: ComponentEventType.onDidClick,
-								args: self.fileContent
+								args: {
+									filePath: file.path,
+									fileContent: self.fileContent
+								}
 							});
 						};
 						reader.readAsText(file);
@@ -101,6 +104,9 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 		super.setProperties(properties);
 		this._button.enabled = this.enabled;
 		this._button.label = this.label;
+		if (this.properties.fileType) {
+			this.fileType = properties.fileType;
+		}
 		this._button.title = this.title;
 
 		// Button's ariaLabel gets set to the label by default.
@@ -116,6 +122,7 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 			this._button.setWidth(this.convertSize(this.height.toString()));
 		}
 		this.updateIcon();
+		this._changeRef.detectChanges();
 	}
 
 	protected updateIcon() {
@@ -180,6 +187,10 @@ export default class ButtonComponent extends ComponentWithIconBase implements IC
 
 	private set title(newValue: string) {
 		this.setPropertyFromUI<azdata.ButtonProperties, string>((properties, title) => { properties.title = title; }, newValue);
+	}
+
+	private setFileType(value: string) {
+		this.properties.fileType = value;
 	}
 
 	private get ariaLabel(): string {
