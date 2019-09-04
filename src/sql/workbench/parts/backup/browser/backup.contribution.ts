@@ -15,10 +15,11 @@ import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlN
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { localize } from 'vs/nls';
-import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
+import { OEAction } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
+import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 new BackupAction().registerTask();
 
@@ -47,9 +48,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 const OE_BACKUP_COMMAND_ID = 'objectExplorer.backup';
 CommandsRegistry.registerCommand({
 	id: OE_BACKUP_COMMAND_ID,
-	handler: (accessor, args: ObjectExplorerActionsContext) => {
-		const commandService = accessor.get(ICommandService);
-		return commandService.executeCommand(BackupAction.ID, args.connectionProfile);
+	handler: (accessor: ServicesAccessor, actionContext: any) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		return instantiationService.createInstance(OEAction, BackupAction.ID, BackupAction.LABEL).run(actionContext);
 	}
 });
 
