@@ -124,6 +124,9 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 	public refreshJobs() {
 		this._agentViewComponent.refresh = true;
 	}
+
+	public openLatesNotebookRun(notebook: azdata.AgentNotebookInfo) {
+	}
 }
 
 export interface JobActionContext {
