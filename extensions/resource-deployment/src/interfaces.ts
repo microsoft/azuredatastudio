@@ -57,12 +57,6 @@ export interface DialogTabInfo {
 	inputWidth?: string;
 }
 
-export interface WizardPageInfo {
-	sections: SectionInfo[];
-	labelWidth?: string;
-	inputWidth?: string;
-}
-
 export interface SectionInfo {
 	title: string;
 	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
@@ -70,12 +64,13 @@ export interface SectionInfo {
 	labelWidth?: string;
 	inputWidth?: string;
 	labelOnLeft?: boolean; // label position. true: label on the left side of field, false: label on top of field, default is false.
+	collapsible?: boolean;
+	collapsed?: boolean;
+	spaceBetweenFields?: string;
 }
 
 export interface RowInfo {
 	fields: FieldInfo[];
-	labelWidth?: string;
-	inputWidth?: string;
 }
 
 export interface FieldInfo {
@@ -104,7 +99,8 @@ export enum FieldType {
 	DateTimeText = 'datetime_text',
 	SQLPassword = 'sql_password',
 	Password = 'password',
-	Options = 'options'
+	Options = 'options',
+	ReadonlyText = 'readonly_text'
 }
 
 export interface NotebookInfo {

@@ -11,7 +11,7 @@ export interface DeploymentProfile {
 	master: number;
 	data: number;
 	compute: number;
-	storage: number;
+	hdfs: number;
 	nameNode: number;
 	spark: number;
 }
@@ -31,7 +31,7 @@ export class AzdataService implements IAzdataService {
 					master: 1,
 					data: 1,
 					compute: 1,
-					storage: 2,
+					hdfs: 2,
 					nameNode: 1,
 					spark: 1
 				}, {
@@ -41,7 +41,7 @@ export class AzdataService implements IAzdataService {
 					master: 1,
 					data: 1,
 					compute: 1,
-					storage: 2,
+					hdfs: 2,
 					nameNode: 1,
 					spark: 1
 				}, {
@@ -51,7 +51,7 @@ export class AzdataService implements IAzdataService {
 					master: 1,
 					data: 1,
 					compute: 1,
-					storage: 2,
+					hdfs: 2,
 					nameNode: 1,
 					spark: 1
 				}

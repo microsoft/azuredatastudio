@@ -63,29 +63,29 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.defaultLogStorage', "Log storage size"),
 					value: profile.defaultLogSize.toString()
 				}, {
-					label: '' // Blank line
+					label: '' // line separator
 				}, {
-					label: localize('deployCluster.masterPool', "Master SQL Server"),
+					label: localize('deployCluster.masterPoolLabel', "Master SQL Server"),
 					value: profile.master.toString()
 				}, {
-					label: localize('deployCluster.computePool', "Compute"),
+					label: localize('deployCluster.computePoolLable', "Compute"),
 					value: profile.compute.toString()
 				}, {
-					label: localize('deployCluster.dataPool', "Data"),
+					label: localize('deployCluster.dataPoolLabel', "Data"),
 					value: profile.data.toString()
 				}, {
-					label: localize('deployCluster.nameNode', "Name node"),
+					label: localize('deployCluster.nameNodeLabel', "Name node"),
 					value: profile.nameNode.toString()
 				}, {
-					label: localize('deployCluster.spark', "Spark"),
+					label: localize('deployCluster.sparkLabel', "Spark"),
 					value: profile.spark.toString()
 				}, {
-					label: localize('deployCluster.storage', "Storage"),
-					value: profile.storage.toString()
+					label: localize('deployCluster.hdfsLabel', "HDFS"),
+					value: profile.hdfs.toString()
 				}
 			],
 			width: '240px',
-			height: '400px'
+			height: '350px',
 		}).component();
 		this._cards.push(card);
 		this.wizard.registerDisposable(card.onCardSelectedChanged(() => {

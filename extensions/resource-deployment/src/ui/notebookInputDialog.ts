@@ -5,6 +5,7 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
@@ -27,7 +28,19 @@ export class NotebookInputDialog extends DialogBase {
 	protected initialize() {
 		const self = this;
 		const validators: Validator[] = [];
-		initializeDialog(this._dialogObject, this.dialogInfo, validators, this.inputComponents, this._toDispose);
+		initializeDialog({
+			dialogInfo: this.dialogInfo,
+			container: this._dialogObject,
+			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
+				this._toDispose.push(disposable);
+			},
+			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+				this.inputComponents[name] = component;
+			},
+			onNewValidatorCreated: (validator: Validator): void => {
+				validators.push(validator);
+			}
+		});
 		this._dialogObject.registerCloseValidator(() => {
 			const messages: string[] = [];
 			validators.forEach(validator => {

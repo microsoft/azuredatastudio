@@ -4,10 +4,11 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { createSection, InputComponents, setModelValues } from '../../modelViewUtils';
+import { createSection, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import { ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
@@ -127,8 +128,34 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 		this.pageObject.registerContent((view: azdata.ModelView) => {
-			const basicSettingsGroup = createSection(this.wizard.wizardObject, view, basicSection, self.validators, this.inputComponents, this.wizard.toDispose);
-			const activeDirectorySettingsGroup = createSection(this.wizard.wizardObject, view, activeDirectorySection, self.validators, this.inputComponents, this.wizard.toDispose);
+			const basicSettingsGroup = createSection({
+				view: view,
+				container: self.wizard.wizardObject,
+				sectionInfo: basicSection,
+				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
+					self.wizard.registerDisposable(disposable);
+				},
+				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+					self.inputComponents[name] = component;
+				},
+				onNewValidatorCreated: (validator: Validator): void => {
+					self.validators.push(validator);
+				}
+			});
+			const activeDirectorySettingsGroup = createSection({
+				view: view,
+				container: self.wizard.wizardObject,
+				sectionInfo: activeDirectorySection,
+				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
+					self.wizard.registerDisposable(disposable);
+				},
+				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+					self.inputComponents[name] = component;
+				},
+				onNewValidatorCreated: (validator: Validator): void => {
+					self.validators.push(validator);
+				}
+			});
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const activeDirectoryFormItem = { title: '', component: activeDirectorySettingsGroup };
 			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[AuthenticationMode_VariableName];

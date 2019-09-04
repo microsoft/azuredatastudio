@@ -4,11 +4,12 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
 import { WizardPageBase } from '../../wizardPageBase';
-import { createSection, InputComponents, setModelValues } from '../../modelViewUtils';
+import { createSection, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { SubscriptionId_VariableName, ResourceGroup_VariableName, Region_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
 const localize = nls.loadMessageBundle();
 
@@ -69,7 +70,21 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 		this.pageObject.registerContent((view: azdata.ModelView) => {
-			const azureGroup = createSection(this.wizard.wizardObject, view, azureSection, self.validators, this.inputComponents, this.wizard.toDispose);
+
+			const azureGroup = createSection({
+				sectionInfo: azureSection,
+				view: view,
+				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
+					self.wizard.registerDisposable(disposable);
+				},
+				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent): void => {
+					self.inputComponents[name] = component;
+				},
+				onNewValidatorCreated: (validator: Validator): void => {
+					self.validators.push(validator);
+				},
+				container: this.wizard.wizardObject
+			});
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[{
 					title: '',
