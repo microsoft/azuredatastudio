@@ -350,8 +350,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	findNextUntitledFileName(filePath: string): string {
-		const fileExtension = path.extname(filePath);
-		const baseName = path.basename(filePath, fileExtension);
+		const baseName = path.basename(filePath);
 		let idx = 0;
 		let title = `${baseName}`;
 		do {
