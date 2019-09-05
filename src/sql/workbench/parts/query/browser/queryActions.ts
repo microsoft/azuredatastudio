@@ -279,7 +279,8 @@ export class CancelQueryAction extends QueryTaskbarAction {
 	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			if (!this.editor.input) {
-				return undefined;
+				console.error('editor input was null');
+				return Promise.resolve(null);
 			}
 			this.queryModelService.cancelQuery(this.editor.input.uri);
 		}
@@ -556,6 +557,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
 		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
+			console.error('editor input was null');
 			return Promise.resolve(null);
 		}
 		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
@@ -687,6 +689,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
 		if (!this._editor.input) {
+			console.error('editor input was null');
 			return;
 		}
 
@@ -722,6 +725,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 
 	private getCurrentDatabaseName() {
 		if (!this._editor.input) {
+			console.error('editor input was null');
 			return undefined;
 		}
 
@@ -749,6 +753,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 		}
 
 		if (!this._editor.input) {
+			console.error('editor input was null');
 			return undefined;
 		}
 
@@ -762,6 +767,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 
 	private onDropdownFocus(): void {
 		if (!this._editor.input) {
+			console.error('editor input was null');
 			return undefined;
 		}
 
@@ -785,7 +791,8 @@ export class ListDatabasesActionItem implements IActionViewItem {
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox.enable();
 			if (!this._editor.input) {
-				return undefined;
+				console.error('editor input was null');
+				return;
 			}
 			let uri = this._editor.input.uri;
 			if (!uri) {
