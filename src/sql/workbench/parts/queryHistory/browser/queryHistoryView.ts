@@ -77,7 +77,7 @@ export class QueryHistoryView extends Disposable {
 		}, {
 				indentPixels: 10,
 				twistiePixels: 20,
-				ariaLabel: localize({ key: 'queryHistory.regTreeAriaLabel', comment: ['QueryHistory'] }, 'Query History')
+				ariaLabel: localize({ key: 'queryHistory.regTreeAriaLabel', comment: ['QueryHistory'] }, "Query History")
 			});
 	}
 

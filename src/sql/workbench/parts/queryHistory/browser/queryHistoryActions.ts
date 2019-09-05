@@ -5,6 +5,7 @@
 
 
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/parts/queryHistory/common/constants';
+import { RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
 import { Action } from 'vs/base/common/actions';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
