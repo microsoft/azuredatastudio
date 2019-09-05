@@ -111,7 +111,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 			}
 			actions.splice(insertIndex, 0, ...builtIn);
 		} else {
-			if (actions.length > 0) {
+			if (actions.length > 0 && builtIn.length > 0) {
 				builtIn.push(new Separator());
 			}
 			actions.unshift(...builtIn);
