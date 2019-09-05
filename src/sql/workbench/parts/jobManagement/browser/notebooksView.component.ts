@@ -984,7 +984,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		await this._commandService.executeCommand('agent.openNotebookDialog', ownerUri);
 	}
 
-	public async openLatesNotebookRun(notebook: azdata.AgentNotebookInfo) {
+	public async openLatestNotebookRun(notebook: azdata.AgentNotebookInfo) {
 		let notebookHistories = this._notebookCacheObject.getNotebookHistory(notebook.jobId);
 		let history: azdata.AgentNotebookHistoryInfo;
 		let minMaterializedId = Number.MIN_VALUE;

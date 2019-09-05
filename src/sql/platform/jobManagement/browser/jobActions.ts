@@ -744,7 +744,7 @@ export class OpenLatestRunMaterializedNotebook extends Action {
 	}
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		actionInfo.component.openLatesNotebookRun(actionInfo.targetObject.job);
+		actionInfo.component.openLatestNotebookRun(actionInfo.targetObject.job);
 		return Promise.resolve(true);
 	}
 }
