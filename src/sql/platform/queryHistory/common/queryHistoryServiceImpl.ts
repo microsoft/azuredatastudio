@@ -12,11 +12,12 @@ import { Range } from 'vs/editor/common/core/range';
 import { QueryHistoryInfo, QueryStatus } from 'sql/platform/queryHistory/common/queryHistoryInfo';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 /**
  * Service that collects the results of executed queries
  */
-export class QueryHistoryService implements IQueryHistoryService {
+export class QueryHistoryService extends Disposable implements IQueryHistoryService {
 	_serviceBrand: any;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
@@ -32,7 +33,9 @@ export class QueryHistoryService implements IQueryHistoryService {
 		@IModelService _modelService: IModelService,
 		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
 	) {
-		_queryModelService.onQueryEvent((e: IQueryEvent) => {
+		super();
+
+		this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
 			if (e.type === 'queryStop') {
 				const uri: URI = URI.parse(e.uri);
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
@@ -47,16 +50,16 @@ export class QueryHistoryService implements IQueryHistoryService {
 
 				// icon as required (for now logic is if any message has error query has error)
 				let error: boolean = false;
-				e.queryInfo.queryRunner.messages.forEach(x => error = error || x.isError);
+				e.queryInfo.messages.forEach(x => error = error || x.isError);
 				if (error) {
 					newInfo.status = QueryStatus.Failed;
 				}
 
 				// Append new node to beginning of array so the newest ones are at the top
-				this._infos = [newInfo].concat(this._infos);
+				this._infos.unshift(newInfo);
 				this._onInfosUpdated.fire(this._infos);
 			}
-		});
+		}));
 	}
 
 	/**

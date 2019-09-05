@@ -5,18 +5,15 @@
 
 
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/parts/queryHistory/common/constants';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import { IConnectionManagementService, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { Action } from 'vs/base/common/actions';
-import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { TogglePanelAction } from 'vs/workbench/browser/panel';
 import { localize } from 'vs/nls';
 import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
 import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
 
 export class ToggleQueryHistoryAction extends TogglePanelAction {
 
@@ -60,23 +57,14 @@ export class OpenQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IEditorService private _editorService: IEditorService
+		@IInstantiationService private _instantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<boolean> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			TaskUtilities.newQuery(
-				element.info.connectionProfile,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._objectExplorerService,
-				this._editorService,
-				element.info.queryText);
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then(() => true, () => false);
 		}
 		return true;
 	}
@@ -89,24 +77,14 @@ export class RunQueryAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IQueryEditorService private _queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService private _objectExplorerService: IObjectExplorerService,
-		@IEditorService private _editorService: IEditorService
+		@IInstantiationService private _instantiationService
 	) {
 		super(id, label);
 	}
 
 	public async run(element: QueryHistoryNode): Promise<boolean> {
 		if (element instanceof QueryHistoryNode && element.info) {
-			TaskUtilities.newQuery(
-				element.info.connectionProfile,
-				this._connectionManagementService,
-				this._queryEditorService,
-				this._objectExplorerService,
-				this._editorService,
-				element.info.queryText,
-				RunQueryOnConnectionMode.executeQuery);
+			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).catch(() => true, () => false);
 		}
 		return true;
 	}

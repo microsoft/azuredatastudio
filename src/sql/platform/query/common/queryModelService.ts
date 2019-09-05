@@ -284,7 +284,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'queryStop',
 				uri: uri,
-				queryInfo: info
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -298,7 +302,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'queryStart',
 				uri: uri,
-				queryInfo: info
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -309,7 +317,12 @@ export class QueryModelService implements IQueryModelService {
 
 			let event: IQueryEvent = {
 				type: 'queryUpdate',
-				uri: uri
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -321,7 +334,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'executionPlan',
 				uri: planInfo.fileUri,
-				queryInfo: info,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				},
 				params: planInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -331,7 +348,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'visualize',
 				uri: uri,
-				queryInfo: info,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				},
 				params: resultSetInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -448,7 +469,11 @@ export class QueryModelService implements IQueryModelService {
 				let event: IQueryEvent = {
 					type: 'queryStop',
 					uri: ownerUri,
-					queryInfo: info
+					queryInfo:
+					{
+						selection: info.selection,
+						messages: info.queryRunner.messages
+					},
 				};
 				this._onQueryEvent.fire(event);
 
@@ -461,7 +486,11 @@ export class QueryModelService implements IQueryModelService {
 				let event: IQueryEvent = {
 					type: 'queryStart',
 					uri: ownerUri,
-					queryInfo: info
+					queryInfo:
+					{
+						selection: info.selection,
+						messages: info.queryRunner.messages
+					},
 				};
 				this._onQueryEvent.fire(event);
 

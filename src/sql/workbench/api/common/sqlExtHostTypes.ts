@@ -325,9 +325,8 @@ export enum DataProviderType {
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
-	DacFxServicesProvider = 'DacFxServicesProvider',
-	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
+	SerializationProvider = 'SerializationProvider',
 	IconProvider = 'IconProvider'
 }
 
