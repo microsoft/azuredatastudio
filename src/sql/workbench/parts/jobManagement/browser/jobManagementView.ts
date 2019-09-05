@@ -125,7 +125,7 @@ export abstract class JobManagementView extends TabChild implements AfterContent
 		this._agentViewComponent.refresh = true;
 	}
 
-	public openLatestNotebookRun(notebook: azdata.AgentNotebookInfo) {
+	public openLastNRun(notebook: azdata.AgentNotebookInfo, n: number, maxVisibleElements: number) {
 	}
 }
 

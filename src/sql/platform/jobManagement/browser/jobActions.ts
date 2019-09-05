@@ -589,7 +589,7 @@ export class NewNotebookJobAction extends Action {
 
 export class EditNotebookJobAction extends Action {
 	public static ID = 'notebookaction.editNotebook';
-	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook Job");
+	public static LABEL = nls.localize('notebookaction.editJob', "Edit");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService
@@ -624,7 +624,7 @@ export class OpenTemplateNotebookAction extends Action {
 
 export class DeleteNotebookAction extends Action {
 	public static ID = 'notebookaction.deleteNotebook';
-	public static LABEL = nls.localize('notebookaction.deleteNotebook', "Delete Notebook");
+	public static LABEL = nls.localize('notebookaction.deleteNotebook', "Delete");
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
@@ -744,7 +744,7 @@ export class OpenLatestRunMaterializedNotebook extends Action {
 	}
 
 	public run(actionInfo: IJobActionInfo): Promise<boolean> {
-		actionInfo.component.openLatestNotebookRun(actionInfo.targetObject.job);
+		actionInfo.component.openLastNRun(actionInfo.targetObject.job, 0, 1);
 		return Promise.resolve(true);
 	}
 }
