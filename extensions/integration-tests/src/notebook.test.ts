@@ -53,9 +53,10 @@ if (context.RunTest) {
 			await (new NotebookTester()).sqlLanguageTest(this.test.title);
 		});
 
-		test('should not be dirty after saving notebook test', async function () {
-			await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
-		});
+		// TODO: Need to make this test more reliable.
+		// test('should not be dirty after saving notebook test', async function () {
+		// 	await (new NotebookTester().shouldNotBeDirtyAfterSavingNotebookTest(this.test.title));
+		// });
 
 		if (process.env['RUN_PYTHON3_TEST'] === '1') {
 			test('Python3 notebook test', async function () {
