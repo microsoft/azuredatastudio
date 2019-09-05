@@ -278,6 +278,9 @@ export class CancelQueryAction extends QueryTaskbarAction {
 
 	public run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
+			if (!this.editor.input) {
+				return undefined;
+			}
 			this.queryModelService.cancelQuery(this.editor.input.uri);
 		}
 		return Promise.resolve(null);
@@ -552,6 +555,9 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		// set query options
 		let queryoptions: QueryExecutionOptions = { options: new Map<string, any>() };
 		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
+		if (!this.editor.input) {
+			return Promise.resolve(null);
+		}
 		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
 
 		// set intellisense options
@@ -680,6 +686,10 @@ export class ListDatabasesActionItem implements IActionViewItem {
 
 	// PRIVATE HELPERS /////////////////////////////////////////////////////
 	private databaseSelected(dbName: string): void {
+		if (!this._editor.input) {
+			return;
+		}
+
 		let uri = this._editor.input.uri;
 		if (!uri) {
 			return;
@@ -711,6 +721,10 @@ export class ListDatabasesActionItem implements IActionViewItem {
 	}
 
 	private getCurrentDatabaseName() {
+		if (!this._editor.input) {
+			return undefined;
+		}
+
 		let uri = this._editor.input.uri;
 		if (uri) {
 			let profile = this.connectionManagementService.getConnectionProfile(uri);
@@ -734,6 +748,10 @@ export class ListDatabasesActionItem implements IActionViewItem {
 			return;
 		}
 
+		if (!this._editor.input) {
+			return undefined;
+		}
+
 		let uri = this._editor.input.uri;
 		if (uri !== connParams.connectionUri) {
 			return;
@@ -743,6 +761,10 @@ export class ListDatabasesActionItem implements IActionViewItem {
 	}
 
 	private onDropdownFocus(): void {
+		if (!this._editor.input) {
+			return undefined;
+		}
+
 		let uri = this._editor.input.uri;
 		if (!uri) {
 			return;
@@ -762,6 +784,9 @@ export class ListDatabasesActionItem implements IActionViewItem {
 
 		if (this._isInAccessibilityMode) {
 			this._databaseSelectBox.enable();
+			if (!this._editor.input) {
+				return undefined;
+			}
 			let uri = this._editor.input.uri;
 			if (!uri) {
 				return;
