@@ -144,6 +144,13 @@ export class NotebookModelStub implements INotebookModel {
 	findMatches: FindMatch[];
 	onFindCountChange: Event<number>;
 	findArray: NotebookRange[];
+	get onActiveCellChanged(): Event<ICellModel> {
+		throw new Error('Method not implemented.');
+	}
+	updateActiveCell(cell: ICellModel) {
+		throw new Error('Method not implemented.');
+	}
+
 }
 
 export class NotebookManagerStub implements INotebookManager {

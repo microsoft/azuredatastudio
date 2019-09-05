@@ -44,7 +44,7 @@
     <body>
       <trans-unit id="providerIdNotValidError">
         <source xml:lang="en">Connection is required in order to interact with SchemaCompareService</source>
-        <target state="new">Connection is required in order to interact with SchemaCompareService</target>
+        <target state="translated">É necessária uma conexão para interagir com o SchemaCompareService</target>
       </trans-unit>
       <trans-unit id="noHandlerRegistered">
         <source xml:lang="en">No Handler Registered</source>
@@ -137,7 +137,7 @@
     <body>
       <trans-unit id="showDataExplorer">
         <source xml:lang="en">Show Connections</source>
-        <target state="new">Show Connections</target>
+        <target state="translated">Mostrar conexões</target>
       </trans-unit>
       <trans-unit id="workbench.dataExplorer">
         <source xml:lang="en">Connections</source>
@@ -197,7 +197,7 @@
     <body>
       <trans-unit id="resultsGridConfigurationTitle">
         <source xml:lang="en">Results Grid and Messages</source>
-        <target state="new">Results Grid and Messages</target>
+        <target state="translated">Grade de resultados e mensagens</target>
       </trans-unit>
       <trans-unit id="fontFamily">
         <source xml:lang="en">Controls the font family.</source>
@@ -385,7 +385,7 @@
     <body>
       <trans-unit id="notebook.inProcMarkdown">
         <source xml:lang="en">Use in-process markdown viewer to render text cells more quickly (Experimental).</source>
-        <target state="new">Use in-process markdown viewer to render text cells more quickly (Experimental).</target>
+        <target state="translated">Use o Visualizador de Markdown em processo para renderizar células de texto mais rapidamente (experimental).</target>
       </trans-unit>
     </body>
   </file>
@@ -601,11 +601,11 @@
     <body>
       <trans-unit id="noProviderFound">
         <source xml:lang="en">Cannot expand as the required connection provider '{0}' was not found</source>
-        <target state="new">Cannot expand as the required connection provider '{0}' was not found</target>
+        <target state="translated">Não é possível expandir, pois o provedor de conexão necessário '{0}' não foi encontrado</target>
       </trans-unit>
       <trans-unit id="loginCanceled">
         <source xml:lang="en">User canceled</source>
-        <target state="new">User canceled</target>
+        <target state="translated">Usuário cancelado</target>
       </trans-unit>
     </body>
   </file>
@@ -633,7 +633,7 @@
       </trans-unit>
       <trans-unit id="dacFx">
         <source xml:lang="en">Data-tier Application Wizard</source>
-        <target state="new">Data-tier Application Wizard</target>
+        <target state="translated">Assistente de aplicativo da camada de dados</target>
       </trans-unit>
       <trans-unit id="profiler">
         <source xml:lang="en">Launch Profiler</source>
@@ -641,7 +641,7 @@
       </trans-unit>
       <trans-unit id="flatFileImport">
         <source xml:lang="en">Import Wizard</source>
-        <target state="new">Import Wizard</target>
+        <target state="translated">Assistente de importação</target>
       </trans-unit>
       <trans-unit id="schemaCompare">
         <source xml:lang="en">Schema Compare</source>
@@ -725,7 +725,7 @@
     <body>
       <trans-unit id="refreshFailed">
         <source xml:lang="en">Refresh account was canceled by the user</source>
-        <target state="new">Refresh account was canceled by the user</target>
+        <target state="translated">A conta de atualização foi cancelada pelo usuário</target>
       </trans-unit>
     </body>
   </file>
@@ -825,91 +825,91 @@
       </trans-unit>
       <trans-unit id="mssql.query.setRowCount">
         <source xml:lang="en">Maximum number of rows to return before the server stops processing your query.</source>
-        <target state="new">Maximum number of rows to return before the server stops processing your query.</target>
+        <target state="translated">Número máximo de linhas a serem retornadas antes que o servidor pare de processar sua consulta.</target>
       </trans-unit>
       <trans-unit id="mssql.query.textSize">
         <source xml:lang="en">Maximum size of text and ntext data returned from a SELECT statement</source>
-        <target state="new">Maximum size of text and ntext data returned from a SELECT statement</target>
+        <target state="translated">Tamanho máximo de dados text e ntext retornados de uma instrução SELECT</target>
       </trans-unit>
       <trans-unit id="mssql.query.executionTimeout">
         <source xml:lang="en">An execution time-out of 0 indicates an unlimited wait (no time-out)</source>
-        <target state="new">An execution time-out of 0 indicates an unlimited wait (no time-out)</target>
+        <target state="translated">Um tempo limite de execução de 0 indica uma espera ilimitada (sem tempo limite)</target>
       </trans-unit>
       <trans-unit id="mssql.query.noCount">
         <source xml:lang="en">Enable SET NOCOUNT option</source>
-        <target state="new">Enable SET NOCOUNT option</target>
+        <target state="translated">Ativar opção SET NOCOUNT</target>
       </trans-unit>
       <trans-unit id="mssql.query.noExec">
         <source xml:lang="en">Enable SET NOEXEC option</source>
-        <target state="new">Enable SET NOEXEC option</target>
+        <target state="translated">Habilitar a opção SET NOEXEC</target>
       </trans-unit>
       <trans-unit id="mssql.query.parseOnly">
         <source xml:lang="en">Enable SET PARSEONLY option</source>
-        <target state="new">Enable SET PARSEONLY option</target>
+        <target state="translated">Habilitar a opção SET PARSEONLY</target>
       </trans-unit>
       <trans-unit id="mssql.query.arithAbort">
         <source xml:lang="en">Enable SET ARITHABORT option</source>
-        <target state="new">Enable SET ARITHABORT option</target>
+        <target state="translated">Habilitar a opção SET ARITHABORT</target>
       </trans-unit>
       <trans-unit id="mssql.query.statisticsTime">
         <source xml:lang="en">Enable SET STATISTICS TIME option</source>
-        <target state="new">Enable SET STATISTICS TIME option</target>
+        <target state="translated">Ative a opção SET STATISTICS TIME</target>
       </trans-unit>
       <trans-unit id="mssql.query.statisticsIO">
         <source xml:lang="en">Enable SET STATISTICS IO option</source>
-        <target state="new">Enable SET STATISTICS IO option</target>
+        <target state="translated">Habilitar a opção SET STATISTICS IO</target>
       </trans-unit>
       <trans-unit id="mssql.query.xactAbortOn">
         <source xml:lang="en">Enable SET XACT_ABORT ON option</source>
-        <target state="new">Enable SET XACT_ABORT ON option</target>
+        <target state="translated">Habilitar a opção SET XACT_ABORT ON</target>
       </trans-unit>
       <trans-unit id="mssql.query.transactionIsolationLevel">
         <source xml:lang="en">Enable SET TRANSACTION ISOLATION LEVEL option</source>
-        <target state="new">Enable SET TRANSACTION ISOLATION LEVEL option</target>
+        <target state="translated">Habilitar a opção SET TRANSACTION ISOLATION LEVEL</target>
       </trans-unit>
       <trans-unit id="mssql.query.deadlockPriority">
         <source xml:lang="en">Enable SET DEADLOCK_PRIORITY option</source>
-        <target state="new">Enable SET DEADLOCK_PRIORITY option</target>
+        <target state="translated">Habilitar a opção SET DEADLOCK_PRIORITY</target>
       </trans-unit>
       <trans-unit id="mssql.query.lockTimeout">
         <source xml:lang="en">Enable SET LOCK TIMEOUT option (in milliseconds)</source>
-        <target state="new">Enable SET LOCK TIMEOUT option (in milliseconds)</target>
+        <target state="translated">Habilitar a opção SET LOCK TIMEOUT (em milissegundos)</target>
       </trans-unit>
       <trans-unit id="mssql.query.queryGovernorCostLimit">
         <source xml:lang="en">Enable SET QUERY_GOVERNOR_COST_LIMIT</source>
-        <target state="new">Enable SET QUERY_GOVERNOR_COST_LIMIT</target>
+        <target state="translated">Habilitar SET QUERY_GOVERNOR_COST_LIMIT</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiDefaults">
         <source xml:lang="en">Enable SET ANSI_DEFAULTS</source>
-        <target state="new">Enable SET ANSI_DEFAULTS</target>
+        <target state="translated">Habilitar SET ANSI_DEFAULTS</target>
       </trans-unit>
       <trans-unit id="mssql.query.quotedIdentifier">
         <source xml:lang="en">Enable SET QUOTED_IDENTIFIER</source>
-        <target state="new">Enable SET QUOTED_IDENTIFIER</target>
+        <target state="translated">Habilitar SET QUOTED_IDENTIFIER</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiNullDefaultOn">
         <source xml:lang="en">Enable SET ANSI_NULL_DFLT_ON</source>
-        <target state="new">Enable SET ANSI_NULL_DFLT_ON</target>
+        <target state="translated">Habilitar SET ANSI_NULL_DFLT_ON</target>
       </trans-unit>
       <trans-unit id="mssql.query.implicitTransactions">
         <source xml:lang="en">Enable SET IMPLICIT_TRANSACTIONS</source>
-        <target state="new">Enable SET IMPLICIT_TRANSACTIONS</target>
+        <target state="translated">Ativar SET IMPLICIT_TRANSACTIONS</target>
       </trans-unit>
       <trans-unit id="mssql.query.cursorCloseOnCommit">
         <source xml:lang="en">Enable SET CURSOR_CLOSE_ON_COMMIT</source>
-        <target state="new">Enable SET CURSOR_CLOSE_ON_COMMIT</target>
+        <target state="translated">Habilitar SET CURSOR_CLOSE_ON_COMMIT</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiPadding">
         <source xml:lang="en">Enable SET ANSI_PADDING</source>
-        <target state="new">Enable SET ANSI_PADDING</target>
+        <target state="translated">Habilitar SET ANSI_PADDING</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiWarnings">
         <source xml:lang="en">Enable SET ANSI_WARNINGS</source>
-        <target state="new">Enable SET ANSI_WARNINGS</target>
+        <target state="translated">Habilitar SET ANSI_WARNINGS</target>
       </trans-unit>
       <trans-unit id="mssql.query.ansiNulls">
         <source xml:lang="en">Enable SET ANSI_NULLS</source>
-        <target state="new">Enable SET ANSI_NULLS</target>
+        <target state="translated">Habilitar SET ANSI_NULLS</target>
       </trans-unit>
       <trans-unit id="queryShortcutDescription">
         <source xml:lang="en">Set keybinding workbench.action.query.shortcut{0} to run the shortcut text as a procedure call. Any selected text in the query editor will be passed as a parameter</source>
@@ -929,7 +929,7 @@
       </trans-unit>
       <trans-unit id="profiler.settings.Filters">
         <source xml:lang="en">Profiler Filters</source>
-        <target state="new">Profiler Filters</target>
+        <target state="translated">Filtros do profiler</target>
       </trans-unit>
     </body>
   </file>
@@ -1037,7 +1037,7 @@
     <body>
       <trans-unit id="toggleTasks">
         <source xml:lang="en">Toggle Tasks</source>
-        <target state="new">Toggle Tasks</target>
+        <target state="translated">Alternar tarefas</target>
       </trans-unit>
     </body>
   </file>
@@ -1314,11 +1314,11 @@
     <body>
       <trans-unit id="noRendererFound">
         <source xml:lang="en">No {0} renderer could be found for output. It has the following MIME types: {1}</source>
-        <target state="new">No {0} renderer could be found for output. It has the following MIME types: {1}</target>
+        <target state="translated">Nenhum renderizador de {0} pode ser encontrado para a saída. Ele tem os seguintes tipos MIME: {1}</target>
       </trans-unit>
       <trans-unit id="safe">
         <source xml:lang="en">(safe) </source>
-        <target state="new">(safe) </target>
+        <target state="translated">(seguro)</target>
       </trans-unit>
     </body>
   </file>
@@ -1326,7 +1326,7 @@
     <body>
       <trans-unit id="plotlyError">
         <source xml:lang="en">Error displaying Plotly graph: {0}</source>
-        <target state="new">Error displaying Plotly graph: {0}</target>
+        <target state="translated">Erro ao exibir o gráfico Plotly: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -1442,7 +1442,7 @@
       </trans-unit>
       <trans-unit id="schema.iconPath">
         <source xml:lang="en">Icon path for the server type</source>
-        <target state="new">Icon path for the server type</target>
+        <target state="translated">Caminho do ícone para o tipo de servidor</target>
       </trans-unit>
       <trans-unit id="schema.connectionOptions">
         <source xml:lang="en">Options for connection</source>
@@ -1630,7 +1630,7 @@
     <body>
       <trans-unit id="copyFailed">
         <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="new">Copy failed with error {0}</target>
+        <target state="translated">Falha na cópia com o erro {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -1738,19 +1738,19 @@
       </trans-unit>
       <trans-unit id="profilerFilterDialog.remove">
         <source xml:lang="en">Remove this clause</source>
-        <target state="new">Remove this clause</target>
+        <target state="translated">Remover esta cláusula</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.saveFilter">
         <source xml:lang="en">Save Filter</source>
-        <target state="new">Save Filter</target>
+        <target state="translated">Salvar filtro</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.loadFilter">
         <source xml:lang="en">Load Filter</source>
-        <target state="new">Load Filter</target>
+        <target state="translated">Carregar filtro</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.addClauseText">
         <source xml:lang="en">Add a clause</source>
-        <target state="new">Add a clause</target>
+        <target state="translated">Adicionar uma cláusula</target>
       </trans-unit>
       <trans-unit id="profilerFilterDialog.fieldColumn">
         <source xml:lang="en">Field</source>
@@ -1950,11 +1950,11 @@
       </trans-unit>
       <trans-unit id="backup.commandNotSupported">
         <source xml:lang="en">Backup command is not supported for Azure SQL databases.</source>
-        <target state="new">Backup command is not supported for Azure SQL databases.</target>
+        <target state="translated">O comando Backup não é compatível com bancos de dados SQL do Azure.</target>
       </trans-unit>
       <trans-unit id="backup.commandNotSupportedForServer">
         <source xml:lang="en">Backup command is not supported in Server Context. Please select a Database and try again.</source>
-        <target state="new">Backup command is not supported in Server Context. Please select a Database and try again.</target>
+        <target state="translated">O comando backup não é compatível no contexto do servidor. Selecione um banco de dados e tente novamente.</target>
       </trans-unit>
       <trans-unit id="restoreAction.restore">
         <source xml:lang="en">Restore</source>
@@ -1966,11 +1966,11 @@
       </trans-unit>
       <trans-unit id="restore.commandNotSupported">
         <source xml:lang="en">Restore command is not supported for Azure SQL databases.</source>
-        <target state="new">Restore command is not supported for Azure SQL databases.</target>
+        <target state="translated">O comando Restore não é compatível com bancos de dados SQL do Azure.</target>
       </trans-unit>
       <trans-unit id="restore.commandNotSupportedForServer">
         <source xml:lang="en">Restore command is not supported in Server Context. Please select a Database and try again.</source>
-        <target state="new">Restore command is not supported in Server Context. Please select a Database and try again.</target>
+        <target state="translated">O comando Restore não é suportado no contexto do servidor. Por favor, selecione um banco de dados e tente novamente.</target>
       </trans-unit>
       <trans-unit id="manage">
         <source xml:lang="en">Manage</source>
@@ -2146,11 +2146,11 @@
     <body>
       <trans-unit id="runActiveCell">
         <source xml:lang="en">F5 shortcut key requires a code cell to be selected. Please select a code cell to run.</source>
-        <target state="new">F5 shortcut key requires a code cell to be selected. Please select a code cell to run.</target>
+        <target state="translated">A tecla de atalho F5 requer que uma célula de código seja selecionada. Selecione uma célula de código para executar.</target>
       </trans-unit>
       <trans-unit id="clearResultActiveCell">
         <source xml:lang="en">Clear result requires a code cell to be selected. Please select a code cell to run.</source>
-        <target state="new">Clear result requires a code cell to be selected. Please select a code cell to run.</target>
+        <target state="translated">Limpar o resultado requer que uma célula de código seja selecionada. Por favor, selecione uma célula de código para executar.</target>
       </trans-unit>
     </body>
   </file>
@@ -2556,7 +2556,7 @@
     <body>
       <trans-unit id="noTaskMessage">
         <source xml:lang="en">No task history to display.</source>
-        <target state="new">No task history to display.</target>
+        <target state="translated">Nenhum histórico de tarefas a ser exibido.</target>
       </trans-unit>
       <trans-unit id="taskHistory.regTreeAriaLabel">
         <source xml:lang="en">Task history</source>
@@ -2649,7 +2649,7 @@
       </trans-unit>
       <trans-unit id="query.initEditExecutionFailed">
         <source xml:lang="en">Initialize edit data session failed: </source>
-        <target state="new">Initialize edit data session failed: </target>
+        <target state="translated">Falha ao inicializar a sessão de edição de dados:</target>
       </trans-unit>
       <trans-unit id="elapsedBatchTime">
         <source xml:lang="en">Batch execution time: {0}</source>
@@ -2657,7 +2657,7 @@
       </trans-unit>
       <trans-unit id="copyFailed">
         <source xml:lang="en">Copy failed with error {0}</source>
-        <target state="new">Copy failed with error {0}</target>
+        <target state="translated">Falha na cópia com erro {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -2925,7 +2925,7 @@
     <body>
       <trans-unit id="servers.noConnections">
         <source xml:lang="en">No connections found.</source>
-        <target state="new">No connections found.</target>
+        <target state="translated">Nenhuma conexão encontrada.</target>
       </trans-unit>
       <trans-unit id="serverTree.addConnection">
         <source xml:lang="en">Add Connection</source>
@@ -2989,7 +2989,7 @@
     <body>
       <trans-unit id="serverDescription">
         <source xml:lang="en">Server Description (optional)</source>
-        <target state="new">Server Description (optional)</target>
+        <target state="translated">Descrição do servidor (opcional)</target>
       </trans-unit>
     </body>
   </file>
@@ -3061,7 +3061,7 @@
       </trans-unit>
       <trans-unit id="noKernelInstalled">
         <source xml:lang="en">Please install the SQL Server 2019 extension to run cells.</source>
-        <target state="new">Please install the SQL Server 2019 extension to run cells.</target>
+        <target state="translated">Instale a extensão do SQL Server 2019 para executar células.</target>
       </trans-unit>
       <trans-unit id="installSql2019Extension">
         <source xml:lang="en">Install Extension</source>
@@ -3089,7 +3089,7 @@
       </trans-unit>
       <trans-unit id="cellRunFailed">
         <source xml:lang="en">Run Cells failed - See error in output of the currently selected cell for more information.</source>
-        <target state="new">Run Cells failed - See error in output of the currently selected cell for more information.</target>
+        <target state="translated">Falha ao executar células – confira o erro na saída da célula selecionada no momento para obter mais informações.</target>
       </trans-unit>
     </body>
   </file>
@@ -3205,7 +3205,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.gettingStarted">
         <source xml:lang="en">Getting started</source>
-        <target state="new">Getting started</target>
+        <target state="translated">Introdução</target>
       </trans-unit>
       <trans-unit id="welcomePage.productDocumentation">
         <source xml:lang="en">Documentation</source>
@@ -3213,7 +3213,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.reportIssue">
         <source xml:lang="en">Report issue or feature request</source>
-        <target state="new">Report issue or feature request</target>
+        <target state="translated">Relatar problema ou solicitação de recurso</target>
       </trans-unit>
       <trans-unit id="welcomePage.gitHubRepository">
         <source xml:lang="en">GitHub repository</source>
@@ -3237,7 +3237,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.extensionDescription">
         <source xml:lang="en">Download extensions that you need, including the SQL Server Admin pack and more</source>
-        <target state="new">Download extensions that you need, including the SQL Server Admin pack and more</target>
+        <target state="translated">Baixe as extensões necessárias, incluindo o pacote de Administrador do SQL Server e muito mais</target>
       </trans-unit>
       <trans-unit id="welcomePage.keyboardShortcut">
         <source xml:lang="en">Keyboard Shortcuts</source>
@@ -3245,7 +3245,7 @@
       </trans-unit>
       <trans-unit id="welcomePage.keyboardShortcutDescription">
         <source xml:lang="en">Find your favorite commands and customize them</source>
-        <target state="new">Find your favorite commands and customize them</target>
+        <target state="translated">Encontre seus comandos favoritos e personalize-os</target>
       </trans-unit>
       <trans-unit id="welcomePage.colorTheme">
         <source xml:lang="en">Color theme</source>
@@ -3269,19 +3269,19 @@
       </trans-unit>
       <trans-unit id="welcomePage.azdataBlog">
         <source xml:lang="en">Discover what's new in the latest release</source>
-        <target state="new">Discover what's new in the latest release</target>
+        <target state="translated">Descubra o que há de novo na versão mais recente</target>
       </trans-unit>
       <trans-unit id="welcomePage.azdataBlogDescription">
         <source xml:lang="en">New monthly blog posts each month showcasing our new features</source>
-        <target state="new">New monthly blog posts each month showcasing our new features</target>
+        <target state="translated">Novas postagens mensais do blog apresentando nossos novos recursos</target>
       </trans-unit>
       <trans-unit id="welcomePage.followTwitter">
         <source xml:lang="en">Follow us on Twitter</source>
-        <target state="new">Follow us on Twitter</target>
+        <target state="translated">Siga-nos no Twitter</target>
       </trans-unit>
       <trans-unit id="welcomePage.followTwitterDescription">
         <source xml:lang="en">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</source>
-        <target state="new">Keep up to date with how the community is using Azure Data Studio and to talk directly with the engineers.</target>
+        <target state="translated">Mantenha-se atualizado com a forma como a Comunidade está usando o Azure Data Studio e converse diretamente com os engenheiros.</target>
       </trans-unit>
     </body>
   </file>
@@ -3397,7 +3397,7 @@
     <body>
       <trans-unit id="stdInLabel">
         <source xml:lang="en">StdIn:</source>
-        <target state="new">StdIn:</target>
+        <target state="translated">Stdin:</target>
       </trans-unit>
     </body>
   </file>
@@ -3485,7 +3485,7 @@
       </trans-unit>
       <trans-unit id="resultsErrorColor">
         <source xml:lang="en">Results messages error color.</source>
-        <target state="new">Results messages error color.</target>
+        <target state="translated">Cor de erro das mensagens de resultados.</target>
       </trans-unit>
     </body>
   </file>
@@ -3657,7 +3657,7 @@
       </trans-unit>
       <trans-unit id="connectingQueryLabel">
         <source xml:lang="en">Connecting query file</source>
-        <target state="new">Connecting query file</target>
+        <target state="translated">Conectando o arquivo de consulta</target>
       </trans-unit>
     </body>
   </file>
@@ -3805,19 +3805,19 @@
     <body>
       <trans-unit id="noMimeTypeFound">
         <source xml:lang="en">No {0}renderer could be found for output. It has the following MIME types: {1}</source>
-        <target state="new">No {0}renderer could be found for output. It has the following MIME types: {1}</target>
+        <target state="translated">Não foi possível encontrar nenhum {0}renderizador para saída. Ele tem os seguintes tipos MIME: {1}</target>
       </trans-unit>
       <trans-unit id="safe">
         <source xml:lang="en">safe </source>
-        <target state="new">safe </target>
+        <target state="translated">Seguro </target>
       </trans-unit>
       <trans-unit id="noSelectorFound">
         <source xml:lang="en">No component could be found for selector {0}</source>
-        <target state="new">No component could be found for selector {0}</target>
+        <target state="translated">Não foi possível encontrar nenhum componente para o seletor {0}</target>
       </trans-unit>
       <trans-unit id="componentRenderError">
         <source xml:lang="en">Error rendering component: {0}</source>
-        <target state="new">Error rendering component: {0}</target>
+        <target state="translated">Erro ao renderizar o componente: {0}</target>
       </trans-unit>
     </body>
   </file>
@@ -3825,7 +3825,7 @@
     <body>
       <trans-unit id="xmlShowplan">
         <source xml:lang="en">XML Showplan</source>
-        <target state="new">XML Showplan</target>
+        <target state="translated">Plano de execução XML</target>
       </trans-unit>
     </body>
   </file>
@@ -4137,7 +4137,7 @@
       </trans-unit>
       <trans-unit id="saveToFileNotSupported">
         <source xml:lang="en">Save to file is not supported by the backing data source</source>
-        <target state="new">Save to file is not supported by the backing data source</target>
+        <target state="translated">Salvar em arquivo não é uma ação compatível com a fonte de dados de backup</target>
       </trans-unit>
       <trans-unit id="copySelection">
         <source xml:lang="en">Copy</source>
@@ -4549,19 +4549,19 @@
       </trans-unit>
       <trans-unit id="markdownBefore">
         <source xml:lang="en">Insert Text Before</source>
-        <target state="new">Insert Text Before</target>
+        <target state="translated">Inserir texto antes</target>
       </trans-unit>
       <trans-unit id="markdownAfter">
         <source xml:lang="en">Insert Text After</source>
-        <target state="new">Insert Text After</target>
+        <target state="translated">Inserir texto após</target>
       </trans-unit>
       <trans-unit id="runAllBefore">
         <source xml:lang="en">Run Cells Before</source>
-        <target state="new">Run Cells Before</target>
+        <target state="translated">Executar células antes de</target>
       </trans-unit>
       <trans-unit id="runAllAfter">
         <source xml:lang="en">Run Cells After</source>
-        <target state="new">Run Cells After</target>
+        <target state="translated">Executar células após</target>
       </trans-unit>
       <trans-unit id="clear">
         <source xml:lang="en">Clear Output</source>
@@ -4705,11 +4705,11 @@
       </trans-unit>
       <trans-unit id="query">
         <source xml:lang="en">Query</source>
-        <target state="new">Query</target>
+        <target state="translated">Consulta</target>
       </trans-unit>
       <trans-unit id="notebook">
         <source xml:lang="en">Notebook</source>
-        <target state="new">Notebook</target>
+        <target state="translated">Notebook</target>
       </trans-unit>
       <trans-unit id="sql">
         <source xml:lang="en">SQL</source>
@@ -4733,7 +4733,7 @@
     <body>
       <trans-unit id="kernelRequiresConnection">
         <source xml:lang="en">Please select a connection to run cells for this kernel</source>
-        <target state="new">Please select a connection to run cells for this kernel</target>
+        <target state="translated">Selecione uma conexão para executar células para este kernel</target>
       </trans-unit>
       <trans-unit id="deleteCellFailed">
         <source xml:lang="en">Failed to delete cell.</source>
@@ -4955,7 +4955,7 @@ Erro: {1}</target>
     <body>
       <trans-unit id="runCellCancelled">
         <source xml:lang="en">Cell execution cancelled</source>
-        <target state="new">Cell execution cancelled</target>
+        <target state="translated">Execução da célula cancelada</target>
       </trans-unit>
       <trans-unit id="executionCanceled">
         <source xml:lang="en">Query execution was canceled</source>

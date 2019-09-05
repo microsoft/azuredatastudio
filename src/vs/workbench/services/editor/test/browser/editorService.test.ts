@@ -33,8 +33,6 @@ import { ModesRegistry } from 'vs/editor/common/modes/modesRegistry';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { NullFileSystemProvider } from 'vs/platform/files/test/common/nullFileSystemProvider';
 
-// {{SQL CARBON EDIT}} - Disable editor tests
-/*
 export class TestEditorControl extends BaseEditor {
 
 	constructor(@ITelemetryService telemetryService: ITelemetryService) { super('MyTestEditorForEditorService', NullTelemetryService, new TestThemeService(), new TestStorageService()); }
@@ -51,8 +49,8 @@ export class TestEditorControl extends BaseEditor {
 }
 
 export class TestEditorInput extends EditorInput implements IFileEditorInput {
-	public gotDisposed: boolean;
-	private fails: boolean;
+	public gotDisposed = false;
+	private fails = false;
 	constructor(private resource: URI) { super(); }
 
 	getTypeId() { return 'testEditorInputForEditorService'; }
@@ -82,7 +80,7 @@ class FileServiceProvider extends Disposable {
 	}
 }
 
-*/suite('EditorService', () => {/*
+suite.skip('EditorService', () => { // {{SQL CARBON EDIT}} skip suite
 
 	function registerTestEditorInput(): void {
 		Registry.as<IEditorRegistry>(Extensions.Editors).registerEditor(new EditorDescriptor(TestEditorControl, 'MyTestEditorForEditorService', 'My Test Editor For Next Editor Service'), [new SyncDescriptor(TestEditorInput)]);
@@ -332,7 +330,7 @@ class FileServiceProvider extends Disposable {
 
 		const inp = instantiationService.createInstance(ResourceEditorInput, 'name', 'description', URI.parse('my://resource-delegate'), undefined);
 		const delegate = instantiationService.createInstance(DelegatingEditorService);
-		delegate.setEditorOpenHandler((group: IEditorGroup, input: IEditorInput, options?: EditorOptions) => {
+		delegate.setEditorOpenHandler((delegate, group: IEditorGroup, input: IEditorInput, options?: EditorOptions) => {
 			assert.strictEqual(input, inp);
 
 			done();
@@ -646,5 +644,5 @@ class FileServiceProvider extends Disposable {
 
 		let failingEditor = await service.openEditor(failingInput);
 		assert.ok(!failingEditor);
-	});*/
+	});
 });

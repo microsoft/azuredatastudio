@@ -39,7 +39,7 @@ class FormItem {
 
 @Component({
 	template: `
-		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()">
+		<div #container *ngIf="items" class="form-table" [style.padding]="getFormPadding()" [style.width]="getFormWidth()" [style.height]="getFormHeight()" role="presentation">
 			<ng-container *ngFor="let item of items">
 			<div class="form-row" *ngIf="isGroupLabel(item)" [style.font-size]="getItemTitleFontSize(item)">
 				<div class="form-item-row form-group-label">

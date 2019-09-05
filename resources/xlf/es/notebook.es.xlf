@@ -308,7 +308,7 @@
     <body>
       <trans-unit id="msgInstallPkgProgress">
         <source xml:lang="en">Notebook dependencies installation is in progress</source>
-        <target state="translated">La instalación de dependencias de notebook está en curso</target>
+        <target state="translated">La instalación de dependencias de Notebook está en curso</target>
       </trans-unit>
       <trans-unit id="msgPythonDownloadComplete">
         <source xml:lang="en">Python download is complete</source>
@@ -472,23 +472,23 @@
       </trans-unit>
       <trans-unit id="openExternalLinkError">
         <source xml:lang="en">Open link {0} failed: {1}</source>
-        <target state="new">Open link {0} failed: {1}</target>
+        <target state="translated">Error al abrir el vínculo {0}: {1}</target>
       </trans-unit>
       <trans-unit id="openConfigFileError">
         <source xml:lang="en">Open file {0} failed: {1}</source>
-        <target state="translated">Error en la apertura de archivo {0}: {1}</target>
+        <target state="translated">Error en la apertura del archivo {0}: {1}</target>
       </trans-unit>
       <trans-unit id="openExternalLinkCommand">
         <source xml:lang="en">Open External Link</source>
-        <target state="new">Open External Link</target>
+        <target state="translated">Abrir vínculo externo</target>
       </trans-unit>
       <trans-unit id="openNotebookCommand">
         <source xml:lang="en">Open Notebook</source>
-        <target state="new">Open Notebook</target>
+        <target state="translated">Abrir Notebook</target>
       </trans-unit>
       <trans-unit id="openMarkdownCommand">
         <source xml:lang="en">Open Markdown</source>
-        <target state="new">Open Markdown</target>
+        <target state="translated">Abrir Markdown</target>
       </trans-unit>
       <trans-unit id="missingFileError">
         <source xml:lang="en">Missing file : {0}</source>

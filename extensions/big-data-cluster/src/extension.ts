@@ -8,25 +8,27 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ControllerTreeDataProvider } from './bigDataCluster/tree/controllerTreeDataProvider';
-import { IconPath } from './bigDataCluster/constants';
+import { IconPathHelper } from './bigDataCluster/constants';
 import { TreeNode } from './bigDataCluster/tree/treeNode';
 import { AddControllerDialogModel, AddControllerDialog } from './bigDataCluster/dialog/addControllerDialog';
 import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
+import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
+import { BdcDashboardModel } from './bigDataCluster/dialog/bdcDashboardModel';
 
 const localize = nls.loadMessageBundle();
 
 const AddControllerCommand = 'bigDataClusters.command.addController';
 const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
 const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
+const ManageControllerCommand = 'bigDataClusters.command.manageController';
 
 let throttleTimers: { [key: string]: any } = {};
 
 export function activate(extensionContext: vscode.ExtensionContext) {
-	IconPath.setExtensionContext(extensionContext);
+	IconPathHelper.setExtensionContext(extensionContext);
 	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
-
 	registerTreeDataProvider(treeDataProvider);
-	registerCommands(treeDataProvider);
+	registerCommands(extensionContext, treeDataProvider);
 }
 
 export function deactivate() {
@@ -36,7 +38,7 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 }
 
-function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
+function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
 	vscode.commands.registerCommand(AddControllerCommand, (node?: TreeNode) => {
 		runThrottledAction(AddControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
@@ -50,6 +52,12 @@ function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
 			return;
 		}
 		treeDataProvider.notifyNodeChanged(node);
+	});
+
+	vscode.commands.registerCommand(ManageControllerCommand, async (node: ControllerNode) => {
+		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(node.url)}`;
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.url, node.username, node.password));
+		dashboard.showDashboard();
 	});
 }
 
@@ -89,8 +97,6 @@ function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, 
 		treeDataProvider.saveControllers();
 	}
 }
-
-
 
 /**
  * Throttles actions to avoid bug where on clicking in tree, action gets called twice

@@ -24,6 +24,7 @@ import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebo
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { IModelDecoration, FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -341,6 +342,11 @@ export interface INotebookModel {
 	readonly onProviderIdChange: Event<string>;
 
 	/**
+	 * Event fired on active cell change
+	 */
+	readonly onActiveCellChanged: Event<ICellModel>;
+
+	/**
 	 * The trusted mode of the Notebook
 	 */
 	trustedMode: boolean;
@@ -379,7 +385,7 @@ export interface INotebookModel {
 	/**
 	 * Serialize notebook cell content to JSON
 	 */
-	toJSON(): nb.INotebookContents;
+	toJSON(type?: NotebookChangeType): nb.INotebookContents;
 
 	/**
 	 * Notifies the notebook of a change in the cell
@@ -405,7 +411,7 @@ export interface INotebookModel {
 	/** Event fired once we get call back from ConfigureConnection method in sqlops extension */
 	readonly onValidConnectionSelected: Event<boolean>;
 
-	serializationStateChanged(changeType: NotebookChangeType): void;
+	serializationStateChanged(changeType: NotebookChangeType, cell?: ICellModel): void;
 
 	standardKernels: IStandardKernelWithProvider[];
 
@@ -472,6 +478,11 @@ export interface NotebookPosition {
 	readonly startColumnNumber: number;
 	readonly endColumnNumber: number;
 
+	/**
+	 * Updates the model's view of an active cell to the new active cell
+	 * @param cell New active cell
+	 */
+	updateActiveCell(cell: ICellModel);
 }
 
 export interface NotebookContentChange {
@@ -492,6 +503,11 @@ export interface NotebookContentChange {
 	 * Optional value indicating if the notebook is in a dirty or clean state after this change
 	 */
 	isDirty?: boolean;
+
+	/**
+	 * Text content changed event for cell edits
+	 */
+	modelContentChangedEvent?: IModelContentChangedEvent;
 }
 
 export interface ICellModelOptions {
@@ -515,6 +531,7 @@ export interface ICellModel {
 	cellUri: URI;
 	id: string;
 	readonly language: string;
+	readonly cellGuid: string;
 	source: string | string[];
 	cellType: CellType;
 	trustedMode: boolean;
@@ -536,6 +553,7 @@ export interface ICellModel {
 	loaded: boolean;
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
+	modelContentChangedEvent: IModelContentChangedEvent;
 }
 
 export interface FutureInternal extends nb.IFuture {
@@ -598,4 +616,11 @@ export namespace notebookConstants {
 		language: 'sql',
 		display_name: sqlKernel
 	});
+}
+
+export interface INotebookContentsEditable {
+	cells: nb.ICellContents[];
+	metadata: nb.INotebookMetadata;
+	nbformat: number;
+	nbformat_minor: number;
 }

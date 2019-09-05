@@ -23,14 +23,6 @@
 			"sqltest/*": [
 				"./sqltest/*"
 			]
-		},
-		"types": [
-			"keytar",
-			"minimist",
-			"mocha",
-			"semver",
-			"sinon",
-			"winreg"
-		]
+		}
 	}
 }

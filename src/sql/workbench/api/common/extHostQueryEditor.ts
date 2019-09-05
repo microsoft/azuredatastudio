@@ -44,8 +44,8 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		return this._proxy.$connect(fileUri, connectionId);
 	}
 
-	public $runQuery(fileUri: string): void {
-		return this._proxy.$runQuery(fileUri);
+	public $runQuery(fileUri: string, runCurrentQuery: boolean = true): void {
+		return this._proxy.$runQuery(fileUri, runCurrentQuery);
 	}
 
 	public $registerQueryInfoListener(providerId: string, listener: azdata.queryeditor.QueryEventListener): void {

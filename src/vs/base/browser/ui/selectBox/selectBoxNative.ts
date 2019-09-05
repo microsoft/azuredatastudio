@@ -17,7 +17,7 @@ export class SelectBoxNative extends Disposable implements ISelectBoxDelegate {
 	public selectElement: HTMLSelectElement;
 	private selectBoxOptions: ISelectBoxOptions;
 	private options: ISelectOptionItem[];
-	private selected: number;
+	private selected = 0;
 	private readonly _onDidSelect: Emitter<ISelectData>;
 	private styles: ISelectBoxStyles;
 

@@ -22,6 +22,7 @@ import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
 import { FilterData } from 'sql/workbench/services/profiler/common/profilerFilter';
+import { uriPrefixes } from 'sql/platform/connection/common/utils';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -60,7 +61,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-		this._profilerService.registerSession(generateUuid(), connection, this).then((id) => {
+		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});

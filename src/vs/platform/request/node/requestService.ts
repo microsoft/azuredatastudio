@@ -13,7 +13,8 @@ import { assign } from 'vs/base/common/objects';
 import { isBoolean, isNumber } from 'vs/base/common/types';
 import { canceled } from 'vs/base/common/errors';
 import { CancellationToken } from 'vs/base/common/cancellation';
-import { IRequestOptions, IRequestContext, IRequestService, IHTTPConfiguration } from 'vs/platform/request/common/request';
+import { IRequestService, IHTTPConfiguration } from 'vs/platform/request/common/request';
+import { IRequestOptions, IRequestContext } from 'vs/base/parts/request/common/request';
 import { getProxyAgent, Agent } from 'vs/platform/request/node/proxy';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -38,7 +39,7 @@ export class RequestService extends Disposable implements IRequestService {
 	_serviceBrand: any;
 
 	private proxyUrl?: string;
-	private strictSSL: boolean;
+	private strictSSL: boolean | undefined;
 	private authorization?: string;
 
 	constructor(

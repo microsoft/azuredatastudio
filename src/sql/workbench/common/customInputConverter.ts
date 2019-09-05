@@ -12,7 +12,7 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
 import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
 import { ResourceEditorInput } from 'vs/workbench/common/editor/resourceEditorInput';
 import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileEditorInput';
@@ -43,7 +43,7 @@ export function convertEditorInput(input: EditorInput, options: IQueryEditorOpti
 			//QueryInput
 			uri = getQueryEditorFileUri(input);
 			if (uri) {
-				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString());
+				const queryResultsInput: QueryResultsInput = instantiationService.createInstance(QueryResultsInput, uri.toString(true));
 				let queryInput: QueryInput = instantiationService.createInstance(QueryInput, '', input, queryResultsInput, undefined);
 				return queryInput;
 			}

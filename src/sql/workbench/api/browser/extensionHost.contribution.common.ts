@@ -19,5 +19,4 @@ import './mainThreadNotebookDocumentsAndEditors';
 import './mainThreadObjectExplorer';
 import './mainThreadQueryEditor';
 import './mainThreadResourceProvider';
-import './mainThreadSerializationProvider';
 import './mainThreadTasks';

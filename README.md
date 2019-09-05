@@ -1,7 +1,7 @@
 # Azure Data Studio
 
 [![Join the chat at https://gitter.im/Microsoft/sqlopsstudio](https://badges.gitter.im/Microsoft/sqlopsstudio.svg)](https://gitter.im/Microsoft/sqlopsstudio?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Build Status](https://dev.azure.com/ms/azuredatastudio/_apis/build/status/Microsoft.azuredatastudio)](https://dev.azure.com/ms/azuredatastudio/_build/latest?definitionId=4)
+[![Build Status](https://dev.azure.com/azuredatastudio/azuredatastudio/_apis/build/status/Azure%20Data%20Studio%20CI?branchName=master)](https://dev.azure.com/azuredatastudio/azuredatastudio/_build/latest?definitionId=4&branchName=master)
 
 Azure Data Studio is a data management tool that enables you to work with SQL Server, Azure SQL DB and SQL DW from Windows, macOS and Linux.
 
@@ -9,13 +9,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2098449
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2098450
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2098500
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2098501
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2098197
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2098280
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2098279
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2100710
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2100711
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2100712
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2100809
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2100714
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2100810
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2100672
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
