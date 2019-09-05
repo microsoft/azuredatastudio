@@ -114,9 +114,9 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this._notebookModel;
 	}
 
-    /**
-     * Called to create the editor in the parent element.
-     */
+	/**
+	 * @param parent Called to create the editor in the parent element.
+	 */
 	public createEditor(parent: HTMLElement): void {
 		this._overlay = document.createElement('div');
 		this._overlay.className = 'overlayWidgets monaco-editor';
@@ -137,16 +137,16 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		this._finder.getDomNode().style.visibility = 'hidden';
 	}
 
-    /**
-     * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
-     */
+	/**
+	 * Sets focus on this editor. Specifically, it sets the focus on the hosted text editor.
+	 */
 	public focus(): void {
 	}
 
-    /**
-     * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
-     * To be called when the container of this editor changes size.
-     */
+	/**
+	 * Updates the internal variable keeping track of the editor's size, and re-calculates the sash position.
+	 * To be called when the container of this editor changes size.
+	 */
 	public layout(dimension: DOM.Dimension): void {
 		this._currentDimensions = dimension;
 		if (this.notebookInput) {
@@ -178,9 +178,9 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 	}
 
-    /**
-     * Load the angular components and record for this input that we have done so
-     */
+	/**
+	 * Load the angular components and record for this input that we have done so
+	 */
 	private bootstrapAngular(input: NotebookInput): void {
 		// Get the bootstrap params and perform the bootstrap
 		input.hasBootstrapped = true;
