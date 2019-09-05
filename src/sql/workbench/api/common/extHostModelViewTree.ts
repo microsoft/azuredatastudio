@@ -45,7 +45,7 @@ export class ExtHostModelViewTreeViews implements ExtHostModelViewTreeViewsShape
 		const treeView = this.treeViews.get(treeViewId);
 		if (!treeView) {
 
-			return Promise.reject(new Error(localize('treeView.notRegistered', 'No tree view with id \'{0}\' registered.', treeViewId)));
+			return Promise.reject(new Error(localize('treeView.notRegistered', "No tree view with id \'{0}\' registered.", treeViewId)));
 		}
 		return treeView.getChildren(treeItemHandle);
 	}

@@ -13,8 +13,6 @@ import { ConnectionManagementInfo } from 'sql/platform/connection/common/connect
 import { IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
-export const VIEWLET_ID = 'workbench.view.connections';
-
 /**
  * Options for the actions that could happen after connecting is complete
  */
@@ -81,16 +79,6 @@ export interface IConnectionManagementService {
 	 * Opens the connection dialog to create new connection
 	 */
 	showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void>;
-
-	/**
-	 * Opens the add server group dialog
-	 */
-	showCreateServerGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void>;
-
-	/**
-	 * Opens the edit server group dialog
-	 */
-	showEditServerGroupDialog(group: ConnectionProfileGroup): Promise<void>;
 
 	/**
 	 * Load the password and opens a new connection

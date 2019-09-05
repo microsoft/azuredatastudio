@@ -69,6 +69,7 @@ export interface IQueryModelService {
 	showCommitError(error: string): void;
 
 	onRunQueryStart: Event<string>;
+	onRunQueryUpdate: Event<string>;
 	onRunQueryComplete: Event<string>;
 	onQueryEvent: Event<IQueryEvent>;
 

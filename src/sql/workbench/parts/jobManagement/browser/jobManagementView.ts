@@ -130,3 +130,8 @@ export interface JobActionContext {
 	canEdit: boolean;
 	job: azdata.AgentJobInfo;
 }
+
+export interface NotebookActionContext {
+	canEdit: boolean;
+	notebook: azdata.AgentNotebookInfo;
+}

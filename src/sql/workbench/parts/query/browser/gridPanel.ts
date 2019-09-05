@@ -203,6 +203,10 @@ export class GridPanel {
 		let tables: GridTable<any>[] = [];
 
 		for (let set of resultSet) {
+			// ensure we aren't adding a resultSet that is already visible
+			if (this.tables.find(t => t.resultSet.batchId === set.batchId && t.resultSet.id === set.id)) {
+				continue;
+			}
 			let tableState: GridTableState;
 			if (this.state) {
 				tableState = this.state.tableStates.find(e => e.batchId === set.batchId && e.resultId === set.id);

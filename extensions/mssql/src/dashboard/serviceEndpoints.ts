@@ -8,46 +8,74 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
-import * as Utils from '../utils';
+import * as utils from '../utils';
+
+const mgmtProxyName = 'mgmtproxy';
+const grafanaEndpointName = 'metricsui';
+const grafanaDescription = localize('grafana', "Metrics Dashboard");
+const logsuiEndpointName = 'logsui';
+const logsuiDescription = localize('kibana', "Log Search Dashboard");
+const sparkHistoryEndpointName = 'spark-history';
+const sparkHistoryDescription = localize('sparkHistory', "Spark Jobs Management and Monitoring Dashboard");
+const yarnUiEndpointName = 'yarn-ui';
+const yarnHistoryDescription = localize('yarnHistory', "Spark Diagnostics and Monitoring Dashboard");
+const hyperlinkedEndpoints = [grafanaEndpointName, logsuiEndpointName, sparkHistoryEndpointName, yarnUiEndpointName];
 
 export function registerServiceEndpoints(context: vscode.ExtensionContext): void {
 	azdata.ui.registerModelViewProvider('bdc-endpoints', async (view) => {
+		let endpointsArray: Array<utils.IEndpoint> = Object.assign([], utils.getClusterEndpoints(view.serverInfo));
 
-		const endpointsArray: Array<Utils.IEndpoint> = Object.assign([], view.serverInfo.options['clusterEndpoints']);
-		endpointsArray.forEach(endpointInfo => {
-			endpointInfo.hyperlink = 'https://' + endpointInfo.ipAddress + ':' + endpointInfo.port;
-
-		});
 		if (endpointsArray.length > 0) {
-			const managementProxyEp = endpointsArray.find(e => e.serviceName === 'management-proxy' || e.serviceName === 'mgmtproxy');
-			if (managementProxyEp) {
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("grafana", "Metrics Dashboard"), '/grafana/d/wZx3OUdmz'));
-				endpointsArray.push(getCustomEndpoint(managementProxyEp, localize("kibana", "Log Search Dashboard"), '/kibana/app/kibana#/discover'));
+			const grafanaEp = endpointsArray.find(e => e.serviceName === grafanaEndpointName);
+			if (grafanaEp && grafanaEp.endpoint && grafanaEp.endpoint.indexOf('/d/wZx3OUdmz') === -1) {
+				// Update to have correct URL
+				grafanaEp.endpoint += '/d/wZx3OUdmz';
+			}
+			const kibanaEp = endpointsArray.find(e => e.serviceName === logsuiEndpointName);
+			if (kibanaEp && kibanaEp.endpoint && kibanaEp.endpoint.indexOf('/app/kibana#/discover') === -1) {
+				// Update to have correct URL
+				kibanaEp.endpoint += '/app/kibana#/discover';
 			}
 
-			const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
-			if (gatewayEp) {
-				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("sparkHostory", "Spark Job Monitoring"), '/gateway/default/sparkhistory'));
-				endpointsArray.push(getCustomEndpoint(gatewayEp, localize("yarnHistory", "Spark Resource Management"), '/gateway/default/yarn'));
+			if (!grafanaEp) {
+				// We are on older CTP, need to manually add some endpoints.
+				// TODO remove once CTP support goes away
+				const managementProxyEp = endpointsArray.find(e => e.serviceName === mgmtProxyName);
+				if (managementProxyEp) {
+					endpointsArray.push(getCustomEndpoint(managementProxyEp, grafanaEndpointName, grafanaDescription, '/grafana/d/wZx3OUdmz'));
+					endpointsArray.push(getCustomEndpoint(managementProxyEp, logsuiEndpointName, logsuiDescription, '/kibana/app/kibana#/discover'));
+				}
+
+				const gatewayEp = endpointsArray.find(e => e.serviceName === 'gateway');
+				if (gatewayEp) {
+					endpointsArray.push(getCustomEndpoint(gatewayEp, sparkHistoryEndpointName, sparkHistoryDescription, '/gateway/default/sparkhistory'));
+					endpointsArray.push(getCustomEndpoint(gatewayEp, yarnUiEndpointName, yarnHistoryDescription, '/gateway/default/yarn'));
+				}
 			}
+
+			endpointsArray = endpointsArray.map(e => {
+				e.description = getEndpointDisplayText(e.serviceName, e.description);
+				return e;
+			}).sort((a, b) => a.endpoint.localeCompare(b.endpoint));
 
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
 			endpointsArray.forEach(endpointInfo => {
+
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
-				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: getFriendlyEndpointNames(endpointInfo.serviceName) }).component();
+				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
-				if (endpointInfo.isHyperlink) {
-					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.hyperlink, url: endpointInfo.hyperlink }).component();
+				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.serviceName) >= 0) {
+					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.endpoint, url: endpointInfo.endpoint }).component();
 					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px' } });
 				}
 				else {
-					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.ipAddress + ':' + endpointInfo.port }).component();
+					const endpointCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.endpoint }).component();
 					endPointRow.addItem(endpointCell, { CSSStyles: { 'width': '62%', 'user-select': 'text' } });
 				}
 				const copyValueCell = view.modelBuilder.button().component();
 				copyValueCell.iconPath = { light: context.asAbsolutePath('resources/light/copy.png'), dark: context.asAbsolutePath('resources/dark/copy_inverse.png') };
 				copyValueCell.onDidClick(() => {
-					vscode.env.clipboard.writeText(endpointInfo.hyperlink);
+					vscode.env.clipboard.writeText(endpointInfo.endpoint);
 				});
 				copyValueCell.title = localize("copyText", "Copy");
 				copyValueCell.iconHeight = '14px';
@@ -64,40 +92,69 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 	});
 }
 
-function getCustomEndpoint(parentEndpoint: Utils.IEndpoint, serviceName: string, serviceUrl?: string): Utils.IEndpoint {
+function getCustomEndpoint(parentEndpoint: utils.IEndpoint, serviceName: string, description: string, serviceUrl?: string): utils.IEndpoint {
 	if (parentEndpoint) {
-		let endpoint: Utils.IEndpoint = {
+		let endpoint: utils.IEndpoint = {
 			serviceName: serviceName,
-			ipAddress: parentEndpoint.ipAddress,
-			port: parentEndpoint.port,
-			isHyperlink: serviceUrl ? true : false,
-			hyperlink: 'https://' + parentEndpoint.ipAddress + ':' + parentEndpoint.port + serviceUrl
+			description: description,
+			endpoint: parentEndpoint.endpoint + serviceUrl,
+			protocol: 'https'
 		};
 		return endpoint;
 	}
 	return null;
 }
 
-function getFriendlyEndpointNames(name: string): string {
-	let friendlyName: string = name;
-	switch (name) {
-		case 'app-proxy':
-			friendlyName = localize("appproxy", "Application Proxy");
-			break;
-		case 'controller':
-			friendlyName = localize("controller", "Cluster Management Service");
-			break;
-		case 'gateway':
-			friendlyName = localize("gateway", "HDFS and Spark");
-			break;
-		case 'management-proxy':
-			friendlyName = localize("managementproxy", "Management Proxy");
-			break;
-		case 'mgmtproxy':
-			friendlyName = localize("mgmtproxy", "Management Proxy");
-			break;
+export enum Endpoint {
+	gateway = 'gateway',
+	sparkHistory = 'spark-history',
+	yarnUi = 'yarn-ui',
+	appProxy = 'app-proxy',
+	mgmtproxy = 'mgmtproxy',
+	managementProxy = 'management-proxy',
+	logsui = 'logsui',
+	metricsui = 'metricsui',
+	controller = 'controller',
+	sqlServerMaster = 'sql-server-master',
+	webhdfs = 'webhdfs',
+	livy = 'livy'
+}
+
+/**
+ * Gets the localized text to display for a corresponding endpoint
+ * @param serviceName The endpoint name to get the display text for
+ * @param description The backup description to use if we don't have our own
+ */
+function getEndpointDisplayText(endpointName?: string, description?: string): string {
+	endpointName = endpointName || '';
+	switch (endpointName.toLowerCase()) {
+		case Endpoint.appProxy:
+			return localize('endpoint.appproxy', "Application Proxy");
+		case Endpoint.controller:
+			return localize('endpoint.controller', "Cluster Management Service");
+		case Endpoint.gateway:
+			return localize('endpoint.gateway', "Gateway to access HDFS files, Spark");
+		case Endpoint.managementProxy:
+			return localize('endpoint.managementproxy', "Management Proxy");
+		case Endpoint.mgmtproxy:
+			return localize('endpoint.mgmtproxy', "Management Proxy");
+		case Endpoint.sqlServerMaster:
+			return localize('endpoint.sqlServerEndpoint', "SQL Server Master Instance Front-End");
+		case Endpoint.metricsui:
+			return localize('endpoint.grafana', "Metrics Dashboard");
+		case Endpoint.logsui:
+			return localize('endpoint.kibana', "Log Search Dashboard");
+		case Endpoint.yarnUi:
+			return localize('endpoint.yarnHistory', "Spark Diagnostics and Monitoring Dashboard");
+		case Endpoint.sparkHistory:
+			return localize('endpoint.sparkHistory', "Spark Jobs Management and Monitoring Dashboard");
+		case Endpoint.webhdfs:
+			return localize('endpoint.webhdfs', "HDFS File System Proxy");
+		case Endpoint.livy:
+			return localize('endpoint.livy', "Proxy for running Spark statements, jobs, applications");
 		default:
-			break;
+			// Default is to use the description if one was given, otherwise worst case just fall back to using the
+			// original endpoint name
+			return description && description.length > 0 ? description : endpointName;
 	}
-	return friendlyName;
 }

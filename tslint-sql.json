@@ -1,0 +1,20 @@
+{
+	"rulesDirectory": [
+		"build/lib/tslint"
+	],
+	"rules": {
+		"double-quoted-string-arg": [
+			true,
+			{
+				"signatures": [
+					"localize",
+					"nls.localize"
+				],
+				"argIndex": 1
+			}
+		]
+	},
+	"linterOptions": {
+		"exclude": ["src/vs/**/*.ts"]
+	}
+}

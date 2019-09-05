@@ -382,7 +382,19 @@ export class ContributableViewsModel extends Disposable {
 			return 0;
 		}
 
-		return (this.getViewOrder(a) - this.getViewOrder(b)) || (a.id < b.id ? -1 : 1);
+		return (this.getViewOrder(a) - this.getViewOrder(b)) || this.getGroupOrderResult(a, b) || (a.id < b.id ? -1 : 1);
+	}
+
+	private getGroupOrderResult(a: IViewDescriptor, b: IViewDescriptor) {
+		if (!a.group || !b.group) {
+			return 0;
+		}
+
+		if (a.group === b.group) {
+			return 0;
+		}
+
+		return a.group < b.group ? -1 : 1;
 	}
 
 	private getViewOrder(viewDescriptor: IViewDescriptor): number {
@@ -556,7 +568,8 @@ export class PersistentContributableViewsModel extends ContributableViewsModel {
 				visibleGlobal: undefined,
 				visibleWorkspace: isUndefined(workspaceViewState.isHidden) ? undefined : !workspaceViewState.isHidden,
 				collapsed: workspaceViewState.collapsed,
-				order: workspaceViewState.order
+				order: workspaceViewState.order,
+				size: workspaceViewState.size
 			});
 		}
 
@@ -625,7 +638,7 @@ export class PersistentContributableViewsModel extends ContributableViewsModel {
 
 export class ViewsService extends Disposable implements IViewsService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand!: ServiceIdentifier<any>;
 
 	private readonly viewDescriptorCollections: Map<ViewContainer, { viewDescriptorCollection: IViewDescriptorCollection, disposable: IDisposable }>;
 	private readonly viewDisposable: Map<IViewDescriptor, IDisposable>;

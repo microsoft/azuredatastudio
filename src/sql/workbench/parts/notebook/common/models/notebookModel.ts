@@ -7,9 +7,9 @@ import { nb, connection } from 'azdata';
 
 import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
-import { Disposable, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 
-import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, INotebookContentsEditable } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/parts/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
@@ -56,6 +56,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _onProviderIdChanged = new Emitter<string>();
 	private _activeContexts: IDefaultConnection;
 	private _trustedMode: boolean;
+	private _onActiveCellChanged = new Emitter<ICellModel>();
 
 	private _cells: ICellModel[];
 	private _defaultLanguageInfo: nb.ILanguageInfo;
@@ -73,7 +74,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private _kernelDisplayNameToNotebookProviderIds: Map<string, string> = new Map<string, string>();
 	private _onValidConnectionSelected = new Emitter<boolean>();
 	private _oldKernel: nb.IKernel;
-	private _clientSessionListeners: IDisposable[] = [];
+	private _clientSessionListeners = new DisposableStore(); // should this be registered?
 	private _connectionUrisToDispose: string[] = [];
 	private _textCellsLoading: number = 0;
 	private _standardKernels: notebookUtils.IStandardKernelWithProvider[];
@@ -268,6 +269,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return this._onValidConnectionSelected.event;
 	}
 
+	public get onActiveCellChanged(): Event<ICellModel> {
+		return this._onActiveCellChanged.event;
+	}
+
 	public get standardKernels(): notebookUtils.IStandardKernelWithProvider[] {
 		return this._standardKernels;
 	}
@@ -359,12 +364,15 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return cell;
 	}
 
-	private updateActiveCell(cell: ICellModel) {
+	public updateActiveCell(cell: ICellModel) {
 		if (this._activeCell) {
 			this._activeCell.active = false;
 		}
 		this._activeCell = cell;
-		this._activeCell.active = true;
+		if (cell) {
+			this._activeCell.active = true;
+		}
+		this._onActiveCellChanged.fire(cell);
 	}
 
 	private createCell(cellType: CellType): ICellModel {
@@ -486,12 +494,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	private updateActiveClientSession(clientSession: IClientSession) {
 		this.clearClientSessionListeners();
 		this._activeClientSession = clientSession;
-		this._clientSessionListeners.push(this._activeClientSession.kernelChanged(e => this._kernelChangedEmitter.fire(e)));
+		this._clientSessionListeners.add(this._activeClientSession.kernelChanged(e => this._kernelChangedEmitter.fire(e)));
 	}
 
 	private clearClientSessionListeners() {
-		this._clientSessionListeners.forEach(listener => listener.dispose());
-		this._clientSessionListeners = [];
+		this._clientSessionListeners.clear();
 	}
 
 	public setDefaultKernelAndProviderId() {
@@ -1000,8 +1007,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		switch (change) {
 			case NotebookChangeType.CellOutputUpdated:
 			case NotebookChangeType.CellSourceUpdated:
-				changeInfo.changeType = NotebookChangeType.DirtyStateChanged;
 				changeInfo.isDirty = true;
+				changeInfo.modelContentChangedEvent = cell.modelContentChangedEvent;
 				break;
 			default:
 			// Do nothing for now
@@ -1009,10 +1016,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._contentChangedEmitter.fire(changeInfo);
 	}
 
-	serializationStateChanged(changeType: NotebookChangeType): void {
+	serializationStateChanged(changeType: NotebookChangeType, cell?: ICellModel): void {
 		let changeInfo: NotebookContentChange = {
 			changeType: changeType,
-			cells: undefined
+			cells: [cell]
 		};
 
 		this._contentChangedEmitter.fire(changeInfo);
