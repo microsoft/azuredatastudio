@@ -171,7 +171,7 @@ export class InputBox extends Widget {
 		let tagName = this.options.flexibleHeight ? 'textarea' : 'input';
 
 		let wrapper = dom.append(this.element, $('.wrapper'));
-		this.input = dom.append(wrapper, $(tagName + '.input'));
+		this.input = dom.append(wrapper, $(tagName + '.input.empty'));
 		this.input.setAttribute('autocorrect', 'off');
 		this.input.setAttribute('autocapitalize', 'off');
 		this.input.setAttribute('spellcheck', 'false');
@@ -541,6 +541,7 @@ export class InputBox extends Widget {
 
 		this.validate();
 		this.updateMirror();
+		dom.toggleClass(this.input, 'empty', !this.value);
 
 		if (this.state === 'open' && this.contextViewProvider) {
 			this.contextViewProvider.layout();
@@ -552,7 +553,7 @@ export class InputBox extends Widget {
 			return;
 		}
 
-		const value = this.value || this.placeholder;
+		const value = this.value;
 		const lastCharCode = value.charCodeAt(value.length - 1);
 		const suffix = lastCharCode === 10 ? ' ' : '';
 		const mirrorTextContent = value + suffix;
