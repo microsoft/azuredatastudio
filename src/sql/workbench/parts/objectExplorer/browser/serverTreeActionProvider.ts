@@ -106,7 +106,7 @@ export class ServerTreeActionProvider extends ContributableActionProvider {
 		fillInActions(groups, actions, false);
 
 		if (insertIndex) {
-			if (!(actions[insertIndex] instanceof Separator)) {
+			if (!(actions[insertIndex] instanceof Separator) && builtIn.length > 0) {
 				builtIn.unshift(new Separator());
 			}
 			actions.splice(insertIndex, 0, ...builtIn);
