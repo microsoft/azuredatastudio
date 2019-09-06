@@ -1024,8 +1024,5 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
 			}
 		}
-		if (notebookHistories.length < 0) {
-
-		}
 	}
 }
