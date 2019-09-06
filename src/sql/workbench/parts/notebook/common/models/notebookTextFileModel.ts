@@ -193,6 +193,8 @@ export class NotebookTextFileModel {
 			}
 		}
 		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
+		// The end of any cell's outputs cannot possibly be the second to last line in the text editor model
+		// The second to last line (']') is always the end of the "cells" array. This is a temporary solution to a larger bracket matching issue.
 		if (!outputsEnd || outputsEnd.length < 2 || outputsEnd[1].endLineNumber === textEditorModel.textEditorModel.getLineCount() - 1) {
 			return undefined;
 		}
