@@ -2471,6 +2471,7 @@ declare module 'azdata' {
 		editor(): ComponentBuilder<EditorComponent>;
 		diffeditor(): ComponentBuilder<DiffEditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
+		image(): ComponentBuilder<ImageComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		tree<T>(): ComponentBuilder<TreeComponent<T>>;
@@ -3057,6 +3058,12 @@ declare module 'azdata' {
 		CSSStyles?: { [key: string]: string };
 	}
 
+	export interface ImageComponentProperties {
+		src: string;
+		alt?: string;
+		height?: number | string;
+		width?: number | string;
+	}
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3180,6 +3187,13 @@ declare module 'azdata' {
 		 * An event called when the text is clicked
 		 */
 		onDidClick: vscode.Event<any>;
+	}
+
+	export interface ImageComponent extends Component, ImageComponentProperties {
+		src: string;
+		alt?: string;
+		height?: number | string;
+		width?: number | string;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
