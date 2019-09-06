@@ -44,23 +44,23 @@ class TestParsedArgs implements ParsedArgs {
 	debugSearch?: string;
 	diff?: boolean;
 	'disable-crash-reporter'?: string;
-	'disable-extension'?: string | string[];
+	'disable-extension'?: string[]; // undefined or array of 1 or more
 	'disable-extensions'?: boolean;
 	'disable-restore-windows'?: boolean;
 	'disable-telemetry'?: boolean;
 	'disable-updates'?: string;
 	'driver'?: string;
-	'enable-proposed-api'?: string | string[];
+	'enable-proposed-api'?: string[];
 	'export-default-configuration'?: string;
 	'extensions-dir'?: string;
-	extensionDevelopmentPath?: string;
+	extensionDevelopmentPath?: string[];
 	extensionTestsPath?: string;
 	'file-chmod'?: boolean;
 	'file-write'?: boolean;
-	'folder-uri'?: string | string[];
+	'folder-uri'?: string[];
 	goto?: boolean;
 	help?: boolean;
-	'install-extension'?: string | string[];
+	'install-extension'?: string[];
 	'install-source'?: string;
 	integrated?: boolean;
 	'list-extensions'?: boolean;
@@ -82,7 +82,7 @@ class TestParsedArgs implements ParsedArgs {
 	'skip-release-notes'?: boolean;
 	status?: boolean;
 	'sticky-quickopen'?: boolean;
-	'uninstall-extension'?: string | string[];
+	'uninstall-extension'?: string[];
 	'unity-launch'?: boolean; // Always open a new window, except if opening the first window or opening a file or folder as part of the launch.
 	'upload-logs'?: string;
 	user?: string;
