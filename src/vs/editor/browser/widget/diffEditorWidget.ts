@@ -212,8 +212,7 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 	private readonly _notificationService: INotificationService;
 
 	private readonly _reviewPane: DiffReview;
-	// {{SQL CARBON EDIT}}
-	private _options: editorOptions.IDiffEditorOptions;
+	private _options: IDiffEditorOptions; // {{SQL CARBON EDIT}}
 
 	constructor(
 		domElement: HTMLElement,
@@ -235,8 +234,8 @@ export class DiffEditorWidget extends Disposable implements editorBrowser.IDiffE
 		this._contextKeyService.createKey('isInDiffEditor', true);
 		this._themeService = themeService;
 		this._notificationService = notificationService;
-		// {{SQL CARBON EDIT}}
-		this._options = options;
+
+		this._options = options; // {{SQL CARBON EDIT}}
 
 		this.id = (++DIFF_EDITOR_ID);
 
