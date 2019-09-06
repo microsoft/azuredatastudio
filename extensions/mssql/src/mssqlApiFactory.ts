@@ -8,8 +8,9 @@ import { IExtension, ICmsService, IDacFxService, ISchemaCompareService, MssqlObj
 import * as constants from './constants';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider/objectExplorerNodeProvider';
 import * as azdata from 'azdata';
+import { SqlToolsServer } from './sqlToolsServer';
 
-export function createMssqlApi(context: AppContext): IExtension {
+export function createMssqlApi(context: AppContext, sqlToolsServer: SqlToolsServer): IExtension {
 	return {
 		get cmsService() {
 			return context.getService<ICmsService>(constants.CmsService);
@@ -28,5 +29,8 @@ export function createMssqlApi(context: AppContext): IExtension {
 				}
 			};
 		},
+		get sqlToolsServiceReady(): Promise<boolean> {
+			return sqlToolsServer.sqlToolsServiceReady.promise;
+		}
 	};
 }
