@@ -589,6 +589,7 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 	private async curateJobHistory(jobs: azdata.AgentJobInfo[], ownerUri: string) {
 		const self = this;
 		for (let job of jobs) {
+			return;
 			let result = await this._jobManagementService.getJobHistory(ownerUri, job.jobId, job.name);
 			if (result) {
 				self.jobSteps[job.jobId] = result.steps ? result.steps : [];
