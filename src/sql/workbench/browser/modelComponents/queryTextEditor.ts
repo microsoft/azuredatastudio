@@ -150,7 +150,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		let shouldAddHorizontalScrollbarHeight = false;
 		if (!this._editorWorkspaceConfig || configChanged) {
 			this._editorWorkspaceConfig = this.workspaceConfigurationService.getValue('editor');
-			this._lineHeight = editorWidget.getRawConfiguration().lineHeight;
+			this._lineHeight = editorWidget.getRawOptions().lineHeight;
 		}
 		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
 		if (wordWrapEnabled) {
