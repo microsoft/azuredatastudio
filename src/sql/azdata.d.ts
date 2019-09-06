@@ -1387,6 +1387,20 @@ declare module 'azdata' {
 		alerts: AgentAlertInfo[];
 	}
 
+	export interface AgentNotebookInfo extends AgentJobInfo {
+		templateId: number;
+		targetDatabase: string;
+		lastRunNotebookError: string;
+		executeDatabase: string;
+	}
+
+	export interface AgentNotebookMaterializedInfo {
+		materializedId: number;
+		targetDatabase: string;
+		materializedName: string;
+		favorite: boolean;
+	}
+
 	export interface AgentJobScheduleInfo {
 		id: number;
 		name: string;
@@ -1487,6 +1501,14 @@ declare module 'azdata' {
 		steps: AgentJobStep[];
 	}
 
+	export interface AgentNotebookHistoryInfo extends AgentJobHistoryInfo {
+		materializedNotebookId: number;
+		materializedNotebookName: string;
+		materializedNotebookPin: boolean;
+		materializedNotebookErrorInfo: string;
+		materializedNotebookDeleted: boolean;
+	}
+
 	export interface AgentProxyInfo {
 		id: number;
 		accountName: string;
@@ -1577,6 +1599,39 @@ declare module 'azdata' {
 		categories: AgentJobCategory[];
 	}
 
+	export interface AgentNotebooksResult extends ResultStatus {
+		notebooks: AgentNotebookInfo[];
+	}
+
+	export interface AgentJobHistoryResult extends ResultStatus {
+		histories: AgentJobHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookHistoryResult extends ResultStatus {
+		histories: AgentNotebookHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookMaterializedResult extends ResultStatus {
+		notebookMaterialized: string;
+	}
+
+	export interface AgentNotebookTemplateResult extends ResultStatus {
+		notebookTemplate: string;
+	}
+
+	export interface CreateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
+	export interface UpdateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
 	export interface CreateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
@@ -1650,6 +1705,18 @@ declare module 'azdata' {
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
 		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
 		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
+
+		// Notebook management methods
+		getNotebooks(ownerUri: string): Thenable<AgentNotebooksResult>;
+		getNotebookHistory(ownerUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<AgentNotebookHistoryResult>;
+		getMaterializedNotebook(ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
+		getTemplateNotebook(ownerUri: string, targetDatabase: string, jobId: string): Thenable<AgentNotebookTemplateResult>;
+		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
+		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
+		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
+		updateNotebookMaterializedName(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<ResultStatus>;
+		updateNotebookMaterializedPin(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
+		deleteMaterializedNotebook(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string): Thenable<ResultStatus>;
 
 		// Job Step management methods
 		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
@@ -2543,6 +2610,13 @@ declare module 'azdata' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -2944,6 +3018,8 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
+		ariaRole?: string;
+		focused?: boolean;
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
@@ -2997,6 +3073,7 @@ declare module 'azdata' {
 		editable?: boolean;
 		fireOnTextChange?: boolean;
 		ariaLabel?: string;
+		required?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -3099,6 +3176,10 @@ declare module 'azdata' {
 
 	export interface TextComponent extends Component, ComponentProperties {
 		value: string;
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
@@ -3111,6 +3192,9 @@ declare module 'azdata' {
 	}
 
 	export interface RadioButtonComponent extends Component, RadioButtonProperties {
+		/**
+		 * An event called when the radio button is clicked
+		 */
 		onDidClick: vscode.Event<any>;
 	}
 

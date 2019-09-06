@@ -87,6 +87,68 @@ export interface DeleteAgentJobStepParams {
 	step: azdata.AgentJobStepInfo;
 }
 
+// Notebook management parameters
+export interface AgentNotebookParams {
+	ownerUri: string;
+}
+
+export interface AgentNotebookHistoryParams {
+	ownerUri: string;
+	jobId: string;
+	jobName: string;
+	targetDatabase: string;
+}
+
+export interface AgentNotebookMaterializedParams {
+	ownerUri: string;
+	targetDatabase: string;
+	notebookMaterializedId: number;
+}
+
+export interface AgentNotebookTemplateParams {
+	ownerUri: string;
+	targetDatabase: string;
+	jobId: string;
+}
+
+export interface CreateAgentNotebookParams {
+	ownerUri: string;
+	notebook: azdata.AgentNotebookInfo;
+	templateFilePath: string;
+}
+
+export interface UpdateAgentNotebookParams {
+	ownerUri: string;
+	originalNotebookName: string;
+	notebook: azdata.AgentJobInfo;
+	templateFilePath: string;
+}
+
+export interface UpdateAgentNotebookRunPinParams {
+	ownerUri: string;
+	targetDatabase: string;
+	agentNotebookHistory: azdata.AgentNotebookHistoryInfo;
+	materializedNotebookPin: boolean;
+}
+
+export interface UpdateAgentNotebookRunNameParams {
+	ownerUri: string;
+	targetDatabase: string;
+	agentNotebookHistory: azdata.AgentNotebookHistoryInfo;
+	materializedNotebookName: string;
+}
+
+export interface DeleteAgentNotebookParams {
+	ownerUri: string;
+	notebook: azdata.AgentNotebookInfo;
+}
+
+export interface DeleteAgentMaterializedNotebookParams {
+	ownerUri: string;
+	targetDatabase: string;
+	agentNotebookHistory: azdata.AgentNotebookHistoryInfo;
+}
+
 // Alert management parameters
 export interface AgentAlertsParams {
 	ownerUri: string;
@@ -216,6 +278,47 @@ export namespace UpdateAgentJobStepRequest {
 
 export namespace DeleteAgentJobStepRequest {
 	export const type = new RequestType<DeleteAgentJobStepParams, azdata.ResultStatus, void, void>('agent/deletejobstep');
+}
+
+// Notebooks request
+export namespace AgentNotebooksRequest {
+	export const type = new RequestType<AgentNotebookParams, azdata.AgentNotebooksResult, void, void>('agent/notebooks');
+}
+
+export namespace AgentNotebookHistoryRequest {
+	export const type = new RequestType<AgentNotebookHistoryParams, azdata.AgentNotebookHistoryResult, void, void>('agent/notebookhistory');
+}
+
+export namespace AgentNotebookMaterializedRequest {
+	export const type = new RequestType<AgentNotebookMaterializedParams, azdata.AgentNotebookMaterializedResult, void, void>('agent/notebookmaterialized');
+}
+
+export namespace UpdateAgentNotebookRunNameRequest {
+	export const type = new RequestType<UpdateAgentNotebookRunNameParams, azdata.UpdateAgentNotebookResult, void, void>('agent/updatenotebookname');
+}
+
+export namespace DeleteMaterializedNotebookRequest {
+	export const type = new RequestType<DeleteAgentMaterializedNotebookParams, azdata.ResultStatus, void, void>('agent/deletenotebookmaterialized');
+}
+
+export namespace UpdateAgentNotebookRunPinRequest {
+	export const type = new RequestType<UpdateAgentNotebookRunPinParams, azdata.ResultStatus, void, void>('agent/updatenotebookpin');
+}
+
+export namespace AgentNotebookTemplateRequest {
+	export const type = new RequestType<AgentNotebookTemplateParams, azdata.ResultStatus, void, void>('agent/notebooktemplate');
+}
+
+export namespace CreateAgentNotebookRequest {
+	export const type = new RequestType<CreateAgentNotebookParams, azdata.CreateAgentNotebookResult, void, void>('agent/createnotebook');
+}
+
+export namespace DeleteAgentNotebookRequest {
+	export const type = new RequestType<DeleteAgentNotebookParams, azdata.ResultStatus, void, void>('agent/deletenotebook');
+}
+
+export namespace UpdateAgentNotebookRequest {
+	export const type = new RequestType<UpdateAgentNotebookParams, azdata.UpdateAgentNotebookResult, void, void>('agent/updatenotebook');
 }
 
 // Alerts requests
@@ -528,3 +631,26 @@ export namespace SerializeDataContinueRequest {
 	export const type = new RequestType<azdata.SerializeDataContinueRequestParams, azdata.SerializeDataResult, void, void>('serialize/continue');
 }
 // ------------------------------- <Serialization> -----------------------------
+
+// ------------------------------- < Load Completion Extension Request > ------------------------------------
+/**
+ * Completion extension load parameters
+ */
+export class CompletionExtensionParams {
+	/// <summary>
+	/// Absolute path for the assembly containing the completion extension
+	/// </summary>
+	public assemblyPath: string;
+	/// <summary>
+	/// The type name for the completion extension
+	/// </summary>
+	public typeName: string;
+	/// <summary>
+	/// Property bag for initializing the completion extension
+	/// </summary>
+	public properties: {};
+}
+
+export namespace CompletionExtLoadRequest {
+	export const type = new RequestType<CompletionExtensionParams, boolean, void, void>('completion/extLoad');
+}

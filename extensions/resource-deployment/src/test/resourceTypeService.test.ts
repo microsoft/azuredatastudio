@@ -23,20 +23,20 @@ suite('Resource Type Service Tests', function (): void {
 		const resourceTypeService = new ResourceTypeService(mockPlatformService.object, toolsService, notebookService);
 		// index 0: platform name, index 1: number of expected resource types
 		const platforms: { platform: string; resourceTypeCount: number }[] = [
-			{ platform: 'win32', resourceTypeCount: 2 },
+			{ platform: 'win32', resourceTypeCount: 3 },
 			{ platform: 'darwin', resourceTypeCount: 2 },
 			{ platform: 'linux', resourceTypeCount: 2 }];
-		const totalResourceTypeCount = 1;
+		const totalResourceTypeCount = 3;
 		platforms.forEach(platformInfo => {
 			mockPlatformService.reset();
 			mockPlatformService.setup(service => service.platform()).returns(() => platformInfo.platform);
 			mockPlatformService.setup(service => service.showErrorMessage(TypeMoq.It.isAnyString()));
 			const resourceTypes = resourceTypeService.getResourceTypes(true);
-			assert.equal(resourceTypes.length, platformInfo.resourceTypeCount, `number of resource types for platform:${platformInfo.resourceTypeCount} does not meet expected value.`);
+			assert.equal(resourceTypes.length, platformInfo.resourceTypeCount, `number of resource types for platform:${platformInfo.resourceTypeCount} does not meet expected value:${resourceTypes.length}.`);
 		});
 
 		const allResourceTypes = resourceTypeService.getResourceTypes(false);
-		assert.equal(allResourceTypes.length, totalResourceTypeCount, `number of resource types does not meet expected value.`);
+		assert.equal(allResourceTypes.length, totalResourceTypeCount, `number of resource types:${allResourceTypes.length} does not meet expected value:${totalResourceTypeCount}.`);
 
 		const validationErrors = resourceTypeService.validateResourceTypes(allResourceTypes);
 		assert(validationErrors.length === 0, `Validation errors detected in the package.json: ${validationErrors.join(EOL)}.`);
