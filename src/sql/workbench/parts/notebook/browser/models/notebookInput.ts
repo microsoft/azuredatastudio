@@ -54,11 +54,6 @@ export class NotebookEditorModel extends EditorModel {
 						this._changeEventsHookedUp = true;
 						this._register(model.kernelChanged(e => this.updateModel(undefined, NotebookChangeType.KernelChanged)));
 						this._register(model.contentChanged(e => this.updateModel(e, e.changeType)));
-						this._register(notebook.model.onActiveCellChanged((cell) => {
-							if (cell) {
-								this._notebookTextFileModel.activeCellGuid = cell.cellGuid;
-							}
-						}));
 					}
 				}, err => undefined);
 			}

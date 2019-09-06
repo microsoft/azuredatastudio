@@ -152,6 +152,7 @@ export class NotebookTextFileModel {
 			}
 			let firstQuoteOfSource = textEditorModel.textEditorModel.findNextMatch('"', { lineNumber: sourceBefore.range.startLineNumber, column: sourceBefore.range.endColumn }, false, true, undefined, true);
 			this._sourceBeginRange = firstQuoteOfSource.range;
+			this._activeCellGuid = cellGuid;
 		} else {
 			return;
 		}
@@ -171,6 +172,7 @@ export class NotebookTextFileModel {
 				return undefined;
 			}
 			this._outputBeginRange = outputsBegin.range;
+			this._activeCellGuid = cellGuid;
 		} else {
 			return undefined;
 		}
@@ -191,7 +193,7 @@ export class NotebookTextFileModel {
 			}
 		}
 		let outputsEnd = textEditorModel.textEditorModel.matchBracket({ column: outputsBegin.endColumn - 1, lineNumber: outputsBegin.endLineNumber });
-		if (!outputsEnd || outputsEnd.length < 2) {
+		if (!outputsEnd || outputsEnd.length < 2 || outputsEnd[1].endLineNumber === textEditorModel.textEditorModel.getLineCount() - 1) {
 			return undefined;
 		}
 		// single line output [i.e. no outputs exist for a cell]
