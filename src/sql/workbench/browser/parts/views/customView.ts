@@ -239,6 +239,7 @@ export class CustomTreeView extends Disposable implements ITreeView {
 		}));
 
 		this.nodeContext = this._register(instantiationService.createInstance(NodeContextKey));
+		this.nodeContext.setExtensionContextKeys();
 		this.create();
 	}
 

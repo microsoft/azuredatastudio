@@ -12,6 +12,8 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
+import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
+import { inBuiltExtensions } from 'sql/workbench/parts/dataExplorer/common/extensions.contribution';
 
 export interface INodeContextValue {
 	node: ITreeItem;
@@ -26,12 +28,25 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 	static ViewItem = new RawContextKey<string>('viewItem', undefined);
 	static Node = new RawContextKey<INodeContextValue>('node', undefined);
 
+	// Inbuilt Extension context keys
+	static ImportLoaded = new RawContextKey<boolean>('importLoaded', false);
+	static SchemaCompareLoaded = new RawContextKey<boolean>('schemaCompareLoaded', false);
+	static ProfilerLoaded = new RawContextKey<boolean>('profilerLoaded', false);
+	static DacpacLoaded = new RawContextKey<boolean>('dacpacLoaded', false);
+	static AdminToolLoaded = new RawContextKey<boolean>('adminToolLoaded', false);
+
 	private readonly _connectionContextKey: ConnectionContextKey;
 	private readonly _connectableKey: IContextKey<boolean>;
 	private readonly _connectedKey: IContextKey<boolean>;
 	private readonly _viewIdKey: IContextKey<string>;
 	private readonly _viewItemKey: IContextKey<string>;
 	private readonly _nodeContextKey: IContextKey<INodeContextValue>;
+
+	private importLoadedKey: IContextKey<boolean>;
+	private schemaCompareLoaded: IContextKey<boolean>;
+	private profilerLoaded: IContextKey<boolean>;
+	private dacpacLoaded: IContextKey<boolean>;
+	private adminToolLoaded: IContextKey<boolean>;
 
 	private _nodeContextUtils: MssqlNodeContext;
 
@@ -40,7 +55,8 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		@IOEShimService private oeService: IOEShimService,
 		@IQueryManagementService queryManagementService: IQueryManagementService,
 		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@ICapabilitiesService private capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private capabilitiesService: ICapabilitiesService,
+		@IExtensionService private extensionService: IExtensionService
 	) {
 		super();
 
@@ -49,6 +65,11 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 		this._viewIdKey = NodeContextKey.ViewId.bindTo(contextKeyService);
 		this._viewItemKey = NodeContextKey.ViewItem.bindTo(contextKeyService);
 		this._nodeContextKey = NodeContextKey.Node.bindTo(contextKeyService);
+		this.importLoadedKey = NodeContextKey.ImportLoaded.bindTo(this.contextKeyService);
+		this.schemaCompareLoaded = NodeContextKey.SchemaCompareLoaded.bindTo(this.contextKeyService);
+		this.profilerLoaded = NodeContextKey.ProfilerLoaded.bindTo(this.contextKeyService);
+		this.dacpacLoaded = NodeContextKey.DacpacLoaded.bindTo(this.contextKeyService);
+		this.adminToolLoaded = NodeContextKey.AdminToolLoaded.bindTo(this.contextKeyService);
 		this._connectionContextKey = new ConnectionContextKey(contextKeyService, queryManagementService);
 	}
 
@@ -85,5 +106,37 @@ export class NodeContextKey extends Disposable implements IContextKey<INodeConte
 
 	get(): INodeContextValue | undefined {
 		return this._nodeContextKey.get();
+	}
+
+	/**
+	 * Helper function to get the correct context menu for showing
+	 * extension actions
+	 */
+	public async setExtensionContextKeys(): Promise<void> {
+		for (let extension of inBuiltExtensions) {
+			let extensionLoaded = await this.extensionService.getExtension(extension);
+			if (extensionLoaded) {
+				switch (extensionLoaded.name) {
+					case ('import'):
+						this.importLoadedKey.set(true);
+						break;
+					case ('schema-compare'):
+						this.schemaCompareLoaded.set(true);
+						break;
+					case ('profiler'):
+						this.profilerLoaded.set(true);
+						break;
+					case ('dacpac'):
+						this.dacpacLoaded.set(true);
+						break;
+					case ('admin-ext-tool-win'):
+						this.adminToolLoaded.set(true);
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		return Promise.resolve();
 	}
 }

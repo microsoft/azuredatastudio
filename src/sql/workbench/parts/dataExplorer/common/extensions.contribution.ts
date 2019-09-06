@@ -10,6 +10,15 @@ import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlN
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { localize } from 'vs/nls';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+
+export const inBuiltExtensions = [
+	'Microsoft.import',
+	'Microsoft.schema-compare',
+	'Microsoft.profiler',
+	'Microsoft.dacpac',
+	'Microsoft.admin-ext-tool-win'
+];
 
 // Data-Tier Application Wizard
 MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
@@ -19,7 +28,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
 		title: localize('dacFx', "Data-tier Application Wizard")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.DacpacLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsDatabaseOrServer)
 });
 
@@ -31,7 +42,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: DATA_TIER_WIZARD_COMMAND_ID,
 		title: localize('dacFx', "Data-tier Application Wizard")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.DacpacLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Folder),
 		MssqlNodeContext.NodeLabel.isEqualTo('Databases'))
 });
@@ -44,7 +57,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: PROFILER_COMMAND_ID,
 		title: localize('profiler', "Launch Profiler")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.ProfilerLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server))
 });
 
@@ -56,7 +71,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: IMPORT_COMMAND_ID,
 		title: localize('flatFileImport', "Import Wizard")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.ImportLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
 });
 
@@ -68,7 +85,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: SCHEMA_COMPARE_COMMAND_ID,
 		title: localize('schemaCompare', "Schema Compare")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.SchemaCompareLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database))
 });
 
@@ -80,7 +99,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: GENERATE_SCRIPTS_COMMAND_ID,
 		title: localize('generateScripts', "Generate Scripts...")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.AdminToolLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Database),
 		MssqlNodeContext.IsWindows)
 });
@@ -93,7 +114,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: PROPERTIES_COMMAND_ID,
 		title: localize('properties', "Properties")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.AdminToolLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.NodeType.isEqualTo(NodeType.Server), ContextKeyExpr.not('isCloud'),
 		MssqlNodeContext.IsWindows)
 });
@@ -105,7 +128,9 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		id: PROPERTIES_COMMAND_ID,
 		title: localize('properties', "Properties")
 	},
-	when: ContextKeyExpr.and(MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
+	when: ContextKeyExpr.and(
+		NodeContextKey.AdminToolLoaded,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName),
 		MssqlNodeContext.IsWindows,
 		ContextKeyRegexExpr.create('nodeType', /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/))
 });
