@@ -10,7 +10,6 @@ import { IActiveCodeEditor } from 'vs/editor/browser/editorBrowser';
 import { IBulkEditService } from 'vs/editor/browser/services/bulkEditService';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { trimTrailingWhitespace } from 'vs/editor/common/commands/trimTrailingWhitespaceCommand';
-import { ICodeActionsOnSaveOptions } from 'vs/editor/common/config/editorOptions';
 import { EditOperation } from 'vs/editor/common/core/editOperation';
 import { Position } from 'vs/editor/common/core/position';
 import { Range } from 'vs/editor/common/core/range';
@@ -31,13 +30,13 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
 import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
-// {{SQL CARBON EDIT}}
-import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles';
+import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles'; // {{SQL CARBON EDIT}}
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
+import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService'; // {{SQL CARBON EDIT}}
 
-// {{SQL CARBON EDIT}}
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-
+export interface ICodeActionsOnSaveOptions {
+	[kind: string]: boolean;
+}
 
 /*
  * An update participant that ensures any un-tracked changes are synced to the JSON file contents for a
@@ -45,7 +44,7 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
  * updates the backing model in-place, this is a backup mechanism to hard-update the file before save in case
  * some are missed.
  */
-class NotebookUpdateParticipant implements ISaveParticipantParticipant {
+class NotebookUpdateParticipant implements ISaveParticipantParticipant { // {{SQL CARBON EDIT}} add notebook participant
 
 	constructor(
 		@INotebookService private notebookService: INotebookService
