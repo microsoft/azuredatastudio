@@ -13,11 +13,11 @@ export interface IConnectionDialogService {
 	/**
 	 * Opens the connection dialog and returns the promise for successfully opening the dialog
 	 */
-	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Thenable<void>;
+	showDialog(connectionManagementService: IConnectionManagementService, params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void>;
 
 	/**
 	 * Opens the connection dialog and returns the promise when connection is made
 	 * or dialog is closed
 	 */
-	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Thenable<IConnectionProfile>;
+	openDialogAndWait(connectionManagementService: IConnectionManagementService, params?: INewConnectionParams, model?: IConnectionProfile, connectionResult?: IConnectionResult, doConnect?: boolean): Promise<IConnectionProfile>;
 }
