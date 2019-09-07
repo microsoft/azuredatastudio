@@ -36,6 +36,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	@Input() modelStore: IModelStore;
 	private _input: InputBox;
 	private _textAreaInput: InputBox;
+	private _defaultAriaLabel: string;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
@@ -142,6 +143,14 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	public validate(): Thenable<boolean> {
 		return super.validate().then(valid => {
 			this.inputElement.validate();
+
+			// set aria label based on validity of input
+			if (valid) {
+				this.inputElement.setAriaLabel(this._defaultAriaLabel);
+			} else {
+				this.inputElement.setAriaLabel((this._defaultAriaLabel ? this._defaultAriaLabel + '. ' : '') + this.inputElement.inputElement.validationMessage);
+			}
+
 			return valid;
 		});
 	}
@@ -209,6 +218,9 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		}
 
 		input.inputElement.required = this.required;
+
+		// save initial setting of aria label in case we change it later due to validation errors
+		this._defaultAriaLabel = this.ariaLabel;
 	}
 
 	// CSS-bound properties

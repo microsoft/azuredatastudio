@@ -177,7 +177,7 @@ export class InputBox extends Widget {
 		this.input.setAttribute('spellcheck', 'false');
 
 		this.onfocus(this.input, () => dom.addClass(this.element, 'synthetic-focus'));
-		this.onblur(this.input, () => dom.removeClass(this.element, 'synthetic-focus'));
+		// this.onblur(this.input, () => dom.removeClass(this.element, 'synthetic-focus'));
 
 		if (this.options.flexibleHeight) {
 			this.maxHeight = typeof this.options.flexibleMaxHeight === 'number' ? this.options.flexibleMaxHeight : Number.POSITIVE_INFINITY;
