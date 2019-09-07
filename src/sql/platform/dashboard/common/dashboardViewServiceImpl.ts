@@ -8,7 +8,7 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IModelView } from 'sql/platform/model/common/modelViewService';
 
 export class DashboardViewService implements IDashboardViewService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _onRegisteredWebview = new Emitter<IDashboardWebview>();
 	public readonly onRegisteredWebview: Event<IDashboardWebview> = this._onRegisteredWebview.event;

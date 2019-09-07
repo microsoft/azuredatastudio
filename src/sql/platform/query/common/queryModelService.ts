@@ -53,7 +53,7 @@ export class QueryInfo {
  * Handles running queries and grid interactions for all URIs. Interacts with each URI's results grid via a DataService instance
  */
 export class QueryModelService implements IQueryModelService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _queryInfoMap: Map<string, QueryInfo>;

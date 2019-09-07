@@ -74,7 +74,7 @@ export class Application {
 		await this.code.waitForElement('.explorer-folders-view');
 
 		if (expectWalkthroughPart) {
-			await this.code.waitForActiveElement(`.editor-instance[id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
+			await this.code.waitForActiveElement(`.editor-instance[data-editor-id="workbench.editor.walkThroughPart"] > div > div[tabIndex="0"]`);
 		}
 		*/
 		//{{SQL CARBON EDIT}}
@@ -149,7 +149,7 @@ export class Application {
 		await this.code.waitForElement('.monaco-workbench');
 
 		if (this.remote) {
-			await this.code.waitForElement('.monaco-workbench .statusbar-item[id="status.host"]');
+			await this.code.waitForTextContent('.monaco-workbench .statusbar-item[id="status.host"]', ' TestResolver');
 		}
 
 		// wait a bit, since focus might be stolen off widgets

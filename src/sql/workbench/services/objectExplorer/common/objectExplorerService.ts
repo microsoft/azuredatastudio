@@ -31,7 +31,7 @@ export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpan
 }
 
 export interface IObjectExplorerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<azdata.ObjectExplorerSessionResponse>;
 
@@ -128,7 +128,7 @@ const errSessionCreateFailed = nls.localize('OeSessionFailedError', "Failed to c
 
 export class ObjectExplorerService implements IObjectExplorerService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private _disposables: IDisposable[] = [];
 
@@ -602,11 +602,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
 			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
-				getChildren: treeNode => this.getChildren(treeNode),
-				isExpanded: treeNode => this.isExpanded(treeNode),
-				setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
-				setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
-			});
+			getChildren: treeNode => this.getChildren(treeNode),
+			isExpanded: treeNode => this.isExpanded(treeNode),
+			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
+			setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
+		});
 		node.childProvider = nodeInfo.childProvider;
 		node.payload = nodeInfo.payload;
 		return node;

@@ -41,7 +41,7 @@ export interface IQueryEvent {
  * Interface for the logic of handling running queries and grid interactions for all URIs.
  */
 export interface IQueryModelService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	getQueryRunner(uri: string): QueryRunner;
 

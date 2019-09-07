@@ -17,7 +17,7 @@ export interface IDashboardWebview extends IView {
 }
 
 export interface IDashboardViewService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onRegisteredWebview: Event<IDashboardWebview>;
 	registerWebview(widget: IDashboardWebview);
 	onRegisteredModelView: Event<IModelView>;

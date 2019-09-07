@@ -54,7 +54,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
-	_serviceBrand!: ServiceIdentifier<IConnectionManagementService>;
+	_serviceBrand: undefined;
 
 	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 	private _iconProviders = new Map<string, azdata.IconProvider>();

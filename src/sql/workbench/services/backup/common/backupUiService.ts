@@ -11,7 +11,7 @@ export const UI_SERVICE_ID = 'backupUiService';
 export const IBackupUiService = createDecorator<IBackupUiService>(UI_SERVICE_ID);
 
 export interface IBackupUiService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Show backup wizard

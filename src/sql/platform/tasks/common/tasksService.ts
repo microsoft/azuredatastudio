@@ -18,7 +18,7 @@ export const SERVICE_ID = 'taskHistoryService';
 export const ITaskService = createDecorator<ITaskService>(SERVICE_ID);
 
 export interface ITaskService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onTaskComplete: Event<TaskNode>;
 	onAddNewTask: Event<TaskNode>;
 	handleNewTask(task: TaskNode): void;
@@ -44,7 +44,7 @@ export interface TaskStatusChangeArgs {
 }
 
 export class TaskService implements ITaskService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _taskQueue: TaskNode;
 	private _onTaskComplete = new Emitter<TaskNode>();
 	private _onAddNewTask = new Emitter<TaskNode>();

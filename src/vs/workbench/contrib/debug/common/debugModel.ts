@@ -395,6 +395,10 @@ export class StackFrame implements IStackFrame {
 		return !this.source.available ? Promise.resolve(null) :
 			this.source.openInEditor(editorService, this.range, preserveFocus, sideBySide, pinned);
 	}
+
+	equals(other: IStackFrame): boolean {
+		return (this.name === other.name) && (other.thread === this.thread) && (other.source === this.source) && (Range.equalsRange(this.range, other.range));
+	}
 }
 
 export class Thread implements IThread {
@@ -583,8 +587,8 @@ export class BaseBreakpoint extends Enablement implements IBaseBreakpoint {
 		return data ? data.verified : true;
 	}
 
-	get idFromAdapter(): number | undefined {
-		const data = this.getSessionData();
+	getIdFromAdapter(sessionId: string): number | undefined {
+		const data = this.sessionData.get(sessionId);
 		return data ? data.id : undefined;
 	}
 
@@ -797,13 +801,13 @@ export class DebugModel implements IDebugModel {
 	private toDispose: lifecycle.IDisposable[];
 	private schedulers = new Map<string, RunOnceScheduler>();
 	private breakpointsSessionId: string | undefined;
+	private breakpointsActivated = true;
 	private readonly _onDidChangeBreakpoints: Emitter<IBreakpointsChangeEvent | undefined>;
 	private readonly _onDidChangeCallStack: Emitter<void>;
 	private readonly _onDidChangeWatchExpressions: Emitter<IExpression | undefined>;
 
 	constructor(
 		private breakpoints: Breakpoint[],
-		private breakpointsActivated: boolean,
 		private functionBreakpoints: FunctionBreakpoint[],
 		private exceptionBreakpoints: ExceptionBreakpoint[],
 		private dataBreakopints: DataBreakpoint[],
@@ -901,7 +905,16 @@ export class DebugModel implements IDebugModel {
 					if (!this.schedulers.has(thread.getId())) {
 						this.schedulers.set(thread.getId(), new RunOnceScheduler(() => {
 							thread.fetchCallStack(19).then(() => {
-								this._onDidChangeCallStack.fire();
+								const stale = thread.getStaleCallStack();
+								const current = thread.getCallStack();
+								let bottomOfCallStackChanged = stale.length !== current.length;
+								for (let i = 1; i < stale.length && !bottomOfCallStackChanged; i++) {
+									bottomOfCallStackChanged = !stale[i].equals(current[i]);
+								}
+
+								if (bottomOfCallStackChanged) {
+									this._onDidChangeCallStack.fire();
+								}
 								c();
 							});
 						}, 420));
@@ -1065,9 +1078,9 @@ export class DebugModel implements IDebugModel {
 	}
 
 	setEnablement(element: IEnablement, enable: boolean): void {
-		if (element instanceof Breakpoint || element instanceof FunctionBreakpoint || element instanceof ExceptionBreakpoint) {
-			const changed: Array<IBreakpoint | IFunctionBreakpoint> = [];
-			if (element.enabled !== enable && (element instanceof Breakpoint || element instanceof FunctionBreakpoint)) {
+		if (element instanceof Breakpoint || element instanceof FunctionBreakpoint || element instanceof ExceptionBreakpoint || element instanceof DataBreakpoint) {
+			const changed: Array<IBreakpoint | IFunctionBreakpoint | IDataBreakpoint> = [];
+			if (element.enabled !== enable && (element instanceof Breakpoint || element instanceof FunctionBreakpoint || element instanceof DataBreakpoint)) {
 				changed.push(element);
 			}
 

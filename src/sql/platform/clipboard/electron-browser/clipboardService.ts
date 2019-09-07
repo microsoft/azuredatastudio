@@ -9,7 +9,7 @@ import { clipboard, nativeImage } from 'electron';
 import { URI } from 'vs/base/common/uri';
 
 export class ClipboardService implements IClipboardService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	constructor(
 		@vsIClipboardService private _vsClipboardService: vsIClipboardService
