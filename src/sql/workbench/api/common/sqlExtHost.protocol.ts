@@ -592,8 +592,6 @@ export interface MainThreadCredentialManagementShape extends IDisposable {
 	$unregisterCredentialProvider(handle: number): Promise<any>;
 }
 
-function ni() { return new Error('Not implemented'); }
-
 // --- proxy identifiers
 
 export const SqlMainContext = {
