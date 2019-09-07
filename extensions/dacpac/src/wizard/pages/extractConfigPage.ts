@@ -117,7 +117,13 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		this.model.version = this.versionTextBox.value;
 
 		this.versionTextBox.onTextChanged(async () => {
-			this.model.version = this.versionTextBox.value;
+			const versionInputText = this.versionTextBox.value;
+
+			if (versionInputText === '') {
+				this.versionTextBox.ariaLabel = localize('dacfx.versionAriaLabelError', "Version. Please fill out this field.");
+			}
+
+			this.model.version = versionInputText;
 		});
 
 		return {
