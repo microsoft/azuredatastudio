@@ -395,6 +395,47 @@ export interface ExtHostDataProtocolShape {
 	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus>;
 
 	/**
+	 * Get Agent Notebook list
+	 */
+	$getNotebooks(handle: number, ownerUri: string): Thenable<azdata.AgentNotebooksResult>;
+
+	/**
+	 * Get a Agent Notebook's history
+	 */
+	$getNotebookHistory(handle: number, ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult>;
+
+	/**
+	 * Get a Agent materialized notebook
+	 */
+	$getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult>;
+
+	/**
+	 * Get a Agent Template notebook
+	 */
+	$getTemplateNotebook(handle: number, ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult>;
+
+	/**
+	 * Deletes a notebook
+	 */
+	$deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus>;
+
+	/**
+	 * Update materialzied Notebook Name
+	 */
+	$updateNotebookMaterializedName(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus>;
+
+	/**
+	 * Update materialzied Notebook Name
+	 */
+	$deleteMaterializedNotebook(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus>;
+
+	/**
+	 * Update materialzied Notebook Pin
+	 */
+	$updateNotebookMaterializedPin(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus>;
+
+
+	/**
 	 * Get Agent Alerts list
 	 */
 	$getAlerts(handle: number, connectionUri: string): Thenable<azdata.AgentAlertsResult>;
@@ -736,7 +777,7 @@ export interface ExtHostQueryEditorShape {
 
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
-	$runQuery(fileUri: string): void;
+	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 	$registerQueryInfoListener(handle: number, providerId: string): void;

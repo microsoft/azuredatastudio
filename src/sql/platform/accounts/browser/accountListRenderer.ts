@@ -33,26 +33,29 @@ export class AccountListDelegate implements IListVirtualDelegate<azdata.Account>
 	}
 }
 
-export interface AccountListTemplate {
+export interface AccountPickerListTemplate {
 	root: HTMLElement;
 	icon: HTMLElement;
 	badgeContent: HTMLElement;
 	contextualDisplayName: HTMLElement;
 	label: HTMLElement;
 	displayName: HTMLElement;
-	content?: HTMLElement;
-	actions?: ActionBar;
 }
 
-export class AccountPickerListRenderer implements IListRenderer<azdata.Account, AccountListTemplate> {
+export interface AccountListTemplate extends AccountPickerListTemplate {
+	content: HTMLElement;
+	actions: ActionBar;
+}
+
+export class AccountPickerListRenderer implements IListRenderer<azdata.Account, AccountPickerListTemplate> {
 	public static TEMPLATE_ID = 'accountListRenderer';
 
 	public get templateId(): string {
 		return AccountPickerListRenderer.TEMPLATE_ID;
 	}
 
-	public renderTemplate(container: HTMLElement): AccountListTemplate {
-		const tableTemplate: AccountListTemplate = Object.create(null);
+	public renderTemplate(container: HTMLElement): AccountPickerListTemplate {
+		const tableTemplate: AccountPickerListTemplate = Object.create(null);
 		const badge = DOM.$('div.badge');
 		tableTemplate.root = DOM.append(container, DOM.$('div.list-row.account-picker-list'));
 		tableTemplate.icon = DOM.append(tableTemplate.root, DOM.$('div.icon'));
@@ -64,7 +67,7 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		return tableTemplate;
 	}
 
-	public renderElement(account: azdata.Account, index: number, templateData: AccountListTemplate): void {
+	public renderElement(account: azdata.Account, index: number, templateData: AccountPickerListTemplate): void {
 		// Set the account icon
 		templateData.icon.classList.add('account-logo', account.displayInfo.accountType);
 
@@ -84,11 +87,11 @@ export class AccountPickerListRenderer implements IListRenderer<azdata.Account, 
 		}
 	}
 
-	public disposeTemplate(template: AccountListTemplate): void {
+	public disposeTemplate(template: AccountPickerListTemplate): void {
 		// noop
 	}
 
-	public disposeElement(element: azdata.Account, index: number, templateData: AccountListTemplate): void {
+	public disposeElement(element: azdata.Account, index: number, templateData: AccountPickerListTemplate): void {
 		// noop
 	}
 }
@@ -105,7 +108,7 @@ export class AccountListRenderer extends AccountPickerListRenderer {
 	}
 
 	public renderTemplate(container: HTMLElement): AccountListTemplate {
-		const tableTemplate = super.renderTemplate(container);
+		const tableTemplate = super.renderTemplate(container) as AccountListTemplate;
 		tableTemplate.content = DOM.append(tableTemplate.label, DOM.$('div.content'));
 		tableTemplate.actions = new ActionBar(tableTemplate.root, { animated: false });
 

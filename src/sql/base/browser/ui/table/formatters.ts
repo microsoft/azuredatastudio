@@ -18,7 +18,7 @@ export class DBCellValue {
 /**
  * Format xml field into a hyperlink and performs HTML entity encoding
  */
-export function hyperLinkFormatter(row: number, cell: any, value: any, columnDef: any, dataContext: any): string {
+export function hyperLinkFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay: string = '';
 
@@ -38,7 +38,7 @@ export function hyperLinkFormatter(row: number, cell: any, value: any, columnDef
 /**
  * Format all text to replace all new lines with spaces and performs HTML entity encoding
  */
-export function textFormatter(row: number, cell: any, value: any, columnDef: any, dataContext: any): string {
+export function textFormatter(row: number | undefined, cell: any | undefined, value: any, columnDef: any | undefined, dataContext: any | undefined): string {
 	let cellClasses = 'grid-cell-value-container';
 	let valueToDisplay = '';
 	let titleValue = '';

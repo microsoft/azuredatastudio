@@ -96,6 +96,10 @@ export class InputBox extends vsInputBox {
 		}
 	}
 
+	public set ariaLive(value: string) {
+		this.element.setAttribute('aria-live', value);
+	}
+
 	public isEnabled(): boolean {
 		return !this.inputElement.hasAttribute('disabled');
 	}

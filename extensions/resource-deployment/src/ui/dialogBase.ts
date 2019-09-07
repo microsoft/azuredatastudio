@@ -11,7 +11,7 @@ export abstract class DialogBase {
 	protected _toDispose: vscode.Disposable[] = [];
 	protected _dialogObject: azdata.window.Dialog;
 
-	constructor(protected extensionContext: vscode.ExtensionContext, dialogTitle: string, dialogName: string, isWide: boolean = false) {
+	constructor(dialogTitle: string, dialogName: string, isWide: boolean = false) {
 		this._dialogObject = azdata.window.createModelViewDialog(dialogTitle, dialogName, isWide);
 		this._dialogObject.cancelButton.onClick(() => this.onCancel());
 	}

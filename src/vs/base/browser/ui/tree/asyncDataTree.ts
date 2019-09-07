@@ -238,7 +238,8 @@ function asObjectTreeOptions<TInput, T, TFilterData>(options?: IAsyncDataTreeOpt
 				e => (options.expandOnlyOnTwistieClick as ((e: T) => boolean))(e.element as T)
 			)
 		),
-		ariaProvider: undefined
+		ariaProvider: undefined,
+		additionalScrollHeight: options.additionalScrollHeight
 	};
 }
 
@@ -397,6 +398,14 @@ export class AsyncDataTree<TInput, T, TFilterData = void> implements IDisposable
 
 	set scrollTop(scrollTop: number) {
 		this.tree.scrollTop = scrollTop;
+	}
+
+	get scrollLeft(): number {
+		return this.tree.scrollLeft;
+	}
+
+	set scrollLeft(scrollLeft: number) {
+		this.tree.scrollLeft = scrollLeft;
 	}
 
 	get scrollHeight(): number {

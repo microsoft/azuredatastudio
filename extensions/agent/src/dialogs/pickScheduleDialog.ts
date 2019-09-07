@@ -40,7 +40,9 @@ export class PickScheduleDialog {
 
 	public async showDialog() {
 		this.model.initialize().then((result) => {
-			this.loadingComponent.loading = false;
+			if (this.loadingComponent) {
+				this.loadingComponent.loading = false;
+			}
 			if (this.model.schedules) {
 				let data: any[][] = [];
 				for (let i = 0; i < this.model.schedules.length; ++i) {
@@ -81,8 +83,21 @@ export class PickScheduleDialog {
 
 			this.loadingComponent = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			this.loadingComponent.loading = true;
+			this.model.initialize().then((result) => {
+				this.loadingComponent.loading = false;
+				if (this.model.schedules) {
+					let data: any[][] = [];
+					for (let i = 0; i < this.model.schedules.length; ++i) {
+						let schedule = this.model.schedules[i];
+						data[i] = [schedule.id, schedule.name, schedule.description];
+					}
+					this.schedulesTable.data = data;
+				}
+			});
+			this.loadingComponent.loading = !this.model.isInitialized();
 			await view.initializeModel(this.loadingComponent);
 		});
+
 	}
 
 	private async execute() {

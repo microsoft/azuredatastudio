@@ -130,7 +130,7 @@ export class ResultSerializer {
 	}
 
 
-	private promptForFilepath(format: SaveFormat, resourceUri: string): Thenable<string> {
+	private promptForFilepath(format: SaveFormat, resourceUri: string): Thenable<string | undefined> {
 		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath) : resolveCurrentDirectory(resourceUri, this.rootPath);
 		if (filepathPlaceHolder) {
 			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
@@ -141,8 +141,11 @@ export class ResultSerializer {
 			defaultUri: filepathPlaceHolder ? URI.file(filepathPlaceHolder) : undefined,
 			filters: this.getResultsFileExtension(format)
 		}).then(filePath => {
-			prevSavePath = filePath.fsPath;
-			return filePath.fsPath;
+			if (filePath) {
+				prevSavePath = filePath.fsPath;
+				return filePath.fsPath;
+			}
+			return undefined;
 		});
 	}
 

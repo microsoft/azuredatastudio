@@ -43,13 +43,12 @@ export class CmsResourceTreeNode extends CmsResourceTreeNodeBase {
 					this.connection.options.password = await this.appContext.cmsUtils.getPassword(this.connection.options.user);
 				}
 			}
-			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then((result) => {
-				// cache new connection is different from old one
-				if (this.appContext.cmsUtils.didConnectionChange(this._connection, result.connection)) {
-					this._connection = result.connection;
-					this._ownerUri = result.ownerUri;
-					this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
-				}
+			return this.appContext.cmsUtils.createCmsServer(this.connection, this.name, this.description).then(async (result) => {
+				// update the owner uri and the connection
+				this._ownerUri = result.ownerUri;
+				this._connection = result.connection;
+				await this.appContext.cmsUtils.cacheRegisteredCmsServer(this.name, this.description, this.ownerUri, this.connection);
+
 				if (result.listRegisteredServersResult.registeredServersList) {
 					result.listRegisteredServersResult.registeredServersList.forEach((registeredServer) => {
 						nodes.push(new RegisteredServerTreeNode(

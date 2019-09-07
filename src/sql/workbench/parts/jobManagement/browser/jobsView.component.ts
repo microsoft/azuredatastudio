@@ -15,7 +15,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
@@ -507,11 +507,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td>${runChart[0] ? runChart[0] : '<div></div>'}</td>
-					<td>${runChart[1] ? runChart[1] : '<div></div>'}</td>
-					<td>${runChart[2] ? runChart[2] : '<div></div>'}</td>
-					<td>${runChart[3] ? runChart[3] : '<div></div>'}</td>
-					<td>${runChart[4] ? runChart[4] : '<div></div>'}</td>
+					<td>${runChart[0] ? runChart[0] : '<div class="bar0"></div>'}</td>
+					<td>${runChart[1] ? runChart[1] : '<div class="bar1"></div>'}</td>
+					<td>${runChart[2] ? runChart[2] : '<div class="bar2"></div>'}</td>
+					<td>${runChart[3] ? runChart[3] : '<div class="bar3"></div>'}</td>
+					<td>${runChart[4] ? runChart[4] : '<div class="bar4"></div>'}</td>
 				</tr>
 			</table>`;
 		} else {

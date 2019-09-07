@@ -161,6 +161,13 @@ declare module 'sqlops' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -624,6 +631,7 @@ declare module 'sqlops' {
 		isFile?: boolean;
 		fileContent?: string;
 		title?: string;
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -1596,8 +1604,6 @@ declare module 'sqlops' {
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
-		DacFxServicesProvider = 'DacFxServicesProvider',
-		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
 		IconProvider = 'IconProvider',
 		SerializationProvider = 'SerializationProvider'

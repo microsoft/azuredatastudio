@@ -13,19 +13,14 @@ const util = require('util');
 const bootstrap = require('../../src/bootstrap');
 const coverage = require('../coverage');
 
-// {{SQL CARBON EDIT}}
-require('reflect-metadata');
+require('reflect-metadata'); // {{SQL CARBON EDIT}}
 
 // Disabled custom inspect. See #38847
 if (util.inspect && util.inspect['defaultOptions']) {
 	util.inspect['defaultOptions'].customInspect = false;
 }
 
-// {{SQL CARBON EDIT}}
-let _tests_glob = '**/*test*/**/*.test.js';
-// {{SQL CARBON EDIT}}
-let _sql_tests_glob = '**/sqltest/**/*.test.js';
-
+let _tests_glob = '**/test/**/*.test.js';
 let loader;
 let _out;
 
@@ -40,16 +35,14 @@ function initLoader(opts) {
 		nodeMain: __filename,
 		catchError: true,
 		baseUrl: bootstrap.uriFromPath(path.join(__dirname, '../../src')),
-		// {{SQL CARBON EDIT}}
 		paths: {
 			'vs': `../${outdir}/vs`,
-			'sqltest': `../${outdir}/sqltest`,
-			'sql': `../${outdir}/sql`,
+			'sqltest': `../${outdir}/sqltest`,  // {{SQL CARBON EDIT}}
+			'sql': `../${outdir}/sql`, // {{SQL CARBON EDIT}}
 			'lib': `../${outdir}/lib`,
 			'bootstrap-fork': `../${outdir}/bootstrap-fork`
 		},
-		// {{SQL CARBON EDIT}}
-		nodeModules: [
+		nodeModules: [ // {{SQL CARBON EDIT}}
 			'@angular/common',
 			'@angular/core',
 			'@angular/forms',

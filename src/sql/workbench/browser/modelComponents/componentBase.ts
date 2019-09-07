@@ -30,7 +30,6 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	private _valid: boolean = true;
 	protected _validations: (() => boolean | Thenable<boolean>)[] = [];
 	private _eventQueue: IComponentEventArgs[] = [];
-	private _CSSStyles: { [key: string]: string } = {};
 
 	constructor(
 		protected _changeRef: ChangeDetectorRef,
@@ -82,7 +81,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	public refreshDataProvider(item: any): void {
 	}
 
-	public updateStyles() {
+	public updateStyles(): void {
 		const element = (<HTMLElement>this._el.nativeElement);
 		for (const style in this.CSSStyles) {
 			element.style[style] = this.CSSStyles[style];
@@ -90,13 +89,9 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	}
 
 	public setProperties(properties: { [key: string]: any; }): void {
-		if (!properties) {
-			this.properties = {};
-		}
+		properties = properties || {};
 		this.properties = properties;
-		if (this.CSSStyles !== this._CSSStyles) {
-			this.updateStyles();
-		}
+		this.updateStyles();
 		this.layout();
 		this.validate();
 	}
@@ -105,10 +100,7 @@ export abstract class ComponentBase extends Disposable implements IComponent, On
 	public updateProperty(key: string, value: any): void {
 		if (key) {
 			this.properties[key] = value;
-
-			if (this.CSSStyles !== this._CSSStyles) {
-				this.updateStyles();
-			}
+			this.updateStyles();
 			this.layout();
 			this.validate();
 		}

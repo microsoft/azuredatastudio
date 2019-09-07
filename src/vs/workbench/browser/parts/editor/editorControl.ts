@@ -112,7 +112,7 @@ export class EditorControl extends Disposable {
 		if (!control.getContainer()) {
 			const controlInstanceContainer = document.createElement('div');
 			addClass(controlInstanceContainer, 'editor-instance');
-			controlInstanceContainer.id = descriptor.getId();
+			controlInstanceContainer.setAttribute('data-editor-id', descriptor.getId());
 
 			control.create(controlInstanceContainer);
 		}
@@ -218,6 +218,12 @@ export class EditorControl extends Disposable {
 	closeEditor(editor: EditorInput): void {
 		if (this._activeControl && editor.matches(this._activeControl.input)) {
 			this.doHideActiveEditorControl();
+		}
+	}
+
+	setVisible(visible: boolean): void {
+		if (this._activeControl) {
+			this._activeControl.setVisible(visible, this.groupView);
 		}
 	}
 

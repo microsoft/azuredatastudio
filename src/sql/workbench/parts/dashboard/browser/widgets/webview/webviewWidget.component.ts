@@ -15,7 +15,7 @@ import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonSer
 import { IDashboardWebview, IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
 
 import * as azdata from 'azdata';
-import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/common/webview';
+import { WebviewElement, IWebviewService } from 'vs/workbench/contrib/webview/browser/webview';
 
 interface IWebviewWidgetConfig {
 	id: string;

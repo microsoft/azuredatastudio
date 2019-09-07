@@ -25,7 +25,7 @@ import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
 import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
+import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';
 import { getErrorMessage } from 'vs/base/common/errors';

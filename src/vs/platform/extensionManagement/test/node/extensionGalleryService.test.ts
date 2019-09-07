@@ -10,8 +10,7 @@ import { parseArgs } from 'vs/platform/environment/node/argv';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { join } from 'vs/base/common/path';
 import { mkdirp, RimRafMode, rimraf } from 'vs/base/node/pfs';
-// {{SQL CARBON EDIT}}
-import { resolveMarketplaceHeaders, ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
+import { resolveMarketplaceHeaders, ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService'; // {{SQL CARBON EDIT}} add imports
 import { isUUID } from 'vs/base/common/uuid';
 import { DisposableStore } from 'vs/base/common/lifecycle';
 import { IFileService } from 'vs/platform/files/common/files';
@@ -63,8 +62,7 @@ suite('Extension Gallery Service', () => {
 		});
 	});
 
-	// {{SQL CARBON EDIT}}
-	test('sortByField', () => {
+	test('sortByField', () => { // {{SQL CARBON EDIT}} add test
 		let a: {
 			extensionId: string | undefined;
 			extensionName: string | undefined;
@@ -120,8 +118,7 @@ suite('Extension Gallery Service', () => {
 		assert.equal(ExtensionGalleryService.compareByField(a, b, 'displayName'), 0);
 	});
 
-	// {{SQL CARBON EDIT}}
-	test('isMatchingExtension', () => {
+	test('isMatchingExtension', () => { // {{SQL CARBON EDIT}} add test
 		let createEmptyExtension = () => {
 			return {
 				extensionId: '',

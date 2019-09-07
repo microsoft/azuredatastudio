@@ -76,6 +76,11 @@ export interface ITerminalConfiguration {
 		osx: string | null;
 		windows: string | null;
 	};
+	automationShell: {
+		linux: string | null;
+		osx: string | null;
+		windows: string | null;
+	};
 	shellArgs: {
 		linux: string[];
 		osx: string[];
@@ -112,6 +117,7 @@ export interface ITerminalConfiguration {
 	splitCwd: 'workspaceRoot' | 'initial' | 'inherited';
 	windowsEnableConpty: boolean;
 	experimentalRefreshOnResume: boolean;
+	experimentalUseTitleEvent: boolean;
 }
 
 export interface ITerminalConfigHelper {
@@ -188,11 +194,6 @@ export interface IShellLaunchConfig {
 	initialText?: string;
 
 	/**
-	 * @deprecated use `isExtensionTerminal`
-	 */
-	isRendererOnly?: boolean;
-
-	/**
 	 * Whether an extension is controlling the terminal via a `vscode.Pseudoterminal`.
 	 */
 	isExtensionTerminal?: boolean;
@@ -245,15 +246,10 @@ export interface ITerminalService {
 	createTerminal(shell?: IShellLaunchConfig): ITerminalInstance;
 
 	/**
-	 * Creates a terminal renderer.
-	 * @param name The name of the terminal.
-	 */
-	createTerminalRenderer(name: string): ITerminalInstance;
-
-	/**
 	 * Creates a raw terminal instance, this should not be used outside of the terminal part.
 	 */
-	createInstance(terminalFocusContextKey: IContextKey<boolean>, configHelper: ITerminalConfigHelper, container: HTMLElement | undefined, shellLaunchConfig: IShellLaunchConfig): ITerminalInstance;
+	// tslint:disable-next-line: no-dom-globals
+	createInstance(container: HTMLElement | undefined, shellLaunchConfig: IShellLaunchConfig): ITerminalInstance;
 	getInstanceFromId(terminalId: number): ITerminalInstance | undefined;
 	getInstanceFromIndex(terminalIndex: number): ITerminalInstance;
 	getTabLabels(): string[];
@@ -284,8 +280,9 @@ export interface ITerminalService {
 
 	selectDefaultWindowsShell(): Promise<void>;
 
+	// tslint:disable-next-line: no-dom-globals
 	setContainers(panelContainer: HTMLElement, terminalContainer: HTMLElement): void;
-	setWorkspaceShellAllowed(isAllowed: boolean): void;
+	manageWorkspaceShellPermissions(): void;
 
 	/**
 	 * Takes a path and returns the properly escaped path to send to the terminal.
@@ -342,6 +339,7 @@ export interface ITerminalTab {
 	focusNextPane(): void;
 	resizePane(direction: Direction): void;
 	setActiveInstanceByIndex(index: number): void;
+	// tslint:disable-next-line: no-dom-globals
 	attachToElement(element: HTMLElement): void;
 	setVisible(visible: boolean): void;
 	layout(width: number, height: number): void;
@@ -423,13 +421,6 @@ export interface ITerminalInstance {
 	onData: Event<string>;
 
 	/**
-	 * Attach a listener to the "renderer" input event, this event fires for terminal renderers on
-	 * keystrokes and when the Terminal.sendText extension API is used.
-	 * @param listener The listener function.
-	 */
-	onRendererInput: Event<string>;
-
-	/**
 	 * Attach a listener to listen for new lines added to this terminal instance.
 	 *
 	 * @param listener The listener function which takes new line strings added to the terminal,
@@ -483,7 +474,7 @@ export interface ITerminalInstance {
 	 * An object that tracks when commands are run and enables navigating and selecting between
 	 * them.
 	 */
-	readonly commandTracker: ITerminalCommandTracker;
+	readonly commandTracker: ICommandTracker | undefined;
 
 	readonly navigationMode: INavigationMode | undefined;
 
@@ -496,14 +487,6 @@ export interface ITerminalInstance {
 	 * get cut off. If immediate kill any terminal processes immediately.
 	 */
 	dispose(immediate?: boolean): void;
-
-	/**
-	 * Indicates that a consumer of a renderer only terminal is finished with it.
-	 *
-	 * @param exitCode The exit code of the terminal. Zero indicates success, non-zero indicates
-	 * failure.
-	 */
-	rendererExit(exitCode: number): void;
 
 	/**
 	 * Forces the terminal to redraw its viewport.
@@ -631,6 +614,7 @@ export interface ITerminalInstance {
 	 *
 	 * @param container The element to attach the terminal instance to.
 	 */
+	// tslint:disable-next-line: no-dom-globals
 	attachToElement(container: HTMLElement): void;
 
 	/**
@@ -657,7 +641,7 @@ export interface ITerminalInstance {
 	/**
 	 * Sets the title of the terminal instance.
 	 */
-	setTitle(title: string, eventFromProcess: boolean): void;
+	setTitle(title: string, eventSource: TitleEventSource): void;
 
 	waitForTitle(): Promise<string>;
 
@@ -671,7 +655,7 @@ export interface ITerminalInstance {
 	getCwd(): Promise<string>;
 }
 
-export interface ITerminalCommandTracker {
+export interface ICommandTracker {
 	scrollToPreviousCommand(): void;
 	scrollToNextCommand(): void;
 	selectToPreviousCommand(): void;
@@ -697,7 +681,7 @@ export interface IBeforeProcessDataEvent {
 export interface ITerminalProcessManager extends IDisposable {
 	readonly processState: ProcessState;
 	readonly ptyProcessReady: Promise<void>;
-	readonly shellProcessId: number;
+	readonly shellProcessId: number | undefined;
 	readonly remoteAuthority: string | undefined;
 	readonly os: OperatingSystem | undefined;
 	readonly userHome: string | undefined;
@@ -780,13 +764,23 @@ export interface IAvailableShellsRequest {
 }
 
 export interface IDefaultShellAndArgsRequest {
-	(shell: string, args: string[] | string | undefined): void;
+	useAutomationShell: boolean;
+	callback: (shell: string, args: string[] | string | undefined) => void;
 }
 
 export enum LinuxDistro {
 	Fedora,
 	Ubuntu,
 	Unknown
+}
+
+export enum TitleEventSource {
+	/** From the API or the rename command that overrides any other type */
+	Api,
+	/** From the process name property*/
+	Process,
+	/** From the VT sequence */
+	Sequence
 }
 
 export interface IWindowsShellHelper extends IDisposable {

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import {
 	SqlExtHostContext, ExtHostDataProtocolShape,
 	MainThreadDataProtocolShape, SqlMainContext
@@ -30,13 +30,11 @@ import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
  * Main thread class for handling data protocol management registration.
  */
 @extHostNamedCustomer(SqlMainContext.MainThreadDataProtocol)
-export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
+export class MainThreadDataProtocol extends Disposable implements MainThreadDataProtocolShape {
 
 	private _proxy: ExtHostDataProtocolShape;
 
-	private _toDispose: IDisposable[];
-
-	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null);
+	private _capabilitiesRegistrations: { [handle: number]: IDisposable; } = Object.create(null); // should we be registering these?
 
 	constructor(
 		extHostContext: IExtHostContext,
@@ -55,16 +53,13 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 		@ISerializationService private _serializationService: ISerializationService,
 		@IFileBrowserService private _fileBrowserService: IFileBrowserService
 	) {
+		super();
 		if (extHostContext) {
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostDataProtocol);
 		}
 		if (this._connectionManagementService) {
-			this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e), this, this._toDispose);
+			this._register(this._connectionManagementService.onLanguageFlavorChanged(e => this._proxy.$languageFlavorChanged(e)));
 		}
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	public $registerConnectionProvider(providerId: string, handle: number): Promise<any> {
@@ -399,6 +394,30 @@ export class MainThreadDataProtocol implements MainThreadDataProtocolShape {
 			},
 			deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
+			},
+			getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+				return self._proxy.$getNotebooks(handle, connectionUri);
+			},
+			getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+				return self._proxy.$getNotebookHistory(handle, connectionUri, jobID, jobName, targetDatabase);
+			},
+			getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+				return self._proxy.$getMaterializedNotebook(handle, connectionUri, targetDatabase, notebookMaterializedId);
+			},
+			updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedName(handle, connectionUri, agentNotebookHistory, targetDatabase, name);
+			},
+			deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteMaterializedNotebook(handle, connectionUri, agentNotebookHistory, targetDatabase);
+			},
+			updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedPin(handle, connectionUri, agentNotebookHistory, targetDatabase, pin);
+			},
+			getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+				return self._proxy.$getTemplateNotebook(handle, connectionUri, targetDatabase, jobId);
+			},
+			deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteNotebook(handle, connectionUri, notebook);
 			},
 			getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);

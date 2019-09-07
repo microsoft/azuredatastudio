@@ -176,14 +176,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		if (cell !== this.model.activeCell) {
-			if (this.model.activeCell) {
-				this.model.activeCell.active = false;
-			}
-			this._model.activeCell = cell;
-			this._model.activeCell.active = true;
-			this.detectChanges();
-		}
+		this.model.updateActiveCell(cell);
+		this.detectChanges();
 	}
 
 	//Saves scrollTop value on scroll change
@@ -192,15 +186,15 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public unselectActiveCell() {
-		if (this.model && this.model.activeCell) {
-			this.model.activeCell.active = false;
-			this.model.activeCell = undefined;
-		}
+		this.model.updateActiveCell(undefined);
 		this.detectChanges();
 	}
 
 	// Add cell based on cell type
-	public addCell(cellType: CellType, index?: number) {
+	public addCell(cellType: CellType, index?: number, event?: Event) {
+		if (event) {
+			event.stopPropagation();
+		}
 		this._model.addCell(cellType, index);
 	}
 
@@ -286,8 +280,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.awaitNonDefaultProvider();
 		await this._model.requestModelLoad();
 		this.detectChanges();
-		await this._model.startSession(this._model.notebookManager, undefined, true);
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
+		await this._model.startSession(this._model.notebookManager, undefined, true);
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
@@ -308,10 +302,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
 		}, this.profile, this.logService, this.notificationService, this.telemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
-		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		model.contentChanged((change) => this.handleContentChanged(change));
-		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
-		model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs));
+		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
+		this._register(model.contentChanged((change) => this.handleContentChanged()));
+		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
+		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
 		this.setLoading(false);
@@ -379,7 +373,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.notificationService.notify(notification);
 	}
 
-	private handleContentChanged(change: NotebookContentChange) {
+	private handleContentChanged() {
 		// Note: for now we just need to set dirty state and refresh the UI.
 		this.detectChanges();
 	}

@@ -106,6 +106,12 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	public setProperties(properties: { [key: string]: any; }): void {
 		super.setProperties(properties);
+
+		if (this.ariaLabel !== '') {
+			this._selectBox.setAriaLabel(this.ariaLabel);
+			this._editableDropdown.ariaLabel = this.ariaLabel;
+		}
+
 		if (this.editable) {
 			this._editableDropdown.values = this.getValues();
 			if (this.value) {
@@ -173,6 +179,10 @@ export default class DropDownComponent extends ComponentBase implements ICompone
 
 	private get fireOnTextChange(): boolean {
 		return this.getPropertyOrDefault<azdata.DropDownProperties, boolean>((props) => props.fireOnTextChange, false);
+	}
+
+	private get ariaLabel(): string {
+		return this.getPropertyOrDefault<azdata.DropDownProperties, string>((props) => props.ariaLabel, '');
 	}
 
 	public getEditableDisplay(): string {
