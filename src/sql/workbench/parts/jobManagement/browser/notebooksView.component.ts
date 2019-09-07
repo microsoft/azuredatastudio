@@ -14,7 +14,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/agentView.component';
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { NotebookCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { EditJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction } from 'sql/platform/jobManagement/browser/jobActions';
+import { EditJobAction, NewNotebookJobAction, RunJobAction, EditNotebookJobAction, JobsRefreshAction, IJobActionInfo, DeleteNotebookAction, OpenLatestRunMaterializedNotebook } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
@@ -395,6 +395,22 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 				this.highlightErrorRows(e1), (e2) => this.hightlightNonErrorRows(e2));
 		});
 
+		jQuery('.bar').click((e) => {
+			let clickEventTarget = e.target;
+			let barId = Number(clickEventTarget.id.replace('bar', ''));
+			let jobId = clickEventTarget.parentElement.offsetParent.id.replace('notebook', '');
+			let notebooks = this._notebookCacheObject.notebooks;
+			let targetNotebook: azdata.AgentNotebookInfo;
+			for (let i = 0; i < notebooks.length; i++) {
+				if (jobId === notebooks[i].jobId) {
+					targetNotebook = notebooks[i];
+					break;
+				}
+			}
+			this.openLastNRun(targetNotebook, barId, 5);
+			e.stopPropagation();
+		});
+
 		// cache the dataview for future use
 		this._notebookCacheObject.dataView = this.dataView;
 		this.filterValueMap['start'] = [[], this.dataView.getItems()];
@@ -540,21 +556,21 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-				<td>${runChart[0] ? runChart[0] : '<div class="bar0"></div>'}</td>
-				<td>${runChart[1] ? runChart[1] : '<div class="bar1"></div>'}</td>
-				<td>${runChart[2] ? runChart[2] : '<div class="bar2"></div>'}</td>
-				<td>${runChart[3] ? runChart[3] : '<div class="bar3"></div>'}</td>
-				<td>${runChart[4] ? runChart[4] : '<div class="bar4"></div>'}</td>
+				<td>${runChart[0] ? runChart[0] : '<div class="bar" id="bar0"></div>'}</td>
+				<td>${runChart[1] ? runChart[1] : '<div class="bar" id="bar1"></div>'}</td>
+				<td>${runChart[2] ? runChart[2] : '<div class="bar" id="bar2"></div>'}</td>
+				<td>${runChart[3] ? runChart[3] : '<div class="bar" id="bar3"></div>'}</td>
+				<td>${runChart[4] ? runChart[4] : '<div class="bar" id="bar4"></div>'}</td>
 				</tr>
 			</table>`;
 		} else {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 			<tr>
-				<td><div class="bar0"></div></td>
-				<td><div class="bar1"></div></td>
-				<td><div class="bar2"></div></td>
-				<td><div class="bar3"></div></td>
-				<td><div class="bar4"></div></td>
+				<td><div class="bar" id="bar0"></div></td>
+				<td><div class="bar" id="bar1"></div></td>
+				<td><div class="bar" id="bar2"></div></td>
+				<td><div class="bar" id="bar3"></div></td>
+				<td><div class="bar" id="bar4"></div></td>
 			</tr>
 			</table>`;
 		}
@@ -667,7 +683,7 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 			if (jobHistories[i].materializedNotebookErrorInfo !== null && jobHistories[i].materializedNotebookErrorInfo.length > 0) {
 				bgColor = 'orange';
 			}
-			let runGraph = jQuery(`table.jobprevruns#${jobId} > tbody > tr > td > div.bar${i}`);
+			let runGraph = jQuery(`table.jobprevruns#${jobId} > tbody > tr > td > #bar${i}`);
 			if (runGraph.length > 0) {
 
 				runGraph.css('height', chartHeights[i]);
@@ -884,10 +900,11 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 		const editAction = this._instantiationService.createInstance(EditJobAction);
 		const editNotebookAction = this._instantiationService.createInstance(EditNotebookJobAction);
 		const runJobAction = this._instantiationService.createInstance(RunJobAction);
+		const openLatestRunAction = this._instantiationService.createInstance(OpenLatestRunMaterializedNotebook);
 		return [
 			runJobAction,
+			openLatestRunAction,
 			editNotebookAction,
-			editAction,
 			this._instantiationService.createInstance(DeleteNotebookAction)
 		];
 	}
@@ -980,5 +997,32 @@ export class NotebooksViewComponent extends JobManagementView implements OnInit,
 	public async openCreateNotebookDialog() {
 		let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
 		await this._commandService.executeCommand('agent.openNotebookDialog', ownerUri);
+	}
+
+	public async openLastNRun(notebook: azdata.AgentNotebookInfo, n: number, maxVisibleElements: number) {
+		let notebookHistories = this._notebookCacheObject.getNotebookHistory(notebook.jobId);
+		if (notebookHistories && n < notebookHistories.length) {
+			notebookHistories = notebookHistories.sort((h1, h2) => {
+				return new Date(h2.runDate).getTime() - new Date(h1.runDate).getTime();
+			});
+			if (notebookHistories.length > maxVisibleElements) {
+				n = notebookHistories.length - (maxVisibleElements - n);
+			}
+			n = notebookHistories.length - 1 - n;
+			let history: azdata.AgentNotebookHistoryInfo = notebookHistories[n];
+			// Did Job Fail? if yes, then notebook to return
+			if (history.runStatus === 0) {
+				return;
+			}
+			let ownerUri: string = this._commonService.connectionManagementService.connectionInfo.ownerUri;
+			let targetDatabase = notebook.targetDatabase;
+			const result = await this._jobManagementService.getMaterialziedNotebook(ownerUri, targetDatabase, history.materializedNotebookId);
+			if (result) {
+				let regex = /:|-/gi;
+				let readableDataTimeString = history.runDate.replace(regex, '').replace(' ', '');
+				let tempNotebookFileName = notebook.name + '_' + readableDataTimeString;
+				await this._commandService.executeCommand('agent.openNotebookEditorFromJsonString', tempNotebookFileName, result.notebookMaterialized);
+			}
+		}
 	}
 }
