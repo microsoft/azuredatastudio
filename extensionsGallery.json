@@ -2491,6 +2491,67 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+                },
+                {
+					"extensionId": "53",
+					"extensionName": "query-editor-boost",
+					"displayName": "Query Editor Boost",
+					"shortDescription": "Helpful add-ons for query editing",
+					"publisher": {
+						"displayName": "Drew Skwiers-Koballa",
+						"publisherId": "drewsk",
+						"publisherName": "drewsk"
+					},
+					"versions": [
+						{
+							"version": "0.2.0",
+							"lastUpdated": "9/7/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/dzsquared/query-editor-boost/releases/tag/0.2.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/images/QEboost200.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/dzsquared/query-editor-boost"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
