@@ -579,8 +579,13 @@ export class ConnectionProfile {
 	azureTenantId?: string;
 	options: { [name: string]: any };
 
-	static createFrom(options: any[]): ConnectionProfile {
-		throw new Error('Method not implemented');
+	static createFrom(options: { [name: string]: any }): ConnectionProfile {
+		const profile = new ConnectionProfile();
+		Object.keys(options).forEach(o => {
+			profile[o] = options[o];
+		});
+
+		return profile;
 	}
 }
 
