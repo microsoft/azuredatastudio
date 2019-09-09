@@ -166,7 +166,8 @@ export enum ModelComponentTypes {
 	Editor,
 	DiffEditor,
 	Dom,
-	Hyperlink
+	Hyperlink,
+	Image
 }
 
 export enum ColumnSizingMode {
