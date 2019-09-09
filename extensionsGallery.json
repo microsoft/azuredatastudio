@@ -246,8 +246,8 @@
 					},
 					"versions": [
 						{
-							"version": "0.3.3",
-							"lastUpdated": "5/9/2019",
+							"version": "0.3.4",
+							"lastUpdated": "9/9/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1565,14 +1565,14 @@
 					},
 					"versions": [
 						{
-							"version": "1.3.2",
-							"lastUpdated": "8/15/2019",
+							"version": "1.3.4",
+							"lastUpdated": "9/5/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-1.3.2.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/sanddance/azdata-sanddance-1.3.4.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2495,8 +2495,8 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-                },
-                {
+				},
+				{
 					"extensionId": "53",
 					"extensionName": "query-editor-boost",
 					"displayName": "Query Editor Boost",
@@ -2556,7 +2556,64 @@
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				},    
+				{
+					"extensionId": "54",
+					"extensionName": "delete-database",
+					"displayName": "Delete database",
+					"shortDescription": "Adds 'Delete' option when right clicking on a database",
+					"publisher": {
+						"displayName": "AlexP",
+						"publisherId": "alx-ppv",
+						"publisherName": "alx-ppv"
+					},
+					"versions": [
+						{
+							"version": "0.0.3",
+							"lastUpdated": "08/14/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+                  "source": "https://github.com/alx-ppv/ADS-delete-database/releases/tag/0.0.3"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/alx-ppv/ADS-delete-database/master/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/alx-ppv/ADS-delete-database/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/alx-ppv/ADS-delete-database/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/alx-ppv/ADS-delete-database/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+                  "value": "https://github.com/alx-ppv/ADS-delete-database"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+                }
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				}                  
 			],
 			"resultMetadata": [
 				{
@@ -2564,7 +2621,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 42
+							"count": 44
 						}
 					]
 				}
