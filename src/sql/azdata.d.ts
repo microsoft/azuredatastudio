@@ -3099,7 +3099,6 @@ declare module 'azdata' {
 	export interface ListBoxProperties {
 		selectedRow?: number;
 		values?: string[];
-
 	}
 
 	export interface WebViewProperties extends ComponentProperties {
@@ -3143,10 +3142,25 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+		/**
+		 * The label for the button
+		 */
 		label?: string;
+		/**
+		 * Whether the button opens the file browser dialog
+		 */
 		isFile?: boolean;
+		/**
+		 * The content of the currently selected file
+		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
 		title?: string;
+		/**
+		 * The accessibility aria label for this component
+		 */
 		ariaLabel?: string;
 	}
 
@@ -3190,15 +3204,9 @@ declare module 'azdata' {
 	}
 
 	export interface ImageComponent extends Component, ImageComponentProperties {
-		src: string;
-		alt?: string;
-		height?: number | string;
-		width?: number | string;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		label: string;
-		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -3219,8 +3227,6 @@ declare module 'azdata' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string | CategoryValue;
-		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 
@@ -3235,8 +3241,6 @@ declare module 'azdata' {
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		selectedRow?: number;
-		values: string[];
 		onRowSelected: vscode.Event<any>;
 	}
 
@@ -3357,19 +3361,6 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
-		/**
-		 * The label for the button
-		 */
-		label: string;
-		/**
-		 * The title for the button. This title will show when it hovers
-		 */
-		title: string;
-		/**
-		 * Icon Path for the button.
-		 */
-		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-
 		/**
 		 * An event called when the button is clicked
 		 */
