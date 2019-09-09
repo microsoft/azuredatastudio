@@ -9,9 +9,7 @@ import { BdcStatusModel, ResourceStatusModel } from '../controller/apiGenerated'
 import { BdcDashboardResourceStatusPage } from './bdcDashboardResourceStatusPage';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { getHealthStatusDot } from '../utils';
-
-const selectedTabCss = { 'font-weight': 'bold' };
-const unselectedTabCss = { 'font-weight': '' };
+import { cssStyles } from '../constants';
 
 export class BdcServiceStatusPage {
 
@@ -84,16 +82,19 @@ export class BdcServiceStatusPage {
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
 				resourceHeaderTab.div.onDidClick(() => {
 					if (this.currentTabText) {
-						this.currentTabText.updateCssStyles(unselectedTabCss);
+						this.currentTabText.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
 					}
 					this.changeSelectedTabPage(resourceStatusPage);
 					this.currentTabText = resourceHeaderTab.text;
-					this.currentTabText.updateCssStyles(selectedTabCss);
+					this.currentTabText.updateCssStyles(cssStyles.selectedResourceHeaderTab);
 				});
 				if (!this.currentTabPage) {
 					this.changeSelectedTabPage(resourceStatusPage);
 					this.currentTabText = resourceHeaderTab.text;
-					this.currentTabText.updateCssStyles(selectedTabCss);
+					this.currentTabText.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+				}
+				else {
+					resourceHeaderTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
 				}
 				this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: { 'border-bottom': 'solid #ccc' } });
 			});
