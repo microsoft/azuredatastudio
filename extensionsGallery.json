@@ -645,14 +645,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.4.0",
-							"lastUpdated": "12/29/2018",
+							"version": "0.5.0",
+							"lastUpdated": "9/8/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.4.0"
+									"source": "https://github.com/dzsquared/sqlops-firstresponderkit/releases/tag/0.5.0"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -679,6 +679,10 @@
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
 									"value": "https://github.com/dzsquared/sqlops-firstresponderkit"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.9.0"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
@@ -2494,6 +2498,67 @@
 				},
 				{
 					"extensionId": "53",
+					"extensionName": "query-editor-boost",
+					"displayName": "Query Editor Boost",
+					"shortDescription": "Helpful add-ons for query editing",
+					"publisher": {
+						"displayName": "Drew Skwiers-Koballa",
+						"publisherId": "drewsk",
+						"publisherName": "drewsk"
+					},
+					"versions": [
+						{
+							"version": "0.2.0",
+							"lastUpdated": "9/7/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/dzsquared/query-editor-boost/releases/tag/0.2.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/images/QEboost200.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/README.md"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/dzsquared/query-editor-boost/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/dzsquared/query-editor-boost"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": ">=0.32.1"
+								},
+								{
+									"key": "Microsoft.AzDataEngine",
+									"value": ">=1.8.0"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
+				},    
+				{
+					"extensionId": "54",
 					"extensionName": "delete-database",
 					"displayName": "Delete database",
 					"shortDescription": "Adds 'Delete' option when right clicking on a database",
@@ -2511,7 +2576,7 @@
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/alx-ppv/ADS-delete-database/releases/tag/0.0.3"
+                  "source": "https://github.com/alx-ppv/ADS-delete-database/releases/tag/0.0.3"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -2537,18 +2602,18 @@
 								},
 								{
 									"key": "Microsoft.VisualStudio.Services.Links.Source",
-									"value": "https://github.com/alx-ppv/ADS-delete-database"
+                  "value": "https://github.com/alx-ppv/ADS-delete-database"
 								},
 								{
 									"key": "Microsoft.VisualStudio.Code.Engine",
 									"value": "*"
-								}
+                }
 							]
 						}
 					],
 					"statistics": [],
 					"flags": "preview"
-				}
+				}                  
 			],
 			"resultMetadata": [
 				{
@@ -2556,7 +2621,7 @@
 					"metadataItems": [
 						{
 							"name": "TotalCount",
-							"count": 42
+							"count": 44
 						}
 					]
 				}
