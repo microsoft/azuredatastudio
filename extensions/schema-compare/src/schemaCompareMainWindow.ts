@@ -299,19 +299,16 @@ export class SchemaCompareMainWindow {
 			columns: [
 				{
 					value: localize('schemaCompare.typeColumn', 'Type'),
-					toolTip: localize('schemaCompare.typeColumn', 'Type'),
 					cssClass: 'align-with-header',
 					width: 50
 				},
 				{
 					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
-					toolTip: localize('schemaCompare.sourceNameColumn', 'Source Name'),
 					cssClass: 'align-with-header',
 					width: 90
 				},
 				{
 					value: localize('schemaCompare.includeColumnName', 'Include'),
-					toolTip: localize('schemaCompare.includeColumnName', 'Include'),
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
@@ -319,13 +316,11 @@ export class SchemaCompareMainWindow {
 				},
 				{
 					value: localize('schemaCompare.actionColumn', 'Action'),
-					toolTip: localize('schemaCompare.actionColumn', 'Action'),
 					cssClass: 'align-with-header',
 					width: 30
 				},
 				{
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
-					toolTip: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header',
 					width: 150
 				}
