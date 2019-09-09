@@ -251,6 +251,7 @@ export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
 	hidden: boolean;
+	focused?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {
