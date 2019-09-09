@@ -273,7 +273,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	}
 
 	private getAriaLabel(checked: boolean): string {
-		return checked ? strings.format('"{0} {1}"', this._options.title, nls.localize("tableCheckboxCell.Checked", "checkbox checked")) :
-			strings.format('"{0} {1}"', this._options.title, nls.localize("tableCheckboxCell.unChecked", "checkbox unchecked"));
+		return checked ? `"${this._options.title} ${nls.localize("tableCheckboxCell.Checked", "checkbox checked")}"` :
+			`"${this._options.title} ${nls.localize("tableCheckboxCell.unChecked", "checkbox unchecked")}"`;
 	}
 }
