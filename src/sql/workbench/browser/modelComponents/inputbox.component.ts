@@ -148,7 +148,11 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 			if (valid && inputElemValid) {
 				this.inputElement.setAriaLabel(this._defaultAriaLabel);
 			} else {
-				this.inputElement.setAriaLabel((this._defaultAriaLabel ? this._defaultAriaLabel + '. ' : '') + this.inputElement.inputElement.validationMessage);
+				if (this._defaultAriaLabel) {
+					this.inputElement.setAriaLabel(this._defaultAriaLabel + '. ' + this.inputElement.inputElement.validationMessage);
+				} else {
+					this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
+				}
 			}
 
 			return valid;
