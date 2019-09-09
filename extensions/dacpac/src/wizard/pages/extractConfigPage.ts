@@ -117,8 +117,7 @@ export class ExtractConfigPage extends DacFxConfigPage {
 		this.model.version = this.versionTextBox.value;
 
 		this.versionTextBox.onTextChanged(async () => {
-			const versionInputText = this.versionTextBox.value;
-			this.model.version = versionInputText;
+			this.model.version = this.versionTextBox.value;
 		});
 
 		return {
