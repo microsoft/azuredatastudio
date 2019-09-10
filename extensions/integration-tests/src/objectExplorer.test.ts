@@ -120,6 +120,8 @@ class ObjectExplorerTester {
 
 		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+		// TODO: #7146 HDFS isn't always filled in by the call to getChildren since it's loaded asynchronously. To avoid this test being flaky just removing
+		// the node for now if it exists until a proper fix can be made.
 		const children = (await nodes[index].getChildren()).filter(c => c.label !== 'HDFS');
 		const actualLabelsString = children.map(c => c.label).join(',');
 		const expectedLabelString = expectedNodeLabel.join(',');
