@@ -4,10 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-export const serviceName = 'SqlToolsService';
+export const serviceName = 'SQL Tools Service';
 export const providerId = 'MSSQL';
-export const serviceCrashMessage = 'SQL Tools Service component exited unexpectedly. Please restart Azure Data Studio.';
-export const serviceCrashButton = 'View Known Issues';
 export const serviceCrashLink = 'https://github.com/Microsoft/vscode-mssql/wiki/SqlToolsService-Known-Issues';
 export const extensionConfigSectionName = 'mssql';
 

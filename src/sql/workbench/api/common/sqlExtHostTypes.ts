@@ -166,7 +166,8 @@ export enum ModelComponentTypes {
 	Editor,
 	DiffEditor,
 	Dom,
-	Hyperlink
+	Hyperlink,
+	Image
 }
 
 export enum ColumnSizingMode {
@@ -250,6 +251,7 @@ export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
 	hidden: boolean;
+	focused?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {

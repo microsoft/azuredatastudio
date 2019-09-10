@@ -354,7 +354,8 @@
       "books-explorer": [
         {
           "id": "bookTreeView",
-          "name": "Books"
+          "name": "Books",
+          "when": "notebookQuality != stable"
         }
       ]
     }

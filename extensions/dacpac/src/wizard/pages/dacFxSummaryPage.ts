@@ -54,6 +54,9 @@ export class DacFxSummaryPage extends BasePage {
 		if (this.model.upgradeExisting && this.instance.selectedOperation === Operation.deploy) {
 			this.instance.wizard.generateScriptButton.hidden = false;
 		}
+
+		this.instance.wizard.doneButton.focused = true;
+
 		return true;
 	}
 

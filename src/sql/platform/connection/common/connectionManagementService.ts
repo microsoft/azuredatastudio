@@ -30,14 +30,13 @@ import { ConnectionOptionSpecialType } from 'sql/workbench/api/common/sqlExtHost
 import { values, entries } from 'sql/base/common/objects';
 import { ConnectionProviderProperties, IConnectionProviderRegistry, Extensions as ConnectionProviderExtensions } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 import { IAccountManagementService, AzureResource } from 'sql/platform/accounts/common/interfaces';
-import { IServerGroupController, IServerGroupDialogCallbacks } from 'sql/platform/serverGroup/common/serverGroupController';
 
 import * as azdata from 'azdata';
 
 import * as nls from 'vs/nls';
 import * as errors from 'vs/base/common/errors';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
 import * as platform from 'vs/platform/registry/common/platform';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
@@ -55,9 +54,9 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 
 export class ConnectionManagementService extends Disposable implements IConnectionManagementService {
 
-	_serviceBrand: any;
+	_serviceBrand!: ServiceIdentifier<IConnectionManagementService>;
 
-	private _providers = new Map<string, { onReady: Thenable<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
+	private _providers = new Map<string, { onReady: Promise<azdata.ConnectionProvider>, properties: ConnectionProviderProperties }>();
 	private _iconProviders = new Map<string, azdata.IconProvider>();
 	private _uriToProvider: { [uri: string]: string; } = Object.create(null);
 	private _onAddConnectionProfile = new Emitter<IConnectionProfile>();
@@ -184,20 +183,15 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param model the existing connection profile to create a new one from
 	 */
 	public showConnectionDialog(params?: INewConnectionParams, options?: IConnectionCompletionOptions, model?: IConnectionProfile, connectionResult?: IConnectionResult): Promise<void> {
-		let self = this;
-		return new Promise<void>((resolve, reject) => {
-			if (!params) {
-				params = { connectionType: ConnectionType.default };
-			}
-			if (!model && params.input && params.input.uri) {
-				model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
-			}
-			self._connectionDialogService.showDialog(self, params, model, connectionResult, options).then(() => {
-				resolve();
-			}, dialogError => {
-				this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
-				reject(dialogError);
-			});
+		if (!params) {
+			params = { connectionType: ConnectionType.default };
+		}
+		if (!model && params.input && params.input.uri) {
+			model = this._connectionStatusManager.getConnectionProfile(params.input.uri);
+		}
+		return this._connectionDialogService.showDialog(this, params, model, connectionResult, options).catch(dialogError => {
+			this._logService.warn('failed to open the connection dialog. error: ' + dialogError);
+			throw dialogError;
 		});
 	}
 
@@ -229,45 +223,38 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * @param options to use after the connection is complete
 	 */
 	private tryConnect(connection: IConnectionProfile, owner: IConnectableInput, options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
-		let self = this;
-		return new Promise<IConnectionResult>((resolve, reject) => {
-			// Load the password if it's not already loaded
-			self._connectionStore.addSavedPassword(connection).then(async result => {
-				let newConnection = result.profile;
-				let foundPassword = result.savedCred;
+		// Load the password if it's not already loaded
+		return this._connectionStore.addSavedPassword(connection).then(async result => {
+			let newConnection = result.profile;
+			let foundPassword = result.savedCred;
 
-				// If there is no password, try to load it from an existing connection
-				if (!foundPassword && self._connectionStore.isPasswordRequired(newConnection)) {
-					let existingConnection = self._connectionStatusManager.findConnectionProfile(connection);
-					if (existingConnection && existingConnection.connectionProfile) {
-						newConnection.password = existingConnection.connectionProfile.password;
-						foundPassword = true;
+			// If there is no password, try to load it from an existing connection
+			if (!foundPassword && this._connectionStore.isPasswordRequired(newConnection)) {
+				let existingConnection = this._connectionStatusManager.findConnectionProfile(connection);
+				if (existingConnection && existingConnection.connectionProfile) {
+					newConnection.password = existingConnection.connectionProfile.password;
+					foundPassword = true;
+				}
+			}
+
+			// Fill in the Azure account token if needed and open the connection dialog if it fails
+			let tokenFillSuccess = await this.fillInOrClearAzureToken(newConnection);
+
+			// If the password is required and still not loaded show the dialog
+			if ((!foundPassword && this._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
+				return this.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options);
+			} else {
+				// Try to connect
+				return this.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
+					if (!connectionResult.connected && !connectionResult.errorHandled) {
+						// If connection fails show the dialog
+						return this.showConnectionDialogOnError(connection, owner, connectionResult, options);
+					} else {
+						//Resolve with the connection result
+						return connectionResult;
 					}
-				}
-
-				// Fill in the Azure account token if needed and open the connection dialog if it fails
-				let tokenFillSuccess = await self.fillInOrClearAzureToken(newConnection);
-
-				// If the password is required and still not loaded show the dialog
-				if ((!foundPassword && self._connectionStore.isPasswordRequired(newConnection) && !newConnection.password) || !tokenFillSuccess) {
-					resolve(self.showConnectionDialogOnError(connection, owner, { connected: false, errorMessage: undefined, callStack: undefined, errorCode: undefined }, options));
-				} else {
-					// Try to connect
-					self.connectWithOptions(newConnection, owner.uri, options, owner).then(connectionResult => {
-						if (!connectionResult.connected && !connectionResult.errorHandled) {
-							// If connection fails show the dialog
-							resolve(self.showConnectionDialogOnError(connection, owner, connectionResult, options));
-						} else {
-							//Resolve with the connection result
-							resolve(connectionResult);
-						}
-					}).catch(connectionError => {
-						reject(connectionError);
-					});
-				}
-			}).catch(err => {
-				reject(err);
-			});
+				});
+			}
 		});
 	}
 
@@ -280,24 +267,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		owner: IConnectableInput,
 		connectionResult: IConnectionResult,
 		options?: IConnectionCompletionOptions): Promise<IConnectionResult> {
-
-		return new Promise<IConnectionResult>((resolve, reject) => {
-			if (options && options.showConnectionDialogOnError) {
-				let params: INewConnectionParams = options && options.params ? options.params : {
-					connectionType: this._connectionStatusManager.isDefaultTypeUri(owner.uri) ? ConnectionType.default : ConnectionType.editor,
-					input: owner,
-					runQueryOnCompletion: RunQueryOnConnectionMode.none,
-					showDashboard: options.showDashboard
-				};
-				this.showConnectionDialog(params, options, connection, connectionResult).then(() => {
-					resolve(connectionResult);
-				}).catch(err => {
-					reject(err);
-				});
-			} else {
-				resolve(connectionResult);
-			}
-		});
+		if (options && options.showConnectionDialogOnError) {
+			let params: INewConnectionParams = options && options.params ? options.params : {
+				connectionType: this._connectionStatusManager.isDefaultTypeUri(owner.uri) ? ConnectionType.default : ConnectionType.editor,
+				input: owner,
+				runQueryOnCompletion: RunQueryOnConnectionMode.none,
+				showDashboard: options.showDashboard
+			};
+			return this.showConnectionDialog(params, options, connection, connectionResult).then(() => {
+				return connectionResult;
+			});
+		} else {
+			return Promise.resolve(connectionResult);
+		}
 	}
 
 	/**
@@ -337,29 +319,25 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	 * The purpose is connection by default
 	 */
 	public connectIfNotConnected(connection: IConnectionProfile, purpose?: 'dashboard' | 'insights' | 'connection' | 'notebook', saveConnection: boolean = false): Promise<string> {
-		return new Promise<string>((resolve, reject) => {
-			let ownerUri: string = Utils.generateUri(connection, purpose);
-			if (this._connectionStatusManager.isConnected(ownerUri)) {
-				resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
-			} else {
-				const options: IConnectionCompletionOptions = {
-					saveTheConnection: saveConnection,
-					showConnectionDialogOnError: true,
-					showDashboard: purpose === 'dashboard',
-					params: undefined,
-					showFirewallRuleOnError: true,
-				};
-				this.connect(connection, ownerUri, options).then(connectionResult => {
-					if (connectionResult && connectionResult.connected) {
-						resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
-					} else {
-						reject(connectionResult.errorMessage);
-					}
-				}, error => {
-					reject(error);
-				});
-			}
-		});
+		let ownerUri: string = Utils.generateUri(connection, purpose);
+		if (this._connectionStatusManager.isConnected(ownerUri)) {
+			return Promise.resolve(this._connectionStatusManager.getOriginalOwnerUri(ownerUri));
+		} else {
+			const options: IConnectionCompletionOptions = {
+				saveTheConnection: saveConnection,
+				showConnectionDialogOnError: true,
+				showDashboard: purpose === 'dashboard',
+				params: undefined,
+				showFirewallRuleOnError: true,
+			};
+			return this.connect(connection, ownerUri, options).then(connectionResult => {
+				if (connectionResult && connectionResult.connected) {
+					return this._connectionStatusManager.getOriginalOwnerUri(ownerUri);
+				} else {
+					throw connectionResult.errorMessage;
+				}
+			});
+		}
 	}
 
 	/**
@@ -384,8 +362,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.connectWithOptions(connection, uri, options, callbacks);
 	}
 
-	private connectWithOptions(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks):
-		Promise<IConnectionResult> {
+	private async connectWithOptions(connection: IConnectionProfile, uri: string, options?: IConnectionCompletionOptions, callbacks?: IConnectionCallbacks): Promise<IConnectionResult> {
 		connection.options['groupId'] = connection.groupId;
 		connection.options['databaseDisplayName'] = connection.databaseName;
 
@@ -411,110 +388,90 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 				showFirewallRuleOnError: true
 			};
 		}
-		return new Promise<IConnectionResult>(async (resolve, reject) => {
-			if (callbacks.onConnectStart) {
-				callbacks.onConnectStart();
-			}
-			let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
-			if (!tokenFillSuccess) {
-				throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
-			}
-			this.createNewConnection(uri, connection).then(connectionResult => {
-				if (connectionResult && connectionResult.connected) {
-					// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
-					// the options.saveTheConnection setting
-					let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
-					this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
+		if (callbacks.onConnectStart) {
+			callbacks.onConnectStart();
+		}
+		let tokenFillSuccess = await this.fillInOrClearAzureToken(connection);
+		if (!tokenFillSuccess) {
+			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
+		}
+		return this.createNewConnection(uri, connection).then(connectionResult => {
+			if (connectionResult && connectionResult.connected) {
+				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
+				// the options.saveTheConnection setting
+				let connectionMgmtInfo = this._connectionStatusManager.findConnection(uri);
+				this.tryAddActiveConnection(connectionMgmtInfo, connection, options.saveTheConnection);
 
-					if (callbacks.onConnectSuccess) {
-						callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
-					}
-					if (options.saveTheConnection) {
-						this.saveToSettings(uri, connection).then(value => {
-							this._onAddConnectionProfile.fire(connection);
-							this.doActionsAfterConnectionComplete(value, options);
-						});
-					} else {
-						connection.saveProfile = false;
-						this.doActionsAfterConnectionComplete(uri, options);
-					}
-					if (connection.savePassword) {
-						this._connectionStore.savePassword(connection).then(() => {
-							resolve(connectionResult);
-						});
-					} else {
-						resolve(connectionResult);
-					}
-				} else if (connectionResult && connectionResult.errorMessage) {
-					this.handleConnectionError(connection, uri, options, callbacks, connectionResult).then(result => {
-						resolve(result);
-					}).catch(handleConnectionError => {
-						if (callbacks.onConnectReject) {
-							callbacks.onConnectReject(handleConnectionError);
-						}
-						reject(handleConnectionError);
+				if (callbacks.onConnectSuccess) {
+					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
+				}
+				if (options.saveTheConnection) {
+					this.saveToSettings(uri, connection).then(value => {
+						this._onAddConnectionProfile.fire(connection);
+						this.doActionsAfterConnectionComplete(value, options);
 					});
 				} else {
+					connection.saveProfile = false;
+					this.doActionsAfterConnectionComplete(uri, options);
+				}
+				if (connection.savePassword) {
+					return this._connectionStore.savePassword(connection).then(() => {
+						return connectionResult;
+					});
+				} else {
+					return connectionResult;
+				}
+			} else if (connectionResult && connectionResult.errorMessage) {
+				return this.handleConnectionError(connection, uri, options, callbacks, connectionResult).catch(handleConnectionError => {
 					if (callbacks.onConnectReject) {
-						callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
+						callbacks.onConnectReject(handleConnectionError);
 					}
-					resolve(connectionResult);
-				}
-			}).catch(err => {
+					throw handleConnectionError;
+				});
+			} else {
 				if (callbacks.onConnectReject) {
-					callbacks.onConnectReject(err);
+					callbacks.onConnectReject(nls.localize('connectionNotAcceptedError', "Connection Not Accepted"));
 				}
-				reject(err);
-			});
+				return connectionResult;
+			}
+		}).catch(err => {
+			if (callbacks.onConnectReject) {
+				callbacks.onConnectReject(err);
+			}
+			throw err;
 		});
 	}
 
 	private handleConnectionError(connection: IConnectionProfile, uri: string, options: IConnectionCompletionOptions, callbacks: IConnectionCallbacks, connectionResult: IConnectionResult) {
-		return new Promise<IConnectionResult>((resolve, reject) => {
-			let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
-			if (options.showFirewallRuleOnError && connectionResult.errorCode) {
-				this.handleFirewallRuleError(connection, connectionResult).then(success => {
-					if (success) {
-						options.showFirewallRuleOnError = false;
-						this.connectWithOptions(connection, uri, options, callbacks).then((result) => {
-							resolve(result);
-						}).catch(connectionError => {
-							reject(connectionError);
-						});
-					} else {
-						if (callbacks.onConnectReject) {
-							callbacks.onConnectReject(connectionNotAcceptedError);
-						}
-						resolve(connectionResult);
+		let connectionNotAcceptedError = nls.localize('connectionNotAcceptedError', "Connection Not Accepted");
+		if (options.showFirewallRuleOnError && connectionResult.errorCode) {
+			return this.handleFirewallRuleError(connection, connectionResult).then(success => {
+				if (success) {
+					options.showFirewallRuleOnError = false;
+					return this.connectWithOptions(connection, uri, options, callbacks);
+				} else {
+					if (callbacks.onConnectReject) {
+						callbacks.onConnectReject(connectionNotAcceptedError);
 					}
-				}).catch(handleFirewallRuleError => {
-					reject(handleFirewallRuleError);
-				});
-			} else {
-				if (callbacks.onConnectReject) {
-					callbacks.onConnectReject(connectionNotAcceptedError);
+					return connectionResult;
 				}
-				resolve(connectionResult);
+			});
+		} else {
+			if (callbacks.onConnectReject) {
+				callbacks.onConnectReject(connectionNotAcceptedError);
 			}
-		});
+			return Promise.resolve(connectionResult);
+		}
 	}
 
 	private handleFirewallRuleError(connection: IConnectionProfile, connectionResult: IConnectionResult): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			this._resourceProviderService.handleFirewallRule(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
-				if (response.canHandleFirewallRule) {
-					connectionResult.errorHandled = true;
-					this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId).then(success => {
-						resolve(success);
-					}).catch(showFirewallRuleError => {
-						reject(showFirewallRuleError);
-					});
-				} else {
-					resolve(false);
-				}
-			}).catch(handleFirewallRuleError => {
-				reject(handleFirewallRuleError);
-			});
+		return this._resourceProviderService.handleFirewallRule(connectionResult.errorCode, connectionResult.errorMessage, connection.providerName).then(response => {
+			if (response.canHandleFirewallRule) {
+				connectionResult.errorHandled = true;
+				return this._resourceProviderService.showFirewallRuleDialog(connection, response.ipAddress, response.resourceProviderId);
+			} else {
+				return false;
+			}
 		});
 	}
 
@@ -573,12 +530,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	private focusDashboard(profile: IConnectionProfile): boolean {
 		let found: boolean = false;
-		let options = {
-			preserveFocus: false,
-			revealIfVisible: true,
-			revealInCenterIfOutsideViewport: true,
-			pinned: true
-		};
 
 		this._editorService.editors.map(editor => {
 			if (editor instanceof DashboardInput) {
@@ -637,13 +588,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 
 	public saveProfileGroup(profile: IConnectionProfileGroup): Promise<string> {
 		TelemetryUtils.addTelemetry(this._telemetryService, this._logService, TelemetryKeys.AddServerGroup);
-		return new Promise<string>((resolve, reject) => {
-			this._connectionStore.saveProfileGroup(profile).then(groupId => {
-				this._onAddConnectionProfile.fire(undefined);
-				resolve(groupId);
-			}).catch(err => {
-				reject(err);
-			});
+		return this._connectionStore.saveProfileGroup(profile).then(groupId => {
+			this._onAddConnectionProfile.fire(undefined);
+			return groupId;
 		});
 	}
 
@@ -815,7 +762,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private sendDisconnectRequest(uri: string): Thenable<boolean> {
+	private sendDisconnectRequest(uri: string): Promise<boolean> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(false);
@@ -827,7 +774,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 	}
 
-	private sendCancelRequest(uri: string): Thenable<boolean> {
+	private sendCancelRequest(uri: string): Promise<boolean> {
 		let providerId: string = this.getProviderIdFromUri(uri);
 		if (!providerId) {
 			return Promise.resolve(false);
@@ -856,12 +803,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	private saveToSettings(id: string, connection: IConnectionProfile): Promise<string> {
-
-		return new Promise<string>((resolve, reject) => {
-			this._connectionStore.saveProfile(connection).then(savedProfile => {
-				let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
-				return resolve(newId);
-			});
+		return this._connectionStore.saveProfile(connection).then(savedProfile => {
+			let newId = this._connectionStatusManager.updateConnectionProfile(savedProfile, id);
+			return newId;
 		});
 	}
 
@@ -900,7 +844,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	public onConnectionComplete(handle: number, info: azdata.ConnectionInfoSummary): void {
-		const self = this;
 		let connection = this._connectionStatusManager.onConnectionComplete(info);
 
 		if (info.connectionId) {
@@ -911,10 +854,10 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			connection.extensionTimer.stop();
 
 			connection.connectHandler(true);
-			self.addTelemetryForConnection(connection);
+			this.addTelemetryForConnection(connection);
 
-			if (self._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
-				self._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
+			if (this._connectionStatusManager.isDefaultTypeUri(info.ownerUri)) {
+				this._connectionGlobalStatus.setStatusToConnected(info.connectionSummary);
 			}
 		} else {
 			connection.connectHandler(false, info.errorMessage, info.errorNumber, info.messages);
@@ -967,40 +910,37 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 		return (recentConnections.length >= 1);
 	}
+
 	// Disconnect a URI from its current connection
 	// The default editor implementation does not perform UI updates
 	// The default force implementation is set to false
 	public disconnectEditor(owner: IConnectableInput, force: boolean = false): Promise<boolean> {
-		const self = this;
-
-		return new Promise<boolean>((resolve, reject) => {
-			// If the URI is connected, disconnect it and the editor
-			if (self.isConnected(owner.uri)) {
-				let connection = self.getConnectionProfile(owner.uri);
-				owner.onDisconnect();
-				resolve(self.doDisconnect(owner.uri, connection));
-
-				// If the URI is connecting, prompt the user to cancel connecting
-			} else if (self.isConnecting(owner.uri)) {
-				if (!force) {
-					self.shouldCancelConnect(owner.uri).then((result) => {
-						// If the user wants to cancel, then disconnect
-						if (result) {
-							owner.onDisconnect();
-							resolve(self.cancelEditorConnection(owner));
-						}
-						// If the user does not want to cancel, then ignore
-						resolve(false);
-					});
-				} else {
-					owner.onDisconnect();
-					resolve(self.cancelEditorConnection(owner));
-				}
-			}
-			// If the URI is disconnected, ensure the UI state is consistent and resolve true
+		// If the URI is connected, disconnect it and the editor
+		if (this.isConnected(owner.uri)) {
+			let connection = this.getConnectionProfile(owner.uri);
 			owner.onDisconnect();
-			resolve(true);
-		});
+			return this.doDisconnect(owner.uri, connection);
+
+			// If the URI is connecting, prompt the user to cancel connecting
+		} else if (this.isConnecting(owner.uri)) {
+			if (!force) {
+				return this.shouldCancelConnect(owner.uri).then((result) => {
+					// If the user wants to cancel, then disconnect
+					if (result) {
+						owner.onDisconnect();
+						return this.cancelEditorConnection(owner);
+					}
+					// If the user does not want to cancel, then ignore
+					return false;
+				});
+			} else {
+				owner.onDisconnect();
+				return this.cancelEditorConnection(owner);
+			}
+		}
+		// If the URI is disconnected, ensure the UI state is consistent and resolve true
+		owner.onDisconnect();
+		return Promise.resolve(true);
 	}
 
 	/**
@@ -1036,75 +976,64 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 	}
 
 	// Ask user if they are sure they want to cancel connection request
-	private shouldCancelConnect(fileUri: string): Thenable<boolean> {
-		const self = this;
-
+	private shouldCancelConnect(fileUri: string): Promise<boolean> {
 		// Double check if the user actually wants to cancel their connection request
-		return new Promise<boolean>((resolve, reject) => {
-			// Setup our cancellation choices
-			let choices: { key, value }[] = [
-				{ key: nls.localize('connectionService.yes', "Yes"), value: true },
-				{ key: nls.localize('connectionService.no', "No"), value: false }
-			];
+		// Setup our cancellation choices
+		let choices: { key, value }[] = [
+			{ key: nls.localize('connectionService.yes', "Yes"), value: true },
+			{ key: nls.localize('connectionService.no', "No"), value: false }
+		];
 
-			self._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
-				let confirm = choices.find(x => x.key === choice);
-				resolve(confirm && confirm.value);
-			});
+		return this._quickInputService.pick(choices.map(x => x.key), { placeHolder: nls.localize('cancelConnectionConfirmation', "Are you sure you want to cancel this connection?"), ignoreFocusLost: true }).then((choice) => {
+			let confirm = choices.find(x => x.key === choice);
+			return confirm && confirm.value;
 		});
 	}
 
 	private doDisconnect(fileUri: string, connection?: IConnectionProfile): Promise<boolean> {
-		const self = this;
+		let disconnectParams = new ConnectionContracts.DisconnectParams();
+		disconnectParams.ownerUri = fileUri;
 
-		return new Promise<boolean>((resolve, reject) => {
-			let disconnectParams = new ConnectionContracts.DisconnectParams();
-			disconnectParams.ownerUri = fileUri;
-
-			// Send a disconnection request for the input URI
-			self.sendDisconnectRequest(fileUri).then((result) => {
-				// If the request was sent
-				if (result) {
-					this._connectionStatusManager.deleteConnection(fileUri);
-					if (connection) {
-						this._notifyDisconnected(connection, fileUri);
-					}
-
-					if (this._connectionStatusManager.isDefaultTypeUri(fileUri)) {
-						this._connectionGlobalStatus.setStatusToDisconnected(fileUri);
-					}
-
-					// TODO: send telemetry events
-					// Telemetry.sendTelemetryEvent('DatabaseDisconnected');
+		// Send a disconnection request for the input URI
+		return this.sendDisconnectRequest(fileUri).then((result) => {
+			// If the request was sent
+			if (result) {
+				this._connectionStatusManager.deleteConnection(fileUri);
+				if (connection) {
+					this._notifyDisconnected(connection, fileUri);
 				}
 
-				resolve(result);
-			});
+				if (this._connectionStatusManager.isDefaultTypeUri(fileUri)) {
+					this._connectionGlobalStatus.setStatusToDisconnected(fileUri);
+				}
+
+				// TODO: send telemetry events
+				// Telemetry.sendTelemetryEvent('DatabaseDisconnected');
+			}
+
+			return result;
 		});
 	}
 
 	public disconnect(connection: IConnectionProfile): Promise<void>;
 	public disconnect(ownerUri: string): Promise<void>;
-	public disconnect(input: any): Promise<void> {
-		return new Promise<void>((resolve, reject) => {
-			let uri: string;
-			let profile: IConnectionProfile;
-			if (typeof input === 'object') {
-				uri = Utils.generateUri(input);
-				profile = input;
-			} else if (typeof input === 'string') {
-				profile = this.getConnectionProfile(input);
-				uri = input;
+	public disconnect(input: string | IConnectionProfile): Promise<void> {
+		let uri: string;
+		let profile: IConnectionProfile;
+		if (typeof input === 'object') {
+			uri = Utils.generateUri(input);
+			profile = input;
+		} else if (typeof input === 'string') {
+			profile = this.getConnectionProfile(input);
+			uri = input;
+		}
+		return this.doDisconnect(uri, profile).then(result => {
+			if (result) {
+				this.addTelemetryForConnectionDisconnected(profile);
+				this._connectionStatusManager.removeConnection(uri);
+			} else {
+				throw result;
 			}
-			this.doDisconnect(uri, profile).then(result => {
-				if (result) {
-					this.addTelemetryForConnectionDisconnected(input);
-					this._connectionStatusManager.removeConnection(uri);
-					resolve();
-				} else {
-					reject(result);
-				}
-			});
 		});
 	}
 
@@ -1113,32 +1042,24 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return this.cancelConnectionForUri(fileUri);
 	}
 
-	public cancelConnectionForUri(fileUri: string): Thenable<boolean> {
-		const self = this;
-		return new Promise<boolean>((resolve, reject) => {
-			// Create a new set of cancel connection params with our file URI
-			let cancelParams: ConnectionContracts.CancelConnectParams = new ConnectionContracts.CancelConnectParams();
-			cancelParams.ownerUri = fileUri;
+	public cancelConnectionForUri(fileUri: string): Promise<boolean> {
+		// Create a new set of cancel connection params with our file URI
+		let cancelParams: ConnectionContracts.CancelConnectParams = new ConnectionContracts.CancelConnectParams();
+		cancelParams.ownerUri = fileUri;
 
-			this._connectionStatusManager.deleteConnection(fileUri);
-			// Send connection cancellation request
-			resolve(self.sendCancelRequest(fileUri));
-		});
+		this._connectionStatusManager.deleteConnection(fileUri);
+		// Send connection cancellation request
+		return this.sendCancelRequest(fileUri);
 	}
 
-	public cancelEditorConnection(owner: IConnectableInput): Thenable<boolean> {
-		const self = this;
-		let fileUri: string = owner.uri;
-		return new Promise<boolean>((resolve, reject) => {
-			if (self.isConnecting(fileUri)) {
-				this.cancelConnectionForUri(fileUri).then(result => {
-					resolve(result);
-				});
-			} else {
-				// If the editor is connected then there is nothing to cancel
-				resolve(false);
-			}
-		});
+	public cancelEditorConnection(owner: IConnectableInput): Promise<boolean> {
+		let fileUri = owner.uri;
+		if (this.isConnecting(fileUri)) {
+			return this.cancelConnectionForUri(fileUri);
+		} else {
+			// If the editor is connected then there is nothing to cancel
+			return Promise.resolve(false);
+		}
 	}
 	// Is a certain file URI connected?
 	public isConnected(fileUri: string, connectionProfile?: ConnectionProfile): boolean {
@@ -1211,14 +1132,9 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		return Promise.resolve(false);
 	}
 
-	public editGroup(group: ConnectionProfileGroup): Promise<any> {
-		return new Promise<string>((resolve, reject) => {
-			this._connectionStore.editGroup(group).then(groupId => {
-				this._onAddConnectionProfile.fire(undefined);
-				resolve(null);
-			}).catch(err => {
-				reject(err);
-			});
+	public editGroup(group: ConnectionProfileGroup): Promise<void> {
+		return this._connectionStore.editGroup(group).then(groupId => {
+			this._onAddConnectionProfile.fire(undefined);
 		});
 	}
 
