@@ -137,4 +137,29 @@ export class BookTreeItem extends vscode.TreeItem {
 			return undefined;
 		}
 	}
+
+	/**
+	 * Helper method to find a child md file or Notebook with a specified URL
+	 * @param section The current section we're checking
+	 * @param url The url of the md file or Notebook we're searching for
+	 */
+	public findChildItem(url: string): any {
+		return this.findChildItemRecur(this, url);
+	}
+
+	private findChildItemRecur(section: any, url: string): any {
+		if (section.url && section.url === url) {
+			return section;
+		}
+		else if (section.sections) {
+			for (let i = 0; i < section.sections.length; i++) {
+				const childSection = section.sections[i];
+				const foundItem = this.findChildItemRecur(childSection, url);
+				if (foundItem) {
+					return foundItem;
+				}
+			}
+		}
+		return undefined;
+	}
 }

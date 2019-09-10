@@ -85,7 +85,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this._openAsUntitled = openAsUntitled;
 				let books = this.getBooks();
 				if (books && books.length > 0) {
-					const bookTreeItem = this.findChildItem(books[0], urlToOpen) || books[0];
+					const bookTreeItem = books[0].findChildItem(urlToOpen) || books[0];
 					bookViewer.reveal(bookTreeItem, { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 					const urlPath = bookTreeItem.url || books[0].tableOfContents[0];
 					const readmeMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
@@ -105,27 +105,6 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				bookPath,
 				e instanceof Error ? e.message : e));
 		}
-	}
-
-	/**
-	 * Helper method to find a child md file or Notebook with a specified URL
-	 * @param section The current section we're checking
-	 * @param url The url of the md file or Notebook we're searching for
-	 */
-	private findChildItem(section: any, url: string): any {
-		if (section.url && section.url === url) {
-			return section;
-		}
-		else if (section.sections) {
-			for (let i = 0; i < section.sections.length; i++) {
-				const childSection = section.sections[i];
-				const foundItem = this.findChildItem(childSection, url);
-				if (foundItem) {
-					return foundItem;
-				}
-			}
-		}
-		return undefined;
 	}
 
 	async openNotebook(resource: string): Promise<void> {
