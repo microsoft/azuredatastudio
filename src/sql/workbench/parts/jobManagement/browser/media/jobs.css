@@ -5,13 +5,14 @@
 
 agentview-component {
 	height: 100%;
-	width : 100%;
+	width: 100%;
 	display: block;
 }
 
-jobsview-component {
+jobsview-component,
+notebooksview-component {
 	height: 100%;
-	width : 100%;
+	width: 100%;
 	display: block;
 }
 
@@ -31,7 +32,13 @@ jobsview-component {
 
 .jobview-grid {
 	height: calc(100% - 75px);
-	width : 100%;
+	width: 100%;
+	display: block;
+}
+
+.jobnotebooksview-grid {
+	height: calc(100% - 75px);
+	width: 100%;
 	display: block;
 }
 
@@ -45,52 +52,91 @@ jobsview-component {
 	font-weight: bold;
 }
 
-.hc-black #jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+.hc-black
+	#jobsDiv
+	jobsview-component
+	.jobview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell,
+.hc-black
+	#notebooksDiv
+	notebooks-component
+	.jobnotebooksview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
 	border: 1px solid #2b56f2;
 }
 
-#jobsDiv jobsview-component .jobview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+#jobsDiv
+	jobsview-component
+	.jobview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell,
+#notebooksDiv
+	notebooksview-component
+	.jobnotebooksview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
 	border-right: transparent !important;
 	border-left: transparent !important;
 	line-height: 33px !important;
 }
 
-#jobsDiv .jobview-joblist {
+#jobsDiv .jobview-joblist,
+#notebooksDiv .jobview-joblist {
 	height: 100%;
 	width: 100%;
 }
 
-#jobsDiv .jobview-jobnametable {
+#jobsDiv .jobview-jobnametable,
+#notebooksDiv .jobview-jobnametable {
 	border: 0px;
 	width: 100%;
 	height: 100%;
 }
 
-#jobsDiv .jobview-jobnameindicatorsuccess {
+#jobsDiv .jobview-jobnameindicatorsuccess,
+#notebooksDiv .jobview-jobnameindicatorsuccess {
 	width: 5px;
 	background: green;
 }
 
-#jobsDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure {
+#jobsDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure,
+#notebooksDiv .slick-cell.l1.r1 .jobview-jobnameindicatorfailure {
 	width: 5px;
 	background: red;
 }
 
-#jobsDiv .jobview-jobnameindicatorcancel {
+#jobsDiv .jobview-jobnameindicatorcancel,
+#notebooksDiv .jobview-jobnameindicatorcancel {
 	width: 5px;
 	background: orange;
 }
 
-#jobsDiv .jobview-grid .jobview-jobnameindicatorunknown {
+#jobsDiv .jobview-grid .jobview-jobnameindicatorunknown,
+#notebooks .jobnotebooksview-grid .jobview-jobnameindicatorunknown {
 	width: 5px;
 	background: grey;
 }
 
-#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext {
+#jobsDiv .jobview-grid .slick-cell.l1.r1.error-row .jobview-jobnametext,
+#notebooksDiv
+	.jobnotebooksview-grid
+	.slick-cell.l1.r1.error-row
+	.jobview-jobnametext,
+#notebooksDiv
+	.jobnotebooksview-grid
+	.slick-cell.l1.r1.notebook-error-row
+	.jobview-jobnametext {
 	width: 100%;
 }
 
-#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext {
+#jobsDiv .jobview-grid .slick-cell.l1.r1 .jobview-jobnametext,
+#notebooksDiv .jobnotebooksview-grid .slick-cell.l1.r1 .jobview-jobnametext {
 	text-overflow: ellipsis;
 	width: 250px;
 	overflow: hidden;
@@ -98,7 +144,10 @@ jobsview-component {
 	display: inline-block;
 }
 
-#operatorsDiv .joboperatorsview-grid .slick-cell.l1.r1 .operatorview-operatornametext,
+#operatorsDiv
+	.joboperatorsview-grid
+	.slick-cell.l1.r1
+	.operatorview-operatornametext,
 #alertsDiv .jobalertsview-grid .slick-cell.l1.r1 .alertview-alertnametext,
 #proxiesDiv .jobproxiesview-grid .slick-cell.l1.r1 .proxyview-proxynametext {
 	text-overflow: ellipsis;
@@ -108,28 +157,74 @@ jobsview-component {
 	display: inline-block;
 }
 
-#jobsDiv .job-with-error {
+#jobsDiv .job-with-error,
+#notebooksDiv .job-with-error {
 	border-bottom: none;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell.l1.r1.error-row {
+.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	.slick-cell.l1.r1.error-row,
+.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	.slick-cell.l1.r1.error-row {
 	width: 100%;
 	opacity: 1;
 	font-weight: 700;
+	text-overflow: ellipsis;
 	color: orangered;
 }
 
-.jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row .slick-cell._detail_selector.error-row {
+.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	.slick-cell.l1.r1.notebook-error-row {
+	width: 100%;
+	opacity: 1;
+	font-weight: 700;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: orange;
+}
+
+.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	.slick-cell._detail_selector.error-row,
+.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	.slick-cell._detail_selector.error-row,
+.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	.slick-cell._detail_selector.notebook-error-row {
 	opacity: 1;
 }
 
-#jobsDiv .jobview-splitter {
+#jobsDiv .jobview-splitter,
+#notebooksDiv .jobview-splitter {
 	height: 1px;
 	width: 100%;
 	background-color: gray;
 }
 
-#jobsDiv .jobview-jobitem {
+#jobsDiv .jobview-jobitem,
+#notebooksDiv .jobview-jobitem {
 	display: flex;
 	flex-direction: row;
 	flex-wrap: nowrap;
@@ -137,82 +232,113 @@ jobsview-component {
 	white-space: nowrap;
 }
 
-#jobsDiv .jobview-label {
+#jobsDiv .jobview-label,
+#notebooksDiv .jobview-label {
 	padding-bottom: 10px;
 	padding-top: 10px;
 }
 
-#jobsDiv .jobview-highlight-none {
+#jobsDiv .jobview-highlight-none,
+#notebooksDiv .jobview-highlight-none {
 	width: 5px;
 	margin-right: 10px;
 }
 
-#jobsDiv .detail-container {
+#jobsDiv .detail-container,
+#notebooksDiv .detail-container {
 	max-height: 100px !important;
 	line-height: 20px;
 }
 
-#jobsDiv .detail {
-	padding: 5px
+#jobsDiv .detail,
+#notebooksDiv .detail {
+	padding: 5px;
 }
 
-#jobsDiv .preload {
+#jobsDiv .preload,
+#notebooksDiv .preload {
 	font-size: 13px;
 }
 
-#jobsDiv .dynamic-cell-detail > :first-child {
-	vertical-align:     middle;
-	line-height:        13px;
-	padding:            10px;
-	margin-left:		20px;
+#jobsDiv .dynamic-cell-detail > :first-child,
+#notebooksDiv .dynamic-cell-detail > :first-child {
+	vertical-align: middle;
+	line-height: 13px;
+	padding: 10px;
+	margin-left: 20px;
 }
 
 .jobsview-icon {
-	background-image: url('./job.svg');
+	background-image: url("./job.svg");
 }
 
 .vs-dark .jobsview-icon,
 .hc-black .jobsview-icon {
-	background-image: url('./job_inverse.svg');
+	background-image: url("./job_inverse.svg");
+}
+
+.notebooksview-icon {
+	background-image: url("./notebook.svg");
+}
+
+.vs-dark .notebooksview-icon,
+.hc-black .notebooksview-icon {
+	background-image: url("./notebook_inverse.svg");
 }
 
 .alertsview-icon {
-	background-image: url('./alert.svg');
+	background-image: url("./alert.svg");
 }
 
 .vs-dark .alertsview-icon,
 .hc-black .alertsview-icon {
-	background-image: url('./alert_inverse.svg');
+	background-image: url("./alert_inverse.svg");
 }
 
 .proxiesview-icon {
-	background-image: url('./proxy.svg');
+	background-image: url("./proxy.svg");
 }
 
 .vs-dark .proxiesview-icon,
 .hc-black .proxiesview-icon {
-	background-image: url('./proxy_inverse.svg');
+	background-image: url("./proxy_inverse.svg");
 }
 
 .operatorsview-icon {
-	background-image: url('./operator.svg');
+	background-image: url("./operator.svg");
 }
 
 .vs-dark .operatorsview-icon,
 .hc-black .operatorsview-icon {
-	background-image: url('./operator_inverse.svg');
+	background-image: url("./operator_inverse.svg");
 }
 
-agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.even > .slick-cell,
-agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.odd > .slick-cell {
+agentview-component
+	.jobview-grid
+	.grid-canvas
+	> .ui-widget-content.slick-row.even
+	> .slick-cell,
+agentview-component
+	.jobnotebooksview-grid
+	.grid-canvas
+	> .ui-widget-content.slick-row.odd
+	> .slick-cell {
 	cursor: pointer;
 }
 
-.vs-dark .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.vs-dark
+	.jobview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted white;
 }
 
-.hc-black .jobview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.hc-black
+	.jobview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted #2b56f2;
 }
 
@@ -227,37 +353,190 @@ agentview-component .jobview-grid .grid-canvas > .ui-widget-content.slick-row.od
 	padding-left: 15px;
 }
 
-#jobsDiv jobsview-component .jobview-grid .slick-cell.l1.r1.error-row td.jobview-jobnameindicatorfailure {
+#jobsDiv
+	jobsview-component
+	.jobview-grid
+	.slick-cell.l1.r1.error-row
+	td.jobview-jobnameindicatorfailure,
+#notebooksDiv
+	notebooksview-component
+	.jobnotebooksview-grid
+	.slick-cell.l1.r1.error-row
+	td.jobview-jobnameindicatorfailure,
+#notebooksDiv
+	notebooksview-component
+	.jobnotebooksview-grid
+	.slick-cell.l1.r1.notebook-error-row
+	td.jobview-jobnameindicatorfailure {
 	width: 0;
 	background: none;
 }
 
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered {
 	background: #dcdcdc !important;
 }
 
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.vs-dark
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.vs-dark
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.vs-dark
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+.vs-dark
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.vs-dark
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.vs-dark
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
 	background: #444444 !important;
 }
 
-.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.hc-black #jobsDiv .jobview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.hc-black
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.hc-black
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.hc-black
+	#jobsDiv
+	.jobview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+.hc-black
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.hc-black
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.hc-black
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
 	background: none !important;
 }
 
-table.jobprevruns div.bar0, table.jobprevruns div.bar1, table.jobprevruns div.bar2,
-table.jobprevruns div.bar3, table.jobprevruns div.bar4, table.jobprevruns div.bar5 {
+table.jobprevruns div.bar,
+table.jobprevruns div.bar0,
+table.jobprevruns div.bar1,
+table.jobprevruns div.bar2,
+table.jobprevruns div.bar3,
+table.jobprevruns div.bar4,
+table.jobprevruns div.bar5 {
 	padding-top: 3px;
 	padding-left: 5px;
 	width: 10px;
 }
 
-.jobview-grid .slick-cell.l10.r10 {
+table.jobprevruns div.bar {
+	cursor: pointer;
+}
+
+.jobview-grid .slick-cell.l10.r10,
+.jobnotebooksview-grid .slick-cell.l10.r10 {
 	text-align: center;
 	display: inline-flex;
 }
@@ -270,117 +549,367 @@ table.jobprevruns > tbody {
 	vertical-align: bottom;
 }
 
+#notebooksDiv .jobnotebooksview-grid {
+	height: calc(100% - 75px);
+	width: 100%;
+	display: block;
+}
+
 #alertsDiv .jobalertsview-grid {
 	height: calc(100% - 75px);
-	width : 100%;
+	width: 100%;
 	display: block;
 }
 
 #operatorsDiv .joboperatorsview-grid {
 	height: calc(100% - 75px);
-	width : 100%;
+	width: 100%;
 	display: block;
 	overflow: scroll;
 }
 
 #proxiesDiv .jobproxiesview-grid {
 	height: calc(100% - 75px);
-	width : 100%;
+	width: 100%;
 	display: block;
 }
 
 .vs .action-label.icon.refreshIcon {
-	background-image: url('refresh.svg');
+	background-image: url("refresh.svg");
 }
 
 .vs-dark .action-label.icon.refreshIcon,
-.hc-black .action-label.icon.refreshIcon  {
-	background-image: url('refresh_inverse.svg');
+.hc-black .action-label.icon.refreshIcon {
+	background-image: url("refresh_inverse.svg");
 }
 
-.agent-actionbar-container .monaco-action-bar > ul.actions-container > li.action-item {
+.vs .action-label.icon.openNotebook {
+	background-image: url("open_notebook.svg");
+}
+
+.vs-dark .action-label.icon.openNotebook,
+.hc-black .action-label.icon.openNotebook {
+	background-image: url("open_notebook_inverse.svg");
+}
+
+.agent-actionbar-container
+	.monaco-action-bar
+	> ul.actions-container
+	> li.action-item {
 	padding-left: 20px;
 }
 
-jobsview-component .jobview-grid .slick-cell.error-row {
+jobsview-component .jobview-grid .slick-cell.error-row,
+notebooksview-component .jobnotebooksview-grid .slick-cell.error-row,
+notebooksview-component .jobnotebooksview-grid .slick-cell.notebook-error-row {
 	opacity: 0;
 }
 
-#alertsDiv jobalertsview-component .jobalertsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+#notebooksDiv
+	notebooksview-component
+	.jobnotebooksview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
 	border-right: transparent !important;
 	border-left: transparent !important;
 	line-height: 33px !important;
 }
 
-#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered {
 	background: #dcdcdc !important;
 }
 
-.vs-dark #alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #alertsDiv .jobalertsview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #alertsDiv .jobalertsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.vs-dark
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.vs-dark
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.vs-dark
+	#notebooksDiv
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
 	background: #444444 !important;
 }
 
-.vs-dark .jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.vs-dark
+	.jobnotebooksview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted white;
 }
 
-.jobalertsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.jobnotebooksview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted #444444;
 }
 
-#operatorsDiv joboperatorsview-component .joboperatorsview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+#alertsDiv
+	jobalertsview-component
+	.jobalertsview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
 	border-right: transparent !important;
 	border-left: transparent !important;
 	line-height: 33px !important;
 }
 
-#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+#alertsDiv
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+#alertsDiv
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+#alertsDiv
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered {
 	background: #dcdcdc !important;
 }
 
-.vs-dark #operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #operatorsDiv .joboperatorsview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #operatorsDiv .joboperatorsview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.vs-dark
+	#alertsDiv
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.vs-dark
+	#alertsDiv
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.vs-dark
+	#alertsDiv
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
 	background: #444444 !important;
 }
 
-.vs-dark .joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.vs-dark
+	.jobalertsview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted white;
 }
 
-.joboperatorsview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.jobalertsview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted #444444;
 }
 
-#proxiesDiv jobproxiesview-component .jobproxiesview-grid .grid-canvas .ui-widget-content.slick-row .slick-cell {
+#operatorsDiv
+	joboperatorsview-component
+	.joboperatorsview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
 	border-right: transparent !important;
 	border-left: transparent !important;
 	line-height: 33px !important;
 }
 
-#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell,
-#proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row> .slick-cell.hovered {
+#operatorsDiv
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+#operatorsDiv
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+#operatorsDiv
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered {
 	background: #dcdcdc !important;
 }
 
-.vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row:hover > .slick-cell,
-.vs-dark #proxiesDiv .jobproxiesview-grid > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row > .slick-cell.hovered,
-.vs-dark #proxiesDiv .jobproxiesview-grid  > .monaco-table .slick-viewport > .grid-canvas > .ui-widget-content.slick-row.hovered > .slick-cell {
+.vs-dark
+	#operatorsDiv
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.vs-dark
+	#operatorsDiv
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.vs-dark
+	#operatorsDiv
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
 	background: #444444 !important;
 }
 
-.vs-dark .jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.vs-dark
+	.joboperatorsview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted white;
 }
 
-.jobproxiesview-grid > .monaco-table .slick-header-columns .slick-resizable-handle {
+.joboperatorsview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
+	border-left: 1px dotted #444444;
+}
+
+#proxiesDiv
+	jobproxiesview-component
+	.jobproxiesview-grid
+	.grid-canvas
+	.ui-widget-content.slick-row
+	.slick-cell {
+	border-right: transparent !important;
+	border-left: transparent !important;
+	line-height: 33px !important;
+}
+
+#proxiesDiv
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+#proxiesDiv
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell,
+#proxiesDiv
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered {
+	background: #dcdcdc !important;
+}
+
+.vs-dark
+	#proxiesDiv
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row:hover
+	> .slick-cell,
+.vs-dark
+	#proxiesDiv
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row
+	> .slick-cell.hovered,
+.vs-dark
+	#proxiesDiv
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-viewport
+	> .grid-canvas
+	> .ui-widget-content.slick-row.hovered
+	> .slick-cell {
+	background: #444444 !important;
+}
+
+.vs-dark
+	.jobproxiesview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
+	border-left: 1px dotted white;
+}
+
+.jobproxiesview-grid
+	> .monaco-table
+	.slick-header-columns
+	.slick-resizable-handle {
 	border-left: 1px dotted #444444;
 }
 
@@ -403,6 +932,7 @@ jobsview-component .jobview-grid .slick-cell.error-row {
 }
 
 #jobsDiv jobsview-component .monaco-toolbar.carbon-taskbar,
+#notebooksDiv notebooksview-component .monaco-toolbar.carbon-taskbar,
 #operatorsDiv joboperatorsview-component .monaco-toolbar.carbon-taskbar,
 #alertsDiv jobalertsview-component .monaco-toolbar.carbon-taskbar,
 #proxiesDiv jobproxiesview-component .monaco-toolbar.carbon-taskbar {

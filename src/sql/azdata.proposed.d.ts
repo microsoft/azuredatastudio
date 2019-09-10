@@ -74,7 +74,6 @@ declare module 'azdata' {
 		continueSerialization(requestParams: SerializeDataContinueRequestParams): Thenable<SerializeDataResult>;
 	}
 
-
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 	}

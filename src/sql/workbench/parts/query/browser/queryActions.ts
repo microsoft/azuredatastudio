@@ -514,8 +514,8 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 	public static DisableSqlcmdClass = 'disablesqlcmd';
 	public static ID = 'ToggleSqlCmdModeAction';
 
-	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD Mode");
-	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD Mode");
+	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD");
+	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD");
 	constructor(
 		editor: QueryEditor,
 		private _isSqlCmdMode: boolean,

@@ -9,13 +9,13 @@ Azure Data Studio is a data management tool that enables you to work with SQL Se
 
 Platform | Link
 -- | --
-Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2100710
-Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2100711
-Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2100712
-macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2100809
-Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2100714
-Linux RPM | https://go.microsoft.com/fwlink/?linkid=2100810
-Linux DEB | https://go.microsoft.com/fwlink/?linkid=2100672
+Windows User Installer | https://go.microsoft.com/fwlink/?linkid=2102927
+Windows System Installer | https://go.microsoft.com/fwlink/?linkid=2102926
+Windows ZIP | https://go.microsoft.com/fwlink/?linkid=2102839
+macOS ZIP | https://go.microsoft.com/fwlink/?linkid=2102925
+Linux TAR.GZ | https://go.microsoft.com/fwlink/?linkid=2102838
+Linux RPM | https://go.microsoft.com/fwlink/?linkid=2102924
+Linux DEB | https://go.microsoft.com/fwlink/?linkid=2103004
 
 Go to our [download page](https://aka.ms/azuredatastudio) for more specific instructions.
 
@@ -68,6 +68,9 @@ The [Microsoft Enterprise and Developer Privacy Statement](https://privacy.micro
 ## Contributions and "Thank You"
 We would like to thank all our users who raised issues, and in particular the following users who helped contribute fixes:
 
+* dzsquared for `fix(snippets): ads parenthesis to sqlcreateindex snippet #7020`
+* devmattrick for `Update row count as updates are received #6642`
+* mottykohn for `In Message panel onclick scroll to line #6417`
 * Stevoni for `Corrected Keyboard Shortcut Execution Issue #5480`
 * yamatoya for `fix the format #4899`
 * GeoffYoung for `Fix sqlDropColumn description #4422`

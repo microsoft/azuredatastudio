@@ -126,7 +126,7 @@ export class CmsUtils {
 	}
 
 	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
-		const servers: ICmsResourceNodeInfo[] = this._memento.get('servers');
+		const servers: ICmsResourceNodeInfo[] = this._memento.get('centralManagementServers');
 		if (servers) {
 			const newServers: ICmsResourceNodeInfo[] = servers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServerName;

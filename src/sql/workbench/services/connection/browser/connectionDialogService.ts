@@ -395,7 +395,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		doConnect: boolean = true): Thenable<IConnectionProfile> {
+		doConnect: boolean = true): Promise<IConnectionProfile> {
 
 		if (!doConnect) {
 			this.ignoreNextConnect = true;
@@ -408,7 +408,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			}, error => {
 				this._dialogDeferredPromise.reject(error);
 			});
-		return this._dialogDeferredPromise;
+		return this._dialogDeferredPromise.promise;
 	}
 
 	public showDialog(
@@ -416,7 +416,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		connectionOptions?: IConnectionCompletionOptions): Thenable<void> {
+		connectionOptions?: IConnectionCompletionOptions): Promise<void> {
 
 		this._connectionManagementService = connectionManagementService;
 

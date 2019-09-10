@@ -679,14 +679,14 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 * Deletes a job
 	 */
 	$deleteJob(handle: number, ownerUri: string, job: azdata.AgentJobInfo): Thenable<azdata.ResultStatus> {
-		throw this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJob(ownerUri, job);
 	}
 
 	/**
 	 * Deletes a job step
 	 */
 	$deleteJobStep(handle: number, ownerUri: string, step: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
-		throw this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteJobStep(ownerUri, step);
 	}
 
 	/**
@@ -701,6 +701,62 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 	 */
 	$deleteAlert(handle: number, ownerUri: string, alert: azdata.AgentAlertInfo): Thenable<azdata.ResultStatus> {
 		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteAlert(ownerUri, alert);
+	}
+
+	/**
+	 * Get Agent Notebook list
+	 */
+	public $getNotebooks(handle: number, ownerUri: string): Thenable<azdata.AgentNotebooksResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getNotebooks(ownerUri);
+	}
+
+	/**
+	 * Get a Agent Notebook's history
+	 */
+	public $getNotebookHistory(handle: number, ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getNotebookHistory(ownerUri, jobID, jobName, targetDatabase);
+	}
+
+	/**
+	 * Get a Agent Materialized Notebook
+	 */
+	public $getMaterializedNotebook(handle: number, ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getMaterializedNotebook(ownerUri, targetDatabase, notebookMaterializedId);
+	}
+
+	/**
+	 * Get a Agent Template Notebook
+	 */
+	public $getTemplateNotebook(handle: number, ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).getTemplateNotebook(ownerUri, targetDatabase, jobId);
+	}
+
+	/**
+	 * Delete a Agent Notebook
+	 */
+	public $deleteNotebook(handle: number, ownerUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteNotebook(ownerUri, notebook);
+	}
+
+	/**
+	 * Update a Agent Materialized Notebook Name
+	 */
+	public $updateNotebookMaterializedName(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedName(ownerUri, agentNotebookHistory, targetDatabase, name);
+	}
+
+	/**
+	 * Get a Agent Materialized Notebook
+	 */
+	public $deleteMaterializedNotebook(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).deleteMaterializedNotebook(ownerUri, agentNotebookHistory, targetDatabase);
+	}
+
+	/**
+	 * Update a Agent Materialized Notebook Pin
+	 */
+	public $updateNotebookMaterializedPin(handle: number, ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+		return this._resolveProvider<azdata.AgentServicesProvider>(handle).updateNotebookMaterializedPin(ownerUri, agentNotebookHistory, targetDatabase, pin);
 	}
 
 	/**

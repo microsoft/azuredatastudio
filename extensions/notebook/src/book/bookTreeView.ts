@@ -13,6 +13,7 @@ import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as nls from 'vscode-nls';
 import { promisify } from 'util';
+import { isEditorTitleFree } from '../common/utils';
 
 const localize = nls.loadMessageBundle();
 const existsAsync = promisify(fs.exists);
@@ -179,7 +180,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this._bookPath)));
 				if (destinationUri) {
 					//remove folder if exists
-					await fs.removeSync(destinationUri.fsPath);
+					await fs.remove(destinationUri.fsPath);
 					//make directory for each contribution book.
 					await fs.mkdirSync(destinationUri.fsPath);
 					await fs.copy(this._bookPath, destinationUri.fsPath);
@@ -373,7 +374,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = this._allNotebooks.get(uri.fsPath);
+		let notebook = uri.scheme !== 'untitled' ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
 		let result: azdata.nb.NavigationResult;
 		if (notebook) {
 			result = {
@@ -400,11 +401,32 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
-		let untitledFileName = vscode.Uri.parse(resource).with({ scheme: 'untitled' });
-		if (!this._allNotebooks.get(untitledFileName.fsPath)) {
+		let untitledFileName: vscode.Uri;
+		if (process.platform.indexOf('win') > -1) {
+			let title = path.join(path.dirname(resource), this.findNextUntitledFileName(resource));
+			untitledFileName = vscode.Uri.parse(`untitled:${title}`);
+		}
+		else {
+			untitledFileName = vscode.Uri.parse(resource).with({ scheme: 'untitled' });
+		}
+		if (!this._allNotebooks.get(untitledFileName.fsPath) && !this._allNotebooks.get(path.basename(untitledFileName.fsPath))) {
 			let notebook = this._allNotebooks.get(resource);
-			this._allNotebooks.set(untitledFileName.fsPath, notebook);
+			this._allNotebooks.set(path.basename(untitledFileName.fsPath), notebook);
 		}
 		return untitledFileName;
 	}
+
+	findNextUntitledFileName(filePath: string): string {
+		const baseName = path.basename(filePath);
+		let idx = 0;
+		let title = `${baseName}`;
+		do {
+			const suffix = idx === 0 ? '' : `-${idx}`;
+			title = `${baseName}${suffix}`;
+			idx++;
+		} while (!isEditorTitleFree(title));
+
+		return title;
+	}
+
 }
