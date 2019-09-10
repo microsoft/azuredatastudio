@@ -242,11 +242,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
-		let parentPath = null;
+		let parentPath;
 		if (element.root.endsWith('.md')) {
 			parentPath = path.join(this._bookPath, 'content', 'readme.md');
 			if (parentPath === element.root) {
-				return Promise.resolve(null);
+				return Promise.resolve(undefined);
 			}
 		}
 		else if (element.root.endsWith('.ipynb')) {
@@ -254,7 +254,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			parentPath = element.root.replace(baseName, 'readme.md');
 		}
 		else {
-			return Promise.resolve(null);
+			return Promise.resolve(undefined);
 		}
 		return Promise.resolve(this._allNotebooks.get(parentPath));
 	}
@@ -402,7 +402,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	getUntitledNotebookUri(resource: string): vscode.Uri {
 		let untitledFileName: vscode.Uri;
-		if (process.platform.indexOf('win') > -1) {
+		if (process.platform === 'win32') {
 			let title = path.join(path.dirname(resource), this.findNextUntitledFileName(resource));
 			untitledFileName = vscode.Uri.parse(`untitled:${title}`);
 		}
