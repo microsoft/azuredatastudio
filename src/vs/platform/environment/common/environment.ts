@@ -71,7 +71,9 @@ export interface ParsedArgs {
 	'driver-verbose'?: boolean;
 	remote?: string;
 	'disable-user-env-probe'?: boolean;
-	'enable-remote-auto-shutdown'?: boolean;
+	'disable-inspect'?: boolean;
+	'force'?: boolean;
+
 	// {{SQL CARBON EDIT}}
 	aad?: boolean;
 	database?: string;
@@ -80,16 +82,11 @@ export interface ParsedArgs {
 	user?: string;
 	command?: string;
 	// {{SQL CARBON EDIT}}
-	'disable-inspect'?: boolean;
-	'force'?: boolean;
-	'gitCredential'?: string;
+
 	// node flags
 	'js-flags'?: string;
 	'disable-gpu'?: boolean;
 	'nolazy'?: boolean;
-
-	// Web flags
-	'web-user-data-dir'?: string;
 }
 
 export const IEnvironmentService = createDecorator<IEnvironmentService>('environmentService');
