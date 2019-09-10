@@ -145,10 +145,10 @@ export class SuggestEnabledInput extends Widget implements IThemable {
 			if (options.focusContextKey) { options.focusContextKey.set(true); }
 			addClass(this.stylingContainer, 'synthetic-focus');
 		})));
-		// this._register((this.inputWidget.onDidBlurEditorText(() => {
-		// 	if (options.focusContextKey) { options.focusContextKey.set(false); }
-		// 	removeClass(this.stylingContainer, 'synthetic-focus');
-		// })));
+		this._register((this.inputWidget.onDidBlurEditorText(() => {
+			if (options.focusContextKey) { options.focusContextKey.set(false); }
+			removeClass(this.stylingContainer, 'synthetic-focus');
+		})));
 
 		const onKeyDownMonaco = Event.chain(this.inputWidget.onKeyDown);
 		this._register(onKeyDownMonaco.filter(e => e.keyCode === KeyCode.Enter).on(e => { e.preventDefault(); this._onEnter.fire(); }, this));
