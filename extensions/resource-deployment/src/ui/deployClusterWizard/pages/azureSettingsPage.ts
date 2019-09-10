@@ -77,7 +77,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent): void => {
+				onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent): void => {
 					self.inputComponents[name] = component;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {

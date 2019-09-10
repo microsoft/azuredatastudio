@@ -28,7 +28,7 @@ export class ToolsPage extends WizardPageBase<DeployClusterWizard> {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this.wizard.registerDisposable(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
 				this.inputComponents[name] = component;
 			},
 			onNewValidatorCreated: (validator: Validator): void => {

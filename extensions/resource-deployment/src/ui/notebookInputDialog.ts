@@ -9,8 +9,9 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
-import { DialogInfo } from '../interfaces';
-import { Validator, initializeDialog, InputComponents } from './modelViewUtils';
+import { DialogInfo, NoteBookEnvironmentVariablePrefix } from '../interfaces';
+import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
+import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
 
@@ -34,7 +35,7 @@ export class NotebookInputDialog extends DialogBase {
 			onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 				this._toDispose.push(disposable);
 			},
-			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+			onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
 				this.inputComponents[name] = component;
 			},
 			onNewValidatorCreated: (validator: Validator): void => {
@@ -59,8 +60,10 @@ export class NotebookInputDialog extends DialogBase {
 	}
 
 	private onComplete(): void {
-		Object.keys(this.inputComponents).forEach(key => {
-			process.env[key] = <string>this.inputComponents[key].value;
+		const model: Model = new Model();
+		setModelValues(this.inputComponents, model);
+		Object.keys(model).filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix)).forEach(key => {
+			process.env[key] = model.getStringValue(key);
 		});
 		this.notebookService.launchNotebook(this.dialogInfo.notebook);
 		this.dispose();

@@ -50,7 +50,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					confirmationRequired: true,
 					defaultValue: '',
 					useCustomValidator: true,
-					description: localize('deployCluster.AdminPasswordDescription', "You can also use this password to access SQL Server and Knox.")
+					description: localize('deployCluster.AdminPasswordDescription', "You can also use this password to access SQL Server and gateway.")
 				}, {
 					type: FieldType.Options,
 					label: localize('deployCluster.AuthenticationModeField', "Authentication mode"),
@@ -135,7 +135,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
 					self.inputComponents[name] = component;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
@@ -149,7 +149,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				onNewDisposableCreated: (disposable: vscode.Disposable): void => {
 					self.wizard.registerDisposable(disposable);
 				},
-				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent): void => {
+				onNewInputComponentCreated: (name: string, component: azdata.DropDownComponent | azdata.InputBoxComponent | azdata.CheckBoxComponent): void => {
 					self.inputComponents[name] = component;
 				},
 				onNewValidatorCreated: (validator: Validator): void => {
@@ -183,5 +183,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
+	}
+
+	public onEnter() {
+		const dropdown = <azdata.DropDownComponent>this.inputComponents[AuthenticationMode_VariableName];
+		if (dropdown) {
+			dropdown.enabled = this.wizard.model.supportActiveDirectory;
+		}
 	}
 }

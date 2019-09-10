@@ -8,12 +8,24 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogInfo, FieldType, FieldInfo, SectionInfo } from '../interfaces';
-import { WizardModel } from './model';
+import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
 
 export type Validator = () => { valid: boolean, message: string };
-export type InputComponents = { [s: string]: azdata.InputBoxComponent | azdata.DropDownComponent; };
+export type InputComponents = { [s: string]: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent; };
+
+export function getInputBoxComponent(name: string, inputComponents: InputComponents): azdata.InputBoxComponent {
+	return <azdata.InputBoxComponent>inputComponents[name];
+}
+
+export function getDropdownComponent(name: string, inputComponents: InputComponents): azdata.DropDownComponent {
+	return <azdata.DropDownComponent>inputComponents[name];
+}
+
+export function getCheckboxComponent(name: string, inputComponents: InputComponents): azdata.CheckBoxComponent {
+	return <azdata.CheckBoxComponent>inputComponents[name];
+}
 
 export const DefaultInputComponentWidth = '400px';
 export const DefaultLabelComponentWidth = '200px';
@@ -45,7 +57,56 @@ interface CreateContext {
 	container: azdata.window.Dialog | azdata.window.Wizard;
 	onNewValidatorCreated: (validator: Validator) => void;
 	onNewDisposableCreated: (disposable: vscode.Disposable) => void;
-	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent) => void;
+	onNewInputComponentCreated: (name: string, component: azdata.InputBoxComponent | azdata.DropDownComponent | azdata.CheckBoxComponent) => void;
+}
+
+export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValue?: string, ariaLabel: string, required?: boolean, placeHolder?: string, width?: string }): azdata.InputBoxComponent {
+	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		value: inputInfo.defaultValue,
+		ariaLabel: inputInfo.ariaLabel,
+		inputType: 'text',
+		required: inputInfo.required,
+		placeHolder: inputInfo.placeHolder,
+		width: inputInfo.width
+	}).component();
+}
+
+export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string }): azdata.TextComponent {
+	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+		value: info.text,
+		description: info.description,
+		requiredIndicator: info.required
+	}).component();
+	text.width = info.width;
+	return text;
+}
+
+export function createNumberInput(view: azdata.ModelView, info: { defaultValue?: string, ariaLabel?: string, min?: number, max?: number, required?: boolean, width?: string, placeHolder?: string }): azdata.InputBoxComponent {
+	return view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
+		value: info.defaultValue,
+		ariaLabel: info.ariaLabel,
+		inputType: 'number',
+		min: info.min,
+		max: info.max,
+		required: info.required,
+		width: info.width,
+		placeHolder: info.placeHolder
+	}).component();
+}
+
+export function createCheckbox(view: azdata.ModelView, info: { initialValue: boolean, label: string }): azdata.CheckBoxComponent {
+	return view.modelBuilder.checkBox().withProperties<azdata.CheckBoxProperties>({
+		checked: info.initialValue,
+		label: info.label
+	}).component();
+}
+
+export function createDropdown(view: azdata.ModelView, info: { defaultValue?: string | azdata.CategoryValue, values?: string[] | azdata.CategoryValue[], width?: string }): azdata.DropDownComponent {
+	return view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+		values: info.values,
+		value: info.defaultValue,
+		width: info.width
+	}).component();
 }
 
 export function initializeDialog(dialogContext: DialogContext): void {
@@ -118,15 +179,16 @@ export function createSection(context: SectionContext): azdata.GroupContainer {
 		context.sectionInfo.rows.forEach(rowInfo => {
 			const rowItems: azdata.Component[] = [];
 			processFields(rowInfo.fields, rowItems, context, context.sectionInfo.spaceBetweenFields || '50px');
-			const row = createRow(context.view, rowItems);
+			const row = createFlexContainer(context.view, rowItems);
 			components.push(row);
 		});
 	}
-	return context.view.modelBuilder.groupContainer().withItems(components).withLayout({
+
+	return createGroupContainer(context.view, components, {
 		header: context.sectionInfo.title,
 		collapsible: context.sectionInfo.collapsible === undefined ? true : context.sectionInfo.collapsible,
 		collapsed: context.sectionInfo.collapsed === undefined ? false : context.sectionInfo.collapsed
-	}).component();
+	});
 }
 
 function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component[], context: SectionContext, spaceBetweenFields?: string): void {
@@ -150,13 +212,20 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 	}
 }
 
-function createRow(view: azdata.ModelView, items: azdata.Component[]): azdata.FlexContainer {
-	return view.modelBuilder.flexContainer().withItems(items, { CSSStyles: { 'margin-right': '5px' } }).withLayout({ flexFlow: 'row', alignItems: 'center' }).component();
+export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true): azdata.FlexContainer {
+	const flexFlow = rowLayout ? 'row' : 'column';
+	const alignItems = rowLayout ? 'center' : '';
+	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px' } } : {};
+	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout({ flexFlow: flexFlow, alignItems: alignItems }).component();
+}
+
+export function createGroupContainer(view: azdata.ModelView, items: azdata.Component[], layout: azdata.GroupLayout): azdata.GroupContainer {
+	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
 function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, labelOnLeft?: boolean) {
 	if (labelOnLeft) {
-		const row = createRow(view, [label, input]);
+		const row = createFlexContainer(view, [label, input]);
 		components.push(row);
 	} else {
 		components.push(label, input);
@@ -185,34 +254,27 @@ function processField(context: FieldContext): void {
 		case FieldType.ReadonlyText:
 			processReadonlyTextField(context);
 			break;
+		case FieldType.Checkbox:
+			processCheckboxField(context);
+			break;
 		default:
 			throw new Error(localize('UnknownFieldTypeError', "Unknown field type: \"{0}\"", context.fieldInfo.type));
 	}
 }
 
-function createLabelComponent(view: azdata.ModelView, label: string, description?: string, isRequired?: boolean, labelWidth?: string): azdata.TextComponent {
-	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
-		value: label,
-		description: description,
-		requiredIndicator: isRequired
-	}).component();
-	text.width = labelWidth;
-	return text;
-}
-
 function processOptionsTypeField(context: FieldContext): void {
-	const label = createLabelComponent(context.view, context.fieldInfo.label, context.fieldInfo.description, false, context.fieldInfo.labelWidth);
-	const dropdown = context.view.modelBuilder.dropDown().withProperties<azdata.DropDownProperties>({
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
+	const dropdown = createDropdown(context.view, {
 		values: context.fieldInfo.options,
-		value: context.fieldInfo.defaultValue
-	}).component();
-	dropdown.width = context.fieldInfo.inputWidth;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName, dropdown);
+		defaultValue: context.fieldInfo.defaultValue,
+		width: context.fieldInfo.inputWidth
+	});
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
 	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelOnLeft);
 }
 
 function processDateTimeTextField(context: FieldContext): void {
-	const label = createLabelComponent(context.view, context.fieldInfo.label, context.fieldInfo.description, context.fieldInfo.required, context.fieldInfo.labelWidth);
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
 	const defaultValue = context.fieldInfo.defaultValue + new Date().toISOString().slice(0, 19).replace(/[^0-9]/g, ''); // Take the date time information and only leaving the numbers
 	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		value: defaultValue,
@@ -222,44 +284,40 @@ function processDateTimeTextField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder
 	}).component();
 	input.width = context.fieldInfo.inputWidth;
-	context.onNewInputComponentCreated(context.fieldInfo.variableName, input);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelOnLeft);
 }
 
 function processNumberField(context: FieldContext): void {
-	const label = createLabelComponent(context.view, context.fieldInfo.label, context.fieldInfo.description, context.fieldInfo.required, context.fieldInfo.labelWidth);
-	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		value: context.fieldInfo.defaultValue,
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const input = createNumberInput(context.view, {
+		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
-		inputType: 'number',
 		min: context.fieldInfo.min,
 		max: context.fieldInfo.max,
 		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
 		width: context.fieldInfo.inputWidth,
 		placeHolder: context.fieldInfo.placeHolder
-	}).component();
-	context.onNewInputComponentCreated(context.fieldInfo.variableName, input);
+	});
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelOnLeft);
 }
 
 function processTextField(context: FieldContext): void {
-	const label = createLabelComponent(context.view, context.fieldInfo.label, context.fieldInfo.description, context.fieldInfo.required, context.fieldInfo.labelWidth);
-	const input = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
-		value: context.fieldInfo.defaultValue,
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
+	const input = createTextInput(context.view, {
+		defaultValue: context.fieldInfo.defaultValue,
 		ariaLabel: context.fieldInfo.label,
-		inputType: 'text',
-		min: context.fieldInfo.min,
-		max: context.fieldInfo.max,
 		required: !context.fieldInfo.useCustomValidator && context.fieldInfo.required,
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
-	}).component();
-	context.onNewInputComponentCreated(context.fieldInfo.variableName, input);
+	});
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
 	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelOnLeft);
 }
 
 function processPasswordField(context: FieldContext): void {
-	const passwordLabel = createLabelComponent(context.view, context.fieldInfo.label, context.fieldInfo.description, context.fieldInfo.required, context.fieldInfo.labelWidth);
+	const passwordLabel = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: context.fieldInfo.required, width: context.fieldInfo.labelWidth });
 	const passwordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 		ariaLabel: context.fieldInfo.label,
 		inputType: 'password',
@@ -267,7 +325,7 @@ function processPasswordField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder,
 		width: context.fieldInfo.inputWidth
 	}).component();
-	context.onNewInputComponentCreated(context.fieldInfo.variableName, passwordInput);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, passwordInput);
 	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo.labelOnLeft);
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
@@ -285,7 +343,7 @@ function processPasswordField(context: FieldContext): void {
 
 	if (context.fieldInfo.confirmationRequired) {
 		const passwordNotMatchMessage = getPasswordMismatchMessage(context.fieldInfo.label);
-		const confirmPasswordLabel = createLabelComponent(context.view, context.fieldInfo.confirmationLabel!, '', true, context.fieldInfo.labelWidth);
+		const confirmPasswordLabel = createLabel(context.view, { text: context.fieldInfo.confirmationLabel!, required: true, width: context.fieldInfo.labelWidth });
 		const confirmPasswordInput = context.view.modelBuilder.inputBox().withProperties<azdata.InputBoxProperties>({
 			ariaLabel: context.fieldInfo.confirmationLabel,
 			inputType: 'password',
@@ -315,9 +373,15 @@ function processPasswordField(context: FieldContext): void {
 }
 
 function processReadonlyTextField(context: FieldContext): void {
-	const label = createLabelComponent(context.view, context.fieldInfo.label, context.fieldInfo.description, false, context.fieldInfo.labelWidth);
-	const text = createLabelComponent(context.view, context.fieldInfo.defaultValue!, '', false, context.fieldInfo.inputWidth);
+	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
+	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth });
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelOnLeft);
+}
+
+function processCheckboxField(context: FieldContext): void {
+	const checkbox = createCheckbox(context.view, { initialValue: context.fieldInfo.defaultValue! === 'true', label: context.fieldInfo.label });
+	context.components.push(checkbox);
+	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
 }
 
 export function isValidSQLPassword(field: FieldInfo, password: string): boolean {
@@ -347,16 +411,21 @@ export function getPasswordMismatchMessage(fieldName: string): string {
 	return localize('passwordNotMatch', "{0} doesn't match the confirmation password", fieldName);
 }
 
-export function setModelValues(inputComponents: InputComponents, model: WizardModel): void {
+export function setModelValues(inputComponents: InputComponents, model: Model): void {
 	Object.keys(inputComponents).forEach(key => {
 		let value;
-		const inputValue = inputComponents[key].value;
-		if (typeof inputValue === 'string' || typeof inputValue === 'undefined') {
-			value = inputValue;
+		const input = inputComponents[key];
+		if ('checked' in input) {
+			value = input.checked ? 'true' : 'false';
 		} else {
-			value = inputValue.name;
+			const inputValue = input.value;
+			if (typeof inputValue === 'string' || typeof inputValue === 'undefined') {
+				value = inputValue;
+			} else {
+				value = inputValue.name;
+			}
 		}
-		model[key] = value;
+
+		model.setPropertyValue(key, value);
 	});
 }
-

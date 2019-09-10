@@ -63,7 +63,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 				this.wizard.wizardObject.message = { text: '' };
 				return true;
 			}
-			let clusterSelected = this.wizard.model[ClusterContext_VariableName] !== undefined;
+			let clusterSelected = this.wizard.model.getStringValue(ClusterContext_VariableName) !== undefined;
 			if (!clusterSelected) {
 				this.wizard.wizardObject.message = {
 					text: localize('deployCluster.ClusterContextNotSelectedMessage', 'Please select a cluster context.'),
@@ -133,7 +133,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 
 	private async loadClusterContexts(configPath: string): Promise<void> {
 		this.clusterContextLoadingComponent!.loading = true;
-		this.wizard.model[ClusterContext_VariableName] = undefined;
+		this.wizard.model.setPropertyValue(ClusterContext_VariableName, undefined);
 		this.wizard.wizardObject.message = { text: '' };
 		let self = this;
 		this.configFileInput!.value = configPath;
@@ -148,7 +148,7 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 			};
 		}
 		if (clusterContexts.length !== 0) {
-			self.wizard.model[KubeConfigPath_VariableName] = configPath;
+			self.wizard.model.setPropertyValue(KubeConfigPath_VariableName, configPath);
 			let options = clusterContexts.map(clusterContext => {
 				let option = this.view!.modelBuilder.radioButton().withProperties<azdata.RadioButtonProperties>({
 					label: clusterContext.name,
@@ -157,12 +157,12 @@ export class TargetClusterContextPage extends WizardPageBase<DeployClusterWizard
 				}).component();
 
 				if (clusterContext.isCurrentContext) {
-					self.wizard.model[ClusterContext_VariableName] = clusterContext.name;
+					self.wizard.model.setPropertyValue(ClusterContext_VariableName, clusterContext.name);
 					self.wizard.wizardObject.message = { text: '' };
 				}
 
 				this.wizard.registerDisposable(option.onDidClick(() => {
-					self.wizard.model[ClusterContext_VariableName] = clusterContext.name;
+					self.wizard.model.setPropertyValue(ClusterContext_VariableName, clusterContext.name);
 					self.wizard.wizardObject.message = { text: '' };
 				}));
 				return option;

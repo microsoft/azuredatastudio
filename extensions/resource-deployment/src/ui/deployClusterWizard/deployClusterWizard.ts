@@ -16,9 +16,10 @@ import { TargetClusterContextPage } from './pages/targetClusterPage';
 import { IKubeService } from '../../services/kubeService';
 import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
+import { Model } from '../model';
 const localize = nls.loadMessageBundle();
 
-export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
+export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployClusterWizardModel> {
 
 	public get kubeService(): IKubeService {
 		return this._kubeService;
@@ -29,7 +30,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 	}
 
 	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService) {
-		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server big data cluster"));
+		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server big data cluster"), new DeployClusterWizardModel());
 	}
 
 	public get deploymentType(): BdcDeploymentType {
@@ -80,4 +81,8 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard> {
 		}
 		return pages;
 	}
+}
+
+export class DeployClusterWizardModel extends Model {
+	public supportActiveDirectory: boolean = false;
 }

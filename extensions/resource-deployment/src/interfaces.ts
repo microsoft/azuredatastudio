@@ -5,6 +5,8 @@
 'use strict';
 import * as azdata from 'azdata';
 
+export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
+
 export interface ResourceType {
 	name: string;
 	displayName: string;
@@ -75,14 +77,14 @@ export interface RowInfo {
 
 export interface FieldInfo {
 	label: string;
-	variableName: string;
+	variableName?: string;
 	type: FieldType;
 	defaultValue?: string;
 	confirmationRequired?: boolean;
 	confirmationLabel?: string;
 	min?: number;
 	max?: number;
-	required: boolean;
+	required?: boolean;
 	options?: string[] | azdata.CategoryValue[];
 	placeHolder?: string;
 	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
@@ -100,7 +102,8 @@ export enum FieldType {
 	SQLPassword = 'sql_password',
 	Password = 'password',
 	Options = 'options',
-	ReadonlyText = 'readonly_text'
+	ReadonlyText = 'readonly_text',
+	Checkbox = 'checkbox'
 }
 
 export interface NotebookInfo {
