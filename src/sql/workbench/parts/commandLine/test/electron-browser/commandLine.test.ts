@@ -43,12 +43,12 @@ class TestParsedArgs implements ParsedArgs {
 	debugPluginHost?: string;
 	debugSearch?: string;
 	diff?: boolean;
-	'disable-crash-reporter'?: string;
+	'disable-crash-reporter'?: boolean;
 	'disable-extension'?: string[]; // undefined or array of 1 or more
 	'disable-extensions'?: boolean;
 	'disable-restore-windows'?: boolean;
 	'disable-telemetry'?: boolean;
-	'disable-updates'?: string;
+	'disable-updates'?: boolean;
 	'driver'?: string;
 	'enable-proposed-api'?: string[];
 	'export-default-configuration'?: string;
@@ -72,7 +72,7 @@ class TestParsedArgs implements ParsedArgs {
 	'open-url'?: boolean;
 	performance?: boolean;
 	'prof-append-timers'?: string;
-	'prof-startup'?: string;
+	'prof-startup'?: boolean;
 	'prof-startup-prefix'?: string;
 	'reuse-window'?: boolean;
 	server?: string;
