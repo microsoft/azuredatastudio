@@ -87,7 +87,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				if (books && books.length > 0) {
 					const bookTreeItem = books[0].findChildItem(urlToOpen) || books[0];
 					bookViewer.reveal(bookTreeItem, { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-					const urlPath = bookTreeItem.url || books[0].tableOfContents[0];
+					const urlPath = bookTreeItem.url || books[0].tableOfContents[0].url;
 					const readmeMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
 					const readmeNotebook: string = path.join(bookPath, 'content', urlPath.concat('.ipynb'));
 					const markdownExists = await existsAsync(readmeMarkdown);
