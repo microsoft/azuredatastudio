@@ -41,7 +41,7 @@ class ObjectExplorerTester {
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async bdcNodeLabelTest(): Promise<void> {
-		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects', 'Data Services'];
+		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 		const server = await getBdcServer();
 		await this.verifyOeNode(server, 6000, expectedNodeLabel);
 	}
@@ -120,12 +120,11 @@ class ObjectExplorerTester {
 
 		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
-		const actualNodeLabel = [];
-		const children = await nodes[index].getChildren();
-		assert(children.length === expectedNodeLabel.length, `Expecting node count: ${expectedNodeLabel.length}, Actual: ${children.length}`);
+		const children = (await nodes[index].getChildren()).filter(c => c.label !== 'HDFS');
+		const actualLabelsString = children.map(c => c.label).join(',');
+		const expectedLabelString = expectedNodeLabel.join(',');
+		assert(expectedNodeLabel.length === children.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
 
-		children.forEach(c => actualNodeLabel.push(c.label));
-		assert(expectedNodeLabel.toLocaleString() === actualNodeLabel.toLocaleString(), `Expected node label: "${expectedNodeLabel}", Actual: "${actualNodeLabel}"`);
 	}
 
 	async verifyDBContextMenu(server: TestServerProfile, timeoutinMS: number, expectedActions: string[]): Promise<void> {

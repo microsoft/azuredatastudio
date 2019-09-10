@@ -275,7 +275,7 @@
         },
         {
           "command": "mssqlCluster.livy.cmd.submitSparkJob",
-          "when": "connectionProvider == MSSQL && nodeType == dataservices",
+          "when": "nodeType == mssqlCluster:hdfs",
           "group": "1root@1"
         },
         {
