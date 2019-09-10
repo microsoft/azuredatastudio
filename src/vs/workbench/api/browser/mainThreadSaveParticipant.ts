@@ -271,7 +271,8 @@ class CodeActionOnSaveParticipant implements ISaveParticipant {
 	constructor(
 		@IBulkEditService private readonly _bulkEditService: IBulkEditService,
 		@ICommandService private readonly _commandService: ICommandService,
-		@IConfigurationService private readonly _configurationService: IConfigurationService
+		@IConfigurationService private readonly _configurationService: IConfigurationService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 	) { }
 
 	async participate(editorModel: IResolvedTextFileEditorModel, env: { reason: SaveReason }): Promise<void> {
@@ -337,7 +338,7 @@ class CodeActionOnSaveParticipant implements ISaveParticipant {
 
 	private async applyCodeActions(actionsToRun: readonly CodeAction[]) {
 		for (const action of actionsToRun) {
-			await applyCodeAction(action, this._bulkEditService, this._commandService);
+			await this._instantiationService.invokeFunction(applyCodeAction, action, this._bulkEditService, this._commandService);
 		}
 	}
 
