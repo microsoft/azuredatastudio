@@ -148,7 +148,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 				this.inputElement.setAriaLabel(this.ariaLabel);
 			} else {
 				if (this.ariaLabel) {
-					this.inputElement.setAriaLabel(this.ariaLabel + '. ' + this.inputElement.inputElement.validationMessage);
+					this.inputElement.setAriaLabel(this.ariaLabel + nls.localize('period', ". ") + this.inputElement.inputElement.validationMessage);
 				} else {
 					this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
 				}
