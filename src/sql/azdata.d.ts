@@ -3625,6 +3625,11 @@ declare module 'azdata' {
 			hidden: boolean;
 
 			/**
+			 * Whether the button is focused
+			 */
+			focused?: boolean;
+
+			/**
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
