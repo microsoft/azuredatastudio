@@ -36,7 +36,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 	@Input() modelStore: IModelStore;
 	private _input: InputBox;
 	private _textAreaInput: InputBox;
-	private _defaultAriaLabel: string;
 
 	@ViewChild('input', { read: ElementRef }) private _inputContainer: ElementRef;
 	@ViewChild('textarea', { read: ElementRef }) private _textareaContainer: ElementRef;
@@ -146,10 +145,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 			// set aria label based on validity of input
 			if (valid && inputElemValid) {
-				this.inputElement.setAriaLabel(this._defaultAriaLabel);
+				this.inputElement.setAriaLabel(this.ariaLabel);
 			} else {
-				if (this._defaultAriaLabel) {
-					this.inputElement.setAriaLabel(this._defaultAriaLabel + '. ' + this.inputElement.inputElement.validationMessage);
+				if (this.ariaLabel) {
+					this.inputElement.setAriaLabel(this.ariaLabel + '. ' + this.inputElement.inputElement.validationMessage);
 				} else {
 					this.inputElement.setAriaLabel(this.inputElement.inputElement.validationMessage);
 				}
@@ -222,9 +221,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 		}
 
 		input.inputElement.required = this.required;
-
-		// save initial setting of aria label in case we change it later due to validation errors
-		this._defaultAriaLabel = this.ariaLabel;
 	}
 
 	// CSS-bound properties
@@ -243,7 +239,6 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set ariaLabel(newValue: string) {
 		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
-		this._defaultAriaLabel = newValue;
 	}
 
 	public get ariaLive() {
