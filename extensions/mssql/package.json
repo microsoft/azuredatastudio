@@ -265,7 +265,7 @@
         },
         {
           "command": "mssqlCluster.copyPath",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeType != mssqlCluster:hdfs",
           "group": "1mssqlCluster@3"
         },
         {
