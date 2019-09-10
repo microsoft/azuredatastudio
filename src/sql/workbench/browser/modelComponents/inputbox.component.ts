@@ -141,10 +141,10 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public validate(): Thenable<boolean> {
 		return super.validate().then(valid => {
-			const inputElemValid = this.inputElement.validate();
+			valid = valid && this.inputElement.validate();
 
 			// set aria label based on validity of input
-			if (valid && inputElemValid) {
+			if (valid) {
 				this.inputElement.setAriaLabel(this.ariaLabel);
 			} else {
 				if (this.ariaLabel) {
