@@ -34,10 +34,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _openAsUntitled: boolean;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		this.initialze(workspaceFolders, null, extensionContext);
+		this.initialize(workspaceFolders, null, extensionContext);
 	}
 
-	private initialze(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
+	private initialize(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
 		let workspacePaths: string[] = [];
 		if (bookPath) {
 			workspacePaths.push(bookPath);
@@ -206,11 +206,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public getBooks(): BookTreeItem[] {
 		let books: BookTreeItem[] = [];
-		for (let i in this._tableOfContentPaths) {
-			let root = path.dirname(path.dirname(this._tableOfContentPaths[i]));
+		for (const tocPath of this._tableOfContentPaths) {
+			let root = path.dirname(path.dirname(tocPath));
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
-				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentPaths[i], 'utf-8'));
+				const tableOfContents = yaml.safeLoad(fs.readFileSync(tocPath, 'utf-8'));
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
