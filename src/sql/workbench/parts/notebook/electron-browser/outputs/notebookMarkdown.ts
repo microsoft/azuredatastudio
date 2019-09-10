@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'vs/base/common/path';
-import * as fs from 'fs';
 
 import { URI } from 'vs/base/common/uri';
 
@@ -13,13 +12,17 @@ import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
+import { IFileService } from 'vs/platform/files/common/files';
+import { promisify } from 'util';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
 	private _notebookURI: URI;
 	private _baseUrls: string[] = [];
+	public existsAsync = promisify(this.fileService.exists);
 
-	constructor() {
+	constructor(@IFileService private readonly fileService: IFileService) {
+
 	}
 
 	render(markdown: IMarkdownString): IMarkdownRenderResult {
@@ -197,7 +200,7 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		if (base && !originIndependentUrl.test(href) && !fs.existsSync(href)) {
+		if (base && !originIndependentUrl.test(href) && !this.existsAsync(URI.parse(href))) {
 			href = this.resolveUrl(base, href);
 		}
 		try {
