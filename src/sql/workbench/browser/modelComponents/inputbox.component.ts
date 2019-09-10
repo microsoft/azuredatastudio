@@ -243,6 +243,7 @@ export default class InputBoxComponent extends ComponentBase implements ICompone
 
 	public set ariaLabel(newValue: string) {
 		this.setPropertyFromUI<azdata.InputBoxProperties, string>((props, value) => props.ariaLabel = value, newValue);
+		this._defaultAriaLabel = newValue;
 	}
 
 	public get ariaLive() {
