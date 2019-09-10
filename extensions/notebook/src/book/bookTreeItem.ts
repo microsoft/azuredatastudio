@@ -66,7 +66,7 @@ export class BookTreeItem extends vscode.TreeItem {
 	private setCommand() {
 		if (this.book.type === BookTreeItemType.Notebook) {
 			let pathToNotebook = path.join(this.book.root, 'content', this._uri.concat('.ipynb'));
-			this.command = { command: 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], };
+			this.command = { command: this.book.untitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], };
 		} else if (this.book.type === BookTreeItemType.Markdown) {
 			let pathToMarkdown = path.join(this.book.root, 'content', this._uri.concat('.md'));
 			this.command = { command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', 'Open Markdown'), arguments: [pathToMarkdown], };
