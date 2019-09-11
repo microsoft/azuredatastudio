@@ -329,7 +329,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
 		@INotebookService private readonly _notebookService: INotebookService,
-		@IFileService private readonly fileService: IFileService
+		@IFileService private readonly _fileService: IFileService
 	) {
 		super();
 		if (extHostContext) {
@@ -709,7 +709,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
-						let content = await this.fileService.readFile(URI.parse(result.next.path));
+						let content = await this._fileService.readFile(URI.parse(result.next.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
@@ -722,7 +722,7 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
-						let content = await this.fileService.readFile(URI.parse(result.previous.path));
+						let content = await this._fileService.readFile(URI.parse(result.previous.path));
 						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
