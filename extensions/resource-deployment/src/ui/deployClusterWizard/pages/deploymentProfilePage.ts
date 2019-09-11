@@ -157,7 +157,8 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.setPropertyValue(VariableNames.IncludeSpark_VariableName, selectedProfile.includeSpark);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageClassName_VariableName, selectedProfile.defaultDataStorageClass);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageClassName_VariableName, selectedProfile.defaultLogsStorageClass);
-		this.wizard.model.supportActiveDirectory = selectedProfile.activeDirectory;
+		this.wizard.model.setPropertyValue(VariableNames.ReadableSecondaryPort_VariableName, selectedProfile.readableSecondaryPort);
+		this.wizard.model.adAuthSupported = selectedProfile.activeDirectory;
 	}
 
 	private loadCards(): Thenable<void> {

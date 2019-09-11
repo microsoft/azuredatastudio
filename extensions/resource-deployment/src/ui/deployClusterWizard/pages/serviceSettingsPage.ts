@@ -7,9 +7,9 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent } from '../../modelViewUtils';
+import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, isInputBoxEmpty } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
-import { MasterSQLServerScale_VariableName, ComputePoolScale_VariableName, DataPoolScale_VariableName, HDFSPoolScale_VariableName, SparkPoolScale_VariableName, ControllerDataStorageClassName_VariableName, ControllerLogsStorageClassName_VariableName, ControllerLogsStorageSize_VariableName, HDFSDataStorageClassName_VariableName, HDFSDataStorageSize_VariableName, HDFSLogsStorageClassName_VariableName, HDFSLogsStorageSize_VariableName, DataPoolDataStorageClassName_VariableName, DataPoolDataStorageSize_VariableName, DataPoolLogsStorageClassName_VariableName, DataPoolLogsStorageSize_VariableName, SQLServerDataStorageClassName_VariableName, SQLServerDataStorageSize_VariableName, SQLServerLogsStorageClassName_VariableName, SQLServerLogsStorageSize_VariableName, ControllerDNSName_VariableName, ControllerPort_VariableName, SQLServerDNSName_VariableName, SQLServerPort_VariableName, GatewayDNSName_VariableName, GateWayPort_VariableName, ReadableSecondaryDNSName_VariableName, ReadableSecondaryPort_VariableName, IncludeSpark_VariableName, HDFSNameNodeScale_VariableName, ControllerDataStorageSize_VariableName } from '../constants';
+import * as VariableNames from '../constants';
 const localize = nls.loadMessageBundle();
 
 const PortInputWidth = '100px';
@@ -57,8 +57,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						min: 1,
 						max: 9,
 						defaultValue: '1',
-						required: true,
-						variableName: MasterSQLServerScale_VariableName,
+						useCustomValidator: true,
+						variableName: VariableNames.MasterSQLServerScale_VariableName,
 					}
 				]
 			}, {
@@ -69,8 +69,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						min: 1,
 						max: 100,
 						defaultValue: '1',
-						required: true,
-						variableName: ComputePoolScale_VariableName,
+						useCustomValidator: true,
+						variableName: VariableNames.ComputePoolScale_VariableName,
 					}
 				]
 			}, {
@@ -80,8 +80,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					min: 1,
 					max: 100,
 					defaultValue: '1',
-					required: true,
-					variableName: DataPoolScale_VariableName,
+					useCustomValidator: true,
+					variableName: VariableNames.DataPoolScale_VariableName,
 				}]
 			}, {
 				fields: [
@@ -91,8 +91,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						min: 1,
 						max: 100,
 						defaultValue: '1',
-						required: true,
-						variableName: HDFSNameNodeScale_VariableName
+						useCustomValidator: true,
+						variableName: VariableNames.HDFSNameNodeScale_VariableName
 					}
 				]
 			}, {
@@ -103,13 +103,13 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						min: 1,
 						max: 100,
 						defaultValue: '1',
-						required: true,
-						variableName: HDFSPoolScale_VariableName
+						useCustomValidator: true,
+						variableName: VariableNames.HDFSPoolScale_VariableName
 					}, {
 						type: FieldType.Checkbox,
 						label: localize('deployCluster.includeSparkInHDFSPool', "Include Spark"),
 						defaultValue: 'true',
-						variableName: IncludeSpark_VariableName,
+						variableName: VariableNames.IncludeSpark_VariableName,
 						required: false
 					}
 				]
@@ -121,8 +121,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						min: 1,
 						max: 100,
 						defaultValue: '1',
-						required: true,
-						variableName: SparkPoolScale_VariableName
+						useCustomValidator: true,
+						variableName: VariableNames.SparkPoolScale_VariableName
 					}
 				]
 			}
@@ -130,7 +130,6 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		};
 
 		const hintTextForStorageFields = localize('deployCluster.storageFieldTooltip', "Use controller settings");
-		const fullDescriptionForStorageFields = localize('deployCluster.storageFieldDescription', "Optional fields, you can leave them blank to use controller settings");
 		const storageSectionInfo: SectionInfo = {
 			title: '',
 			labelWidth: '0px',
@@ -171,25 +170,26 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					{
 						type: FieldType.Text,
 						label: localize('deployCluster.ControllerText', "Controller"),
+						useCustomValidator: true,
+						variableName: VariableNames.ControllerDataStorageClassName_VariableName,
 						required: true,
-						variableName: ControllerDataStorageClassName_VariableName,
 						description: localize('deployCluster.AdvancedStorageDescription', "By default Controller storage settings will be applied to other services as well, you can expand the advanced storage settings to configure storage for other services."),
 						labelWidth: labelWidth
 					}, {
 						type: FieldType.Number,
 						label: '',
-						required: true,
-						variableName: ControllerDataStorageSize_VariableName,
+						useCustomValidator: true,
+						variableName: VariableNames.ControllerDataStorageSize_VariableName,
 					}, {
 						type: FieldType.Text,
 						label: '',
-						required: true,
-						variableName: ControllerLogsStorageClassName_VariableName,
+						useCustomValidator: true,
+						variableName: VariableNames.ControllerLogsStorageClassName_VariableName,
 					}, {
 						type: FieldType.Number,
 						label: '',
-						required: true,
-						variableName: ControllerLogsStorageSize_VariableName,
+						useCustomValidator: true,
+						variableName: VariableNames.ControllerLogsStorageSize_VariableName,
 					}
 				]
 			}
@@ -208,27 +208,26 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Text,
 						label: localize('deployCluster.HDFSText', "HDFS"),
 						required: false,
-						description: fullDescriptionForStorageFields,
-						variableName: HDFSDataStorageClassName_VariableName,
+						variableName: VariableNames.HDFSDataStorageClassName_VariableName,
 						placeHolder: hintTextForStorageFields,
 						labelWidth: labelWidth
 					}, {
 						type: FieldType.Number,
 						label: '',
 						required: false,
-						variableName: HDFSDataStorageSize_VariableName,
+						variableName: VariableNames.HDFSDataStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Text,
 						label: '',
 						required: false,
-						variableName: HDFSLogsStorageClassName_VariableName,
+						variableName: VariableNames.HDFSLogsStorageClassName_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Number,
 						label: '',
 						required: false,
-						variableName: HDFSLogsStorageSize_VariableName,
+						variableName: VariableNames.HDFSLogsStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}
 				]
@@ -238,27 +237,26 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Text,
 						label: localize('deployCluster.DataText', "Data"),
 						required: false,
-						description: fullDescriptionForStorageFields,
-						variableName: DataPoolDataStorageClassName_VariableName,
+						variableName: VariableNames.DataPoolDataStorageClassName_VariableName,
 						labelWidth: labelWidth,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Number,
 						label: '',
 						required: false,
-						variableName: DataPoolDataStorageSize_VariableName,
+						variableName: VariableNames.DataPoolDataStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Text,
 						label: '',
 						required: false,
-						variableName: DataPoolLogsStorageClassName_VariableName,
+						variableName: VariableNames.DataPoolLogsStorageClassName_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Number,
 						label: '',
 						required: false,
-						variableName: DataPoolLogsStorageSize_VariableName,
+						variableName: VariableNames.DataPoolLogsStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}
 				]
@@ -267,28 +265,27 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					{
 						type: FieldType.Text,
 						label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
-						description: fullDescriptionForStorageFields,
 						required: false,
-						variableName: SQLServerDataStorageClassName_VariableName,
+						variableName: VariableNames.SQLServerDataStorageClassName_VariableName,
 						labelWidth: labelWidth,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Number,
 						label: '',
 						required: false,
-						variableName: SQLServerDataStorageSize_VariableName,
+						variableName: VariableNames.SQLServerDataStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Text,
 						label: '',
 						required: false,
-						variableName: SQLServerLogsStorageClassName_VariableName,
+						variableName: VariableNames.SQLServerLogsStorageClassName_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
 						type: FieldType.Number,
 						label: '',
 						required: false,
-						variableName: SQLServerLogsStorageSize_VariableName,
+						variableName: VariableNames.SQLServerLogsStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}
 				]
@@ -341,94 +338,131 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.portHeader = createLabel(view, { text: localize('deployCluster.PortHeader', "PORT"), width: PortInputWidth });
 		this.dnsSectionHeaderRow = createFlexContainer(view, [this.nameHeader, this.dnsHeader, this.portHeader]);
 
-		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth });
+		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth, required: true });
 		this.controllerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
-		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: false, width: PortInputWidth });
+		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: PortInputWidth });
 		this.controllerDNSRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
-		this.inputComponents[ControllerDNSName_VariableName] = this.controllerDNSInput;
-		this.inputComponents[ControllerPort_VariableName] = this.controllerPortInput;
+		this.inputComponents[VariableNames.ControllerDNSName_VariableName] = this.controllerDNSInput;
+		this.inputComponents[VariableNames.ControllerPort_VariableName] = this.controllerPortInput;
 
-		this.masterSQLNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "Master SQL Server"), width: labelWidth });
+		this.masterSQLNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "Master SQL Server"), width: labelWidth, required: true });
 		this.masterSqlServerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "Master SQL Server DNS name"), required: false, width: inputWidth });
-		this.masterSqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "Master SQL Server port"), required: false, width: PortInputWidth });
+		this.masterSqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "Master SQL Server port"), required: true, width: PortInputWidth });
 		this.masterSQLDNSRow = createFlexContainer(view, [this.masterSQLNameLabel, this.masterSqlServerDNSInput, this.masterSqlServerPortInput]);
-		this.inputComponents[SQLServerDNSName_VariableName] = this.masterSqlServerDNSInput;
-		this.inputComponents[SQLServerPort_VariableName] = this.masterSqlServerPortInput;
+		this.inputComponents[VariableNames.SQLServerDNSName_VariableName] = this.masterSqlServerDNSInput;
+		this.inputComponents[VariableNames.SQLServerPort_VariableName] = this.masterSqlServerPortInput;
 
-		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth });
+		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth, required: true });
 		this.gatewayDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
-		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: false, width: PortInputWidth });
+		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: PortInputWidth });
 		this.gatewayDNSRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
-		this.inputComponents[GatewayDNSName_VariableName] = this.gatewayDNSInput;
-		this.inputComponents[GateWayPort_VariableName] = this.gatewayPortInput;
+		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = this.gatewayDNSInput;
+		this.inputComponents[VariableNames.GateWayPort_VariableName] = this.gatewayPortInput;
 
-		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth });
+		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
 		this.readableSecondaryDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
-		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Controller port"), required: false, width: PortInputWidth });
+		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: PortInputWidth });
 		this.readableSecondaryDNSRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
-		this.inputComponents[ReadableSecondaryDNSName_VariableName] = this.readableSecondaryDNSInput;
-		this.inputComponents[ReadableSecondaryPort_VariableName] = this.readableSecondaryPortInput;
+		this.inputComponents[VariableNames.ReadableSecondaryDNSName_VariableName] = this.readableSecondaryDNSInput;
+		this.inputComponents[VariableNames.ReadableSecondaryPort_VariableName] = this.readableSecondaryPortInput;
 
 		return createGroupContainer(view, [this.dnsSectionHeaderRow, this.controllerDNSRow, this.masterSQLDNSRow, this.gatewayDNSRow, this.readableSecondaryDNSRow], {
-			header: localize('deployCluster.DNSSectionTitle', "Ports settings"),
+			header: localize('deployCluster.DNSSectionTitle', "Port settings"),
 			collapsible: true
 		});
 	}
 
 	public onEnter(): void {
-		getInputBoxComponent(MasterSQLServerScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(MasterSQLServerScale_VariableName);
-		getInputBoxComponent(MasterSQLServerScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(MasterSQLServerScale_VariableName);
-		getInputBoxComponent(ComputePoolScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(ComputePoolScale_VariableName);
-		getInputBoxComponent(DataPoolScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(DataPoolScale_VariableName);
-		getInputBoxComponent(HDFSPoolScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(HDFSPoolScale_VariableName);
-		getInputBoxComponent(HDFSNameNodeScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(HDFSNameNodeScale_VariableName);
-		getInputBoxComponent(SparkPoolScale_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(SparkPoolScale_VariableName);
-		getCheckboxComponent(IncludeSpark_VariableName, this.inputComponents).checked = this.wizard.model.getBooleanValue(IncludeSpark_VariableName);
-		getInputBoxComponent(ControllerPort_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(ControllerPort_VariableName);
-		getInputBoxComponent(SQLServerPort_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(SQLServerPort_VariableName);
-		getInputBoxComponent(GateWayPort_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(GateWayPort_VariableName);
+		this.setInputBoxValue(VariableNames.MasterSQLServerScale_VariableName);
+		this.setInputBoxValue(VariableNames.ComputePoolScale_VariableName);
+		this.setInputBoxValue(VariableNames.DataPoolScale_VariableName);
+		this.setInputBoxValue(VariableNames.HDFSPoolScale_VariableName);
+		this.setInputBoxValue(VariableNames.HDFSNameNodeScale_VariableName);
+		this.setInputBoxValue(VariableNames.SparkPoolScale_VariableName);
+		this.setCheckboxValue(VariableNames.IncludeSpark_VariableName);
 
-		getInputBoxComponent(ControllerDataStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(ControllerDataStorageClassName_VariableName);
-		getInputBoxComponent(ControllerDataStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(ControllerDataStorageSize_VariableName);
-		getInputBoxComponent(ControllerLogsStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(ControllerLogsStorageClassName_VariableName);
-		getInputBoxComponent(ControllerLogsStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(ControllerLogsStorageSize_VariableName);
+		this.setInputBoxValue(VariableNames.ControllerPort_VariableName);
+		this.setInputBoxValue(VariableNames.SQLServerPort_VariableName);
+		this.setInputBoxValue(VariableNames.GateWayPort_VariableName);
+		this.setInputBoxValue(VariableNames.ReadableSecondaryPort_VariableName);
 
-		getInputBoxComponent(HDFSDataStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(HDFSDataStorageClassName_VariableName);
-		getInputBoxComponent(HDFSDataStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(HDFSDataStorageSize_VariableName);
-		getInputBoxComponent(HDFSLogsStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(HDFSLogsStorageClassName_VariableName);
-		getInputBoxComponent(HDFSLogsStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(HDFSLogsStorageSize_VariableName);
-
-		getInputBoxComponent(DataPoolDataStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(DataPoolDataStorageClassName_VariableName);
-		getInputBoxComponent(DataPoolDataStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(DataPoolDataStorageSize_VariableName);
-		getInputBoxComponent(DataPoolLogsStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(DataPoolLogsStorageClassName_VariableName);
-		getInputBoxComponent(DataPoolLogsStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(DataPoolLogsStorageSize_VariableName);
-
-		getInputBoxComponent(SQLServerDataStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(SQLServerDataStorageClassName_VariableName);
-		getInputBoxComponent(SQLServerDataStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(SQLServerDataStorageSize_VariableName);
-		getInputBoxComponent(SQLServerLogsStorageClassName_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(SQLServerLogsStorageClassName_VariableName);
-		getInputBoxComponent(SQLServerLogsStorageSize_VariableName, this.inputComponents).value = this.wizard.model.getStringValue(SQLServerLogsStorageSize_VariableName);
+		this.setInputBoxValue(VariableNames.ControllerDataStorageClassName_VariableName);
+		this.setInputBoxValue(VariableNames.ControllerDataStorageSize_VariableName);
+		this.setInputBoxValue(VariableNames.ControllerLogsStorageClassName_VariableName);
+		this.setInputBoxValue(VariableNames.ControllerLogsStorageSize_VariableName);
 
 		this.dnsSectionHeaderRow.clearItems();
 		this.controllerDNSRow.clearItems();
 		this.gatewayDNSRow.clearItems();
 		this.masterSQLDNSRow.clearItems();
 		this.readableSecondaryDNSRow.clearItems();
-		this.dnsSectionHeaderRow.addItems([this.nameHeader, this.portHeader]);
+
 		this.controllerDNSRow.addItems([this.controllerNameLabel, this.controllerPortInput]);
 		this.gatewayDNSRow.addItems([this.gatewayNameLabel, this.gatewayPortInput]);
 		this.masterSQLDNSRow.addItems([this.masterSQLNameLabel, this.masterSqlServerPortInput]);
-		this.readableSecondaryDNSRow.addItems([this.readableSecondaryNameLabel, this.readableSecondaryPortInput]);
-		if (this.wizard.model.supportActiveDirectory) {
+		if (this.wizard.model.hadrEnabled) {
+			this.readableSecondaryDNSRow.addItems([this.readableSecondaryNameLabel, this.readableSecondaryPortInput]);
+		}
+
+		if (this.wizard.model.getStringValue(VariableNames.AuthenticationMode_VariableName) === VariableNames.ActiveDirectoryAuthentication) {
 			const itemLayout: azdata.FlexItemLayout = { CSSStyles: { 'margin-right': '20px' } };
-			this.dnsSectionHeaderRow.insertItem(this.dnsHeader, 1, itemLayout);
+			this.dnsSectionHeaderRow.addItems([this.nameHeader, this.dnsHeader, this.portHeader]);
 			this.controllerDNSRow.insertItem(this.controllerDNSInput, 1, itemLayout);
 			this.gatewayDNSRow.insertItem(this.gatewayDNSInput, 1, itemLayout);
 			this.masterSQLDNSRow.insertItem(this.masterSqlServerDNSInput, 1, itemLayout);
-			this.readableSecondaryDNSRow.insertItem(this.readableSecondaryDNSInput, 1, itemLayout);
+			if (this.wizard.model.hadrEnabled) {
+				this.readableSecondaryDNSRow.insertItem(this.readableSecondaryDNSInput, 1, itemLayout);
+			}
 		}
+
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			this.wizard.wizardObject.message = { text: '' };
+			if (pcInfo.newPage > pcInfo.lastPage) {
+				const isValid: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.MasterSQLServerScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ComputePoolScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DataPoolScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSNameNodeScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSPoolScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerDataStorageClassName_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerDataStorageSize_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerLogsStorageClassName_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerLogsStorageSize_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerPort_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SQLServerPort_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.GateWayPort_VariableName, this.inputComponents))
+					&& (!this.wizard.model.hadrEnabled
+						|| !isInputBoxEmpty(this.readableSecondaryPortInput))
+					&& (!this.wizard.model.adAuthSupported
+						|| (!isInputBoxEmpty(this.gatewayDNSInput)
+							&& !isInputBoxEmpty(this.controllerDNSInput)
+							&& !isInputBoxEmpty(this.masterSqlServerDNSInput)
+							&& !isInputBoxEmpty(this.readableSecondaryDNSInput)
+						));
+				if (!isValid) {
+					this.wizard.wizardObject.message = {
+						text: localize('deployCluster.MissingRequiredInformation', "Please fill out the required information."),
+						level: azdata.window.MessageLevel.Error
+					};
+				}
+				return isValid;
+			}
+			return true;
+		});
 	}
 
 	public onLeave(): void {
 		setModelValues(this.inputComponents, this.wizard.model);
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			return true;
+		});
+	}
+
+	private setInputBoxValue(variableName: string): void {
+		getInputBoxComponent(variableName, this.inputComponents).value = this.wizard.model.getStringValue(variableName);
+	}
+
+	private setCheckboxValue(variableName: string): void {
+		getCheckboxComponent(variableName, this.inputComponents).checked = this.wizard.model.getBooleanValue(variableName);
 	}
 }

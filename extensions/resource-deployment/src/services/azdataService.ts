@@ -24,6 +24,7 @@ export interface DeploymentProfile {
 	gatewayPort: string;
 	appProxyPort: string;
 	masterSqlServerPort: string;
+	readableSecondaryPort?: string;
 	controllerPort: string;
 	defaultDataStorageClass: string;
 	defaultLogsStorageClass: string;
@@ -97,12 +98,13 @@ export class AzdataService implements IAzdataService {
 							hdfs: <string>bdcJson.spec.resources['storage-0'].spec.replicas,
 							nameNode: '1',
 							spark: '1',
-							activeDirectory: profileName === 'kubeadm-prod', // TODO: replace with real implementation
+							activeDirectory: false, // TODO: implement AD checking
 							hadr: <string>bdcJson.spec.resources.master.spec.settings.sql['hadr.enabled'],
 							includeSpark: <string>bdcJson.spec.resources['storage-0'].spec.settings.spark.includeSpark,
 							gatewayPort: this.getEndpointPort(bdcJson.spec.resources.gateway.spec.endpoints, 'Knox'),
 							appProxyPort: this.getEndpointPort(bdcJson.spec.resources.appproxy.spec.endpoints, 'AppServiceProxy'),
 							masterSqlServerPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'Master'),
+							readableSecondaryPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'MasterSecondary'),
 							controllerPort: this.getEndpointPort(controlJson.spec.endpoints, 'Controller')
 						});
 					}
@@ -124,6 +126,7 @@ export class AzdataService implements IAzdataService {
 	}
 
 	private getEndpointPort(endpoints: any, name: string): string {
-		return (<{ port: string, name: string }[]>endpoints).find(endpoint => endpoint.name === name)!.port;
+		const endpoint = (<{ port: string, name: string }[]>endpoints).find(endpoint => endpoint.name === name);
+		return endpoint ? endpoint.port : '';
 	}
 }

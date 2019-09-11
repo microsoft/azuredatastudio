@@ -17,6 +17,7 @@ import { IKubeService } from '../../services/kubeService';
 import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { Model } from '../model';
+import * as VariableNames from './constants';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployClusterWizardModel> {
@@ -84,5 +85,13 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 }
 
 export class DeployClusterWizardModel extends Model {
-	public supportActiveDirectory: boolean = false;
+	public adAuthSupported: boolean = false;
+
+	public get hadrEnabled(): boolean {
+		return this.getBooleanValue(VariableNames.EnableHADR_VariableName);
+	}
+
+	public set hadrEnabled(value: boolean) {
+		this.setPropertyValue(VariableNames.EnableHADR_VariableName, value);
+	}
 }

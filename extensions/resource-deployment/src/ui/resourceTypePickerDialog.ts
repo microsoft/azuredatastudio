@@ -11,6 +11,7 @@ import { DialogBase } from './dialogBase';
 import { ResourceType, DeploymentProvider } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
+import { EOL } from 'os';
 
 const localize = nls.loadMessageBundle();
 
@@ -23,6 +24,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _toolsTable!: azdata.TableComponent;
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
+	private _toolsLoadingComponent!: azdata.LoadingComponent;
 
 	constructor(private extensionContext: vscode.ExtensionContext,
 		private toolsService: IToolsService,
@@ -50,18 +52,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 			};
 			const descriptionColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolDescriptionColumnHeader', 'Description'),
-				width: 850
+				width: 650
+			};
+			const installStatusColumn: azdata.TableColumn = {
+				value: localize('deploymentDialog.toolStatusColumnHeader', 'Installed'),
+				width: 100
+			};
+			const versionColumn: azdata.TableColumn = {
+				value: localize('deploymentDialog.toolVersionColumnHeader', 'Version'),
+				width: 100
 			};
 
 			this._toolsTable = view.modelBuilder.table().withProperties<azdata.TableComponentProperties>({
 				data: [],
-				columns: [toolColumn, descriptionColumn],
+				columns: [toolColumn, descriptionColumn, installStatusColumn, versionColumn],
 				width: tableWidth
 			}).component();
 
 			const toolsTableWrapper = view.modelBuilder.divContainer().withLayout({ width: tableWidth }).component();
 			toolsTableWrapper.addItem(this._toolsTable, { CSSStyles: { 'border-left': '1px solid silver', 'border-top': '1px solid silver' } });
-
+			this._toolsLoadingComponent = view.modelBuilder.loadingComponent().withItem(toolsTableWrapper).component();
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[
 					{
@@ -74,7 +84,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 						component: this._optionsContainer,
 						title: localize('deploymentDialog.OptionsTitle', 'Options')
 					}, {
-						component: toolsTableWrapper,
+						component: this._toolsLoadingComponent,
 						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
 					}
 				],
@@ -151,15 +161,39 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private updateTools(): void {
-		const tools = this.getCurrentProvider().requiredTools;
+		const toolRequirements = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
-		this._toolsTable.height = 25 * Math.max(tools.length, 1) + headerRowHeight;
-		if (tools.length === 0) {
+		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
+		if (toolRequirements.length === 0) {
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 		} else {
-			this._toolsTable.data = tools.map(toolRef => {
-				const tool = this.toolsService.getToolByName(toolRef.name)!;
-				return [tool.displayName, tool.description];
+			const tools = toolRequirements.map(toolReq => {
+				return this.toolsService.getToolByName(toolReq.name)!;
+			});
+			this._toolsLoadingComponent.loading = true;
+			this._dialogObject.okButton.enabled = false;
+			this._dialogObject.message = {
+				text: ''
+			};
+			Promise.all(tools.map(tool => tool.loadInformation())).then(() => {
+				const messages: string[] = [];
+				this._toolsTable.data = toolRequirements.map(toolRef => {
+					const tool = this.toolsService.getToolByName(toolRef.name)!;
+					if (!tool.isInstalled) {
+						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
+					}
+					return [tool.displayName, tool.description, tool.isInstalled ? localize('deploymentDialog.YesText', "Yes") : localize('deploymentDialog.NoText', "No"), tool.version ? tool.version.version : ''];
+				});
+				this._dialogObject.okButton.enabled = messages.length === 0;
+				if (messages.length !== 0) {
+					this._dialogObject.message = {
+						level: azdata.window.MessageLevel.Error,
+						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or does not meet the minum version requirement."),
+						description: messages.join(EOL)
+					};
+				}
+				this._toolsLoadingComponent.loading = false;
+
 			});
 		}
 	}

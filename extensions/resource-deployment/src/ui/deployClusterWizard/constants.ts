@@ -56,3 +56,6 @@ export const GateWayPort_VariableName = 'AZDATA_NB_VAR_BDC_GATEWAY_PORT';
 export const ReadableSecondaryDNSName_VariableName = 'AZDATA_NB_VAR_BDC_READABLE_SECONDARY_DNS';
 export const ReadableSecondaryPort_VariableName = 'AZDATA_NB_VAR_BDC_READABLE_SECONDARY_PORT';
 export const EnableHADR_VariableName = 'AZDATA_NB_VAR_BDC_ENABLE_HADR';
+
+export const BasicAuthentication = 'basic';
+export const ActiveDirectoryAuthentication = 'ad';

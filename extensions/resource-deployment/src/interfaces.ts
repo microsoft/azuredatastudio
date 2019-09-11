@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as azdata from 'azdata';
+import { SemVer } from 'semver';
 
 export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
@@ -129,6 +130,10 @@ export interface ITool {
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
+	readonly version: SemVer | undefined;
+	readonly homePage: string;
+	readonly isInstalled: boolean;
+	loadInformation(): Thenable<void>;
 }
 
 export enum BdcDeploymentType {

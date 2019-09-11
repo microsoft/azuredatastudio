@@ -8,11 +8,13 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { createSection, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
+import { createSection, InputComponents, setModelValues, Validator, isInputBoxEmpty, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
-import { ClusterName_VariableName, AdminUserName_VariableName, AdminPassword_VariableName, AuthenticationMode_VariableName, DistinguishedName_VariableName, AdminPrincipals_VariableName, UserPrincipals_VariableName, UpstreamIPAddresses_VariableName, DnsName_VariableName, Realm_VariableName, AppOwnerPrincipals_VariableName, AppReaderPrincipals_VariableName } from '../constants';
+import * as VariableNames from '../constants';
+import { EOL } from 'os';
 const localize = nls.loadMessageBundle();
 
+const ConfirmPasswordName = 'ConfirmPassword';
 export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
 
@@ -31,31 +33,36 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					type: FieldType.Text,
 					label: localize('deployCluster.ClusterNameField', "Cluster name"),
 					required: true,
-					variableName: ClusterName_VariableName,
+					variableName: VariableNames.ClusterName_VariableName,
 					defaultValue: 'mssql-cluster',
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminUserNameField', "Admin username"),
 					required: true,
-					variableName: AdminUserName_VariableName,
+					variableName: VariableNames.AdminUserName_VariableName,
 					defaultValue: 'admin',
 					useCustomValidator: true
 				}, {
-					type: FieldType.SQLPassword,
+					type: FieldType.Password,
 					label: localize('deployCluster.AdminPasswordField', "Password"),
 					required: true,
-					variableName: AdminPassword_VariableName,
-					confirmationLabel: localize('deployCluster.ConfirmPassword', "Confirm password"),
-					confirmationRequired: true,
+					variableName: VariableNames.AdminPassword_VariableName,
 					defaultValue: '',
 					useCustomValidator: true,
 					description: localize('deployCluster.AdminPasswordDescription', "You can also use this password to access SQL Server and gateway.")
 				}, {
+					type: FieldType.Password,
+					label: localize('deployCluster.ConfirmPassword', "Confirm password"),
+					required: true,
+					variableName: ConfirmPasswordName,
+					defaultValue: '',
+					useCustomValidator: true,
+				}, {
 					type: FieldType.Options,
 					label: localize('deployCluster.AuthenticationModeField', "Authentication mode"),
 					required: true,
-					variableName: AuthenticationMode_VariableName,
+					variableName: VariableNames.AuthenticationMode_VariableName,
 					defaultValue: 'basic',
 					options: [
 						{
@@ -80,49 +87,49 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					type: FieldType.Text,
 					label: localize('deployCluster.DistinguishedName', "Distinguished name"),
 					required: true,
-					variableName: DistinguishedName_VariableName,
+					variableName: VariableNames.DistinguishedName_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AdminPrincipals', "Admin principals"),
 					required: true,
-					variableName: AdminPrincipals_VariableName,
+					variableName: VariableNames.AdminPrincipals_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.UserPrincipals', "User principals"),
 					required: true,
-					variableName: UserPrincipals_VariableName,
+					variableName: VariableNames.UserPrincipals_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.UpstreamIPAddresses', "Upstream IP Addresses"),
 					required: true,
-					variableName: UpstreamIPAddresses_VariableName,
+					variableName: VariableNames.UpstreamIPAddresses_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DNSName', "DNS name"),
 					required: true,
-					variableName: DnsName_VariableName,
+					variableName: VariableNames.DnsName_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.Realm', "Realm"),
 					required: true,
-					variableName: Realm_VariableName,
+					variableName: VariableNames.Realm_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AppOnwerPrincipals', "App owner principals"),
 					required: true,
-					variableName: AppOwnerPrincipals_VariableName,
+					variableName: VariableNames.AppOwnerPrincipals_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AppReaderPrincipals', "App reader principals"),
 					required: true,
-					variableName: AppReaderPrincipals_VariableName,
+					variableName: VariableNames.AppReaderPrincipals_VariableName,
 					useCustomValidator: true
 				}
 			]
@@ -158,7 +165,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			});
 			const basicSettingsFormItem = { title: '', component: basicSettingsGroup };
 			const activeDirectoryFormItem = { title: '', component: activeDirectorySettingsGroup };
-			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[AuthenticationMode_VariableName];
+			const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
 			const formBuilder = view.modelBuilder.formContainer().withFormItems(
 				[basicSettingsFormItem],
 				{
@@ -183,12 +190,61 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	public onLeave() {
 		setModelValues(this.inputComponents, this.wizard.model);
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			return true;
+		});
 	}
 
 	public onEnter() {
-		const dropdown = <azdata.DropDownComponent>this.inputComponents[AuthenticationMode_VariableName];
-		if (dropdown) {
-			dropdown.enabled = this.wizard.model.supportActiveDirectory;
+		const authModeDropdown = <azdata.DropDownComponent>this.inputComponents[VariableNames.AuthenticationMode_VariableName];
+		if (authModeDropdown) {
+			authModeDropdown.enabled = this.wizard.model.adAuthSupported;
 		}
+
+		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
+			this.wizard.wizardObject.message = { text: '' };
+			if (pcInfo.newPage > pcInfo.lastPage) {
+				const messages: string[] = [];
+				const authMode = typeof authModeDropdown.value === 'string' ? authModeDropdown.value : authModeDropdown.value.name;
+				const requiredFieldsFilled: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterName_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))
+					&& (!(authMode === VariableNames.ActiveDirectoryAuthentication) || (
+						!isInputBoxEmpty(getInputBoxComponent(VariableNames.DistinguishedName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPrincipals_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.UserPrincipals_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.UpstreamIPAddresses_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DnsName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.Realm_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppOwnerPrincipals_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppReaderPrincipals_VariableName, this.inputComponents))));
+				if (!requiredFieldsFilled) {
+					messages.push(localize('deployCluster.MissingRequiredInformation', "Please fill out the required information."));
+				}
+
+				if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))) {
+					const password = getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents).value!;
+					const confirmPassword = getInputBoxComponent(ConfirmPasswordName, this.inputComponents).value!;
+					if (password !== confirmPassword) {
+						messages.push(getPasswordMismatchMessage(localize('deployCluster.AdminPasswordField', "Password")));
+					}
+					if (!isValidSQLPassword(password)) {
+						messages.push(getInvalidSQLPasswordMessage(localize('deployCluster.AdminPasswordField', "Password")));
+					}
+				}
+
+				if (messages.length > 0) {
+					this.wizard.wizardObject.message = {
+						text: messages.length === 1 ? messages[0] : localize('deployCluster.ValidationError', "There are some errors on this page, click 'Show Details' to view the errors."),
+						description: messages.length === 1 ? undefined : messages.join(EOL),
+						level: azdata.window.MessageLevel.Error
+					};
+				}
+				return messages.length === 0;
+			}
+			return true;
+		});
 	}
 }

@@ -331,13 +331,13 @@ function processPasswordField(context: FieldContext): void {
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);
 		context.onNewDisposableCreated(passwordInput.onTextChanged(() => {
-			if (context.fieldInfo.type === FieldType.SQLPassword && isValidSQLPassword(context.fieldInfo, passwordInput.value!)) {
+			if (context.fieldInfo.type === FieldType.SQLPassword && isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName)) {
 				removeValidationMessage(context.container, invalidPasswordMessage);
 			}
 		}));
 
 		context.onNewValidatorCreated((): { valid: boolean, message: string } => {
-			return { valid: isValidSQLPassword(context.fieldInfo, passwordInput.value!), message: invalidPasswordMessage };
+			return { valid: isValidSQLPassword(passwordInput.value!, context.fieldInfo.userName), message: invalidPasswordMessage };
 		});
 	}
 
@@ -384,9 +384,9 @@ function processCheckboxField(context: FieldContext): void {
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, checkbox);
 }
 
-export function isValidSQLPassword(field: FieldInfo, password: string): boolean {
+export function isValidSQLPassword(password: string, userName: string = 'sa'): boolean {
 	// Validate SQL Server password
-	const containsUserName = password && field.userName && password.toUpperCase().includes(field.userName.toUpperCase());
+	const containsUserName = password && userName !== undefined && password.toUpperCase().includes(userName.toUpperCase());
 	// Instead of using one RegEx, I am seperating it to make it more readable.
 	const hasUpperCase = /[A-Z]/.test(password) ? 1 : 0;
 	const hasLowerCase = /[a-z]/.test(password) ? 1 : 0;
@@ -428,4 +428,8 @@ export function setModelValues(inputComponents: InputComponents, model: Model): 
 
 		model.setPropertyValue(key, value);
 	});
+}
+
+export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
+	return input.value === undefined || input.value === '';
 }

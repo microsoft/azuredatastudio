@@ -119,7 +119,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				}, {
 					type: FieldType.ReadonlyText,
 					label: localize('deployCluster.HDFSText', "HDFS"),
-					defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} (${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', " Spark included") : ''})`
+					defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`
 				}, {
 					type: FieldType.ReadonlyText,
 					label: localize('deployCluster.SparkText', "Spark"),
@@ -262,7 +262,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.form.addFormItem(azureSection);
 		}
 
-		if (this.wizard.model.supportActiveDirectory) {
+		if (this.wizard.model.adAuthSupported) {
 			const dnsNamesSection = createSectionFunc(dnsNamesSectionInfo);
 			this.formItems.push(dnsNamesSection);
 			this.form.addFormItem(dnsNamesSection);
