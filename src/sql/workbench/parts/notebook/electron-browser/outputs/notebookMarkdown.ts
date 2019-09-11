@@ -198,17 +198,17 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		this.fileService.exists(URI.file(href)).then(exists => {
+		return this.fileService.exists(URI.file(href)).then(exists => {
 			if (base && !originIndependentUrl.test(href) && !exists) {
 				href = this.resolveUrl(base, href);
 			}
+			try {
+				href = encodeURI(href).replace(/%25/g, '%');
+			} catch (e) {
+				return null;
+			}
+			return href;
 		});
-		try {
-			href = encodeURI(href).replace(/%25/g, '%');
-		} catch (e) {
-			return null;
-		}
-		return href;
 	}
 
 	resolveUrl(base: string, href: string) {
