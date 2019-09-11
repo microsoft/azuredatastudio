@@ -41,9 +41,5 @@ export class HostSessionManager {
 				connectionProvider,
 				sharedService);
 		});
-
-		// context.subscriptions.push(sharedService.onDidChangeIsServiceAvailable(available => {
-		// //	available ? this.startSession() : this.endSession();
-		// }));
 	}
 }

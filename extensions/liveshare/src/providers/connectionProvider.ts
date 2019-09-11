@@ -105,6 +105,7 @@ export class ConnectionProvider {
 
 		let connect = (ownerUri: string, connInfo: azdata.ConnectionInfo): Thenable<boolean> => {
 			if (self._onConnectionCompleteHandler) {
+				// "test" liveshare connection details to be filled out in later iteration
 				let connSummary: azdata.ConnectionInfoSummary = {
 					ownerUri: ownerUri,
 					connectionId: ownerUri,

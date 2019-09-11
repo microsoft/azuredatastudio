@@ -18,23 +18,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	new HostSessionManager(context, vslsApi);
 	new GuestSessionManager(context, vslsApi);
-
-	// test commands for easy entry points during early dev
-	registerLiveShareIntegrationCommands();
 }
 
 export function deactivate(): void {
-}
-
-
-/// test commands
-function testCommand1() {
-
-}
-
-export function registerLiveShareIntegrationCommands() {
-	vscode.commands.registerCommand(
-		'collaboration.testcmd1',
-		testCommand1
-	);
 }

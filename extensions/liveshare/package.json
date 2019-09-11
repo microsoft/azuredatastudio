@@ -26,15 +26,5 @@
   "dependencies": {
     "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
     "vsls": "^0.3.1291"
-  },
-
-  "contributes": {
-    "commands": [
-      {
-        "command": "collaboration.testcmd1",
-        "title": "Command 1",
-        "category": "Collaboraton"
-      }
-    ]
   }
 }
