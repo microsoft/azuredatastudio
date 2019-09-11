@@ -16,7 +16,7 @@ import { isEditorTitleFree } from '../common/utils';
 import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
-const existsSync = promisify(fs.exists);
+const exists = promisify(fs.exists);
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';
@@ -109,10 +109,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let book = books.filter(book => book.root.indexOf(bookPath.replace(/\\/g, '/')) > -1)[0];
 		const readmeMarkdown: string = path.join(bookPath, 'content', book.tableOfContents[0].url.concat('.md'));
 		const readmeNotebook: string = path.join(bookPath, 'content', book.tableOfContents[0].url.concat('.ipynb'));
-		if (existsSync(readmeMarkdown)) {
+		if (await exists(readmeMarkdown)) {
 			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
 		}
-		else if (existsSync(readmeNotebook)) {
+		else if (await exists(readmeNotebook)) {
 			vscode.workspace.openTextDocument(readmeNotebook);
 		}
 	}
