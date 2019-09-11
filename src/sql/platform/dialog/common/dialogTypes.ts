@@ -83,6 +83,7 @@ export class DialogButton implements azdata.window.Button {
 	private _label: string;
 	private _enabled: boolean;
 	private _hidden: boolean;
+	private _focused: boolean;
 	private _onClick: Emitter<void> = new Emitter<void>();
 	public readonly onClick: Event<void> = this._onClick.event;
 	private _onUpdate: Emitter<void> = new Emitter<void>();
@@ -118,6 +119,15 @@ export class DialogButton implements azdata.window.Button {
 
 	public set hidden(hidden: boolean) {
 		this._hidden = hidden;
+		this._onUpdate.fire();
+	}
+
+	public get focused(): boolean {
+		return this._focused;
+	}
+
+	public set focused(focused: boolean) {
+		this._focused = focused;
 		this._onUpdate.fire();
 	}
 

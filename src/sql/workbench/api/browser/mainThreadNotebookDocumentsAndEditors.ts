@@ -707,8 +707,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					if (uri.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+					if (result.next.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
 						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
 					}
 					else {
@@ -719,8 +719,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					if (uri.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+					if (result.previous.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
 						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
 					}
 					else {

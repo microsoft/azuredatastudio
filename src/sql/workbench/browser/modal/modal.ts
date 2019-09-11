@@ -319,13 +319,27 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set focusable elements in the modal dialog
 	 */
 	public setFocusableElements() {
-		this._focusableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		// try to find focusable element in dialog pane rather than overall container
+		this._focusableElements = this._modalBodySection ?
+			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
 		if (this._focusableElements && this._focusableElements.length > 0) {
 			this._firstFocusableElement = <HTMLElement>this._focusableElements[0];
 			this._lastFocusableElement = <HTMLElement>this._focusableElements[this._focusableElements.length - 1];
 		}
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+		this.focus();
+	}
+
+	/**
+	 * Focuses the modal
+	 * Default behavior: focus the first focusable element
+	 */
+	protected focus() {
+		if (this._firstFocusableElement) {
+			this._firstFocusableElement.focus();
+		}
 	}
 
 	/**

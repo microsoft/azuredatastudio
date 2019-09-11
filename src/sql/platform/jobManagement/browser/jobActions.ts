@@ -589,7 +589,7 @@ export class NewNotebookJobAction extends Action {
 
 export class EditNotebookJobAction extends Action {
 	public static ID = 'notebookaction.editNotebook';
-	public static LABEL = nls.localize('notebookaction.editJob', "Edit Notebook Job");
+	public static LABEL = nls.localize('notebookaction.editJob', "Edit");
 
 	constructor(
 		@ICommandService private _commandService: ICommandService
@@ -624,7 +624,7 @@ export class OpenTemplateNotebookAction extends Action {
 
 export class DeleteNotebookAction extends Action {
 	public static ID = 'notebookaction.deleteNotebook';
-	public static LABEL = nls.localize('notebookaction.deleteNotebook', "Delete Notebook");
+	public static LABEL = nls.localize('notebookaction.deleteNotebook', "Delete");
 
 	constructor(
 		@INotificationService private _notificationService: INotificationService,
@@ -729,6 +729,22 @@ export class RenameNotebookMaterializedAction extends Action {
 
 	public run(actionInfo: any): Promise<boolean> {
 		actionInfo.component.renameNotebook(actionInfo.history);
+		return Promise.resolve(true);
+	}
+}
+
+export class OpenLatestRunMaterializedNotebook extends Action {
+	public static ID = 'notebookaction.openLatestRun';
+	public static LABEL = nls.localize('notebookaction.openLatestRun', "Open Latest Run");
+
+	constructor(
+		@ICommandService private _commandService: ICommandService,
+	) {
+		super(OpenLatestRunMaterializedNotebook.ID, OpenLatestRunMaterializedNotebook.LABEL);
+	}
+
+	public run(actionInfo: IJobActionInfo): Promise<boolean> {
+		actionInfo.component.openLastNRun(actionInfo.targetObject.job, 0, 1);
 		return Promise.resolve(true);
 	}
 }
