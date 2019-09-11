@@ -77,9 +77,6 @@ export class JupyterServerInstallation {
 			try {
 				await this.installPythonPackage(backgroundOperation);
 
-				this.outputChannel.appendLine(msgPythonDownloadComplete);
-				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-
 				if (this._usingConda) {
 					await this.installCondaDependencies();
 				} else if (this._usingExistingPython) {
@@ -91,12 +88,6 @@ export class JupyterServerInstallation {
 				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 				throw err;
 			}
-
-			fs.remove(this._pythonPackageDir, (err: Error) => {
-				if (err) {
-					this.outputChannel.appendLine(err.message);
-				}
-			});
 
 			this.outputChannel.appendLine(msgInstallPkgFinish);
 			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
@@ -193,6 +184,8 @@ export class JupyterServerInstallation {
 								}
 							});
 
+							this.outputChannel.appendLine(msgPythonDownloadComplete);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 							resolve();
 						}).catch(err => {
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
@@ -429,6 +422,12 @@ export class JupyterServerInstallation {
 			// Force reinstall pip to update shebangs in pip*.exe files
 			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --force-reinstall --no-index pip --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			await this.executeStreamedCommand(installJupyterCommand);
+
+			fs.remove(this._pythonPackageDir, (err: Error) => {
+				if (err) {
+					this.outputChannel.appendLine(err.message);
+				}
+			});
 
 			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
