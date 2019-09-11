@@ -13,8 +13,10 @@ import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as nls from 'vscode-nls';
 import { isEditorTitleFree } from '../common/utils';
+import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
+const existsSync = promisify(fs.exists);
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';
@@ -107,12 +109,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		let book = books.filter(book => book.root.indexOf(bookPath.replace(/\\/g, '/')) > -1)[0];
 		const readmeMarkdown: string = path.join(bookPath, 'content', book.tableOfContents[0].url.concat('.md'));
 		const readmeNotebook: string = path.join(bookPath, 'content', book.tableOfContents[0].url.concat('.ipynb'));
-		const markdownExists = fs.existsSync(readmeMarkdown);
-		const notebookExists = fs.existsSync(readmeNotebook);
-		if (markdownExists) {
+		if (existsSync(readmeMarkdown)) {
 			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
 		}
-		else if (notebookExists) {
+		else if (existsSync(readmeNotebook)) {
 			vscode.workspace.openTextDocument(readmeNotebook);
 		}
 	}
