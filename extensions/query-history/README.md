@@ -13,7 +13,7 @@ Initially this view will be empty but once you execute a query editor that will 
 ![Query History tab with queries](https://github.com/microsoft/azuredatastudio/tree/master/extensions/query-history/images/QueryHistoryTabWithQueries.png)
 
 Each row consists of 3 parts :
-	1. Status icon : This will be a ✔️ if the query executed successfully. If any errors occured a ❌is shown.
+	1. Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌is shown.
 	2. Query Text : This is the text of the query that was executed
 	3. Connection Info : The Server and Database the query was executed against
 	4. Timestamp : The date and time the query was executed
@@ -34,7 +34,7 @@ This will do the same thing as Open Query but will additionally run the statemen
 
 #### Delete
 
-This will permenantly delete the row from the view.
+This will permanently delete the row from the view.
 
 ## Code of Conduct
 This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/). For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
