@@ -81,7 +81,7 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	/**
 	 * Method to force initialization of the service so that it can start tracking query events
 	 */
-	public startup(): void {
+	public start(): void {
 
 	}
 }

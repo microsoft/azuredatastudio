@@ -26,7 +26,7 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 		// We need this to be running in the background even if the Panel (which is currently the only thing using it)
 		// isn't shown yet. Otherwise the service won't be initialized until the Panel is which means we might miss out
 		// on some events
-		_queryHistoryService.startup();
+		_queryHistoryService.start();
 
 		// This feature is in preview so for now hide it behind a flag. We expose this as a command
 		// so that the query-history extension can call it. We eventually want to move all this into
