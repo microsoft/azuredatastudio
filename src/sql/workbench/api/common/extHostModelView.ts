@@ -107,6 +107,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	image(): azdata.ComponentBuilder<azdata.ImageComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ImageComponent> = this.getComponentBuilder(new ImageComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	radioButton(): azdata.ComponentBuilder<azdata.RadioButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.RadioButtonComponent> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
@@ -1118,6 +1125,42 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	}
 }
 
+class ImageComponentWrapper extends ComponentWrapper implements azdata.ImageComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Image, id);
+		this.properties = {};
+	}
+
+	public get src(): string {
+		return this.properties['src'];
+	}
+	public set src(v: string) {
+		this.setProperty('src', v);
+	}
+
+	public get alt(): string {
+		return this.properties['alt'];
+	}
+	public set alt(v: string) {
+		this.setProperty('alt', v);
+	}
+
+	public get height(): number | string {
+		return this.properties['height'];
+	}
+	public set height(v: number | string) {
+		this.setProperty('height', v);
+	}
+
+	public get width(): number | string {
+		return this.properties['width'];
+	}
+	public set width(v: number | string) {
+		this.setProperty('width', v);
+	}
+}
+
 class TableComponentWrapper extends ComponentWrapper implements azdata.TableComponent {
 
 	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
@@ -1191,6 +1234,13 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		this.setProperty('moveFocusOutWithTab', v);
 	}
 
+	public get focused(): boolean {
+		return this.properties['focused'];
+	}
+	public set focused(v: boolean) {
+		this.setProperty('focused', v);
+	}
+
 	public get onRowSelected(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onSelectedRowChanged);
 		return emitter && emitter.event;
@@ -1200,6 +1250,8 @@ class TableComponentWrapper extends ComponentWrapper implements azdata.TableComp
 		let emitter = this._emitterMap.get(ComponentEventType.onCellAction);
 		return emitter && emitter.event;
 	}
+
+
 }
 
 class DropDownWrapper extends ComponentWrapper implements azdata.DropDownComponent {

@@ -322,6 +322,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		if (styles.listFocusOutline) {
 			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected.active { outline: 2px solid ${styles.listFocusOutline}; outline-offset: -1px; }`);
 		}
 
 		if (styles.listInactiveFocusOutline) {
@@ -358,5 +359,9 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	public set ariaColumnCount(value: number) {
 		this._tableContainer.setAttribute('aria-colcount', value.toString());
+	}
+
+	public set ariaRole(value: string) {
+		this._tableContainer.setAttribute('role', value);
 	}
 }

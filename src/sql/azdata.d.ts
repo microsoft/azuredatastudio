@@ -1387,6 +1387,20 @@ declare module 'azdata' {
 		alerts: AgentAlertInfo[];
 	}
 
+	export interface AgentNotebookInfo extends AgentJobInfo {
+		templateId: number;
+		targetDatabase: string;
+		lastRunNotebookError: string;
+		executeDatabase: string;
+	}
+
+	export interface AgentNotebookMaterializedInfo {
+		materializedId: number;
+		targetDatabase: string;
+		materializedName: string;
+		favorite: boolean;
+	}
+
 	export interface AgentJobScheduleInfo {
 		id: number;
 		name: string;
@@ -1487,6 +1501,14 @@ declare module 'azdata' {
 		steps: AgentJobStep[];
 	}
 
+	export interface AgentNotebookHistoryInfo extends AgentJobHistoryInfo {
+		materializedNotebookId: number;
+		materializedNotebookName: string;
+		materializedNotebookPin: boolean;
+		materializedNotebookErrorInfo: string;
+		materializedNotebookDeleted: boolean;
+	}
+
 	export interface AgentProxyInfo {
 		id: number;
 		accountName: string;
@@ -1577,6 +1599,39 @@ declare module 'azdata' {
 		categories: AgentJobCategory[];
 	}
 
+	export interface AgentNotebooksResult extends ResultStatus {
+		notebooks: AgentNotebookInfo[];
+	}
+
+	export interface AgentJobHistoryResult extends ResultStatus {
+		histories: AgentJobHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		alerts: AgentAlertInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookHistoryResult extends ResultStatus {
+		histories: AgentNotebookHistoryInfo[];
+		schedules: AgentJobScheduleInfo[];
+		steps: AgentJobStepInfo[];
+	}
+
+	export interface AgentNotebookMaterializedResult extends ResultStatus {
+		notebookMaterialized: string;
+	}
+
+	export interface AgentNotebookTemplateResult extends ResultStatus {
+		notebookTemplate: string;
+	}
+
+	export interface CreateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
+	export interface UpdateAgentNotebookResult extends ResultStatus {
+		notebook: AgentNotebookInfo;
+	}
+
 	export interface CreateAgentJobStepResult extends ResultStatus {
 		step: AgentJobStepInfo;
 	}
@@ -1650,6 +1705,18 @@ declare module 'azdata' {
 		updateJob(ownerUri: string, originalJobName: string, jobInfo: AgentJobInfo): Thenable<UpdateAgentJobResult>;
 		deleteJob(ownerUri: string, jobInfo: AgentJobInfo): Thenable<ResultStatus>;
 		getJobDefaults(ownerUri: string): Thenable<AgentJobDefaultsResult>;
+
+		// Notebook management methods
+		getNotebooks(ownerUri: string): Thenable<AgentNotebooksResult>;
+		getNotebookHistory(ownerUri: string, jobId: string, jobName: string, targetDatabase: string): Thenable<AgentNotebookHistoryResult>;
+		getMaterializedNotebook(ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<AgentNotebookMaterializedResult>;
+		getTemplateNotebook(ownerUri: string, targetDatabase: string, jobId: string): Thenable<AgentNotebookTemplateResult>;
+		createNotebook(ownerUri: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<CreateAgentNotebookResult>;
+		deleteNotebook(ownerUri: string, notebook: AgentNotebookInfo): Thenable<ResultStatus>;
+		updateNotebook(ownerUri: string, originialNotebookName: string, notebook: AgentNotebookInfo, templateFilePath: string): Thenable<UpdateAgentNotebookResult>;
+		updateNotebookMaterializedName(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<ResultStatus>;
+		updateNotebookMaterializedPin(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<ResultStatus>;
+		deleteMaterializedNotebook(ownerUri: string, agentNotebookHistory: AgentNotebookHistoryInfo, targetDatabase: string): Thenable<ResultStatus>;
 
 		// Job Step management methods
 		createJobStep(ownerUri: string, stepInfo: AgentJobStepInfo): Thenable<CreateAgentJobStepResult>;
@@ -2404,6 +2471,7 @@ declare module 'azdata' {
 		editor(): ComponentBuilder<EditorComponent>;
 		diffeditor(): ComponentBuilder<DiffEditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
+		image(): ComponentBuilder<ImageComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		tree<T>(): ComponentBuilder<TreeComponent<T>>;
@@ -2959,6 +3027,8 @@ declare module 'azdata' {
 		title?: string;
 		ariaRowCount?: number;
 		ariaColumnCount?: number;
+		ariaRole?: string;
+		focused?: boolean;
 		moveFocusOutWithTab?: boolean; //accessibility requirement for tables with no actionable cells
 	}
 
@@ -2998,6 +3068,12 @@ declare module 'azdata' {
 		CSSStyles?: { [key: string]: string };
 	}
 
+	export interface ImageComponentProperties {
+		src: string;
+		alt?: string;
+		height?: number | string;
+		width?: number | string;
+	}
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3014,6 +3090,7 @@ declare module 'azdata' {
 		editable?: boolean;
 		fireOnTextChange?: boolean;
 		ariaLabel?: string;
+		required?: boolean;
 	}
 
 	export interface DeclarativeTableColumn {
@@ -3032,7 +3109,6 @@ declare module 'azdata' {
 	export interface ListBoxProperties {
 		selectedRow?: number;
 		values?: string[];
-
 	}
 
 	export interface WebViewProperties extends ComponentProperties {
@@ -3076,10 +3152,25 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+		/**
+		 * The label for the button
+		 */
 		label?: string;
+		/**
+		 * Whether the button opens the file browser dialog
+		 */
 		isFile?: boolean;
+		/**
+		 * The content of the currently selected file
+		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
 		title?: string;
+		/**
+		 * The accessibility aria label for this component
+		 */
 		ariaLabel?: string;
 	}
 
@@ -3122,9 +3213,10 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
+	export interface ImageComponent extends Component, ImageComponentProperties {
+	}
+
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		label: string;
-		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -3145,8 +3237,6 @@ declare module 'azdata' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string | CategoryValue;
-		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 
@@ -3161,8 +3251,6 @@ declare module 'azdata' {
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		selectedRow?: number;
-		values: string[];
 		onRowSelected: vscode.Event<any>;
 	}
 
@@ -3283,19 +3371,6 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
-		/**
-		 * The label for the button
-		 */
-		label: string;
-		/**
-		 * The title for the button. This title will show when it hovers
-		 */
-		title: string;
-		/**
-		 * Icon Path for the button.
-		 */
-		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-
 		/**
 		 * An event called when the button is clicked
 		 */
@@ -3560,6 +3635,11 @@ declare module 'azdata' {
 			hidden: boolean;
 
 			/**
+			 * Whether the button is focused
+			 */
+			focused?: boolean;
+
+			/**
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
@@ -3725,7 +3805,7 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
-		export type QueryEvent =
+		export type QueryEventType =
 			| 'queryStart'
 			| 'queryUpdate'
 			| 'queryStop'
@@ -3740,7 +3820,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
+			onQueryEvent(type: QueryEventType, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
 		// new extensibility interfaces

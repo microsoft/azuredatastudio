@@ -25,6 +25,7 @@ import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/bro
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 
 @Component({
 	selector: 'modelview-table',
@@ -72,13 +73,15 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						width: col.width,
 						cssClass: col.cssClass,
 						headerCssClass: col.headerCssClass,
-						toolTip: col.toolTip
+						toolTip: col.toolTip,
+						formatter: textFormatter,
 					});
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
 						id: <string>col,
-						field: <string>col
+						field: <string>col,
+						formatter: textFormatter
 					});
 				}
 				index++;
@@ -94,8 +97,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			});
 		}
 	}
-
-
 
 	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
 		if (rows && columns) {
@@ -122,7 +123,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				syncColumnCellResize: true,
 				enableColumnReorder: false,
 				enableCellNavigation: true,
-				forceFitColumns: true // default to true during init, actual value will be updated when setProperties() is called
+				forceFitColumns: true, // default to true during init, actual value will be updated when setProperties() is called
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
@@ -245,6 +247,14 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			this._table.ariaColumnCount = this.ariaColumnCount;
 		}
 
+		if (this.ariaRole) {
+			this._table.ariaRole = this.ariaRole;
+		}
+
+		if (this.focused) {
+			this._table.focus();
+		}
+
 		this.layoutTable();
 		this.validate();
 	}
@@ -328,11 +338,23 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
 	}
 
+	public get ariaRole(): string {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.ariaRole, undefined);
+	}
+
 	public set moveFocusOutWithTab(newValue: boolean) {
 		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
 	}
 
 	public get moveFocusOutWithTab(): boolean {
 		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
+	}
+
+	public get focused(): boolean {
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
+	}
+
+	public set focused(newValue: boolean) {
+		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 }

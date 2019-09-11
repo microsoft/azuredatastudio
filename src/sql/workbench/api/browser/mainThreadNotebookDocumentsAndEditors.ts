@@ -98,7 +98,7 @@ class MainThreadNotebookEditor extends Disposable {
 		if (!input) {
 			return false;
 		}
-		return input === this.editor.notebookParams.input;
+		return input.notebookUri.toString() === this.editor.notebookParams.input.notebookUri.toString();
 	}
 
 	public applyEdits(versionIdCheck: number, edits: ISingleNotebookEditOperation[], opts: IUndoStopOptions): boolean {
@@ -574,7 +574,12 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		addedEditors.forEach(editor => {
 			let modelUrl = editor.uri;
 			const store = new DisposableStore();
-			store.add(editor.contentChanged((e) => this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor))));
+			store.add(editor.contentChanged((e) => {
+				// Cell source updates are handled by vscode editor updates in main/extHost Documents
+				if (e.changeType !== NotebookChangeType.CellSourceUpdated) {
+					this._proxy.$acceptModelChanged(modelUrl, this._toNotebookChangeData(e, editor));
+				}
+			}));
 			this._modelToDisposeMap.set(editor.uri.toString(), store);
 		});
 	}
@@ -702,8 +707,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onNext: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					if (uri.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path, '.ipynb')}`);
+					if (result.next.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
 						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
 					}
 					else {
@@ -714,8 +719,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 			onPrevious: async (uri) => {
 				let result = await this._proxy.$getNavigation(handle, uri);
 				if (result) {
-					if (uri.scheme === Schemas.untitled) {
-						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path, '.ipynb')}`);
+					if (result.previous.scheme === Schemas.untitled) {
+						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
 						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
 					}
 					else {

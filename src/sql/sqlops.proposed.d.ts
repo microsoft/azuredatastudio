@@ -632,10 +632,23 @@ declare module 'sqlops' {
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+		/**
+		 * The label for the button
+		 */
 		label?: string;
+		/**
+		 * Whether the button opens the file browser dialog
+		 */
 		isFile?: boolean;
+		/**
+		 * The content of the currently selected file
+		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
 		title?: string;
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -669,8 +682,6 @@ declare module 'sqlops' {
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		label: string;
-		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -688,8 +699,6 @@ declare module 'sqlops' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string | CategoryValue;
-		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 
@@ -704,8 +713,6 @@ declare module 'sqlops' {
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		selectedRow?: number;
-		values: string[];
 		onRowSelected: vscode.Event<any>;
 	}
 
@@ -769,19 +776,6 @@ declare module 'sqlops' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
-		/**
-		 * The label for the button
-		 */
-		label: string;
-		/**
-		 * The title for the button. This title will show when it hovers
-		 */
-		title: string;
-		/**
-		 * Icon Path for the button.
-		 */
-		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-
 		/**
 		 * An event called when the button is clicked
 		 */

@@ -6,12 +6,21 @@
 'use strict';
 
 import * as azdata from 'azdata';
+import * as fs from 'fs';
+import { promisify } from 'util';
+
 
 export class AgentUtils {
 
 	private static _agentService: azdata.AgentServicesProvider;
 	private static _connectionService: azdata.ConnectionProvider;
 	private static _queryProvider: azdata.QueryProvider;
+
+	public static async setupProvidersFromConnection(connection?: azdata.connection.Connection) {
+		this._agentService = azdata.dataprotocol.getProvider<azdata.AgentServicesProvider>(connection.providerName, azdata.DataProviderType.AgentServicesProvider);
+		this._connectionService = azdata.dataprotocol.getProvider<azdata.ConnectionProvider>(connection.providerName, azdata.DataProviderType.ConnectionProvider);
+		this._queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>(connection.providerName, azdata.DataProviderType.QueryProvider);
+	}
 
 	public static async getAgentService(): Promise<azdata.AgentServicesProvider> {
 		if (!AgentUtils._agentService) {
@@ -41,4 +50,20 @@ export class AgentUtils {
 		return this._queryProvider;
 	}
 
+}
+
+export function exists(path: string): Promise<boolean> {
+	return promisify(fs.exists)(path);
+}
+
+export function mkdir(path: string): Promise<void> {
+	return promisify(fs.mkdir)(path);
+}
+
+export function unlink(path: string): Promise<void> {
+	return promisify(fs.unlink)(path);
+}
+
+export function writeFile(path: string, data: string): Promise<void> {
+	return promisify(fs.writeFile)(path, data);
 }
