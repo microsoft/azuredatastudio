@@ -82,6 +82,31 @@ export class MainThreadConnectionManagement extends Disposable implements MainTh
 		return Promise.resolve(this._connectionManagementService.getConnections(activeConnectionsOnly).map(profile => this.convertToConnectionProfile(profile)));
 	}
 
+	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
+		let profile = this._connectionManagementService.getConnection(uri);
+		if (!profile) {
+			return Promise.resolve(undefined);
+		}
+
+		let connection: azdata.connection.ConnectionProfile = {
+			providerId: profile.providerName,
+			connectionId: profile.id,
+			connectionName: profile.connectionName,
+			serverName: profile.serverName,
+			databaseName: profile.databaseName,
+			userName: profile.userName,
+			password: profile.password,
+			authenticationType: profile.authenticationType,
+			savePassword: profile.savePassword,
+			groupFullName: profile.groupFullName,
+			groupId: profile.groupId,
+			saveProfile: profile.savePassword,
+			azureTenantId: profile.azureTenantId,
+			options: profile.options
+		};
+		return Promise.resolve(connection);
+	}
+
 	public $getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 		return Promise.resolve(this._connectionManagementService.getActiveConnections().map(profile => this.convertConnection(profile)));
 	}
