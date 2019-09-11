@@ -110,6 +110,7 @@ export const OPTIONS: OptionDescriptions<Required<ParsedArgs>> = {
 	'trace-category-filter': { type: 'string' },
 	'trace-options': { type: 'string' },
 	'disable-inspect': { type: 'boolean' },
+	'force-user-env': { type: 'boolean' },
 
 	// {{SQL CARBON EDIT}}
 	'command': { type: 'string', alias: 'c', cat: 'o', args: 'command-name', description: localize('commandParameter', 'Name of command to run') },

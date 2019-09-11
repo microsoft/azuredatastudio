@@ -73,6 +73,7 @@ export interface ParsedArgs {
 	'disable-user-env-probe'?: boolean;
 	'disable-inspect'?: boolean;
 	'force'?: boolean;
+	'force-user-env'?: boolean;
 
 	// {{SQL CARBON EDIT}}
 	aad?: boolean;
