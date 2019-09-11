@@ -13,13 +13,12 @@ import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 import { IFileService } from 'vs/platform/files/common/files';
-import { promisify } from 'util';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
 	private _notebookURI: URI;
 	private _baseUrls: string[] = [];
-	public exists = promisify(this.fileService.exists);
+
 	constructor(@IFileService private readonly fileService: IFileService) {
 
 	}
@@ -199,7 +198,7 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		if (base && !originIndependentUrl.test(href) && (!URI.isUri(href) || !this.exists(URI.parse(href)))) {
+		if (base && !originIndependentUrl.test(href) && (!URI.isUri(href) || !(async () => await this.fileService.exists(URI.parse(href))))) {
 			href = this.resolveUrl(base, href);
 		}
 		try {
