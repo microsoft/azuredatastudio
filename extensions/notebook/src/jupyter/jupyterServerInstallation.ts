@@ -87,8 +87,6 @@ export class JupyterServerInstallation {
 				} else {
 					await this.installOfflinePipDependencies();
 				}
-				let doOnlineInstall = this._usingExistingPython;
-				await this.installSparkMagic(doOnlineInstall);
 			} catch (err) {
 				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 				throw err;
@@ -444,32 +442,12 @@ export class JupyterServerInstallation {
 		}
 	}
 
-	private async installSparkMagic(doOnlineInstall: boolean): Promise<void> {
-		let installSparkMagic: string;
-		if (process.platform === constants.winPlatform || this._usingExistingPython) {
-			// Overwrite existing install of sparkmagic, since we use a custom version
-			let cmdOptions = this._usingExistingPython ? '--user' : '';
-			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			if (doOnlineInstall) {
-				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} "${sparkWheel}" --no-warn-script-location`;
-			} else {
-				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
-			}
-		}
-
-		if (installSparkMagic) {
-			this.outputChannel.show(true);
-			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
-			await this.executeStreamedCommand(installSparkMagic);
-		}
-	}
-
 	private async installPipDependencies(): Promise<void> {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter==1.0.0 pandas==0.24.2`;
+		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter==1.0.0 pandas==0.24.2 sparkmagic==0.12.9`;
 		await this.executeStreamedCommand(installCommand);
 
 		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
@@ -482,7 +460,7 @@ export class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2 sparkmagic==0.12.9`;
 		if (process.platform !== constants.winPlatform) {
 			installCommand = `${installCommand} pykerberos==1.2.1`;
 		}
