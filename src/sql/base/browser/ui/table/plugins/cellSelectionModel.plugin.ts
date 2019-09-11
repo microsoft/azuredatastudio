@@ -194,7 +194,7 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 
 	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range> {
 		let result = this.mergeSelections(ranges, range);
-		let newRanges = result.newRanges = [];
+		let newRanges = result.newRanges;
 
 		// Keep merging the rows until we stop having changes
 		let i = 0;
