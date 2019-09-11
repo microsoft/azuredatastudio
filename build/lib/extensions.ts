@@ -235,7 +235,8 @@ const sqlBuiltInExtensions = [
 	'admin-pack',
 	'dacpac',
 	'schema-compare',
-	'cms'
+	'cms',
+	'query-history'
 ];
 
 // make resource deployment and BDC extension only available in insiders

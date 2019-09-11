@@ -44,6 +44,7 @@ export interface IQueryMessage extends azdata.IResultMessage {
 export default class QueryRunner extends Disposable {
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _resultLineOffset: number;
+	private _resultColumnOffset: number;
 	private _totalElapsedMilliseconds: number = 0;
 	private _isExecuting: boolean = false;
 	private _hasCompleted: boolean = false;
@@ -179,6 +180,7 @@ export default class QueryRunner extends Disposable {
 		if (types.isObject(input) || types.isUndefinedOrNull(input)) {
 			// Update internal state to show that we're executing the query
 			this._resultLineOffset = input ? input.startLine : 0;
+			this._resultColumnOffset = input ? input.startColumn : 0;
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
 			// TODO issue #228 add statusview callbacks here
@@ -243,8 +245,10 @@ export default class QueryRunner extends Disposable {
 
 		this._batchSets.map(batch => {
 			if (batch.selection) {
-				batch.selection.startLine = batch.selection.startLine + this._resultLineOffset;
-				batch.selection.endLine = batch.selection.endLine + this._resultLineOffset;
+				batch.selection.startLine += this._resultLineOffset;
+				batch.selection.startColumn += this._resultColumnOffset;
+				batch.selection.endLine += this._resultLineOffset;
+				batch.selection.endColumn += this._resultColumnOffset;
 			}
 		});
 
@@ -271,7 +275,9 @@ export default class QueryRunner extends Disposable {
 		// Recalculate the start and end lines, relative to the result line offset
 		if (batch.selection) {
 			batch.selection.startLine += this._resultLineOffset;
+			batch.selection.startColumn += this._resultColumnOffset;
 			batch.selection.endLine += this._resultLineOffset;
+			batch.selection.endColumn += this._resultColumnOffset;
 		}
 
 		// Set the result sets as an empty array so that as result sets complete we can add to the list

@@ -3785,7 +3785,7 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
-		export type QueryEvent =
+		export type QueryEventType =
 			| 'queryStart'
 			| 'queryUpdate'
 			| 'queryStop'
@@ -3800,7 +3800,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
+			onQueryEvent(type: QueryEventType, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
 		// new extensibility interfaces
