@@ -206,11 +206,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	public getBooks(): BookTreeItem[] {
 		let books: BookTreeItem[] = [];
-		for (const tocPath of this._tableOfContentPaths) {
-			let root = path.dirname(path.dirname(tocPath));
+		for (let i in this._tableOfContentPaths) {
+			let root = path.dirname(path.dirname(this._tableOfContentPaths[i]));
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
-				const tableOfContents = yaml.safeLoad(fs.readFileSync(tocPath, 'utf-8'));
+				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentPaths[i], 'utf-8'));
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
