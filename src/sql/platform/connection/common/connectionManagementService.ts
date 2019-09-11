@@ -395,7 +395,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!tokenFillSuccess) {
 			throw new Error(nls.localize('connection.noAzureAccount', "Failed to get Azure account token for connection"));
 		}
-		return this.createNewConnection(uri, connection).then(connectionResult => {
+		return this.createNewConnection(uri, connection).then(async connectionResult => {
 			if (connectionResult && connectionResult.connected) {
 				// The connected succeeded so add it to our active connections now, optionally adding it to the MRU based on
 				// the options.saveTheConnection setting
@@ -406,7 +406,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					callbacks.onConnectSuccess(options.params, connectionResult.connectionProfile);
 				}
 				if (options.saveTheConnection) {
-					this.saveToSettings(uri, connection).then(value => {
+					await this.saveToSettings(uri, connection).then(value => {
 						this._onAddConnectionProfile.fire(connection);
 						this.doActionsAfterConnectionComplete(value, options);
 					});
@@ -521,7 +521,7 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		if (!this.focusDashboard(connectionProfile)) {
 			let dashboardInput: DashboardInput = this._instantiationService ? this._instantiationService.createInstance(DashboardInput, connectionProfile) : undefined;
 			return dashboardInput.initializedPromise.then(() => {
-				this._editorService.openEditor(dashboardInput, { pinned: true }, ACTIVE_GROUP);
+				return this._editorService.openEditor(dashboardInput, { pinned: true }, ACTIVE_GROUP);
 			}).then(() => true);
 		} else {
 			return Promise.resolve(true);
@@ -1148,33 +1148,26 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		// Disconnect if connected
 		let uri = Utils.generateUri(connection);
 		if (this.isConnected(uri) || this.isConnecting(uri)) {
-			this.doDisconnect(uri, connection).then((result) => {
+			return this.doDisconnect(uri, connection).then((result) => {
 				if (result) {
 					// Remove profile from configuration
-					this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
+					return this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
 						this._onDeleteConnectionProfile.fire();
-						Promise.resolve(true);
-					}).catch(err => {
-						// Reject promise if error occurred writing to settings
-						Promise.reject(err);
+						return true;
 					});
 
 				} else {
 					// If connection fails to disconnect, resolve promise with false
-					Promise.resolve(false);
+					return false;
 				}
 			});
 		} else {
 			// Remove disconnected profile from settings
-			this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
+			return this._connectionStore.deleteConnectionFromConfiguration(connection).then(() => {
 				this._onDeleteConnectionProfile.fire();
-				Promise.resolve(true);
-			}).catch(err => {
-				// Reject promise if error ocurred writing to settings
-				Promise.reject(err);
+				return true;
 			});
 		}
-		return Promise.resolve(undefined);
 	}
 
 	/**
@@ -1196,20 +1189,19 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 		});
 
 		// When all the disconnect promises resolve, remove profiles from config
-		Promise.all(disconnected).then(() => {
+		return Promise.all(disconnected).then(() => {
 			// Remove profiles and groups from config
-			this._connectionStore.deleteGroupFromConfiguration(group).then(() => {
+			return this._connectionStore.deleteGroupFromConfiguration(group).then(() => {
 				this._onDeleteConnectionProfile.fire();
-				Promise.resolve(true);
+				return true;
 			}).catch(err => {
 				// If saving to config fails, reject promise with false
-				return Promise.reject(false);
+				return false;
 			});
 		}).catch(err => {
 			// If disconnecting all connected profiles fails, resolve promise with false
-			return Promise.resolve(false);
+			return false;
 		});
-		return Promise.resolve(undefined);
 	}
 
 	private _notifyDisconnected(connectionProfile: IConnectionProfile, connectionUri: string): void {
