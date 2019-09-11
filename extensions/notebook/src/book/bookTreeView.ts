@@ -182,7 +182,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					//remove folder if exists
 					await fs.remove(destinationUri.fsPath);
 					//make directory for each contribution book.
-					await fs.mkdirSync(destinationUri.fsPath);
+					await fs.mkdir(destinationUri.fsPath);
 					await fs.copy(this._bookPath, destinationUri.fsPath);
 					let untitledBookIndex: number = this._tableOfContentPaths.indexOf(path.join(this._bookPath, '_data', 'toc.yml').replace(/\\/g, '/'));
 					if (untitledBookIndex > -1 && this._allNotebooks.size > 0) {
@@ -340,9 +340,11 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 							}
 						);
 						notebooks.push(notebook);
-						this._allNotebooks.set(pathToNotebook, notebook);
 						if (this._openAsUntitled) {
 							this._allNotebooks.set(path.basename(pathToNotebook), notebook);
+						}
+						else {
+							this._allNotebooks.set(pathToNotebook, notebook);
 						}
 					} else if (fs.existsSync(pathToMarkdown)) {
 						let markdown = new BookTreeItem({
