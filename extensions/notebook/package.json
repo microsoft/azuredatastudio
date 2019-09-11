@@ -377,11 +377,11 @@
       "books-explorer": [
         {
           "id": "bookTreeView",
-          "name": "Saved Books"
+          "name": "%title.SavedBooks%"
         },
         {
           "id": "untitledBookTreeView",
-          "name": "Untitled Books"
+          "name": "%title.UntitledBooks%"
         }
       ]
     }
