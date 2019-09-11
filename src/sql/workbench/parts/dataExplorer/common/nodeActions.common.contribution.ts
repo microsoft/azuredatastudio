@@ -24,6 +24,7 @@ MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
 		title: localize('disconnect', "Disconnect")
 	},
 	when: ContextKeyExpr.and(NodeContextKey.IsConnected,
+		ContextKeyNotEqualsExpr.create('nodeProvider', mssqlProviderName),
 		ContextKeyNotEqualsExpr.create('nodeType', NodeType.Folder))
 });
 

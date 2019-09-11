@@ -22,7 +22,7 @@ export class BdcDashboardModel {
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 
-	constructor(public clusterName: string, private url: string, private username: string, private password: string) {
+	constructor(private url: string, private username: string, private password: string) {
 		this.refresh();
 	}
 
@@ -72,7 +72,7 @@ export class BdcDashboardModel {
 		// We default to sa - if that doesn't work then callers of this should open up a connection
 		// dialog so the user can enter in the correct connection information
 		return {
-			connectionName: '',
+			connectionName: undefined,
 			serverName: sqlServerMasterEndpoint.endpoint,
 			databaseName: undefined,
 			userName: 'sa',

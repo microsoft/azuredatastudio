@@ -69,7 +69,7 @@ describe('SchemaCompareResult.start', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow();
+		let result = new SchemaCompareMainWindow(sc);
 		await result.start(null);
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;
@@ -80,6 +80,6 @@ describe('SchemaCompareResult.start', function (): void {
 		await result.execute();
 
 		should(result.getComparisonResult() !== undefined);
-		should(result.getComparisonResult().operationId !== undefined);
+		should(result.getComparisonResult().operationId === 'Test Operation Id');
 	});
 });

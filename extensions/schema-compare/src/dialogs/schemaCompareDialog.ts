@@ -306,7 +306,7 @@ export class SchemaCompareDialog {
 
 		currentButton.onDidClick(async (click) => {
 			// file browser should open where the current dacpac is or the appropriate default folder
-			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			let rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
 			let defaultUri = endpoint && endpoint.packageFilePath && existsSync(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
 
 			let fileUris = await vscode.window.showOpenDialog(

@@ -190,9 +190,9 @@ export class TabbedPanel extends Disposable {
 		}));
 
 		const insertBefore = !isUndefinedOrNull(index) ? this.tabList.children.item(index) : undefined;
-		if (insertBefore && index) {
-			this._tabOrder.copyWithin(index + 1, index);
-			this._tabOrder[index] = tab.tab.identifier;
+		if (insertBefore) {
+			this._tabOrder.copyWithin(index! + 1, index!);
+			this._tabOrder[index!] = tab.tab.identifier;
 			this.tabList.insertBefore(tabHeaderElement, insertBefore);
 		} else {
 			this.tabList.append(tabHeaderElement);

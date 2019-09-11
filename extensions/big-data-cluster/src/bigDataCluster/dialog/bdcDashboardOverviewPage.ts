@@ -65,32 +65,22 @@ export class BdcDashboardOverviewPage {
 
 		// Row 1
 		const row1 = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
-		// Cluster Name
-		const clusterNameLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.clusterName', "Cluster Name :") }).component();
-		const clusterNameValue = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this.model.clusterName }).component();
-		row1.addItem(clusterNameLabel, { CSSStyles: { 'width': '100px', 'min-width': '100px', 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(clusterNameValue, { CSSStyles: { 'user-select': 'text' } });
-
-		rootContainer.addItem(row1, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
-
-		// Row 2
-		const row2 = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', height: '30px', alignItems: 'center' }).component();
 
 		// Cluster State
 		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.clusterState', "Cluster State :") }).component();
 		const clusterStateValue = view.modelBuilder.text().withProperties({ CSSStyles: { 'user-select': 'text' } }).component();
 		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent().withItem(clusterStateValue).component();
-		row2.addItem(clusterStateLabel, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none', 'font-weight': 'bold' } });
-		row2.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none' } });
+		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none', 'font-weight': 'bold' } });
+		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none' } });
 
 		// Health Status
 		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatus', "Health Status :") }).component();
 		const healthStatusValue = view.modelBuilder.text().withProperties({ CSSStyles: { 'user-select': 'text' } }).component();
 		this.clusterHealthStatusLoadingComponent = view.modelBuilder.loadingComponent().withItem(healthStatusValue).component();
-		row2.addItem(healthStatusLabel, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none', 'font-weight': 'bold' } });
-		row2.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none' } });
+		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none', 'font-weight': 'bold' } });
+		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none' } });
 
-		rootContainer.addItem(row2, { CSSStyles: { 'padding-left': '10px', 'border-bottom': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
+		rootContainer.addItem(row1, { CSSStyles: { 'padding-left': '10px', 'border-bottom': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
 		// ############
 		// # OVERVIEW #
