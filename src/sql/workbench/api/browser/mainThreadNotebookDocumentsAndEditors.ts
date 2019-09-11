@@ -710,10 +710,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					if (result.next.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
 						let content = await this.fileService.readFile(URI.parse(result.next.path));
-						this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
-						this.doOpenEditor(result.next, {});
+						await this.doOpenEditor(result.next, {});
 					}
 				}
 			},
@@ -723,10 +723,10 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 					if (result.previous.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
 						let content = await this.fileService.readFile(URI.parse(result.previous.path));
-						this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
-						this.doOpenEditor(result.previous, {});
+						await this.doOpenEditor(result.previous, {});
 					}
 				}
 			}
