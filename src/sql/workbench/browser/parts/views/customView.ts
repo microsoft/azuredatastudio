@@ -65,6 +65,7 @@ export class CustomTreeViewPanel extends ViewletPanel {
 		const { treeView } = (<ITreeViewDescriptor>Registry.as<IViewsRegistry>(Extensions.ViewsRegistry).getView(options.id));
 		this.treeView = treeView as ITreeView;
 		this._register(this.treeView.onDidChangeActions(() => this.updateActions(), this));
+		this._register(this.treeView.onDidChangeTitle((newTitle) => this.updateTitle(newTitle)));
 		this._register(toDisposable(() => this.treeView.setVisibility(false)));
 		this._register(this.onDidChangeBodyVisibility(() => this.updateTreeVisibility()));
 		this.updateTreeVisibility();
@@ -200,11 +201,14 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	private readonly _onDidChangeActions: Emitter<void> = this._register(new Emitter<void>());
 	readonly onDidChangeActions: Event<void> = this._onDidChangeActions.event;
 
+	private readonly _onDidChangeTitle: Emitter<string> = this._register(new Emitter<string>());
+	readonly onDidChangeTitle: Event<string> = this._onDidChangeTitle.event;
+
 	private nodeContext: NodeContextKey;
 
 	constructor(
 		private id: string,
-		private title: string,
+		private _title: string,
 		private viewContainer: ViewContainer,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IWorkbenchThemeService private readonly themeService: IWorkbenchThemeService,
@@ -275,6 +279,15 @@ export class CustomTreeView extends Disposable implements ITreeView {
 	set message(message: string | undefined) {
 		this._message = message;
 		this.updateMessage();
+	}
+
+	get title(): string {
+		return this._title;
+	}
+
+	set title(name: string) {
+		this._title = name;
+		this._onDidChangeTitle.fire(this._title);
 	}
 
 	get canSelectMany(): boolean {
