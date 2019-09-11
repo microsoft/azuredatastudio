@@ -197,8 +197,7 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		let absoluteUrl = /^(?:\/|[a-z]+:\/\/)/;
-		if (base && !originIndependentUrl.test(href) && !absoluteUrl.test(href)) {
+		if (base && !originIndependentUrl.test(href) && !path.isAbsolute(href)) {
 			href = this.resolveUrl(base, href);
 		}
 		try {
