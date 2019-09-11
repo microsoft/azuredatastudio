@@ -19,7 +19,7 @@ import { promisify } from 'util';
 export class NotebookMarkdownRenderer {
 	private _notebookURI: URI;
 	private _baseUrls: string[] = [];
-
+	public existsSync = promisify(this.fileService.exists);
 	constructor(@IFileService private readonly fileService: IFileService) {
 
 	}
@@ -199,7 +199,7 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		if (base && !originIndependentUrl.test(href) && (!URI.isUri(href) || !this.fileService.exists(URI.parse(href)))) {
+		if (base && !originIndependentUrl.test(href) && (!URI.isUri(href) || !this.existsSync(URI.parse(href)))) {
 			href = this.resolveUrl(base, href);
 		}
 		try {
