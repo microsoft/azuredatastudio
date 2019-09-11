@@ -12,14 +12,13 @@ import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
 import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
-import { IFileService } from 'vs/platform/files/common/files';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
 	private _notebookURI: URI;
 	private _baseUrls: string[] = [];
 
-	constructor(@IFileService private readonly fileService: IFileService) {
+	constructor() {
 
 	}
 
@@ -66,7 +65,7 @@ export class NotebookMarkdownRenderer {
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href).toString();
 			let dimensions: string[] = [];
 			if (href) {
 				const splitted = href.split('|').map(s => s.trim());
@@ -103,7 +102,7 @@ export class NotebookMarkdownRenderer {
 			return '<img ' + attributes.join(' ') + '>';
 		};
 		renderer.link = (href: string, title: string, text: string): string => {
-			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			let returnedValue = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			if (href === null) {
 				return text;
 			}
@@ -198,17 +197,17 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		return this.fileService.exists(URI.file(href)).then(exists => {
-			if (base && !originIndependentUrl.test(href) && !exists) {
-				href = this.resolveUrl(base, href);
-			}
-			try {
-				href = encodeURI(href).replace(/%25/g, '%');
-			} catch (e) {
-				return null;
-			}
-			return href;
-		});
+		let absoluteUrl = /^(?:\/|[a-z]+:\/\/)/;
+		if (base && !originIndependentUrl.test(href) && !absoluteUrl.test(href)) {
+			href = this.resolveUrl(base, href);
+		}
+		try {
+			href = encodeURI(href).replace(/%25/g, '%');
+		} catch (e) {
+			return null;
+		}
+		return href;
+
 	}
 
 	resolveUrl(base: string, href: string) {
