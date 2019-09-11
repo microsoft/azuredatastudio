@@ -192,12 +192,17 @@ export class CellSelectionModel<T> implements Slick.SelectionModel<T, Array<Slic
 		};
 	}
 
-	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range>  {
+	private insertIntoSelections(ranges: Array<Slick.Range>, range: Slick.Range): Array<Slick.Range> {
 		let result = this.mergeSelections(ranges, range);
-		let newRanges = result.newRanges;
+		let newRanges = result.newRanges = [];
 
 		// Keep merging the rows until we stop having changes
+		let i = 0;
 		while (true) {
+			if (i++ > 10000) {
+				console.error('InsertIntoSelection infinite loop: Report this error on github');
+				break;
+			}
 			let shouldContinue = false;
 			for (let current of newRanges) {
 				result = this.mergeSelections(newRanges, current);
