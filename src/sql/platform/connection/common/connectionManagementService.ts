@@ -1157,7 +1157,6 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 					});
 
 				} else {
-					// If connection fails to disconnect, resolve promise with false
 					return false;
 				}
 			});
@@ -1194,14 +1193,8 @@ export class ConnectionManagementService extends Disposable implements IConnecti
 			return this._connectionStore.deleteGroupFromConfiguration(group).then(() => {
 				this._onDeleteConnectionProfile.fire();
 				return true;
-			}).catch(err => {
-				// If saving to config fails, reject promise with false
-				return false;
 			});
-		}).catch(err => {
-			// If disconnecting all connected profiles fails, resolve promise with false
-			return false;
-		});
+		}).catch(() => false);
 	}
 
 	private _notifyDisconnected(connectionProfile: IConnectionProfile, connectionUri: string): void {
