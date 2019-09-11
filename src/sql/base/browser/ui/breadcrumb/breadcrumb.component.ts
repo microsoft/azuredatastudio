@@ -53,6 +53,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy {
 	}
 
 	public route(link: any[]): void {
+		// tslint:disable-next-line:no-floating-promise
 		this._router.navigate(link);
 	}
 }

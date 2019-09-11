@@ -231,6 +231,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	 */
 	public onSessionCreated(handle: number, session: azdata.ObjectExplorerSession): void {
 		if (session && session.success) {
+			// tslint:disable-next-line
 			this.handleSessionCreated(session);
 		} else {
 			let errorMessage = session && session.errorMessage ? session.errorMessage : errSessionCreateFailed;
@@ -284,7 +285,8 @@ export class ObjectExplorerService implements IObjectExplorerService {
 					this._serverTreeView.deleteObjectExplorerNodeAndRefreshTree(connection).then(() => {
 						this.sendUpdateNodeEvent(connection, session.errorMessage);
 						connection.isDisconnecting = true;
-						this._connectionManagementService.disconnect(connection).then((value) => {
+						// tslint:disable-next-line
+						this._connectionManagementService.disconnect(connection).then(() => {
 							connection.isDisconnecting = false;
 						});
 					});
@@ -487,6 +489,7 @@ export class ObjectExplorerService implements IObjectExplorerService {
 	public refreshNode(providerId: string, session: azdata.ObjectExplorerSession, nodePath: string): Thenable<azdata.ObjectExplorerExpandInfo> {
 		let provider = this._providers[providerId];
 		if (provider) {
+			// tslint:disable-next-line
 			TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.ObjectExplorerExpand, { refresh: 1, provider: providerId });
 			return this.expandOrRefreshNode(providerId, session, nodePath, true);
 		}

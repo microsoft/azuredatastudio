@@ -64,6 +64,7 @@ export class RestoreService implements IRestoreService {
 		return new Promise<azdata.RestoreResponse>((resolve, reject) => {
 			const providerResult = this.getProvider(connectionUri);
 			if (providerResult) {
+				// tslint:disable-next-line:no-floating-promise
 				TelemetryUtils.addTelemetry(this._telemetryService, this.logService, TelemetryKeys.RestoreRequested, { provider: providerResult.providerName });
 				providerResult.provider.restore(connectionUri, restoreInfo).then(result => {
 					resolve(result);
@@ -165,11 +166,10 @@ export class RestoreDialogController implements IRestoreDialogController {
 			const self = this;
 			let connectionProfile = self._connectionService.getConnectionProfile(self._ownerUri);
 			let activeNode = self._objectExplorerService.getObjectExplorerNode(connectionProfile);
-			this._taskService.onTaskComplete(response => {
+			this._taskService.onTaskComplete(async response => {
 				if (result.taskId === response.id && this.isSuccessfulRestore(response) && activeNode) {
-					self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode).then(result => {
-						self._objectExplorerService.getServerTreeView().refreshTree();
-					});
+					await self._objectExplorerService.refreshTreeNode(activeNode.getSession(), activeNode);
+					return self._objectExplorerService.getServerTreeView().refreshTree();
 				}
 			});
 			let restoreDialog = this._restoreDialogs[this._currentProvider];
@@ -279,6 +279,7 @@ export class RestoreDialogController implements IRestoreDialogController {
 	}
 
 	private handleOnClose(): void {
+		// tslint:disable-next-line:no-floating-promise
 		this._connectionService.disconnect(this._ownerUri);
 	}
 

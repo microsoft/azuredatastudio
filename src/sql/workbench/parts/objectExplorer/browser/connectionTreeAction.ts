@@ -41,16 +41,15 @@ export class RefreshAction extends Action {
 		super(id, label);
 		this._tree = tree;
 	}
-	public run(): Promise<boolean> {
+	public async run(): Promise<boolean> {
 		let treeNode: TreeNode;
 		if (this.element instanceof ConnectionProfile) {
 			let connection: ConnectionProfile = this.element;
 			if (this._connectionManagementService.isConnected(undefined, connection)) {
 				treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 				if (treeNode === undefined) {
-					this._objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile()).then(() => {
-						treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
-					});
+					await this._objectExplorerService.updateObjectExplorerNodes(connection.toIConnectionProfile());
+					treeNode = this._objectExplorerService.getObjectExplorerNode(connection);
 				}
 			}
 		} else if (this.element instanceof TreeNode) {
@@ -58,23 +57,21 @@ export class RefreshAction extends Action {
 		}
 
 		if (treeNode) {
-			return this._tree.collapse(this.element).then(() => {
-				return this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode).then(() => {
-
-					return this._tree.refresh(this.element).then(() => {
-						return this._tree.expand(this.element);
-					}, refreshError => {
-						return Promise.resolve(true);
-					});
-				}, error => {
+			try {
+				await this._tree.collapse(this.element);
+				try {
+					await this._objectExplorerService.refreshTreeNode(treeNode.getSession(), treeNode);
+				} catch (error) {
 					this.showError(error);
 					return Promise.resolve(true);
-				});
-			}, collapseError => {
-				return Promise.resolve(true);
-			});
+				}
+				await this._tree.refresh(this.element);
+				return this._tree.expand(this.element);
+			} catch (ex) {
+				return true;
+			}
 		}
-		return Promise.resolve(true);
+		return true;
 	}
 
 	private showError(errorMessage: string) {
@@ -99,29 +96,23 @@ export class DisconnectConnectionAction extends Action {
 		super(id, label);
 	}
 
-	run(actionContext: ObjectExplorerActionsContext): Promise<any> {
-		return new Promise<boolean>((resolve, reject) => {
-			if (!this._connectionProfile) {
-				resolve(true);
+	async run(actionContext: ObjectExplorerActionsContext): Promise<any> {
+		if (!this._connectionProfile) {
+			return true;
+		}
+		if (this._connectionManagementService.isProfileConnected(this._connectionProfile)) {
+			let profileImpl = this._connectionProfile as ConnectionProfile;
+			if (profileImpl) {
+				profileImpl.isDisconnecting = true;
 			}
-			if (this._connectionManagementService.isProfileConnected(this._connectionProfile)) {
-				let profileImpl = this._connectionProfile as ConnectionProfile;
-				if (profileImpl) {
-					profileImpl.isDisconnecting = true;
-				}
-				this._connectionManagementService.disconnect(this._connectionProfile).then((value) => {
-					if (profileImpl) {
-						profileImpl.isDisconnecting = false;
-					}
-					resolve(true);
-				}
-				).catch(disconnectError => {
-					reject(disconnectError);
-				});
-			} else {
-				resolve(true);
+			await this._connectionManagementService.disconnect(this._connectionProfile);
+			if (profileImpl) {
+				profileImpl.isDisconnecting = false;
 			}
-		});
+			return true;
+		} else {
+			return true;
+		}
 	}
 }
 
@@ -141,7 +132,7 @@ export class AddServerAction extends Action {
 		this.class = 'add-server-action';
 	}
 
-	public run(element: ConnectionProfileGroup): Promise<boolean> {
+	public async run(element: ConnectionProfileGroup): Promise<boolean> {
 		let connection: IConnectionProfile = element === undefined ? undefined : {
 			connectionName: undefined,
 			serverName: undefined,
@@ -159,8 +150,8 @@ export class AddServerAction extends Action {
 			saveProfile: true,
 			id: element.id
 		};
-		this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
-		return Promise.resolve(true);
+		await this._connectionManagementService.showConnectionDialog(undefined, undefined, connection);
+		return true;
 	}
 }
 
@@ -180,9 +171,9 @@ export class AddServerGroupAction extends Action {
 		this.class = 'add-server-group-action';
 	}
 
-	public run(): Promise<boolean> {
-		this.serverGroupController.showCreateGroupDialog();
-		return Promise.resolve(true);
+	public async run(): Promise<boolean> {
+		await this.serverGroupController.showCreateGroupDialog();
+		return true;
 	}
 }
 

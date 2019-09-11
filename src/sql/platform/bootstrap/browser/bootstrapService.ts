@@ -48,6 +48,7 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 		platform = platformBrowserDynamic();
 	}
 
+	// tslint:disable-next-line
 	platform.bootstrapModule(moduleType(params, uniqueSelectorString, service)).then(moduleRef => {
 		if (input) {
 			input.onDispose(() => {
