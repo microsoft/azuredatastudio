@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -21,7 +21,7 @@ import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
-import { FilterData } from 'sql/workbench/services/profiler/common/profilerFilter';
+import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
 import { uriPrefixes } from 'sql/platform/connection/common/utils';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {

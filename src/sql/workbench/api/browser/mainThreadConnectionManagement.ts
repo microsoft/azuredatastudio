@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { IConnectionManagementService, ConnectionType, IConnectionParams } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';

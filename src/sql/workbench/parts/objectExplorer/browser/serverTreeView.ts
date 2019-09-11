@@ -24,7 +24,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';

@@ -35,9 +35,9 @@ import { TimeElapsedStatusBarContributions, RowCountStatusBarContributions, Quer
 import { SqlFlavorStatusbarItem } from 'sql/workbench/parts/query/browser/flavorStatus';
 import { NewQueryTask, OE_NEW_QUERY_ACTION_ID, DE_NEW_QUERY_COMMAND_ID } from 'sql/workbench/parts/query/browser/queryActions';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
-import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { ManageActionContext } from 'sql/workbench/common/actions';
+import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 
 const gridCommandsWeightBonus = 100; // give our commands a little bit more weight over other default list/tree commands

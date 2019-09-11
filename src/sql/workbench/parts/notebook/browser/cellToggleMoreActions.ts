@@ -12,13 +12,13 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import * as DOM from 'vs/base/browser/dom';
 
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { CellActionBase, CellContext } from 'sql/workbench/parts/notebook/browser/cellViews/codeActions';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { ToggleMoreWidgetAction } from 'sql/workbench/parts/dashboard/browser/core/actions';
-import { CellModel } from 'sql/workbench/parts/notebook/common/models/cell';
+import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
 
 export const HIDDEN_CLASS = 'actionhidden';
 
