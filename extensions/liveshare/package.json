@@ -1,0 +1,30 @@
+{
+  "name": "liveshare",
+  "version": "0.1.0",
+  "publisher": "Microsoft",
+  "aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+  "activationEvents": [
+    "*"
+  ],
+  "engines": {
+    "vscode": "*"
+  },
+  "main": "./out/main",
+  "extensionDependencies": [
+    "vscode.sql"
+  ],
+  "scripts": {
+    "compile": "gulp compile-extension:liveshare"
+  },
+  "devDependencies": {
+    "@types/node": "12.0.9",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.1",
+    "vscode": "^1.1.33"
+  },
+  "dependencies": {
+    "dataprotocol-client": "github:Microsoft/sqlops-dataprotocolclient#0.3.0",
+    "vsls": "^0.3.1291"
+  }
+}
