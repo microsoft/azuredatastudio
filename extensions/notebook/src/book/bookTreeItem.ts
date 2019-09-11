@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as nls from 'vscode-nls';
+import { IJupyterBookSection, IJupyterBookToc } from '../contracts/content';
 const localize = nls.loadMessageBundle();
 
 export enum BookTreeItemType {
@@ -19,14 +20,14 @@ export enum BookTreeItemType {
 export interface BookTreeItemFormat {
 	title: string;
 	root: string;
-	tableOfContents: any[];
+	tableOfContents: IJupyterBookToc;
 	page: any;
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: any[];
+	private _sections: IJupyterBookSection[];
 	private _uri: string;
 	private _previousUri: string;
 	private _nextUri: string;
@@ -54,7 +55,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._sections = this.book.page.sections || this.book.page.subsections;
 		this._uri = this.book.page.url;
 
-		let index = (this.book.tableOfContents.indexOf(this.book.page));
+		let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
 		this.setPreviousUri(index);
 		this.setNextUri(index);
 	}
@@ -74,9 +75,9 @@ export class BookTreeItem extends vscode.TreeItem {
 	private setPreviousUri(index: number): void {
 		let i = --index;
 		while (i > -1) {
-			if (this.book.tableOfContents[i].url) {
+			if (this.book.tableOfContents.sections[i].url) {
 				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents[i].url.concat('.ipynb'));
+				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				if (fs.existsSync(pathToNotebook)) {
 					this._previousUri = pathToNotebook;
 					return;
@@ -88,10 +89,10 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	private setNextUri(index: number): void {
 		let i = ++index;
-		while (i < this.book.tableOfContents.length) {
-			if (this.book.tableOfContents[i].url) {
+		while (i < this.book.tableOfContents.sections.length) {
+			if (this.book.tableOfContents.sections[i].url) {
 				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents[i].url.concat('.ipynb'));
+				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				if (fs.existsSync(pathToNotebook)) {
 					this._nextUri = pathToNotebook;
 					return;
@@ -113,7 +114,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.root;
 	}
 
-	public get tableOfContents(): any[] {
+	public get tableOfContents(): IJupyterBookToc {
 		return this.book.tableOfContents;
 	}
 
@@ -143,20 +144,18 @@ export class BookTreeItem extends vscode.TreeItem {
 	 * @param section The current section we're checking
 	 * @param url The url of the md file or Notebook we're searching for
 	 */
-	public findChildItem(url: string): any {
-		return this.findChildItemRecur(this, url);
+	public findChildSection(url: string): any {
+		return this.findChildSectionRecur(this, url);
 	}
 
-	private findChildItemRecur(section: any, url: string): any {
+	private findChildSectionRecur(section: IJupyterBookSection, url: string): any {
 		if (section.url && section.url === url) {
 			return section;
-		}
-		else if (section.sections) {
-			for (let i = 0; i < section.sections.length; i++) {
-				const childSection = section.sections[i];
-				const foundItem = this.findChildItemRecur(childSection, url);
-				if (foundItem) {
-					return foundItem;
+		} else if (section.sections) {
+			for (const childSection of section.sections) {
+				const foundSection = this.findChildSectionRecur(childSection, url);
+				if (foundSection) {
+					return foundSection;
 				}
 			}
 		}

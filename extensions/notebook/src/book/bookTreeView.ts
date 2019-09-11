@@ -14,6 +14,7 @@ import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import { isEditorTitleFree } from '../common/utils';
 import * as nls from 'vscode-nls';
 import { promisify } from 'util';
+import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
 const existsAsync = promisify(fs.exists);
@@ -85,9 +86,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this._openAsUntitled = openAsUntitled;
 				let books = this.getBooks();
 				if (books && books.length > 0) {
-					const bookTreeItem = books[0].findChildItem(urlToOpen) || books[0];
+					const bookTreeItem = books[0].findChildSection(urlToOpen) || books[0];
 					bookViewer.reveal(bookTreeItem, { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-					const urlPath = bookTreeItem.url || books[0].tableOfContents[0].url;
+					const urlPath = bookTreeItem.url || books[0].tableOfContents.sections[0].url;
 					const readmeMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
 					const readmeNotebook: string = path.join(bookPath, 'content', urlPath.concat('.ipynb'));
 					const markdownExists = await existsAsync(readmeMarkdown);
@@ -198,12 +199,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private flattenArray(array: any[], title: string): any[] {
-		try {
-			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections, title)) : acc.concat(val), []);
-		} catch (e) {
-			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', title);
-		}
+	/**
+	 * Recursively parses out a section of a Jupyter Book.
+	 * @param array The input data to parse
+	 */
+	private parseJupyterSection(array: any[]): IJupyterBookSection[] {
+		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
 	}
 
 	public getBooks(): BookTreeItem[] {
@@ -213,20 +214,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
 				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentPaths[i], 'utf-8'));
-				let book = new BookTreeItem({
-					title: config.title,
-					root: root,
-					tableOfContents: this.flattenArray(tableOfContents, config.title),
-					page: tableOfContents,
-					type: BookTreeItemType.Book,
-					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
-				},
-					{
-						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
-						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
-					}
-				);
-				books.push(book);
+				try {
+					let book = new BookTreeItem({
+						title: config.title,
+						root: root,
+						tableOfContents: { sections: this.parseJupyterSection(tableOfContents) },
+						page: tableOfContents,
+						type: BookTreeItemType.Book,
+						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+					},
+						{
+							light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
+						}
+					);
+					books.push(book);
+				} catch (e) {
+					throw Error(localize('invalidTocError', "Error: {0} has an incorrect toc.yml file. {1}", config.title, e instanceof Error ? e.message : e));
+				}
 			} catch (e) {
 				let error = e instanceof Error ? e.message : e;
 				this._errorMessage = error;
@@ -236,7 +241,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return books;
 	}
 
-	public getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
+	public getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): BookTreeItem[] {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
