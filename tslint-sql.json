@@ -12,7 +12,10 @@
 				],
 				"argIndex": 1
 			}
-		]
+		],
+		"no-floating-promises":{
+			"severity": "warn"
+		}
 	},
 	"linterOptions": {
 		"exclude": ["src/vs/**/*.ts"]
