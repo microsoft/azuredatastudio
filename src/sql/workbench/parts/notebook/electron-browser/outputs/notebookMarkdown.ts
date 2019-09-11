@@ -203,9 +203,6 @@ export class NotebookMarkdownRenderer {
 				href = this.resolveUrl(base, href);
 			}
 		});
-		if (base && !originIndependentUrl.test(href) && (!URI.isUri(href) || !(async () => await this.fileService.exists(URI.parse(href))))) {
-			href = this.resolveUrl(base, href);
-		}
 		try {
 			href = encodeURI(href).replace(/%25/g, '%');
 		} catch (e) {
