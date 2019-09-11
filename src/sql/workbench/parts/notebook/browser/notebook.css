@@ -143,16 +143,18 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	width: 60%;
-	margin: 1px auto;
+	width: 100%;
+	padding: 0px 20px;
+	margin: 1px 0px;
+	box-sizing: border-box;
 }
 
 .notebookEditor .hoverButtonsContainer .containerBackground {
 	position: absolute;
-	width: inherit;
-	height: 2px;
-	border-radius: 3px;
-	opacity: 0.4;
+	width: auto;
+	left: 20px;
+	right: 20px;
+	height: 1px;
 	z-index: 0;
 	visibility: hidden;
 }
@@ -166,14 +168,12 @@
 	flex-direction: row;
 	align-items: center;
 	justify-content: center;
-	margin: 3px;
-	padding: 4px 6px;
-	font-size: 10px;
+	margin: 3px 2px;
+	padding: 4px 12px;
+	font-size: 12px;
 	box-sizing: border-box;
-	border-color: transparent;
 	border-width: 1px;
 	border-style: solid;
-	border-radius: 3px;
 	z-index: 1;
 	visibility: hidden;
 }
