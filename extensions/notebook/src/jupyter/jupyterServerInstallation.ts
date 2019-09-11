@@ -105,41 +105,34 @@ export class JupyterServerInstallation {
 	}
 
 	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
+		if (this._usingExistingPython) {
+			return Promise.resolve();
+		}
+
 		let bundleVersion = constants.pythonBundleVersion;
 		let pythonVersion = constants.pythonVersion;
 		let platformId = utils.getOSPlatformId();
 		let packageName: string;
 		let pythonDownloadUrl: string;
-		if (this._usingExistingPython) {
-			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
-			pythonDownloadUrl = constants.pythonOfflinePipPackagesUrl;
-		} else {
-			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
-			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
-			switch (utils.getOSPlatform()) {
-				case utils.Platform.Windows:
-					pythonDownloadUrl = constants.pythonWindowsInstallUrl;
-					break;
-				case utils.Platform.Mac:
-					pythonDownloadUrl = constants.pythonMacInstallUrl;
-					break;
-				default:
-					// Default to linux
-					pythonDownloadUrl = constants.pythonLinuxInstallUrl;
-					break;
-			}
+		let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
+		packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
+
+		switch (utils.getOSPlatform()) {
+			case utils.Platform.Windows:
+				pythonDownloadUrl = constants.pythonWindowsInstallUrl;
+				break;
+			case utils.Platform.Mac:
+				pythonDownloadUrl = constants.pythonMacInstallUrl;
+				break;
+			default:
+				// Default to linux
+				pythonDownloadUrl = constants.pythonLinuxInstallUrl;
+				break;
 		}
 
-		let installPath: string;
-		if (this._usingExistingPython) {
-			installPath = utils.getUserHome();
-		} else {
-			installPath = this._pythonInstallationPath;
-		}
-
-		let pythonPackagePathLocal = path.join(installPath, packageName);
 		return new Promise((resolve, reject) => {
+			let installPath = this._pythonInstallationPath;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(installPath, (err) => {
 				if (err) {
@@ -177,12 +170,13 @@ export class JupyterServerInstallation {
 						}
 					});
 
+				let pythonPackagePathLocal = path.join(installPath, packageName);
 				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
 					.on('close', () => {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
-						if (!this._usingExistingPython && fs.existsSync(pythonSourcePath)) {
+						if (fs.existsSync(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
@@ -221,7 +215,7 @@ export class JupyterServerInstallation {
 			: path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
 
 		if (this._usingExistingPython) {
-			this._pythonPackageDir = path.join(utils.getUserHome(), 'offlinePackages');
+			this._pythonPackageDir = undefined;
 		} else {
 			this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
 		}
