@@ -7,7 +7,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
