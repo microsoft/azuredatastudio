@@ -226,6 +226,8 @@ export class NotebookMarkdownRenderer {
 			return base.replace(/:[\s\S]*/, ':') + href;
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
+		} else if (href.slice(0, 2) === '..') {
+			return path.join(base, href);
 		} else {
 			return base + href;
 		}

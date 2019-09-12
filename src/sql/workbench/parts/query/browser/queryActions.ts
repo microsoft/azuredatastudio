@@ -472,12 +472,14 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	}
 
 	public run(): Promise<void> {
-		if (this.connected) {
-			// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
-			// determine if we need to disconnect, cancel an in-progress connection, or do nothing
-			this.connectionManagementService.disconnectEditor(this.editor.input);
-		} else {
-			this.connectEditor(this.editor);
+		if (!this.editor.input.isSharedSession) {
+			if (this.connected) {
+				// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
+				// determine if we need to disconnect, cancel an in-progress connection, or do nothing
+				this.connectionManagementService.disconnectEditor(this.editor.input);
+			} else {
+				this.connectEditor(this.editor);
+			}
 		}
 		return Promise.resolve(null);
 	}
@@ -514,8 +516,8 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 	public static DisableSqlcmdClass = 'disablesqlcmd';
 	public static ID = 'ToggleSqlCmdModeAction';
 
-	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD Mode");
-	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD Mode");
+	private _enablesqlcmdLabel = nls.localize('enablesqlcmdLabel', "Enable SQLCMD");
+	private _disablesqlcmdLabel = nls.localize('disablesqlcmdLabel', "Disable SQLCMD");
 	constructor(
 		editor: QueryEditor,
 		private _isSqlCmdMode: boolean,

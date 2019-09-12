@@ -150,6 +150,8 @@ import { INotebookService } from 'sql/workbench/services/notebook/common/noteboo
 import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
+import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
+import { QueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryServiceImpl';
 
 registerSingleton(IDashboardService, DashboardService);
 registerSingleton(IDashboardViewService, DashboardViewService);
@@ -189,6 +191,7 @@ registerSingleton(INotebookService, NotebookService);
 registerSingleton(IAccountPickerService, AccountPickerService);
 registerSingleton(IProfilerService, ProfilerService);
 registerSingleton(IAdsTelemetryService, AdsTelemetryService);
+registerSingleton(IQueryHistoryService, QueryHistoryService);
 // {{SQL CARBON EDIT}} - End
 
 //#region --- workbench contributions
@@ -276,7 +279,10 @@ import 'sql/workbench/parts/editData/browser/editData.contribution';
 // query plan editor
 import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
 
-//acounts
+// query history
+import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
+
+//accounts
 import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 
 //backup
@@ -331,3 +337,4 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewConta
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
 
 import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
+
