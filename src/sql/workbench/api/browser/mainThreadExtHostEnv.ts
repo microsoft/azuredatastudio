@@ -27,7 +27,7 @@ export class MainThreadExtHostEnv extends Disposable implements MainThreadExtHos
 			this._proxy = extHostContext.getProxy(SqlExtHostContext.ExtHostExtHostEnv);
 		}
 	}
-	public $getEnvironment(): Thenable<azdata.ExtHostEnvironment> {
+	public getEnvironment(): Thenable<azdata.ExtHostEnvironment> {
 		return this._proxy.$getEnvironment();
 	}
 }

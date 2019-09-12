@@ -601,7 +601,7 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 }
 
 export interface MainThreadExtHostEnvShape extends IDisposable {
-	$getEnvironment(): Thenable<azdata.ExtHostEnvironment>;
+	getEnvironment(): Thenable<azdata.ExtHostEnvironment>;
 }
 
 export interface MainThreadCredentialManagementShape extends IDisposable {
