@@ -632,7 +632,7 @@ export const SqlMainContext = {
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
 	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
-	MainThreadExtHostEnv: createMainId<MainThreadExtHostEnvShape>('ExtHostExtHostEnv')
+	MainThreadExtHostEnv: createMainId<MainThreadExtHostEnvShape>('MainThreadExtHostEnv')
 };
 
 export const SqlExtHostContext = {
