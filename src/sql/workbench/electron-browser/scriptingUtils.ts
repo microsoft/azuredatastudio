@@ -207,6 +207,9 @@ function getServerInfo(connectionService: IConnectionManagementService, ownerUri
 }
 
 function getFilePath(metadata: azdata.ObjectMetadata): string {
+	azdata.exthostenv.getEnvironment().then((env) => {
+		console.log(env);
+	});
 	let schemaName: string = metadata.schema;
 	let objectName: string = metadata.name;
 	let timestamp = Date.now().toString();
