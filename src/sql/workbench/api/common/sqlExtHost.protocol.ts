@@ -183,7 +183,7 @@ export interface ExtHostDataProtocolShape {
 	/**
 	 * Connect the editor document to the given profile
 	 */
-	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> { throw ni(); }
+	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void>;
 
 	/**
 	 * Disposes the cached information regarding a query
