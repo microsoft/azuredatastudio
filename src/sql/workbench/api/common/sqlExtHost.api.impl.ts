@@ -26,6 +26,7 @@ import { ExtHostBackgroundTaskManagement } from 'sql/workbench/api/common/extHos
 import { ExtHostNotebook } from 'sql/workbench/api/common/extHostNotebook';
 import { ExtHostNotebookDocumentsAndEditors } from 'sql/workbench/api/common/extHostNotebookDocumentsAndEditors';
 import { ExtHostExtensionManagement } from 'sql/workbench/api/common/extHostExtensionManagement';
+import { ExtHostExtHostEnv } from 'sql/workbench/api/common/extHostExtHostEnv';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
 import * as extHostTypes from 'vs/workbench/api/common/extHostTypes';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
@@ -100,6 +101,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 	const extHostNotebook = rpcProtocol.set(SqlExtHostContext.ExtHostNotebook, new ExtHostNotebook(rpcProtocol));
 	const extHostNotebookDocumentsAndEditors = rpcProtocol.set(SqlExtHostContext.ExtHostNotebookDocumentsAndEditors, new ExtHostNotebookDocumentsAndEditors(rpcProtocol));
 	const extHostExtensionManagement = rpcProtocol.set(SqlExtHostContext.ExtHostExtensionManagement, new ExtHostExtensionManagement(rpcProtocol));
+	const extHostExtHostEnv = rpcProtocol.set(SqlExtHostContext.ExtHostExtHostEnv, new ExtHostExtHostEnv(rpcProtocol));
 
 
 	return {
@@ -514,6 +516,12 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				NotebookChangeKind: sqlExtHostTypes.NotebookChangeKind
 			};
 
+			const exthostenv = {
+				getEnvironment() {
+					return extHostExtHostEnv.$getEnvironment();
+				}
+			};
+
 			return {
 				accounts,
 				connection,
@@ -521,6 +529,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				objectexplorer: objectExplorer,
 				resources,
 				dataprotocol,
+				exthostenv,
 				DataProviderType: sqlExtHostTypes.DataProviderType,
 				DeclarativeDataType: sqlExtHostTypes.DeclarativeDataType,
 				ServiceOptionType: sqlExtHostTypes.ServiceOptionType,

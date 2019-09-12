@@ -79,4 +79,12 @@ declare module 'azdata' {
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;
 	}
+
+	export namespace exthostenv {
+		export function getEnvironment(): Thenable<ExtHostEnvironment>;
+	}
+
+	export interface ExtHostEnvironment {
+		tmpdir: vscode.Uri;
+	}
 }

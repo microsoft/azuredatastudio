@@ -516,6 +516,10 @@ export abstract class ExtHostCredentialManagementShape {
 	$deleteCredential(credentialId: string): Thenable<boolean> { throw ni(); }
 }
 
+export interface ExtHostExtHostEnvShape {
+	$getEnvironment(): Thenable<azdata.ExtHostEnvironment>;
+}
+
 export interface MainThreadAccountManagementShape extends IDisposable {
 	$registerAccountProvider(providerMetadata: azdata.AccountProviderMetadata, handle: number): Thenable<any>;
 	$unregisterAccountProvider(handle: number): Thenable<any>;
@@ -596,6 +600,10 @@ export interface MainThreadConnectionManagementShape extends IDisposable {
 	$connect(connectionProfile: azdata.IConnectionProfile, saveConnection: boolean, showDashboard: boolean): Thenable<azdata.ConnectionResult>;
 }
 
+export interface MainThreadExtHostEnvShape extends IDisposable {
+	$getEnvironment(): Thenable<azdata.ExtHostEnvironment>;
+}
+
 export interface MainThreadCredentialManagementShape extends IDisposable {
 	$registerCredentialProvider(handle: number): Promise<any>;
 	$unregisterCredentialProvider(handle: number): Promise<any>;
@@ -623,7 +631,8 @@ export const SqlMainContext = {
 	MainThreadQueryEditor: createMainId<MainThreadQueryEditorShape>('MainThreadQueryEditor'),
 	MainThreadNotebook: createMainId<MainThreadNotebookShape>('MainThreadNotebook'),
 	MainThreadNotebookDocumentsAndEditors: createMainId<MainThreadNotebookDocumentsAndEditorsShape>('MainThreadNotebookDocumentsAndEditors'),
-	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement')
+	MainThreadExtensionManagement: createMainId<MainThreadExtensionManagementShape>('MainThreadExtensionManagement'),
+	MainThreadExtHostEnv: createMainId<MainThreadExtHostEnvShape>('ExtHostExtHostEnv')
 };
 
 export const SqlExtHostContext = {
@@ -644,7 +653,8 @@ export const SqlExtHostContext = {
 	ExtHostQueryEditor: createExtId<ExtHostQueryEditorShape>('ExtHostQueryEditor'),
 	ExtHostNotebook: createExtId<ExtHostNotebookShape>('ExtHostNotebook'),
 	ExtHostNotebookDocumentsAndEditors: createExtId<ExtHostNotebookDocumentsAndEditorsShape>('ExtHostNotebookDocumentsAndEditors'),
-	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement')
+	ExtHostExtensionManagement: createExtId<ExtHostExtensionManagementShape>('ExtHostExtensionManagement'),
+	ExtHostExtHostEnv: createExtId<ExtHostExtHostEnvShape>('ExtHostExtHostEnv')
 };
 
 export interface MainThreadDashboardShape extends IDisposable {
