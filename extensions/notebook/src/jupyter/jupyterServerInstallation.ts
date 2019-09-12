@@ -440,10 +440,10 @@ export class JupyterServerInstallation {
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter==1.0.0 pandas==0.24.2 sparkmagic==0.12.9`;
+		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter>=1.0.0 pandas>=0.24.2 sparkmagic>=0.12.9`;
 		await this.executeStreamedCommand(installCommand);
 
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator>=1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
@@ -453,14 +453,14 @@ export class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter>=1.0.0 pandas>=0.24.2`;
 		if (process.platform !== constants.winPlatform) {
-			installCommand = `${installCommand} pykerberos==1.2.1`;
+			installCommand = `${installCommand} pykerberos>=1.2.1`;
 		}
 		await this.executeStreamedCommand(installCommand);
 
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} sparkmagic==0.12.9 prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
