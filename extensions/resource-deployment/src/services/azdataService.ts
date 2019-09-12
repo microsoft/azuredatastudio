@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 import * as cp from 'child_process';
-import * as os from 'os';
 import * as path from 'path';
 import * as fs from 'fs';
+import { IPlatformService } from './platformService';
 
 export interface DeploymentProfile {
 	name: string;
@@ -37,14 +37,13 @@ interface BdcConfigListOutput {
 export interface IAzdataService {
 	getDeploymentProfiles(): Thenable<DeploymentProfile[]>;
 }
-const WorkingDirectory: string = path.join(os.homedir(), '.azuredatastudiobdc');
 
 export class AzdataService implements IAzdataService {
+	constructor(private platformService: IPlatformService) {
+	}
+
 	getDeploymentProfiles(): Thenable<DeploymentProfile[]> {
 		return this.getDeploymentProfileNames().then((names: string[]) => {
-			if (!fs.existsSync(WorkingDirectory)) {
-				fs.mkdirSync(WorkingDirectory);
-			}
 			const profilePromises: Thenable<DeploymentProfile>[] = [];
 			names.forEach(name => {
 				profilePromises.push(this.getDeploymentProfileInfo(name));
@@ -56,8 +55,8 @@ export class AzdataService implements IAzdataService {
 	private getDeploymentProfileNames(): Thenable<string[]> {
 		const promise = new Promise<string[]>((resolve, reject) => {
 			cp.exec('azdata bdc config list -o json', (error, stdout, stderror) => {
-				if (stderror) {
-					reject(stderror);
+				if (error) {
+					reject(error.message);
 				} else {
 					try {
 						const output = <BdcConfigListOutput>JSON.parse(stdout);
@@ -78,14 +77,16 @@ export class AzdataService implements IAzdataService {
 
 	private getDeploymentProfileInfo(profileName: string): Thenable<DeploymentProfile> {
 		const promise = new Promise<DeploymentProfile>((resolve, reject) => {
-			cp.exec(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { cwd: WorkingDirectory }, (error, stdout, stderror) => {
-				if (stderror) {
-					reject(stderror);
+			if (!fs.existsSync(this.platformService.storagePath())) {
+				fs.mkdirSync(this.platformService.storagePath());
+			}
+			cp.exec(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { cwd: this.platformService.storagePath() }, (error, stdout, stderror) => {
+				if (error) {
+					reject(error.message);
 				} else {
 					try {
-						const bdcJson = this.getJsonObject(path.join(WorkingDirectory, profileName, 'bdc.json'));
-						const controlJson = this.getJsonObject(path.join(WorkingDirectory, profileName, 'control.json'));
-
+						const bdcJson = this.getJsonObject(path.join(this.platformService.storagePath(), profileName, 'bdc.json'));
+						const controlJson = this.getJsonObject(path.join(this.platformService.storagePath(), profileName, 'control.json'));
 						resolve({
 							name: profileName,
 							defaultDataSize: (<string>controlJson.spec.storage.data.size).replace('Gi', ''),

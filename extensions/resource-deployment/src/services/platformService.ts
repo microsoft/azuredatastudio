@@ -13,6 +13,7 @@ import * as azdata from 'azdata';
  */
 export interface IPlatformService {
 	platform(): string;
+	storagePath(): string;
 	copyFile(source: string, target: string): void;
 	fileExists(file: string): boolean;
 	openFile(filePath: string): void;
@@ -21,6 +22,13 @@ export interface IPlatformService {
 }
 
 export class PlatformService implements IPlatformService {
+	constructor(private _storagePath: string = '') {
+
+	}
+	storagePath(): string {
+		return this._storagePath;
+	}
+
 	platform(): string {
 		return process.platform;
 	}

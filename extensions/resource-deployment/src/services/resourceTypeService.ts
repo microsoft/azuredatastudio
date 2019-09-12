@@ -199,7 +199,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (provider.wizard) {
-			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(), this.notebookService);
+			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);
 			wizard.open();
 		} else if (provider.dialog) {
 			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);

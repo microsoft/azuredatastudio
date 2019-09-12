@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, isInputBoxEmpty } from '../../modelViewUtils';
+import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, isInputBoxEmpty, getDropdownComponent } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 const localize = nls.loadMessageBundle();
@@ -52,12 +52,10 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			rows: [{
 				fields: [
 					{
-						type: FieldType.Number,
+						type: FieldType.Options,
 						label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
-						min: 1,
-						max: 9,
+						options: ['1', '3', '4', '5', '6', '7', '8', '9'],
 						defaultValue: '1',
-						useCustomValidator: true,
 						variableName: VariableNames.MasterSQLServerScale_VariableName,
 					}
 				]
@@ -382,7 +380,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onEnter(): void {
-		this.setInputBoxValue(VariableNames.MasterSQLServerScale_VariableName);
+		this.setDropdownValue(VariableNames.MasterSQLServerScale_VariableName);
 		this.setInputBoxValue(VariableNames.ComputePoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.DataPoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.HDFSPoolScale_VariableName);
@@ -427,8 +425,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
-				const isValid: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.MasterSQLServerScale_VariableName, this.inputComponents))
-					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ComputePoolScale_VariableName, this.inputComponents))
+				const isValid: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.ComputePoolScale_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DataPoolScale_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSNameNodeScale_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSPoolScale_VariableName, this.inputComponents))
@@ -473,5 +470,9 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	private setCheckboxValue(variableName: string): void {
 		getCheckboxComponent(variableName, this.inputComponents).checked = this.wizard.model.getBooleanValue(variableName);
+	}
+
+	private setDropdownValue(variableName: string): void {
+		getDropdownComponent(variableName, this.inputComponents).value = this.wizard.model.getStringValue(variableName);
 	}
 }
