@@ -83,6 +83,10 @@ export class BdcServiceStatusPage {
 				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
 				resourceHeaderTab.div.onDidClick(() => {
+					// Don't need to do anything if this is already the currently selected tab
+					if (this.currentTab.index === currentIndex) {
+						return;
+					}
 					if (this.currentTab) {
 						this.currentTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
 						this.resourceHeader.removeItem(this.currentTab.div);
@@ -97,7 +101,7 @@ export class BdcServiceStatusPage {
 				// Set initial page
 				if (!this.currentTabPage) {
 					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTab = { ...resourceHeaderTab, index: tabIndex };
+					this.currentTab = { ...resourceHeaderTab, index: currentIndex };
 					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
 					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				}

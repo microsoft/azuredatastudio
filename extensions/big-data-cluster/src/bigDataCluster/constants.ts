@@ -66,5 +66,3 @@ export namespace cssStyles {
 	export const selectedTabDiv = { 'border-bottom': '2px solid #000' };
 	export const unselectedTabDiv = { 'border-bottom': '1px solid #ccc' };
 }
-
-
