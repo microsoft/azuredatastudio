@@ -118,7 +118,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
 					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
 				},
-
+				getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
+					return extHostConnectionManagement.$getConnection(uri);
+				},
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 					console.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');

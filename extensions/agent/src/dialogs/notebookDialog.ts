@@ -66,8 +66,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private removeScheduleButton: azdata.ButtonComponent;
 	private descriptionTextBox: azdata.InputBoxComponent;
 
-
-
 	private isEdit: boolean = false;
 
 	// Job objects

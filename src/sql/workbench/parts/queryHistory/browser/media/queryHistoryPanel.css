@@ -1,0 +1,56 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+#workbench\.panel\.queryHistory > .no-queries-message {
+	padding: 10px 22px 0 22px;
+}
+
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item {
+	line-height:22px;
+	display:flex;
+}
+
+/* query history label and description */
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .label {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	font-weight: bold;
+}
+
+/* style for server name | database name */
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .connection-info {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	padding-left: 12px
+}
+
+/* style for timing */
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .time {
+	padding-left: 12px;
+	opacity: .6;
+	text-overflow: ellipsis;
+	font-style: italic
+}
+
+/* query history icon status */
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon {
+	background-size: 16px;
+	background-position: left center;
+	background-repeat: no-repeat;
+	padding-right: 6px;
+	width: 22px;
+	height: 22px;
+	display: inline-block;
+}
+
+
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon.success {
+	background-image: url("status_success.svg");
+}
+
+#workbench\.panel\.queryHistory > .monaco-tree .monaco-tree-rows > .monaco-tree-row > .content > .query-history-item > .query-history-icon.error {
+	background-image: url("status_error.svg");
+}
+

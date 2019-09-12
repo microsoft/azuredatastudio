@@ -1,5 +1,12 @@
 # Change Log
 
+## Version 1.11.0
+* Release date: September 10, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/41?closed=1).
+
 ## Version 1.10.0
 * Release date: August 14, 2019
 * Release status: General Availability

@@ -441,6 +441,7 @@ notebookhistory-component
 	height: 40px;
 	background-size: 40px 40px;
 	background-repeat: no-repeat;
+	cursor: pointer;
 }
 
 .vs-dark .notebook-grid-item > .img-error,

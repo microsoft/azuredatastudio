@@ -181,6 +181,11 @@ export interface ExtHostDataProtocolShape {
 	$setQueryExecutionOptions(handle: number, ownerUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;
 
 	/**
+	 * Connect the editor document to the given profile
+	 */
+	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> { throw ni(); }
+
+	/**
 	 * Disposes the cached information regarding a query
 	 */
 	$disposeQuery(handle: number, ownerUri: string): Thenable<void>;
@@ -575,6 +580,7 @@ export interface MainThreadDataProtocolShape extends IDisposable {
 export interface MainThreadConnectionManagementShape extends IDisposable {
 	$registerConnectionEventListener(handle: number, providerId: string): void;
 	$getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]>;
+	$getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile>;
 	$getActiveConnections(): Thenable<azdata.connection.Connection[]>;
 	$getCurrentConnection(): Thenable<azdata.connection.Connection>;
 	$getCurrentConnectionProfile(): Thenable<azdata.connection.ConnectionProfile>;
@@ -731,6 +737,7 @@ export interface ExtHostQueryEditorShape {
 
 export interface MainThreadQueryEditorShape extends IDisposable {
 	$connect(fileUri: string, connectionId: string): Thenable<void>;
+	$connectWithProfile(fileUri: string, connectionProfile: azdata.connection.ConnectionProfile): Thenable<void>;
 	$runQuery(fileUri: string, runCurrentQuery?: boolean): void;
 	$createQueryTab(fileUri: string, title: string, content: string): void;
 	$setQueryExecutionOptions(fileUri: string, options: azdata.QueryExecutionOptions): Thenable<void>;

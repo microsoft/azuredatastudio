@@ -1,0 +1,30 @@
+{
+	"name": "query-history",
+	"displayName": "%queryHistory.displayName%",
+	"description": "%queryHistory.description%",
+	"version": "0.1.0",
+	"publisher": "Microsoft",
+	"preview": true,
+	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
+	"icon": "images/sqlserver.png",
+	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+	"engines": {
+		"vscode": "^1.30.1",
+		"azdata": ">=1.9.0"
+	},
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/main",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/Microsoft/azuredatastudio.git"
+	},
+	"extensionDependencies": [
+	],
+	"dependencies": {
+	},
+	"devDependencies": {
+		"vscode": "1.0.1"
+	}
+}

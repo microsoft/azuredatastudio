@@ -355,4 +355,8 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 	public get tabColor(): string {
 		return this._connectionManagementService.getTabColorForUri(this.uri);
 	}
+
+	public get isSharedSession(): boolean {
+		return this.uri && this.uri.startsWith('vsls:');
+	}
 }

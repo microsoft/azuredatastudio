@@ -52,8 +52,4 @@ export class ApiWrapper {
 	public showErrorMessage(message: string, ...items: string[]): Thenable<string | undefined> {
 		return vscode.window.showErrorMessage(message, ...items);
 	}
-
-	public get workspaceRootPath(): string {
-		return vscode.workspace.rootPath;
-	}
 }
