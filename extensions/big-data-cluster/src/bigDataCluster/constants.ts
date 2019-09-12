@@ -63,4 +63,8 @@ export namespace cssStyles {
 	export const tableHeader = { 'font-weight': 'bold', 'text-transform': 'uppercase', 'font-size': '10px', 'user-select': 'text' };
 	export const selectedResourceHeaderTab = { 'font-weight': 'bold', 'color': '' };
 	export const unselectedResourceHeaderTab = { 'font-weight': '', 'color': '#0078d4' };
+	export const selectedTabDiv = { 'border-bottom': '2px solid #000' };
+	export const unselectedTabDiv = { 'border-bottom': '1px solid #ccc' };
 }
+
+

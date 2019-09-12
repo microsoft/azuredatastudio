@@ -16,7 +16,7 @@ export class BdcServiceStatusPage {
 	private initialized: boolean = false;
 	private resourceTabsCreated: boolean = false;
 
-	private currentTabText: azdata.TextComponent;
+	private currentTab: { div: azdata.DivContainer, text: azdata.TextComponent, index: number };
 	private currentTabPage: azdata.FlexContainer;
 	private rootContainer: azdata.FlexContainer;
 	private resourceHeader: azdata.FlexContainer;
@@ -77,26 +77,35 @@ export class BdcServiceStatusPage {
 	 */
 	private createResourceNavTabs(resources: ResourceStatusModel[]) {
 		if (this.initialized && !this.resourceTabsCreated) {
+			let tabIndex = 0;
 			resources.forEach(resource => {
+				const currentIndex = tabIndex++;
 				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
 				resourceHeaderTab.div.onDidClick(() => {
-					if (this.currentTabText) {
-						this.currentTabText.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+					if (this.currentTab) {
+						this.currentTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+						this.resourceHeader.removeItem(this.currentTab.div);
+						this.resourceHeader.insertItem(this.currentTab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
 					}
 					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTabText = resourceHeaderTab.text;
-					this.currentTabText.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.currentTab = { ...resourceHeaderTab, index: currentIndex };
+					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.resourceHeader.removeItem(this.currentTab.div);
+					this.resourceHeader.insertItem(this.currentTab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				});
+				// Set initial page
 				if (!this.currentTabPage) {
 					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTabText = resourceHeaderTab.text;
-					this.currentTabText.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.currentTab = { ...resourceHeaderTab, index: tabIndex };
+					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				}
 				else {
 					resourceHeaderTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
 				}
-				this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: { 'border-bottom': 'solid #ccc' } });
+
 			});
 			this.resourceTabsCreated = true;
 		}
