@@ -160,7 +160,7 @@ export class TaskService implements ITaskService {
 			let numOfInprogressTasks = this.getNumberOfInProgressTasks();
 			if (numOfInprogressTasks > 0) {
 				this.dialogService.show(Severity.Warning, message, options).then(choice => {
-					switch (choice) {
+					switch (choice.choice) {
 						case 0:
 							let timeout: any;
 							let isTimeout = false;
