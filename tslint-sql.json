@@ -12,7 +12,18 @@
 				],
 				"argIndex": 1
 			}
-		]
+		],
+		"no-floating-promises":{
+			"severity": "warn"
+		},
+		"await-promise": {
+			"severity": "warn",
+			"options": ["Thenable"]
+		},
+		"no-promise-as-boolean": {
+			"severity": "error",
+			"options": ["Thenable"]
+		}
 	},
 	"linterOptions": {
 		"exclude": ["src/vs/**/*.ts"]

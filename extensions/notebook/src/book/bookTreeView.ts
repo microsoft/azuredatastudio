@@ -37,12 +37,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext, openAsUntitled: boolean, view: string) {
 		this._openAsUntitled = openAsUntitled;
-		this.initialze(workspaceFolders, null, extensionContext);
+		this.initialize(workspaceFolders, null, extensionContext);
 		vscode.commands.executeCommand('setContext', 'untitledBooks', openAsUntitled);
 		this.viewId = view;
 	}
 
-	private initialze(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
+	private initialize(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
 		let workspacePaths: string[] = [];
 		if (bookPath) {
 			workspacePaths.push(bookPath);

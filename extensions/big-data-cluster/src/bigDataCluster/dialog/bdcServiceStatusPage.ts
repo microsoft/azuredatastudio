@@ -9,16 +9,14 @@ import { BdcStatusModel, ResourceStatusModel } from '../controller/apiGenerated'
 import { BdcDashboardResourceStatusPage } from './bdcDashboardResourceStatusPage';
 import { BdcDashboardModel } from './bdcDashboardModel';
 import { getHealthStatusDot } from '../utils';
-
-const selectedTabCss = { 'font-weight': 'bold' };
-const unselectedTabCss = { 'font-weight': '' };
+import { cssStyles } from '../constants';
 
 export class BdcServiceStatusPage {
 
 	private initialized: boolean = false;
 	private resourceTabsCreated: boolean = false;
 
-	private currentTabText: azdata.TextComponent;
+	private currentTab: { div: azdata.DivContainer, text: azdata.TextComponent, index: number };
 	private currentTabPage: azdata.FlexContainer;
 	private rootContainer: azdata.FlexContainer;
 	private resourceHeader: azdata.FlexContainer;
@@ -79,23 +77,39 @@ export class BdcServiceStatusPage {
 	 */
 	private createResourceNavTabs(resources: ResourceStatusModel[]) {
 		if (this.initialized && !this.resourceTabsCreated) {
+			let tabIndex = 0;
 			resources.forEach(resource => {
+				const currentIndex = tabIndex++;
 				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
 				resourceHeaderTab.div.onDidClick(() => {
-					if (this.currentTabText) {
-						this.currentTabText.updateCssStyles(unselectedTabCss);
+					// Don't need to do anything if this is already the currently selected tab
+					if (this.currentTab.index === currentIndex) {
+						return;
+					}
+					if (this.currentTab) {
+						this.currentTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+						this.resourceHeader.removeItem(this.currentTab.div);
+						this.resourceHeader.insertItem(this.currentTab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
 					}
 					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTabText = resourceHeaderTab.text;
-					this.currentTabText.updateCssStyles(selectedTabCss);
+					this.currentTab = { ...resourceHeaderTab, index: currentIndex };
+					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.resourceHeader.removeItem(this.currentTab.div);
+					this.resourceHeader.insertItem(this.currentTab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				});
+				// Set initial page
 				if (!this.currentTabPage) {
 					this.changeSelectedTabPage(resourceStatusPage);
-					this.currentTabText = resourceHeaderTab.text;
-					this.currentTabText.updateCssStyles(selectedTabCss);
+					this.currentTab = { ...resourceHeaderTab, index: currentIndex };
+					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				}
-				this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: { 'border-bottom': 'solid #ccc' } });
+				else {
+					resourceHeaderTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
+				}
+
 			});
 			this.resourceTabsCreated = true;
 		}

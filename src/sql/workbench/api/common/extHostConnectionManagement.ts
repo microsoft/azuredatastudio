@@ -20,10 +20,6 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		this._proxy = mainContext.getProxy(SqlMainContext.MainThreadConnectionManagement);
 	}
 
-	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
-		return this._proxy.$getCurrentConnectionProfile();
-	}
-
 	public $onConnectionEvent(handle: number, type: azdata.connection.ConnectionEventType, ownerUri: string, profile: azdata.IConnectionProfile): void {
 		let listener = this._connectionListeners[handle];
 		if (listener) {
@@ -37,8 +33,16 @@ export class ExtHostConnectionManagement extends ExtHostConnectionManagementShap
 		this._nextListenerHandle++;
 	}
 
+	public $getCurrentConnection(): Thenable<azdata.connection.ConnectionProfile> {
+		return this._proxy.$getCurrentConnectionProfile();
+	}
+
 	public $getConnections(activeConnectionsOnly?: boolean): Thenable<azdata.connection.ConnectionProfile[]> {
 		return this._proxy.$getConnections(activeConnectionsOnly);
+	}
+
+	public $getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
+		return this._proxy.$getConnection(uri);
 	}
 
 	// "sqlops" back-compat connection APIs
