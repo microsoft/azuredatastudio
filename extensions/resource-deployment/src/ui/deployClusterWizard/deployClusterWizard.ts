@@ -18,6 +18,7 @@ import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { Model } from '../model';
 import * as VariableNames from './constants';
+import { INotebookService } from '../../services/notebookService';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployClusterWizardModel> {
@@ -30,8 +31,12 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 		return this._azdataService;
 	}
 
-	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService) {
-		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server big data cluster"), new DeployClusterWizardModel());
+	public get notebookService(): INotebookService {
+		return this._notebookService;
+	}
+
+	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService) {
+		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server Big Data Cluster"), new DeployClusterWizardModel());
 	}
 
 	public get deploymentType(): BdcDeploymentType {
@@ -48,6 +53,8 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 	}
 
 	protected onOk(): void {
+		this.model.setEnvironmentVariables();
+		this.notebookService.launchNotebook(this.wizardInfo.notebook);
 	}
 
 	private getPages(): WizardPageBase<DeployClusterWizard>[] {

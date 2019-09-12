@@ -17,10 +17,6 @@ export class Model {
 		}
 	}
 
-	public get propertyNames(): string[] {
-		return Object.keys(this.propValueObject);
-	}
-
 	public getIntegerValue(propName: string, defaultValue: number = 0): number {
 		const value = this.propValueObject[propName];
 		return value === undefined ? defaultValue : Number.parseInt(value);
@@ -33,5 +29,15 @@ export class Model {
 	public getBooleanValue(propName: string, defaultValue: boolean = false): boolean {
 		const value = this.propValueObject[propName];
 		return value === undefined ? defaultValue : value === 'true';
+	}
+
+	public setEnvironmentVariables(): void {
+		Object.keys(this.propValueObject).filter(propertyName => propertyName.startsWith('AZDATA_NB_VAR_')).forEach(propertyName => {
+			const value = this.getStringValue(propertyName);
+			if (value !== undefined && value !== '') {
+				process.env[propertyName] = value;
+			}
+			process.env[propertyName] = value === undefined ? '' : value;
+		});
 	}
 }

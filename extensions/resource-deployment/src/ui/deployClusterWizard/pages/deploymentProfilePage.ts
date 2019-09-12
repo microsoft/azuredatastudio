@@ -10,6 +10,7 @@ import { WizardPageBase } from '../../wizardPageBase';
 import { DeploymentProfile } from '../../../services/azdataService';
 import * as VariableNames from '../constants';
 import { createFlexContainer } from '../../modelViewUtils';
+import { BdcDeploymentType } from '../../../interfaces';
 const localize = nls.loadMessageBundle();
 
 export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
@@ -163,8 +164,14 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 
 	private loadCards(): Thenable<void> {
 		return this.wizard.azdataService.getDeploymentProfiles().then((profiles: DeploymentProfile[]) => {
+			const defaultProfile: string = this.getDefaultProfile();
+
 			profiles.forEach(profile => {
 				const card = this.createProfileCard(profile, this._view!);
+				if (profile.name === defaultProfile) {
+					card.selected = true;
+					this.setModelValuesByProfile(profile);
+				}
 				this._cardContainer!.addItem(card, { flex: '0 0 auto' });
 			});
 		});
@@ -191,5 +198,17 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			return true;
 		});
+	}
+
+	private getDefaultProfile(): string {
+		switch (this.wizard.deploymentType) {
+			case BdcDeploymentType.NewAKS:
+			case BdcDeploymentType.ExistingAKS:
+				return 'aks-dev-test';
+			case BdcDeploymentType.ExistingKubeAdm:
+				return 'kubeadm-dev-test';
+			default:
+				return 'aks=dev-test';
+		}
 	}
 }

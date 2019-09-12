@@ -96,9 +96,9 @@ export class AzdataService implements IAzdataService {
 							data: <string>bdcJson.spec.resources['data-0'].spec.replicas,
 							compute: <string>bdcJson.spec.resources['compute-0'].spec.replicas,
 							hdfs: <string>bdcJson.spec.resources['storage-0'].spec.replicas,
-							nameNode: '1',
-							spark: '1',
-							activeDirectory: false, // TODO: implement AD checking
+							nameNode: <string>bdcJson.spec.resources['nmnode-0'].spec.replicas,
+							spark: <string>bdcJson.spec.resources['sparkhead'].spec.replicas,
+							activeDirectory: false, // TODO: implement AD check
 							hadr: <string>bdcJson.spec.resources.master.spec.settings.sql['hadr.enabled'],
 							includeSpark: <string>bdcJson.spec.resources['storage-0'].spec.settings.spark.includeSpark,
 							gatewayPort: this.getEndpointPort(bdcJson.spec.resources.gateway.spec.endpoints, 'Knox'),

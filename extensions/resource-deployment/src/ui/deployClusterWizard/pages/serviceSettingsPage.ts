@@ -179,16 +179,19 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						useCustomValidator: true,
+						min: 1,
 						variableName: VariableNames.ControllerDataStorageSize_VariableName,
 					}, {
 						type: FieldType.Text,
 						label: '',
 						useCustomValidator: true,
+						min: 1,
 						variableName: VariableNames.ControllerLogsStorageClassName_VariableName,
 					}, {
 						type: FieldType.Number,
 						label: '',
 						useCustomValidator: true,
+						min: 1,
 						variableName: VariableNames.ControllerLogsStorageSize_VariableName,
 					}
 				]
@@ -215,6 +218,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						required: false,
+						min: 1,
 						variableName: VariableNames.HDFSDataStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
@@ -227,6 +231,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						required: false,
+						min: 1,
 						variableName: VariableNames.HDFSLogsStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}
@@ -244,6 +249,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						required: false,
+						min: 1,
 						variableName: VariableNames.DataPoolDataStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
@@ -256,6 +262,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						required: false,
+						min: 1,
 						variableName: VariableNames.DataPoolLogsStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}
@@ -273,6 +280,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						required: false,
+						min: 1,
 						variableName: VariableNames.SQLServerDataStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}, {
@@ -285,6 +293,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.Number,
 						label: '',
 						required: false,
+						min: 1,
 						variableName: VariableNames.SQLServerLogsStorageSize_VariableName,
 						placeHolder: hintTextForStorageFields
 					}
@@ -340,28 +349,28 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth, required: true });
 		this.controllerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
-		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: PortInputWidth });
+		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: PortInputWidth, min: 1 });
 		this.controllerDNSRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
 		this.inputComponents[VariableNames.ControllerDNSName_VariableName] = this.controllerDNSInput;
 		this.inputComponents[VariableNames.ControllerPort_VariableName] = this.controllerPortInput;
 
 		this.masterSQLNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "Master SQL Server"), width: labelWidth, required: true });
 		this.masterSqlServerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "Master SQL Server DNS name"), required: false, width: inputWidth });
-		this.masterSqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "Master SQL Server port"), required: true, width: PortInputWidth });
+		this.masterSqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "Master SQL Server port"), required: true, width: PortInputWidth, min: 1 });
 		this.masterSQLDNSRow = createFlexContainer(view, [this.masterSQLNameLabel, this.masterSqlServerDNSInput, this.masterSqlServerPortInput]);
 		this.inputComponents[VariableNames.SQLServerDNSName_VariableName] = this.masterSqlServerDNSInput;
 		this.inputComponents[VariableNames.SQLServerPort_VariableName] = this.masterSqlServerPortInput;
 
 		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth, required: true });
 		this.gatewayDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
-		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: PortInputWidth });
+		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: PortInputWidth, min: 1 });
 		this.gatewayDNSRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
 		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = this.gatewayDNSInput;
 		this.inputComponents[VariableNames.GateWayPort_VariableName] = this.gatewayPortInput;
 
 		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
 		this.readableSecondaryDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
-		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: PortInputWidth });
+		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: PortInputWidth, min: 1 });
 		this.readableSecondaryDNSRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
 		this.inputComponents[VariableNames.ReadableSecondaryDNSName_VariableName] = this.readableSecondaryDNSInput;
 		this.inputComponents[VariableNames.ReadableSecondaryPort_VariableName] = this.readableSecondaryPortInput;
@@ -441,7 +450,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						));
 				if (!isValid) {
 					this.wizard.wizardObject.message = {
-						text: localize('deployCluster.MissingRequiredInformation', "Please fill out the required information."),
+						text: localize('deployCluster.MissingRequiredInformation', "Please fill out the required fields."),
 						level: azdata.window.MessageLevel.Error
 					};
 				}

@@ -20,7 +20,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.ClusterSettingsPageTitle', "Cluster settings"),
-			localize('deployCluster.ClusterSettingsPageDescription', "Configure the SQL Server big data cluster settings"), wizard);
+			localize('deployCluster.ClusterSettingsPageDescription', "Configure the SQL Server Big Data Cluster settings"), wizard);
 	}
 
 	public initialize(): void {
@@ -205,7 +205,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
 				const messages: string[] = [];
-				const authMode = typeof authModeDropdown.value === 'string' ? authModeDropdown.value : authModeDropdown.value.name;
+				const authMode = typeof authModeDropdown.value === 'string' ? authModeDropdown.value : authModeDropdown.value!.name;
 				const requiredFieldsFilled: boolean = !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterName_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
@@ -220,7 +220,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppOwnerPrincipals_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppReaderPrincipals_VariableName, this.inputComponents))));
 				if (!requiredFieldsFilled) {
-					messages.push(localize('deployCluster.MissingRequiredInformation', "Please fill out the required information."));
+					messages.push(localize('deployCluster.MissingRequiredInformation', "Please fill out the required fields."));
 				}
 
 				if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))

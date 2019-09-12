@@ -141,7 +141,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			let providerIndex = 1;
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
-				if (!provider.dialog && !provider.notebook && !provider.downloadUrl && !provider.webPageUrl) {
+				if (!provider.wizard && !provider.dialog && !provider.notebook && !provider.downloadUrl && !provider.webPageUrl) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
@@ -199,7 +199,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (provider.wizard) {
-			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService());
+			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(), this.notebookService);
 			wizard.open();
 		} else if (provider.dialog) {
 			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);

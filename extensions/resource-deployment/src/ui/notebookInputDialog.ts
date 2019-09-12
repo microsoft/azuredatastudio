@@ -9,7 +9,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
-import { DialogInfo, NoteBookEnvironmentVariablePrefix } from '../interfaces';
+import { DialogInfo } from '../interfaces';
 import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
 import { Model } from './model';
 
@@ -62,9 +62,7 @@ export class NotebookInputDialog extends DialogBase {
 	private onComplete(): void {
 		const model: Model = new Model();
 		setModelValues(this.inputComponents, model);
-		Object.keys(model).filter(key => key.startsWith(NoteBookEnvironmentVariablePrefix)).forEach(key => {
-			process.env[key] = model.getStringValue(key);
-		});
+		model.setEnvironmentVariables();
 		this.notebookService.launchNotebook(this.dialogInfo.notebook);
 		this.dispose();
 	}

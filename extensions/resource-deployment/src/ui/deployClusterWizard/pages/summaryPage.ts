@@ -27,7 +27,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	onEnter() {
+	public onEnter() {
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -208,22 +208,22 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					this.wizard.model.getStringValue(VariableNames.ControllerLogsStorageSize_VariableName)],
 				[
 					localize('deployCluster.HDFSText', "HDFS"),
-					this.wizard.model.getStringValue(VariableNames.HDFSDataStorageClassName_VariableName),
-					this.wizard.model.getStringValue(VariableNames.HDFSDataStorageSize_VariableName),
-					this.wizard.model.getStringValue(VariableNames.HDFSLogsStorageClassName_VariableName),
-					this.wizard.model.getStringValue(VariableNames.HDFSLogsStorageSize_VariableName),
+					this.getStorageSettingValue(VariableNames.HDFSDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName),
+					this.getStorageSettingValue(VariableNames.HDFSDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName),
+					this.getStorageSettingValue(VariableNames.HDFSLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName),
+					this.getStorageSettingValue(VariableNames.HDFSLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)
 				], [
 					localize('deployCluster.DataText', "Data"),
-					this.wizard.model.getStringValue(VariableNames.DataPoolDataStorageClassName_VariableName),
-					this.wizard.model.getStringValue(VariableNames.DataPoolDataStorageSize_VariableName),
-					this.wizard.model.getStringValue(VariableNames.DataPoolLogsStorageClassName_VariableName),
-					this.wizard.model.getStringValue(VariableNames.DataPoolLogsStorageSize_VariableName),
+					this.getStorageSettingValue(VariableNames.DataPoolDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName),
+					this.getStorageSettingValue(VariableNames.DataPoolDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName),
+					this.getStorageSettingValue(VariableNames.DataPoolLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName),
+					this.getStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)
 				], [
 					localize('deployCluster.MasterSqlText', "Master SQL Server"),
-					this.wizard.model.getStringValue(VariableNames.SQLServerDataStorageClassName_VariableName),
-					this.wizard.model.getStringValue(VariableNames.SQLServerDataStorageSize_VariableName),
-					this.wizard.model.getStringValue(VariableNames.SQLServerLogsStorageClassName_VariableName),
-					this.wizard.model.getStringValue(VariableNames.SQLServerLogsStorageSize_VariableName),
+					this.getStorageSettingValue(VariableNames.SQLServerDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName),
+					this.getStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName),
+					this.getStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName),
+					this.getStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)
 				]
 			],
 			columns: [serviceNameColumn, dataStorageClassColumn, dataStorageSizeColumn, logStorageClassColumn, logStorageSizeColumn],
@@ -270,5 +270,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 		this.formItems.push(storageSection);
 		this.form.addFormItem(storageSection);
+	}
+
+	private getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
+		const value = this.wizard.model.getStringValue(propertyName);
+		return (value === undefined || value === '') ? this.wizard.model.getStringValue(defaultValuePropertyName) : value;
 	}
 }

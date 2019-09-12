@@ -24,7 +24,6 @@ export abstract class WizardBase<T, M extends Model> {
 	}
 
 	public open(): Thenable<void> {
-		const self = this;
 		this.initialize();
 		this.wizardObject.customButtons = this.customButtons;
 		this.toDispose.push(this.wizardObject.onPageChanged((e) => {
@@ -35,9 +34,6 @@ export abstract class WizardBase<T, M extends Model> {
 		}));
 
 		this.toDispose.push(this.wizardObject.doneButton.onClick(() => {
-			self.model.propertyNames.forEach(key => {
-				process.env[key] = self.model.getStringValue(key);
-			});
 			this.onOk();
 			this.dispose();
 		}));
