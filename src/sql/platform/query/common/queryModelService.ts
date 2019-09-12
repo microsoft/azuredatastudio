@@ -276,7 +276,12 @@ export class QueryModelService implements IQueryModelService {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStop',
-				uri: uri
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -289,7 +294,12 @@ export class QueryModelService implements IQueryModelService {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStart',
-				uri: uri
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -300,7 +310,12 @@ export class QueryModelService implements IQueryModelService {
 
 			let event: IQueryEvent = {
 				type: 'queryUpdate',
-				uri: uri
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -312,6 +327,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'executionPlan',
 				uri: planInfo.fileUri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				},
 				params: planInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -321,6 +341,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'visualize',
 				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				},
 				params: resultSetInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -436,7 +461,12 @@ export class QueryModelService implements IQueryModelService {
 				// fire extensibility API event
 				let event: IQueryEvent = {
 					type: 'queryStop',
-					uri: ownerUri
+					uri: ownerUri,
+					queryInfo:
+					{
+						selection: info.selection,
+						messages: info.queryRunner.messages
+					},
 				};
 				this._onQueryEvent.fire(event);
 
@@ -448,7 +478,12 @@ export class QueryModelService implements IQueryModelService {
 				// fire extensibility API event
 				let event: IQueryEvent = {
 					type: 'queryStart',
-					uri: ownerUri
+					uri: ownerUri,
+					queryInfo:
+					{
+						selection: info.selection,
+						messages: info.queryRunner.messages
+					},
 				};
 				this._onQueryEvent.fire(event);
 

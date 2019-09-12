@@ -14,7 +14,7 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import * as queryContext from 'sql/workbench/parts/query/common/queryContext';
@@ -32,7 +32,7 @@ import { IContextKey, IContextKeyService } from 'vs/platform/contextkey/common/c
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IFlexibleSash, HorizontalFlexibleSash } from 'sql/workbench/parts/query/browser/flexibleSash';
 import { EditDataResultsEditor } from 'sql/workbench/parts/editData/browser/editDataResultsEditor';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup } from 'vs/workbench/services/editor/common/editorGroupsService';

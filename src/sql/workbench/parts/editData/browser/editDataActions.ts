@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
@@ -150,14 +150,13 @@ export class ChangeMaxRowsAction extends EditDataAction {
  * Action item that handles the dropdown (combobox) that lists the avaliable number of row selections
  * for an edit data session
  */
-export class ChangeMaxRowsActionItem implements IActionViewItem {
+export class ChangeMaxRowsActionItem extends Disposable implements IActionViewItem {
 
 	public actionRunner: IActionRunner;
 	public defaultRowCount: number;
 	private container: HTMLElement;
 	private start: HTMLElement;
 	private selectBox: SelectBox;
-	private toDispose: IDisposable[];
 	private context: any;
 	private _options: string[];
 	private _currentOptionsIndex: number;
@@ -166,15 +165,15 @@ export class ChangeMaxRowsActionItem implements IActionViewItem {
 		private _editor: EditDataEditor,
 		@IContextViewService contextViewService: IContextViewService,
 		@IThemeService private _themeService: IThemeService) {
+		super();
 		this._options = ['200', '1000', '10000'];
 		this._currentOptionsIndex = 0;
-		this.toDispose = [];
 		this.selectBox = new SelectBox(this._options, this._options[this._currentOptionsIndex], contextViewService);
 		this._registerListeners();
 		this._refreshOptions();
 		this.defaultRowCount = Number(this._options[this._currentOptionsIndex]);
 
-		this.toDispose.push(attachSelectBoxStyler(this.selectBox, _themeService));
+		this._register(attachSelectBoxStyler(this.selectBox, _themeService));
 	}
 
 	public render(container: HTMLElement): void {
@@ -211,20 +210,16 @@ export class ChangeMaxRowsActionItem implements IActionViewItem {
 		this.container.blur();
 	}
 
-	public dispose(): void {
-		this.toDispose = dispose(this.toDispose);
-	}
-
 	private _refreshOptions(databaseIndex?: number): void {
 		this.selectBox.setOptions(this._options, this._currentOptionsIndex);
 	}
 
 	private _registerListeners(): void {
-		this.toDispose.push(this.selectBox.onDidSelect(selection => {
+		this._register(this.selectBox.onDidSelect(selection => {
 			this._currentOptionsIndex = this._options.findIndex(x => x === selection.selected);
 			this._editor.editDataInput.onRowDropDownSet(Number(selection.selected));
 		}));
-		this.toDispose.push(attachSelectBoxStyler(this.selectBox, this._themeService));
+		this._register(attachSelectBoxStyler(this.selectBox, this._themeService));
 	}
 }
 

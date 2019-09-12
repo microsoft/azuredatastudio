@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IRequestHandler } from 'vs/base/common/worker/simpleWorker';
 import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
 import { VSBuffer } from 'vs/base/common/buffer';
 import { Emitter } from 'vs/base/common/event';
@@ -13,15 +12,30 @@ import { ExtensionHostMain } from 'vs/workbench/services/extensions/common/exten
 import { IHostUtils } from 'vs/workbench/api/common/extHostExtensionService';
 import 'vs/workbench/services/extensions/worker/extHost.services';
 
-// worker-self
+//#region --- Define, capture, and override some globals
+//todo@joh do not allow extensions to call postMessage and other globals...
+
 declare namespace self {
-	function close(): void;
+	let close: any;
+	let postMessage: any;
+	let addEventLister: any;
+	let indexedDB: { open: any, [k: string]: any };
+	let caches: { open: any, [k: string]: any };
 }
 
-// do not allow extensions to call terminate
 const nativeClose = self.close.bind(self);
-self.close = () => console.trace('An extension called terminate and this was prevented');
-let onTerminate = nativeClose;
+self.close = () => console.trace(`'close' has been blocked`);
+
+const nativePostMessage = postMessage.bind(self);
+self.postMessage = () => console.trace(`'postMessage' has been blocked`);
+
+const nativeAddEventLister = addEventListener.bind(self);
+self.addEventLister = () => console.trace(`'addEventListener' has been blocked`);
+
+self.indexedDB.open = () => console.trace(`'indexedDB.open' has been blocked`);
+self.caches.open = () => console.trace(`'indexedDB.caches' has been blocked`);
+
+//#endregion ---
 
 const hostUtil = new class implements IHostUtils {
 	_serviceBrand: any;
@@ -36,23 +50,20 @@ const hostUtil = new class implements IHostUtils {
 	}
 };
 
-//todo@joh do not allow extensions to call postMessage and other globals...
 
-class ExtensionWorker implements IRequestHandler {
-
-	// worker-contract
-	readonly _requestHandlerBrand: any;
-	readonly onmessage: (data: any) => any;
+class ExtensionWorker {
 
 	// protocol
 	readonly protocol: IMessagePassingProtocol;
 
-	constructor(postMessage: (message: any, transfer?: Transferable[]) => any) {
+	constructor() {
 
 		let emitter = new Emitter<VSBuffer>();
 		let terminating = false;
 
-		this.onmessage = data => {
+
+		nativeAddEventLister('message', event => {
+			const { data } = event;
 			if (!(data instanceof ArrayBuffer)) {
 				console.warn('UNKNOWN data received', data);
 				return;
@@ -68,14 +79,14 @@ class ExtensionWorker implements IRequestHandler {
 
 			// emit non-terminate messages to the outside
 			emitter.fire(msg);
-		};
+		});
 
 		this.protocol = {
 			onMessage: emitter.event,
 			send: vsbuf => {
 				if (!terminating) {
 					const data = vsbuf.buffer.buffer.slice(vsbuf.buffer.byteOffset, vsbuf.buffer.byteOffset + vsbuf.buffer.byteLength);
-					postMessage(data, [data]);
+					nativePostMessage(data, [data]);
 				}
 			}
 		};
@@ -98,8 +109,10 @@ function connectToRenderer(protocol: IMessagePassingProtocol): Promise<IRenderer
 	});
 }
 
-export function create(postMessage: (message: any, transfer?: Transferable[]) => any): IRequestHandler {
-	const res = new ExtensionWorker(postMessage);
+let onTerminate = nativeClose;
+
+(function create(): void {
+	const res = new ExtensionWorker();
 
 	connectToRenderer(res.protocol).then(data => {
 
@@ -112,6 +125,4 @@ export function create(postMessage: (message: any, transfer?: Transferable[]) =>
 
 		onTerminate = () => extHostMain.terminate();
 	});
-
-	return res;
-}
+})();

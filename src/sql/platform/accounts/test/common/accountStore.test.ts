@@ -21,7 +21,7 @@ suite('Account Store Tests', () => {
 				// ... I should have gotten back a result indicating the account was added
 				assert.ok(result.accountAdded);
 				assert.ok(!result.accountModified);
-				assertAccountEqual(result.changedAccount, account1);
+				assertAccountEqual(result.changedAccount!, account1);
 
 				// ... The memento should have been initialized and account added
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
@@ -47,7 +47,7 @@ suite('Account Store Tests', () => {
 				// ... I should have gotten back a result indicating the account was added
 				assert.ok(result.accountAdded);
 				assert.ok(!result.accountModified);
-				assertAccountEqual(result.changedAccount, account1);
+				assertAccountEqual(result.changedAccount!, account1);
 
 				// ... The memento should have the account added
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));
@@ -77,7 +77,7 @@ suite('Account Store Tests', () => {
 				// ... I should have gotten back a result indicating the account was updated
 				assert.ok(result.accountModified);
 				assert.ok(!result.accountAdded);
-				assertAccountEqual(result.changedAccount, param);
+				assertAccountEqual(result.changedAccount!, param);
 
 				// ... The memento should have been initialized and account updated
 				assert.ok(Array.isArray(memento[AccountStore.MEMENTO_KEY]));

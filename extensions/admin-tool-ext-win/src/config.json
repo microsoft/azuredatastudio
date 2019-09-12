@@ -8,5 +8,12 @@
 	"installDirectory": "ssmsmin/{#platform#}/{#version#}",
 	"executableFiles": [
 		"SsmsMin.exe"
-	]
+	],
+	"retry": {
+		"retries": 15,
+		"factor": 2,
+		"minTimeout": 1000,
+		"maxTimeout": 300000,
+		"randomize": false
+	}
 }

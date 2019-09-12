@@ -6,7 +6,7 @@
 import { SqlMainContext, MainThreadExtensionManagementShape } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
 import { extHostNamedCustomer } from 'vs/workbench/api/common/extHostCustomers';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { Disposable } from 'vs/base/common/lifecycle';
 import { IExtensionManagementService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { URI } from 'vs/base/common/uri';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
@@ -15,9 +15,8 @@ import { localize } from 'vs/nls';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadExtensionManagement)
-export class MainThreadExtensionManagement implements MainThreadExtensionManagementShape {
+export class MainThreadExtensionManagement extends Disposable implements MainThreadExtensionManagementShape {
 
-	private _toDispose: IDisposable[];
 	private _obsoleteExtensionApiUsageNotificationShown: boolean = false;
 
 	constructor(
@@ -27,11 +26,7 @@ export class MainThreadExtensionManagement implements MainThreadExtensionManagem
 		@INotificationService private _notificationService: INotificationService,
 		@IWindowService protected readonly _windowService: IWindowService
 	) {
-		this._toDispose = [];
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
+		super();
 	}
 
 	public $install(vsixPath: string): Thenable<string> {

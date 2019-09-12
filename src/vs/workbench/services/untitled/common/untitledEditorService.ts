@@ -56,12 +56,6 @@ export interface IUntitledEditorService {
 	 */
 	exists(resource: URI): boolean;
 
-	// {{SQL CARBON EDIT}}
-	/**
-	 * Returns all untitled editor inputs.
-	 */
-	getAll(resources?: URI[]): UntitledEditorInput[];
-
 	/**
 	 * Returns dirty untitled editors as resource URIs.
 	 */
@@ -147,8 +141,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 		return this.mapResourceToInput.get(resource);
 	}
 
-	// {{SQL CARBON EDIT}}
-	public getAll(resources?: URI[]): UntitledEditorInput[] {
+	protected getAll(resources?: URI[]): UntitledEditorInput[] {
 		if (resources) {
 			return arrays.coalesce(resources.map(r => this.get(r)));
 		}

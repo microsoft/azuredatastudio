@@ -85,6 +85,7 @@ export class QueryEditor extends BaseEditor {
 	private _estimatedQueryPlanAction: actions.EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: actions.ActualQueryPlanAction;
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
+	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -181,6 +182,7 @@ export class QueryEditor extends BaseEditor {
 		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);
 		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
+		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 
 		this.setTaskbarContent();
 
@@ -203,6 +205,10 @@ export class QueryEditor extends BaseEditor {
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
+		}
+
+		if (stateChangeEvent.sqlCmdModeChanged) {
+			this._toggleSqlcmdMode.isSqlCmdMode = this.input.state.isSqlCmdMode;
 		}
 
 		if (stateChangeEvent.connectingChange) {
@@ -259,7 +265,8 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._changeConnectionAction },
 			{ action: this._listDatabasesAction },
 			{ element: separator },
-			{ action: this._estimatedQueryPlanAction }
+			{ action: this._estimatedQueryPlanAction },
+			{ action: this._toggleSqlcmdMode }
 		];
 
 		// Remove the estimated query plan action if preview features are not enabled
@@ -309,7 +316,7 @@ export class QueryEditor extends BaseEditor {
 		dispose(this.inputDisposables);
 		this.inputDisposables = [];
 		this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
-		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
+		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
 
 		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
 

@@ -9,8 +9,6 @@ import { IQuestion, IPrompter, IPromptCallback } from './question';
 // Supports simple pattern for prompting for user input and acting on this
 export default class CodeAdapter implements IPrompter {
 
-	constructor() {	}
-
 	// TODO define question interface
 	private fixQuestion(question: any): any {
 		if (question.type === 'checkbox' && Array.isArray(question.choices)) {

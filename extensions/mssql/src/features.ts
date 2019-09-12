@@ -27,267 +27,6 @@ export class TelemetryFeature implements StaticFeature {
 	}
 }
 
-export class DacFxServicesFeature extends SqlOpsFeature<undefined> {
-	private static readonly messageTypes: RPCMessageType[] = [
-		contracts.ExportRequest.type,
-		contracts.ImportRequest.type,
-		contracts.ExtractRequest.type,
-		contracts.DeployRequest.type
-	];
-
-	constructor(client: SqlOpsDataClient) {
-		super(client, DacFxServicesFeature.messageTypes);
-	}
-
-	public fillClientCapabilities(capabilities: ClientCapabilities): void {
-	}
-
-	public initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-	}
-
-	protected registerProvider(options: undefined): Disposable {
-		const client = this._client;
-
-		let exportBacpac = (databaseName: string, packageFilePath: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.ExportParams = { databaseName: databaseName, packageFilePath: packageFilePath, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.ExportRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.ExportRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let importBacpac = (packageFilePath: string, databaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.ImportParams = { packageFilePath: packageFilePath, databaseName: databaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.ImportRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.ImportRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let extractDacpac = (databaseName: string, packageFilePath: string, applicationName: string, applicationVersion: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.ExtractParams = { databaseName: databaseName, packageFilePath: packageFilePath, applicationName: applicationName, applicationVersion: applicationVersion, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.ExtractRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.ExtractRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let deployDacpac = (packageFilePath: string, targetDatabaseName: string, upgradeExisting: boolean, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.DeployParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, upgradeExisting: upgradeExisting, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.DeployRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.DeployRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let generateDeployScript = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.DacFxResult> => {
-			let params: contracts.GenerateDeployScriptParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.GenerateDeployScriptRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.GenerateDeployScriptRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let generateDeployPlan = (packageFilePath: string, targetDatabaseName: string, ownerUri: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.GenerateDeployPlanResult> => {
-			let params: contracts.GenerateDeployPlanParams = { packageFilePath: packageFilePath, databaseName: targetDatabaseName, ownerUri: ownerUri, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.GenerateDeployPlanRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.GenerateDeployPlanRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		return azdata.dataprotocol.registerDacFxServicesProvider({
-			providerId: client.providerId,
-			exportBacpac,
-			importBacpac,
-			extractDacpac,
-			deployDacpac,
-			generateDeployScript,
-			generateDeployPlan
-		});
-	}
-}
-
-export class SchemaCompareServicesFeature extends SqlOpsFeature<undefined> {
-	private static readonly messageTypes: RPCMessageType[] = [
-		contracts.SchemaCompareRequest.type,
-		contracts.SchemaCompareGenerateScriptRequest.type,
-		contracts.SchemaComparePublishChangesRequest.type,
-		contracts.SchemaCompareGetDefaultOptionsRequest.type,
-		contracts.SchemaCompareIncludeExcludeNodeRequest.type,
-		contracts.SchemaCompareOpenScmpRequest.type,
-		contracts.SchemaCompareSaveScmpRequest.type
-	];
-
-	constructor(client: SqlOpsDataClient) {
-		super(client, SchemaCompareServicesFeature.messageTypes);
-	}
-
-	public fillClientCapabilities(capabilities: ClientCapabilities): void {
-	}
-
-	public initialize(capabilities: ServerCapabilities): void {
-		this.register(this.messages, {
-			id: UUID.generateUuid(),
-			registerOptions: undefined
-		});
-	}
-
-	protected registerProvider(options: undefined): Disposable {
-		const client = this._client;
-
-		let schemaCompare = (operationId: string, sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions): Thenable<azdata.SchemaCompareResult> => {
-			let params: contracts.SchemaCompareParams = { operationId: operationId, sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions };
-			return client.sendRequest(contracts.SchemaCompareRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareGenerateScript = (operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
-			let params: contracts.SchemaCompareGenerateScriptParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.SchemaCompareGenerateScriptRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareGenerateScriptRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaComparePublishChanges = (operationId: string, targetServerName: string, targetDatabaseName: string, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
-			let params: contracts.SchemaComparePublishChangesParams = { operationId: operationId, targetServerName: targetServerName, targetDatabaseName: targetDatabaseName, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.SchemaComparePublishChangesRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaComparePublishChangesRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareGetDefaultOptions = (): Thenable<azdata.SchemaCompareOptionsResult> => {
-			let params: contracts.SchemaCompareGetOptionsParams = {};
-			return client.sendRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareGetDefaultOptionsRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareIncludeExcludeNode = (operationId: string, diffEntry: azdata.DiffEntry, includeRequest: boolean, taskExecutionMode: azdata.TaskExecutionMode): Thenable<azdata.ResultStatus> => {
-			let params: contracts.SchemaCompareNodeParams = { operationId: operationId, diffEntry, includeRequest, taskExecutionMode: taskExecutionMode };
-			return client.sendRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareIncludeExcludeNodeRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareOpenScmp = (filePath: string): Thenable<azdata.SchemaCompareOpenScmpResult> => {
-			let params: contracts.SchemaCompareOpenScmpParams = { filePath: filePath };
-			return client.sendRequest(contracts.SchemaCompareOpenScmpRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareOpenScmpRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareSaveScmp = (sourceEndpointInfo: azdata.SchemaCompareEndpointInfo, targetEndpointInfo: azdata.SchemaCompareEndpointInfo, taskExecutionMode: azdata.TaskExecutionMode, deploymentOptions: azdata.DeploymentOptions, scmpFilePath: string, excludedSourceObjects: azdata.SchemaCompareObjectId[], excludedTargetObjects: azdata.SchemaCompareObjectId[]): Thenable<azdata.ResultStatus> => {
-			let params: contracts.SchemaCompareSaveScmpParams = { sourceEndpointInfo: sourceEndpointInfo, targetEndpointInfo: targetEndpointInfo, taskExecutionMode: taskExecutionMode, deploymentOptions: deploymentOptions, scmpFilePath: scmpFilePath, excludedSourceObjects: excludedSourceObjects, excludedTargetObjects: excludedTargetObjects };
-			return client.sendRequest(contracts.SchemaCompareSaveScmpRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareSaveScmpRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		let schemaCompareCancel = (operationId: string): Thenable<azdata.ResultStatus> => {
-			let params: contracts.SchemaCompareCancelParams = { operationId: operationId };
-			return client.sendRequest(contracts.SchemaCompareCancellationRequest.type, params).then(
-				r => {
-					return r;
-				},
-				e => {
-					client.logFailedRequest(contracts.SchemaCompareCancellationRequest.type, e);
-					return Promise.resolve(undefined);
-				}
-			);
-		};
-
-		return azdata.dataprotocol.registerSchemaCompareServicesProvider({
-			providerId: client.providerId,
-			schemaCompare,
-			schemaCompareGenerateScript,
-			schemaComparePublishChanges,
-			schemaCompareGetDefaultOptions,
-			schemaCompareIncludeExcludeNode,
-			schemaCompareOpenScmp,
-			schemaCompareSaveScmp,
-			schemaCompareCancel
-		});
-	}
-}
-
 export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 	private static readonly messagesTypes: RPCMessageType[] = [
 		contracts.AgentJobsRequest.type,
@@ -487,6 +226,151 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 				}
 			);
 		};
+
+		// Notebook Management methods
+		const getNotebooks = (ownerUri: string): Thenable<azdata.AgentNotebooksResult> => {
+			let params: contracts.AgentNotebookParams = { ownerUri: ownerUri };
+			return client.sendRequest(contracts.AgentNotebooksRequest.type, params).then(
+				r => r,
+				e => {
+					client.logFailedRequest(contracts.AgentNotebooksRequest.type, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		const getNotebookHistory = (ownerUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> => {
+			let params: contracts.AgentNotebookHistoryParams = { ownerUri: ownerUri, jobId: jobID, jobName: jobName, targetDatabase: targetDatabase };
+
+			return client.sendRequest(contracts.AgentNotebookHistoryRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.AgentNotebookHistoryRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		const getMaterializedNotebook = (ownerUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> => {
+			let params: contracts.AgentNotebookMaterializedParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, notebookMaterializedId: notebookMaterializedId };
+			return client.sendRequest(contracts.AgentNotebookMaterializedRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.AgentNotebookMaterializedRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		const getTemplateNotebook = (ownerUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> => {
+			let params: contracts.AgentNotebookTemplateParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, jobId: jobId };
+			return client.sendRequest(contracts.AgentNotebookTemplateRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.AgentNotebookTemplateRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		const createNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.CreateAgentNotebookResult> => {
+			let params: contracts.CreateAgentNotebookParams = {
+				ownerUri: ownerUri,
+				notebook: notebookInfo,
+				templateFilePath: templateFilePath
+			};
+			let requestType = contracts.CreateAgentNotebookRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => {
+					fireOnUpdated();
+					return r;
+				},
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+
+		const updateNotebook = (ownerUri: string, originalNotebookName: string, notebookInfo: azdata.AgentNotebookInfo, templateFilePath: string): Thenable<azdata.UpdateAgentNotebookResult> => {
+			let params: contracts.UpdateAgentNotebookParams = {
+				ownerUri: ownerUri,
+				originalNotebookName: originalNotebookName,
+				notebook: notebookInfo,
+				templateFilePath: templateFilePath
+			};
+			let requestType = contracts.UpdateAgentNotebookRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => {
+					fireOnUpdated();
+					return r;
+				},
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		const deleteNotebook = (ownerUri: string, notebookInfo: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> => {
+			let params: contracts.DeleteAgentNotebookParams = {
+				ownerUri: ownerUri,
+				notebook: notebookInfo
+			};
+			let requestType = contracts.DeleteAgentNotebookRequest.type;
+			return client.sendRequest(requestType, params).then(
+				r => {
+					fireOnUpdated();
+					return r;
+				},
+				e => {
+					client.logFailedRequest(requestType, e);
+					return Promise.resolve(undefined);
+				}
+			);
+		};
+
+		const deleteMaterializedNotebook = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> => {
+			let params: contracts.DeleteAgentMaterializedNotebookParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, agentNotebookHistory: agentNotebookHistory };
+			return client.sendRequest(contracts.DeleteMaterializedNotebookRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.DeleteMaterializedNotebookRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		const updateNotebookMaterializedName = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> => {
+			let params: contracts.UpdateAgentNotebookRunNameParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, agentNotebookHistory: agentNotebookHistory, materializedNotebookName: name };
+			return client.sendRequest(contracts.UpdateAgentNotebookRunNameRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.UpdateAgentNotebookRunNameRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+		const updateNotebookMaterializedPin = (ownerUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> => {
+			let params: contracts.UpdateAgentNotebookRunPinParams = { ownerUri: ownerUri, targetDatabase: targetDatabase, agentNotebookHistory: agentNotebookHistory, materializedNotebookPin: pin };
+			return client.sendRequest(contracts.UpdateAgentNotebookRunPinRequest
+				.type, params).then(
+					r => r,
+					e => {
+						client.logFailedRequest(contracts.UpdateAgentNotebookRunPinRequest.type, e);
+						return Promise.resolve(undefined);
+					}
+				);
+		};
+
+
 
 		// Alert management methods
 		let getAlerts = (ownerUri: string): Thenable<azdata.AgentAlertsResult> => {
@@ -796,6 +680,16 @@ export class AgentServicesFeature extends SqlOpsFeature<undefined> {
 			createJobStep,
 			updateJobStep,
 			deleteJobStep,
+			getNotebooks,
+			getNotebookHistory,
+			getMaterializedNotebook,
+			getTemplateNotebook,
+			createNotebook,
+			updateNotebook,
+			deleteMaterializedNotebook,
+			updateNotebookMaterializedName,
+			updateNotebookMaterializedPin,
+			deleteNotebook,
 			getAlerts,
 			createAlert,
 			updateAlert,

@@ -8,6 +8,9 @@ import { IConnectableInput } from 'sql/platform/connection/common/connectionMana
 import { IEditorOptions } from 'vs/platform/editor/common/editor';
 
 import { URI } from 'vs/base/common/uri';
+import { ITextModel } from 'vs/editor/common/model';
+import { ILanguageSelection } from 'vs/editor/common/services/modeService';
+import { IEditor } from 'vs/workbench/common/editor';
 
 export interface IQueryEditorOptions extends IEditorOptions {
 

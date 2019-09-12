@@ -84,7 +84,7 @@ export class RecentConnectionTreeController extends DefaultController {
 
 	protected onRightClick(tree: ITree, element: any, eventish: ICancelableEvent, origin: string = 'mouse'): boolean {
 		this.clickcb(element, eventish, origin);
-		this.showContextMenu(tree, element, event);
+		this.showContextMenu(tree, element, eventish);
 		return true;
 	}
 

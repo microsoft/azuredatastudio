@@ -166,7 +166,8 @@ export enum ModelComponentTypes {
 	Editor,
 	DiffEditor,
 	Dom,
-	Hyperlink
+	Hyperlink,
+	Image
 }
 
 export enum ColumnSizingMode {
@@ -250,6 +251,7 @@ export interface IModelViewButtonDetails {
 	label: string;
 	enabled: boolean;
 	hidden: boolean;
+	focused?: boolean;
 }
 
 export interface IModelViewWizardPageDetails {
@@ -325,11 +327,9 @@ export enum DataProviderType {
 	AdminServicesProvider = 'AdminServicesProvider',
 	AgentServicesProvider = 'AgentServicesProvider',
 	CapabilitiesProvider = 'CapabilitiesProvider',
-	DacFxServicesProvider = 'DacFxServicesProvider',
-	SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 	ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
-	IconProvider = 'IconProvider',
-	SerializationProvider = 'SerializationProvider'
+	SerializationProvider = 'SerializationProvider',
+	IconProvider = 'IconProvider'
 }
 
 export enum DeclarativeDataType {
@@ -564,25 +564,116 @@ export interface ISingleNotebookEditOperation {
 }
 
 export class ConnectionProfile {
+	get providerId(): string {
+		return this.options['providerId'];
+	}
 
-	providerId: string;
-	connectionId: string;
-	connectionName: string;
-	serverName: string;
-	databaseName: string;
-	userName: string;
-	password: string;
-	authenticationType: string;
-	savePassword: boolean;
-	groupFullName: string;
-	groupId: string;
-	saveProfile: boolean;
-	azureTenantId?: string;
-	options: { [name: string]: any };
+	set providerId(value: string) {
+		this.options['providerId'] = value;
+	}
 
-	static createFrom(options: any[]): ConnectionProfile {
-		// create from options
-		return undefined;
+	get connectionId(): string {
+		return this.options['connectionId'];
+	}
+
+	set connectionId(value: string) {
+		this.options['connectionId'] = value;
+	}
+
+	get connectionName(): string {
+		return this.options['connectionName'];
+	}
+
+	set connectionName(value: string) {
+		this.options['connectionName'] = value;
+	}
+
+	get serverName(): string {
+		return this.options['serverName'];
+	}
+
+	set serverName(value: string) {
+		this.options['serverName'] = value;
+	}
+
+	get databaseName(): string {
+		return this.options['databaseName'];
+	}
+
+	set databaseName(value: string) {
+		this.options['databaseName'] = value;
+	}
+
+	get userName(): string {
+		return this.options['userName'];
+	}
+
+	set userName(value: string) {
+		this.options['userName'] = value;
+	}
+
+	get password(): string {
+		return this.options['password'];
+	}
+
+	set password(value: string) {
+		this.options['password'] = value;
+	}
+
+	get authenticationType(): string {
+		return this.options['authenticationType'];
+	}
+
+	set authenticationType(value: string) {
+		this.options['authenticationType'] = value;
+	}
+
+	get savePassword(): boolean {
+		return this.options['savePassword'];
+	}
+
+	set savePassword(value: boolean) {
+		this.options['savePassword'] = value;
+	}
+
+	get groupFullName(): string {
+		return this.options['groupFullName'];
+	}
+
+	set groupFullName(value: string) {
+		this.options['groupFullName'] = value;
+	}
+
+	get groupId(): string {
+		return this.options['groupId'];
+	}
+
+	set groupId(value: string) {
+		this.options['groupId'] = value;
+	}
+
+	get saveProfile(): boolean {
+		return this.options['groupId'];
+	}
+
+	set saveProfile(value: boolean) {
+		this.options['groupId'] = value;
+	}
+
+	get azureTenantId(): string {
+		return this.options['azureTenantId'];
+	}
+
+	set azureTenantId(value: string) {
+		this.options['azureTenantId'] = value;
+	}
+
+	options: Map<string, any> = new Map<string, any>();
+
+	static createFrom(options: Map<string, any>): ConnectionProfile {
+		let profile = new ConnectionProfile();
+		profile.options = options;
+		return profile;
 	}
 }
 
@@ -622,54 +713,53 @@ export enum SchemaObjectType {
 	ExternalFileFormats = 16,
 	ExternalTables = 17,
 	Filegroups = 18,
-	Files = 19,
-	FileTables = 20,
-	FullTextCatalogs = 21,
-	FullTextStoplists = 22,
-	MessageTypes = 23,
-	PartitionFunctions = 24,
-	PartitionSchemes = 25,
-	Permissions = 26,
-	Queues = 27,
-	RemoteServiceBindings = 28,
-	RoleMembership = 29,
-	Rules = 30,
-	ScalarValuedFunctions = 31,
-	SearchPropertyLists = 32,
-	SecurityPolicies = 33,
-	Sequences = 34,
-	Services = 35,
-	Signatures = 36,
-	StoredProcedures = 37,
-	SymmetricKeys = 38,
-	Synonyms = 39,
-	Tables = 40,
-	TableValuedFunctions = 41,
-	UserDefinedDataTypes = 42,
-	UserDefinedTableTypes = 43,
-	ClrUserDefinedTypes = 44,
-	Users = 45,
-	Views = 46,
-	XmlSchemaCollections = 47,
-	Audits = 48,
-	Credentials = 49,
-	CryptographicProviders = 50,
-	DatabaseAuditSpecifications = 51,
-	DatabaseEncryptionKeys = 52,
-	DatabaseScopedCredentials = 53,
-	Endpoints = 54,
-	ErrorMessages = 55,
-	EventNotifications = 56,
-	EventSessions = 57,
-	LinkedServerLogins = 58,
-	LinkedServers = 59,
-	Logins = 60,
-	MasterKeys = 61,
-	Routes = 62,
-	ServerAuditSpecifications = 63,
-	ServerRoleMembership = 64,
-	ServerRoles = 65,
-	ServerTriggers = 66
+	FileTables = 19,
+	FullTextCatalogs = 20,
+	FullTextStoplists = 21,
+	MessageTypes = 22,
+	PartitionFunctions = 23,
+	PartitionSchemes = 24,
+	Permissions = 25,
+	Queues = 26,
+	RemoteServiceBindings = 27,
+	RoleMembership = 28,
+	Rules = 29,
+	ScalarValuedFunctions = 30,
+	SearchPropertyLists = 31,
+	SecurityPolicies = 32,
+	Sequences = 33,
+	Services = 34,
+	Signatures = 35,
+	StoredProcedures = 36,
+	SymmetricKeys = 37,
+	Synonyms = 38,
+	Tables = 39,
+	TableValuedFunctions = 40,
+	UserDefinedDataTypes = 41,
+	UserDefinedTableTypes = 42,
+	ClrUserDefinedTypes = 43,
+	Users = 44,
+	Views = 45,
+	XmlSchemaCollections = 46,
+	Audits = 47,
+	Credentials = 48,
+	CryptographicProviders = 49,
+	DatabaseAuditSpecifications = 50,
+	DatabaseEncryptionKeys = 51,
+	DatabaseScopedCredentials = 52,
+	Endpoints = 53,
+	ErrorMessages = 54,
+	EventNotifications = 55,
+	EventSessions = 56,
+	LinkedServerLogins = 57,
+	LinkedServers = 58,
+	Logins = 59,
+	MasterKeys = 60,
+	Routes = 61,
+	ServerAuditSpecifications = 62,
+	ServerRoleMembership = 63,
+	ServerRoles = 64,
+	ServerTriggers = 65
 }
 
 export enum ColumnType {
@@ -689,3 +779,9 @@ export enum NotebookChangeKind {
 	Save = 2,
 	CellExecuted = 3
 }
+
+export type QueryEventType =
+	| 'queryStart'
+	| 'queryStop'
+	| 'executionPlan'
+	| 'visualize';

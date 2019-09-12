@@ -14,7 +14,7 @@ import { URI, UriComponents } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
 import { IContextKey } from 'vs/platform/contextkey/common/contextkey';
-import { WebviewContentOptions, IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/common/webview';
+import { WebviewContentOptions, IWebviewService, WebviewElement } from 'vs/workbench/contrib/webview/browser/webview';
 import { generateUuid } from 'vs/base/common/uuid';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
@@ -67,9 +67,7 @@ export default class WebViewComponent extends ComponentBase implements IComponen
 
 	private _createWebview(): void {
 		this._webview = this.webviewService.createWebview(this.id,
-			{
-				allowSvgs: true
-			},
+			{},
 			{
 				allowScripts: true
 			});

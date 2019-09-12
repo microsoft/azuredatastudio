@@ -75,8 +75,8 @@ export class ServerTreeDataSource implements IDataSource {
 					// It has been tested for connecting to the server in profile itself and things work fine there.
 					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
 						resolve(node.children);
-					}, expandError => {
-						node.setExpandedState(TreeItemCollapsibleState.Collapsed);
+					}, async expandError => {
+						await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
 						node.errorStateMessage = expandError;
 						this.showError(expandError);
 						// collapse node and refresh in case of error so remove tree cache

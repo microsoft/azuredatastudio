@@ -75,10 +75,10 @@ class ObjectExplorerTester {
 		let expectedActions: string[] = [];
 		// Generate Scripts and Properties come from the admin-tool-ext-win extension which is for Windows only, so the item won't show up on non-Win32 platforms
 		if (process.platform === 'win32') {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard', 'Generate Scripts...', 'Properties'];
 		}
 		else {
-			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Backup', 'Restore', 'Refresh', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
+			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
 		await this.verifyDBContextMenu(server, 3000, expectedActions);
 	}

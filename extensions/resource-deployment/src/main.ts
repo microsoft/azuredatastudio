@@ -4,13 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import vscode = require('vscode');
-import { ResourceTypePickerDialog } from './ui/resourceDeploymentDialog';
-import { ToolsService } from './services/toolsService';
-import { NotebookService } from './services/notebookService';
-import { ResourceTypeService } from './services/resourceTypeService';
-import { PlatformService } from './services/platformService';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
+import { DialogInfo } from './interfaces';
+import { NotebookService } from './services/notebookService';
+import { PlatformService } from './services/platformService';
+import { ResourceTypeService } from './services/resourceTypeService';
+import { ToolsService } from './services/toolsService';
+import { NotebookInputDialog } from './ui/notebookInputDialog';
+import { ResourceTypePickerDialog } from './ui/resourceTypePickerDialog';
 
 const localize = nls.loadMessageBundle();
 
@@ -18,8 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const platformService = new PlatformService();
 	const toolsService = new ToolsService();
 	const notebookService = new NotebookService(platformService, context.extensionPath);
-	const resourceTypeService = new ResourceTypeService(platformService, toolsService);
-
+	const resourceTypeService = new ResourceTypeService(platformService, toolsService, notebookService);
 	const resourceTypes = resourceTypeService.getResourceTypes();
 	const validationFailures = resourceTypeService.validateResourceTypes(resourceTypes);
 	if (validationFailures.length !== 0) {
@@ -33,7 +34,7 @@ export function activate(context: vscode.ExtensionContext) {
 		if (filtered.length !== 1) {
 			vscode.window.showErrorMessage(localize('resourceDeployment.UnknownResourceType', 'The resource type: {0} is not defined', resourceTypeName));
 		} else {
-			const dialog = new ResourceTypePickerDialog(context, notebookService, toolsService, resourceTypeService, filtered[0]);
+			const dialog = new ResourceTypePickerDialog(context, toolsService, resourceTypeService, filtered[0]);
 			dialog.open();
 		}
 	};
@@ -46,6 +47,10 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 	vscode.commands.registerCommand('azdata.resource.deploy', () => {
 		openDialog('sql-bdc');
+	});
+	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: DialogInfo) => {
+		const dialog = new NotebookInputDialog(notebookService, dialogInfo);
+		dialog.open();
 	});
 }
 

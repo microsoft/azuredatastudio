@@ -43,6 +43,10 @@ export interface IModalDialogStyles {
 	dialogBorder?: Color;
 	dialogHeaderAndFooterBackground?: Color;
 	dialogBodyBackground?: Color;
+	footerBackgroundColor?: Color;
+	footerBorderTopWidth?: Color;
+	footerBorderTopStyle?: Color;
+	footerBorderTopColor?: Color;
 }
 
 export interface IModalOptions {
@@ -53,14 +57,6 @@ export interface IModalOptions {
 	hasTitleIcon?: boolean;
 	hasErrors?: boolean;
 	hasSpinner?: boolean;
-}
-
-// Needed for angular component dialogs to style modal footer
-export class ModalFooterStyle {
-	public static backgroundColor;
-	public static borderTopWidth;
-	public static borderTopStyle;
-	public static borderTopColor;
 }
 
 const defaultOptions: IModalOptions = {
@@ -93,10 +89,10 @@ export abstract class Modal extends Disposable implements IThemable {
 	private _lastFocusableElement: HTMLElement;
 	private _focusedElementBeforeOpen: HTMLElement;
 
-	private _dialogForeground: Color;
-	private _dialogBorder: Color;
-	private _dialogHeaderAndFooterBackground: Color;
-	private _dialogBodyBackground: Color;
+	private _dialogForeground?: Color;
+	private _dialogBorder?: Color;
+	private _dialogHeaderAndFooterBackground?: Color;
+	private _dialogBodyBackground?: Color;
 
 	private _modalDialog: HTMLElement;
 	private _modalHeaderSection: HTMLElement;
@@ -323,25 +319,39 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Set focusable elements in the modal dialog
 	 */
 	public setFocusableElements() {
-		this._focusableElements = this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
+		// try to find focusable element in dialog pane rather than overall container
+		this._focusableElements = this._modalBodySection ?
+			this._modalBodySection.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]') :
+			this._bodyContainer.querySelectorAll('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex="0"]');
 		if (this._focusableElements && this._focusableElements.length > 0) {
 			this._firstFocusableElement = <HTMLElement>this._focusableElements[0];
 			this._lastFocusableElement = <HTMLElement>this._focusableElements[this._focusableElements.length - 1];
 		}
 
 		this._focusedElementBeforeOpen = <HTMLElement>document.activeElement;
+		this.focus();
+	}
+
+	/**
+	 * Focuses the modal
+	 * Default behavior: focus the first focusable element
+	 */
+	protected focus() {
+		if (this._firstFocusableElement) {
+			this._firstFocusableElement.focus();
+		}
 	}
 
 	/**
 	 * Shows the modal and attaches key listeners
 	 */
 	protected show() {
-		this._modalShowingContext.get().push(this._staticKey);
+		this._modalShowingContext.get()!.push(this._staticKey);
 		DOM.append(this.layoutService.container, this._bodyContainer);
 		this.setFocusableElements();
 
 		this._keydownListener = DOM.addDisposableListener(document, DOM.EventType.KEY_DOWN, (e: KeyboardEvent) => {
-			let context = this._modalShowingContext.get();
+			let context = this._modalShowingContext.get()!;
 			if (context[context.length - 1] === this._staticKey) {
 				let event = new StandardKeyboardEvent(e);
 				if (event.equals(KeyCode.Enter)) {
@@ -372,7 +382,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * Hides the modal and removes key listeners
 	 */
 	protected hide() {
-		this._modalShowingContext.get().pop();
+		this._modalShowingContext.get()!.pop();
 		this._bodyContainer.remove();
 		if (this._focusedElementBeforeOpen) {
 			this._focusedElementBeforeOpen.focus();
@@ -438,7 +448,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	 * @param level Severity level of the message
 	 * @param description Description of the message
 	 */
-	protected setError(message: string, level: MessageLevel = MessageLevel.Error, description: string = '') {
+	protected setError(message: string | undefined, level: MessageLevel = MessageLevel.Error, description: string = '') {
 		if (this._modalOptions.hasErrors) {
 			this._messageSummaryText = message ? message : '';
 			this._messageDetailText = description ? description : '';
@@ -461,8 +471,8 @@ export abstract class Modal extends Disposable implements IThemable {
 
 				this._messageIcon.title = severityText;
 				this._messageSeverity.innerText = severityText;
-				this._messageSummary.innerText = message;
-				this._messageSummary.title = message;
+				this._messageSummary.innerText = message!;
+				this._messageSummary.title = message!;
 				this._messageDetail.innerText = description;
 			}
 			DOM.hide(this._messageDetail);
@@ -491,7 +501,7 @@ export abstract class Modal extends Disposable implements IThemable {
 	/**
 	 * Return background color of header and footer
 	 */
-	protected get headerAndFooterBackground(): string {
+	protected get headerAndFooterBackground(): string | null {
 		return this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
 	}
 
@@ -533,10 +543,8 @@ export abstract class Modal extends Disposable implements IThemable {
 		const border = this._dialogBorder ? this._dialogBorder.toString() : null;
 		const headerAndFooterBackground = this._dialogHeaderAndFooterBackground ? this._dialogHeaderAndFooterBackground.toString() : null;
 		const bodyBackground = this._dialogBodyBackground ? this._dialogBodyBackground.toString() : null;
-		ModalFooterStyle.backgroundColor = headerAndFooterBackground;
-		ModalFooterStyle.borderTopWidth = border ? '1px' : null;
-		ModalFooterStyle.borderTopStyle = border ? 'solid' : null;
-		ModalFooterStyle.borderTopColor = border;
+		const footerBorderTopWidth = border ? '1px' : null;
+		const footerBorderTopStyle = border ? 'solid' : null;
 
 		if (this._closeButtonInHeader) {
 			this._closeButtonInHeader.style.color = foreground;
@@ -567,10 +575,10 @@ export abstract class Modal extends Disposable implements IThemable {
 		}
 
 		if (this._modalFooterSection) {
-			this._modalFooterSection.style.backgroundColor = ModalFooterStyle.backgroundColor;
-			this._modalFooterSection.style.borderTopWidth = ModalFooterStyle.borderTopWidth;
-			this._modalFooterSection.style.borderTopStyle = ModalFooterStyle.borderTopStyle;
-			this._modalFooterSection.style.borderTopColor = ModalFooterStyle.borderTopColor;
+			this._modalFooterSection.style.backgroundColor = headerAndFooterBackground;
+			this._modalFooterSection.style.borderTopWidth = footerBorderTopWidth;
+			this._modalFooterSection.style.borderTopStyle = footerBorderTopStyle;
+			this._modalFooterSection.style.borderTopColor = border;
 		}
 	}
 

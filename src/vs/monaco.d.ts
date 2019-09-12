@@ -2495,6 +2495,11 @@ declare namespace monaco.editor {
 	export type EditorAutoSurroundStrategy = 'languageDefined' | 'quotes' | 'brackets' | 'never';
 
 	/**
+	 * Configuration options for typing over closing quotes or brackets
+	 */
+	export type EditorAutoClosingOvertypeStrategy = 'always' | 'auto' | 'never';
+
+	/**
 	 * Configuration options for editor minimap
 	 */
 	export interface IEditorMinimapOptions {
@@ -2922,6 +2927,10 @@ declare namespace monaco.editor {
 		 * Defaults to language defined behavior.
 		 */
 		autoClosingQuotes?: EditorAutoClosingStrategy;
+		/**
+		 * Options for typing over closing quotes or brackets.
+		 */
+		autoClosingOvertype?: EditorAutoClosingOvertypeStrategy;
 		/**
 		 * Options for auto surrounding.
 		 * Defaults to always allowing auto surrounding.
@@ -3389,6 +3398,7 @@ declare namespace monaco.editor {
 		readonly wordSeparators: string;
 		readonly autoClosingBrackets: EditorAutoClosingStrategy;
 		readonly autoClosingQuotes: EditorAutoClosingStrategy;
+		readonly autoClosingOvertype: EditorAutoClosingOvertypeStrategy;
 		readonly autoSurround: EditorAutoSurroundStrategy;
 		readonly autoIndent: boolean;
 		readonly useTabStops: boolean;
@@ -3530,6 +3540,7 @@ declare namespace monaco.editor {
 		readonly wordSeparators: boolean;
 		readonly autoClosingBrackets: boolean;
 		readonly autoClosingQuotes: boolean;
+		readonly autoClosingOvertype: boolean;
 		readonly autoSurround: boolean;
 		readonly autoIndent: boolean;
 		readonly useTabStops: boolean;
@@ -3609,17 +3620,17 @@ declare namespace monaco.editor {
 		 * @param zone Zone to create
 		 * @return A unique identifier to the view zone.
 		 */
-		addZone(zone: IViewZone): number;
+		addZone(zone: IViewZone): string;
 		/**
 		 * Remove a zone
 		 * @param id A unique identifier to the view zone, as returned by the `addZone` call.
 		 */
-		removeZone(id: number): void;
+		removeZone(id: string): void;
 		/**
 		 * Change a zone's position.
 		 * The editor will rescan the `afterLineNumber` and `afterColumn` properties of a view zone.
 		 */
-		layoutZone(id: number): void;
+		layoutZone(id: string): void;
 	}
 
 	/**
@@ -4058,7 +4069,7 @@ declare namespace monaco.editor {
 		 * @param edits The edits to execute.
 		 * @param endCursorState Cursor state after the edits were applied.
 		 */
-		executeEdits(source: string, edits: IIdentifiedSingleEditOperation[], endCursorState?: Selection[]): boolean;
+		executeEdits(source: string, edits: IIdentifiedSingleEditOperation[], endCursorState?: ICursorStateComputer | Selection[]): boolean;
 		/**
 		 * Execute multiple (concomitant) commands on the editor.
 		 * @param source The source of the call.
@@ -4565,7 +4576,9 @@ declare namespace monaco.languages {
 		 *
 		 * @deprecated Will be replaced by a better API soon.
 		 */
-		__electricCharacterSupport?: IBracketElectricCharacterContribution;
+		__electricCharacterSupport?: {
+			docComment?: IDocComment;
+		};
 	}
 
 	/**
@@ -4638,10 +4651,6 @@ declare namespace monaco.languages {
 		 * The action to execute.
 		 */
 		action: EnterAction;
-	}
-
-	export interface IBracketElectricCharacterContribution {
-		docComment?: IDocComment;
 	}
 
 	/**
@@ -4792,6 +4801,10 @@ declare namespace monaco.languages {
 		Snippet = 25
 	}
 
+	export enum CompletionItemTag {
+		Deprecated = 1
+	}
+
 	export enum CompletionItemInsertTextRule {
 		/**
 		 * Adjust whitespace/indentation of multiline insert texts to
@@ -4820,6 +4833,11 @@ declare namespace monaco.languages {
 		 * an icon is chosen by the editor.
 		 */
 		kind: CompletionItemKind;
+		/**
+		 * A modifier to the `kind` which affect how the item
+		 * is rendered, e.g. Deprecated is rendered with a strikeout
+		 */
+		tags?: ReadonlyArray<CompletionItemTag>;
 		/**
 		 * A human-readable string with additional information
 		 * about this item, like type or symbol information.
@@ -5229,10 +5247,15 @@ declare namespace monaco.languages {
 		TypeParameter = 25
 	}
 
+	export enum SymbolTag {
+		Deprecated = 1
+	}
+
 	export interface DocumentSymbol {
 		name: string;
 		detail: string;
 		kind: SymbolKind;
+		tags: ReadonlyArray<SymbolTag>;
 		containerName?: string;
 		range: IRange;
 		selectionRange: IRange;

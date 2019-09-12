@@ -15,10 +15,11 @@ import { ILanguageAssociationRegistry, Extensions as LanguageAssociationExtensio
 import { UntitledNotebookInput } from 'sql/workbench/parts/notebook/common/models/untitledNotebookInput';
 import { FileNotebookInput } from 'sql/workbench/parts/notebook/common/models/fileNotebookInput';
 import { FileNoteBookEditorInputFactory, UntitledNoteBookEditorInputFactory } from 'sql/workbench/parts/notebook/common/models/nodebookInputFactory';
-import { NotebookInput } from 'sql/workbench/parts/notebook/common/models/notebookInput';
-import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
 import { IWorkbenchActionRegistry, Extensions as WorkbenchActionsExtensions } from 'vs/workbench/common/actions';
-import { SyncActionDescriptor, registerAction } from 'vs/platform/actions/common/actions';
+import { SyncActionDescriptor, registerAction, MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
+
+import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
+import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
 import { NewNotebookAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -30,6 +31,18 @@ import { registerComponentType } from 'sql/workbench/parts/notebook/browser/outp
 import { MimeRendererComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRenderer.component';
 import { GridOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/gridOutput.component';
 import { PlotlyOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/plotlyOutput.component';
+import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer } from 'vs/workbench/common/views';
+import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { mssqlProviderName } from 'sql/platform/connection/common/constants';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
+import { ConnectedContext } from 'azdata';
+import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
+import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
+import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
+import { ManageActionContext } from 'sql/workbench/common/actions';
 
 Registry.as<IEditorInputFactoryRegistry>(EditorInputFactoryExtensions.EditorInputFactories)
 	.registerEditorInputFactory(FileNotebookInput.ID, FileNoteBookEditorInputFactory);
@@ -67,6 +80,67 @@ actionRegistry.registerWorkbenchAction(
 	NewNotebookAction.LABEL
 );
 
+const DE_NEW_NOTEBOOK_COMMAND_ID = 'dataExplorer.newNotebook';
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: DE_NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, args: TreeViewItemHandleArg) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const connectedContext: ConnectedContext = { connectionProfile: args.$treeItem.payload };
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+	}
+});
+
+// New Notebook
+MenuRegistry.appendMenuItem(MenuId.DataExplorerContext, {
+	group: '0_query',
+	order: 3,
+	command: {
+		id: DE_NEW_NOTEBOOK_COMMAND_ID,
+		title: localize('newNotebook', "New Notebook")
+	},
+	when: ContextKeyExpr.and(NodeContextKey.IsConnectable,
+		MssqlNodeContext.IsDatabaseOrServer,
+		MssqlNodeContext.NodeProvider.isEqualTo(mssqlProviderName))
+});
+
+const OE_NEW_NOTEBOOK_COMMAND_ID = 'objectExplorer.newNotebook';
+// New Notebook
+CommandsRegistry.registerCommand({
+	id: OE_NEW_NOTEBOOK_COMMAND_ID,
+	handler: (accessor, args: ObjectExplorerActionsContext) => {
+		const instantiationService = accessor.get(IInstantiationService);
+		const connectedContext: ConnectedContext = { connectionProfile: args.connectionProfile };
+		return instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+	}
+});
+
+MenuRegistry.appendMenuItem(MenuId.ObjectExplorerItemContext, {
+	group: '0_query',
+	order: 3,
+	command: {
+		id: OE_NEW_NOTEBOOK_COMMAND_ID,
+		title: localize('newQuery', "New Notebook")
+	},
+	when: ContextKeyExpr.or(ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Server')), ContextKeyExpr.and(TreeNodeContextKey.Status.notEqualsTo('Unavailable'), TreeNodeContextKey.NodeType.isEqualTo('Database')))
+});
+
+const ExplorerNotebookActionID = 'explorer.notebook';
+CommandsRegistry.registerCommand(ExplorerNotebookActionID, (accessor, context: ManageActionContext) => {
+	const instantiationService = accessor.get(IInstantiationService);
+	const connectedContext: ConnectedContext = { connectionProfile: context.profile };
+	instantiationService.createInstance(NewNotebookAction, NewNotebookAction.ID, NewNotebookAction.LABEL).run(connectedContext);
+});
+
+MenuRegistry.appendMenuItem(MenuId.ExplorerWidgetContext, {
+	command: {
+		id: ExplorerNotebookActionID,
+		title: NewNotebookAction.LABEL
+	},
+	when: ItemContextKey.ItemType.isEqualTo('database'),
+	order: 1
+});
+
 registerAction({
 	id: 'workbench.action.setWorkspaceAndOpen',
 	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
@@ -100,6 +174,22 @@ configurationRegistry.registerConfiguration({
 			'default': true,
 			'description': localize('notebook.inProcMarkdown', "Use in-process markdown viewer to render text cells more quickly (Experimental).")
 		}
+	}
+});
+
+/**
+* Explorer viewlet id.
+*/
+export const VIEWLET_ID = 'bookTreeView';
+/**
+* Explorer viewlet container.
+*/
+export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
+registerAction({
+	id: 'workbench.books.action.focusBooksExplorer',
+	handler: async (accessor) => {
+		const viewletService = accessor.get(IViewletService);
+		viewletService.openViewlet('workbench.view.extension.books-explorer', true);
 	}
 });
 

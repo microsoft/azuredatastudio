@@ -7,11 +7,10 @@
 
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { ControllerError, getEndPoints } from '../controller/clusterControllerApi';
+import { getEndPoints, ControllerError } from '../controller/clusterControllerApi';
 import { ControllerTreeDataProvider } from '../tree/controllerTreeDataProvider';
 import { TreeNode } from '../tree/treeNode';
 import { showErrorMessage } from '../utils';
-import { EndpointModel } from '../controller/apiGenerated';
 
 const localize = nls.loadMessageBundle();
 
@@ -22,32 +21,26 @@ export class AddControllerDialogModel {
 	constructor(
 		public treeDataProvider: ControllerTreeDataProvider,
 		public node?: TreeNode,
-		public prefilledClusterName?: string,
 		public prefilledUrl?: string,
 		public prefilledUsername?: string,
 		public prefilledPassword?: string,
 		public prefilledRememberPassword?: boolean
 	) {
-		this.prefilledClusterName = prefilledClusterName || (node && node['clusterName']);
 		this.prefilledUrl = prefilledUrl || (node && node['url']);
 		this.prefilledUsername = prefilledUsername || (node && node['username']);
 		this.prefilledPassword = prefilledPassword || (node && node['password']);
 		this.prefilledRememberPassword = prefilledRememberPassword || (node && node['rememberPassword']);
 	}
 
-	public async onComplete(clusterName: string, url: string, username: string, password: string, rememberPassword: boolean): Promise<void> {
+	public async onComplete(url: string, username: string, password: string, rememberPassword: boolean): Promise<void> {
 		try {
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
-			let response = await getEndPoints(clusterName, url, username, password, true);
+			let response = await getEndPoints(url, username, password, true);
 			if (response && response.endPoints) {
-				let masterInstance: EndpointModel = undefined;
-				if (response.endPoints) {
-					masterInstance = response.endPoints.find(e => e.name && e.name === 'sql-server-master');
-				}
 				if (this._canceled) {
 					return;
 				}
-				this.treeDataProvider.addController(clusterName, url, username, password, rememberPassword, masterInstance);
+				this.treeDataProvider.addController(url, username, password, rememberPassword);
 				await this.treeDataProvider.saveControllers();
 			}
 		} catch (error) {
@@ -56,6 +49,7 @@ export class AddControllerDialogModel {
 				throw error;
 			}
 		}
+
 	}
 
 	public async onError(error: ControllerError): Promise<void> {
@@ -75,7 +69,6 @@ export class AddControllerDialog {
 	private dialog: azdata.window.Dialog;
 	private uiModelBuilder: azdata.ModelBuilder;
 
-	private clusterNameInputBox: azdata.InputBoxComponent;
 	private urlInputBox: azdata.InputBoxComponent;
 	private usernameInputBox: azdata.InputBoxComponent;
 	private passwordInputBox: azdata.InputBoxComponent;
@@ -94,11 +87,6 @@ export class AddControllerDialog {
 		this.dialog.registerContent(async view => {
 			this.uiModelBuilder = view.modelBuilder;
 
-			this.clusterNameInputBox = this.uiModelBuilder.inputBox()
-				.withProperties<azdata.InputBoxProperties>({
-					placeHolder: localize('textClusterNameLower', 'mssql-cluster'),
-					value: this.model.prefilledUrl || 'mssql-cluster'
-				}).component();
 			this.urlInputBox = this.uiModelBuilder.inputBox()
 				.withProperties<azdata.InputBoxProperties>({
 					placeHolder: localize('textUrlLower', 'url'),
@@ -126,10 +114,6 @@ export class AddControllerDialog {
 				.withFormItems([{
 					components: [
 						{
-							component: this.clusterNameInputBox,
-							title: localize('textClusterNameCapital', 'Cluster Name'),
-							required: true
-						}, {
 							component: this.urlInputBox,
 							title: localize('textUrlCapital', 'URL'),
 							required: true
@@ -159,14 +143,13 @@ export class AddControllerDialog {
 	}
 
 	private async validate(): Promise<boolean> {
-		let clusterName = this.clusterNameInputBox && this.clusterNameInputBox.value;
 		let url = this.urlInputBox && this.urlInputBox.value;
 		let username = this.usernameInputBox && this.usernameInputBox.value;
 		let password = this.passwordInputBox && this.passwordInputBox.value;
 		let rememberPassword = this.passwordInputBox && !!this.rememberPwCheckBox.checked;
 
 		try {
-			await this.model.onComplete(clusterName, url, username, password, rememberPassword);
+			await this.model.onComplete(url, username, password, rememberPassword);
 			return true;
 		} catch (error) {
 			showErrorMessage(error);

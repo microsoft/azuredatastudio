@@ -54,6 +54,9 @@ export class DacFxSummaryPage extends BasePage {
 		if (this.model.upgradeExisting && this.instance.selectedOperation === Operation.deploy) {
 			this.instance.wizard.generateScriptButton.hidden = false;
 		}
+
+		this.instance.wizard.doneButton.focused = true;
+
 		return true;
 	}
 
@@ -130,8 +133,8 @@ export class DacFxSummaryPage extends BasePage {
 					cssClass: 'align-with-header'
 				}],
 			width: 700,
-			height: 200
+			height: 200,
+			moveFocusOutWithTab: true
 		});
 	}
 }
-

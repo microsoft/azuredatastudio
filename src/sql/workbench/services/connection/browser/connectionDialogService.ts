@@ -276,14 +276,12 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			if (providerName === Constants.cmsProviderName) {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(CmsConnectionController,
-						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
 						}, providerName);
 			} else {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(ConnectionController,
-						this._connectionManagementService,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
 							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
 						}, providerName);
@@ -397,7 +395,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		doConnect: boolean = true): Thenable<IConnectionProfile> {
+		doConnect: boolean = true): Promise<IConnectionProfile> {
 
 		if (!doConnect) {
 			this.ignoreNextConnect = true;
@@ -410,7 +408,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 			}, error => {
 				this._dialogDeferredPromise.reject(error);
 			});
-		return this._dialogDeferredPromise;
+		return this._dialogDeferredPromise.promise;
 	}
 
 	public showDialog(
@@ -418,7 +416,7 @@ export class ConnectionDialogService implements IConnectionDialogService {
 		params?: INewConnectionParams,
 		model?: IConnectionProfile,
 		connectionResult?: IConnectionResult,
-		connectionOptions?: IConnectionCompletionOptions): Thenable<void> {
+		connectionOptions?: IConnectionCompletionOptions): Promise<void> {
 
 		this._connectionManagementService = connectionManagementService;
 

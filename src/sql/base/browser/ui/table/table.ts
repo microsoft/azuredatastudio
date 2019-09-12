@@ -41,7 +41,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 	private _container: HTMLElement;
 	private _tableContainer: HTMLElement;
 
-	private _classChangeTimeout: NodeJS.Timer;
+	private _classChangeTimeout: any;
 
 	private _onContextMenu = new Emitter<ITableMouseEvent>();
 	public readonly onContextMenu: Event<ITableMouseEvent> = this._onContextMenu.event;
@@ -322,6 +322,7 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 		if (styles.listFocusOutline) {
 			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected { outline: 1px solid ${styles.listFocusOutline}; outline-offset: -1px; }`);
+			content.push(`.monaco-table.${this.idPrefix}.focused .slick-row .selected.active { outline: 2px solid ${styles.listFocusOutline}; outline-offset: -1px; }`);
 		}
 
 		if (styles.listInactiveFocusOutline) {
@@ -342,5 +343,25 @@ export class Table<T extends Slick.SlickData> extends Widget implements IDisposa
 
 	public setTableTitle(title: string): void {
 		this._tableContainer.title = title;
+	}
+
+	public removeAriaRowCount(): void {
+		this._tableContainer.removeAttribute('aria-rowcount');
+	}
+
+	public set ariaRowCount(value: number) {
+		this._tableContainer.setAttribute('aria-rowcount', value.toString());
+	}
+
+	public removeAriaColumnCount(): void {
+		this._tableContainer.removeAttribute('aria-colcount');
+	}
+
+	public set ariaColumnCount(value: number) {
+		this._tableContainer.setAttribute('aria-colcount', value.toString());
+	}
+
+	public set ariaRole(value: string) {
+		this._tableContainer.setAttribute('role', value);
 	}
 }
