@@ -20,3 +20,4 @@ import 'sql/workbench/api/browser/mainThreadNotebook';
 import 'sql/workbench/api/browser/mainThreadNotebookDocumentsAndEditors';
 import 'sql/workbench/api/browser/mainThreadAccountManagement';
 import 'sql/workbench/api/browser/mainThreadExtensionManagement';
+import 'sql/workbench/api/browser/mainThreadExtHostEnv';
