@@ -306,6 +306,7 @@ export class GridPanel extends Disposable {
 	public dispose() {
 		dispose(this.tables);
 		this.tables = undefined;
+		super.dispose();
 	}
 }
 
