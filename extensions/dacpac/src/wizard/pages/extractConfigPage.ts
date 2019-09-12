@@ -108,12 +108,12 @@ export class ExtractConfigPage extends DacFxConfigPage {
 
 	private async createVersionTextBox(): Promise<azdata.FormComponent> {
 		this.versionTextBox = this.view.modelBuilder.inputBox().withProperties({
-			required: true
+			required: true,
+			ariaLabel: localize('dacFxExtract.versionTextBoxAriaLabel', 'Version')
 		}).component();
 
 		// default version
 		this.versionTextBox.value = '1.0.0.0';
-		this.versionTextBox.ariaLabel = localize('dacfx.versionAriaLabel', "Version");
 		this.model.version = this.versionTextBox.value;
 
 		this.versionTextBox.onTextChanged(async () => {
