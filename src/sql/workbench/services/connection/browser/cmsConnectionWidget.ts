@@ -66,7 +66,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 	protected registerListeners(): void {
 		super.registerListeners();
 		if (this._serverDescriptionInputBox) {
-			this._toDispose.push(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
+			this._register(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
 		}
 	}
 

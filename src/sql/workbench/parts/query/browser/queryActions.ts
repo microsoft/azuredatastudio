@@ -6,7 +6,7 @@
 import 'vs/css!./media/queryActions';
 import * as nls from 'vs/nls';
 import { Action, IActionViewItem, IActionRunner } from 'vs/base/common/actions';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { IDisposable, dispose, Disposable } from 'vs/base/common/lifecycle';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
@@ -566,11 +566,10 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
  * Action item that handles the dropdown (combobox) that lists the available databases.
  * Based off StartDebugActionItem.
  */
-export class ListDatabasesActionItem implements IActionViewItem {
+export class ListDatabasesActionItem extends Disposable implements IActionViewItem {
 	public static ID = 'listDatabaseQueryActionItem';
 
 	public actionRunner: IActionRunner;
-	private _toDispose: IDisposable[];
 	private _currentDatabaseName: string;
 	private _isConnected: boolean;
 	private _databaseListDropdown: HTMLElement;
@@ -587,7 +586,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 		@INotificationService private readonly notificationService: INotificationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) {
-		this._toDispose = [];
+		super();
 		this._databaseListDropdown = $('.databaseListDropdown');
 		this._isInAccessibilityMode = this.configurationService.getValue('editor.accessibilitySupport') === 'on';
 
@@ -605,11 +604,11 @@ export class ListDatabasesActionItem implements IActionViewItem {
 				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			});
 			this._dropdown.onValueChange(s => this.databaseSelected(s));
-			this._toDispose.push(this._dropdown.onFocus(() => this.onDropdownFocus()));
+			this._register(this._dropdown.onFocus(() => this.onDropdownFocus()));
 		}
 
 		// Register event handlers
-		this._toDispose.push(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
+		this._register(this.connectionManagementService.onConnectionChanged(params => this.onConnectionChanged(params)));
 	}
 
 	// PUBLIC METHODS //////////////////////////////////////////////////////
@@ -655,10 +654,6 @@ export class ListDatabasesActionItem implements IActionViewItem {
 		} else {
 			return attachEditableDropdownStyler(this, themeService);
 		}
-	}
-
-	public dispose(): void {
-		this._toDispose = dispose(this._toDispose);
 	}
 
 	// EVENT HANDLERS FROM EDITOR //////////////////////////////////////////
