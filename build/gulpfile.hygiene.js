@@ -160,6 +160,7 @@ const copyrightFilter = [
 	'!extensions/notebook/src/prompts/**',
 	'!extensions/mssql/src/prompts/**',
 	'!extensions/notebook/resources/jupyter_config/**',
+	'!extensions/query-history/images/**',
 	'!**/*.gif',
 	'!**/*.xlf',
 	'!**/*.dacpac',
