@@ -6,11 +6,11 @@ Adds a Query History panel for viewing and running past executed queries.
 
 Query History is displayed as a tab in the tab panel, which is toggled by the *View: Toggle Panel* command.
 
-![Query History tab](https://github.com/microsoft/azuredatastudio/tree/master/extensions/query-history/images/QueryHistoryTab.PNG)
+![Query History tab](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryTab.PNG?raw=true)
 
 Initially this view will be empty but once you execute a query editor that will be captured in the window - with a separate row displayed for every query executed.
 
-![Query History tab with queries](https://github.com/microsoft/azuredatastudio/tree/master/extensions/query-history/images/QueryHistoryTabWithQueries.PNG)
+![Query History tab with queries](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryTabWithQueries.PNG?raw=true)
 
 Each row consists of 3 parts :
 	1. Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌is shown.
@@ -22,7 +22,7 @@ Each row consists of 3 parts :
 
 Right clicking on a history row will bring up a menu with a number of actions available.
 
-![Query History action menu](https://github.com/microsoft/azuredatastudio/tree/master/extensions/query-history/images/QueryHistoryActionMenu.PNG)
+![Query History action menu](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryActionMenu.PNG?raw=true)
 
 #### Open Query
 
