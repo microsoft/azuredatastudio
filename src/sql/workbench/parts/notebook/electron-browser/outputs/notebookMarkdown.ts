@@ -59,13 +59,13 @@ export class NotebookMarkdownRenderer {
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
+		let notebookFolder = path.join(path.dirname(this._notebookURI.fsPath), path.sep);
 		if (!this._baseUrls.includes(notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
 		const renderer = new marked.Renderer({ baseUrl: notebookFolder });
 		renderer.image = (href: string, title: string, text: string) => {
-			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href).toString();
+			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			let dimensions: string[] = [];
 			if (href) {
 				const splitted = href.split('|').map(s => s.trim());
@@ -102,7 +102,7 @@ export class NotebookMarkdownRenderer {
 			return '<img ' + attributes.join(' ') + '>';
 		};
 		renderer.link = (href: string, title: string, text: string): string => {
-			let returnedValue = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
+			href = this.cleanUrl(!markdown.isTrusted, notebookFolder, href);
 			if (href === null) {
 				return text;
 			}
@@ -215,7 +215,7 @@ export class NotebookMarkdownRenderer {
 			// but we might need to add _that_
 			// https://tools.ietf.org/html/rfc3986#section-3
 			if (/^[^:]+:\/*[^/]*$/.test(base)) {
-				this._baseUrls[' ' + base] = base + '/';
+				this._baseUrls[' ' + base] = path.join(base, path.sep);
 			} else {
 				// Remove trailing 'c's. /c*$/ is vulnerable to REDOS.
 				this._baseUrls[' ' + base] = base.replace(/c*$/, '');
