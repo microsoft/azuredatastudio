@@ -167,24 +167,23 @@ export const DE_NEW_QUERY_COMMAND_ID = 'dataExplorer.newQuery';
 // New Query
 CommandsRegistry.registerCommand({
 	id: DE_NEW_QUERY_COMMAND_ID,
-	handler: (accessor, args: TreeViewItemHandleArg) => {
+	handler: async (accessor, args: TreeViewItemHandleArg) => {
 		if (args.$treeItem) {
 			const queryEditorService = accessor.get(IQueryEditorService);
 			const connectionService = accessor.get(IConnectionManagementService);
 			const capabilitiesService = accessor.get(ICapabilitiesService);
-			return queryEditorService.newSqlEditor().then((owner: IConnectableInput) => {
-				// Connect our editor to the input connection
-				let options: IConnectionCompletionOptions = {
-					params: { connectionType: ConnectionType.editor, input: owner },
-					saveTheConnection: false,
-					showDashboard: false,
-					showConnectionDialogOnError: true,
-					showFirewallRuleOnError: true
-				};
-				return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), owner.uri, options);
-			});
+			const owner = await queryEditorService.newSqlEditor();
+			// Connect our editor to the input connection
+			let options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, input: owner },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: true,
+				showFirewallRuleOnError: true
+			};
+			return connectionService.connect(new ConnectionProfile(capabilitiesService, args.$treeItem.payload), owner.uri, options);
 		}
-		return Promise.resolve(true);
+		return true;
 	}
 });
 
@@ -205,7 +204,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 		this.label = nls.localize('runQueryLabel', "Run");
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -216,10 +215,10 @@ export class RunQueryAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeQuery, this.editor.getSelection());
 			}
 		}
-		return Promise.resolve(null);
+		return;
 	}
 
-	public runCurrent(): Promise<void> {
+	public async runCurrent(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -230,7 +229,7 @@ export class RunQueryAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.executeCurrentQuery, this.editor.getSelection(false));
 			}
 		}
-		return Promise.resolve(null);
+		return;
 	}
 
 	public runQuery(editor: QueryEditor, runCurrentStatement: boolean = false) {
@@ -276,15 +275,14 @@ export class CancelQueryAction extends QueryTaskbarAction {
 		this.label = nls.localize('cancelQueryLabel', "Cancel");
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		if (this.isConnected(this.editor)) {
 			if (!this.editor.input) {
 				console.error('editor input was null');
-				return Promise.resolve(null);
+				return;
 			}
 			this.queryModelService.cancelQuery(this.editor.input.uri);
 		}
-		return Promise.resolve(null);
 	}
 }
 
@@ -304,7 +302,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 		this.label = nls.localize('estimatedQueryPlan', "Explain");
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -315,7 +313,7 @@ export class EstimatedQueryPlanAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.estimatedQueryPlan, this.editor.getSelection());
 			}
 		}
-		return Promise.resolve(null);
+		return;
 	}
 
 	public runQuery(editor: QueryEditor) {
@@ -343,7 +341,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 		this.label = nls.localize('actualQueryPlan', "Actual");
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		if (!this.editor.isSelectionEmpty()) {
 			if (this.isConnected(this.editor)) {
 				// If we are already connected, run the query
@@ -354,7 +352,7 @@ export class ActualQueryPlanAction extends QueryTaskbarAction {
 				this.connectEditor(this.editor, RunQueryOnConnectionMode.actualQueryPlan, this.editor.getSelection());
 			}
 		}
-		return Promise.resolve(null);
+		return;
 	}
 
 	public runQuery(editor: QueryEditor) {
@@ -390,11 +388,11 @@ export class DisconnectDatabaseAction extends QueryTaskbarAction {
 		this.label = nls.localize('disconnectDatabaseLabel', "Disconnect");
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 		// determine if we need to disconnect, cancel an in-progress conneciton, or do nothing
 		this.connectionManagementService.disconnectEditor(this.editor.input);
-		return Promise.resolve(null);
+		return;
 	}
 }
 
@@ -428,9 +426,9 @@ export class ConnectDatabaseAction extends QueryTaskbarAction {
 		this.label = label;
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		this.connectEditor(this.editor);
-		return Promise.resolve(null);
+		return;
 	}
 }
 
@@ -475,7 +473,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 		}
 	}
 
-	public run(): Promise<void> {
+	public async un(): Promise<void> {
 		if (this.connected) {
 			// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 			// determine if we need to disconnect, cancel an in-progress connection, or do nothing
@@ -483,7 +481,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 		} else {
 			this.connectEditor(this.editor);
 		}
-		return Promise.resolve(null);
+		return;
 	}
 }
 
@@ -504,8 +502,8 @@ export class ListDatabasesAction extends QueryTaskbarAction {
 		this.class = ListDatabasesAction.EnabledClass;
 	}
 
-	public run(): Promise<void> {
-		return Promise.resolve(null);
+	public async run(): Promise<void> {
+		return;
 	}
 }
 
@@ -549,7 +547,7 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 
 	}
 
-	public run(): Promise<void> {
+	public async run(): Promise<void> {
 		const toSqlCmdState = !this.isSqlCmdMode; // input.state change triggers event that changes this.isSqlCmdMode, so store it before using
 		this.editor.input.state.isSqlCmdMode = toSqlCmdState;
 
@@ -558,13 +556,12 @@ export class ToggleSqlCmdModeAction extends QueryTaskbarAction {
 		queryoptions.options['isSqlCmdMode'] = toSqlCmdState;
 		if (!this.editor.input) {
 			console.error('editor input was null');
-			return Promise.resolve(null);
+			return;
 		}
 		this.queryManagementService.setQueryExecutionOptions(this.editor.input.uri, queryoptions);
 
 		// set intellisense options
 		toSqlCmdState ? this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sqlcmd', 'MSSQL') : this.connectionManagementService.doChangeLanguageFlavor(this.editor.input.uri, 'sql', 'MSSQL');
-		return Promise.resolve(null);
 	}
 }
 
@@ -768,7 +765,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 	private onDropdownFocus(): void {
 		if (!this._editor.input) {
 			console.error('editor input was null');
-			return undefined;
+			return;
 		}
 
 		let uri = this._editor.input.uri;
