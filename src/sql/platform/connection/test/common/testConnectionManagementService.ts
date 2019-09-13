@@ -294,4 +294,8 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
 		return [];
 	}
+
+	getConnection(uri: string): ConnectionProfile {
+		return undefined;
+	}
 }

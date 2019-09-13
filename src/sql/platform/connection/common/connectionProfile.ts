@@ -33,8 +33,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile
-	) {
+		model: string | azdata.IConnectionProfile) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
 			this.groupId = model.groupId;

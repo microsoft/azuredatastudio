@@ -593,15 +593,15 @@ class ComponentWrapper implements azdata.Component {
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
 		let itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
-			throw new Error(nls.localize('unknownComponentType', "Unkown component type. Must use ModelBuilder to create objects"));
+			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
 		let config = new InternalItemConfig(itemImpl, itemLayout);
-		if (index !== undefined && index >= 0 && index < this.items.length) {
+		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
 			this.itemConfigs.push(config);
 		} else {
-			throw new Error(nls.localize('invalidIndex', "The index is invalid."));
+			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
 		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
