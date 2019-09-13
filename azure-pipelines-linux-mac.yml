@@ -63,12 +63,12 @@ steps:
 
   - script: |
       DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
-    displayName: Run Unit Tests
+    displayName: Run Unit Tests (Linux)
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
   - script: |
       DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage
-    displayName: "Tests"
+    displayName: Run Unit Tests (Mac)
     condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
 
   - task: PublishTestResults@2
