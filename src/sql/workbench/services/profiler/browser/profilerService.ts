@@ -46,7 +46,7 @@ class TwoWayMap<T, K> {
 
 export class ProfilerService implements IProfilerService {
 	private static readonly PROFILER_SERVICE_UI_STATE_STORAGE_KEY = 'profileservice.uiState';
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers = new Map<string, azdata.ProfilerProvider>();
 	private _idMap = new TwoWayMap<ProfilerSessionID, string>();
 	private _sessionMap = new Map<ProfilerSessionID, IProfilerSession>();

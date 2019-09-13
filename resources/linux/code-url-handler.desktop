@@ -2,7 +2,7 @@
 Name=@@NAME_LONG@@ - URL Handler
 Comment=Azure Data Studio
 GenericName=Text Editor
-Exec=/usr/share/@@NAME@@/@@NAME@@ --open-url %U
+Exec=@@EXEC@@ --open-url %U
 Icon=@@ICON@@
 Type=Application
 NoDisplay=true

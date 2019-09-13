@@ -375,7 +375,7 @@ interface IRawExtensionsReport {
 
 export class ExtensionGalleryService implements IExtensionGalleryService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private extensionsGalleryUrl: string | undefined;
 	private extensionsControlUrl: string | undefined;

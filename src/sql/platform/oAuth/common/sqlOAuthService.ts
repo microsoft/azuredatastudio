@@ -13,7 +13,7 @@ export const ISqlOAuthService = createDecorator<ISqlOAuthService>('sqlOAuthServi
  * electron-based services are referenced in unit testable code.
  */
 export interface ISqlOAuthService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Sends request to main thread to handle OAuth request

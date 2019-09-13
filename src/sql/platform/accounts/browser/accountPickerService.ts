@@ -11,7 +11,7 @@ import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPick
 import { AccountPicker } from 'sql/platform/accounts/browser/accountPickerImpl';
 
 export class AccountPickerService implements IAccountPickerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _accountPicker: AccountPicker;
 
