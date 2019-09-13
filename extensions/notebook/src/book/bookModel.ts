@@ -19,7 +19,7 @@ const localize = nls.loadMessageBundle();
 
 export class BookModel implements azdata.nb.NavigationProvider {
 	public BookPath: string;
-	private _books: BookTreeItem[] = [];
+	private _bookItems: BookTreeItem[] = [];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	public openAsUntitled: boolean = false;
 	private _extensionContext: vscode.ExtensionContext;
@@ -68,15 +68,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		}
 	}
 
-	private flattenArray(array: any[], title: string): any[] {
-		try {
-			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections, title)) : acc.concat(val), []);
-		} catch (e) {
-			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', title);
-		}
-	}
-
-	private readBooks(): BookTreeItem[] {
+	public readBooks(): BookTreeItem[] {
 		for (const contentPath of this._tableOfContentPaths) {
 			let root = path.dirname(path.dirname(contentPath));
 			try {
@@ -96,22 +88,18 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
 					}
 				);
-				this._books.push(book);
+				this._bookItems.push(book);
 			} catch (e) {
 				let error = e instanceof Error ? e.message : e;
 				this._errorMessage = error;
 				vscode.window.showErrorMessage(error);
 			}
 		}
-		return this._books;
+		return this._bookItems;
 	}
 
-	public getBooks(): BookTreeItem[] {
-		if (this._books.length > 0) {
-			return this._books;
-		} else {
-			return [];
-		}
+	public get getBookItems() {
+		return this._bookItems;
 	}
 
 	public getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): BookTreeItem[] {
@@ -196,7 +184,12 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	 * @param array The input data to parse
 	 */
 	private parseJupyterSection(array: any[]): IJupyterBookSection[] {
-		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
+		try {
+			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
+		} catch (error) {
+			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', array[0].title); //need to find a way to get title.
+		}
+
 	}
 
 	public get errorMessage() {
