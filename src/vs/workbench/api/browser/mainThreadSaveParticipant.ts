@@ -32,7 +32,7 @@ import { extHostCustomer } from 'vs/workbench/api/common/extHostCustomers';
 import { TextFileEditorModel } from 'vs/workbench/services/textfile/common/textFileEditorModel';
 import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEditorModel } from 'vs/workbench/services/textfile/common/textfiles'; // {{SQL CARBON EDIT}}
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService'; // {{SQL CARBON EDIT}}
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService'; // {{SQL CARBON EDIT}}
 
 export interface ICodeActionsOnSaveOptions {
 	[kind: string]: boolean;
