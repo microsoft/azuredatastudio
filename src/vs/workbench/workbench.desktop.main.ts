@@ -87,7 +87,7 @@ registerSingleton(IMenubarService, MenubarService);
 
 // {{SQL CARBON EDIT}} - SQL-specific services
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ConnectionDialogService } from 'sql/workbench/services/connection/browser/connectionDialogService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
@@ -101,7 +101,7 @@ import { CapabilitiesService } from 'sql/platform/capabilities/common/capabiliti
 import { ICredentialsService as sqlICredentialsService, CredentialsService } from 'sql/platform/credentials/common/credentialsService';
 import { ISerializationService, SerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IMetadataService, MetadataService } from 'sql/platform/metadata/common/metadataService';
-import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, ObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { ITaskService, TaskService } from 'sql/platform/tasks/common/tasksService';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
@@ -118,7 +118,7 @@ import { BackupService } from 'sql/platform/backup/common/backupServiceImp';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 import { BackupUiService } from 'sql/workbench/services/backup/browser/backupUiService';
 import { IRestoreDialogController, IRestoreService } from 'sql/platform/restore/common/restoreService';
-import { RestoreService, RestoreDialogController } from 'sql/platform/restore/common/restoreServiceImpl';
+import { RestoreService, RestoreDialogController } from 'sql/platform/restore/browser/restoreServiceImpl';
 import { INewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialog';
 import { NewDashboardTabDialogService } from 'sql/workbench/services/dashboard/browser/newDashboardTabDialogService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
@@ -129,7 +129,7 @@ import { IInsightsDialogService } from 'sql/workbench/services/insights/browser/
 import { InsightsDialogService } from 'sql/workbench/services/insights/browser/insightsDialogServiceImpl';
 import { IAccountManagementService } from 'sql/platform/accounts/common/interfaces';
 import { AccountManagementService } from 'sql/workbench/services/accountManagement/browser/accountManagementService';
-import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerService } from 'sql/workbench/services/profiler/browser/profilerService';
 import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
 import { SqlOAuthService } from 'sql/platform/oAuth/electron-browser/sqlOAuthServiceImpl';
@@ -139,15 +139,15 @@ import { AccountPickerService } from 'sql/platform/accounts/browser/accountPicke
 import { IAccountPickerService } from 'sql/platform/accounts/browser/accountPicker';
 import { IResourceProviderService } from 'sql/workbench/services/resourceProvider/common/resourceProviderService';
 import { ResourceProviderService } from 'sql/workbench/services/resourceProvider/browser/resourceProviderService';
-import { IDashboardViewService } from 'sql/platform/dashboard/common/dashboardViewService';
-import { DashboardViewService } from 'sql/platform/dashboard/common/dashboardViewServiceImpl';
-import { IModelViewService } from 'sql/platform/modelComponents/common/modelViewService';
-import { ModelViewService } from 'sql/platform/modelComponents/common/modelViewServiceImpl';
+import { IDashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewService';
+import { DashboardViewService } from 'sql/platform/dashboard/browser/dashboardViewServiceImpl';
+import { IModelViewService } from 'sql/platform/modelComponents/browser/modelViewService';
+import { ModelViewService } from 'sql/platform/modelComponents/browser/modelViewServiceImpl';
 import { IDashboardService } from 'sql/platform/dashboard/browser/dashboardService';
 import { DashboardService } from 'sql/platform/dashboard/browser/dashboardServiceImpl';
-import { NotebookService } from 'sql/workbench/services/notebook/common/notebookServiceImpl';
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
-import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
+import { NotebookService } from 'sql/workbench/services/notebook/browser/notebookServiceImpl';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
+import { OEShimService, IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
 import { IAdsTelemetryService } from 'sql/platform/telemetry/common/telemetry';
 import { AdsTelemetryService } from 'sql/platform/telemetry/common/adsTelemetryService';
 import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHistoryService';
@@ -261,7 +261,7 @@ import 'sql/workbench/update/electron-browser/releaseNotes.contribution';
 
 // data explorer
 import 'sql/workbench/parts/dataExplorer/browser/dataExplorer.contribution';
-import 'sql/workbench/parts/dataExplorer/common/nodeActions.common.contribution';
+import 'sql/workbench/parts/dataExplorer/browser/nodeActions.common.contribution';
 
 import 'sql/workbench/parts/telemetry/common/telemetry.contribution';
 import 'sql/workbench/parts/connection/browser/connection.contribution';
@@ -289,7 +289,7 @@ import 'sql/workbench/parts/accounts/browser/accounts.contribution';
 import 'sql/workbench/parts/backup/browser/backup.contribution';
 
 //extensions
-import 'sql/workbench/parts/dataExplorer/common/extensions.contribution';
+import 'sql/workbench/parts/dataExplorer/browser/extensions.contribution';
 
 //restore
 import 'sql/workbench/parts/restore/browser/restore.contribution';
@@ -318,7 +318,7 @@ import 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.contribu
 import 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.contribution';
 import 'sql/workbench/parts/dashboard/browser/dashboard.contribution';
 /* Tasks */
-import 'sql/workbench/common/actions.contribution';
+import 'sql/workbench/browser/actions.contribution';
 /* Model-based Views */
 import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */
@@ -337,4 +337,3 @@ import 'sql/workbench/parts/dashboard/browser/containers/dashboardModelViewConta
 import 'sql/workbench/parts/dashboard/browser/core/dashboardTab.contribution';
 
 import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
-
