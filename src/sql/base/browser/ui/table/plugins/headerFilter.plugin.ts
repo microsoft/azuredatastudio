@@ -8,6 +8,7 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { escape } from 'sql/base/common/strings';
 import { addDisposableListener } from 'vs/base/browser/dom';
 import { DisposableStore } from 'vs/base/common/lifecycle';
+import { withNullAsUndefined } from 'vs/base/common/types';
 
 interface IExtendedColumn<T> extends Slick.Column<T> {
 	filterValues?: Array<string>;
@@ -150,7 +151,8 @@ export class HeaderFilter<T extends Slick.SlickData> {
 	}
 
 	private showFilter(e: KeyboardEvent) {
-		const $menuButton = jQuery(e.target);
+		const target = withNullAsUndefined(e.target);
+		const $menuButton = jQuery(target);
 		this.columnDef = $menuButton.data('column');
 
 		this.columnDef.filterValues = this.columnDef.filterValues || [];
@@ -225,16 +227,16 @@ export class HeaderFilter<T extends Slick.SlickData> {
 		this.applyStyles();
 
 		jQuery(':checkbox', $filter).bind('click', (e) => {
-			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(e.target));
+			this.workingFilters = this.changeWorkingFilter(filterItems, this.workingFilters, jQuery(target));
 		});
 
-		const offset = jQuery(e.target).offset();
-		const left = offset.left - this.$menu.width() + jQuery(e.target).width() - 8;
+		const offset = jQuery(target).offset();
+		const left = offset.left - this.$menu.width() + jQuery(target).width() - 8;
 
-		let menutop = offset.top + jQuery(e.target).height();
+		let menutop = offset.top + jQuery(target).height();
 
 		if (menutop + offset.top > jQuery(window).height()) {
-			menutop -= (this.$menu.height() + jQuery(e.target).height() + 8);
+			menutop -= (this.$menu.height() + jQuery(target).height() + 8);
 		}
 		this.$menu.css('top', menutop)
 			.css('left', (left > 0 ? left : 0));
