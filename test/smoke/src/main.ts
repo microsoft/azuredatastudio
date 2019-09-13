@@ -19,7 +19,7 @@ import {
 	Logger,
 	ConsoleLogger,
 	FileLogger,
-} from 'vscode-automation';
+} from '../../automation';
 
 //{{SQL CARBON EDIT}}
 import { setup as runProfilerTests } from './sql/profiler/profiler.test';

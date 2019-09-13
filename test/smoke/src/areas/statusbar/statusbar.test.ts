@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application, Quality, StatusBarElement } from 'vscode-automation';
+import { Application, Quality, StatusBarElement } from '../../../../automation';
 
 export function setup() {
 	describe('Statusbar', () => {
