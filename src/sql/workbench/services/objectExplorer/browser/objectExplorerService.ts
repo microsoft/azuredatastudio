@@ -6,7 +6,6 @@
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -129,8 +128,6 @@ const errSessionCreateFailed = nls.localize('OeSessionFailedError', "Failed to c
 export class ObjectExplorerService implements IObjectExplorerService {
 
 	public _serviceBrand: any;
-
-	private _disposables: IDisposable[] = [];
 
 	private _providers: { [handle: string]: azdata.ObjectExplorerProvider; } = Object.create(null);
 
@@ -539,10 +536,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		let nodeProviders = this._nodeProviders[nodeProvider.supportedProviderId] || [];
 		nodeProviders.push(nodeProvider);
 		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
-	}
-
-	public dispose(): void {
-		this._disposables = dispose(this._disposables);
 	}
 
 	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
