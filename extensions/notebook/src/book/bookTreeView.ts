@@ -194,7 +194,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						this.books.splice(untitledBookIndex, 1);
 						this.currentBook = undefined;
 						this._onDidChangeTreeData.fire();
-						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false);
+						vscode.commands.executeCommand('bookTreeView.openBook', destinationUri.fsPath, false, undefined);
 					}
 				}
 			}
