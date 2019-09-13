@@ -91,6 +91,7 @@ export interface IInitData {
 	logsLocation: URI;
 	autoStart: boolean;
 	remote: { isRemote: boolean; authority: string | undefined; };
+	uiKind: UIKind;
 }
 
 export interface IConfigurationInitData extends IConfigurationData {
@@ -107,6 +108,11 @@ export interface IExtHostContext extends IRPCProtocol {
 }
 
 export interface IMainContext extends IRPCProtocol {
+}
+
+export enum UIKind {
+	Desktop = 1,
+	Web = 2
 }
 
 // --- main thread
