@@ -141,10 +141,12 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	/**
 	 * Helper method to find a child section with a specified URL
-	 * @param section The current section we're checking
 	 * @param url The url of the section we're searching for
 	 */
-	public findChildSection(url: string): IJupyterBookSection | undefined {
+	public findChildSection(url?: string): IJupyterBookSection | undefined {
+		if (!url) {
+			return undefined;
+		}
 		return this.findChildSectionRecur(this, url);
 	}
 

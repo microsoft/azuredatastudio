@@ -86,18 +86,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				this._openAsUntitled = openAsUntitled;
 				let books = this.getBooks();
 				if (books && books.length > 0) {
-					const bookTreeItem = books[0].findChildSection(urlToOpen) || books[0];
-					bookViewer.reveal(bookTreeItem, { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-					const urlPath = bookTreeItem.url || books[0].tableOfContents.sections[0].url;
-					const readmeMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
-					const readmeNotebook: string = path.join(bookPath, 'content', urlPath.concat('.ipynb'));
-					const markdownExists = await existsAsync(readmeMarkdown);
-					const notebookExists = await existsAsync(readmeNotebook);
+					const rootTreeItem = books[0];
+					const sectionToOpen = rootTreeItem.findChildSection(urlToOpen);
+					bookViewer.reveal(rootTreeItem, { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+					const urlPath = sectionToOpen ? sectionToOpen.url : rootTreeItem.tableOfContents.sections[0].url;
+					const sectionToOpenMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
+					const sectionToOpenNotebook: string = path.join(bookPath, 'content', urlPath.concat('.ipynb'));
+					const markdownExists = await existsAsync(sectionToOpenMarkdown);
+					const notebookExists = await existsAsync(sectionToOpenNotebook);
 					if (markdownExists) {
-						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
+						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(sectionToOpenMarkdown));
 					}
 					else if (notebookExists) {
-						this.openNotebook(readmeNotebook);
+						this.openNotebook(sectionToOpenNotebook);
 					}
 				}
 			}
