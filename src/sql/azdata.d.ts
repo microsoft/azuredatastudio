@@ -33,7 +33,7 @@ declare module 'azdata' {
 
 		export function registerMetadataProvider(provider: MetadataProvider): vscode.Disposable;
 
-		export function registerQueryProvider(provider: QueryProvider): vscode.Disposable;
+		export function registerQueryProvider(provider: QueryProvider, isLiveShare?: boolean): vscode.Disposable;
 
 		export function registerAdminServicesProvider(provider: AdminServicesProvider): vscode.Disposable;
 
@@ -93,7 +93,7 @@ declare module 'azdata' {
 			azureTenantId?: string;
 			options: { [name: string]: any };
 
-			static createFrom(options: any[]): ConnectionProfile;
+			static createFrom(options: Map<string, any>): ConnectionProfile;
 		}
 
 		/**
@@ -2471,6 +2471,7 @@ declare module 'azdata' {
 		editor(): ComponentBuilder<EditorComponent>;
 		diffeditor(): ComponentBuilder<DiffEditorComponent>;
 		text(): ComponentBuilder<TextComponent>;
+		image(): ComponentBuilder<ImageComponent>;
 		button(): ComponentBuilder<ButtonComponent>;
 		dropDown(): ComponentBuilder<DropDownComponent>;
 		tree<T>(): ComponentBuilder<TreeComponent<T>>;
@@ -3057,6 +3058,12 @@ declare module 'azdata' {
 		CSSStyles?: { [key: string]: string };
 	}
 
+	export interface ImageComponentProperties {
+		src: string;
+		alt?: string;
+		height?: number | string;
+		width?: number | string;
+	}
 	export interface LinkArea {
 		text: string;
 		url: string;
@@ -3092,7 +3099,6 @@ declare module 'azdata' {
 	export interface ListBoxProperties {
 		selectedRow?: number;
 		values?: string[];
-
 	}
 
 	export interface WebViewProperties extends ComponentProperties {
@@ -3136,10 +3142,25 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+		/**
+		 * The label for the button
+		 */
 		label?: string;
+		/**
+		 * Whether the button opens the file browser dialog
+		 */
 		isFile?: boolean;
+		/**
+		 * The content of the currently selected file
+		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
 		title?: string;
+		/**
+		 * The accessibility aria label for this component
+		 */
 		ariaLabel?: string;
 	}
 
@@ -3182,9 +3203,10 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
+	export interface ImageComponent extends Component, ImageComponentProperties {
+	}
+
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		label: string;
-		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -3205,8 +3227,6 @@ declare module 'azdata' {
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string | CategoryValue;
-		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 
@@ -3221,8 +3241,6 @@ declare module 'azdata' {
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		selectedRow?: number;
-		values: string[];
 		onRowSelected: vscode.Event<any>;
 	}
 
@@ -3343,19 +3361,6 @@ declare module 'azdata' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
-		/**
-		 * The label for the button
-		 */
-		label: string;
-		/**
-		 * The title for the button. This title will show when it hovers
-		 */
-		title: string;
-		/**
-		 * Icon Path for the button.
-		 */
-		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-
 		/**
 		 * An event called when the button is clicked
 		 */
@@ -3620,6 +3625,11 @@ declare module 'azdata' {
 			hidden: boolean;
 
 			/**
+			 * Whether the button is focused
+			 */
+			focused?: boolean;
+
+			/**
 			 * Raised when the button is clicked
 			 */
 			readonly onClick: vscode.Event<void>;
@@ -3785,7 +3795,7 @@ declare module 'azdata' {
 	 * Namespace for interacting with query editor
 	*/
 	export namespace queryeditor {
-		export type QueryEvent =
+		export type QueryEventType =
 			| 'queryStart'
 			| 'queryUpdate'
 			| 'queryStop'
@@ -3800,7 +3810,7 @@ declare module 'azdata' {
 		 * visualize: ResultSetSummary
 		 */
 		export interface QueryEventListener {
-			onQueryEvent(type: QueryEvent, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
+			onQueryEvent(type: QueryEventType, document: queryeditor.QueryDocument, args: ResultSetSummary | string | undefined): void;
 		}
 
 		// new extensibility interfaces
@@ -3815,6 +3825,9 @@ declare module 'azdata' {
 			// tab content is build using the modelview UI builder APIs
 			// probably should rename DialogTab class since it is useful outside dialogs
 			createQueryTab(tab: window.DialogTab): void;
+
+			// connect the query document using the given connection profile
+			connect(connectionProfile: connection.ConnectionProfile): Thenable<void>;
 		}
 
 		/**

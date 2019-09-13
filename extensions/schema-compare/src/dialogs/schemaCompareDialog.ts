@@ -60,7 +60,7 @@ export class SchemaCompareDialog {
 	private targetIsDacpac: boolean;
 	private connectionId: string;
 	private sourceDbEditable: string;
-	private taregtDbEditable: string;
+	private targetDbEditable: string;
 	private previousSource: mssql.SchemaCompareEndpointInfo;
 	private previousTarget: mssql.SchemaCompareEndpointInfo;
 
@@ -306,7 +306,7 @@ export class SchemaCompareDialog {
 
 		currentButton.onDidClick(async (click) => {
 			// file browser should open where the current dacpac is or the appropriate default folder
-			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			let rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
 			let defaultUri = endpoint && endpoint.packageFilePath && existsSync(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
 
 			let fileUris = await vscode.window.showOpenDialog(
@@ -455,7 +455,7 @@ export class SchemaCompareDialog {
 		let sourcefilled = (this.sourceIsDacpac && this.existsDacpac(this.sourceTextBox.value))
 			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetIsDacpac && this.existsDacpac(this.targetTextBox.value))
-			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.taregtDbEditable)) !== -1);
+			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
 	}
@@ -616,7 +616,7 @@ export class SchemaCompareDialog {
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged((value) => {
-			this.taregtDbEditable = value;
+			this.targetDbEditable = value;
 			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
 		});
 

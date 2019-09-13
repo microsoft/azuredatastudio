@@ -30,7 +30,7 @@ import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachEditableDropdownStyler, attachSelectBoxStyler } from 'sql/platform/theme/common/styler';
 import { Dropdown } from 'sql/base/parts/editableDropdown/browser/dropdown';
 import { Task } from 'sql/platform/tasks/browser/tasksRegistry';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -472,12 +472,14 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 	}
 
 	public run(): Promise<void> {
-		if (this.connected) {
-			// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
-			// determine if we need to disconnect, cancel an in-progress connection, or do nothing
-			this.connectionManagementService.disconnectEditor(this.editor.input);
-		} else {
-			this.connectEditor(this.editor);
+		if (!this.editor.input.isSharedSession) {
+			if (this.connected) {
+				// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
+				// determine if we need to disconnect, cancel an in-progress connection, or do nothing
+				this.connectionManagementService.disconnectEditor(this.editor.input);
+			} else {
+				this.connectEditor(this.editor);
+			}
 		}
 		return Promise.resolve(null);
 	}

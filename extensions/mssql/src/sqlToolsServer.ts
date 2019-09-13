@@ -45,7 +45,7 @@ export class SqlToolsServer {
 			const processStart = Date.now();
 			this.client.onReady().then(() => {
 				const processEnd = Date.now();
-				statusView.text = 'Service Started';
+				statusView.text = localize('serviceStartedStatusMsg', "{0} Started", Constants.serviceName);
 				setTimeout(() => {
 					statusView.hide();
 				}, 1500);
@@ -61,13 +61,13 @@ export class SqlToolsServer {
 				this.sqlToolsServiceReady.resolve(true);
 			});
 			statusView.show();
-			statusView.text = 'Starting service';
+			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
 			await this.activateFeatures(context);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-			vscode.window.showErrorMessage('Failed to start Sql tools service');
+			vscode.window.showErrorMessage(localize('failedToStartServiceErrorMsg', "Failed to start {0}", Constants.serviceName));
 			throw e;
 		}
 	}
@@ -111,16 +111,16 @@ function generateHandleServerProviderEvent() {
 			case Events.INSTALL_START:
 				outputChannel.show(true);
 				statusView.show();
-				outputChannel.appendLine(localize('installingServiceChannelMsg', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
-				statusView.text = localize('installingServiceStatusMsg', 'Installing Service');
+				outputChannel.appendLine(localize('installingServiceChannelMsg', "Installing {0} to {1}", Constants.serviceName, args[0]));
+				statusView.text = localize('installingServiceStatusMsg', "Installing {0}", Constants.serviceName);
 				break;
 			case Events.INSTALL_END:
-				outputChannel.appendLine(localize('installedServiceChannelMsg', 'Installed'));
+				outputChannel.appendLine(localize('installedServiceChannelMsg', "Installed {0}", Constants.serviceName));
 				break;
 			case Events.DOWNLOAD_START:
-				outputChannel.appendLine(localize('downloadingServiceChannelMsg', 'Downloading {0}', args[0]));
-				outputChannel.append(localize('downloadingServiceSizeChannelMsg', '({0} KB)', Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
-				statusView.text = localize('downloadingServiceStatusMsg', 'Downloading Service');
+				outputChannel.appendLine(localize('downloadingServiceChannelMsg', "Downloading {0}", args[0]));
+				outputChannel.append(localize('downloadingServiceSizeChannelMsg', "({0} KB)", Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
+				statusView.text = localize('downloadingServiceStatusMsg', "Downloading {0}", Constants.serviceName);
 				break;
 			case Events.DOWNLOAD_PROGRESS:
 				let newDots = Math.ceil(args[0] / 5);
@@ -130,7 +130,7 @@ function generateHandleServerProviderEvent() {
 				}
 				break;
 			case Events.DOWNLOAD_END:
-				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', 'Done!'));
+				outputChannel.appendLine(localize('downloadServiceDoneChannelMsg', "Done installing {0}", Constants.serviceName));
 				break;
 			default:
 				console.error(`Unknown event from Server Provider ${e}`);

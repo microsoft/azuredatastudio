@@ -13,6 +13,8 @@ import { Disposable } from 'vs/base/common/lifecycle';
 import { IQueryModelService } from 'sql/platform/query/common/queryModel';
 import * as azdata from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
+import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
+import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 
 @extHostNamedCustomer(SqlMainContext.MainThreadQueryEditor)
 export class MainThreadQueryEditor extends Disposable implements MainThreadQueryEditorShape {
@@ -58,6 +60,36 @@ export class MainThreadQueryEditor extends Disposable implements MainThreadQuery
 				}
 			} else {
 				resolve();
+			}
+		});
+	}
+
+	private static connectionProfileToIConnectionProfile(connection: azdata.connection.ConnectionProfile): IConnectionProfile {
+		let profile: ConnectionProfile = new ConnectionProfile(undefined, undefined);
+		profile.options = connection.options;
+		profile.providerName = connection.options['providerName'];
+		return profile.toIConnectionProfile();
+	}
+
+	public $connectWithProfile(fileUri: string, connection: azdata.connection.ConnectionProfile): Thenable<void> {
+		return new Promise<void>(async (resolve, reject) => {
+			let editors = this._editorService.visibleControls.filter(resource => {
+				return !!resource && resource.input.getResource().toString() === fileUri;
+			});
+			let editor = editors && editors.length > 0 ? editors[0] : undefined;
+
+			let options: IConnectionCompletionOptions = {
+				params: { connectionType: ConnectionType.editor, runQueryOnCompletion: RunQueryOnConnectionMode.none, input: editor ? editor.input as any : undefined },
+				saveTheConnection: false,
+				showDashboard: false,
+				showConnectionDialogOnError: false,
+				showFirewallRuleOnError: false,
+			};
+
+			let profile: IConnectionProfile = MainThreadQueryEditor.connectionProfileToIConnectionProfile(connection);
+			let connectionResult = await this._connectionManagementService.connect(profile, fileUri, options);
+			if (connectionResult && connectionResult.connected) {
+				console.log(`editor ${fileUri} connected`);
 			}
 		});
 	}

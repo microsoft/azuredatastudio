@@ -79,7 +79,7 @@ export class DialogPane extends Disposable implements IThemable {
 							tabContainer.style.display = 'block';
 						},
 						layout: (dimension) => { this.getTabDimension(); },
-						focus: () => { }
+						focus: () => { this.focus(); }
 					}
 				});
 			});

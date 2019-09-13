@@ -36,7 +36,7 @@ import { ISaveParticipant, SaveReason, IResolvedTextFileEditorModel, ITextFileEd
 import { ExtHostContext, ExtHostDocumentSaveParticipantShape, IExtHostContext } from '../common/extHost.protocol';
 
 // {{SQL CARBON EDIT}}
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 
 
 /*

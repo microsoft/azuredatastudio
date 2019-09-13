@@ -34,10 +34,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _openAsUntitled: boolean;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		this.initialze(workspaceFolders, null, extensionContext);
+		this.initialize(workspaceFolders, null, extensionContext);
 	}
 
-	private initialze(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
+	private initialize(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
 		let workspacePaths: string[] = [];
 		if (bookPath) {
 			workspacePaths.push(bookPath);
@@ -276,7 +276,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						notebooks.push(notebook);
 						this._allNotebooks.set(pathToNotebook, notebook);
 						if (this._openAsUntitled) {
-							this._allNotebooks.set(path.basename(pathToNotebook, '.ipynb'), notebook);
+							this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 						}
 					} else if (fs.existsSync(pathToMarkdown)) {
 						let markdown = new BookTreeItem({
@@ -307,7 +307,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	getNavigation(uri: vscode.Uri): Thenable<azdata.nb.NavigationResult> {
-		let notebook = this._allNotebooks.get(uri.fsPath);
+		let notebook = uri.scheme !== 'untitled' ? this._allNotebooks.get(uri.fsPath) : this._allNotebooks.get(path.basename(uri.fsPath));
 		let result: azdata.nb.NavigationResult;
 		if (notebook) {
 			result = {
@@ -332,19 +332,25 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	public get tableOfContentPaths() {
 		return this._tableOfContentPaths;
 	}
+
 	getUntitledNotebookUri(resource: string): vscode.Uri {
-		let title = this.findNextUntitledFileName(resource);
-		let untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${title}`);
-		if (!this._allNotebooks.get(untitledFileName.fsPath)) {
+		let untitledFileName: vscode.Uri;
+		if (process.platform.indexOf('win') > -1) {
+			let title = path.join(path.dirname(resource), this.findNextUntitledFileName(resource));
+			untitledFileName = vscode.Uri.parse(`untitled:${title}`);
+		}
+		else {
+			untitledFileName = vscode.Uri.parse(resource).with({ scheme: 'untitled' });
+		}
+		if (!this._allNotebooks.get(untitledFileName.fsPath) && !this._allNotebooks.get(path.basename(untitledFileName.fsPath))) {
 			let notebook = this._allNotebooks.get(resource);
-			this._allNotebooks.set(untitledFileName.fsPath, notebook);
+			this._allNotebooks.set(path.basename(untitledFileName.fsPath), notebook);
 		}
 		return untitledFileName;
 	}
 
 	findNextUntitledFileName(filePath: string): string {
-		const fileExtension = path.extname(filePath);
-		const baseName = path.basename(filePath, fileExtension);
+		const baseName = path.basename(filePath);
 		let idx = 0;
 		let title = `${baseName}`;
 		do {

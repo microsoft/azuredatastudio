@@ -25,8 +25,8 @@ import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer } from 'vs/workbench/common/views';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
-import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
@@ -35,7 +35,7 @@ import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/tr
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
-import { ManageActionContext } from 'sql/workbench/common/actions';
+import { ManageActionContext } from 'sql/workbench/browser/actions';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
