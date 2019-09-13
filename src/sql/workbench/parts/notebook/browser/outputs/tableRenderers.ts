@@ -8,7 +8,7 @@ import { Table } from 'sql/base/browser/ui/table/table';
 import { textFormatter } from 'sql/base/browser/ui/table/formatters';
 import { RowNumberColumn } from 'sql/base/browser/ui/table/plugins/rowNumberColumn.plugin';
 import { escape } from 'sql/base/common/strings';
-import { IDataResource } from 'sql/workbench/services/notebook/common/sql/sqlSessionManager';
+import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { MouseWheelSupport } from 'sql/base/browser/ui/table/plugins/mousewheelTableScroll.plugin';

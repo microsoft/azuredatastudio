@@ -23,16 +23,16 @@ import {
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
-import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/workbench/common/customInputConverter';
+import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
 
 class MainThreadNotebookEditor extends Disposable {
