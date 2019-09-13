@@ -3,18 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IClipboardService } from 'sql/platform/clipboard/common/clipboardService';
+import { INotificationService } from 'vs/platform/notification/common/notification';
 import { IClipboardService as vsIClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-import { ClipboardService as BrowserClipboardService } from 'sql/platform/clipboard/browser/clipboardService';
+import { BrowserClipboardService } from 'sql/platform/clipboard/browser/clipboardService';
 import { clipboard, nativeImage } from 'electron';
 
 export class ClipboardService extends BrowserClipboardService {
 	_serviceBrand: any;
 
 	constructor(
-		@vsIClipboardService _vsClipboardService: vsIClipboardService
+		@vsIClipboardService _vsClipboardService: vsIClipboardService,
+		@INotificationService _notificationService: INotificationService
 	) {
-		super(_vsClipboardService);
+		super(_vsClipboardService, _notificationService);
 	}
 
 	/**
