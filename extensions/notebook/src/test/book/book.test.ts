@@ -185,8 +185,8 @@ describe.skip('BookTreeViewProviderTests', function() {
 		});
 
 		it('should ignore toc.yml files not in _data folder', function(): void {
-			bookTreeViewProvider.getTableOfContentFiles([folder.uri.toString()]);
-			for (let p of bookTreeViewProvider.tableOfContentPaths) {
+			bookTreeViewProvider.currentBook.getTableOfContentFiles(folder.uri.toString());
+			for (let p of bookTreeViewProvider.currentBook.tableOfContentPaths) {
 				should(p.toLocaleLowerCase()).equal(tableOfContentsFile.replace(/\\/g, '/').toLocaleLowerCase());
 			}
 		});
@@ -227,12 +227,12 @@ describe.skip('BookTreeViewProviderTests', function() {
 		});
 
 		it('should show error message if config.yml file not found', function(): void {
-			bookTreeViewProvider.getBooks();
+			bookTreeViewProvider.currentBook.getBooks();
 			should(bookTreeViewProvider.errorMessage.toLocaleLowerCase()).equal(('ENOENT: no such file or directory, open \'' + configFile + '\'').toLocaleLowerCase());
 		});
 		it('should show error if toc.yml file format is invalid', async function(): Promise<void> {
 			await fs.writeFile(configFile, 'title: Test Book');
-			bookTreeViewProvider.getBooks();
+			bookTreeViewProvider.currentBook.getBooks();
 			should(bookTreeViewProvider.errorMessage).equal('Error: Test Book has an incorrect toc.yml file');
 		});
 
@@ -284,8 +284,8 @@ describe.skip('BookTreeViewProviderTests', function() {
 		});
 
 		it('should show error if notebook or markdown file is missing', function(): void {
-			let books = bookTreeViewProvider.getBooks();
-			let children = bookTreeViewProvider.getSections([], books[0].sections, rootFolderPath);
+			let books = bookTreeViewProvider.currentBook.getBooks();
+			let children = bookTreeViewProvider.currentBook.getSections([], books[0].sections, rootFolderPath);
 			should(bookTreeViewProvider.errorMessage).equal('Missing file : Notebook1');
 			// Rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);
