@@ -140,15 +140,15 @@ export class BookTreeItem extends vscode.TreeItem {
 	}
 
 	/**
-	 * Helper method to find a child md file or Notebook with a specified URL
+	 * Helper method to find a child section with a specified URL
 	 * @param section The current section we're checking
-	 * @param url The url of the md file or Notebook we're searching for
+	 * @param url The url of the section we're searching for
 	 */
-	public findChildSection(url: string): any {
+	public findChildSection(url: string): IJupyterBookSection | undefined {
 		return this.findChildSectionRecur(this, url);
 	}
 
-	private findChildSectionRecur(section: IJupyterBookSection, url: string): any {
+	private findChildSectionRecur(section: IJupyterBookSection, url: string): IJupyterBookSection | undefined {
 		if (section.url && section.url === url) {
 			return section;
 		} else if (section.sections) {
