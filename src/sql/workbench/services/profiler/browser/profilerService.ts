@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IConnectionManagementService, IConnectionCompletionOptions, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from '../common/interfaces';
+import { ProfilerSessionID, IProfilerSession, IProfilerService, IProfilerViewTemplate, IProfilerSessionTemplate, PROFILER_SETTINGS, IProfilerSettings, EngineType, ProfilerFilter, PROFILER_FILTER_SETTINGS } from './interfaces';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInput';
 import { ProfilerColumnEditorDialog } from 'sql/workbench/parts/profiler/browser/profilerColumnEditorDialog';
