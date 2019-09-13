@@ -82,7 +82,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			else {
 				await this.initialize(null, bookPath);
-				book = this.books.filter(book => book.BookPath === bookPath)[0];
+				this.currentBook = this.books.filter(book => book.BookPath === bookPath)[0];
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
 				bookViewer.reveal(this.currentBook.getBookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				this.showPreviewFile(urlToOpen);
@@ -242,10 +242,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			} else {
 				return Promise.resolve([]);
 			}
-		} else if (this.currentBook) {
-			return Promise.resolve(this.currentBook.getBookItems);
 		} else {
-			return Promise.resolve([]);
+			let booksitems: BookTreeItem[] = [];
+			this.books.map(book => {
+				booksitems = booksitems.concat(book.getBookItems);
+			});
+			return Promise.resolve(booksitems);
 		}
 	}
 
