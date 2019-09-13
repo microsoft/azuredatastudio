@@ -20,9 +20,8 @@ export class ClipboardService extends BrowserClipboardService {
 	/**
 	 * Writes the input image as a dataurl to the clipbaord
 	 */
-	async writeImageDataUrl(data: string): Promise<boolean> {
+	async writeImageDataUrl(data: string): Promise<void> {
 		let image = nativeImage.createFromDataURL(data);
-		clipboard.writeImage(image);
-		return true;
+		return clipboard.writeImage(image);
 	}
 }

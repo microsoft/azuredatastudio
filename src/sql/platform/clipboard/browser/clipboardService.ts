@@ -17,9 +17,9 @@ export class ClipboardService implements IClipboardService {
 	/**
 	 * Writes the input image as a dataurl to the clipbaord
 	 */
-	async writeImageDataUrl(data: string): Promise<boolean> {
+	async writeImageDataUrl(data: string): Promise<void> {
 		// not implemented until web standards catch up
-		return false;
+		throw new Error('Not implemented');
 	}
 
 	writeText(text: string): Promise<void> {
