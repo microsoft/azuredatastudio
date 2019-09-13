@@ -17,7 +17,7 @@ import { TabbedPanel, PanelTabIdentifier } from 'sql/base/browser/ui/panel/panel
 import { RecentConnectionTreeController, RecentConnectionActionsProvider } from 'sql/workbench/parts/connection/browser/recentConnectionTreeController';
 import { SavedConnectionTreeController } from 'sql/workbench/parts/connection/browser/savedConnectionTreeController';
 import * as TelemetryKeys from 'sql/platform/telemetry/common/telemetryKeys';
-import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/common/connectionActions';
+import { ClearRecentConnectionsAction } from 'sql/workbench/parts/connection/browser/connectionActions';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { contrastBorder } from 'vs/platform/theme/common/colorRegistry';
 import { Event, Emitter } from 'vs/base/common/event';

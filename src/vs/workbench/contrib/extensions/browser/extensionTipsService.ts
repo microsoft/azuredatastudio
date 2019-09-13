@@ -17,7 +17,7 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 // {{SQL CARBON EDIT}}
 import { ShowRecommendedExtensionsAction, InstallWorkspaceRecommendedExtensionsAction, InstallRecommendedExtensionAction } from 'vs/workbench/contrib/extensions/browser/extensionsActions';
-import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/common/extensionsActions';
+import { ShowRecommendedExtensionsByScenarioAction, InstallRecommendedExtensionsByScenarioAction } from 'sql/workbench/contrib/extensions/browser/extensionsActions';
 import * as Constants from 'sql/workbench/contrib/extensions/common/constants';
 // {{SQL CARBON EDIT}} - End
 import Severity from 'vs/base/common/severity';

@@ -28,7 +28,7 @@ import { IEditorGroupView, IEditorOpeningEvent, EditorServiceImpl } from 'vs/wor
 import { ILabelService } from 'vs/platform/label/common/label';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { withNullAsUndefined } from 'vs/base/common/types';
-import { convertEditorInput, getFileMode } from 'sql/workbench/common/customInputConverter'; //{{SQL CARBON EDIT}}
+import { convertEditorInput, getFileMode } from 'sql/workbench/browser/customInputConverter'; //{{SQL CARBON EDIT}}
 
 type CachedEditorInput = ResourceEditorInput | IFileEditorInput | DataUriEditorInput;
 type OpenInEditorGroup = IEditorGroup | GroupIdentifier | SIDE_GROUP_TYPE | ACTIVE_GROUP_TYPE;

@@ -46,8 +46,8 @@ import { FuzzyScore, createMatches } from 'vs/base/common/filters';
 import { CollapseAllAction } from 'vs/base/browser/ui/tree/treeDefaults';
 
 import { ITreeItem, ITreeView } from 'sql/workbench/common/views';
-import { IOEShimService } from 'sql/workbench/parts/objectExplorer/common/objectExplorerViewTreeShim';
-import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/common/nodeContext';
+import { IOEShimService } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerViewTreeShim';
+import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
 
 export class CustomTreeViewPanel extends ViewletPanel {
 
