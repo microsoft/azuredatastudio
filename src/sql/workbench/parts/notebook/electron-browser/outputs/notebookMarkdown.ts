@@ -59,7 +59,7 @@ export class NotebookMarkdownRenderer {
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = path.join(path.dirname(this._notebookURI.fsPath), path.sep);
+		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
 		if (!this._baseUrls.includes(notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
@@ -215,7 +215,7 @@ export class NotebookMarkdownRenderer {
 			// but we might need to add _that_
 			// https://tools.ietf.org/html/rfc3986#section-3
 			if (/^[^:]+:\/*[^/]*$/.test(base)) {
-				this._baseUrls[' ' + base] = path.join(base, path.sep);
+				this._baseUrls[' ' + base] = base + '/';
 			} else {
 				// Remove trailing 'c's. /c*$/ is vulnerable to REDOS.
 				this._baseUrls[' ' + base] = base.replace(/c*$/, '');
