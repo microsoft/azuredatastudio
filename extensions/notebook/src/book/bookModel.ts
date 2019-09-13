@@ -12,6 +12,7 @@ import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
+import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
 //const exists = promisify(fs.exists);
@@ -84,7 +85,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
-					tableOfContents: this.flattenArray(tableOfContents, config.title),
+					tableOfContents: { sections: this.parseJupyterSection(tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
@@ -113,7 +114,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		}
 	}
 
-	public getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
+	public getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): BookTreeItem[] {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
@@ -188,6 +189,14 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			}
 		}
 		return notebooks;
+	}
+
+	/**
+	 * Recursively parses out a section of a Jupyter Book.
+	 * @param array The input data to parse
+	 */
+	private parseJupyterSection(array: any[]): IJupyterBookSection[] {
+		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
 	}
 
 	public get errorMessage() {
