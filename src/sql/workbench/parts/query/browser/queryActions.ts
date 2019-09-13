@@ -603,7 +603,7 @@ export class ListDatabasesActionItem extends Disposable implements IActionViewIt
 				ariaLabel: this._selectDatabaseString,
 				actionLabel: nls.localize('listDatabases.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			});
-			this._dropdown.onValueChange(s => this.databaseSelected(s));
+			this._register(this._dropdown.onValueChange(s => this.databaseSelected(s)));
 			this._register(this._dropdown.onFocus(() => this.onDropdownFocus()));
 		}
 
