@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "exports"], function (require) {
+define(["require", "vs/base/common/errors", "exports"], function (require, errors) {
 	const jquerylib = require.__$__nodeRequire('jquery');
 
 	window['jQuery'] = jquerylib;
@@ -20,4 +20,7 @@ define(["require", "exports"], function (require) {
 	require.__$__nodeRequire('zone.js/dist/zone');
 	require.__$__nodeRequire('zone.js/dist/zone-error');
 	require.__$__nodeRequire('chart.js');
+
+	window["Zone"]["__zone_symbol__ignoreConsoleErrorUncaughtError"] = true;
+	window["Zone"]["__zone_symbol__unhandledPromiseRejectionHandler"] = errors.onUnexpectedError;
 });
