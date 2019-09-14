@@ -6,7 +6,7 @@
 'use strict';
 
 import 'mocha';
-import assert = require('assert');
+import * as assert from 'assert';
 import { ToolsService } from '../services/toolsService';
 import { ToolType } from '../interfaces';
 import { isNumber } from 'util';

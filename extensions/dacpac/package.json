@@ -56,10 +56,12 @@
 		"vscode-nls": "^3.2.1"
 	},
 	"devDependencies": {
+		"@types/glob": "^7.1.1",
 		"@types/mocha": "^5.2.5",
+		"glob": "^7.1.4",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
-		"vscodetestcover": "^1.0.2"
+		"vscode-test": "^1.2.0"
 	},
 	"__metadata": {
 		"id": "33",

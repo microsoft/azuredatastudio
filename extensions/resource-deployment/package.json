@@ -528,7 +528,11 @@
     "vscode-nls": "^4.0.0"
   },
   "devDependencies": {
-    "typemoq": "^2.1.0",
-    "vscode": "^1.1.26"
+	"@types/glob": "^7.1.1",
+	"@types/mocha": "^5.2.5",
+	"glob": "^7.1.4",
+	"mocha": "^5.2.0",
+	"typemoq": "^2.1.0",
+	"vscode-test": "^1.2.0"
   }
 }

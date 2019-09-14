@@ -7,7 +7,7 @@
 
 import 'mocha';
 import * as TypeMoq from 'typemoq';
-import assert = require('assert');
+import * as assert from 'assert';
 import { EOL } from 'os';
 import { ResourceTypeService } from '../services/resourceTypeService';
 import { IPlatformService } from '../services/platformService';

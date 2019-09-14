@@ -8,6 +8,9 @@
 			"es6",
 			"es2015.promise"
 		],
+		"typeRoots": [
+			"./node_modules/@types"
+		],
 		"sourceMap": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,

@@ -8,7 +8,7 @@
 import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { NotebookService } from '../services/notebookService';
-import assert = require('assert');
+import * as assert from 'assert';
 import { NotebookInfo } from '../interfaces';
 import { IPlatformService } from '../services/platformService';
 
