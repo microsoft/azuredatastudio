@@ -20,7 +20,6 @@ import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
-import { Deferred } from './util/promise';
 
 const baseConfig = require('./config.json');
 
@@ -29,7 +28,6 @@ const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.L
 
 export class SqlToolsServer {
 
-	public sqlToolsServiceReady: Deferred<boolean> = new Deferred();
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
@@ -58,7 +56,6 @@ export class SqlToolsServer {
 					totalTime: String(processEnd - installationStart),
 					beginningTimestamp: String(installationStart)
 				});
-				this.sqlToolsServiceReady.resolve(true);
 			});
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
