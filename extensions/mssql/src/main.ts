@@ -70,7 +70,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	registerBooksWidget(bookContributionProvider);
 
-	// initalize client last so we don't have features stuck behind it
+	// initialize client last so we don't have features stuck behind it
 	const server = new SqlToolsServer();
 	context.subscriptions.push(server);
 	await server.start(appContext);
