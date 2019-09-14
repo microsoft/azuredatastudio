@@ -40,7 +40,7 @@ export interface IExtension {
 
 	readonly dacFx: IDacFxService;
 
-	sqlToolsServiceReady: Promise<boolean>;
+	readonly sqlToolsServiceReady: Promise<boolean>;
 }
 
 /**
