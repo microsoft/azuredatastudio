@@ -75,7 +75,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	context.subscriptions.push(server);
 	await server.start(appContext);
 
-	return createMssqlApi(appContext, server);
+	return createMssqlApi(appContext);
 }
 
 const logFiles = ['resourceprovider.log', 'sqltools.log', 'credentialstore.log'];
