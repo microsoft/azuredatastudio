@@ -109,6 +109,7 @@ class ExtensionUrlHandler implements IExtensionUrlHandler, IURLHandler {
 		if (!confirmed) {
 			let uriString = uri.toString();
 
+			// {{SQL CARBON EDIT}} - Begin
 			// Dialog service starts truncating words longer than 80 characters and adds ellipses to it.
 			// To show more of the URL, we can show about 80 characters in the beginning and 80 in the end, with ellipses in between.
 			if (uriString.length > 80) {
@@ -118,6 +119,7 @@ class ExtensionUrlHandler implements IExtensionUrlHandler, IURLHandler {
 				// There needs to be whitespace before/after the ellipses so that the URL does not look like one long word.
 				uriString = `${uriString.substring(0, truncLength)} ... ${uriString.substring(uriString.length - truncLength)}`;
 			}
+			// {{SQL CARBON EDIT}} - End
 
 			const result = await this.dialogService.confirm({
 				message: localize('confirmUrl', "Allow an extension to open this URL?", extensionId),
