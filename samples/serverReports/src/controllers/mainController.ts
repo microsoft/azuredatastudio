@@ -5,7 +5,6 @@
 
 'use strict';
 
-import * as sqlops from 'sqlops';
 import * as azdata from 'azdata';
 import * as Utils from '../utils';
 import ControllerBase from './controllerBase';
