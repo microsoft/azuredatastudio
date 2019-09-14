@@ -124,7 +124,7 @@ class ExtensionUrlHandler implements IExtensionUrlHandler, IURLHandler {
 				checkbox: {
 					label: localize('rememberConfirmUrl', "Don't ask again for this extension."),
 				},
-				detail: `${extension.displayName || extension.name} (${extensionId}) wants to open a URL: ${uriString}`,
+				detail: `${extension.displayName || extension.name} (${extensionId}) wants to open a URL:\n\n${uriString}`,
 				primaryButton: localize('open', "&&Open"),
 				type: 'question'
 			});
