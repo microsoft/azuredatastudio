@@ -275,9 +275,9 @@ export class SchemaCompareDialog {
 						components: targetComponents
 					}
 				], {
-						horizontal: true,
-						titleFontSize: titleFontSize
-					})
+					horizontal: true,
+					titleFontSize: titleFontSize
+				})
 				.withLayout({
 					width: '100%',
 					padding: '10px 10px 0 30px'

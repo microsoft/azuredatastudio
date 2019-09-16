@@ -14,7 +14,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
 

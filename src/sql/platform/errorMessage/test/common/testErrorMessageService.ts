@@ -7,7 +7,7 @@ import Severity from 'vs/base/common/severity';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class TestErrorMessageService implements IErrorMessageService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	showDialog(severity: Severity, headerTitle: string, message: string): void {
 	}
 }
