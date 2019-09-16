@@ -41,9 +41,9 @@ export class ImportConfigPage extends DacFxConfigPage {
 					serverComponent,
 					databaseComponent,
 				], {
-					horizontal: true,
-					componentWidth: 400
-				}).component();
+				horizontal: true,
+				componentWidth: 400
+			}).component();
 		await this.view.initializeModel(this.form);
 		return true;
 	}

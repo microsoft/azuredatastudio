@@ -15,7 +15,7 @@ import * as azdata from 'azdata';
 export const IAdminService = createDecorator<IAdminService>(SERVICE_ID);
 
 export interface IAdminService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	registerProvider(providerId: string, provider: azdata.AdminServicesProvider): void;
 
@@ -25,7 +25,7 @@ export interface IAdminService {
 }
 
 export class AdminService implements IAdminService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _providers: { [handle: string]: azdata.AdminServicesProvider; } = Object.create(null);
 

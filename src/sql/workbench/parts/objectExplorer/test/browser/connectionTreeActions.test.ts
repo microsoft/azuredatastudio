@@ -107,7 +107,7 @@ suite('SQL Connection Tree Action tests', () => {
 		});
 
 		const viewsService = new class implements IViewsService {
-			_serviceBrand: ServiceIdentifier<any>;
+			_serviceBrand: undefined;
 			openView(id: string, focus?: boolean): Promise<IView> {
 				return Promise.resolve({
 					id: '',

@@ -19,7 +19,7 @@ import { IBackupService, TaskExecutionMode } from 'sql/platform/backup/common/ba
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
 
 export class BackupUiService implements IBackupUiService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _backupDialogs: { [providerName: string]: BackupDialog | OptionsDialog } = {};
 	private _currentProvider: string;
 	private _optionValues: { [optionName: string]: any } = {};

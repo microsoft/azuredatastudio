@@ -4262,10 +4262,7 @@ declare namespace JQuery {
         stopPropagation(): void;
     }
 
-    interface Event<TElement = EventTarget> extends Partial<Pick<PointerEvent & KeyboardEvent & TouchEvent, 'altKey' | 'bubbles' | 'cancelable' |
-        'changedTouches' | 'ctrlKey' | 'detail' | 'eventPhase' | 'metaKey' | 'pageX' | 'pageY' | 'shiftKey' | 'view' |
-        'char' | 'charCode' | 'key' | 'keyCode' | 'button' | 'buttons' | 'clientX' | 'clientY' | 'offsetX' | 'offsetY' |
-        'pointerId' | 'pointerType' | 'screenX' | 'screenY' | 'targetTouches' | 'toElement' | 'touches'>> {
+    interface Event<TElement = EventTarget> {
         originalTarget?: TElement;
         originalEvent: _Event;
         new<T extends PlainObject>(event: string, properties?: T): JQuery.Event<TElement> & T;

@@ -58,7 +58,7 @@ export interface IConnectionComponentController {
 
 export class ConnectionDialogService implements IConnectionDialogService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _connectionDialog: ConnectionDialogWidget;
 	private _connectionControllerMap: { [providerName: string]: IConnectionComponentController } = {};
@@ -277,14 +277,14 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(CmsConnectionController,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
-							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-						}, providerName);
+						onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
+					}, providerName);
 			} else {
 				this._connectionControllerMap[providerName] =
 					this._instantiationService.createInstance(ConnectionController,
 						this._capabilitiesService.getCapabilities(providerName).connection, {
-							onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
-						}, providerName);
+						onSetConnectButton: (enable: boolean) => this.handleSetConnectButtonEnable(enable)
+					}, providerName);
 			}
 		}
 		return this._connectionControllerMap[providerName];

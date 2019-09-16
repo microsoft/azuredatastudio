@@ -9,7 +9,7 @@ import { IDisposable } from 'vs/base/common/lifecycle';
 import { Emitter } from 'vs/base/common/event';
 
 export class TestCredentialsService implements ICredentialsService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	public credentials = new Map<string, Credential>();
 

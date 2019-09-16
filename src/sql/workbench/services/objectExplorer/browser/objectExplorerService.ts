@@ -6,7 +6,6 @@
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -31,7 +30,7 @@ export interface NodeExpandInfoWithProviderId extends azdata.ObjectExplorerExpan
 }
 
 export interface IObjectExplorerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createNewSession(providerId: string, connection: ConnectionProfile): Thenable<azdata.ObjectExplorerSessionResponse>;
 
@@ -128,9 +127,7 @@ const errSessionCreateFailed = nls.localize('OeSessionFailedError', "Failed to c
 
 export class ObjectExplorerService implements IObjectExplorerService {
 
-	public _serviceBrand: any;
-
-	private _disposables: IDisposable[] = [];
+	public _serviceBrand: undefined;
 
 	private _providers: { [handle: string]: azdata.ObjectExplorerProvider; } = Object.create(null);
 
@@ -541,10 +538,6 @@ export class ObjectExplorerService implements IObjectExplorerService {
 		this._nodeProviders[nodeProvider.supportedProviderId] = nodeProviders;
 	}
 
-	public dispose(): void {
-		this._disposables = dispose(this._disposables);
-	}
-
 	public resolveTreeNodeChildren(session: azdata.ObjectExplorerSession, parentTree: TreeNode): Thenable<TreeNode[]> {
 		// Always refresh the node if it has an error, otherwise expand it normally
 		let needsRefresh = !!parentTree.errorStateMessage;
@@ -602,11 +595,11 @@ export class ObjectExplorerService implements IObjectExplorerService {
 
 		let node = new TreeNode(nodeInfo.nodeType, nodeInfo.label, isLeaf, nodeInfo.nodePath,
 			nodeInfo.nodeSubType, nodeInfo.nodeStatus, parent, nodeInfo.metadata, nodeInfo.iconType, {
-				getChildren: treeNode => this.getChildren(treeNode),
-				isExpanded: treeNode => this.isExpanded(treeNode),
-				setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
-				setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
-			});
+			getChildren: treeNode => this.getChildren(treeNode),
+			isExpanded: treeNode => this.isExpanded(treeNode),
+			setNodeExpandedState: async (treeNode, expandedState) => await this.setNodeExpandedState(treeNode, expandedState),
+			setNodeSelected: (treeNode, selected, clearOtherSelections: boolean = undefined) => this.setNodeSelected(treeNode, selected, clearOtherSelections)
+		});
 		node.childProvider = nodeInfo.childProvider;
 		node.payload = nodeInfo.payload;
 		return node;

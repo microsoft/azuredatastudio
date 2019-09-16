@@ -285,7 +285,7 @@ describe.skip('BookTreeViewProviderTests', function() {
 
 		it('should show error if notebook or markdown file is missing', function(): void {
 			let books = bookTreeViewProvider.getBooks();
-			let children = bookTreeViewProvider.getSections([], books[0].sections, rootFolderPath);
+			let children = bookTreeViewProvider.getSections({ sections: [] }, books[0].sections, rootFolderPath);
 			should(bookTreeViewProvider.errorMessage).equal('Missing file : Notebook1');
 			// Rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);

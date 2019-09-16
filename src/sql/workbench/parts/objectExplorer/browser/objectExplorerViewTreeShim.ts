@@ -23,7 +23,7 @@ export const SERVICE_ID = 'oeShimService';
 export const IOEShimService = createDecorator<IOEShimService>(SERVICE_ID);
 
 export interface IOEShimService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	getChildren(node: ITreeItem, viewId: string): Promise<ITreeItem[]>;
 	disconnectNode(viewId: string, node: ITreeItem): Promise<boolean>;
 	providerExists(providerId: string): boolean;
@@ -32,7 +32,7 @@ export interface IOEShimService {
 }
 
 export class OEShimService extends Disposable implements IOEShimService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private sessionMap = new Map<number, string>();
 	private nodeHandleMap = new Map<number, string>();
