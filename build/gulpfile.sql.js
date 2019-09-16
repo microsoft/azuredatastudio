@@ -109,7 +109,7 @@ gulp.task('install-sqltoolsservice', () => {
 });
 
 function installSsmsMin() {
-	const config = require('../extensions/admin-tool-ext-win/src/config.json');
+	const config = require('../extensions/admin-tool-ext-win/config.json');
 	return platformInfo.getCurrent().then(p => {
 		const runtime = p.runtimeId;
 		// fix path since it won't be correct
