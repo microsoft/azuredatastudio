@@ -8,6 +8,7 @@ import * as glob from 'glob';
 
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
+import { promisify } from 'util';
 
 export interface PythonPathInfo {
 	installDir: string;
@@ -92,7 +93,7 @@ export class PythonPathLookup {
 			const cmd = `"${options.command}" ${args.join(' ')}`;
 			let output = await utils.executeBufferedCommand(cmd, {});
 			let value = output ? output.trim() : '';
-			if (value.length > 0 && fs.existsSync(value)) {
+			if (value.length > 0 && await promisify(fs.exists)(value)) {
 				return value;
 			}
 		} catch (err) {

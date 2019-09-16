@@ -28,6 +28,8 @@ import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './mssqlApiFactory';
 import { localize } from './localize';
 import { SqlToolsServer } from './sqlToolsServer';
+import { promisify } from 'util';
+import { exists } from 'fs';
 
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
@@ -200,7 +202,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
 	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
 	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!Utils.fileExists(notebookFullPath)) {
+	if (!(await promisify(exists)(notebookFullPath))) {
 		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
 	} else {
 		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);

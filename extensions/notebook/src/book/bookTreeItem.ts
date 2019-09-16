@@ -78,6 +78,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			if (this.book.tableOfContents.sections[i].url) {
 				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
 				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				// tslint:disable-next-line:rule1 no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._previousUri = pathToNotebook;
 					return;
@@ -93,6 +94,7 @@ export class BookTreeItem extends vscode.TreeItem {
 			if (this.book.tableOfContents.sections[i].url) {
 				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
 				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
+				// tslint:disable-next-line:rule1 no-sync
 				if (fs.existsSync(pathToNotebook)) {
 					this._nextUri = pathToNotebook;
 					return;

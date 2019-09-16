@@ -61,14 +61,6 @@ export function findNextUntitledEditorName(filePath: string): string {
 	return title;
 }
 
-export function fileExists(file: string): boolean {
-	return fs.existsSync(file);
-}
-
-export function copyFile(source: string, target: string): void {
-	fs.copyFileSync(source, target);
-}
-
 export function removeOldLogFiles(logPath: string, prefix: string): JSON {
 	return findRemoveSync(logPath, { age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }

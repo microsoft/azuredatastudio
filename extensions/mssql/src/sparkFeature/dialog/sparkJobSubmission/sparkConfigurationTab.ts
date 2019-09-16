@@ -18,6 +18,7 @@ import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 import { SparkJobSubmissionModel } from './sparkJobSubmissionModel';
 import { SparkFileSource } from './sparkJobSubmissionService';
+import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -223,7 +224,7 @@ export class SparkConfigurationTab {
 
 		// 1. For local file Source check whether they existed.
 		if (this._dataModel.isMainSourceFromLocal) {
-			if (!fs.existsSync(this._dataModel.localFileSourcePath)) {
+			if (!(await promisify(fs.exists)(this._dataModel.localFileSourcePath))) {
 				this._dataModel.showDialogError(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(this._dataModel.localFileSourcePath));
 				return false;
 			}

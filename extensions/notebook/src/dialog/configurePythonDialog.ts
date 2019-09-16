@@ -13,6 +13,7 @@ import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation'
 import { ApiWrapper } from '../common/apiWrapper';
 import { Deferred } from '../common/promise';
 import { PythonPathLookup, PythonPathInfo } from './pythonPathLookup';
+import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -220,7 +221,7 @@ export class ConfigurePythonDialog {
 
 			if (useExistingPython) {
 				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
-				let pythonExists = fs.existsSync(exePath);
+				let pythonExists = await promisify(fs.exists)(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
 					return false;

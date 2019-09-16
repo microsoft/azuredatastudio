@@ -21,8 +21,9 @@ import * as utils from '../utils';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
+import { promisify } from 'util';
 
-function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): vscode.Uri {
+async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): Promise<vscode.Uri> {
 	let root = utils.getUserHome();
 	let workspaceFolders = apiWrapper.workspaceFolders;
 	if (workspaceFolders && workspaceFolders.length > 0) {
@@ -33,7 +34,7 @@ function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: bo
 		let fileNum = 1;
 		let fileNameWithoutExtension = fspath.parse(fileName).name;
 		let fileExtension = fspath.parse(fileName).ext;
-		while (fs.existsSync(fspath.join(root, fileName))) {
+		while (await promisify(fs.exists)(fspath.join(root, fileName))) {
 			fileName = `${fileNameWithoutExtension}-${fileNum}${fileExtension}`;
 			fileNum++;
 		}
@@ -82,7 +83,7 @@ export class UploadFilesCommand extends ProgressCommand {
 				};
 				let fileUris: vscode.Uri[] = await this.apiWrapper.showOpenDialog(options);
 				if (fileUris) {
-					let files: IFile[] = fileUris.map(uri => uri.fsPath).map(this.mapPathsToFiles());
+					let files: IFile[] = await Promise.all(fileUris.map(uri => uri.fsPath).map(this.mapPathsToFiles()));
 					await this.executeWithProgress(
 						(cancelToken: vscode.CancellationTokenSource) => this.writeFiles(files, folderNode, cancelToken),
 						localize('uploading', 'Uploading files to HDFS'), true,
@@ -99,9 +100,9 @@ export class UploadFilesCommand extends ProgressCommand {
 		}
 	}
 
-	private mapPathsToFiles(): (value: string, index: number, array: string[]) => File {
-		return (path: string) => {
-			let isDir = fs.lstatSync(path).isDirectory();
+	private mapPathsToFiles(): (value: string, index: number, array: string[]) => Promise<File> {
+		return async (path: string) => {
+			let isDir = (await fs.promises.lstat(path)).isDirectory();
 			return new File(path, isDir);
 		};
 	}
@@ -115,9 +116,9 @@ export class UploadFilesCommand extends ProgressCommand {
 			if (file.isDirectory) {
 				let dirName = fspath.basename(file.path);
 				let subFolder = await folderNode.mkdir(dirName);
-				let children: IFile[] = fs.readdirSync(file.path)
+				let children: IFile[] = await Promise.all((await fs.promises.readdir(file.path))
 					.map(childFileName => joinHdfsPath(file.path, childFileName))
-					.map(this.mapPathsToFiles());
+					.map(this.mapPathsToFiles()));
 				this.writeFiles(children, subFolder, cancelToken);
 			} else {
 				await folderNode.writeFile(file);
@@ -258,7 +259,7 @@ export class SaveFileCommand extends ProgressCommand {
 		try {
 			let fileNode = await getNode<FileNode>(context, this.appContext);
 			if (fileNode) {
-				let defaultUri = getSaveableUri(this.apiWrapper, fspath.basename(fileNode.hdfsPath));
+				let defaultUri = await getSaveableUri(this.apiWrapper, fspath.basename(fileNode.hdfsPath));
 				let fileUri: vscode.Uri = await this.apiWrapper.showSaveDialog({
 					defaultUri: defaultUri
 				});
@@ -330,7 +331,7 @@ export class PreviewFileCommand extends ProgressCommand {
 	private async showNotebookDocument(fileName: string, connectionProfile?: azdata.IConnectionProfile,
 		initialContent?: string
 	): Promise<azdata.nb.NotebookEditor> {
-		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true)
+		let docUri: vscode.Uri = (await getSaveableUri(this.apiWrapper, fileName, true))
 			.with({ scheme: constants.UNTITLED_SCHEMA });
 		return await azdata.nb.showNotebookDocument(docUri, {
 			connectionProfile: connectionProfile,
@@ -340,7 +341,7 @@ export class PreviewFileCommand extends ProgressCommand {
 	}
 
 	private async openTextDocument(fileName: string): Promise<vscode.TextDocument> {
-		let docUri: vscode.Uri = getSaveableUri(this.apiWrapper, fileName, true);
+		let docUri: vscode.Uri = await getSaveableUri(this.apiWrapper, fileName, true);
 		if (docUri) {
 			docUri = docUri.with({ scheme: constants.UNTITLED_SCHEMA });
 			return await this.apiWrapper.openTextDocument(docUri);

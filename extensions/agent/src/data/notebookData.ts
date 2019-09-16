@@ -9,10 +9,9 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { AgentUtils } from '../agentUtils';
+import { AgentUtils, exists } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';
 import { NotebookDialogOptions } from '../dialogs/notebookDialog';
-import { createConnection } from 'net';
 
 const localize = nls.loadMessageBundle();
 const NotebookCompletionActionCondition_Always: string = localize('notebookData.whenJobCompletes', 'When the notebook completes');
@@ -179,7 +178,7 @@ export class NotebookData implements IAgentDialogData {
 		}
 	}
 
-	public validate(): { valid: boolean, errorMessages: string[] } {
+	public async validate(): Promise<{ valid: boolean, errorMessages: string[] }> {
 		let validationErrors: string[] = [];
 		if (this.dialogMode !== AgentDialogMode.EDIT) {
 			if (!(this.name && this.name.trim())) {
@@ -188,7 +187,7 @@ export class NotebookData implements IAgentDialogData {
 			if (!(this.templatePath && this.name.trim())) {
 				validationErrors.push(TemplatePathEmptyErrorMessage);
 			}
-			if (!fs.existsSync(this.templatePath)) {
+			if (!(await exists(this.templatePath))) {
 				validationErrors.push(InvalidNotebookPathErrorMessage);
 			}
 			if (NotebookData.jobLists) {
@@ -201,7 +200,7 @@ export class NotebookData implements IAgentDialogData {
 			}
 		}
 		else {
-			if (this.templatePath && this.templatePath !== '' && !fs.existsSync(this.templatePath)) {
+			if (this.templatePath && this.templatePath !== '' && !(await exists(this.templatePath))) {
 				validationErrors.push(InvalidNotebookPathErrorMessage);
 			}
 		}

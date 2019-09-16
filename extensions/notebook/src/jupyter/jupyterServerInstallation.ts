@@ -17,6 +17,7 @@ import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
+import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -34,6 +35,8 @@ const msgPendingInstallError = localize('msgPendingInstallError', "Another Pytho
 const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already exists at the specific location. Skipping install.");
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
+
+const exists = promisify(fs.exists);
 
 export class JupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
@@ -67,7 +70,7 @@ export class JupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
+		if (!(await exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			this.outputChannel.show(true);
@@ -180,11 +183,11 @@ export class JupyterServerInstallation {
 					});
 
 				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
-					.on('close', () => {
+					.on('close', async () => {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
-						if (!this._usingExistingPython && fs.existsSync(pythonSourcePath)) {
+						if (!this._usingExistingPython && await exists(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
@@ -256,7 +259,7 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		if (fs.existsSync(this._pythonExecutable)) {
+		if (await exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -330,7 +333,7 @@ export class JupyterServerInstallation {
 			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
+		if (!(await exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
@@ -522,6 +525,7 @@ export class JupyterServerInstallation {
 		}
 
 		let condaExePath = this.getCondaExePath();
+		// tslint:disable-next-line:rule1 no-sync
 		return fs.existsSync(condaExePath);
 	}
 
@@ -538,6 +542,7 @@ export class JupyterServerInstallation {
 
 		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
+		// tslint:disable-next-line:rule1 no-sync
 		return fs.existsSync(pythonExe);
 	}
 
@@ -568,6 +573,7 @@ export class JupyterServerInstallation {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
 			if (notebookConfig) {
 				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
+				// tslint:disable-next-line:rule1 no-sync
 				if (configPythonPath && fs.existsSync(configPythonPath)) {
 					path = configPythonPath;
 				}

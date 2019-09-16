@@ -17,6 +17,7 @@ import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
 import { NotebookInputDialog } from '../ui/notebookInputDialog';
+import { promisify } from 'util';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -226,7 +227,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	private download(url: string): Promise<string> {
 		const self = this;
 		const promise = new Promise<string>((resolve, reject) => {
-			https.get(url, function (response) {
+			https.get(url, async function (response) {
 				console.log('Download installer from: ' + url);
 				if (response.statusCode === 301 || response.statusCode === 302) {
 					// Redirect and download from new location
@@ -247,7 +248,7 @@ export class ResourceTypeService implements IResourceTypeService {
 				let fileName = originalFileName;
 				const downloadFolder = os.homedir();
 				let cnt = 1;
-				while (fs.existsSync(path.join(downloadFolder, fileName + extension))) {
+				while (await promisify(fs.exists)(path.join(downloadFolder, fileName + extension))) {
 					fileName = `${originalFileName}-${cnt}`;
 					cnt++;
 				}

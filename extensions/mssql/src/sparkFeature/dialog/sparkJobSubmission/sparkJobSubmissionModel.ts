@@ -19,6 +19,7 @@ import * as utils from '../../../utils';
 import { SparkJobSubmissionService, SparkJobSubmissionInput, LivyLogResponse } from './sparkJobSubmissionService';
 import { AppContext } from '../../../appContext';
 import { IFileSource, File, joinHdfsPath } from '../../../objectExplorerNodeProvider/fileSources';
+import { promisify } from 'util';
 
 
 // Stores important state and service methods used by the Spark Job Submission Dialog.
@@ -143,7 +144,7 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(localize('sparkJobSubmission_localFileOrFolderNotSpecified.', 'Property localFilePath or hdfsFolderPath is not specified. '));
 			}
 
-			if (!fs.existsSync(localFilePath)) {
+			if (!(await promisify(fs.exists)(localFilePath))) {
 				return Promise.reject(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(localFilePath));
 			}
 
