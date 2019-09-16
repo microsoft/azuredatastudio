@@ -473,7 +473,7 @@ export class ToggleConnectDatabaseAction extends QueryTaskbarAction {
 		}
 	}
 
-	public async un(): Promise<void> {
+	public async run(): Promise<void> {
 		if (this.connected) {
 			// Call disconnectEditor regardless of the connection state and let the ConnectionManagementService
 			// determine if we need to disconnect, cancel an in-progress connection, or do nothing
