@@ -43,6 +43,7 @@ export class AzdataService implements IAzdataService {
 	}
 
 	getDeploymentProfiles(): Thenable<DeploymentProfile[]> {
+		process.env['ACCEPT_EULA'] = 'Yes';
 		return this.getDeploymentProfileNames().then((names: string[]) => {
 			const profilePromises: Thenable<DeploymentProfile>[] = [];
 			names.forEach(name => {
