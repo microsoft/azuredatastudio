@@ -10,6 +10,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
+import { promises as fs } from 'fs';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -280,5 +281,14 @@ export function logDebug(msg: any): void {
 		let currentTime = new Date().toLocaleTimeString();
 		let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';
 		console.log(outputMsg);
+	}
+}
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

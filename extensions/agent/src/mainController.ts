@@ -17,20 +17,11 @@ import { ProxyDialog } from './dialogs/proxyDialog';
 import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 import { JobData } from './data/jobData';
-import { AgentUtils } from './agentUtils';
+import { AgentUtils, exists } from './agentUtils';
 import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog';
 
 
 const localize = nls.loadMessageBundle();
-
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
 
 /**
  * The main controller class that initializes the extension

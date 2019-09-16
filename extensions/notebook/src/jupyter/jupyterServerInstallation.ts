@@ -35,15 +35,6 @@ const msgSkipPythonInstall = localize('msgSkipPythonInstall', "Python already ex
 function msgDependenciesInstallationFailed(errorMessage: string): string { return localize('msgDependenciesInstallationFailed', "Installing Notebook dependencies failed with error: {0}", errorMessage); }
 function msgDownloadPython(platform: string, pythonDownloadUrl: string): string { return localize('msgDownloadPython', "Downloading local python for platform: {0} to {1}", platform, pythonDownloadUrl); }
 
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
-
 export class JupyterServerInstallation {
 	public apiWrapper: ApiWrapper;
 	public extensionPath: string;
@@ -76,7 +67,7 @@ export class JupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!(await exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			this.outputChannel.show(true);
@@ -193,7 +184,7 @@ export class JupyterServerInstallation {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
-						if (!this._usingExistingPython && await exists(pythonSourcePath)) {
+						if (!this._usingExistingPython && await utils.exists(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
@@ -265,7 +256,7 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		if (await exists(this._pythonExecutable)) {
+		if (await utils.exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -339,7 +330,7 @@ export class JupyterServerInstallation {
 			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
-		if (!(await exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,

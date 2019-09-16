@@ -223,7 +223,7 @@ export class SparkConfigurationTab {
 
 		// 1. For local file Source check whether they existed.
 		if (this._dataModel.isMainSourceFromLocal) {
-			if (!(await exists(this._dataModel.localFileSourcePath))) {
+			if (!(await utils.exists(this._dataModel.localFileSourcePath))) {
 				this._dataModel.showDialogError(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(this._dataModel.localFileSourcePath));
 				return false;
 			}
@@ -276,14 +276,5 @@ export class SparkConfigurationTab {
 			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission_SelectFileError', 'Error in locating the file due to Error: {0}', utils.getErrorMessage(err)));
 			return undefined;
 		}
-	}
-}
-
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
 	}
 }

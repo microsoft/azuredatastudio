@@ -201,7 +201,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
 	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
 	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!(await exists(notebookFullPath))) {
+	if (!(await Utils.exists(notebookFullPath))) {
 		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
 	} else {
 		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);
@@ -215,15 +215,6 @@ async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionPr
 				initialDirtyState: false
 			});
 		});
-	}
-}
-
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
 	}
 }
 

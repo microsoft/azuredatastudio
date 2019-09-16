@@ -11,20 +11,11 @@ import * as yaml from 'js-yaml';
 import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
-import { isEditorTitleFree } from '../common/utils';
+import { isEditorTitleFree, exists } from '../common/utils';
 import * as nls from 'vscode-nls';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
-
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';

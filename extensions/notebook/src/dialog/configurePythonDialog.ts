@@ -16,15 +16,6 @@ import { PythonPathLookup, PythonPathInfo } from './pythonPathLookup';
 
 const localize = nls.loadMessageBundle();
 
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
-
 export class ConfigurePythonDialog {
 	private dialog: azdata.window.Dialog;
 
@@ -229,7 +220,7 @@ export class ConfigurePythonDialog {
 
 			if (useExistingPython) {
 				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
-				let pythonExists = await exists(exePath);
+				let pythonExists = await utils.exists(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
 					return false;

@@ -22,15 +22,6 @@ import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
 
-async function exists(path: string): Promise<boolean> {
-	try {
-		await fs.access(path);
-		return true;
-	} catch (e) {
-		return false;
-	}
-}
-
 async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): Promise<vscode.Uri> {
 	let root = utils.getUserHome();
 	let workspaceFolders = apiWrapper.workspaceFolders;
@@ -42,7 +33,7 @@ async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPrevie
 		let fileNum = 1;
 		let fileNameWithoutExtension = fspath.parse(fileName).name;
 		let fileExtension = fspath.parse(fileName).ext;
-		while (await exists(fspath.join(root, fileName))) {
+		while (await utils.exists(fspath.join(root, fileName))) {
 			fileName = `${fileNameWithoutExtension}-${fileNum}${fileExtension}`;
 			fileNum++;
 		}
