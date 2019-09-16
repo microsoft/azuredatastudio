@@ -41,7 +41,7 @@ export class DockerTool implements ITool {
 
 	loadInformation(): Thenable<void> {
 		const promise = new Promise<void>((resolve, reject) => {
-			cp.exec('docker version --format \'{{json .}}\'', (error, stdout, stderror) => {
+			cp.exec('docker version --format "{{json .}}"', (error, stdout, stderror) => {
 				if (stdout) {
 					try {
 						this._version = new SemVer(JSON.parse(stdout).Client.Version, true);
