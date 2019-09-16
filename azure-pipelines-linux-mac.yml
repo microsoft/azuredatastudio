@@ -62,6 +62,10 @@ steps:
     displayName: Compile
 
   - script: |
+      yarn gulp install-sqltoolsservice
+    displayName: Install SQL Tools Service
+
+  - script: |
       DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
     displayName: Run Unit Tests (Linux)
     condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
