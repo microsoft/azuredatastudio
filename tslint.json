@@ -228,7 +228,8 @@
 		"no-new-buffer": true,
 		"translation-remind": true,
 		"no-standalone-editor": true,
-		"no-nls-in-standalone-editor": true
+		"no-nls-in-standalone-editor": true,
+		"no-useless-strict": true
 	},
 	"defaultSeverity": "warning"
 }
