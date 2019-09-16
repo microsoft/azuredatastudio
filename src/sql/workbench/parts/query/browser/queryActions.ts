@@ -720,7 +720,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 				});
 	}
 
-	private getCurrentDatabaseName() {
+	private getCurrentDatabaseName(): string | undefined {
 		if (!this._editor.input) {
 			console.error('editor input was null');
 			return undefined;
@@ -751,7 +751,7 @@ export class ListDatabasesActionItem implements IActionViewItem {
 
 		if (!this._editor.input) {
 			console.error('editor input was null');
-			return undefined;
+			return;
 		}
 
 		let uri = this._editor.input.uri;
