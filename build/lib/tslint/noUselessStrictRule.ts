@@ -23,7 +23,7 @@ class NoUselessStrictRuleWalker extends Lint.RuleWalker {
 
 	private checkStringLiteral(node: ts.StringLiteral): void {
 		const text = node.getText();
-		if (text === '\'use strict\'') {
+		if (text === '\'use strict\'' || text === '"use strict"') {
 			this.addFailureAtNode(node, 'use strict directive is unnecessary');
 		}
 	}
