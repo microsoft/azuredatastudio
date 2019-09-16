@@ -463,12 +463,22 @@ export interface INotebookModel {
 
 }
 
-export class NotebookRange extends Range {
+export class NotebookRange extends Range implements NotebookPosition {
+	lineNumber: number;
+	startColumnNumber: number;
+	endColumnNumber: number;
+	updateActiveCell(cell: ICellModel) {
+		this.cell = cell;
+	}
 	cell: ICellModel;
 
 	constructor(cell: ICellModel, startLineNumber: number, startColumn: number, endLineNumber: number, endColumn: number) {
 		super(startLineNumber, startColumn, endLineNumber, endColumn);
 		this.cell = cell;
+		this.lineNumber = startLineNumber;
+		this.startColumnNumber = startColumn;
+		this.endColumnNumber = endColumn;
+		this.updateActiveCell(cell);
 	}
 }
 

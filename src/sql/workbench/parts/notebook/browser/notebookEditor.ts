@@ -25,7 +25,7 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/note
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, NotebookPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookModel, NotebookPosition, NotebookRange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -51,7 +51,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 	private _notebookModel: INotebookModel;
 	private _findCountChangeListener: IDisposable;
-	private _findPosition: NotebookPosition;
+	private _findPosition: NotebookRange;
 	private readonly _decorations: FindDecorations;
 	private readonly _toDispose = new DisposableStore();
 	private _isDisposed: boolean;
@@ -258,14 +258,15 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 						if (p) {
 							this._updateFinderMatchState();
 							this._finder.focusFindInput();
+							this.updatePosition(p);
 							// this._findPosition = p;
 						}
 					});
-					this._decorations.set(this._notebookModel.findMatches, findScope);
+					this._decorations.set(this._notebookModel.findMatches, this._findPosition);
 					this._findState.changeMatchInfo(
 						this._decorations.getCurrentMatchesPosition(this.getSelection()),
 						this._decorations.getCount(),
-						undefined
+						this._findPosition
 					);
 				} else {
 					this._notebookModel.clearFind();
@@ -298,21 +299,25 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	public findNext(): void {
 		this._notebookModel.findNext().then(p => {
+			this.updatePosition(p);
 			this._updateFinderMatchState();
-			// this._findPosition = p;
 		}, er => { });
+	}
+
+	private updatePosition(range: NotebookRange): void {
+		this._findPosition = range;
 	}
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
+			this.updatePosition(p);
 			this._updateFinderMatchState();
-			// this._findPosition = p;
 		}, er => { });
 	}
 
 	private _updateFinderMatchState(): void {
 		if (this.notebookInput && this._notebookModel) {
-			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), undefined);
+			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), this._findPosition);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}

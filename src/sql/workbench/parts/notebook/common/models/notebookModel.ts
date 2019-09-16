@@ -1295,8 +1295,8 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return types.isUndefinedOrNull(this._findArray) ? 0 : this._findArray.length;
 	}
 
-	public getDecorationRange(id: string): Range | null {
-		return undefined;
+	public getDecorationRange(id: string): NotebookRange | null {
+		return this._findArray[id];
 	}
 
 	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): model.IModelDecoration[] {
