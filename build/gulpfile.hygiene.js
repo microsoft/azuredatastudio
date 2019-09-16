@@ -198,9 +198,9 @@ const tslintBaseFilter = [
 // 	'src/**'
 // ];
 
-// const sqlFilter = [
-// 	'src/sql/**'
-// ];
+const sqlFilter = [
+	'src/sql/**'
+];
 
 // {{SQL CARBON EDIT}}
 
@@ -401,16 +401,16 @@ function hygiene(some) {
 		input = some;
 	}
 
-	// const tslintSqlConfiguration = tslint.Configuration.findConfiguration('tslint-sql.json', '.'); // TODO RESTORE
+	const tslintSqlConfiguration = tslint.Configuration.findConfiguration('tslint-sql.json', '.');
 	const tslintSqlOptions = { fix: false, formatter: 'json' };
 	const sqlTsLinter = new tslint.Linter(tslintSqlOptions);
 
-	// const sqlTsl = es.through(function (file) { //TODO restore
-	// 	const contents = file.contents.toString('utf8');
-	// 	sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
+	const sqlTsl = es.through(function (file) { //TODO restore
+		const contents = file.contents.toString('utf8');
+		sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
 
-	// 	this.emit('data', file);
-	// });
+		this.emit('data', file);
+	});
 
 	const productJsonFilter = filter('product.json', { restore: true });
 
@@ -430,6 +430,9 @@ function hygiene(some) {
 
 	if (!process.argv.some(arg => arg === '--skip-tslint')) {
 		typescript = typescript.pipe(tsl);
+		typescript = typescript
+			.pipe(filter(sqlFilter))
+			.pipe(sqlTsl); // {{SQL CARBON EDIT}}
 	}
 
 	const javascript = result
