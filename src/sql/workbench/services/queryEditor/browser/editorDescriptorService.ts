@@ -10,13 +10,13 @@ import { Registry } from 'vs/platform/registry/common/platform';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 
 export interface IEditorDescriptorService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	getEditor(input: EditorInput): IEditorDescriptor;
 }
 
 export class EditorDescriptorService implements IEditorDescriptorService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	constructor() {
 	}

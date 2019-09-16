@@ -10,8 +10,8 @@ import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtil
 
 import product from 'vs/platform/product/node/product'; // {{ SQL CARBON EDIT }}
 
-export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, installSourcePath: string, remoteAuthority?: string): Promise<{ [name: string]: string | undefined }> {
-	const result = await resolveCommonProperties(commit, version, machineId, installSourcePath);
+export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, msftInternalDomains: string[] | undefined, installSourcePath: string, remoteAuthority?: string): Promise<{ [name: string]: string | boolean | undefined }> {
+	const result = await resolveCommonProperties(commit, version, machineId, msftInternalDomains, installSourcePath);
 	const instanceId = storageService.get(instanceStorageKey, StorageScope.GLOBAL)!;
 	const firstSessionDate = storageService.get(firstSessionDateStorageKey, StorageScope.GLOBAL)!;
 	const lastSessionDate = storageService.get(lastSessionDateStorageKey, StorageScope.GLOBAL)!;

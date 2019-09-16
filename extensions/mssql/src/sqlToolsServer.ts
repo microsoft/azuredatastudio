@@ -20,8 +20,8 @@ import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
-
-const baseConfig = require('./config.json');
+import { promisify } from 'util';
+import { readFile } from 'fs';
 
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -35,7 +35,7 @@ export class SqlToolsServer {
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
 			const installationStart = Date.now();
-			const path = await this.download();
+			const path = await this.download(context);
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
 			let clientOptions = getClientOptions(context);
@@ -69,8 +69,9 @@ export class SqlToolsServer {
 		}
 	}
 
-	private download() {
-		this.config = JSON.parse(JSON.stringify(baseConfig));
+	private async download(context: AppContext): Promise<string> {
+		const rawConfig = await promisify(readFile)(path.join(context.extensionContext.extensionPath, 'config.json'));
+		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
