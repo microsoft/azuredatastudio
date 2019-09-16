@@ -10,8 +10,6 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
-import * as fs from 'fs';
-import { promisify } from 'util';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -28,17 +26,6 @@ export function getAppDataPath() {
 		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
-	}
-}
-
-export namespace pfs {
-
-	export function exists(path: string): Promise<boolean> {
-		return promisify(fs.exists)(path);
-	}
-
-	export function mkdir(path: string, mode?: number): Promise<void> {
-		return promisify(fs.mkdir)(path, mode);
 	}
 }
 

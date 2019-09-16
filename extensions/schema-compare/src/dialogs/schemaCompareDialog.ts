@@ -9,8 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as os from 'os';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
-import * as fs from 'fs';
-import { promisify } from 'util';
+import { promises as fs } from 'fs';
 import { Telemetry } from '../telemetry';
 import { getEndpointName } from '../utils';
 import * as mssql from '../../../mssql';
@@ -35,7 +34,14 @@ const YesButtonText: string = localize('schemaCompareDialog.Yes', 'Yes');
 const NoButtonText: string = localize('schemaCompareDialog.No', 'No');
 const titleFontSize: number = 13;
 
-const exists = promisify(fs.exists);
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
 
 export class SchemaCompareDialog {
 	public dialog: azdata.window.Dialog;

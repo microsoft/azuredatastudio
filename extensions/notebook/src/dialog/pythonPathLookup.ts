@@ -3,16 +3,24 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as glob from 'glob';
 
 import * as utils from '../common/utils';
 import * as constants from '../common/constants';
-import { promisify } from 'util';
 
 export interface PythonPathInfo {
 	installDir: string;
 	version: string;
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }
 
 export class PythonPathLookup {
@@ -93,7 +101,7 @@ export class PythonPathLookup {
 			const cmd = `"${options.command}" ${args.join(' ')}`;
 			let output = await utils.executeBufferedCommand(cmd, {});
 			let value = output ? output.trim() : '';
-			if (value.length > 0 && await promisify(fs.exists)(value)) {
+			if (value.length > 0 && await exists(value)) {
 				return value;
 			}
 		} catch (err) {

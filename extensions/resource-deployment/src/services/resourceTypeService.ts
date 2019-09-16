@@ -6,7 +6,7 @@
 
 import * as azdata from 'azdata';
 import * as cp from 'child_process';
-import * as fs from 'fs';
+import { createWriteStream, promises as fs } from 'fs';
 import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
@@ -17,7 +17,6 @@ import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
 import { NotebookInputDialog } from '../ui/notebookInputDialog';
-import { promisify } from 'util';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -248,19 +247,19 @@ export class ResourceTypeService implements IResourceTypeService {
 				let fileName = originalFileName;
 				const downloadFolder = os.homedir();
 				let cnt = 1;
-				while (await promisify(fs.exists)(path.join(downloadFolder, fileName + extension))) {
+				while (await exists(path.join(downloadFolder, fileName + extension))) {
 					fileName = `${originalFileName}-${cnt}`;
 					cnt++;
 				}
 				fileName = path.join(downloadFolder, fileName + extension);
-				const file = fs.createWriteStream(fileName);
+				const file = createWriteStream(fileName);
 				response.pipe(file);
 				file.on('finish', () => {
 					file.close();
 					resolve(fileName);
 				});
-				file.on('error', (err) => {
-					fs.unlink(fileName, () => { });
+				file.on('error', async (err) => {
+					await fs.unlink(fileName);
 					reject(err.message);
 				});
 			});
@@ -268,4 +267,13 @@ export class ResourceTypeService implements IResourceTypeService {
 		return promise;
 	}
 
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

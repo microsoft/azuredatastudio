@@ -18,7 +18,6 @@ import * as utils from '../common/utils';
 import * as constants from '../common/constants';
 import * as notebookUtils from '../common/notebookUtils';
 import * as ports from '../common/ports';
-import { promisify } from 'util';
 
 const NotebookConfigFilename = 'jupyter_notebook_config.py';
 const CustomJsFilename = 'custom.js';
@@ -63,8 +62,13 @@ export class ServerInstanceUtils {
 	public copy(src: string, dest: string): Promise<void> {
 		return fs.copy(src, dest);
 	}
-	public exists(dirPath: string): Promise<boolean> {
-		return promisify(fs.exists)(dirPath);
+	public async exists(path: string): Promise<boolean> {
+		try {
+			await fs.access(path);
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 	public generateUuid(): string {
 		return UUID.generateUuid();

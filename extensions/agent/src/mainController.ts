@@ -7,7 +7,7 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { AlertDialog } from './dialogs/alertDialog';
@@ -17,12 +17,20 @@ import { ProxyDialog } from './dialogs/proxyDialog';
 import { JobStepDialog } from './dialogs/jobStepDialog';
 import { PickScheduleDialog } from './dialogs/pickScheduleDialog';
 import { JobData } from './data/jobData';
-import { AgentUtils, exists, mkdir, unlink, writeFile } from './agentUtils';
+import { AgentUtils } from './agentUtils';
 import { NotebookDialog, NotebookDialogOptions } from './dialogs/notebookDialog';
-import { promisify } from 'util';
 
 
 const localize = nls.loadMessageBundle();
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
 
 /**
  * The main controller class that initializes the extension
@@ -102,7 +110,7 @@ export class MainController {
 			let templateMap = this.notebookTemplateMap.get(nbEditor.document.uri.toString());
 			let vsEditor = await vscode.workspace.openTextDocument(templateMap.fileUri);
 			let content = vsEditor.getText();
-			promisify(fs.writeFile)(templateMap.tempPath, content);
+			await fs.writeFile(templateMap.tempPath, content);
 			AgentUtils.getAgentService().then(async (agentService) => {
 				let result = await agentService.updateNotebook(templateMap.ownerUri, templateMap.notebookInfo.name, templateMap.notebookInfo, templateMap.tempPath);
 				if (result.success) {
@@ -128,14 +136,13 @@ export class MainController {
 		vscode.commands.registerCommand('agent.openNotebookEditorFromJsonString', async (filename: string, jsonNotebook: string, notebookInfo?: azdata.AgentNotebookInfo, ownerUri?: string) => {
 			const tempfilePath = path.join(os.tmpdir(), 'mssql_notebooks', filename + '.ipynb');
 			if (!await exists(path.join(os.tmpdir(), 'mssql_notebooks'))) {
-				await mkdir(path.join(os.tmpdir(), 'mssql_notebooks'));
+				await fs.mkdir(path.join(os.tmpdir(), 'mssql_notebooks'));
 			}
-			let editors = azdata.nb.visibleNotebookEditors;
 			if (await exists(tempfilePath)) {
-				await unlink(tempfilePath);
+				await fs.unlink(tempfilePath);
 			}
 			try {
-				await writeFile(tempfilePath, jsonNotebook);
+				await fs.writeFile(tempfilePath, jsonNotebook);
 				let uri = vscode.Uri.parse(`untitled:${path.basename(tempfilePath)}`);
 				if (notebookInfo) {
 					this.notebookTemplateMap.set(uri.toString(), { notebookInfo: notebookInfo, fileUri: uri, ownerUri: ownerUri, tempPath: tempfilePath });

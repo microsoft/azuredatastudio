@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from './constants';
@@ -29,7 +29,6 @@ import { registerAzureResourceCommands } from './azureResource/commands';
 import { registerAzureResourceDatabaseServerCommands } from './azureResource/providers/databaseServer/commands';
 import { registerAzureResourceDatabaseCommands } from './azureResource/providers/database/commands';
 import { AzureResourceTreeProvider } from './azureResource/tree/treeProvider';
-import { promisify } from 'util';
 
 let extensionContext: vscode.ExtensionContext;
 
@@ -83,12 +82,21 @@ export async function activate(context: vscode.ExtensionContext) {
 	};
 }
 
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
+
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
 	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
 	try {
-		if (!(await promisify(fs.exists)(storagePath))) {
-			await fs.promises.mkdir(storagePath);
+		if (!(await exists(storagePath))) {
+			await fs.mkdir(storagePath);
 			console.log('Initialized Azure account extension storage.');
 		}
 	}
@@ -125,4 +133,3 @@ function registerCommands(appContext: AppContext, azureResourceTree: AzureResour
 
 	registerAzureResourceDatabaseCommands(appContext);
 }
-

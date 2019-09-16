@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as fspath from 'path';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as vscode from 'vscode';
 import * as utils from '../../../utils';
 import * as LocalizedConstants from '../../../localizedConstants';
@@ -18,7 +18,6 @@ import { AppContext } from '../../../appContext';
 import { ApiWrapper } from '../../../apiWrapper';
 import { SparkJobSubmissionModel } from './sparkJobSubmissionModel';
 import { SparkFileSource } from './sparkJobSubmissionService';
-import { promisify } from 'util';
 
 const localize = nls.loadMessageBundle();
 
@@ -224,7 +223,7 @@ export class SparkConfigurationTab {
 
 		// 1. For local file Source check whether they existed.
 		if (this._dataModel.isMainSourceFromLocal) {
-			if (!(await promisify(fs.exists)(this._dataModel.localFileSourcePath))) {
+			if (!(await exists(this._dataModel.localFileSourcePath))) {
 				this._dataModel.showDialogError(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(this._dataModel.localFileSourcePath));
 				return false;
 			}
@@ -277,5 +276,14 @@ export class SparkConfigurationTab {
 			this.apiWrapper.showErrorMessage(localize('sparkJobSubmission_SelectFileError', 'Error in locating the file due to Error: {0}', utils.getErrorMessage(err)));
 			return undefined;
 		}
+	}
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

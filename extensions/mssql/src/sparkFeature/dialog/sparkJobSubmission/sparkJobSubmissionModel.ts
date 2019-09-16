@@ -8,7 +8,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as fspath from 'path';
 import * as os from 'os';
 
@@ -19,7 +19,6 @@ import * as utils from '../../../utils';
 import { SparkJobSubmissionService, SparkJobSubmissionInput, LivyLogResponse } from './sparkJobSubmissionService';
 import { AppContext } from '../../../appContext';
 import { IFileSource, File, joinHdfsPath } from '../../../objectExplorerNodeProvider/fileSources';
-import { promisify } from 'util';
 
 
 // Stores important state and service methods used by the Spark Job Submission Dialog.
@@ -144,7 +143,7 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(localize('sparkJobSubmission_localFileOrFolderNotSpecified.', 'Property localFilePath or hdfsFolderPath is not specified. '));
 			}
 
-			if (!(await promisify(fs.exists)(localFilePath))) {
+			if (!(await exists(localFilePath))) {
 				return Promise.reject(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(localFilePath));
 			}
 
@@ -203,5 +202,14 @@ export class SparkJobSubmissionModel {
 	private async sleep(ms: number): Promise<{}> {
 		// tslint:disable-next-line no-string-based-set-timeout
 		return new Promise(resolve => setTimeout(resolve, ms));
+	}
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

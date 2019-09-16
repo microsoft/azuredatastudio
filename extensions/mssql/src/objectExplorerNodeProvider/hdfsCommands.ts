@@ -5,7 +5,7 @@
 
 import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as fspath from 'path';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
@@ -21,7 +21,15 @@ import * as utils from '../utils';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
-import { promisify } from 'util';
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}
 
 async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): Promise<vscode.Uri> {
 	let root = utils.getUserHome();
@@ -34,7 +42,7 @@ async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPrevie
 		let fileNum = 1;
 		let fileNameWithoutExtension = fspath.parse(fileName).name;
 		let fileExtension = fspath.parse(fileName).ext;
-		while (await promisify(fs.exists)(fspath.join(root, fileName))) {
+		while (await exists(fspath.join(root, fileName))) {
 			fileName = `${fileNameWithoutExtension}-${fileNum}${fileExtension}`;
 			fileNum++;
 		}
@@ -102,7 +110,7 @@ export class UploadFilesCommand extends ProgressCommand {
 
 	private mapPathsToFiles(): (value: string, index: number, array: string[]) => Promise<File> {
 		return async (path: string) => {
-			let isDir = (await fs.promises.lstat(path)).isDirectory();
+			let isDir = (await fs.lstat(path)).isDirectory();
 			return new File(path, isDir);
 		};
 	}
@@ -116,7 +124,7 @@ export class UploadFilesCommand extends ProgressCommand {
 			if (file.isDirectory) {
 				let dirName = fspath.basename(file.path);
 				let subFolder = await folderNode.mkdir(dirName);
-				let children: IFile[] = await Promise.all((await fs.promises.readdir(file.path))
+				let children: IFile[] = await Promise.all((await fs.readdir(file.path))
 					.map(childFileName => joinHdfsPath(file.path, childFileName))
 					.map(this.mapPathsToFiles()));
 				this.writeFiles(children, subFolder, cancelToken);
