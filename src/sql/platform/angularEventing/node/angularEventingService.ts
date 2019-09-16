@@ -5,7 +5,6 @@
 
 import { Subject } from 'rxjs/Subject';
 import { Subscription } from 'rxjs/Subscription';
-import * as fs from 'fs';
 
 import { IAngularEventingService, IAngularEvent, AngularEventType } from 'sql/platform/angularEventing/common/angularEventingService';
 import { ILogService } from 'vs/platform/log/common/log';
