@@ -34,7 +34,7 @@ steps:
       GITHUB_TOKEN: $(GITHUB_TOKEN)
 
   - script: |
-      yarn gulp hygiene
+      yarn gulp hygiene --skip-tslint
     displayName: Run Hygiene Checks
 
   - script: |
