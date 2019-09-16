@@ -8,7 +8,6 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import * as fspath from 'path';
-import { promises as fs } from 'fs';
 import * as vscode from 'vscode';
 import * as utils from '../../../utils';
 import * as LocalizedConstants from '../../../localizedConstants';

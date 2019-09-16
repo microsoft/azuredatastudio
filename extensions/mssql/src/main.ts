@@ -43,7 +43,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}
 
 	// ensure our log path exists
-	if (!(await exists(context.logPath))) {
+	if (!(await Utils.exists(context.logPath))) {
 		await fs.mkdir(context.logPath);
 	}
 
