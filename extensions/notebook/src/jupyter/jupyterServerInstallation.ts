@@ -525,7 +525,7 @@ export class JupyterServerInstallation {
 		}
 
 		let condaExePath = this.getCondaExePath();
-		// tslint:disable-next-line:rule1 no-sync
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(condaExePath);
 	}
 
@@ -542,7 +542,7 @@ export class JupyterServerInstallation {
 
 		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
-		// tslint:disable-next-line:rule1 no-sync
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(pythonExe);
 	}
 
@@ -573,7 +573,7 @@ export class JupyterServerInstallation {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
 			if (notebookConfig) {
 				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
-				// tslint:disable-next-line:rule1 no-sync
+				// tslint:disable-next-line:no-sync
 				if (configPythonPath && fs.existsSync(configPythonPath)) {
 					path = configPythonPath;
 				}
