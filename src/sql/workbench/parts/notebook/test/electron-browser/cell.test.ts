@@ -269,13 +269,13 @@ suite('Cell Model', function (): void {
 				metadata: { language: 'python' },
 				execution_count: 1
 			}, {
-					notebook: new NotebookModelStub({
-						name: '',
-						version: '',
-						mimetype: 'x-scala'
-					}),
-					isTrusted: false
-				});
+				notebook: new NotebookModelStub({
+					name: '',
+					version: '',
+					mimetype: 'x-scala'
+				}),
+				isTrusted: false
+			});
 		});
 
 		test('should send and handle incoming messages', async () => {

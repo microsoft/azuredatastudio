@@ -46,7 +46,7 @@ export interface IProfilerSession {
  * A Profiler Service that handles session communication between the backends and frontends
  */
 export interface IProfilerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	/**
 	 * Registers a backend provider for profiler session. ex: mssql
 	 */

@@ -69,8 +69,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 					},
 					this.dataLossComponentGroup
 				], {
-					horizontal: true,
-				});
+				horizontal: true,
+			});
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);
 

@@ -92,7 +92,7 @@ class ProviderDescriptor {
 }
 
 export class NotebookService extends Disposable implements INotebookService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _providersMemento: Memento;
 	private _trustedNotebooksMemento: Memento;

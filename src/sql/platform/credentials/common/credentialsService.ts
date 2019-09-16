@@ -21,7 +21,7 @@ export interface CredentialManagementEvents {
 export const ICredentialsService = createDecorator<ICredentialsService>(SERVICE_ID);
 
 export interface ICredentialsService {
-	_serviceBrand: ServiceIdentifier<ICredentialsService>;
+	_serviceBrand: undefined;
 
 	saveCredential(credentialId: string, password: string): Promise<boolean>;
 
@@ -34,7 +34,7 @@ export interface ICredentialsService {
 
 export class CredentialsService implements ICredentialsService {
 
-	_serviceBrand: ServiceIdentifier<ICredentialsService>;
+	_serviceBrand: undefined;
 
 	private _serverEvents: { [handle: number]: CredentialManagementEvents; } = Object.create(null);
 

@@ -10,7 +10,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { Event, Emitter } from 'vs/base/common/event';
 
 export class JobManagementService implements IJobManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _onDidChange = new Emitter<void>();
 	public readonly onDidChange: Event<void> = this._onDidChange.event;
@@ -213,7 +213,7 @@ export class JobManagementService implements IJobManagementService {
  * Server level caching of jobs/job histories and their views
  */
 export class JobCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _jobs: azdata.AgentJobInfo[] = [];
 	private _jobHistories: { [jobID: string]: azdata.AgentJobHistoryInfo[]; } = {};
 	private _jobSteps: { [jobID: string]: azdata.AgentJobStepInfo[]; } = {};
@@ -399,7 +399,7 @@ export class NotebookCacheObject {
  * Server level caching of Operators
  */
 export class OperatorsCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _operators: azdata.AgentOperatorInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;
@@ -436,7 +436,7 @@ export class OperatorsCacheObject {
 * Server level caching of job alerts and the alerts view
 */
 export class AlertsCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _alerts: azdata.AgentAlertInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;
@@ -473,7 +473,7 @@ export class AlertsCacheObject {
  * Server level caching of job proxies and proxies view
  */
 export class ProxiesCacheObject {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	private _proxies: azdata.AgentProxyInfo[];
 	private _dataView: Slick.Data.DataView<any>;
 	private _serverName: string;

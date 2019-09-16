@@ -76,10 +76,10 @@ export class FileBrowserTreeView extends Disposable implements IDisposable {
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
 		}, {
-				indentPixels: 10,
-				twistiePixels: 12,
-				ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, "File browser tree")
-			});
+			indentPixels: 10,
+			twistiePixels: 12,
+			ariaLabel: nls.localize({ key: 'fileBrowser.regTreeAriaLabel', comment: ['FileBrowserTree'] }, "File browser tree")
+		});
 	}
 
 	/**
