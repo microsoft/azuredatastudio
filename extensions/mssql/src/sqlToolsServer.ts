@@ -22,12 +22,14 @@ import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
 import { promisify } from 'util';
 import { readFile } from 'fs';
+import { Deferred } from './util/promise';
 
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
 export class SqlToolsServer {
 
+	public sqlToolsServiceReady: Deferred<boolean> = new Deferred();
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
@@ -41,7 +43,7 @@ export class SqlToolsServer {
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
-			this.client.onReady().then(() => {
+			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
 				statusView.text = localize('serviceStartedStatusMsg', "{0} Started", Constants.serviceName);
 				setTimeout(() => {
@@ -56,11 +58,12 @@ export class SqlToolsServer {
 					totalTime: String(processEnd - installationStart),
 					beginningTimestamp: String(installationStart)
 				});
+				this.sqlToolsServiceReady.resolve(true);
 			});
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
-			await this.activateFeatures(context);
+			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
