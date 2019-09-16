@@ -101,4 +101,38 @@ export class DeployClusterWizardModel extends Model {
 	public set hadrEnabled(value: boolean) {
 		this.setPropertyValue(VariableNames.EnableHADR_VariableName, value);
 	}
+
+	public getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
+		const value = this.getStringValue(propertyName);
+		return (value === undefined || value === '') ? this.getStringValue(defaultValuePropertyName) : value;
+	}
+
+	private setStorageSettingValue(propertyName: string, defaultValuePropertyName: string): void {
+		const value = this.getStringValue(propertyName);
+		if (value === undefined || value === '') {
+			this.setPropertyValue(propertyName, this.getStringValue(defaultValuePropertyName));
+		}
+	}
+
+	private setStorageSettingValues(): void {
+		this.setStorageSettingValue(VariableNames.DataPoolDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName);
+		this.setStorageSettingValue(VariableNames.DataPoolDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName);
+		this.setStorageSettingValue(VariableNames.DataPoolLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName);
+		this.setStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName);
+
+		this.setStorageSettingValue(VariableNames.HDFSDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName);
+		this.setStorageSettingValue(VariableNames.HDFSDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName);
+		this.setStorageSettingValue(VariableNames.HDFSLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName);
+		this.setStorageSettingValue(VariableNames.HDFSLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName);
+
+		this.setStorageSettingValue(VariableNames.SQLServerDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName);
+		this.setStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName);
+		this.setStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName);
+		this.setStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName);
+	}
+
+	public setEnvironmentVariables(): void {
+		this.setStorageSettingValues();
+		super.setEnvironmentVariables();
+	}
 }

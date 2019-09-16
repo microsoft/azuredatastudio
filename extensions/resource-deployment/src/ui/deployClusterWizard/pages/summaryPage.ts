@@ -145,13 +145,18 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					type: FieldType.ReadonlyText,
 					label: localize('deployCluster.GatewayText', "Gateway"),
 					defaultValue: this.wizard.model.getStringValue(VariableNames.GateWayPort_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryPort_VariableName)
 				}
 			]
 		};
+
+		if (this.wizard.model.getBooleanValue(VariableNames.EnableHADR_VariableName)) {
+			portSectionInfo.fields.push({
+				type: FieldType.ReadonlyText,
+				label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
+				defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryPort_VariableName)
+			});
+		}
+
 		const dnsNamesSectionInfo = {
 			labelOnLeft: true,
 			labelWidth: '150px',
