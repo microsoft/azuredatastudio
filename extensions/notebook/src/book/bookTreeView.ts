@@ -14,6 +14,7 @@ import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import { isEditorTitleFree } from '../common/utils';
 import * as nls from 'vscode-nls';
 import { promisify } from 'util';
+import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
 const existsAsync = promisify(fs.exists);
@@ -34,10 +35,10 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private _openAsUntitled: boolean;
 
 	constructor(workspaceFolders: vscode.WorkspaceFolder[], extensionContext: vscode.ExtensionContext) {
-		this.initialze(workspaceFolders, null, extensionContext);
+		this.initialize(workspaceFolders, null, extensionContext);
 	}
 
-	private initialze(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
+	private initialize(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string, context: vscode.ExtensionContext): void {
 		let workspacePaths: string[] = [];
 		if (bookPath) {
 			workspacePaths.push(bookPath);
@@ -72,7 +73,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._onReadAllTOCFiles.fire();
 	}
 
-	async openBook(bookPath: string, context: vscode.ExtensionContext, openAsUntitled: boolean): Promise<void> {
+	async openBook(bookPath: string, openAsUntitled: boolean, urlToOpen?: string): Promise<void> {
 		try {
 			// Check if the book is already open in viewlet.
 			if (this._tableOfContentPaths.indexOf(path.join(bookPath, '_data', 'toc.yml').replace(/\\/g, '/')) > -1 && this._allNotebooks.size > 0) {
@@ -80,21 +81,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			}
 			else {
 				await this.getTableOfContentFiles([bookPath]);
-				let bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
+				const bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 				await vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer');
 				this._openAsUntitled = openAsUntitled;
 				let books = this.getBooks();
 				if (books && books.length > 0) {
-					bookViewer.reveal(books[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
-					const readmeMarkdown: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.md'));
-					const readmeNotebook: string = path.join(bookPath, 'content', books[0].tableOfContents[0].url.concat('.ipynb'));
-					const markdownExists = await existsAsync(readmeMarkdown);
-					const notebookExists = await existsAsync(readmeNotebook);
+					const rootTreeItem = books[0];
+					const sectionToOpen = rootTreeItem.findChildSection(urlToOpen);
+					bookViewer.reveal(rootTreeItem, { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+					const urlPath = sectionToOpen ? sectionToOpen.url : rootTreeItem.tableOfContents.sections[0].url;
+					const sectionToOpenMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
+					const sectionToOpenNotebook: string = path.join(bookPath, 'content', urlPath.concat('.ipynb'));
+					const markdownExists = await existsAsync(sectionToOpenMarkdown);
+					const notebookExists = await existsAsync(sectionToOpenNotebook);
 					if (markdownExists) {
-						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(readmeMarkdown));
+						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(sectionToOpenMarkdown));
 					}
 					else if (notebookExists) {
-						vscode.workspace.openTextDocument(readmeNotebook);
+						this.openNotebook(sectionToOpenNotebook);
 					}
 				}
 			}
@@ -196,12 +200,12 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		}
 	}
 
-	private flattenArray(array: any[], title: string): any[] {
-		try {
-			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.flattenArray(val.sections, title)) : acc.concat(val), []);
-		} catch (e) {
-			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', title);
-		}
+	/**
+	 * Recursively parses out a section of a Jupyter Book.
+	 * @param array The input data to parse
+	 */
+	private parseJupyterSection(array: any[]): IJupyterBookSection[] {
+		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
 	}
 
 	public getBooks(): BookTreeItem[] {
@@ -211,20 +215,24 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
 				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentPaths[i], 'utf-8'));
-				let book = new BookTreeItem({
-					title: config.title,
-					root: root,
-					tableOfContents: this.flattenArray(tableOfContents, config.title),
-					page: tableOfContents,
-					type: BookTreeItemType.Book,
-					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
-				},
-					{
-						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
-						dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
-					}
-				);
-				books.push(book);
+				try {
+					let book = new BookTreeItem({
+						title: config.title,
+						root: root,
+						tableOfContents: { sections: this.parseJupyterSection(tableOfContents) },
+						page: tableOfContents,
+						type: BookTreeItemType.Book,
+						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
+					},
+						{
+							light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
+							dark: this._extensionContext.asAbsolutePath('resources/dark/book_inverse.svg')
+						}
+					);
+					books.push(book);
+				} catch (e) {
+					throw Error(localize('invalidTocError', "Error: {0} has an incorrect toc.yml file. {1}", config.title, e instanceof Error ? e.message : e));
+				}
 			} catch (e) {
 				let error = e instanceof Error ? e.message : e;
 				this._errorMessage = error;
@@ -234,7 +242,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return books;
 	}
 
-	public getSections(tableOfContents: any[], sections: any[], root: string): BookTreeItem[] {
+	public getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): BookTreeItem[] {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {

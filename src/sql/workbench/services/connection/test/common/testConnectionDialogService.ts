@@ -8,7 +8,7 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 
 export class TestConnectionDialogService implements IConnectionDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	public showDialog(connectionManagementService: IConnectionManagementService,
 		params: INewConnectionParams, model: IConnectionProfile, connectionResult?: IConnectionResult, connectionOptions?: IConnectionCompletionOptions): Promise<void> {

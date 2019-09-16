@@ -14,7 +14,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 export class BackupService implements IBackupService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.BackupProvider; } = Object.create(null);
 
 	constructor(

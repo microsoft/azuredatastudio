@@ -12,7 +12,7 @@ export const IDashboardService = createDecorator<IDashboardService>('dashboardSe
 
 export interface IDashboardService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	readonly onDidOpenDashboard: Event<azdata.DashboardDocument>;
 	readonly onDidChangeToDashboard: Event<azdata.DashboardDocument>;
 	readonly onLayout: Event<DOM.Dimension>;

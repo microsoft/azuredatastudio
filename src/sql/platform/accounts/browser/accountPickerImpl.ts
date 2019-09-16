@@ -87,7 +87,7 @@ export class AccountPicker extends Disposable {
 		const delegate = new AccountListDelegate(AccountPicker.ACCOUNTPICKERLIST_HEIGHT);
 		const accountRenderer = new AccountPickerListRenderer();
 		this._listContainer = DOM.$('div.account-list-container');
-		this._accountList = new List<azdata.Account>(this._listContainer, delegate, [accountRenderer]);
+		this._accountList = new List<azdata.Account>('AccountPicker', this._listContainer, delegate, [accountRenderer]);
 		this._register(attachListStyler(this._accountList, this._themeService));
 
 		this._rootElement = DOM.$('div.account-picker-container');

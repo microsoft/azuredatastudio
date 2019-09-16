@@ -16,24 +16,23 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as types from 'vs/base/common/types';
-import * as fs from 'fs';
-
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
 } from 'sql/workbench/api/common/sqlExtHost.protocol';
 import { NotebookInput } from 'sql/workbench/parts/notebook/browser/models/notebookInput';
-import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService, INotebookEditor } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation, NotebookChangeKind } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { disposed } from 'vs/base/common/errors';
-import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, NotebookContentChange, INotebookModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
-import { notebookModeId } from 'sql/workbench/common/customInputConverter';
+import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
+import { IFileService } from 'vs/platform/files/common/files';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -329,7 +328,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@INotebookService private readonly _notebookService: INotebookService
+		@INotebookService private readonly _notebookService: INotebookService,
+		@IFileService private readonly _fileService: IFileService
 	) {
 		super();
 		if (extHostContext) {
@@ -709,10 +709,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
-						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+						let content = await this._fileService.readFile(URI.parse(result.next.path));
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
-						this.doOpenEditor(result.next, {});
+						await this.doOpenEditor(result.next, {});
 					}
 				}
 			},
@@ -721,10 +722,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
-						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+						let content = await this._fileService.readFile(URI.parse(result.previous.path));
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
-						this.doOpenEditor(result.previous, {});
+						await this.doOpenEditor(result.previous, {});
 					}
 				}
 			}

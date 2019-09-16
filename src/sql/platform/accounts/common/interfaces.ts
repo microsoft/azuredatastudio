@@ -13,7 +13,7 @@ export const SERVICE_ID = 'accountManagementService';
 export const IAccountManagementService = createDecorator<IAccountManagementService>(SERVICE_ID);
 
 export interface IAccountManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// ACCOUNT MANAGEMENT METHODS //////////////////////////////////////////
 	accountUpdated(account: azdata.Account): Thenable<void>;

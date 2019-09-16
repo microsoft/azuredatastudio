@@ -266,12 +266,12 @@ export abstract class ContainerBase<T> extends ComponentBase {
 		if (this.items.some(item => item.descriptor.id === componentDescriptor.id && item.descriptor.type === componentDescriptor.type)) {
 			return;
 		}
-		if (index !== undefined && index !== null && index >= 0 && index < this.items.length) {
+		if (index !== undefined && index !== null && index >= 0 && index <= this.items.length) {
 			this.items.splice(index, 0, new ItemDescriptor(componentDescriptor, config));
 		} else if (!index) {
 			this.items.push(new ItemDescriptor(componentDescriptor, config));
 		} else {
-			throw new Error(nls.localize('invalidIndex', "The index is invalid."));
+			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
 		this.modelStore.eventuallyRunOnComponent(componentDescriptor.id, component => component.registerEventHandler(event => {
 			if (event.eventType === ComponentEventType.validityChanged) {
