@@ -7,7 +7,6 @@
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import * as fs from 'fs';
 import * as path from 'path';
 import { AgentUtils, exists } from '../agentUtils';
 import { IAgentDialogData, AgentDialogMode } from '../interfaces';

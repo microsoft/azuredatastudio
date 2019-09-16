@@ -6,7 +6,7 @@
 import * as adal from 'adal-node';
 import * as azdata from 'azdata';
 import * as crypto from 'crypto';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 
 export default class TokenCache implements adal.TokenCache {
 	private static CipherAlgorithm = 'aes-256-cbc';
@@ -58,23 +58,19 @@ export default class TokenCache implements adal.TokenCache {
 		});
 	}
 
-	public clear(): Thenable<void> {
-		let self = this;
+	public async clear(): Promise<void> {
 
 		// 1) Delete encrypted serialization file
 		//    If we got an 'ENOENT' response, the file doesn't exist, which is fine
 		// 3) Delete the encryption key
-		return new Promise<void>((resolve, reject) => {
-			fs.unlink(self._cacheSerializationPath, err => {
-				if (err && err.code !== 'ENOENT') {
-					reject(err);
-				} else {
-					resolve();
-				}
-			});
-		})
-			.then(() => { return self._credentialProvider.deleteCredential(self._credentialServiceKey); })
-			.then(() => { });
+		try {
+			await fs.unlink(this._cacheSerializationPath);
+		} catch (err) {
+			if (err.code !== 'ENOENT') {
+				throw err;
+			}
+		}
+		await this._credentialProvider.deleteCredential(this._credentialServiceKey);
 	}
 
 	public find(query: any, callback: (error: Error, results: any[]) => void): void {
@@ -261,7 +257,7 @@ export default class TokenCache implements adal.TokenCache {
 	}
 
 	private async decryptCache(encoding: crypto.Utf8AsciiBinaryEncoding, encryptionParams: EncryptionParams): Promise<adal.TokenResponse[]> {
-		let cacheCipher = await fs.promises.readFile(this._cacheSerializationPath, TokenCache.FsOptions);
+		let cacheCipher = await fs.readFile(this._cacheSerializationPath, TokenCache.FsOptions);
 		let decipher = crypto.createDecipheriv(TokenCache.CipherAlgorithm, encryptionParams.key, encryptionParams.initializationVector);
 		let cacheJson = decipher.update(cacheCipher.toString(), 'hex', encoding);
 		cacheJson += decipher.final(encoding);
@@ -305,7 +301,7 @@ export default class TokenCache implements adal.TokenCache {
 					let cacheCipher = cipher.update(cacheJson, 'utf8', 'hex');
 					cacheCipher += cipher.final('hex');
 
-					await fs.promises.writeFile(self._cacheSerializationPath, cacheCipher, TokenCache.FsOptions);
+					await fs.writeFile(self._cacheSerializationPath, cacheCipher, TokenCache.FsOptions);
 				} catch (e) {
 					throw e;
 				}
