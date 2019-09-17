@@ -51,7 +51,7 @@ export interface ISerializationService {
 
 	serializeResults(request: SerializeDataParams): Promise<azdata.SerializeDataResult>;
 
-	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider;
+	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider | undefined;
 }
 
 function getBatchSize(totalRows: number, currentIndex: number): number {
@@ -90,7 +90,7 @@ export class SerializationService implements ISerializationService {
 
 	}
 
-	public getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider {
+	public getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 

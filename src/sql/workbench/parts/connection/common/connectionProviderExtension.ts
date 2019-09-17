@@ -26,7 +26,7 @@ export const Extensions = {
 
 export interface IConnectionProviderRegistry {
 	registerConnectionProvider(id: string, properties: ConnectionProviderProperties): void;
-	getProperties(id: string): ConnectionProviderProperties;
+	getProperties(id: string): ConnectionProviderProperties | undefined;
 	readonly onNewProvider: Event<{ id: string, properties: ConnectionProviderProperties }>;
 	readonly providers: { [id: string]: ConnectionProviderProperties };
 }
@@ -41,7 +41,7 @@ class ConnectionProviderRegistryImpl implements IConnectionProviderRegistry {
 		this._onNewProvider.fire({ id, properties });
 	}
 
-	public getProperties(id: string): ConnectionProviderProperties {
+	public getProperties(id: string): ConnectionProviderProperties | undefined {
 		return this._providers.get(id);
 	}
 

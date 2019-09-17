@@ -29,7 +29,7 @@ export interface IFileBrowserService {
 	/**
 	 * Event called when file browser is opened
 	 */
-	onFileBrowserOpened(handle: number, fileBrowserOpenedParams: azdata.FileBrowserOpenedParams);
+	onFileBrowserOpened(handle: number, fileBrowserOpenedParams: azdata.FileBrowserOpenedParams): void;
 
 	/**
 	 * Expand folder node
@@ -39,7 +39,7 @@ export interface IFileBrowserService {
 	/**
 	 * Event called when children nodes are retrieved
 	 */
-	onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: azdata.FileBrowserExpandedParams);
+	onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: azdata.FileBrowserExpandedParams): void;
 
 	/**
 	 * Validate selected file paths
@@ -49,10 +49,10 @@ export interface IFileBrowserService {
 	/**
 	 * Event called when the validation is complete
 	 */
-	onFilePathsValidated(handle: number, fileBrowserValidatedParams: azdata.FileBrowserValidatedParams);
+	onFilePathsValidated(handle: number, fileBrowserValidatedParams: azdata.FileBrowserValidatedParams): void;
 
 	/**
 	 * Close file browser
 	 */
-	closeFileBrowser(ownerUri: string): Thenable<azdata.FileBrowserCloseResponse>;
+	closeFileBrowser(ownerUri: string): Thenable<azdata.FileBrowserCloseResponse | void>;
 }

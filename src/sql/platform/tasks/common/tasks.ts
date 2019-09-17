@@ -55,6 +55,6 @@ export interface ITaskRegistry {
 	registerTask(id: string, command: ITaskHandler): IDisposable;
 	registerTask(command: ITask): IDisposable;
 	getTasks(): string[];
-	getOrCreateTaskIconClassName(item: ICommandAction): string;
+	getOrCreateTaskIconClassName(item: ICommandAction): string | undefined;
 	onTaskRegistered: Event<string>;
 }
