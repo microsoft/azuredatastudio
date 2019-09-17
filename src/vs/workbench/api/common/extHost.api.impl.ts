@@ -68,6 +68,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IURITransformerService } from 'vs/workbench/api/common/extHostUriTransformerService';
 import { IExtHostRpcService } from 'vs/workbench/api/common/extHostRpcService';
 import { IExtHostInitDataService } from 'vs/workbench/api/common/extHostInitDataService';
+import { ExtHostUserData } from 'vs/workbench/api/common/extHostUserData';
 
 export interface IExtensionApiFactory {
 	(extension: IExtensionDescription, registry: ExtensionDescriptionRegistry, configProvider: ExtHostConfigProvider): typeof vscode;
@@ -124,6 +125,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 	const extHostWindow = rpcProtocol.set(ExtHostContext.ExtHostWindow, new ExtHostWindow(rpcProtocol));
 	const extHostProgress = rpcProtocol.set(ExtHostContext.ExtHostProgress, new ExtHostProgress(rpcProtocol.getProxy(MainContext.MainThreadProgress)));
 	const extHostLabelService = rpcProtocol.set(ExtHostContext.ExtHosLabelService, new ExtHostLabelService(rpcProtocol));
+	const extHostUserData = rpcProtocol.set(ExtHostContext.ExtHostUserData, new ExtHostUserData(rpcProtocol.getProxy(MainContext.MainThreadUserData), extHostLogService));
 
 	// Check that no named customers are missing
 	// {{SQL CARBON EDIT}} filter out the services we don't expose
@@ -548,6 +550,10 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			createInputBox(): vscode.InputBox {
 				return extHostQuickOpen.createInputBox(extension.identifier);
+			},
+			registerUserDataSyncProvider: (identity: string, userDataProvider: vscode.UserDataSyncProvider): vscode.Disposable => {
+				checkProposedApiEnabled(extension);
+				return extHostUserData.registerUserDataProvider(identity, userDataProvider);
 			}
 		};
 
@@ -908,6 +914,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			CallHierarchyIncomingCall: extHostTypes.CallHierarchyIncomingCall,
 			CallHierarchyItem: extHostTypes.CallHierarchyItem,
 			Decoration: extHostTypes.Decoration,
+			UserDataError: extHostTypes.UserDataError,
 			WebviewEditorState: extHostTypes.WebviewEditorState,
 			UIKind: UIKind
 		};

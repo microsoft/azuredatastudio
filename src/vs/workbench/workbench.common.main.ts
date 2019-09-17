@@ -76,6 +76,8 @@ import 'vs/workbench/services/label/common/labelService';
 import 'vs/workbench/services/extensionManagement/common/extensionEnablementService';
 import 'vs/workbench/services/notification/common/notificationService';
 import 'vs/workbench/services/extensions/common/staticExtensions';
+import 'vs/workbench/services/userData/common/userDataSyncStoreService';
+import 'vs/workbench/services/userData/common/userDataSyncService';
 import 'vs/workbench/services/workspace/browser/workspaceEditingService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -243,5 +245,8 @@ import 'vs/workbench/contrib/experiments/browser/experiments.contribution';
 
 // Send a Smile
 import 'vs/workbench/contrib/feedback/browser/feedback.contribution';
+
+// User Data
+import 'vs/workbench/contrib/userData/browser/userData.contribution';
 
 //#endregion

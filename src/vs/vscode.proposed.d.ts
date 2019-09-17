@@ -1095,4 +1095,32 @@ declare module 'vscode' {
 	}
 
 	//#endregion
+
+	// #region Sandy - User data synchronization
+
+	export namespace window {
+
+		export function registerUserDataSyncProvider(name: string, userDataProvider: UserDataSyncProvider): Disposable;
+
+	}
+
+	export class UserDataError extends Error {
+
+		static Rejected(): FileSystemError;
+
+		/**
+		 * Creates a new userData error.
+		 */
+		constructor();
+	}
+
+	export interface UserDataSyncProvider {
+
+		read(key: string): Promise<{ content: string, ref: string } | null>;
+
+		write(key: string, content: string, ref: string | null): Promise<string>;
+
+	}
+
+	//#endregion
 }
