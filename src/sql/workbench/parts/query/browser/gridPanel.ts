@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/gridPanel';
+
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -428,8 +430,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
 		if (actionsOrientation === ActionsOrientation.HORIZONTAL) {
-			actionBarContainer.style.width = '100%';
-			actionBarContainer.style.display = 'flex';
+			actionBarContainer.className = 'grid-panel action-bar horizontal';
 			this.container.appendChild(actionBarContainer);
 		}
 
@@ -477,10 +478,8 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		}
 		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
 		if (actionsOrientation === ActionsOrientation.VERTICAL) {
+			actionBarContainer.className = 'grid-panel action-bar vertical';
 			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
-			actionBarContainer.style.display = 'inline-block';
-			actionBarContainer.style.height = '100%';
-			actionBarContainer.style.verticalAlign = 'top';
 			this.container.appendChild(actionBarContainer);
 		}
 		let context: IGridActionContext = {

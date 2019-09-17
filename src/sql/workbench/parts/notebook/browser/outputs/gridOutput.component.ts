@@ -129,7 +129,6 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 class DataResourceTable extends GridTableBase<any> {
 
 	private _gridDataProvider: IGridDataProvider;
-	private _sharedActions: IAction[];
 
 	constructor(source: IDataResource,
 		documentUri: string,
@@ -143,12 +142,6 @@ class DataResourceTable extends GridTableBase<any> {
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
-		this._sharedActions = [
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
-			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML)
-		];
 	}
 
 	get gridDataProvider(): IGridDataProvider {
@@ -156,17 +149,19 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getCurrentActions(): IAction[] {
-		if (!this._serializationService.hasProvider()) {
-			return [];
-		}
-		return this._sharedActions;
+		return this.getContextActions();
 	}
 
 	protected getContextActions(): IAction[] {
 		if (!this._serializationService.hasProvider()) {
 			return [];
 		}
-		return this._sharedActions;
+		return [
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVECSV_ID, SaveResultAction.SAVECSV_LABEL, SaveResultAction.SAVECSV_ICON, SaveFormat.CSV),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEEXCEL_ID, SaveResultAction.SAVEEXCEL_LABEL, SaveResultAction.SAVEEXCEL_ICON, SaveFormat.EXCEL),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEJSON_ID, SaveResultAction.SAVEJSON_LABEL, SaveResultAction.SAVEJSON_ICON, SaveFormat.JSON),
+			this.instantiationService.createInstance(SaveResultAction, SaveResultAction.SAVEXML_ID, SaveResultAction.SAVEXML_LABEL, SaveResultAction.SAVEXML_ICON, SaveFormat.XML),
+		];
 	}
 
 	public get maximumSize(): number {
