@@ -558,7 +558,7 @@ export abstract class ExtHostTaskBase implements ExtHostTaskShape {
 
 		const resolvedTask = await handler.provider.resolveTask(task, CancellationToken.None);
 		if (!resolvedTask) {
-			return;
+			return undefined; // {{SQL CARBON EDIT}} strict-null-check
 		}
 
 		const resolvedTaskDTO: tasks.TaskDTO | undefined = TaskDTO.from(resolvedTask, handler.extension);
