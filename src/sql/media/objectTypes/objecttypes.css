@@ -9,18 +9,6 @@
 	background: url("Table.svg") center center no-repeat;
 }
 
-.vs .icon.stored-procedure,
-.vs-dark .icon.stored-procedure,
-.hc-black .icon.stored-procedure {
-	background: url("StoredProcedure.svg") center center no-repeat;
-}
-
-.vs .icon.view,
-.vs-dark .icon.view,
-.hc-black .icon.view {
-	background: url("View.svg") center center no-repeat;
-}
-
 .vs .icon.aggregatefunction,
 .vs-dark .icon.aggregatefunction,
 .hc-black .icon.aggregatefunction {
@@ -155,7 +143,13 @@
 
 .vs .icon.defaulticon,
 .vs-dark .icon.defaulticon,
-.hc-black .icon.defaulticon {
+.hc-black .icon.defaulticon,
+.vs .icon.filegroup,
+.vs-dark .icon.filegroup,
+.hc-black .icon.filegroup,
+.vs .icon.historytable,
+.vs-dark .icon.historytable,
+.hc-black .icon.historytable {
 	background: url("DefaultIcon.svg") center center no-repeat;
 }
 
@@ -214,10 +208,7 @@
 
 .vs .icon.key_primarykey,
 .vs-dark .icon.key_primarykey,
-.hc-black .icon.key_primarykey {
-	background: url("Key_PrimaryKey.svg") center center no-repeat;
-}
-
+.hc-black .icon.key_primarykey,
 .vs .icon.index_primarykey,
 .vs-dark .icon.index_primarykey,
 .hc-black .icon.index_primarykey {
@@ -226,14 +217,11 @@
 
 .vs .icon.key_uniquekey,
 .vs-dark .icon.key_uniquekey,
-.hc-black .icon.key_uniquekey {
-	background: url("Key_UniqueKey.svg") center center no-repeat;
-}
-
+.hc-black .icon.key_uniquekey,
 .vs .icon.index_uniquekey,
 .vs-dark .icon.index_uniquekey,
 .hc-black .icon.index_uniquekey {
-		background: url("Key_UniqueKey.svg") center center no-repeat;
+	background: url("Key_UniqueKey.svg") center center no-repeat;
 }
 
 .vs .icon.masterkey,
@@ -636,22 +624,4 @@
 .vs-dark .icon.xmlschemacollection,
 .hc-black .icon.xmlschemacollection {
 	background: url("XmlSchemaCollection.svg") center center no-repeat;
-}
-
-.vs .icon.filegroup,
-.vs-dark .icon.filegroup,
-.hc-black .icon.filegroup {
-	background: url("DefaultIcon.svg") center center no-repeat;
-}
-
-.vs .icon.securitypolicie,
-.vs-dark .icon.securitypolicie,
-.hc-black .icon.securitypolicie {
-	background: url("DefaultIcon.svg") center center no-repeat;
-}
-
-.vs .icon.historytable,
-.vs-dark .icon.historytable,
-.hc-black .icon.historytable {
-	background: url("DefaultIcon.svg") center center no-repeat;
 }
