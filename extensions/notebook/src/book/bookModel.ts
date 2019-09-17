@@ -13,46 +13,37 @@ import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
+import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
-//const exists = promisify(fs.exists);
 
 export class BookModel implements azdata.nb.NavigationProvider {
-	public BookPath: string;
 	private _bookItems: BookTreeItem[] = [];
 	private _allNotebooks = new Map<string, BookTreeItem>();
-	public openAsUntitled: boolean = false;
-	private _extensionContext: vscode.ExtensionContext;
 	private _tableOfContentPaths: string[] = [];
 	readonly providerId: string = 'BookNavigator';
-	// For testing
-	private _errorMessage: string;
 
-	constructor(bookPath: string, openAsUntitled: boolean, extensionContext: vscode.ExtensionContext) {
-		this.BookPath = bookPath;
+	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
+		this.bookPath = bookPath;
 		this.openAsUntitled = openAsUntitled;
-		this._extensionContext = extensionContext;
-		extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
-		//this.getTableOfContentFiles(this.BookPath).then(() => { this._books = this.readBooks();}, (err) => { console.log(err); });
-
+		_extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
 	public async initializeContents(): Promise<void> {
-		await this.getTableOfContentFiles(this.BookPath);
+		await this.getTableOfContentFiles(this.bookPath);
 		this.readBooks();
-		return;
 	}
 
 	public getAllBooks(): Map<string, BookTreeItem> {
 		return this._allNotebooks;
 	}
 
-	async getTableOfContentFiles(workspacePath: string): Promise<void> {
+	public async getTableOfContentFiles(workspacePath: string): Promise<void> {
 		try {
 			let notebookConfig = vscode.workspace.getConfiguration(notebookConfigKey);
 			let maxDepth = notebookConfig[maxBookSearchDepth];
 			// Use default value if user enters an invalid value
-			if (maxDepth === undefined || maxDepth < 0) {
+			if (isNullOrUndefined(maxDepth) || maxDepth < 0) {
 				maxDepth = 5;
 			} else if (maxDepth === 0) { // No limit of search depth if user enters 0
 				maxDepth = undefined;
@@ -81,7 +72,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
-					untitled: this.openAsUntitled,
+					isUntitled: this.openAsUntitled,
 				},
 					{
 						light: this._extensionContext.asAbsolutePath('resources/light/book.svg'),
@@ -91,14 +82,13 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				this._bookItems.push(book);
 			} catch (e) {
 				let error = e instanceof Error ? e.message : e;
-				this._errorMessage = error;
 				vscode.window.showErrorMessage(error);
 			}
 		}
 		return this._bookItems;
 	}
 
-	public get getBookItems() {
+	public get bookItems(): BookTreeItem[] {
 		return this._bookItems;
 	}
 
@@ -114,7 +104,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						page: sections[i],
 						type: BookTreeItemType.ExternalLink,
 						treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-						untitled: this.openAsUntitled
+						isUntitled: this.openAsUntitled
 					},
 						{
 							light: this._extensionContext.asAbsolutePath('resources/light/link.svg'),
@@ -136,7 +126,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 							page: sections[i],
 							type: BookTreeItemType.Notebook,
 							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-							untitled: this.openAsUntitled
+							isUntitled: this.openAsUntitled
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/notebook.svg'),
@@ -158,7 +148,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 							page: sections[i],
 							type: BookTreeItemType.Markdown,
 							treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Collapsed,
-							untitled: this.openAsUntitled
+							isUntitled: this.openAsUntitled
 						},
 							{
 								light: this._extensionContext.asAbsolutePath('resources/light/markdown.svg'),
@@ -167,8 +157,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 						);
 						notebooks.push(markdown);
 					} else {
-						let error = localize('missingFileError', 'Missing file : {0}', sections[i].title);
-						this._errorMessage = error;
+						let error = localize('missingFileError', "Missing file : {0}", sections[i].title);
 						vscode.window.showErrorMessage(error);
 					}
 				}
@@ -187,13 +176,11 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		try {
 			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
 		} catch (error) {
-			throw localize('Invalid toc.yml', 'Error: {0} has an incorrect toc.yml file', array[0].title); //need to find a way to get title.
+			let err = localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", array[0].title); //need to find a way to get title.
+			vscode.window.showErrorMessage(err);
+			throw err;
 		}
 
-	}
-
-	public get errorMessage() {
-		return this._errorMessage;
 	}
 
 	public get tableOfContentPaths() {

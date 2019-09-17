@@ -24,7 +24,7 @@ export interface BookTreeItemFormat {
 	page: any;
 	type: BookTreeItemType;
 	treeItemCollapsibleState: number;
-	untitled: boolean;
+	isUntitled: boolean;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
@@ -40,7 +40,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		if (book.type === BookTreeItemType.Book) {
 			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
-			if (book.untitled) {
+			if (book.isUntitled) {
 				this.contextValue = 'untitledBook';
 			}
 		} else {
@@ -67,12 +67,12 @@ export class BookTreeItem extends vscode.TreeItem {
 	private setCommand() {
 		if (this.book.type === BookTreeItemType.Notebook) {
 			let pathToNotebook = path.join(this.book.root, 'content', this._uri.concat('.ipynb'));
-			this.command = { command: this.book.untitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: localize('openNotebookCommand', 'Open Notebook'), arguments: [pathToNotebook], };
+			this.command = { command: this.book.isUntitled ? 'bookTreeView.openUntitledNotebook' : 'bookTreeView.openNotebook', title: localize('openNotebookCommand', "Open Notebook"), arguments: [pathToNotebook], };
 		} else if (this.book.type === BookTreeItemType.Markdown) {
 			let pathToMarkdown = path.join(this.book.root, 'content', this._uri.concat('.md'));
-			this.command = { command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', 'Open Markdown'), arguments: [pathToMarkdown], };
+			this.command = { command: 'bookTreeView.openMarkdown', title: localize('openMarkdownCommand', "Open Markdown"), arguments: [pathToMarkdown], };
 		} else if (this.book.type === BookTreeItemType.ExternalLink) {
-			this.command = { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', 'Open External Link'), arguments: [this._uri], };
+			this.command = { command: 'bookTreeView.openExternalLink', title: localize('openExternalLinkCommand', "Open External Link"), arguments: [this._uri], };
 		}
 	}
 

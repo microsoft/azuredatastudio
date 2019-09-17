@@ -38,31 +38,22 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		this._openAsUntitled = openAsUntitled;
 		this._extensionContext = extensionContext;
 		this.books = [];
-		this.initialize(workspaceFolders, null);
+		this.initialize(workspaceFolders.map(a => a.uri.fsPath));
 		vscode.commands.executeCommand('setContext', 'untitledBooks', openAsUntitled);
 		this.viewId = view;
 		this.prompter = new CodeAdapter();
-
 	}
 
-	private async initialize(workspaceFolders: vscode.WorkspaceFolder[], bookPath: string): Promise<void> {
-		if (bookPath) {
-			let book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
-			await book.initializeContents();
-			this.books.push(book);
-			if (!this.currentBook) {
-				this.currentBook = book;
-			}
-		}
-		else if (workspaceFolders) {
-			workspaceFolders.map(async (a) => {
-				let book: BookModel = new BookModel(a.uri.fsPath, this._openAsUntitled, this._extensionContext);
+	private async initialize(bookPaths: string[]): Promise<any> {
+		if (bookPaths.length > 0) {
+			return Promise.all(bookPaths.map(async (bookPath) => {
+				let book: BookModel = new BookModel(bookPath, this._openAsUntitled, this._extensionContext);
 				await book.initializeContents();
 				this.books.push(book);
 				if (!this.currentBook) {
 					this.currentBook = book;
 				}
-			});
+			}));
 		}
 	}
 
@@ -74,17 +65,17 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 
 	async openBook(bookPath: string, urlToOpen?: string): Promise<void> {
 		try {
-			let book: BookModel = this.books.filter(book => book.BookPath === bookPath)[0];
+			let books: BookModel[] = this.books.filter(book => book.bookPath === bookPath);
 			// Check if the book is already open in viewlet.
-			if (book && book.getBookItems.length > 0) {
-				this.currentBook = book;
+			if (books.length > 0 && books[0].bookItems) {
+				this.currentBook = books[0];
 				this.showPreviewFile(urlToOpen);
 			}
 			else {
-				await this.initialize(null, bookPath);
-				this.currentBook = this.books.filter(book => book.BookPath === bookPath)[0];
+				await this.initialize([bookPath]);
 				let bookViewer = vscode.window.createTreeView(this.viewId, { showCollapseAll: true, treeDataProvider: this });
-				bookViewer.reveal(this.currentBook.getBookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
+				this.currentBook = this.books.filter(book => book.bookPath === bookPath)[0];
+				bookViewer.reveal(this.currentBook.bookItems[0], { expand: vscode.TreeItemCollapsibleState.Expanded, focus: true, select: true });
 				this.showPreviewFile(urlToOpen);
 			}
 		} catch (e) {
@@ -95,21 +86,19 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	}
 
 	async showPreviewFile(urlToOpen?: string): Promise<void> {
-		const bookRoot = this.currentBook.getBookItems[0];
+		const bookRoot = this.currentBook.bookItems[0];
 		const sectionToOpen = bookRoot.findChildSection(urlToOpen);
 		const urlPath = sectionToOpen ? sectionToOpen.url : bookRoot.tableOfContents.sections[0].url;
-		const sectionToOpenMarkdown: string = path.join(this.currentBook.BookPath, 'content', urlPath.concat('.md'));
-		const sectionToOpenNotebook: string = path.join(this.currentBook.BookPath, 'content', urlPath.concat('.ipynb'));
-		const markdownExists = fs.existsSync(sectionToOpenMarkdown);
-		const notebookExists = fs.existsSync(sectionToOpenNotebook);
-		if (markdownExists) {
+		const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.md'));
+		const sectionToOpenNotebook: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.ipynb'));
+		if (await exists(sectionToOpenMarkdown)) {
 			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(sectionToOpenMarkdown));
 		}
-		else if (notebookExists) {
+		else if (await exists(sectionToOpenNotebook)) {
 			this.openNotebook(sectionToOpenNotebook);
 		}
-		await exists(sectionToOpenMarkdown);
-		await exists(sectionToOpenNotebook);
+
+
 	}
 
 	async openNotebook(resource: string): Promise<void> {
@@ -122,7 +111,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				vscode.window.showTextDocument(doc);
 			}
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openNotebookError', "Open file {0} failed: {1}",
+			vscode.window.showErrorMessage(localize('openNotebookError', "Open notebook {0} failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
@@ -133,7 +122,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			try {
 				vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(resource));
 			} catch (e) {
-				vscode.window.showErrorMessage(localize('openMarkdownError', "Open file {0} failed: {1}",
+				vscode.window.showErrorMessage(localize('openMarkdownError', "Open markdown {0} failed: {1}",
 					resource,
 					e instanceof Error ? e.message : e));
 			}
@@ -152,14 +141,14 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				});
 			});
 		} catch (e) {
-			vscode.window.showErrorMessage(localize('openUntitledNotebookError', "Open file {0} as untitled failed: {1}",
+			vscode.window.showErrorMessage(localize('openUntitledNotebookError', "Open untitled notebook {0} as untitled failed: {1}",
 				resource,
 				e instanceof Error ? e.message : e));
 		}
 	}
 
 	async saveJupyterBooks(): Promise<void> {
-		if (this.currentBook.BookPath) {
+		if (this.currentBook.bookPath) {
 			const allFilesFilter = localize('allFiles', "All Files");
 			let filter: any = {};
 			filter[allFilesFilter] = '*';
@@ -172,7 +161,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 			});
 			if (uris && uris.length > 0) {
 				let pickedFolder = uris[0];
-				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.BookPath)));
+				let destinationUri: vscode.Uri = vscode.Uri.file(path.join(pickedFolder.fsPath, path.basename(this.currentBook.bookPath)));
 				if (destinationUri) {
 					if (await fs.pathExists(destinationUri.fsPath)) {
 						let doReplace = await this.confirmReplace();
@@ -186,7 +175,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					}
 					//make directory for each contribution book.
 					await fs.mkdir(destinationUri.fsPath);
-					await fs.copy(this.currentBook.BookPath, destinationUri.fsPath);
+					await fs.copy(this.currentBook.bookPath, destinationUri.fsPath);
 
 					//remove book from the books
 					let untitledBookIndex: number = this.books.indexOf(this.currentBook);
@@ -245,7 +234,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		} else {
 			let booksitems: BookTreeItem[] = [];
 			this.books.map(book => {
-				booksitems = booksitems.concat(book.getBookItems);
+				booksitems = booksitems.concat(book.bookItems);
 			});
 			return Promise.resolve(booksitems);
 		}
@@ -255,9 +244,9 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	getParent(element?: BookTreeItem): vscode.ProviderResult<BookTreeItem> {
 		let parentPath;
 		if (element.root.endsWith('.md')) {
-			parentPath = path.join(this.currentBook.BookPath, 'content', 'readme.md');
+			parentPath = path.join(this.currentBook.bookPath, 'content', 'readme.md');
 			if (parentPath === element.root) {
-				return Promise.resolve(undefined);
+				return undefined;
 			}
 		}
 		else if (element.root.endsWith('.ipynb')) {
@@ -267,7 +256,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		else {
 			return undefined;
 		}
-		return Promise.resolve(this.currentBook.getAllBooks().get(parentPath));
+		return this.currentBook.getAllBooks().get(parentPath);
 	}
 
 	public get errorMessage() {
@@ -307,7 +296,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 	private async confirmReplace(): Promise<boolean> {
 		return await this.prompter.promptSingle<boolean>(<IQuestion>{
 			type: QuestionTypes.confirm,
-			message: localize('confirmReplace', 'Folder already exists. Are you sure you want to replace?'),
+			message: localize('confirmReplace', "Folder already exists. Are you sure you want to replace?"),
 			default: false
 		});
 	}
