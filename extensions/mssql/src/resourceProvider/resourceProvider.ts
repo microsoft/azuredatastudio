@@ -55,9 +55,9 @@ class FireWallFeature extends SqlOpsFeature<any> {
 
 			}
 		}, {
-				handleFirewallRule,
-				createFirewallRule
-			});
+			handleFirewallRule,
+			createFirewallRule
+		});
 	}
 }
 

@@ -60,19 +60,13 @@
 	background-repeat: no-repeat;
 }
 
-.vs .icon.estimatedQueryPlan {
-	background-image: url('query-plan.svg');
-}
-
-.vs-dark .icon.estimatedQueryPlan,
-.hc-black .icon.estimatedQueryPlan {
-	background-image: url('query-plan-inverse.svg');
-}
-
+.vs .icon.estimatedQueryPlan,
 .vs .icon.actualQueryPlan {
 	background-image: url('query-plan.svg');
 }
 
+.vs-dark .icon.estimatedQueryPlan,
+.hc-black .icon.estimatedQueryPlan,
 .vs-dark .icon.actualQueryPlan,
 .hc-black .icon.actualQueryPlan {
 	background-image: url('query-plan-inverse.svg');

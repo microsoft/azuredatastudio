@@ -11,7 +11,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
-import { AbstractShowReleaseNotesAction } from 'vs/workbench/contrib/update/electron-browser/update';
+import { AbstractShowReleaseNotesAction } from 'vs/workbench/contrib/update/browser/update';
 
 export class OpenGettingStartedInBrowserAction extends Action {
 

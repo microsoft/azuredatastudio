@@ -619,11 +619,6 @@ declare var WeakSet: WeakSetConstructor;
 // Modules: es6.string.iterator, es6.array.iterator, es6.map, es6.set, web.dom.iterable
 // #############################################################################################
 
-interface IteratorResult<T> {
-    done: boolean;
-    value: T;
-}
-
 interface Iterator<T> {
     next(value?: any): IteratorResult<T>;
     return?(value?: any): IteratorResult<T>;

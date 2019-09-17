@@ -11,7 +11,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 export const IFileBrowserService = createDecorator<IFileBrowserService>('fileBrowserService');
 export interface IFileBrowserService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onAddFileTree: Event<FileBrowserTree>;
 	onExpandFolder: Event<FileNode>;
 	onPathValidate: Event<azdata.FileBrowserValidatedParams>;

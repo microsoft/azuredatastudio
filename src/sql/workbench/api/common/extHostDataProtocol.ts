@@ -251,6 +251,7 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		if (this.uriTransformer) {
 			ownerUri = URI.from(this.uriTransformer.transformIncoming(URI.parse(ownerUri))).toString(true);
 		}
+
 		return this._resolveProvider<azdata.QueryProvider>(handle).runQuery(ownerUri, selection, runOptions);
 	}
 
@@ -272,6 +273,10 @@ export class ExtHostDataProtocol extends ExtHostDataProtocolShape {
 		} else {
 			return new Promise((r) => r());
 		}
+	}
+
+	$connectWithProfile(handle: number, ownerUri: string, profile: azdata.connection.ConnectionProfile): Thenable<void> {
+		return new Promise((r) => r());
 	}
 
 	$parseSyntax(handle: number, ownerUri: string, query: string): Thenable<azdata.SyntaxParseResult> {
