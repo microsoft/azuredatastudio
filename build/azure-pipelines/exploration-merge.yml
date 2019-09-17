@@ -4,8 +4,9 @@ trigger:
 pr: none
 
 jobs:
-  - job: Exploration Merge
-    container: ubuntu:16.04
+  - job: ExplorationMerge
+    pool:
+      vmImage: Ubuntu-16.04
     steps:
       - task: NodeTool@0
         inputs:
@@ -13,6 +14,12 @@ jobs:
 
       - script: |
           set -e
+
+          cat << EOF > ~/.netrc
+          machine mssqltools.visualstudio.com
+          login azuredatastudio
+          password $(DEVOPS_PASSWORD)
+          EOF
 
           git config user.email "andresse@microsoft.com"
           git config user.name "AzureDataStudio"
@@ -27,3 +34,6 @@ jobs:
           git push explore HEAD:master
 
         displayName: Sync & Merge Explore
+        env:
+          ADS_EXPLORE_REPO: $(ADS_EXPLORE_REPO)
+          DEVOPS_PASSWORD: $(DEVOPS_PASSWORD)
