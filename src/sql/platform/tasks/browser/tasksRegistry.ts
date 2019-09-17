@@ -84,7 +84,7 @@ export abstract class Task {
 		if (opts.iconPath.dark) {
 			this.iconPath = {
 				dark: URI.parse(opts.iconPath.dark),
-				light: opts.iconPath ? URI.parse(opts.iconPath.light) : undefined,
+				light: opts.iconPath.light ? URI.parse(opts.iconPath.light) : undefined,
 			};
 		}
 		this._iconClass = opts.iconClass;
