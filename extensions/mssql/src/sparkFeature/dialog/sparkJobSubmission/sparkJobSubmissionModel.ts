@@ -8,7 +8,6 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
-import * as fs from 'fs';
 import * as fspath from 'path';
 import * as os from 'os';
 
@@ -143,7 +142,7 @@ export class SparkJobSubmissionModel {
 				return Promise.reject(localize('sparkJobSubmission_localFileOrFolderNotSpecified.', 'Property localFilePath or hdfsFolderPath is not specified. '));
 			}
 
-			if (!fs.existsSync(localFilePath)) {
+			if (!(await utils.exists(localFilePath))) {
 				return Promise.reject(LocalizedConstants.sparkJobSubmissionLocalFileNotExisted(localFilePath));
 			}
 
