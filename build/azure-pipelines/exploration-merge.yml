@@ -28,3 +28,5 @@ jobs:
           git push explore HEAD:master
 
         displayName: Sync & Merge Explore
+        env:
+          ADS_EXPLORE_REPO: $(ADS_EXPLORE_REPO)
