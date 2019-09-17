@@ -144,3 +144,8 @@ export class DeployClusterWizardModel extends Model {
 		super.setEnvironmentVariables();
 	}
 }
+
+export enum AuthenticationMode {
+	ActiveDirectory = 'ad',
+	Basic = 'basic'
+}

@@ -40,7 +40,7 @@ export class DockerTool implements ITool {
 	}
 
 	loadInformation(): Thenable<void> {
-		const promise = new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			cp.exec('docker version --format "{{json .}}"', (error, stdout, stderror) => {
 				if (stdout) {
 					try {
@@ -48,13 +48,12 @@ export class DockerTool implements ITool {
 						this._isInstalled = true;
 					}
 					catch (err) {
-						console.error('error parsing Docker version:' + err);
+						console.error('error parsing Docker version: ' + err);
 					}
 				}
 				resolve();
 			});
 		});
-		return promise;
 	}
 
 	private _isInstalled: boolean = false;

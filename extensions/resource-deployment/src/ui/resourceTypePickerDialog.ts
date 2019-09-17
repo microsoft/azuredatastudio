@@ -16,6 +16,7 @@ import { EOL } from 'os';
 const localize = nls.loadMessageBundle();
 
 export class ResourceTypePickerDialog extends DialogBase {
+	private toolRefreshTimestamp: number = 0;
 	private _selectedResourceType: ResourceType;
 	private _resourceTypeCards: azdata.CardComponent[] = [];
 	private _view!: azdata.ModelView;
@@ -161,6 +162,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private updateTools(): void {
+		this.toolRefreshTimestamp = new Date().getTime();
+		const currentRefreshTimestamp = this.toolRefreshTimestamp;
 		const toolRequirements = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
@@ -175,7 +178,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._dialogObject.message = {
 				text: ''
 			};
+
 			Promise.all(tools.map(tool => tool.loadInformation())).then(() => {
+				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
+				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
+					return;
+				}
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolRef => {
 					const tool = this.toolsService.getToolByName(toolRef.name)!;
@@ -188,12 +196,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (messages.length !== 0) {
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
-						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or does not meet the minum version requirement."),
+						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
 						description: messages.join(EOL)
 					};
 				}
 				this._toolsLoadingComponent.loading = false;
-
 			});
 		}
 	}

@@ -40,19 +40,18 @@ export class AzdataTool implements ITool {
 	}
 
 	loadInformation(): Thenable<void> {
-		const promise = new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			cp.exec('azdata -v', (error, stdout, stderror) => {
 				if (stdout && stdout.split('\n').length > 0) {
 					this._isInstalled = true;
 					this._version = new SemVer(stdout.split('\n')[0].replace(/ /g, ''));
 				}
 				if (stderror) {
-					console.error('error parsing azdata version:' + stderror);
+					console.error('error parsing azdata version: ' + stderror);
 				}
 				resolve();
 			});
 		});
-		return promise;
 	}
 
 	private _isInstalled: boolean = false;

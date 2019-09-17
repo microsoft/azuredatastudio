@@ -25,7 +25,7 @@ export class KubeService implements IKubeService {
 	}
 
 	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]> {
-		const promise = new Promise<KubeClusterContext[]>((resolve, reject) => {
+		return new Promise<KubeClusterContext[]>((resolve, reject) => {
 			try {
 				if (fs.existsSync(configFile)) {
 					const config = yamljs.load(configFile);
@@ -51,6 +51,5 @@ export class KubeService implements IKubeService {
 				reject(error);
 			}
 		});
-		return promise;
 	}
 }

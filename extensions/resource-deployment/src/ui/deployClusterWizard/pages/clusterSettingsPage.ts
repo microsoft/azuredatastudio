@@ -6,9 +6,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType } from '../../../interfaces';
-import { createSection, InputComponents, setModelValues, Validator, isInputBoxEmpty, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage } from '../../modelViewUtils';
+import { DeployClusterWizard, AuthenticationMode } from '../deployClusterWizard';
+import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
+import { createSection, InputComponents, setModelValues, Validator, isInputBoxEmpty, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { EOL } from 'os';
@@ -26,7 +26,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	public initialize(): void {
 		const self = this;
 		const basicSection: SectionInfo = {
-			labelOnLeft: true,
+			labelPosition: LabelPosition.Left,
 			title: '',
 			fields: [
 				{
@@ -63,14 +63,14 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					label: localize('deployCluster.AuthenticationModeField', "Authentication mode"),
 					required: true,
 					variableName: VariableNames.AuthenticationMode_VariableName,
-					defaultValue: 'basic',
+					defaultValue: AuthenticationMode.Basic,
 					options: [
 						{
-							name: 'basic',
+							name: AuthenticationMode.Basic,
 							displayName: localize('deployCluster.AuthenticationMode.Basic', "Basic")
 						},
 						{
-							name: 'ad',
+							name: AuthenticationMode.ActiveDirectory,
 							displayName: localize('deployCluster.AuthenticationMode.ActiveDirectory', "Active Directory")
 
 						}
@@ -80,7 +80,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		};
 
 		const activeDirectorySection: SectionInfo = {
-			labelOnLeft: true,
+			labelPosition: LabelPosition.Left,
 			title: localize('deployCluster.ActiveDirectorySettings', "Active Directory settings"),
 			fields: [
 				{
@@ -210,7 +210,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminUserName_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))
-					&& (!(authMode === VariableNames.ActiveDirectoryAuthentication) || (
+					&& (!(authMode === AuthenticationMode.ActiveDirectory) || (
 						!isInputBoxEmpty(getInputBoxComponent(VariableNames.DistinguishedName_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPrincipals_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.UserPrincipals_VariableName, this.inputComponents))
@@ -220,7 +220,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppOwnerPrincipals_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppReaderPrincipals_VariableName, this.inputComponents))));
 				if (!requiredFieldsFilled) {
-					messages.push(localize('deployCluster.MissingRequiredInformation', "Please fill out the required fields."));
+					messages.push(MissingRequiredInformationErrorMessage);
 				}
 
 				if (!isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))

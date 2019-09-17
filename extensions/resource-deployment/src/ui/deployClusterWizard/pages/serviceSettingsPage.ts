@@ -5,9 +5,9 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
+import { DeployClusterWizard, AuthenticationMode } from '../deployClusterWizard';
 import { SectionInfo, FieldType } from '../../../interfaces';
-import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, isInputBoxEmpty, getDropdownComponent } from '../../modelViewUtils';
+import { Validator, InputComponents, createSection, createGroupContainer, createLabel, createFlexContainer, createTextInput, createNumberInput, setModelValues, getInputBoxComponent, getCheckboxComponent, isInputBoxEmpty, getDropdownComponent, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 const localize = nls.loadMessageBundle();
@@ -145,26 +145,26 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: '',
 						required: false,
-						defaultValue: localize('deployCluster.DataStorageClassName', "STORAGE CLASS FOR DATA"),
+						defaultValue: localize('deployCluster.DataStorageClassName', "Storage class for data"),
 						variableName: '',
 						labelWidth: labelWidth
 					}, {
 						type: FieldType.ReadonlyText,
 						label: '',
 						required: false,
-						defaultValue: localize('deployCluster.DataClaimSize', "CLAIM SIZE FOR DATA (GB)"),
+						defaultValue: localize('deployCluster.DataClaimSize', "Claim size for data (GB)"),
 						variableName: ''
 					}, {
 						type: FieldType.ReadonlyText,
 						label: '',
 						required: false,
-						defaultValue: localize('deployCluster.LogStorageClassName', "STORAGE CLASS FOR LOGS"),
+						defaultValue: localize('deployCluster.LogStorageClassName', "Storage class for logs"),
 						variableName: '',
 					}, {
 						type: FieldType.ReadonlyText,
 						label: '',
 						required: false,
-						defaultValue: localize('deployCluster.LogsClaimSize', "CLAIM SIZE FOR LOGS (GB)"),
+						defaultValue: localize('deployCluster.LogsClaimSize', "Claim size for logs (GB)"),
 						variableName: ''
 					}
 				]
@@ -348,8 +348,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	private createEndpointSection(view: azdata.ModelView): azdata.GroupContainer {
 		this.endpointNameColumnHeader = createLabel(view, { text: '', width: labelWidth });
-		this.dnsColumnHeader = createLabel(view, { text: localize('deployCluster.DNSNameHeader', "DNS NAME"), width: inputWidth });
-		this.portColumnHeader = createLabel(view, { text: localize('deployCluster.PortHeader', "PORT"), width: PortInputWidth });
+		this.dnsColumnHeader = createLabel(view, { text: localize('deployCluster.DNSNameHeader', "DNS name"), width: inputWidth });
+		this.portColumnHeader = createLabel(view, { text: localize('deployCluster.PortHeader', "Port"), width: PortInputWidth });
 		this.endpointHeaderRow = createFlexContainer(view, [this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 
 		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth, required: true });
@@ -407,7 +407,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageSize_VariableName);
 
 		this.endpointHeaderRow.clearItems();
-		if (this.wizard.model.authenticationMode === VariableNames.ActiveDirectoryAuthentication) {
+		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			this.endpointHeaderRow.addItems([this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 		}
 		this.loadEndpointRow(this.controllerEndpointRow, this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput);
@@ -431,7 +431,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.GateWayPort_VariableName, this.inputComponents))
 					&& (!getCheckboxComponent(VariableNames.EnableHADR_VariableName, this.inputComponents).checked
 						|| !isInputBoxEmpty(this.readableSecondaryPortInput))
-					&& (this.wizard.model.authenticationMode !== VariableNames.ActiveDirectoryAuthentication
+					&& (this.wizard.model.authenticationMode !== AuthenticationMode.ActiveDirectory
 						|| (!isInputBoxEmpty(this.gatewayDNSInput)
 							&& !isInputBoxEmpty(this.controllerDNSInput)
 							&& !isInputBoxEmpty(this.sqlServerDNSInput)
@@ -439,7 +439,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						));
 				if (!isValid) {
 					this.wizard.wizardObject.message = {
-						text: localize('deployCluster.MissingRequiredInformation', "Please fill out the required fields."),
+						text: MissingRequiredInformationErrorMessage,
 						level: azdata.window.MessageLevel.Error
 					};
 				}

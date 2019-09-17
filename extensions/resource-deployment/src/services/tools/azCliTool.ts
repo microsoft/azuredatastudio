@@ -39,7 +39,7 @@ export class AzCliTool implements ITool {
 	}
 
 	loadInformation(): Thenable<void> {
-		const promise = new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			cp.exec('az --version', (error, stdout, stderror) => {
 				if (stdout && stdout.includes('azure-cli')) {
 					try {
@@ -47,13 +47,12 @@ export class AzCliTool implements ITool {
 						this._isInstalled = true;
 					}
 					catch (err) {
-						console.error('error parsing AzureCLI version:' + err);
+						console.error('error parsing AzureCLI version: ' + err);
 					}
 				}
 				resolve();
 			});
 		});
-		return promise;
 	}
 
 	private _isInstalled: boolean = false;

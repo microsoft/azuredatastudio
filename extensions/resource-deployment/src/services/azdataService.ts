@@ -44,7 +44,9 @@ export class AzdataService implements IAzdataService {
 
 	getDeploymentProfiles(): Thenable<DeploymentProfile[]> {
 		process.env['ACCEPT_EULA'] = 'Yes';
-		return this.getDeploymentProfileNames().then((names: string[]) => {
+		return this.ensureWorkingDirectoryExists().then(() => {
+			return this.getDeploymentProfileNames();
+		}).then((names: string[]) => {
 			const profilePromises: Thenable<DeploymentProfile>[] = [];
 			names.forEach(name => {
 				profilePromises.push(this.getDeploymentProfileInfo(name));
@@ -54,7 +56,7 @@ export class AzdataService implements IAzdataService {
 	}
 
 	private getDeploymentProfileNames(): Thenable<string[]> {
-		const promise = new Promise<string[]>((resolve, reject) => {
+		return new Promise<string[]>((resolve, reject) => {
 			cp.exec('azdata bdc config list -o json', (error, stdout, stderror) => {
 				if (error) {
 					reject(error.message);
@@ -73,21 +75,17 @@ export class AzdataService implements IAzdataService {
 				}
 			});
 		});
-		return promise;
 	}
 
 	private getDeploymentProfileInfo(profileName: string): Thenable<DeploymentProfile> {
-		const promise = new Promise<DeploymentProfile>((resolve, reject) => {
-			if (!fs.existsSync(this.platformService.storagePath())) {
-				fs.mkdirSync(this.platformService.storagePath());
-			}
+		return new Promise<DeploymentProfile>((resolve, reject) => {
 			cp.exec(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { cwd: this.platformService.storagePath() }, (error, stdout, stderror) => {
 				if (error) {
 					reject(error.message);
 				} else {
 					try {
-						const bdcJson = this.getJsonObject(path.join(this.platformService.storagePath(), profileName, 'bdc.json'));
-						const controlJson = this.getJsonObject(path.join(this.platformService.storagePath(), profileName, 'control.json'));
+						const bdcJson = this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json'));
+						const controlJson = this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'));
 						resolve({
 							name: profileName,
 							defaultDataSize: (<string>controlJson.spec.storage.data.size).replace('Gi', ''),
@@ -120,10 +118,27 @@ export class AzdataService implements IAzdataService {
 				}
 			});
 		});
-		return promise;
 	}
 
-	private getJsonObject(path: string): any {
+	private ensureWorkingDirectoryExists(): Thenable<void> {
+		return new Promise<void>((resolve, reject) => {
+			fs.access(this.platformService.storagePath(), (error) => {
+				if (error && error.code === 'ENOENT') {
+					fs.mkdir(this.platformService.storagePath(), (error) => {
+						if (error) {
+							reject(error.message);
+						} else {
+							resolve();
+						}
+					});
+				} else {
+					resolve();
+				}
+			});
+		});
+	}
+
+	private getJsonObjectFromFile(path: string): any {
 		return JSON.parse(fs.readFileSync(path, 'utf8'));
 	}
 

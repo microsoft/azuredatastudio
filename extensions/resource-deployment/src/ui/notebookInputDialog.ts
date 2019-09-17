@@ -12,6 +12,7 @@ import { INotebookService } from '../services/notebookService';
 import { DialogInfo } from '../interfaces';
 import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
 import { Model } from './model';
+import { EOL } from 'os';
 
 const localize = nls.loadMessageBundle();
 
@@ -51,7 +52,7 @@ export class NotebookInputDialog extends DialogBase {
 				}
 			});
 			if (messages.length > 0) {
-				self._dialogObject.message = { level: azdata.window.MessageLevel.Error, text: messages.join('\n') };
+				self._dialogObject.message = { level: azdata.window.MessageLevel.Error, text: messages.join(EOL) };
 			} else {
 				self._dialogObject.message = { text: '' };
 			}

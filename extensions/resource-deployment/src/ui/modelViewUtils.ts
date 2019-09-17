@@ -7,7 +7,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfo, FieldType, FieldInfo, SectionInfo } from '../interfaces';
+import { DialogInfo, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
 import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
@@ -197,7 +197,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 		const fieldInfo = fieldInfoArray[i];
 		fieldInfo.labelWidth = fieldInfo.labelWidth || context.sectionInfo.labelWidth;
 		fieldInfo.inputWidth = fieldInfo.inputWidth || context.sectionInfo.inputWidth;
-		fieldInfo.labelOnLeft = fieldInfo.labelOnLeft === undefined ? context.sectionInfo.labelOnLeft : fieldInfo.labelOnLeft;
+		fieldInfo.labelPosition = fieldInfo.labelPosition === undefined ? context.sectionInfo.labelPosition : fieldInfo.labelPosition;
 		processField({
 			view: context.view,
 			onNewDisposableCreated: context.onNewDisposableCreated,
@@ -224,8 +224,8 @@ export function createGroupContainer(view: azdata.ModelView, items: azdata.Compo
 	return view.modelBuilder.groupContainer().withItems(items).withLayout(layout).component();
 }
 
-function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, labelOnLeft?: boolean) {
-	if (labelOnLeft) {
+function addLabelInputPairToContainer(view: azdata.ModelView, components: azdata.Component[], label: azdata.Component, input: azdata.Component, labelPosition?: LabelPosition) {
+	if (labelPosition && labelPosition === LabelPosition.Left) {
 		const row = createFlexContainer(view, [label, input]);
 		components.push(row);
 	} else {
@@ -271,7 +271,7 @@ function processOptionsTypeField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, dropdown);
-	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelOnLeft);
+	addLabelInputPairToContainer(context.view, context.components, label, dropdown, context.fieldInfo.labelPosition);
 }
 
 function processDateTimeTextField(context: FieldContext): void {
@@ -286,7 +286,7 @@ function processDateTimeTextField(context: FieldContext): void {
 	}).component();
 	input.width = context.fieldInfo.inputWidth;
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelOnLeft);
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
 }
 
 function processNumberField(context: FieldContext): void {
@@ -301,7 +301,7 @@ function processNumberField(context: FieldContext): void {
 		placeHolder: context.fieldInfo.placeHolder
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelOnLeft);
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
 }
 
 function processTextField(context: FieldContext): void {
@@ -314,7 +314,7 @@ function processTextField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth
 	});
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, input);
-	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelOnLeft);
+	addLabelInputPairToContainer(context.view, context.components, label, input, context.fieldInfo.labelPosition);
 }
 
 function processPasswordField(context: FieldContext): void {
@@ -327,7 +327,7 @@ function processPasswordField(context: FieldContext): void {
 		width: context.fieldInfo.inputWidth
 	}).component();
 	context.onNewInputComponentCreated(context.fieldInfo.variableName!, passwordInput);
-	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo.labelOnLeft);
+	addLabelInputPairToContainer(context.view, context.components, passwordLabel, passwordInput, context.fieldInfo.labelPosition);
 
 	if (context.fieldInfo.type === FieldType.SQLPassword) {
 		const invalidPasswordMessage = getInvalidSQLPasswordMessage(context.fieldInfo.label);
@@ -352,7 +352,7 @@ function processPasswordField(context: FieldContext): void {
 			width: context.fieldInfo.inputWidth
 		}).component();
 
-		addLabelInputPairToContainer(context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo.labelOnLeft);
+		addLabelInputPairToContainer(context.view, context.components, confirmPasswordLabel, confirmPasswordInput, context.fieldInfo.labelPosition);
 		context.onNewValidatorCreated((): { valid: boolean, message: string } => {
 			const passwordMatches = passwordInput.value === confirmPasswordInput.value;
 			return { valid: passwordMatches, message: passwordNotMatchMessage };
@@ -376,7 +376,7 @@ function processPasswordField(context: FieldContext): void {
 function processReadonlyTextField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
 	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle });
-	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelOnLeft);
+	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelPosition);
 }
 
 function processCheckboxField(context: FieldContext): void {
@@ -434,3 +434,5 @@ export function setModelValues(inputComponents: InputComponents, model: Model): 
 export function isInputBoxEmpty(input: azdata.InputBoxComponent): boolean {
 	return input.value === undefined || input.value === '';
 }
+
+export const MissingRequiredInformationErrorMessage = localize('deployCluster.MissingRequiredInfoError', "Please fill out the required fields marked with red asterisks.");

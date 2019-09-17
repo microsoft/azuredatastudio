@@ -40,7 +40,7 @@ export class KubeCtlTool implements ITool {
 	}
 
 	loadInformation(): Thenable<void> {
-		const promise = new Promise<void>((resolve, reject) => {
+		return new Promise<void>((resolve, reject) => {
 			cp.exec('kubectl version -o json --client', (error, stdout, stderror) => {
 				if (stdout) {
 					try {
@@ -49,13 +49,12 @@ export class KubeCtlTool implements ITool {
 						this._isInstalled = true;
 					}
 					catch (err) {
-						console.error('error parsing kubectl version:' + err);
+						console.error('error parsing kubectl version: ' + err);
 					}
 				}
 				resolve();
 			});
 		});
-		return promise;
 	}
 
 	private _isInstalled: boolean = false;

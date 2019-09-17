@@ -7,7 +7,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType } from '../../../interfaces';
+import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
 import { WizardPageBase } from '../../wizardPageBase';
 import { createSection, InputComponents, setModelValues, Validator } from '../../modelViewUtils';
 import { SubscriptionId_VariableName, ResourceGroup_VariableName, Region_VariableName, AksName_VariableName, VMCount_VariableName, VMSize_VariableName } from '../constants';
@@ -25,7 +25,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		const self = this;
 		const azureSection: SectionInfo = {
 			title: '',
-			labelOnLeft: true,
+			labelPosition: LabelPosition.Left,
 			fields: [
 				{
 					type: FieldType.Text,
