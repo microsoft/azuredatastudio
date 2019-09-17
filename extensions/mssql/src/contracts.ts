@@ -298,7 +298,7 @@ export namespace UpdateAgentNotebookRunNameRequest {
 }
 
 export namespace DeleteMaterializedNotebookRequest {
-	export const type = new RequestType<DeleteAgentMaterializedNotebookParams, azdata.ResultStatus, void, void>('agent/deletenotebookmaterialized');
+	export const type = new RequestType<DeleteAgentMaterializedNotebookParams, azdata.ResultStatus, void, void>('agent/deletematerializednotebook');
 }
 
 export namespace UpdateAgentNotebookRunPinRequest {

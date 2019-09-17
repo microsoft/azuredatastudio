@@ -107,6 +107,13 @@ class ModelBuilderImpl implements azdata.ModelBuilder {
 		return builder;
 	}
 
+	image(): azdata.ComponentBuilder<azdata.ImageComponent> {
+		let id = this.getNextComponentId();
+		let builder: ComponentBuilderImpl<azdata.ImageComponent> = this.getComponentBuilder(new ImageComponentWrapper(this._proxy, this._handle, id), id);
+		this._componentBuilders.set(id, builder);
+		return builder;
+	}
+
 	radioButton(): azdata.ComponentBuilder<azdata.RadioButtonComponent> {
 		let id = this.getNextComponentId();
 		let builder: ComponentBuilderImpl<azdata.RadioButtonComponent> = this.getComponentBuilder(new RadioButtonWrapper(this._proxy, this._handle, id), id);
@@ -586,15 +593,15 @@ class ComponentWrapper implements azdata.Component {
 	public addItem(item: azdata.Component, itemLayout?: any, index?: number): void {
 		let itemImpl = item as ComponentWrapper;
 		if (!itemImpl) {
-			throw new Error(nls.localize('unknownComponentType', "Unkown component type. Must use ModelBuilder to create objects"));
+			throw new Error(nls.localize('unknownComponentType', "Unknown component type. Must use ModelBuilder to create objects"));
 		}
 		let config = new InternalItemConfig(itemImpl, itemLayout);
-		if (index !== undefined && index >= 0 && index < this.items.length) {
+		if (index !== undefined && index >= 0 && index <= this.items.length) {
 			this.itemConfigs.splice(index, 0, config);
 		} else if (!index) {
 			this.itemConfigs.push(config);
 		} else {
-			throw new Error(nls.localize('invalidIndex', "The index is invalid."));
+			throw new Error(nls.localize('invalidIndex', "The index {0} is invalid.", index));
 		}
 		this._proxy.$addToContainer(this._handle, this.id, config.toIItemConfig(), index).then(undefined, (err) => this.handleError(err));
 	}
@@ -1115,6 +1122,42 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;
+	}
+}
+
+class ImageComponentWrapper extends ComponentWrapper implements azdata.ImageComponentProperties {
+
+	constructor(proxy: MainThreadModelViewShape, handle: number, id: string) {
+		super(proxy, handle, ModelComponentTypes.Image, id);
+		this.properties = {};
+	}
+
+	public get src(): string {
+		return this.properties['src'];
+	}
+	public set src(v: string) {
+		this.setProperty('src', v);
+	}
+
+	public get alt(): string {
+		return this.properties['alt'];
+	}
+	public set alt(v: string) {
+		this.setProperty('alt', v);
+	}
+
+	public get height(): number | string {
+		return this.properties['height'];
+	}
+	public set height(v: number | string) {
+		this.setProperty('height', v);
+	}
+
+	public get width(): number | string {
+		return this.properties['width'];
+	}
+	public set width(v: number | string) {
+		this.setProperty('width', v);
 	}
 }
 

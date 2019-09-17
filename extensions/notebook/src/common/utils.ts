@@ -188,3 +188,12 @@ export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
 		port: undefined
 	};
 }
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
+}

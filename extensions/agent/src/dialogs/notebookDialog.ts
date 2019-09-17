@@ -66,8 +66,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private removeScheduleButton: azdata.ButtonComponent;
 	private descriptionTextBox: azdata.InputBoxComponent;
 
-
-
 	private isEdit: boolean = false;
 
 	// Job objects
@@ -89,9 +87,9 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 		this.generalTab = azdata.window.createTab(GeneralTabText);
 		this.initializeGeneralTab();
 		this.dialog.content = [this.generalTab];
-		this.dialog.registerCloseValidator(() => {
+		this.dialog.registerCloseValidator(async () => {
 			this.updateModel();
-			let validationResult = this.model.validate();
+			let validationResult = await this.model.validate();
 			if (!validationResult.valid) {
 				// TODO: Show Error Messages
 				this.dialog.message = { text: validationResult.errorMessages[0] };

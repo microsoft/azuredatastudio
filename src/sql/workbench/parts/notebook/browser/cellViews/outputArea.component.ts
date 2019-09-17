@@ -6,7 +6,7 @@ import 'vs/css!./code';
 import 'vs/css!./outputArea';
 import { OnInit, Component, Input, Inject, ElementRef, ViewChild, forwardRef, ChangeDetectorRef } from '@angular/core';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import * as themeColors from 'vs/workbench/common/theme';
 import { IWorkbenchThemeService, IColorTheme } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { URI } from 'vs/base/common/uri';

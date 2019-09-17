@@ -104,13 +104,13 @@ export interface IExpressionContainer extends ITreeElement {
 	readonly hasChildren: boolean;
 	getChildren(): Promise<IExpression[]>;
 	readonly reference?: number;
+	readonly value: string;
+	readonly type?: string;
+	valueChanged?: boolean;
 }
 
-export interface IExpression extends IReplElement, IExpressionContainer {
+export interface IExpression extends IExpressionContainer {
 	name: string;
-	readonly value: string;
-	valueChanged?: boolean;
-	readonly type?: string;
 }
 
 export interface IDebugger {
@@ -157,6 +157,8 @@ export interface IDebugSession extends ITreeElement {
 
 	setSubId(subId: string | undefined): void;
 
+	setName(name: string): void;
+	readonly onDidChangeName: Event<string>;
 	getLabel(): string;
 
 	getSourceForUri(modelUri: uri): Source | undefined;
@@ -208,8 +210,8 @@ export interface IDebugSession extends ITreeElement {
 
 	stackTrace(threadId: number, startFrame: number, levels: number): Promise<DebugProtocol.StackTraceResponse>;
 	exceptionInfo(threadId: number): Promise<IExceptionInfo | undefined>;
-	scopes(frameId: number): Promise<DebugProtocol.ScopesResponse>;
-	variables(variablesReference: number, filter: 'indexed' | 'named' | undefined, start: number | undefined, count: number | undefined): Promise<DebugProtocol.VariablesResponse>;
+	scopes(frameId: number, threadId: number): Promise<DebugProtocol.ScopesResponse>;
+	variables(variablesReference: number, threadId: number | undefined, filter: 'indexed' | 'named' | undefined, start: number | undefined, count: number | undefined): Promise<DebugProtocol.VariablesResponse>;
 	evaluate(expression: string, frameId?: number, context?: string): Promise<DebugProtocol.EvaluateResponse>;
 	customRequest(request: string, args: any): Promise<DebugProtocol.Response>;
 
@@ -223,7 +225,7 @@ export interface IDebugSession extends ITreeElement {
 	pause(threadId: number): Promise<void>;
 	terminateThreads(threadIds: number[]): Promise<void>;
 
-	completions(frameId: number | undefined, text: string, position: Position, overwriteBefore: number): Promise<CompletionItem[]>;
+	completions(frameId: number | undefined, text: string, position: Position, overwriteBefore: number, token: CancellationToken): Promise<CompletionItem[]>;
 	setVariable(variablesReference: number | undefined, name: string, value: string): Promise<DebugProtocol.SetVariableResponse>;
 	loadSource(resource: uri): Promise<DebugProtocol.SourceResponse>;
 	getLoadedSources(): Promise<Source[]>;
@@ -308,6 +310,7 @@ export interface IStackFrame extends ITreeElement {
 	restart(): Promise<any>;
 	toString(): string;
 	openInEditor(editorService: IEditorService, preserveFocus?: boolean, sideBySide?: boolean): Promise<ITextEditor | null>;
+	equals(other: IStackFrame): boolean;
 }
 
 export interface IEnablement extends ITreeElement {
@@ -337,7 +340,7 @@ export interface IBaseBreakpoint extends IEnablement {
 	readonly hitCondition?: string;
 	readonly logMessage?: string;
 	readonly verified: boolean;
-	readonly idFromAdapter: number | undefined;
+	getIdFromAdapter(sessionId: string): number | undefined;
 }
 
 export interface IBreakpoint extends IBaseBreakpoint {
@@ -452,6 +455,7 @@ export interface IDebugConfiguration {
 		wordWrap: boolean;
 	};
 	focusWindowOnBreak: boolean;
+	onTaskErrors: 'debugAnyway' | 'showErrors' | 'prompt';
 }
 
 export interface IGlobalConfig {
@@ -500,7 +504,7 @@ export interface IDebugAdapter extends IDisposable {
 	startSession(): Promise<void>;
 	sendMessage(message: DebugProtocol.ProtocolMessage): void;
 	sendResponse(response: DebugProtocol.Response): void;
-	sendRequest(command: string, args: any, clb: (result: DebugProtocol.Response) => void, timeout?: number): void;
+	sendRequest(command: string, args: any, clb: (result: DebugProtocol.Response) => void, timeout?: number): number;
 	stopSession(): Promise<void>;
 }
 
@@ -682,7 +686,7 @@ export interface ILaunch {
 export const IDebugService = createDecorator<IDebugService>(DEBUG_SERVICE_ID);
 
 export interface IDebugService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Gets the current debug state.
@@ -857,7 +861,7 @@ export const DEBUG_HELPER_SERVICE_ID = 'debugHelperService';
 export const IDebugHelperService = createDecorator<IDebugHelperService>(DEBUG_HELPER_SERVICE_ID);
 
 export interface IDebugHelperService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createTelemetryService(configurationService: IConfigurationService, args: string[]): TelemetryService | undefined;
 }

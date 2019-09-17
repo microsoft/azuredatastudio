@@ -3,6 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import 'vs/css!./media/gridPanel';
+
 import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import QueryRunner, { QueryGridDataProvider } from 'sql/platform/query/common/queryRunner';
 import { VirtualizedCollection, AsyncDataProvider } from 'sql/base/browser/ui/table/asyncDataView';
@@ -30,7 +32,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
-import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
@@ -59,12 +61,12 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
-export class GridPanel {
+export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private splitView: ScrollableSplitView;
 	private tables: GridTable<any>[] = [];
-	private tableDisposable: IDisposable[] = [];
-	private queryRunnerDisposables: IDisposable[] = [];
+	private tableDisposable = this._register(new DisposableStore());
+	private queryRunnerDisposables = this._register(new DisposableStore());
 	private currentHeight: number;
 
 	private runner: QueryRunner;
@@ -78,6 +80,7 @@ export class GridPanel {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService
 	) {
+		super();
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
@@ -107,13 +110,12 @@ export class GridPanel {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		dispose(this.queryRunnerDisposables);
+		this.queryRunnerDisposables.clear();
 		this.reset();
-		this.queryRunnerDisposables = [];
 		this.runner = runner;
-		this.queryRunnerDisposables.push(this.runner.onResultSet(this.onResultSet, this));
-		this.queryRunnerDisposables.push(this.runner.onResultSetUpdate(this.updateResultSet, this));
-		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => {
+		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
 			if (this.state) {
 				this.state.tableStates = [];
 			}
@@ -218,14 +220,14 @@ export class GridPanel {
 				}
 			}
 			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
-			this.tableDisposable.push(tableState.onMaximizedChange(e => {
+			this.tableDisposable.add(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
 				} else {
 					this.minimizeTables();
 				}
 			}));
-			this.tableDisposable.push(attachTableStyler(table, this.themeService));
+			this.tableDisposable.add(attachTableStyler(table, this.themeService));
 
 			tables.push(table);
 		}
@@ -254,8 +256,7 @@ export class GridPanel {
 			this.splitView.removeView(i);
 		}
 		dispose(this.tables);
-		dispose(this.tableDisposable);
-		this.tableDisposable = [];
+		this.tableDisposable.clear();
 		this.tables = [];
 		this.maximizedGrid = undefined;
 	}
@@ -305,11 +306,9 @@ export class GridPanel {
 	}
 
 	public dispose() {
-		dispose(this.queryRunnerDisposables);
-		dispose(this.tableDisposable);
 		dispose(this.tables);
-		this.tableDisposable = undefined;
 		this.tables = undefined;
+		super.dispose();
 	}
 }
 
@@ -419,7 +418,22 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		this.scrolled = false;
 	}
 
-	private build(): void {
+	// actionsOrientation controls the orientation (horizontal or vertical) of the actionBar
+	private build(actionsOrientation?: ActionsOrientation): void {
+
+		// Default is VERTICAL
+		if (isUndefinedOrNull(actionsOrientation)) {
+			actionsOrientation = ActionsOrientation.VERTICAL;
+		}
+
+		let actionBarContainer = document.createElement('div');
+
+		// Create a horizontal actionbar if orientation passed in is HORIZONTAL
+		if (actionsOrientation === ActionsOrientation.HORIZONTAL) {
+			actionBarContainer.className = 'grid-panel action-bar horizontal';
+			this.container.appendChild(actionBarContainer);
+		}
+
 		let tableContainer = document.createElement('div');
 		tableContainer.style.display = 'inline-block';
 		tableContainer.style.width = `calc(100% - ${ACTIONBAR_WIDTH}px)`;
@@ -449,6 +463,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		};
 		this.dataProvider = new AsyncDataProvider(collection);
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));
@@ -461,13 +476,12 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		if (this.styles) {
 			this.table.style(this.styles);
 		}
-
-		let actionBarContainer = document.createElement('div');
-		actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
-		actionBarContainer.style.display = 'inline-block';
-		actionBarContainer.style.height = '100%';
-		actionBarContainer.style.verticalAlign = 'top';
-		this.container.appendChild(actionBarContainer);
+		// If the actionsOrientation passed in is "VERTICAL" (or no actionsOrientation is passed in at all), create a vertical actionBar
+		if (actionsOrientation === ActionsOrientation.VERTICAL) {
+			actionBarContainer.className = 'grid-panel action-bar vertical';
+			actionBarContainer.style.width = ACTIONBAR_WIDTH + 'px';
+			this.container.appendChild(actionBarContainer);
+		}
 		let context: IGridActionContext = {
 			gridDataProvider: this.gridDataProvider,
 			table: this.table,
@@ -476,7 +490,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 			resultId: this.resultSet.id
 		};
 		this.actionBar = new ActionBar(actionBarContainer, {
-			orientation: ActionsOrientation.VERTICAL, context: context
+			orientation: actionsOrientation, context: context
 		});
 		// update context before we run an action
 		this.selectionModel.onSelectedRangesChanged.subscribe(e => {
@@ -604,15 +618,17 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 
 	protected abstract getContextActions(): IAction[];
 
-	public layout(size?: number): void {
+	// The actionsOrientation passed in controls the actionBar orientation
+	public layout(size?: number, orientation?: Orientation, actionsOrientation?: ActionsOrientation): void {
 		if (!this.table) {
-			this.build();
+			this.build(actionsOrientation);
 		}
 		if (!size) {
 			size = this.currentHeight;
 		} else {
 			this.currentHeight = size;
 		}
+		// Table is always called with Orientation as VERTICAL
 		this.table.layout(size, Orientation.VERTICAL);
 	}
 

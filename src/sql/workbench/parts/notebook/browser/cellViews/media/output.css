@@ -468,3 +468,9 @@ plotly-output .plotly-wrapper {
 	display: block;
 	overflow-y: hidden;
 }
+
+output-component .grid-panel .action-label.icon {
+	min-width: 16px;
+	margin-right: 6px;
+	margin-bottom: 6px;
+}

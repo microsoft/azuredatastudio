@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import * as azdata from 'azdata';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as utils from '../common/utils';
 
 import { JupyterServerInstallation } from '../jupyter/jupyterServerInstallation';
@@ -220,7 +220,7 @@ export class ConfigurePythonDialog {
 
 			if (useExistingPython) {
 				let exePath = JupyterServerInstallation.getPythonExePath(pythonLocation, true);
-				let pythonExists = fs.existsSync(exePath);
+				let pythonExists = await utils.exists(exePath);
 				if (!pythonExists) {
 					this.showErrorMessage(this.PythonNotFoundMsg);
 					return false;
@@ -243,27 +243,23 @@ export class ConfigurePythonDialog {
 		return true;
 	}
 
-	private isFileValid(pythonLocation: string): Promise<boolean> {
+	private async isFileValid(pythonLocation: string): Promise<boolean> {
 		let self = this;
-		return new Promise<boolean>(function (resolve) {
-			fs.stat(pythonLocation, function (err, stats) {
-				if (err) {
-					// Ignore error if folder doesn't exist, since it will be
-					// created during installation
-					if (err.code !== 'ENOENT') {
-						self.showErrorMessage(err.message);
-						resolve(false);
-					}
-				}
-				else {
-					if (stats.isFile()) {
-						self.showErrorMessage(self.InvalidLocationMsg);
-						resolve(false);
-					}
-				}
-				resolve(true);
-			});
-		});
+		try {
+			const stats = await fs.stat(pythonLocation);
+			if (stats.isFile()) {
+				self.showErrorMessage(self.InvalidLocationMsg);
+				return false;
+			}
+		} catch (err) {
+			// Ignore error if folder doesn't exist, since it will be
+			// created during installation
+			if (err.code !== 'ENOENT') {
+				self.showErrorMessage(err.message);
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private async handleBrowse(): Promise<void> {

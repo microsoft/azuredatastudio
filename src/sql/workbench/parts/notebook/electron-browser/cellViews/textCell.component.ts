@@ -23,12 +23,12 @@ import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRender
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/electron-browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 
 export const TEXT_SELECTOR: string = 'text-cell-component';
 const USER_SELECT_CLASS = 'actionselect';

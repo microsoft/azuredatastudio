@@ -30,7 +30,7 @@ export const ICapabilitiesService = createDecorator<ICapabilitiesService>(SERVIC
  * Interface for managing provider capabilities
  */
 export interface ICapabilitiesService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Retrieve a list of registered capabilities providers
