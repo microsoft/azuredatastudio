@@ -108,9 +108,17 @@ class ExtensionUrlHandler implements IExtensionUrlHandler, IURLHandler {
 		if (!confirmed) {
 			let uriString = uri.toString();
 
-			if (uriString.length > 40) {
-				uriString = `${uriString.substring(0, 30)}...${uriString.substring(uriString.length - 5)}`;
+			// {{SQL CARBON EDIT}} - Begin
+			// Dialog service starts truncating words longer than 80 characters and adds ellipses to it.
+			// To show more of the URL, we can show about 80 characters in the beginning and 80 in the end, with ellipses in between.
+			if (uriString.length > 80) {
+				// Split the URL half way in the middle or max out at 80. Add a fudge factor of 5 so that we never show the full string if we split exactly in the middle.
+				let truncLength = Math.min(uriString.length / 2, 80) - 5;
+
+				// There needs to be whitespace before/after the ellipses so that the URL does not look like one long word.
+				uriString = `${uriString.substring(0, truncLength)} ... ${uriString.substring(uriString.length - truncLength)}`;
 			}
+			// {{SQL CARBON EDIT}} - End
 
 			const result = await this.dialogService.confirm({
 				message: localize('confirmUrl', "Allow an extension to open this URI?", extensionId),
