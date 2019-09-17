@@ -72,7 +72,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			}, {
 				label: '' // line separator
 			}, {
-				label: localize('deployCluster.masterPoolLabel', "Master SQL Server"),
+				label: localize('deployCluster.masterPoolLabel', "SQL Server Master"),
 				value: profile.master.toString()
 			}, {
 				label: localize('deployCluster.computePoolLable', "Compute"),
@@ -148,11 +148,11 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.setPropertyValue(VariableNames.HDFSPoolScale_VariableName, selectedProfile.hdfs);
 		this.wizard.model.setPropertyValue(VariableNames.ComputePoolScale_VariableName, selectedProfile.compute);
 		this.wizard.model.setPropertyValue(VariableNames.HDFSNameNodeScale_VariableName, selectedProfile.nameNode);
-		this.wizard.model.setPropertyValue(VariableNames.MasterSQLServerScale_VariableName, selectedProfile.master);
+		this.wizard.model.setPropertyValue(VariableNames.SQLServerScale_VariableName, selectedProfile.master);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageSize_VariableName, selectedProfile.defaultDataSize);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageSize_VariableName, selectedProfile.defaultLogSize);
 		this.wizard.model.setPropertyValue(VariableNames.EnableHADR_VariableName, selectedProfile.hadr);
-		this.wizard.model.setPropertyValue(VariableNames.SQLServerPort_VariableName, selectedProfile.masterSqlServerPort);
+		this.wizard.model.setPropertyValue(VariableNames.SQLServerPort_VariableName, selectedProfile.sqlServerPort);
 		this.wizard.model.setPropertyValue(VariableNames.GateWayPort_VariableName, selectedProfile.gatewayPort);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerPort_VariableName, selectedProfile.controllerPort);
 		this.wizard.model.setPropertyValue(VariableNames.IncludeSpark_VariableName, selectedProfile.includeSpark);

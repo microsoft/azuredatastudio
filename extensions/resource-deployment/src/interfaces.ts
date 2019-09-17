@@ -94,6 +94,7 @@ export interface FieldInfo {
 	description?: string;
 	useCustomValidator?: boolean;
 	labelOnLeft?: boolean; // overwrite the labelOnLeft of SectionInfo.
+	fontStyle?: string;
 }
 
 export enum FieldType {

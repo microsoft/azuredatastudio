@@ -19,24 +19,24 @@ const spaceBetweenFields = '5px';
 
 export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 	private inputComponents: InputComponents = {};
-	private dnsSectionHeaderRow!: azdata.FlexContainer;
-	private dnsHeader!: azdata.TextComponent;
-	private portHeader!: azdata.TextComponent;
+	private endpointHeaderRow!: azdata.FlexContainer;
+	private dnsColumnHeader!: azdata.TextComponent;
+	private portColumnHeader!: azdata.TextComponent;
 	private controllerDNSInput!: azdata.InputBoxComponent;
 	private controllerPortInput!: azdata.InputBoxComponent;
-	private controllerDNSRow!: azdata.FlexContainer;
-	private masterSqlServerDNSInput!: azdata.InputBoxComponent;
-	private masterSQLDNSRow!: azdata.FlexContainer;
-	private masterSqlServerPortInput!: azdata.InputBoxComponent;
+	private controllerEndpointRow!: azdata.FlexContainer;
+	private sqlServerDNSInput!: azdata.InputBoxComponent;
+	private sqlServerEndpointRow!: azdata.FlexContainer;
+	private sqlServerPortInput!: azdata.InputBoxComponent;
 	private gatewayDNSInput!: azdata.InputBoxComponent;
 	private gatewayPortInput!: azdata.InputBoxComponent;
-	private gatewayDNSRow!: azdata.FlexContainer;
+	private gatewayEndpointRow!: azdata.FlexContainer;
 	private readableSecondaryDNSInput!: azdata.InputBoxComponent;
 	private readableSecondaryPortInput!: azdata.InputBoxComponent;
-	private readableSecondaryDNSRow!: azdata.FlexContainer;
-	private nameHeader!: azdata.TextComponent;
+	private readableSecondaryEndpointRow!: azdata.FlexContainer;
+	private endpointNameColumnHeader!: azdata.TextComponent;
 	private controllerNameLabel!: azdata.TextComponent;
-	private masterSQLNameLabel!: azdata.TextComponent;
+	private SqlServerNameLabel!: azdata.TextComponent;
 	private gatewayNameLabel!: azdata.TextComponent;
 	private readableSecondaryNameLabel!: azdata.TextComponent;
 
@@ -53,10 +53,16 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.Options,
-						label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
+						label: localize('deployCluster.MasterSqlText', "SQL Server Master"),
 						options: ['1', '3', '4', '5', '6', '7', '8', '9'],
 						defaultValue: '1',
-						variableName: VariableNames.MasterSQLServerScale_VariableName,
+						variableName: VariableNames.SQLServerScale_VariableName,
+					}, {
+						type: FieldType.Checkbox,
+						label: localize('deployCluster.enableHADR', "Enable Availability Groups"),
+						defaultValue: 'false',
+						variableName: VariableNames.EnableHADR_VariableName,
+						required: false
 					}
 				]
 			}, {
@@ -116,9 +122,9 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					{
 						type: FieldType.Number,
 						label: localize('deployCluster.SparkText', "Spark"),
-						min: 1,
+						min: 0,
 						max: 100,
-						defaultValue: '1',
+						defaultValue: '0',
 						useCustomValidator: true,
 						variableName: VariableNames.SparkPoolScale_VariableName
 					}
@@ -269,7 +275,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				fields: [
 					{
 						type: FieldType.Text,
-						label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
+						label: localize('deployCluster.MasterSqlText', "SQL Server Master"),
 						required: false,
 						variableName: VariableNames.SQLServerDataStorageClassName_VariableName,
 						labelWidth: labelWidth,
@@ -316,20 +322,21 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				});
 			};
 			const scaleSection = createSectionFunc(scaleSectionInfo);
-			const dnsSection = this.createDNSSection(view);
+			const endpointSection = this.createEndpointSection(view);
 			const storageSection = createSectionFunc(storageSectionInfo);
 			const advancedStorageSection = createSectionFunc(advancedStorageSectionInfo);
 			const storageContainer = createGroupContainer(view, [storageSection, advancedStorageSection], {
 				header: localize('deployCluster.StorageSectionTitle', "Storage settings"),
 				collapsible: true
 			});
+			this.setSQLServerMasterFieldEventHandler();
 			const form = view.modelBuilder.formContainer().withFormItems([
 				{
 					title: '',
 					component: scaleSection
 				}, {
 					title: '',
-					component: dnsSection
+					component: endpointSection
 				}, {
 					title: '',
 					component: storageContainer
@@ -339,55 +346,56 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	private createDNSSection(view: azdata.ModelView): azdata.GroupContainer {
-		this.nameHeader = createLabel(view, { text: '', width: labelWidth });
-		this.dnsHeader = createLabel(view, { text: localize('deployCluster.DNSNameHeader', "DNS NAME"), width: inputWidth });
-		this.portHeader = createLabel(view, { text: localize('deployCluster.PortHeader', "PORT"), width: PortInputWidth });
-		this.dnsSectionHeaderRow = createFlexContainer(view, [this.nameHeader, this.dnsHeader, this.portHeader]);
+	private createEndpointSection(view: azdata.ModelView): azdata.GroupContainer {
+		this.endpointNameColumnHeader = createLabel(view, { text: '', width: labelWidth });
+		this.dnsColumnHeader = createLabel(view, { text: localize('deployCluster.DNSNameHeader', "DNS NAME"), width: inputWidth });
+		this.portColumnHeader = createLabel(view, { text: localize('deployCluster.PortHeader', "PORT"), width: PortInputWidth });
+		this.endpointHeaderRow = createFlexContainer(view, [this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 
 		this.controllerNameLabel = createLabel(view, { text: localize('deployCluster.ControllerText', "Controller"), width: labelWidth, required: true });
 		this.controllerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ControllerDNSName', "Controller DNS name"), required: false, width: inputWidth });
 		this.controllerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ControllerPortName', "Controller port"), required: true, width: PortInputWidth, min: 1 });
-		this.controllerDNSRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
+		this.controllerEndpointRow = createFlexContainer(view, [this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput]);
 		this.inputComponents[VariableNames.ControllerDNSName_VariableName] = this.controllerDNSInput;
 		this.inputComponents[VariableNames.ControllerPort_VariableName] = this.controllerPortInput;
 
-		this.masterSQLNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "Master SQL Server"), width: labelWidth, required: true });
-		this.masterSqlServerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "Master SQL Server DNS name"), required: false, width: inputWidth });
-		this.masterSqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "Master SQL Server port"), required: true, width: PortInputWidth, min: 1 });
-		this.masterSQLDNSRow = createFlexContainer(view, [this.masterSQLNameLabel, this.masterSqlServerDNSInput, this.masterSqlServerPortInput]);
-		this.inputComponents[VariableNames.SQLServerDNSName_VariableName] = this.masterSqlServerDNSInput;
-		this.inputComponents[VariableNames.SQLServerPort_VariableName] = this.masterSqlServerPortInput;
+		this.SqlServerNameLabel = createLabel(view, { text: localize('deployCluster.MasterSqlText', "SQL Server Master"), width: labelWidth, required: true });
+		this.sqlServerDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerDNSName', "SQL Server Master DNS name"), required: false, width: inputWidth });
+		this.sqlServerPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.MasterSQLServerPortName', "SQL Server Master port"), required: true, width: PortInputWidth, min: 1 });
+		this.sqlServerEndpointRow = createFlexContainer(view, [this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput]);
+		this.inputComponents[VariableNames.SQLServerDNSName_VariableName] = this.sqlServerDNSInput;
+		this.inputComponents[VariableNames.SQLServerPort_VariableName] = this.sqlServerPortInput;
 
 		this.gatewayNameLabel = createLabel(view, { text: localize('deployCluster.GatewayText', "Gateway"), width: labelWidth, required: true });
 		this.gatewayDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.GatewayDNSName', "Gateway DNS name"), required: false, width: inputWidth });
 		this.gatewayPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.GatewayPortName', "Gateway port"), required: true, width: PortInputWidth, min: 1 });
-		this.gatewayDNSRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
+		this.gatewayEndpointRow = createFlexContainer(view, [this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput]);
 		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = this.gatewayDNSInput;
 		this.inputComponents[VariableNames.GateWayPort_VariableName] = this.gatewayPortInput;
 
 		this.readableSecondaryNameLabel = createLabel(view, { text: localize('deployCluster.ReadableSecondaryText', "Readable secondary"), width: labelWidth, required: true });
 		this.readableSecondaryDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryDNSName', "Readable secondary DNS name"), required: false, width: inputWidth });
 		this.readableSecondaryPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ReadableSecondaryPortName', "Readable secondary port"), required: false, width: PortInputWidth, min: 1 });
-		this.readableSecondaryDNSRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
+		this.readableSecondaryEndpointRow = createFlexContainer(view, [this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput]);
 		this.inputComponents[VariableNames.ReadableSecondaryDNSName_VariableName] = this.readableSecondaryDNSInput;
 		this.inputComponents[VariableNames.ReadableSecondaryPort_VariableName] = this.readableSecondaryPortInput;
 
-		return createGroupContainer(view, [this.dnsSectionHeaderRow, this.controllerDNSRow, this.masterSQLDNSRow, this.gatewayDNSRow, this.readableSecondaryDNSRow], {
-			header: localize('deployCluster.DNSSectionTitle', "Port settings"),
+		return createGroupContainer(view, [this.endpointHeaderRow, this.controllerEndpointRow, this.sqlServerEndpointRow, this.gatewayEndpointRow, this.readableSecondaryEndpointRow], {
+			header: localize('deployCluster.EndpointSettings', "Endpoint settings"),
 			collapsible: true
 		});
 	}
 
 	public onEnter(): void {
-		this.setDropdownValue(VariableNames.MasterSQLServerScale_VariableName);
+		this.setDropdownValue(VariableNames.SQLServerScale_VariableName);
+		this.setCheckboxValue(VariableNames.EnableHADR_VariableName);
 		this.setInputBoxValue(VariableNames.ComputePoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.DataPoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.HDFSPoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.HDFSNameNodeScale_VariableName);
 		this.setInputBoxValue(VariableNames.SparkPoolScale_VariableName);
 		this.setCheckboxValue(VariableNames.IncludeSpark_VariableName);
-
+		this.setEnableHadrCheckboxState(this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName));
 		this.setInputBoxValue(VariableNames.ControllerPort_VariableName);
 		this.setInputBoxValue(VariableNames.SQLServerPort_VariableName);
 		this.setInputBoxValue(VariableNames.GateWayPort_VariableName);
@@ -398,30 +406,14 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageClassName_VariableName);
 		this.setInputBoxValue(VariableNames.ControllerLogsStorageSize_VariableName);
 
-		this.dnsSectionHeaderRow.clearItems();
-		this.controllerDNSRow.clearItems();
-		this.gatewayDNSRow.clearItems();
-		this.masterSQLDNSRow.clearItems();
-		this.readableSecondaryDNSRow.clearItems();
-
-		this.controllerDNSRow.addItems([this.controllerNameLabel, this.controllerPortInput]);
-		this.gatewayDNSRow.addItems([this.gatewayNameLabel, this.gatewayPortInput]);
-		this.masterSQLDNSRow.addItems([this.masterSQLNameLabel, this.masterSqlServerPortInput]);
-		if (this.wizard.model.hadrEnabled) {
-			this.readableSecondaryDNSRow.addItems([this.readableSecondaryNameLabel, this.readableSecondaryPortInput]);
+		this.endpointHeaderRow.clearItems();
+		if (this.wizard.model.authenticationMode === VariableNames.ActiveDirectoryAuthentication) {
+			this.endpointHeaderRow.addItems([this.endpointNameColumnHeader, this.dnsColumnHeader, this.portColumnHeader]);
 		}
-
-		if (this.wizard.model.getStringValue(VariableNames.AuthenticationMode_VariableName) === VariableNames.ActiveDirectoryAuthentication) {
-			const itemLayout: azdata.FlexItemLayout = { CSSStyles: { 'margin-right': '20px' } };
-			this.dnsSectionHeaderRow.addItems([this.nameHeader, this.dnsHeader, this.portHeader]);
-			this.controllerDNSRow.insertItem(this.controllerDNSInput, 1, itemLayout);
-			this.gatewayDNSRow.insertItem(this.gatewayDNSInput, 1, itemLayout);
-			this.masterSQLDNSRow.insertItem(this.masterSqlServerDNSInput, 1, itemLayout);
-			if (this.wizard.model.hadrEnabled) {
-				this.readableSecondaryDNSRow.insertItem(this.readableSecondaryDNSInput, 1, itemLayout);
-			}
-		}
-
+		this.loadEndpointRow(this.controllerEndpointRow, this.controllerNameLabel, this.controllerDNSInput, this.controllerPortInput);
+		this.loadEndpointRow(this.gatewayEndpointRow, this.gatewayNameLabel, this.gatewayDNSInput, this.gatewayPortInput);
+		this.loadEndpointRow(this.sqlServerEndpointRow, this.SqlServerNameLabel, this.sqlServerDNSInput, this.sqlServerPortInput);
+		this.updateReadableSecondaryEndpointComponents(this.wizard.model.hadrEnabled);
 		this.wizard.wizardObject.registerNavigationValidator((pcInfo) => {
 			this.wizard.wizardObject.message = { text: '' };
 			if (pcInfo.newPage > pcInfo.lastPage) {
@@ -437,12 +429,12 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerPort_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SQLServerPort_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.GateWayPort_VariableName, this.inputComponents))
-					&& (!this.wizard.model.hadrEnabled
+					&& (!getCheckboxComponent(VariableNames.EnableHADR_VariableName, this.inputComponents).checked
 						|| !isInputBoxEmpty(this.readableSecondaryPortInput))
-					&& (!this.wizard.model.adAuthSupported
+					&& (this.wizard.model.authenticationMode !== VariableNames.ActiveDirectoryAuthentication
 						|| (!isInputBoxEmpty(this.gatewayDNSInput)
 							&& !isInputBoxEmpty(this.controllerDNSInput)
-							&& !isInputBoxEmpty(this.masterSqlServerDNSInput)
+							&& !isInputBoxEmpty(this.sqlServerDNSInput)
 							&& !isInputBoxEmpty(this.readableSecondaryDNSInput)
 						));
 				if (!isValid) {
@@ -474,5 +466,48 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	private setDropdownValue(variableName: string): void {
 		getDropdownComponent(variableName, this.inputComponents).value = this.wizard.model.getStringValue(variableName);
+	}
+
+	private setSQLServerMasterFieldEventHandler() {
+		const sqlScaleDropdown = getDropdownComponent(VariableNames.SQLServerScale_VariableName, this.inputComponents);
+		const enableHadrCheckbox = getCheckboxComponent(VariableNames.EnableHADR_VariableName, this.inputComponents);
+		this.wizard.registerDisposable(sqlScaleDropdown.onValueChanged(() => {
+			const selectedValue = typeof sqlScaleDropdown.value === 'string' ? sqlScaleDropdown.value : sqlScaleDropdown.value!.name;
+			this.setEnableHadrCheckboxState(Number.parseInt(selectedValue));
+		}));
+		this.wizard.registerDisposable(enableHadrCheckbox.onChanged(() => {
+			this.updateReadableSecondaryEndpointComponents(enableHadrCheckbox.checked);
+		}));
+	}
+
+	private setEnableHadrCheckboxState(sqlInstances: number) {
+		// 1. it is ok to enable HADR when there is only 1 replica
+		// 2. if there are multiple replicas, the hadr.enabled switch must be set to true.
+		const enableHadrCheckbox = getCheckboxComponent(VariableNames.EnableHADR_VariableName, this.inputComponents);
+		const hadrEnabled = sqlInstances === 1 ? enableHadrCheckbox.checked : true;
+		if (sqlInstances === 1) {
+			enableHadrCheckbox.enabled = true;
+		} else {
+			enableHadrCheckbox.enabled = false;
+		}
+		enableHadrCheckbox.checked = hadrEnabled;
+		this.updateReadableSecondaryEndpointComponents(hadrEnabled);
+	}
+
+	private updateReadableSecondaryEndpointComponents(hadrEnabled: boolean) {
+		this.readableSecondaryEndpointRow.clearItems();
+		if (hadrEnabled) {
+			this.loadEndpointRow(this.readableSecondaryEndpointRow, this.readableSecondaryNameLabel, this.readableSecondaryDNSInput, this.readableSecondaryPortInput);
+		}
+	}
+
+	private loadEndpointRow(row: azdata.FlexContainer, label: azdata.TextComponent, dnsInput: azdata.InputBoxComponent, portInput: azdata.InputBoxComponent): void {
+		row.clearItems();
+		const itemLayout: azdata.FlexItemLayout = { CSSStyles: { 'margin-right': '20px' } };
+		row.addItem(label);
+		if (this.wizard.model.adAuthSupported) {
+			row.addItem(dnsInput, itemLayout);
+		}
+		row.addItem(portInput);
 	}
 }

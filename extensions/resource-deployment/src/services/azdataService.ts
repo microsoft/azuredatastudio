@@ -23,7 +23,7 @@ export interface DeploymentProfile {
 	includeSpark: string;
 	gatewayPort: string;
 	appProxyPort: string;
-	masterSqlServerPort: string;
+	sqlServerPort: string;
 	readableSecondaryPort?: string;
 	controllerPort: string;
 	defaultDataStorageClass: string;
@@ -98,14 +98,14 @@ export class AzdataService implements IAzdataService {
 							compute: <string>bdcJson.spec.resources['compute-0'].spec.replicas,
 							hdfs: <string>bdcJson.spec.resources['storage-0'].spec.replicas,
 							nameNode: <string>bdcJson.spec.resources['nmnode-0'].spec.replicas,
-							spark: <string>bdcJson.spec.resources['sparkhead'].spec.replicas,
+							spark: '0',
 							activeDirectory: false, // TODO: implement AD check
 							hadr: <string>bdcJson.spec.resources.master.spec.settings.sql['hadr.enabled'],
 							includeSpark: <string>bdcJson.spec.resources['storage-0'].spec.settings.spark.includeSpark,
 							gatewayPort: this.getEndpointPort(bdcJson.spec.resources.gateway.spec.endpoints, 'Knox'),
 							appProxyPort: this.getEndpointPort(bdcJson.spec.resources.appproxy.spec.endpoints, 'AppServiceProxy'),
-							masterSqlServerPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'Master'),
-							readableSecondaryPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'MasterSecondary'),
+							sqlServerPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'Master'),
+							readableSecondaryPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'MasterSecondary', '31436'),
 							controllerPort: this.getEndpointPort(controlJson.spec.endpoints, 'Controller')
 						});
 					}
@@ -126,8 +126,8 @@ export class AzdataService implements IAzdataService {
 		return JSON.parse(fs.readFileSync(path, 'utf8'));
 	}
 
-	private getEndpointPort(endpoints: any, name: string): string {
+	private getEndpointPort(endpoints: any, name: string, defaultValue: string = ''): string {
 		const endpoint = (<{ port: string, name: string }[]>endpoints).find(endpoint => endpoint.name === name);
-		return endpoint ? endpoint.port : '';
+		return endpoint ? endpoint.port : defaultValue;
 	}
 }

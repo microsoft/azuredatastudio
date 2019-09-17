@@ -5,7 +5,7 @@
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType } from '../../../interfaces';
+import { SectionInfo, FieldType, FieldInfo } from '../../../interfaces';
 import { createSection, createGroupContainer } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
@@ -37,24 +37,36 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			labelWidth: '150px',
 			inputWidth: '200px',
 			title: localize('deployCluster.ClusterSettings', "Cluster settings"),
-			fields: [
+			rows: [
 				{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.DeploymentProfile', "Deployment profile"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName)
-				},
-				{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ClusterName', "Cluster name"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName)
+
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.DeploymentProfile', "Deployment profile"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName),
+							fontStyle: 'italic'
+						},
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.ClusterName', "Cluster name"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName),
+							fontStyle: 'italic'
+						}]
 				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.AdminUsername', "Admin username"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.AdminUserName_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.AuthenticationMode_VariableName)
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.AdminUsername', "Admin username"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.AdminUserName_VariableName),
+							fontStyle: 'italic'
+						}, {
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.AuthenticationMode_VariableName),
+							fontStyle: 'italic'
+						}
+					]
 				}
 			]
 		};
@@ -64,33 +76,49 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			labelWidth: '150px',
 			inputWidth: '200px',
 			title: localize('deployCluster.AzureSettings', "Azure settings"),
-
-			fields: [
-				{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.SubscriptionId', "Subscription id"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.SubscriptionId_VariableName) || localize('deployCluster.DefaultSubscription', "Default Azure Subscription")
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ResourceGroup', "Resource group"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ResourceGroup_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.Region', "Region"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.AksClusterName', "AKS cluster name"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.AksName_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.VMSize', "VM size"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.VMSize_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.VMCount', "VM count"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.VMCount_VariableName)
-				}
+			rows: [{
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.SubscriptionId', "Subscription id"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.SubscriptionId_VariableName) || localize('deployCluster.DefaultSubscription', "Default Azure Subscription"),
+						fontStyle: 'italic'
+					}, {
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.ResourceGroup', "Resource group"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.ResourceGroup_VariableName),
+						fontStyle: 'italic'
+					}
+				]
+			}, {
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.Region', "Region"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DeploymentProfile_VariableName),
+						fontStyle: 'italic'
+					}, {
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.AksClusterName', "AKS cluster name"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AksName_VariableName),
+						fontStyle: 'italic'
+					}
+				]
+			}, {
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.VMSize', "VM size"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.VMSize_VariableName),
+						fontStyle: 'italic'
+					}, {
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.VMCount', "VM count"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.VMCount_VariableName),
+						fontStyle: 'italic'
+					}
+				]
+			}
 			]
 		};
 
@@ -99,89 +127,136 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			labelWidth: '150px',
 			inputWidth: '200px',
 			title: localize('deployCluster.ScaleSettings', "Scale settings"),
-			fields: [
+			rows: [
 				{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.MasterSQLServerScale_VariableName)
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.SqlServerText', "SQL Server Master"),
+							defaultValue: `${this.wizard.model.getStringValue(VariableNames.SQLServerScale_VariableName)} ${this.wizard.model.hadrEnabled ? localize('deployCluster.WithHADR', "(Availability Groups Enabled)") : ''}`,
+							fontStyle: 'italic'
+						}, {
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.ComputeText', "Compute"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName),
+							fontStyle: 'italic'
+						}
+					]
 				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ComputeText', "Compute"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName)
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.DataText', "Data"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.DataPoolScale_VariableName),
+							fontStyle: 'italic'
+						}, {
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.HDFSNameNodeScale_VariableName),
+							fontStyle: 'italic'
+						}
+					]
 				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.DataText', "Data"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.DataPoolScale_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.HDFSNameNodeScale_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.HDFSText', "HDFS"),
-					defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.SparkText', "Spark"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.SparkPoolScale_VariableName)
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.HDFSText', "HDFS"),
+							defaultValue: `${this.wizard.model.getStringValue(VariableNames.HDFSPoolScale_VariableName)} ${this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName) ? localize('deployCluster.WithSpark', "(Spark included)") : ''}`,
+							fontStyle: 'italic'
+						}, {
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.SparkText', "Spark"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.SparkPoolScale_VariableName),
+							fontStyle: 'italic'
+						}
+					]
 				}
 			]
 		};
-		const portSectionInfo = {
+		const endpointSectionInfo: SectionInfo = {
 			labelOnLeft: true,
 			labelWidth: '150px',
 			inputWidth: '200px',
-			title: localize('deployCluster.PortSettings', "Port settings"),
-			fields: [
+			title: localize('deployCluster.EndpointSettings', "Endpoint settings"),
+			rows: [
 				{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ControllerText', "Controller"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ControllerPort_VariableName)
+					fields: [{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.ControllerText', "Controller"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.ControllerPort_VariableName),
+						fontStyle: 'italic'
+					}]
+				},
+				{
+					fields: [{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.SqlServerText', "SQL Server Master"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerPort_VariableName),
+						fontStyle: 'italic'
+					}]
 				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerPort_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.GatewayText', "Gateway"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.GateWayPort_VariableName)
+					fields: [{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.GatewayText', "Gateway"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.GateWayPort_VariableName),
+						fontStyle: 'italic'
+					}]
 				}
 			]
 		};
 
-		if (this.wizard.model.getBooleanValue(VariableNames.EnableHADR_VariableName)) {
-			portSectionInfo.fields.push({
-				type: FieldType.ReadonlyText,
-				label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
-				defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryPort_VariableName)
-			});
+		if (this.wizard.model.adAuthSupported) {
+			endpointSectionInfo.rows![0].fields.unshift(
+				{
+					type: FieldType.ReadonlyText,
+					label: '',
+					defaultValue: this.wizard.model.getStringValue(VariableNames.ControllerDNSName_VariableName),
+					labelWidth: '0px',
+					fontStyle: 'italic'
+
+				}
+			);
+			endpointSectionInfo.rows![1].fields.unshift(
+				{
+					type: FieldType.ReadonlyText,
+					label: '',
+					defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerDNSName_VariableName),
+					labelWidth: '0px',
+					fontStyle: 'italic'
+				}
+			);
+			endpointSectionInfo.rows![2].fields.unshift(
+				{
+					type: FieldType.ReadonlyText,
+					label: '',
+					defaultValue: this.wizard.model.getStringValue(VariableNames.GatewayDNSName_VariableName),
+					labelWidth: '0px',
+					fontStyle: 'italic'
+				}
+			);
 		}
 
-		const dnsNamesSectionInfo = {
-			labelOnLeft: true,
-			labelWidth: '150px',
-			inputWidth: '200px',
-			title: localize('deployCluster.DnsNames', "DNS names"),
-			fields: [
-				{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ControllerText', "Controller"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ControllerDNSName_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.MasterSqlText', "Master SQL Server"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerDNSName_VariableName)
-				}, {
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.GatewayText', "Gateway"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.GatewayDNSName_VariableName)
-				}, {
+		if (this.wizard.model.getBooleanValue(VariableNames.EnableHADR_VariableName)) {
+			const secondaryEndpointRow: { fields: FieldInfo[] } = {
+				fields: [{
 					type: FieldType.ReadonlyText,
 					label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryDNSName_VariableName)
-				}
-			]
-		};
+					defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryPort_VariableName),
+					fontStyle: 'italic'
+				}]
+			};
+
+			if (this.wizard.model.adAuthSupported) {
+				secondaryEndpointRow.fields.push({
+					type: FieldType.ReadonlyText,
+					label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
+					defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryDNSName_VariableName),
+					labelWidth: '0px',
+					fontStyle: 'italic'
+				});
+			}
+			endpointSectionInfo.rows!.push(secondaryEndpointRow);
+		}
 
 		const serviceNameColumn: azdata.TableColumn = {
 			value: ' ',
@@ -224,7 +299,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					this.getStorageSettingValue(VariableNames.DataPoolLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName),
 					this.getStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)
 				], [
-					localize('deployCluster.MasterSqlText', "Master SQL Server"),
+					localize('deployCluster.MasterSqlText', "SQL Server Master"),
 					this.getStorageSettingValue(VariableNames.SQLServerDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName),
 					this.getStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName),
 					this.getStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName),
@@ -251,7 +326,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		};
 		const clusterSection = createSectionFunc(clusterSectionInfo);
 		const scaleSection = createSectionFunc(scaleSectionInfo);
-		const portSection = createSectionFunc(portSectionInfo);
+		const endpointSection = createSectionFunc(endpointSectionInfo);
 		const storageSection = {
 			title: '',
 			component: createGroupContainer(this.view, [storageTable], {
@@ -259,19 +334,13 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				collapsible: true
 			})
 		};
-		this.formItems.push(clusterSection, scaleSection, portSection);
-		this.form.addFormItems([clusterSection, scaleSection, portSection]);
 		if (this.wizard.model.getStringValue(VariableNames.AksName_VariableName)) {
 			const azureSection = createSectionFunc(azureSectionInfo);
 			this.formItems.push(azureSection);
 			this.form.addFormItem(azureSection);
 		}
-
-		if (this.wizard.model.adAuthSupported) {
-			const dnsNamesSection = createSectionFunc(dnsNamesSectionInfo);
-			this.formItems.push(dnsNamesSection);
-			this.form.addFormItem(dnsNamesSection);
-		}
+		this.formItems.push(clusterSection, scaleSection, endpointSection);
+		this.form.addFormItems([clusterSection, scaleSection, endpointSection]);
 
 		this.formItems.push(storageSection);
 		this.form.addFormItem(storageSection);

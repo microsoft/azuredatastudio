@@ -102,6 +102,14 @@ export class DeployClusterWizardModel extends Model {
 		this.setPropertyValue(VariableNames.EnableHADR_VariableName, value);
 	}
 
+	public get authenticationMode(): string | undefined {
+		return this.getStringValue(VariableNames.AuthenticationMode_VariableName);
+	}
+
+	public set authenticationMode(value: string | undefined) {
+		this.setPropertyValue(VariableNames.AuthenticationMode_VariableName, value);
+	}
+
 	public getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
 		const value = this.getStringValue(propertyName);
 		return (value === undefined || value === '') ? this.getStringValue(defaultValuePropertyName) : value;

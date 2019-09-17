@@ -71,11 +71,12 @@ export function createTextInput(view: azdata.ModelView, inputInfo: { defaultValu
 	}).component();
 }
 
-export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string }): azdata.TextComponent {
+export function createLabel(view: azdata.ModelView, info: { text: string, description?: string, required?: boolean, width?: string, fontStyle?: string }): azdata.TextComponent {
 	const text = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 		value: info.text,
 		description: info.description,
-		requiredIndicator: info.required
+		requiredIndicator: info.required,
+		CSSStyles: { 'font-style': info.fontStyle || 'normal' }
 	}).component();
 	text.width = info.width;
 	return text;
@@ -374,7 +375,7 @@ function processPasswordField(context: FieldContext): void {
 
 function processReadonlyTextField(context: FieldContext): void {
 	const label = createLabel(context.view, { text: context.fieldInfo.label, description: context.fieldInfo.description, required: false, width: context.fieldInfo.labelWidth });
-	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth });
+	const text = createLabel(context.view, { text: context.fieldInfo.defaultValue!, description: '', required: false, width: context.fieldInfo.inputWidth, fontStyle: context.fieldInfo.fontStyle });
 	addLabelInputPairToContainer(context.view, context.components, label, text, context.fieldInfo.labelOnLeft);
 }
 
