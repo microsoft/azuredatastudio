@@ -5,7 +5,7 @@
 
 import { MenuId, MenuRegistry } from 'vs/platform/actions/common/actions';
 import * as commands from 'sql/workbench/parts/scripting/electron-browser/scriptingActions';
-import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';

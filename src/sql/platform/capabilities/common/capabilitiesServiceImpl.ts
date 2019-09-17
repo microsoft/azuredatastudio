@@ -33,7 +33,7 @@ interface CapabilitiesMomento {
  * to discover the DMP capabilities that a DMP provider offers.
  */
 export class CapabilitiesService extends Disposable implements ICapabilitiesService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _momento: Memento;
 	private _providers = new Map<string, ProviderFeatures>();

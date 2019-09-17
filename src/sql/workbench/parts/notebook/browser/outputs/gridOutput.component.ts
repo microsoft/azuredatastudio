@@ -13,7 +13,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
-import { IDataResource } from 'sql/workbench/services/notebook/common/sql/sqlSessionManager';
+import { IDataResource } from 'sql/workbench/services/notebook/browser/sql/sqlSessionManager';
 import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 import { getEolString, shouldIncludeHeaders, shouldRemoveNewLines } from 'sql/platform/query/common/queryRunner';
 import { INotificationService } from 'vs/platform/notification/common/notification';
@@ -24,7 +24,7 @@ import { localize } from 'vs/nls';
 import { IAction } from 'vs/base/common/actions';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
 import { GridTableState } from 'sql/workbench/parts/query/common/gridPanelState';
 import { GridTableBase } from 'sql/workbench/parts/query/browser/gridPanel';

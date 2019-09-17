@@ -10,7 +10,7 @@ import { IAngularEventingService, IAngularEvent, AngularEventType } from 'sql/pl
 import { ILogService } from 'vs/platform/log/common/log';
 
 export class AngularEventingService implements IAngularEventingService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _angularMap = new Map<string, Subject<IAngularEvent>>();
 
 	constructor(

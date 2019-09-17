@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 
 export const IAccountPickerService = createDecorator<IAccountPickerService>('AccountPickerService');
 export interface IAccountPickerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	renderAccountPicker(container: HTMLElement): void;
 	addAccountCompleteEvent: Event<void>;
 	addAccountErrorEvent: Event<string>;

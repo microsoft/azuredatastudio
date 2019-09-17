@@ -233,6 +233,7 @@ function registerLocaleDefinitionSchema(languages: string[]): void {
 	jsonRegistry.registerSchema(localeDefinitionFileSchemaId, {
 		id: localeDefinitionFileSchemaId,
 		allowComments: true,
+		allowsTrailingCommas: true,
 		description: 'Locale Definition file',
 		type: 'object',
 		default: {

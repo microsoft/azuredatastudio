@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@types/chai": "3.4.34",
-    "@types/node": "7.0.43",
+    "@types/node": "^10.14.8",
     "adstest": "github:ranasaria/adstest.git#0.0.2",
     "chai": "3.5.0",
     "mocha-junit-reporter": "^1.17.0",

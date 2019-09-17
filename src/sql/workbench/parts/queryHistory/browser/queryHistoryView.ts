@@ -75,10 +75,10 @@ export class QueryHistoryView extends Disposable {
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
 		}, {
-				indentPixels: 10,
-				twistiePixels: 20,
-				ariaLabel: localize({ key: 'queryHistory.regTreeAriaLabel', comment: ['QueryHistory'] }, "Query History")
-			});
+			indentPixels: 10,
+			twistiePixels: 20,
+			ariaLabel: localize({ key: 'queryHistory.regTreeAriaLabel', comment: ['QueryHistory'] }, "Query History")
+		});
 	}
 
 	public refreshTree(): void {
