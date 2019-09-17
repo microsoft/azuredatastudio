@@ -27,8 +27,8 @@ export const pySparkNotebookContent: azdata.nb.INotebookContents = {
 	}],
 	metadata: {
 		'kernelspec': {
-			'name': 'pyspark3kernel',
-			'display_name': 'PySpark3'
+			'name': 'pysparkkernel',
+			'display_name': 'PySpark'
 		}
 	},
 	nbformat: 4,
@@ -127,16 +127,16 @@ export const sqlNotebookMultipleCellsContent: azdata.nb.INotebookContents = {
 	nbformat_minor: 2
 };
 
-export const pySpark3KernelMetadata = {
+export const pySparkKernelMetadata = {
 	'kernelspec': {
-		'name': 'pyspark3kernel',
-		'display_name': 'PySpark3'
+		'name': 'pysparkkernel',
+		'display_name': 'PySpark'
 	}
 };
 
-export const pySpark3KernelSpec = {
-	name: 'pyspark3',
-	display_name: 'PySpark3'
+export const pySparkKernelSpec = {
+	name: 'pyspark',
+	display_name: 'PySpark'
 };
 
 export const sqlKernelMetadata = {

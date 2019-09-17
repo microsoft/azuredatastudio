@@ -11,7 +11,6 @@ export const extensionOutputChannel = 'Notebooks';
 // JUPYTER CONFIG //////////////////////////////////////////////////////////
 export const pythonBundleVersion = '0.0.1';
 export const pythonVersion = '3.6.6';
-export const sparkMagicVersion = '0.12.6.1';
 export const pythonPathConfigKey = 'pythonPath';
 export const existingPythonConfigKey = 'useExistingPython';
 export const notebookConfigKey = 'notebook';
@@ -42,7 +41,6 @@ export enum PythonPkgType {
 	Anaconda = 'Anaconda'
 }
 
-export const pythonOfflinePipPackagesUrl = 'https://go.microsoft.com/fwlink/?linkid=2092867';
-export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092866';
-export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092865';
-export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2092864';
+export const pythonWindowsInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2103837';
+export const pythonMacInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2103836';
+export const pythonLinuxInstallUrl = 'https://go.microsoft.com/fwlink/?linkid=2103835';
