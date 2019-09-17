@@ -92,7 +92,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		const sectionToOpenMarkdown: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.md'));
 		const sectionToOpenNotebook: string = path.join(this.currentBook.bookPath, 'content', urlPath.concat('.ipynb'));
 		if (await exists(sectionToOpenMarkdown)) {
-			vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(sectionToOpenMarkdown));
+			this.openMarkdown(sectionToOpenMarkdown);
 		}
 		else if (await exists(sectionToOpenNotebook)) {
 			this.openNotebook(sectionToOpenNotebook);

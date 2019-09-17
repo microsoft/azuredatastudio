@@ -10,12 +10,13 @@ import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as path from 'path';
-import * as fs from 'fs-extra';
+import * as fs from 'fs';
 import * as nls from 'vscode-nls';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
+const fsPromises = fs.promises;
 
 export class BookModel implements azdata.nb.NavigationProvider {
 	private _bookItems: BookTreeItem[] = [];
@@ -31,7 +32,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	public async initializeContents(): Promise<void> {
 		await this.getTableOfContentFiles(this.bookPath);
-		this.readBooks();
+		await this.readBooks();
 	}
 
 	public getAllBooks(): Map<string, BookTreeItem> {
@@ -59,12 +60,14 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		}
 	}
 
-	public readBooks(): BookTreeItem[] {
+	public async readBooks(): Promise<BookTreeItem[]> {
 		for (const contentPath of this._tableOfContentPaths) {
 			let root = path.dirname(path.dirname(contentPath));
 			try {
-				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
-				const tableOfContents = yaml.safeLoad(fs.readFileSync(contentPath, 'utf-8'));
+				let fileContents = await fsPromises.readFile(path.join(root, '_config.yml'), 'utf-8');
+				const config = yaml.safeLoad(fileContents.toString()); //fs.readFileSync(path.join(root, '_config.yml'), 'utf-8')
+				fileContents = await fsPromises.readFile(contentPath, 'utf-8');
+				const tableOfContents = yaml.safeLoad(fileContents.toString());
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
