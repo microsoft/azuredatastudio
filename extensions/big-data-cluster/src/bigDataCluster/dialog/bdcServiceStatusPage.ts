@@ -8,12 +8,15 @@ import * as azdata from 'azdata';
 import { BdcStatusModel, ResourceStatusModel } from '../controller/apiGenerated';
 import { BdcDashboardResourceStatusPage } from './bdcDashboardResourceStatusPage';
 import { BdcDashboardModel } from './bdcDashboardModel';
+import { getHealthStatusDot } from '../utils';
+import { cssStyles } from '../constants';
 
 export class BdcServiceStatusPage {
 
 	private initialized: boolean = false;
 	private resourceTabsCreated: boolean = false;
 
+	private currentTab: { div: azdata.DivContainer, text: azdata.TextComponent, index: number };
 	private currentTabPage: azdata.FlexContainer;
 	private rootContainer: azdata.FlexContainer;
 	private resourceHeader: azdata.FlexContainer;
@@ -74,16 +77,39 @@ export class BdcServiceStatusPage {
 	 */
 	private createResourceNavTabs(resources: ResourceStatusModel[]) {
 		if (this.initialized && !this.resourceTabsCreated) {
+			let tabIndex = 0;
 			resources.forEach(resource => {
-				const resourceHeaderTab = createResourceHeaderTab(this.modelView, resource.resourceName);
+				const currentIndex = tabIndex++;
+				const resourceHeaderTab = createResourceHeaderTab(this.modelView.modelBuilder, resource);
 				const resourceStatusPage: azdata.FlexContainer = new BdcDashboardResourceStatusPage(this.model, this.modelView, this.serviceName, resource.resourceName).container;
-				resourceHeaderTab.onDidClick(() => {
+				resourceHeaderTab.div.onDidClick(() => {
+					// Don't need to do anything if this is already the currently selected tab
+					if (this.currentTab.index === currentIndex) {
+						return;
+					}
+					if (this.currentTab) {
+						this.currentTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+						this.resourceHeader.removeItem(this.currentTab.div);
+						this.resourceHeader.insertItem(this.currentTab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
+					}
 					this.changeSelectedTabPage(resourceStatusPage);
+					this.currentTab = { ...resourceHeaderTab, index: currentIndex };
+					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.resourceHeader.removeItem(this.currentTab.div);
+					this.resourceHeader.insertItem(this.currentTab.div, this.currentTab.index, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				});
+				// Set initial page
 				if (!this.currentTabPage) {
 					this.changeSelectedTabPage(resourceStatusPage);
+					this.currentTab = { ...resourceHeaderTab, index: currentIndex };
+					this.currentTab.text.updateCssStyles(cssStyles.selectedResourceHeaderTab);
+					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.selectedTabDiv });
 				}
-				this.resourceHeader.addItem(resourceHeaderTab, { flex: '0 0 auto', CSSStyles: { 'border-bottom': 'solid #ccc' } });
+				else {
+					resourceHeaderTab.text.updateCssStyles(cssStyles.unselectedResourceHeaderTab);
+					this.resourceHeader.addItem(resourceHeaderTab.div, { flex: '0 0 auto', CSSStyles: cssStyles.unselectedTabDiv });
+				}
+
 			});
 			this.resourceTabsCreated = true;
 		}
@@ -92,12 +118,15 @@ export class BdcServiceStatusPage {
 
 /**
  * Creates a single resource header tab
- * @param view TheModelView used to construct the object
+ * @param modelBuilder The ModelBuilder used to construct the object
  * @param title The text to display in the tab
  */
-function createResourceHeaderTab(view: azdata.ModelView, title: string): azdata.DivContainer {
-	const resourceHeaderTab = view.modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ CSSStyles: { 'text-align': 'center' } }).component();
-	const resourceHeaderLabel = view.modelBuilder.text().withProperties({ value: title, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	resourceHeaderTab.addItem(resourceHeaderLabel);
-	return resourceHeaderTab;
+function createResourceHeaderTab(modelBuilder: azdata.ModelBuilder, resourceStatus: ResourceStatusModel): { div: azdata.DivContainer, text: azdata.TextComponent } {
+	const resourceHeaderTab = modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
+	const innerContainer = modelBuilder.flexContainer().withLayout({ width: '100px', height: '25px', flexFlow: 'row' }).component();
+	innerContainer.addItem(modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right' } }).component(), { flex: '0 0 auto' });
+	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'text-align': 'left' } }).component();
+	innerContainer.addItem(resourceHeaderLabel);
+	resourceHeaderTab.addItem(innerContainer);
+	return { div: resourceHeaderTab, text: resourceHeaderLabel };
 }

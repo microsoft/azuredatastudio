@@ -7,7 +7,7 @@ import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectio
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { ITree, IDataSource } from 'vs/base/parts/tree/browser/tree';
 import { TreeNode, TreeItemCollapsibleState } from 'sql/workbench/parts/objectExplorer/common/treeNode';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import Severity from 'vs/base/common/severity';
@@ -75,8 +75,8 @@ export class ServerTreeDataSource implements IDataSource {
 					// It has been tested for connecting to the server in profile itself and things work fine there.
 					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
 						resolve(node.children);
-					}, expandError => {
-						node.setExpandedState(TreeItemCollapsibleState.Collapsed);
+					}, async expandError => {
+						await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
 						node.errorStateMessage = expandError;
 						this.showError(expandError);
 						// collapse node and refresh in case of error so remove tree cache

@@ -38,7 +38,7 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 			BinaryFileEditor.ID,
 			{
 				openInternal: (input, options) => this.openInternal(input, options),
-				openExternal: resource => this.openerService.openExternal(resource)
+				openExternal: resource => this.openerService.open(resource, { openExternal: true })
 			},
 			telemetryService,
 			themeService,
@@ -49,7 +49,7 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 		);
 	}
 
-	private async openInternal(input: EditorInput, options: EditorOptions): Promise<void> {
+	private async openInternal(input: EditorInput, options: EditorOptions | undefined): Promise<void> {
 		if (input instanceof FileEditorInput) {
 			input.setForceOpenAsText();
 
@@ -57,7 +57,7 @@ export class BinaryFileEditor extends BaseBinaryResourceEditor {
 		}
 	}
 
-	getTitle(): string | null {
+	getTitle(): string | undefined {
 		return this.input ? this.input.getName() : nls.localize('binaryFileEditor', "Binary File Viewer");
 	}
 }

@@ -6,7 +6,7 @@
 import { IConnectionManagementService, IConnectionCompletionOptions } from 'sql/platform/connection/common/connectionManagement';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 
 // import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
@@ -15,8 +15,9 @@ import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/tree
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
 
-	private _lastClicked: any;
-	private _clickTimer: NodeJS.Timer = undefined;
+	private _lastClicked: any[];
+	private _clickTimer: any = undefined;
+	private _otherTimer: any = undefined;
 
 	// constructor(@IProgressService private _progressService: IProgressService) {
 
@@ -38,14 +39,21 @@ export class TreeSelectionHandler {
 		return event && event.payload && event.payload.origin === 'mouse';
 	}
 
+	private isKeyboardEvent(event: any): boolean {
+		return event && event.payload && event.payload.origin === 'keyboard';
+	}
+
 	/**
-	 * Handle selection of tree element
+	 * Handle select	ion of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
-		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean) => {
-			let isKeyboard = event && event.payload && event.payload.origin === 'keyboard';
+		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
+			// userInteraction: defensive - don't touch this something else is handling it.
+			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
+				this._lastClicked = undefined;
+			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, isKeyboard, selection, tree, connectionCompleteCallback);
+				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
 			}
 		});
 
@@ -56,18 +64,29 @@ export class TreeSelectionHandler {
 		}
 		let specificSelection = selection[0];
 
-		if (this.isMouseEvent(event)) {
-			if (this._lastClicked === specificSelection) {
+		if (this.isMouseEvent(event) || this.isKeyboardEvent(event)) {
+			if (this._lastClicked !== undefined) {
 				clearTimeout(this._clickTimer);
-				sendSelectionEvent(event, selection, true);
-				return;
-			}
-			this._lastClicked = specificSelection;
-		}
+				let lastSpecificClick = this._lastClicked[0];
 
-		this._clickTimer = setTimeout(() => {
-			sendSelectionEvent(event, selection, false);
-		}, 300);
+				if (lastSpecificClick === specificSelection) {
+					sendSelectionEvent(event, selection, true, true);
+					return;
+				} else {
+					sendSelectionEvent(event, this._lastClicked, false, true);
+				}
+			}
+			this._lastClicked = selection;
+
+			this._clickTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false, true);
+			}, 400);
+		} else {
+			clearTimeout(this._otherTimer);
+			this._otherTimer = setTimeout(() => {
+				sendSelectionEvent(event, selection, false, false);
+			}, 400);
+		}
 	}
 
 	/**

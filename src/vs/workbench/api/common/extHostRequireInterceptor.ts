@@ -24,12 +24,12 @@ import { IExtensionApiFactory as sqlIApiFactory } from 'sql/workbench/api/common
 
 
 interface LoadFunction {
-	(request: string, parent: { filename: string; }, isMain: any): any;
+	(request: string): any;
 }
 
 export interface INodeModuleFactory { //{{SQL CARBON EDIT}} export interface
 	readonly nodeModuleName: string | string[];
-	load(request: string, parent: URI, isMain: any, original: LoadFunction): any;
+	load(request: string, parent: URI, original: LoadFunction): any;
 	alternativeModuleName?(name: string): string | undefined;
 }
 
@@ -134,6 +134,7 @@ interface IKeytarModule {
 	setPassword(service: string, account: string, password: string): Promise<void>;
 	deletePassword(service: string, account: string): Promise<boolean>;
 	findPassword(service: string): Promise<string | null>;
+	findCredentials(service: string): Promise<Array<{ account: string, password: string }>>;
 }
 
 class KeytarNodeModuleFactory implements INodeModuleFactory {
@@ -174,6 +175,9 @@ class KeytarNodeModuleFactory implements INodeModuleFactory {
 			},
 			findPassword: (service: string): Promise<string | null> => {
 				return mainThreadKeytar.$findPassword(service);
+			},
+			findCredentials(service: string): Promise<Array<{ account: string, password: string }>> {
+				return mainThreadKeytar.$findCredentials(service);
 			}
 		};
 	}
@@ -250,7 +254,7 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 		};
 	}
 
-	public load(request: string, parent: URI, isMain: any, original: LoadFunction): any {
+	public load(request: string, parent: URI, original: LoadFunction): any {
 		// get extension id from filename and api for extension
 		const extension = this._extensionPaths.findSubstr(parent.fsPath);
 		if (extension) {
@@ -258,7 +262,7 @@ class OpenNodeModuleFactory implements INodeModuleFactory {
 			this.sendShimmingTelemetry();
 		}
 
-		this._original = original(request, { filename: parent.fsPath }, isMain);
+		this._original = original(request);
 		return this._impl;
 	}
 

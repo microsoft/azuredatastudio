@@ -37,6 +37,9 @@ import 'vs/workbench/services/extensionManagement/common/extensionManagementServ
 import 'vs/workbench/services/telemetry/browser/telemetryService';
 import 'vs/workbench/services/configurationResolver/browser/configurationResolverService';
 import 'vs/workbench/services/credentials/browser/credentialsService';
+import 'vs/workbench/services/url/browser/urlService';
+import 'vs/workbench/services/update/browser/updateService';
+import 'vs/workbench/contrib/stats/browser/workspaceStatsService';
 import 'vs/workbench/browser/web.simpleservices';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -56,8 +59,8 @@ import { ContextMenuService } from 'vs/platform/contextview/browser/contextMenuS
 import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { BackupFileService } from 'vs/workbench/services/backup/common/backupFileService';
 import { ExtensionManagementService } from 'vs/workbench/services/extensionManagement/common/extensionManagementService';
-import { OpenerService } from 'vs/editor/browser/services/openerService';
-import { IOpenerService } from 'vs/platform/opener/common/opener';
+import { ITunnelService } from 'vs/platform/remote/common/tunnel';
+import { NoOpTunnelService } from 'vs/platform/remote/common/tunnelService';
 
 registerSingleton(IRequestService, RequestService, true);
 registerSingleton(IExtensionManagementService, ExtensionManagementService);
@@ -67,15 +70,12 @@ registerSingleton(IClipboardService, BrowserClipboardService, true);
 registerSingleton(IAccessibilityService, BrowserAccessibilityService, true);
 registerSingleton(ILifecycleService, BrowserLifecycleService);
 registerSingleton(IContextMenuService, ContextMenuService);
-registerSingleton(IOpenerService, OpenerService, true);
+registerSingleton(ITunnelService, NoOpTunnelService, true);
 
 //#endregion
 
 
 //#region --- workbench contributions
-
-// Resource Service Worker
-import 'vs/workbench/contrib/resources/browser/resourceServiceWorkerClient';
 
 // Preferences
 import 'vs/workbench/contrib/preferences/browser/keyboardLayoutPicker';

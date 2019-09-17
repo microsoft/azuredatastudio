@@ -8,7 +8,7 @@ import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/q
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IEditorProgressService, IProgressService, ProgressLocation } from 'vs/platform/progress/common/progress';
-import { BaseActionContext } from 'sql/workbench/common/actions';
+import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 
 export class ExplorerScriptSelectAction extends ScriptSelectAction {

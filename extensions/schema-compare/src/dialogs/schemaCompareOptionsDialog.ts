@@ -471,7 +471,7 @@ export class SchemaCompareOptionsDialog {
 	}
 
 	private async reset() {
-		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).schemaCompare;
+		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.deploymentOptions = result.defaultDeploymentOptions;
 		this.optionsChanged = true;

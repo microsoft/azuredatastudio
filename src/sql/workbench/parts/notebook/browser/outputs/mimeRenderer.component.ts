@@ -6,8 +6,8 @@
 import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { ElementRef, forwardRef, Inject, Component, OnInit, Input } from '@angular/core';
-import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { RenderMimeRegistry } from 'sql/workbench/parts/notebook/browser/outputs/registry';
 import { localize } from 'vs/nls';
 

@@ -7,6 +7,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as nls from 'vscode-nls';
+import { IJupyterBookSection, IJupyterBookToc } from '../contracts/content';
 const localize = nls.loadMessageBundle();
 
 export enum BookTreeItemType {
@@ -19,23 +20,24 @@ export enum BookTreeItemType {
 export interface BookTreeItemFormat {
 	title: string;
 	root: string;
-	tableOfContents: any[];
+	tableOfContents: IJupyterBookToc;
 	page: any;
 	type: BookTreeItemType;
+	treeItemCollapsibleState: number;
 }
 
 export class BookTreeItem extends vscode.TreeItem {
-	private _sections: any[];
+	private _sections: IJupyterBookSection[];
 	private _uri: string;
 	private _previousUri: string;
 	private _nextUri: string;
 	public command: vscode.Command;
 
 	constructor(public book: BookTreeItemFormat, icons: any) {
-		super(book.title, vscode.TreeItemCollapsibleState.Collapsed);
+		super(book.title, book.treeItemCollapsibleState);
 
 		if (book.type === BookTreeItemType.Book) {
-			this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed;
+			this.collapsibleState = book.treeItemCollapsibleState;
 			this._sections = book.page;
 		} else {
 			this.setPageVariables();
@@ -53,7 +55,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		this._sections = this.book.page.sections || this.book.page.subsections;
 		this._uri = this.book.page.url;
 
-		let index = (this.book.tableOfContents.indexOf(this.book.page));
+		let index = (this.book.tableOfContents.sections.indexOf(this.book.page));
 		this.setPreviousUri(index);
 		this.setNextUri(index);
 	}
@@ -73,9 +75,9 @@ export class BookTreeItem extends vscode.TreeItem {
 	private setPreviousUri(index: number): void {
 		let i = --index;
 		while (i > -1) {
-			if (this.book.tableOfContents[i].url) {
+			if (this.book.tableOfContents.sections[i].url) {
 				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents[i].url.concat('.ipynb'));
+				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				if (fs.existsSync(pathToNotebook)) {
 					this._previousUri = pathToNotebook;
 					return;
@@ -87,10 +89,10 @@ export class BookTreeItem extends vscode.TreeItem {
 
 	private setNextUri(index: number): void {
 		let i = ++index;
-		while (i < this.book.tableOfContents.length) {
-			if (this.book.tableOfContents[i].url) {
+		while (i < this.book.tableOfContents.sections.length) {
+			if (this.book.tableOfContents.sections[i].url) {
 				// TODO: Currently only navigating to notebooks. Need to add logic for markdown.
-				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents[i].url.concat('.ipynb'));
+				let pathToNotebook = path.join(this.book.root, 'content', this.book.tableOfContents.sections[i].url.concat('.ipynb'));
 				if (fs.existsSync(pathToNotebook)) {
 					this._nextUri = pathToNotebook;
 					return;
@@ -112,7 +114,7 @@ export class BookTreeItem extends vscode.TreeItem {
 		return this.book.root;
 	}
 
-	public get tableOfContents(): any[] {
+	public get tableOfContents(): IJupyterBookToc {
 		return this.book.tableOfContents;
 	}
 
@@ -135,5 +137,30 @@ export class BookTreeItem extends vscode.TreeItem {
 		else {
 			return undefined;
 		}
+	}
+
+	/**
+	 * Helper method to find a child section with a specified URL
+	 * @param url The url of the section we're searching for
+	 */
+	public findChildSection(url?: string): IJupyterBookSection | undefined {
+		if (!url) {
+			return undefined;
+		}
+		return this.findChildSectionRecur(this, url);
+	}
+
+	private findChildSectionRecur(section: IJupyterBookSection, url: string): IJupyterBookSection | undefined {
+		if (section.url && section.url === url) {
+			return section;
+		} else if (section.sections) {
+			for (const childSection of section.sections) {
+				const foundSection = this.findChildSectionRecur(childSection, url);
+				if (foundSection) {
+					return foundSection;
+				}
+			}
+		}
+		return undefined;
 	}
 }

@@ -17,6 +17,7 @@ import { PerfviewInput } from 'vs/workbench/contrib/performance/electron-browser
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { URI } from 'vs/base/common/uri';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 export class StartupProfiler implements IWorkbenchContribution {
 
@@ -28,6 +29,7 @@ export class StartupProfiler implements IWorkbenchContribution {
 		@IClipboardService private readonly _clipboardService: IClipboardService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@IExtensionService extensionService: IExtensionService,
+		@IOpenerService private readonly _openerService: IOpenerService
 	) {
 		// wait for everything to be ready
 		Promise.all([
@@ -104,6 +106,11 @@ export class StartupProfiler implements IWorkbenchContribution {
 	}
 
 	private async _createPerfIssue(files: string[]): Promise<void> {
+		const reportIssueUrl = product.reportIssueUrl;
+		if (!reportIssueUrl) {
+			return;
+		}
+
 		const ref = await this._textModelResolverService.createModelReference(PerfviewInput.Uri);
 		await this._clipboardService.writeText(ref.object.textEditorModel.getValue());
 		ref.dispose();
@@ -113,9 +120,9 @@ export class StartupProfiler implements IWorkbenchContribution {
 1. :warning: Make sure to **attach** these files from your *home*-directory: :warning:\n${files.map(file => `-\`${file}\``).join('\n')}
 `;
 
-		const baseUrl = product.reportIssueUrl;
+		const baseUrl = reportIssueUrl;
 		const queryStringPrefix = baseUrl.indexOf('?') === -1 ? '?' : '&';
 
-		window.open(`${baseUrl}${queryStringPrefix}body=${encodeURIComponent(body)}`);
+		this._openerService.open(URI.parse(`${baseUrl}${queryStringPrefix}body=${encodeURIComponent(body)}`));
 	}
 }

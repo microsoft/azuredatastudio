@@ -8,7 +8,6 @@ import { Event, Emitter } from 'vs/base/common/event';
 import { IWorkspaceStorageChangeEvent, IStorageService, StorageScope, IWillSaveStateEvent, WillSaveStateReason, logStorage } from 'vs/platform/storage/common/storage';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
 import { IWorkspaceInitializationPayload } from 'vs/platform/workspaces/common/workspaces';
-import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import { IFileService, FileChangeType } from 'vs/platform/files/common/files';
 import { IStorage, Storage, IStorageDatabase, IStorageItemsChangeEvent, IUpdateRequest } from 'vs/base/parts/storage/common/storage';
 import { URI } from 'vs/base/common/uri';
@@ -19,7 +18,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 
 export class BrowserStorageService extends Disposable implements IStorageService {
 
-	_serviceBrand!: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	private readonly _onDidChangeStorage: Emitter<IWorkspaceStorageChangeEvent> = this._register(new Emitter<IWorkspaceStorageChangeEvent>());
 	readonly onDidChangeStorage: Event<IWorkspaceStorageChangeEvent> = this._onDidChangeStorage.event;
@@ -37,7 +36,7 @@ export class BrowserStorageService extends Disposable implements IStorageService
 	private workspaceStorageFile: URI;
 
 	private initializePromise: Promise<void>;
-	private periodicSaveScheduler = this._register(new RunOnceScheduler(() => this.saveState(), 5000));
+	private periodicSaveScheduler = this._register(new RunOnceScheduler(() => this.collectState(), 5000));
 
 	get hasPendingUpdate(): boolean {
 		return this.globalStorageDatabase.hasPendingUpdate || this.workspaceStorageDatabase.hasPendingUpdate;
@@ -57,14 +56,19 @@ export class BrowserStorageService extends Disposable implements IStorageService
 		this.periodicSaveScheduler.schedule();
 	}
 
-	private saveState(): void {
+	private collectState(): void {
 		runWhenIdle(() => {
 
 			// this event will potentially cause new state to be stored
 			// since new state will only be created while the document
 			// has focus, one optimization is to not run this when the
 			// document has no focus, assuming that state has not changed
-			if (document.hasFocus()) {
+			//
+			// another optimization is to not collect more state if we
+			// have a pending update already running which indicates
+			// that the connection is either slow or disconnected and
+			// thus unhealthy.
+			if (document.hasFocus() && !this.hasPendingUpdate) {
 				this._onWillSaveState.fire({ reason: WillSaveStateReason.NONE });
 			}
 
@@ -145,6 +149,10 @@ export class BrowserStorageService extends Disposable implements IStorageService
 		return logStorage(result[0], result[1], this.globalStorageFile.toString(), this.workspaceStorageFile.toString());
 	}
 
+	async migrate(toWorkspace: IWorkspaceInitializationPayload): Promise<void> {
+		// TODO@ben implement storage migration in web
+	}
+
 	close(): void {
 		// We explicitly do not close our DBs because writing data onBeforeUnload()
 		// can result in unexpected results. Namely, it seems that - even though this
@@ -197,7 +205,7 @@ export class FileStorageDatabase extends Disposable implements IStorageDatabase 
 		this._register(this.fileService.watch(this.file));
 		this._register(this.fileService.onFileChanges(e => {
 			if (document.hasFocus()) {
-				return; // ignore changes from ourselves by checking for focus
+				return; // optimization: ignore changes from ourselves by checking for focus
 			}
 
 			if (!e.contains(this.file, FileChangeType.UPDATED)) {
@@ -251,15 +259,17 @@ export class FileStorageDatabase extends Disposable implements IStorageDatabase 
 
 		await this.pendingUpdate;
 
-		this._hasPendingUpdate = true;
+		this.pendingUpdate = (async () => {
+			try {
+				this._hasPendingUpdate = true;
 
-		this.pendingUpdate = this.fileService.writeFile(this.file, VSBuffer.fromString(JSON.stringify(mapToSerializable(items))))
-			.then(() => {
+				await this.fileService.writeFile(this.file, VSBuffer.fromString(JSON.stringify(mapToSerializable(items))));
+
 				this.ensureWatching(); // now that the file must exist, ensure we watch it for changes
-			})
-			.finally(() => {
+			} finally {
 				this._hasPendingUpdate = false;
-			});
+			}
+		})();
 
 		return this.pendingUpdate;
 	}

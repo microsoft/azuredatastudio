@@ -47,10 +47,7 @@ import { ExplorerItem, NewExplorerItem } from 'vs/workbench/contrib/files/common
 import { onUnexpectedError, getErrorMessage } from 'vs/base/common/errors';
 
 // {{SQL CARBON EDIT}}
-import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
-import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
-import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
+import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
 
 export const NEW_FILE_COMMAND_ID = 'explorer.newFile';
 export const NEW_FILE_LABEL = nls.localize('newFile', "New File");
@@ -160,16 +157,14 @@ export class GlobalNewUntitledFileAction extends Action {
 		label: string,
 		// {{SQL CARBON EDIT}} - Make editorService protected and add other services
 		@IEditorService protected readonly editorService: IEditorService,
-		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService
+		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
 		super(id, label);
 	}
 
 	public run(): Promise<any> {
 		// {{SQL CARBON EDIT}}
-		return TaskUtilities.newQuery(undefined, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this.editorService);
+		return this.instantiationService.invokeFunction(openNewQuery);
 	}
 }
 
@@ -943,7 +938,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 		const { stat } = getContext(list);
 		let folder: ExplorerItem;
 		if (stat) {
-			folder = stat.isDirectory ? stat : stat.parent!;
+			folder = stat.isDirectory ? stat : (stat.parent || explorerService.roots[0]);
 		} else {
 			folder = explorerService.roots[0];
 		}
@@ -957,7 +952,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 
 		folder.addChild(newStat);
 
-		const onSuccess = async (value: string) => {
+		const onSuccess = (value: string): Promise<void> => {
 			const createPromise = isFolder ? fileService.createFolder(resources.joinPath(folder.resource, value)) : textFileService.create(resources.joinPath(folder.resource, value));
 			return createPromise.then(created => {
 				refreshIfSeparator(value, explorerService);
@@ -975,8 +970,6 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 				explorerService.setEditable(newStat, null);
 				if (success) {
 					onSuccess(value);
-				} else {
-					explorerService.select(folder.resource).then(undefined, onUnexpectedError);
 				}
 			}
 		});

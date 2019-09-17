@@ -18,10 +18,13 @@ import {
 	ActiveConnectionsFilterAction,
 	AddServerAction, AddServerGroupAction
 } from 'sql/workbench/parts/objectExplorer/browser/connectionTreeAction';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { ITree } from 'vs/base/parts/tree/browser/tree';
 
 export class ConnectionViewletPanel extends ViewletPanel {
+
+	public static readonly ID = 'dataExplorer.servers';
 
 	private _root: HTMLElement;
 	private _serverTreeView: ServerTreeView;
@@ -68,6 +71,10 @@ export class ConnectionViewletPanel extends ViewletPanel {
 			console.warn('render registered servers: ' + error);
 		});
 		this._root = container;
+	}
+
+	get serversTree(): ITree {
+		return this._serverTreeView.tree;
 	}
 
 	layoutBody(size: number): void {

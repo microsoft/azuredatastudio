@@ -13,14 +13,14 @@ import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilit
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import * as azdata from 'azdata';
 import { IMetadataService } from 'sql/platform/metadata/common/metadataService';
-import { IObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService, NodeExpandInfoWithProviderId } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IScriptingService } from 'sql/platform/scripting/common/scriptingService';
 import { IAdminService } from 'sql/workbench/services/admin/common/adminService';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { IBackupService } from 'sql/platform/backup/common/backupService';
 import { IRestoreService } from 'sql/platform/restore/common/restoreService';
 import { ITaskService } from 'sql/platform/tasks/common/tasksService';
-import { IProfilerService } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerService } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ISerializationService } from 'sql/platform/serialization/common/serializationService';
 import { IFileBrowserService } from 'sql/platform/fileBrowser/common/interfaces';
 import { IExtHostContext } from 'vs/workbench/api/common/extHost.protocol';
@@ -394,6 +394,30 @@ export class MainThreadDataProtocol extends Disposable implements MainThreadData
 			},
 			deleteJobStep(connectionUri: string, stepInfo: azdata.AgentJobStepInfo): Thenable<azdata.ResultStatus> {
 				return self._proxy.$deleteJobStep(handle, connectionUri, stepInfo);
+			},
+			getNotebooks(connectionUri: string): Thenable<azdata.AgentNotebooksResult> {
+				return self._proxy.$getNotebooks(handle, connectionUri);
+			},
+			getNotebookHistory(connectionUri: string, jobID: string, jobName: string, targetDatabase: string): Thenable<azdata.AgentNotebookHistoryResult> {
+				return self._proxy.$getNotebookHistory(handle, connectionUri, jobID, jobName, targetDatabase);
+			},
+			getMaterializedNotebook(connectionUri: string, targetDatabase: string, notebookMaterializedId: number): Thenable<azdata.AgentNotebookMaterializedResult> {
+				return self._proxy.$getMaterializedNotebook(handle, connectionUri, targetDatabase, notebookMaterializedId);
+			},
+			updateNotebookMaterializedName(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, name: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedName(handle, connectionUri, agentNotebookHistory, targetDatabase, name);
+			},
+			deleteMaterializedNotebook(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteMaterializedNotebook(handle, connectionUri, agentNotebookHistory, targetDatabase);
+			},
+			updateNotebookMaterializedPin(connectionUri: string, agentNotebookHistory: azdata.AgentNotebookHistoryInfo, targetDatabase: string, pin: boolean): Thenable<azdata.ResultStatus> {
+				return self._proxy.$updateNotebookMaterializedPin(handle, connectionUri, agentNotebookHistory, targetDatabase, pin);
+			},
+			getTemplateNotebook(connectionUri: string, targetDatabase: string, jobId: string): Thenable<azdata.AgentNotebookTemplateResult> {
+				return self._proxy.$getTemplateNotebook(handle, connectionUri, targetDatabase, jobId);
+			},
+			deleteNotebook(connectionUri: string, notebook: azdata.AgentNotebookInfo): Thenable<azdata.ResultStatus> {
+				return self._proxy.$deleteNotebook(handle, connectionUri, notebook);
 			},
 			getAlerts(connectionUri: string): Thenable<azdata.AgentAlertsResult> {
 				return self._proxy.$getAlerts(handle, connectionUri);

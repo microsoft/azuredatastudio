@@ -6,7 +6,7 @@ import 'vs/css!./notebook';
 
 import { registerThemingParticipant, ITheme, ICssStyleCollector } from 'vs/platform/theme/common/themeService';
 import { SIDE_BAR_BACKGROUND, SIDE_BAR_SECTION_HEADER_BACKGROUND, EDITOR_GROUP_HEADER_TABS_BACKGROUND } from 'vs/workbench/common/theme';
-import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorForeground } from 'vs/platform/theme/common/colorRegistry';
+import { activeContrastBorder, contrastBorder, buttonBackground, textLinkForeground, textLinkActiveForeground, textPreformatForeground, textBlockQuoteBackground, textBlockQuoteBorder, buttonForeground, editorBackground, lighten } from 'vs/platform/theme/common/colorRegistry';
 import { editorLineHighlight, editorLineHighlightBorder } from 'vs/editor/common/view/editorColorRegistry';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -37,32 +37,54 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			`);
 		}
 
-		const textColor = theme.getColor(editorForeground);
-		if (textColor) {
+		if (buttonBackgroundColor) {
+			let lighterBackgroundColor = lighten(buttonBackgroundColor, 0.825)(theme);
 			collector.addRule(`
-				.notebookEditor .hoverButtonsContainer .hoverButton {
-					color: ${textColor};
+				.notebookEditor .notebook-cell.active {
+					border-color: ${buttonBackgroundColor};
+					border-width: 1px;
+				}
+				.notebookEditor .notebook-cell.active:hover {
+					border-color: ${buttonBackgroundColor};
+				}
+
+				.notebookEditor .hoverButton {
+					border-color: ${buttonBackgroundColor};
+				}
+				.notebookEditor .hoverButton:active,
+				.notebookEditor .hoverButton:hover {
+					background-color: ${buttonBackgroundColor};
+				}
+				.notebookEditor .hoverButton {
+					color: ${buttonBackgroundColor};
+				}
+
+				.vs-dark .notebookEditor .hoverButton {
+					border-color: ${lighterBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton:active,
+				.vs-dark .notebookEditor .hoverButton:hover {
+					background-color: ${lighterBackgroundColor};
+				}
+				.vs-dark .notebookEditor .hoverButton {
+					color: ${lighterBackgroundColor};
 				}
 			`);
 		}
 
-		// Active border
-		const activeBorder = theme.getColor(buttonBackground);
-		if (activeBorder) {
+		const backgroundColor = theme.getColor(editorBackground);
+		if (backgroundColor) {
 			collector.addRule(`
-				.notebookEditor .notebook-cell.active {
-					border-color: ${activeBorder};
-					border-width: 1px;
+				.notebookEditor .hoverButton {
+					background-color: ${backgroundColor};
 				}
-			`);
-
-			collector.addRule(`
-				.notebookEditor .hoverButton:active {
-					border-color: ${activeBorder};
+				.notebookEditor .hoverButton:active,
+				.notebookEditor .hoverButton:hover {
+					color: ${backgroundColor};
 				}
-
-				.notebookEditor .hoverButtonsContainer .containerBackground {
-					background-color: ${activeBorder};
+				.hc-black .notebookEditor .hoverButton:active,
+				.hc-black .notebookEditor .hoverButton:hover {
+					color: ${backgroundColor};
 				}
 			`);
 		}
@@ -81,10 +103,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				box-shadow: 0;
 			}
 
-			.notebookEditor .notebook-cell.active:hover {
-				border-color: ${activeBorder};
-			}
-
 			.notebookEditor .notebook-cell:hover:not(.active) {
 				box-shadow: ${lightBoxShadow};
 			}
@@ -94,18 +112,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 			}
 
 			.hc-black .notebookEditor .notebook-cell:hover:not(.active) {
-				box-shadow: 0;
-			}
-
-			.notebookEditor .hoverButtonsContainer .hoverButton:hover {
-				box-shadow: ${lightBoxShadow};
-			}
-
-			.vs-dark .notebookEditor .hoverButtonsContainer .hoverButton:hover {
-				box-shadow: ${darkBoxShadow};
-			}
-
-			.hc-black .notebookEditor .hoverButtonsContainer .hoverButton:hover {
 				box-shadow: 0;
 			}
 		`);
@@ -143,12 +149,6 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 						background-color: ${codeBackground};
 					}`);
 
-				collector.addRule(`
-					.notebookEditor .hoverButtonsContainer .hoverButton {
-						background-color: ${codeBackground};
-					}
-				`);
-
 				// Margin background will be the same (may override some styles)
 				collector.addRule(`.notebook-cell:not(.active) code-component .monaco-editor .margin { background-color: ${codeBackground}; }`);
 				addBorderToInactiveCodeCells = false;
@@ -169,6 +169,10 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				.notebookEditor .notebook-cell:hover {
 					border-color: ${inactiveBorder};
 					border-width: 1px;
+				}
+
+				.notebookEditor .hoverButtonsContainer .containerBackground {
+					background-color: ${inactiveBorder};
 				}
 			`);
 
@@ -228,9 +232,16 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 					outline-width: 1px;
 					outline-style: solid;
 				}
+
+				.hc-black .notebookEditor .hoverButton {
+					color: ${hcOutline};
+				}
 				.hc-black .notebookEditor .hoverButton:not(:active) {
 					border-color: ${hcOutline};
-					border-radius: 0px;
+				}
+				.hc-black .notebookEditor .hoverButton:active,
+				.hc-black .notebookEditor .hoverButton:hover {
+					background-color: ${hcOutline};
 				}
 			`);
 		}

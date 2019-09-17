@@ -94,7 +94,7 @@ export interface IDevToolsOptions {
 
 export interface IWindowsService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	readonly onWindowOpen: Event<number>;
 	readonly onWindowFocus: Event<number>;
@@ -221,7 +221,7 @@ export function isFileToOpen(uriToOpen: IURIToOpen): uriToOpen is IFileToOpen {
 
 export interface IWindowService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	readonly onDidChangeFocus: Event<boolean>;
 	readonly onDidChangeMaximize: Event<boolean>;
@@ -240,6 +240,8 @@ export interface IWindowService {
 	closeWorkspace(): Promise<void>;
 	updateTouchBar(items: ISerializableCommandAction[][]): Promise<void>;
 	enterWorkspace(path: URI): Promise<IEnterWorkspaceResult | undefined>;
+	// rationale: will eventually move to electron-browser
+	// tslint:disable-next-line: no-dom-globals
 	toggleFullScreen(target?: HTMLElement): Promise<void>;
 	setRepresentedFilename(fileName: string): Promise<void>;
 	getRecentlyOpened(): Promise<IRecentlyOpened>;

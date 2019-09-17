@@ -2,7 +2,7 @@
 	"name": "cms",
 	"displayName": "%cms.displayName%",
 	"description": "%cms.description%",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
@@ -627,7 +627,7 @@
 	},
 	"devDependencies": {
 		"@types/mocha": "^5.2.5",
-		"@types/node": "^8.0.24",
+    "@types/node": "^10.14.8",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
 		"vscode": "^1.1.26",

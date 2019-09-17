@@ -188,11 +188,6 @@
 				return;
 			}
 
-			// Prevent middle clicks opening a broken link in the browser
-			if (event.button == 1) {
-				event.preventDefault();
-			}
-
 			let baseElement = event.view.document.getElementsByTagName('base')[0];
 			/** @type {any} */
 			let node = event.target;
@@ -212,6 +207,27 @@
 					break;
 				}
 				node = node.parentNode;
+			}
+		};
+
+		/**
+		 * @param {MouseEvent} event
+		 */
+		const handleAuxClick = (event) => {
+			// Prevent middle clicks opening a broken link in the browser
+			if (!event.view || !event.view.document) {
+				return;
+			}
+
+			if (event.button === 1) {
+				let node = /** @type {any} */ (event.target);
+				while (node) {
+					if (node.tagName && node.tagName.toLowerCase() === 'a' && node.href) {
+						event.preventDefault();
+						break;
+					}
+					node = node.parentNode;
+				}
 			}
 		};
 
@@ -289,6 +305,11 @@
 			const csp = newDocument.querySelector('meta[http-equiv="Content-Security-Policy"]');
 			if (!csp) {
 				host.postMessage('no-csp-found');
+			} else {
+				// Rewrite vscode-resource in csp
+				if (data.endpoint) {
+					csp.setAttribute('content', csp.getAttribute('content').replace(/vscode-resource:/g, data.endpoint));
+				}
 			}
 
 			// set DOCTYPE for newDocument explicitly as DOMParser.parseFromString strips it off
@@ -454,7 +475,8 @@
 					});
 
 					// Bubble out link clicks
-					newFrame.contentWindow.addEventListener('mousedown', handleInnerClick);
+					newFrame.contentWindow.addEventListener('click', handleInnerClick);
+					newFrame.contentWindow.addEventListener('auxclick', handleAuxClick);
 
 					if (host.onIframeLoaded) {
 						host.onIframeLoaded(newFrame);

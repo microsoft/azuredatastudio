@@ -10,7 +10,7 @@ import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { attachListStyler } from 'vs/platform/theme/common/styler';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { dispose, Disposable } from 'vs/base/common/lifecycle';
 import { DefaultFilter, DefaultDragAndDrop, DefaultAccessibilityProvider } from 'vs/base/parts/tree/browser/treeDefaults';
 import { localize } from 'vs/nls';
 import { hide, $, append } from 'vs/base/browser/dom';
@@ -27,10 +27,9 @@ import { IExpandableTree } from 'sql/workbench/parts/objectExplorer/browser/tree
 /**
  * TaskHistoryView implements the dynamic tree view.
  */
-export class TaskHistoryView {
+export class TaskHistoryView extends Disposable {
 	private _messages: HTMLElement;
 	private _tree: ITree;
-	private _toDispose: IDisposable[] = [];
 
 	constructor(
 		@IInstantiationService private _instantiationService: IInstantiationService,
@@ -38,6 +37,7 @@ export class TaskHistoryView {
 		@IErrorMessageService private _errorMessageService: IErrorMessageService,
 		@IThemeService private _themeService: IThemeService
 	) {
+		super();
 	}
 
 	/**
@@ -56,17 +56,17 @@ export class TaskHistoryView {
 		let noTaskMessage = localize('noTaskMessage', "No task history to display.");
 		append(this._messages, $('span')).innerText = noTaskMessage;
 
-		this._tree = this.createTaskHistoryTree(container, this._instantiationService);
-		this._toDispose.push(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
+		this._tree = this._register(this.createTaskHistoryTree(container, this._instantiationService));
+		this._register(this._tree.onDidChangeSelection((event) => this.onSelected(event)));
 
 		// Theme styler
-		this._toDispose.push(attachListStyler(this._tree, this._themeService));
+		this._register(attachListStyler(this._tree, this._themeService));
 
-		this._toDispose.push(this._taskService.onAddNewTask(args => {
+		this._register(this._taskService.onAddNewTask(args => {
 			hide(this._messages);
 			this.refreshTree();
 		}));
-		this._toDispose.push(this._taskService.onTaskComplete(task => {
+		this._register(this._taskService.onTaskComplete(task => {
 			this.updateTask(task);
 		}));
 
@@ -90,10 +90,10 @@ export class TaskHistoryView {
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
 		}, {
-				indentPixels: 10,
-				twistiePixels: 20,
-				ariaLabel: localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, "Task history")
-			});
+			indentPixels: 10,
+			twistiePixels: 20,
+			ariaLabel: localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, "Task history")
+		});
 	}
 
 	private updateTask(task: TaskNode): void {
@@ -120,10 +120,10 @@ export class TaskHistoryView {
 		//Get the tree Input
 		let treeInput = this._taskService.getAllTasks();
 		if (treeInput) {
-			this._tree.setInput(treeInput).then(() => {
+			this._tree.setInput(treeInput).then(async () => {
 				// Make sure to expand all folders that where expanded in the previous session
 				if (targetsToExpand) {
-					this._tree.expandAll(targetsToExpand);
+					await this._tree.expandAll(targetsToExpand);
 				}
 				if (selectedElement) {
 					this._tree.select(selectedElement);
@@ -165,13 +165,5 @@ export class TaskHistoryView {
 		} else {
 			this._tree.onHidden();
 		}
-	}
-
-	/**
-	 * dispose the server tree view
-	 */
-	public dispose(): void {
-		this._tree.dispose();
-		this._toDispose = dispose(this._toDispose);
 	}
 }

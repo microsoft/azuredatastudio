@@ -1,44 +1,60 @@
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.15.1'
-  displayName: 'Install Node.js'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "10.15.1"
 
-- script: |
-    yarn
-  displayName: 'Yarn Install'
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
+      targetfolder: "**/node_modules, !**/node_modules/**/node_modules"
+      vstsFeed: "$(build-cache)"
 
-- script: |
-    yarn gulp electron-x64
-  displayName: 'Electron'
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+    inputs:
+      versionSpec: "1.10.1"
 
-- script: |
-    yarn gulp hygiene
-  displayName: Run Hygiene Checks
+  - script: |
+      yarn --frozen-lockfile
+    displayName: Install Dependencies
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- script: |
-    yarn tslint
-  displayName: 'Run TSLint'
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    inputs:
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
+      targetfolder: "**/node_modules, !**/node_modules/**/node_modules"
+      vstsFeed: "$(build-cache)"
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-- script: |
-    yarn strict-null-check
-  displayName: 'Run Strict Null Check'
+  - script: |
+      yarn gulp electron-x64
+    displayName: "Electron"
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- script: |
-    yarn compile
-  displayName: 'Compile'
+  - script: |
+      yarn gulp hygiene --skip-tslint
+    displayName: Run Hygiene Checks
 
-- script: |
-    .\scripts\test.bat --reporter mocha-junit-reporter --coverage
-  displayName: 'Test'
+  - script: |
+      yarn tslint
+    displayName: Run TSLint
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: 'test-results.xml'
-  condition: succeededOrFailed()
+  - script: |
+      yarn strict-null-check
+    displayName: Run Strict Null Check
 
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: 'cobertura'
-    summaryFileLocation: $(System.DefaultWorkingDirectory)\.build\coverage\cobertura-coverage.xml
-    reportDirectory: $(System.DefaultWorkingDirectory)\.build\coverage\lcov-report
+  - script: |
+      yarn compile
+    displayName: Compile
+
+  - powershell: |
+      .\scripts\test.bat --tfs "Unit Tests"
+    displayName: Run Unit Tests
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: "*-results.xml"
+      searchFolder: "$(Build.ArtifactStagingDirectory)/test-results"
+    condition: succeededOrFailed()

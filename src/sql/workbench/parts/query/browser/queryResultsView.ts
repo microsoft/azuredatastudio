@@ -230,7 +230,7 @@ export class QueryResultsView extends Disposable {
 			this.hideChart();
 			this.hidePlan();
 			this.hideDynamicViewModelTabs();
-			this.input.state.visibleTabs = new Set();
+			this.input.state.visibleTabs.clear();
 			this.input.state.activeTab = this.resultsTab.identifier;
 		}));
 		this.runnerDisposables.add(runner.onQueryEnd(() => {

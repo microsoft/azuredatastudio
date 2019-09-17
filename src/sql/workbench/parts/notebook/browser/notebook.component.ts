@@ -23,24 +23,24 @@ import * as DOM from 'vs/base/browser/dom';
 
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { CellTypes, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, IModelFactory, INotebookModel, NotebookContentChange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
-import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/common/notebookService';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
-import { ModelFactory } from 'sql/workbench/parts/notebook/common/models/modelFactory';
-import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { INotebookService, INotebookParams, INotebookManager, INotebookEditor, DEFAULT_NOTEBOOK_PROVIDER, SQL_NOTEBOOK_PROVIDER, INotebookSection, INavigationProvider } from 'sql/workbench/services/notebook/browser/notebookService';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
+import { ModelFactory } from 'sql/workbench/parts/notebook/browser/models/modelFactory';
+import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { Deferred } from 'sql/base/common/promise';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { KernelsDropdown, AttachToDropdown, AddCellAction, TrustedAction, RunAllCellsAction, ClearAllOutputsAction } from 'sql/workbench/parts/notebook/browser/notebookActions';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
 import { IConnectionDialogService } from 'sql/workbench/services/connection/common/connectionDialogService';
 import { ICapabilitiesService } from 'sql/platform/capabilities/common/capabilitiesService';
-import { CellMagicMapper } from 'sql/workbench/parts/notebook/common/models/cellMagicMapper';
+import { CellMagicMapper } from 'sql/workbench/parts/notebook/browser/models/cellMagicMapper';
 import { IExtensionsViewlet, VIEWLET_ID } from 'vs/workbench/contrib/extensions/common/extensions';
-import { CellModel } from 'sql/workbench/parts/notebook/common/models/cell';
+import { CellModel } from 'sql/workbench/parts/notebook/browser/models/cell';
 import { FileOperationError, FileOperationResult } from 'vs/platform/files/common/files';
 import { isValidBasename } from 'vs/base/common/extpath';
 import { basename } from 'vs/base/common/resources';
@@ -176,14 +176,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		if (event) {
 			event.stopPropagation();
 		}
-		if (cell !== this.model.activeCell) {
-			if (this.model.activeCell) {
-				this.model.activeCell.active = false;
-			}
-			this._model.activeCell = cell;
-			this._model.activeCell.active = true;
-			this.detectChanges();
-		}
+		this.model.updateActiveCell(cell);
+		this.detectChanges();
 	}
 
 	//Saves scrollTop value on scroll change
@@ -192,10 +186,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 	}
 
 	public unselectActiveCell() {
-		if (this.model && this.model.activeCell) {
-			this.model.activeCell.active = false;
-			this.model.activeCell = undefined;
-		}
+		this.model.updateActiveCell(undefined);
 		this.detectChanges();
 	}
 
@@ -289,8 +280,8 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		await this.awaitNonDefaultProvider();
 		await this._model.requestModelLoad();
 		this.detectChanges();
-		await this._model.startSession(this._model.notebookManager, undefined, true);
 		this.setContextKeyServiceWithProviderId(this._model.providerId);
+		await this._model.startSession(this._model.notebookManager, undefined, true);
 		this.fillInActionsForCurrentContext();
 		this.detectChanges();
 	}
@@ -311,10 +302,10 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 			editorLoadedTimestamp: this._notebookParams.input.editorOpenedTimestamp
 		}, this.profile, this.logService, this.notificationService, this.telemetryService);
 		let trusted = await this.notebookService.isNotebookTrustCached(this._notebookParams.notebookUri, this.isDirty());
-		model.onError((errInfo: INotification) => this.handleModelError(errInfo));
-		model.contentChanged((change) => this.handleContentChanged(change));
-		model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider));
-		model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs));
+		this._register(model.onError((errInfo: INotification) => this.handleModelError(errInfo)));
+		this._register(model.contentChanged((change) => this.handleContentChanged()));
+		this._register(model.onProviderIdChange((provider) => this.handleProviderIdChanged(provider)));
+		this._register(model.kernelChanged((kernelArgs) => this.handleKernelChanged(kernelArgs)));
 		this._model = this._register(model);
 		await this._model.loadContents(trusted);
 		this.setLoading(false);
@@ -382,7 +373,7 @@ export class NotebookComponent extends AngularDisposable implements OnInit, OnDe
 		this.notificationService.notify(notification);
 	}
 
-	private handleContentChanged(change: NotebookContentChange) {
+	private handleContentChanged() {
 		// Note: for now we just need to set dirty state and refresh the UI.
 		this.detectChanges();
 	}

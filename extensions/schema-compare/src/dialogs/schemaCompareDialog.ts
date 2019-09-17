@@ -60,7 +60,7 @@ export class SchemaCompareDialog {
 	private targetIsDacpac: boolean;
 	private connectionId: string;
 	private sourceDbEditable: string;
-	private taregtDbEditable: string;
+	private targetDbEditable: string;
 	private previousSource: mssql.SchemaCompareEndpointInfo;
 	private previousTarget: mssql.SchemaCompareEndpointInfo;
 
@@ -190,7 +190,8 @@ export class SchemaCompareDialog {
 		this.schemaCompareTab.registerContent(async view => {
 			this.sourceTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareResult.sourceEndpointInfo ? this.schemaCompareResult.sourceEndpointInfo.packageFilePath : '',
-				width: 275
+				width: 275,
+				ariaLabel: localize('schemaCompareDialog.sourceTextBox', "Source file")
 			}).component();
 
 			this.sourceTextBox.onTextChanged((e) => {
@@ -199,7 +200,8 @@ export class SchemaCompareDialog {
 
 			this.targetTextBox = view.modelBuilder.inputBox().withProperties({
 				value: this.schemaCompareResult.targetEndpointInfo ? this.schemaCompareResult.targetEndpointInfo.packageFilePath : '',
-				width: 275
+				width: 275,
+				ariaLabel: localize('schemaCompareDialog.targetTextBox', "Target file")
 			}).component();
 
 			this.targetTextBox.onTextChanged(() => {
@@ -271,9 +273,9 @@ export class SchemaCompareDialog {
 						components: targetComponents
 					}
 				], {
-						horizontal: true,
-						titleFontSize: titleFontSize
-					})
+					horizontal: true,
+					titleFontSize: titleFontSize
+				})
 				.withLayout({
 					width: '100%',
 					padding: '10px 10px 0 30px'
@@ -304,7 +306,7 @@ export class SchemaCompareDialog {
 
 		currentButton.onDidClick(async (click) => {
 			// file browser should open where the current dacpac is or the appropriate default folder
-			let rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			let rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
 			let defaultUri = endpoint && endpoint.packageFilePath && existsSync(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
 
 			let fileUris = await vscode.window.showOpenDialog(
@@ -374,9 +376,11 @@ export class SchemaCompareDialog {
 		// if source is currently a db, show it in the server and db dropdowns
 		if (this.schemaCompareResult.sourceEndpointInfo && this.schemaCompareResult.sourceEndpointInfo.endpointType === mssql.SchemaCompareEndpointType.Database) {
 			databaseRadioButton.checked = true;
+			databaseRadioButton.focused = true;
 			this.sourceIsDacpac = false;
 		} else {
 			dacpacRadioButton.checked = true;
+			dacpacRadioButton.focused = true;
 			this.sourceIsDacpac = true;
 		}
 		let flexRadioButtonsModel = view.modelBuilder.flexContainer()
@@ -451,7 +455,7 @@ export class SchemaCompareDialog {
 		let sourcefilled = (this.sourceIsDacpac && this.existsDacpac(this.sourceTextBox.value))
 			|| (!this.sourceIsDacpac && !isNullOrUndefined(this.sourceDatabaseDropdown.value) && this.sourceDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.sourceDbEditable)) !== -1);
 		let targetfilled = (this.targetIsDacpac && this.existsDacpac(this.targetTextBox.value))
-			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.taregtDbEditable)) !== -1);
+			|| (!this.targetIsDacpac && !isNullOrUndefined(this.targetDatabaseDropdown.value) && this.targetDatabaseDropdown.values.findIndex(x => this.matchesValue(x, this.targetDbEditable)) !== -1);
 
 		return sourcefilled && targetfilled;
 	}
@@ -464,7 +468,8 @@ export class SchemaCompareDialog {
 		this.sourceServerDropdown = view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.sourceServerDropdown', "Source Server")
 			}
 		).component();
 		this.sourceServerDropdown.onValueChanged(async (value) => {
@@ -489,7 +494,8 @@ export class SchemaCompareDialog {
 		this.targetServerDropdown = view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.targetServerDropdown', "Target Server")
 			}
 		).component();
 		this.targetServerDropdown.onValueChanged(async (value) => {
@@ -586,7 +592,8 @@ export class SchemaCompareDialog {
 		this.sourceDatabaseDropdown = view.modelBuilder.dropDown().withProperties(
 			{
 				editable: true,
-				fireOnTextChange: true
+				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.sourceDatabaseDropdown', "Source Database")
 			}
 		).component();
 		this.sourceDatabaseDropdown.onValueChanged((value) => {
@@ -605,10 +612,11 @@ export class SchemaCompareDialog {
 			{
 				editable: true,
 				fireOnTextChange: true,
+				ariaLabel: localize('schemaCompareDialog.targetDatabaseDropdown', "Target Database")
 			}
 		).component();
 		this.targetDatabaseDropdown.onValueChanged((value) => {
-			this.taregtDbEditable = value;
+			this.targetDbEditable = value;
 			this.dialog.okButton.enabled = this.shouldEnableOkayButton();
 		});
 

@@ -25,6 +25,8 @@ declare module 'azdata' {
 		 * Register a connection event listener
 		 */
 		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+
+		export function getConnection(uri: string): Thenable<ConnectionProfile>;
 	}
 
 
@@ -73,7 +75,6 @@ declare module 'azdata' {
 		startSerialization(requestParams: SerializeDataStartRequestParams): Thenable<SerializeDataResult>;
 		continueSerialization(requestParams: SerializeDataContinueRequestParams): Thenable<SerializeDataResult>;
 	}
-
 
 	export namespace dataprotocol {
 		export function registerSerializationProvider(provider: SerializationProvider): vscode.Disposable;

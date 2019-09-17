@@ -4,7 +4,7 @@
 |----------------------------------------------------------------------------*/
 
 import * as widgets from './widgets';
-import { IRenderMime } from '../../common/models/renderMimeInterfaces';
+import { IRenderMime } from '../models/renderMimeInterfaces';
 
 /**
  * A mime renderer factory for raw html.
@@ -92,4 +92,3 @@ export const standardRendererFactories: ReadonlyArray<IRenderMime.IRendererFacto
 	textRendererFactory,
 	dataResourceRendererFactory
 ];
-

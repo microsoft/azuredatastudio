@@ -15,6 +15,16 @@ import { IHdfsOptions, IRequestParams } from './fileSources';
 const localize = nls.loadMessageBundle();
 const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', "Invalid Data Structure");
 
+const emitError = (instance, err) => {
+	const isErrorEmitted = instance.errorEmitted;
+
+	if (!isErrorEmitted) {
+		instance.emit('error', err);
+		instance.emit('finish');
+	}
+
+	instance.errorEmitted = true;
+};
 export class WebHDFS {
 	private _requestParams: IRequestParams;
 	private _opts: IHdfsOptions;
@@ -544,31 +554,55 @@ export class WebHDFS {
 			return this.doCreateWriteStream(params);
 		}
 		// Else, must add kerberos token and handle redirects
+		return this.createKerberosWriteStream(params);
+	}
+
+	private createKerberosWriteStream(params: any): fs.WriteStream {
 		params.followRedirect = false;
-		let replyStream = through();
+		// Create an intermediate stream that pauses until we get a positive
+		// response from the server
+		let isWaiting = true;
+		let firstCb: Function = undefined;
+		let replyStream = through(function (chunk, enc, cb) {
+			this.push(chunk, enc);
+			if (isWaiting) {
+				firstCb = cb;
+			} else {
+				cb();
+			}
+		});
 		let handleErr = (err) => {
 			replyStream.emit('error', err);
 			replyStream.end();
 		};
 		let initRedirectedStream = () => {
-			let redirectedStream = this.doCreateWriteStream(params);
-			replyStream.pipe(redirectedStream);
+			// After redirect, create valid stream to correct location
+			// and pipe the intermediate stream to it, unblocking the data flow
+			params.headers['content-type'] = 'application/octet-stream';
+			let upload = request(params, (err, res, bo) => {
+				if (err || this.isError(res)) {
+					emitError(replyStream, this.parseError(res, bo, err));
+					replyStream.end();
+				}
+				else if (res.headers.hasOwnProperty('location')) {
+					replyStream.emit('finish', res.headers.location);
+				}
+				else {
+					replyStream.emit('finish');
+				}
+			});
+			isWaiting = false;
+			replyStream.pipe(upload);
+			if (firstCb) {
+				firstCb();
+			}
 		};
 		this.requestWithRedirectAndAuth(params, initRedirectedStream, handleErr);
 		return <fs.WriteStream><any>replyStream;
 	}
 
 	private doCreateWriteStream(params: any): fs.WriteStream {
-		let emitError = (instance, err) => {
-			const isErrorEmitted = instance.errorEmitted;
 
-			if (!isErrorEmitted) {
-				instance.emit('error', err);
-				instance.emit('finish');
-			}
-
-			instance.errorEmitted = true;
-		};
 		let canResume: boolean = true;
 		let stream = undefined;
 		let req = request(params, (error, response, body) => {
@@ -680,6 +714,8 @@ export class WebHDFS {
 				this.setKerberosAuthOnParams(params)
 					.then(onRedirected)
 					.catch(handleErr);
+			} else {
+				handleErr(err);
 			}
 		});
 	}

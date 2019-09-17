@@ -136,7 +136,7 @@ export abstract class DacFxConfigPage extends BasePage {
 			if (!(this.instance.selectedOperation === Operation.deploy && !this.model.upgradeExisting)) {
 				this.model.database = values[0].name;
 			}
-			// filename shouldn't change for deploy because the file exists and isn't being generated like for extract and export
+			// filename shouldn't change for deploy because the file exists and isn't being generated as for extract and export
 			if (this.instance.selectedOperation !== Operation.deploy) {
 				this.model.filePath = this.generateFilePathFromDatabaseAndTimestamp();
 				this.fileTextBox.value = this.model.filePath;
@@ -156,7 +156,8 @@ export abstract class DacFxConfigPage extends BasePage {
 			component => isValidBasename(component.value)
 		)
 			.withProperties({
-				required: true
+				required: true,
+				ariaLive: 'polite'
 			}).component();
 
 		this.fileTextBox.ariaLabel = localize('dacfx.fileLocationAriaLabel', "File Location");
@@ -181,7 +182,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
 			return path.dirname(this.fileTextBox.value);
 		} else { // otherwise use the folder open in the Explorer or the home directory
-			return vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
 		}
 	}
 

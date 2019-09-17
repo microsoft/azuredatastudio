@@ -12,13 +12,13 @@ import { ICommandService } from 'vs/platform/commands/common/commands';
 import { ISanitizer, defaultSanitizer } from 'sql/workbench/parts/notebook/browser/outputs/sanitizer';
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { IMimeComponent } from 'sql/workbench/parts/notebook/browser/outputs/mimeRegistry';
-import { INotebookService } from 'sql/workbench/services/notebook/common/notebookService';
+import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/electron-browser/outputs/notebookMarkdown';
-import { MimeModel } from 'sql/workbench/parts/notebook/common/models/mimemodel';
-import { ICellModel } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
-import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { MimeModel } from 'sql/workbench/parts/notebook/browser/models/mimemodel';
+import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { useInProcMarkdown, convertVscodeResourceToFileInSubDirectories } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { URI } from 'vs/base/common/uri';
 
 @Component({

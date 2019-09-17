@@ -30,7 +30,7 @@ import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { isUndefinedOrNull } from 'vs/base/common/types';
 import { range } from 'vs/base/common/arrays';
 import { Orientation } from 'vs/base/browser/ui/splitview/splitview';
-import { Disposable, IDisposable, dispose } from 'vs/base/common/lifecycle';
+import { Disposable, dispose, DisposableStore } from 'vs/base/common/lifecycle';
 import { generateUuid } from 'vs/base/common/uuid';
 import { Separator, ActionBar, ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 import { isInDOM, Dimension } from 'vs/base/browser/dom';
@@ -59,12 +59,12 @@ const ACTIONBAR_HEIGHT = 120;
 // this handles min size if rows is greater than the min grid visible rows
 const MIN_GRID_HEIGHT = (MIN_GRID_HEIGHT_ROWS * ROW_HEIGHT) + HEADER_HEIGHT + ESTIMATED_SCROLL_BAR_HEIGHT;
 
-export class GridPanel {
+export class GridPanel extends Disposable {
 	private container = document.createElement('div');
 	private splitView: ScrollableSplitView;
 	private tables: GridTable<any>[] = [];
-	private tableDisposable: IDisposable[] = [];
-	private queryRunnerDisposables: IDisposable[] = [];
+	private tableDisposable = this._register(new DisposableStore());
+	private queryRunnerDisposables = this._register(new DisposableStore());
 	private currentHeight: number;
 
 	private runner: QueryRunner;
@@ -78,6 +78,7 @@ export class GridPanel {
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@ILogService private readonly logService: ILogService
 	) {
+		super();
 		this.splitView = new ScrollableSplitView(this.container, { enableResizing: false, verticalScrollbarVisibility: ScrollbarVisibility.Visible });
 		this.splitView.onScroll(e => {
 			if (this.state && this.splitView.length !== 0) {
@@ -107,13 +108,12 @@ export class GridPanel {
 	}
 
 	public set queryRunner(runner: QueryRunner) {
-		dispose(this.queryRunnerDisposables);
+		this.queryRunnerDisposables.clear();
 		this.reset();
-		this.queryRunnerDisposables = [];
 		this.runner = runner;
-		this.queryRunnerDisposables.push(this.runner.onResultSet(this.onResultSet, this));
-		this.queryRunnerDisposables.push(this.runner.onResultSetUpdate(this.updateResultSet, this));
-		this.queryRunnerDisposables.push(this.runner.onQueryStart(() => {
+		this.queryRunnerDisposables.add(this.runner.onResultSet(this.onResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onResultSetUpdate(this.updateResultSet, this));
+		this.queryRunnerDisposables.add(this.runner.onQueryStart(() => {
 			if (this.state) {
 				this.state.tableStates = [];
 			}
@@ -218,14 +218,14 @@ export class GridPanel {
 				}
 			}
 			let table = this.instantiationService.createInstance(GridTable, this.runner, set, tableState);
-			this.tableDisposable.push(tableState.onMaximizedChange(e => {
+			this.tableDisposable.add(tableState.onMaximizedChange(e => {
 				if (e) {
 					this.maximizeTable(table.id);
 				} else {
 					this.minimizeTables();
 				}
 			}));
-			this.tableDisposable.push(attachTableStyler(table, this.themeService));
+			this.tableDisposable.add(attachTableStyler(table, this.themeService));
 
 			tables.push(table);
 		}
@@ -254,8 +254,7 @@ export class GridPanel {
 			this.splitView.removeView(i);
 		}
 		dispose(this.tables);
-		dispose(this.tableDisposable);
-		this.tableDisposable = [];
+		this.tableDisposable.clear();
 		this.tables = [];
 		this.maximizedGrid = undefined;
 	}
@@ -305,11 +304,9 @@ export class GridPanel {
 	}
 
 	public dispose() {
-		dispose(this.queryRunnerDisposables);
-		dispose(this.tableDisposable);
 		dispose(this.tables);
-		this.tableDisposable = undefined;
 		this.tables = undefined;
+		super.dispose();
 	}
 }
 
@@ -449,6 +446,7 @@ export abstract class GridTableBase<T> extends Disposable implements IView {
 		};
 		this.dataProvider = new AsyncDataProvider(collection);
 		this.table = this._register(new Table(tableContainer, { dataProvider: this.dataProvider, columns: this.columns }, tableOptions));
+		this.table.setTableTitle(localize('resultsGrid', "Results grid"));
 		this.table.setSelectionModel(this.selectionModel);
 		this.table.registerPlugin(new MouseWheelSupport());
 		this.table.registerPlugin(new AutoColumnSize({ autoSizeOnRender: !this.state.columnSizes && this.configurationService.getValue('resultsGrid.autoSizeColumns'), maxWidth: this.configurationService.getValue<number>('resultsGrid.maxColumnWidth') }));

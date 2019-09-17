@@ -20,7 +20,7 @@ import { BareResultsGridInfo } from 'sql/workbench/parts/query/browser/queryResu
 import { IEditDataComponentParams } from 'sql/platform/bootstrap/common/bootstrapParams';
 import { EditDataModule } from 'sql/workbench/parts/editData/browser/editData.module';
 import { EDITDATA_SELECTOR } from 'sql/workbench/parts/editData/browser/editData.component';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IStorageService } from 'vs/platform/storage/common/storage';
 

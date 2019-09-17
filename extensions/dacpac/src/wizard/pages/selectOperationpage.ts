@@ -39,6 +39,10 @@ export class SelectOperationPage extends BasePage {
 		let importComponent = await this.createImportRadioButton();
 		let exportComponent = await this.createExportRadioButton();
 
+		// default have the first radio button checked
+		this.deployRadioButton.checked = true;
+		this.deployRadioButton.focused = true;
+
 		this.form = this.view.modelBuilder.formContainer()
 			.withFormItems(
 				[
@@ -47,12 +51,10 @@ export class SelectOperationPage extends BasePage {
 					importComponent,
 					exportComponent
 				], {
-					horizontal: true
-				}).component();
+				horizontal: true
+			}).component();
 		await this.view.initializeModel(this.form);
 
-		// default have the first radio button checked
-		this.deployRadioButton.checked = true;
 		this.instance.setDoneButton(Operation.deploy);
 		return true;
 	}

@@ -8,36 +8,49 @@ import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProper
 import { instanceStorageKey, firstSessionDateStorageKey, lastSessionDateStorageKey } from 'vs/platform/telemetry/common/telemetry';
 import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtils';
 
-// {{ SQL CARBON EDIT }}
-import product from 'vs/platform/product/node/product';
+import product from 'vs/platform/product/node/product'; // {{ SQL CARBON EDIT }}
 
-export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, installSourcePath: string, remoteAuthority?: string): Promise<{ [name: string]: string | undefined }> {
-	const result = await resolveCommonProperties(commit, version, machineId, installSourcePath);
+export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, msftInternalDomains: string[] | undefined, installSourcePath: string, remoteAuthority?: string): Promise<{ [name: string]: string | boolean | undefined }> {
+	const result = await resolveCommonProperties(commit, version, machineId, msftInternalDomains, installSourcePath);
 	const instanceId = storageService.get(instanceStorageKey, StorageScope.GLOBAL)!;
 	const firstSessionDate = storageService.get(firstSessionDateStorageKey, StorageScope.GLOBAL)!;
 	const lastSessionDate = storageService.get(lastSessionDateStorageKey, StorageScope.GLOBAL)!;
 
-	// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	// result['common.version.shell'] = process.versions && process.versions['electron'];
-	// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	// result['common.version.renderer'] = process.versions && process.versions['chrome'];
-	// __GDPR__COMMON__ "common.firstSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	// result['common.firstSessionDate'] = firstSessionDate;
-	// __GDPR__COMMON__ "common.lastSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	// result['common.lastSessionDate'] = lastSessionDate || '';
-	// __GDPR__COMMON__ "common.isNewSession" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	// result['common.isNewSession'] = !lastSessionDate ? '1' : '0';
-	// __GDPR__COMMON__ "common.instanceId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
-	// result['common.instanceId'] = instanceId;
-	// __GDPR__COMMON__ "common.remoteAuthority" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
-	// result['common.remoteAuthority'] = cleanRemoteAuthority(remoteAuthority);
+	if (product.quality !== 'stable') {
+		// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		result['common.version.shell'] = process.versions && process.versions['electron'];
+		// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		result['common.version.renderer'] = process.versions && process.versions['chrome'];
+		// __GDPR__COMMON__ "common.firstSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		result['common.firstSessionDate'] = firstSessionDate;
+		// __GDPR__COMMON__ "common.lastSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		result['common.lastSessionDate'] = lastSessionDate || '';
+		// __GDPR__COMMON__ "common.isNewSession" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		result['common.isNewSession'] = !lastSessionDate ? '1' : '0';
+		// __GDPR__COMMON__ "common.instanceId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		result['common.instanceId'] = instanceId;
+		// __GDPR__COMMON__ "common.remoteAuthority" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		result['common.remoteAuthority'] = cleanRemoteAuthority(remoteAuthority);
+	} else {
+		// __GDPR__COMMON__ "common.version.shell" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		// result['common.version.shell'] = process.versions && process.versions['electron'];
+		// __GDPR__COMMON__ "common.version.renderer" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		// result['common.version.renderer'] = process.versions && process.versions['chrome'];
+		// __GDPR__COMMON__ "common.firstSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		// result['common.firstSessionDate'] = firstSessionDate;
+		// __GDPR__COMMON__ "common.lastSessionDate" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		// result['common.lastSessionDate'] = lastSessionDate || '';
+		// __GDPR__COMMON__ "common.isNewSession" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		// result['common.isNewSession'] = !lastSessionDate ? '1' : '0';
+		// __GDPR__COMMON__ "common.instanceId" : { "classification": "SystemMetaData", "purpose": "FeatureInsight" }
+		// result['common.instanceId'] = instanceId;
+		// __GDPR__COMMON__ "common.remoteAuthority" : { "classification": "SystemMetaData", "purpose": "PerformanceAndHealth" }
+		// result['common.remoteAuthority'] = cleanRemoteAuthority(remoteAuthority);
 
-	// {{SQL CARBON EDIT}}
-	result['common.application.name'] = product.nameLong;
-	// {{SQL CARBON EDIT}}
-	result['common.userId'] = '';
+		result['common.userId'] = ''; // {{SQL CARBON EDIT}}
+	}
 
-	// {{SQL CARBON EDIT}}
+	result['common.application.name'] = product.nameLong; // {{SQL CARBON EDIT}}
 	setUsageDates(storageService);
 
 	return result;

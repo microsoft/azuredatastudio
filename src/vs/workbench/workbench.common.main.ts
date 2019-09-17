@@ -53,6 +53,7 @@ import 'vs/workbench/browser/parts/views/views';
 
 //#region --- workbench services
 
+import 'vs/workbench/services/extensions/common/extensionUrlHandler';
 import 'vs/workbench/services/bulkEdit/browser/bulkEditService';
 import 'vs/workbench/services/keybinding/common/keybindingEditing';
 import 'vs/workbench/services/decorations/browser/decorationsService';
@@ -74,6 +75,8 @@ import 'vs/workbench/services/themes/browser/workbenchThemeService';
 import 'vs/workbench/services/label/common/labelService';
 import 'vs/workbench/services/extensionManagement/common/extensionEnablementService';
 import 'vs/workbench/services/notification/common/notificationService';
+import 'vs/workbench/services/extensions/common/staticExtensions';
+import 'vs/workbench/services/workspace/browser/workspaceEditingService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { ExtensionGalleryService } from 'vs/platform/extensionManagement/common/extensionGalleryService';
@@ -97,6 +100,8 @@ import { IMenuService } from 'vs/platform/actions/common/actions';
 import { MenuService } from 'vs/platform/actions/common/menuService';
 import { IDownloadService } from 'vs/platform/download/common/download';
 import { DownloadService } from 'vs/platform/download/common/downloadService';
+import { OpenerService } from 'vs/editor/browser/services/openerService';
+import { IOpenerService } from 'vs/platform/opener/common/opener';
 
 registerSingleton(IExtensionGalleryService, ExtensionGalleryService, true);
 registerSingleton(IContextViewService, ContextViewService, true);
@@ -109,6 +114,7 @@ registerSingleton(IModelService, ModelServiceImpl, true);
 registerSingleton(ITextResourceConfigurationService, TextResourceConfigurationService);
 registerSingleton(IMenuService, MenuService, true);
 registerSingleton(IDownloadService, DownloadService, true);
+registerSingleton(IOpenerService, OpenerService, true);
 
 //#endregion
 
@@ -168,6 +174,7 @@ import 'vs/workbench/contrib/url/common/url.contribution';
 
 // Webview
 import 'vs/workbench/contrib/webview/browser/webview.contribution';
+import 'vs/workbench/contrib/customEditor/browser/webviewEditor.contribution';
 
 // Extensions Management
 import 'vs/workbench/contrib/extensions/browser/extensions.contribution';
@@ -215,11 +222,13 @@ import 'vs/workbench/contrib/format/browser/format.contribution';
 // Themes
 import 'vs/workbench/contrib/themes/browser/themes.contribution';
 
+// Update
+import 'vs/workbench/contrib/update/browser/update.contribution';
+
 // Watermark
 import 'vs/workbench/contrib/watermark/browser/watermark';
 
 // Welcome
-import 'vs/workbench/contrib/welcome/walkThrough/browser/walkThrough.contribution';
 import 'vs/workbench/contrib/welcome/overlay/browser/welcomeOverlay';
 
 // Call Hierarchy

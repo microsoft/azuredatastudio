@@ -14,13 +14,14 @@ import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import Severity from 'vs/base/common/severity';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 import { UNSAVED_GROUP_ID } from 'sql/platform/connection/common/constants';
+import { IServerGroupController } from 'sql/platform/serverGroup/common/serverGroupController';
 
 export class RefreshAction extends Action {
 
@@ -173,14 +174,14 @@ export class AddServerGroupAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
 		this.class = 'add-server-group-action';
 	}
 
 	public run(): Promise<boolean> {
-		this._connectionManagementService.showCreateServerGroupDialog();
+		this.serverGroupController.showCreateGroupDialog();
 		return Promise.resolve(true);
 	}
 }
@@ -196,14 +197,14 @@ export class EditServerGroupAction extends Action {
 		id: string,
 		label: string,
 		private _group: ConnectionProfileGroup,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		@IServerGroupController private readonly serverGroupController: IServerGroupController
 	) {
 		super(id, label);
 		this.class = 'edit-server-group-action';
 	}
 
 	public run(): Promise<boolean> {
-		this._connectionManagementService.showEditServerGroupDialog(this._group);
+		this.serverGroupController.showEditGroupDialog(this._group);
 		return Promise.resolve(true);
 	}
 }
@@ -231,8 +232,7 @@ export class ActiveConnectionsFilterAction extends Action {
 	constructor(
 		id: string,
 		label: string,
-		private view: ServerTreeView,
-		@IConnectionManagementService private _connectionManagementService: IConnectionManagementService
+		private view: ServerTreeView
 	) {
 		super(id, label);
 		this.class = ActiveConnectionsFilterAction.enabledClass;
@@ -300,40 +300,6 @@ export class RecentConnectionsFilterAction extends Action {
 			this.view.refreshTree();
 			this.isSet = false;
 		}
-		return Promise.resolve(true);
-	}
-}
-
-export class NewQueryAction extends Action {
-	public static ID = 'registeredServers.newQuery';
-	public static LABEL = localize('registeredServers.newQuery', "New Query");
-	private _connectionProfile: IConnectionProfile;
-	get connectionProfile(): IConnectionProfile {
-		return this._connectionProfile;
-	}
-	set connectionProfile(profile: IConnectionProfile) {
-		this._connectionProfile = profile;
-	}
-
-	constructor(
-		id: string,
-		label: string,
-		@IQueryEditorService private queryEditorService: IQueryEditorService,
-		@IConnectionManagementService private connectionManagementService: IConnectionManagementService,
-		@IObjectExplorerService protected _objectExplorerService: IObjectExplorerService,
-		@IEditorService protected _workbenchEditorService: IEditorService,
-		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService
-	) {
-		super(id, label);
-		this.class = 'extension-action update';
-	}
-
-	public run(actionContext: ObjectExplorerActionsContext): Promise<boolean> {
-		if (actionContext instanceof ObjectExplorerActionsContext) {
-			this._connectionProfile = new ConnectionProfile(this._capabilitiesService, actionContext.connectionProfile);
-		}
-
-		TaskUtilities.newQuery(this._connectionProfile, this.connectionManagementService, this.queryEditorService, this._objectExplorerService, this._workbenchEditorService);
 		return Promise.resolve(true);
 	}
 }

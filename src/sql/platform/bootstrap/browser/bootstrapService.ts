@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { NgModuleRef, enableProdMode, PlatformRef, Provider } from '@angular/core';
+import { NgModuleRef, PlatformRef, Provider } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 import { IInstantiationService, _util } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorInput } from 'vs/workbench/common/editor';
@@ -60,8 +60,4 @@ export function bootstrapAngular<T>(service: IInstantiationService, moduleType: 
 	});
 
 	return uniqueSelectorString;
-}
-
-if (!process.env['VSCODE_DEV']) {
-	enableProdMode();
 }

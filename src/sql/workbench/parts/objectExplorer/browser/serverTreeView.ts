@@ -24,7 +24,7 @@ import { IConnectionManagementService } from 'sql/platform/connection/common/con
 import { TreeCreationUtils } from 'sql/workbench/parts/objectExplorer/browser/treeCreationUtils';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
 import { TreeSelectionHandler } from 'sql/workbench/parts/objectExplorer/browser/treeSelectionHandler';
-import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/common/objectExplorerService';
+import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/browser/objectExplorerService';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { Button } from 'sql/base/browser/ui/button/button';
 import { attachButtonStyler } from 'sql/platform/theme/common/styler';
@@ -171,13 +171,13 @@ export class ServerTreeView extends Disposable {
 			}));
 		}
 
-		return new Promise<void>((resolve, reject) => {
+		return new Promise<void>(async (resolve, reject) => {
 			this.refreshTree();
 			const root = <ConnectionProfileGroup>this._tree.getInput();
 
 			const expandGroups: boolean = this._configurationService.getValue(SERVER_GROUP_CONFIG)[SERVER_GROUP_AUTOEXPAND_CONFIG];
 			if (expandGroups) {
-				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
+				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(root));
 			}
 
 			if (root && !root.hasValidConnections) {
@@ -270,9 +270,9 @@ export class ServerTreeView extends Disposable {
 		if (connection) {
 			const conn = this.getConnectionInTreeInput(connection.id);
 			if (conn) {
-				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(() => {
-					this._tree.collapse(conn);
-					this._tree.refresh(conn);
+				return this._objectExplorerService.deleteObjectExplorerNode(conn).then(async () => {
+					await this._tree.collapse(conn);
+					return this._tree.refresh(conn);
 				});
 			}
 		}
@@ -342,10 +342,10 @@ export class ServerTreeView extends Disposable {
 			} else {
 				treeInput = filteredResults[0];
 			}
-			this._tree.setInput(treeInput).then(() => {
+			this._tree.setInput(treeInput).then(async () => {
 				if (isHidden(this.messages)) {
 					this._tree.getFocus();
-					this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+					await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 				} else {
 					this._tree.clearFocus();
 				}
@@ -374,10 +374,10 @@ export class ServerTreeView extends Disposable {
 		// Add all connections to tree root and set tree input
 		const treeInput = new ConnectionProfileGroup('searchroot', undefined, 'searchroot', undefined, undefined);
 		treeInput.addConnections(filteredResults);
-		this._tree.setInput(treeInput).then(() => {
+		this._tree.setInput(treeInput).then(async () => {
 			if (isHidden(this.messages)) {
 				this._tree.getFocus();
-				this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
+				await this._tree.expandAll(ConnectionProfileGroup.getSubgroups(treeInput));
 			} else {
 				this._tree.clearFocus();
 			}

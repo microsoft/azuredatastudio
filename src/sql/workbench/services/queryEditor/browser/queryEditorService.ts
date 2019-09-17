@@ -5,11 +5,11 @@
 
 import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResultsInput';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
-import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/common/customInputConverter';
+import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/browser/customInputConverter';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
 import { ITextModel } from 'vs/editor/common/model';
@@ -23,7 +23,7 @@ import paths = require('vs/base/common/extpath');
 import { isLinux } from 'vs/base/common/platform';
 import { Schemas } from 'vs/base/common/network';
 import { INotificationService } from 'vs/platform/notification/common/notification';
-import { EditDataResultsInput } from 'sql/workbench/parts/editData/common/editDataResultsInput';
+import { EditDataResultsInput } from 'sql/workbench/parts/editData/browser/editDataResultsInput';
 import { IEditorInput, IEditor } from 'vs/workbench/common/editor';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { ILanguageSelection } from 'vs/editor/common/services/modeService';
@@ -36,7 +36,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
  */
 export class QueryEditorService implements IQueryEditorService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private static CHANGE_UNSUPPORTED_ERROR_MESSAGE = nls.localize(
 		'queryEditorServiceChangeUnsupportedError',

@@ -69,8 +69,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 					},
 					this.dataLossComponentGroup
 				], {
-					horizontal: true,
-				});
+				horizontal: true,
+			});
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);
 
@@ -99,7 +99,8 @@ export class DeployPlanPage extends DacFxConfigPage {
 			data: this.getColumnData(result),
 			columns: this.getTableColumns(result.dataLossAlerts.size > 0),
 			width: 875,
-			height: 300
+			height: 300,
+			ariaRole: 'alert'
 		});
 
 		if (result.dataLossAlerts.size > 0) {

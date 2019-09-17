@@ -19,7 +19,7 @@ export interface IHandleFirewallRuleResult {
 }
 
 export interface IResourceProviderService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Register a resource provider

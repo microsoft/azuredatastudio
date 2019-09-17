@@ -84,7 +84,7 @@ export class CmsUtils {
 	// CMS APIs
 	public async getCmsService(): Promise<mssql.ICmsService> {
 		if (!this._cmsService) {
-			this._cmsService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).cmsService;
+			this._cmsService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).cmsService;
 		}
 		return this._cmsService;
 	}
@@ -126,7 +126,7 @@ export class CmsUtils {
 	}
 
 	public async deleteCmsServer(cmsServerName: string, connection: azdata.connection.Connection): Promise<void> {
-		const servers: ICmsResourceNodeInfo[] = this._memento.get('servers');
+		const servers: ICmsResourceNodeInfo[] = this._memento.get('centralManagementServers');
 		if (servers) {
 			const newServers: ICmsResourceNodeInfo[] = servers.filter((cachedServer) => {
 				return cachedServer.name !== cmsServerName;

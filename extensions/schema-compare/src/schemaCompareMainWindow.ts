@@ -15,7 +15,6 @@ import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri 
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 const localize = nls.loadMessageBundle();
-const msSqlProvider = 'MSSQL';
 const diffEditorTitle = localize('schemaCompare.CompareDetailsTitle', 'Compare Details');
 const applyConfirmation = localize('schemaCompare.ApplyConfirmation', 'Are you sure you want to update the target?');
 const reCompareToRefeshMessage = localize('schemaCompare.RecompareToRefresh', 'Press Compare to refresh the comparison.');
@@ -74,7 +73,7 @@ export class SchemaCompareMainWindow {
 	public sourceEndpointInfo: mssql.SchemaCompareEndpointInfo;
 	public targetEndpointInfo: mssql.SchemaCompareEndpointInfo;
 
-	constructor() {
+	constructor(private schemaCompareService?: mssql.ISchemaCompareService) {
 		this.SchemaCompareActionMap = new Map<Number, string>();
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Delete] = localize('schemaCompare.deleteAction', 'Delete');
 		this.SchemaCompareActionMap[mssql.SchemaUpdateAction.Change] = localize('schemaCompare.changeAction', 'Change');
@@ -102,7 +101,8 @@ export class SchemaCompareMainWindow {
 		this.editor.registerContent(async view => {
 			this.differencesTable = view.modelBuilder.table().withProperties({
 				data: [],
-				height: 300
+				height: 300,
+				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
 			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
@@ -273,7 +273,7 @@ export class SchemaCompareMainWindow {
 
 	public async execute(): Promise<void> {
 		Telemetry.sendTelemetryEvent('SchemaComparisonStarted');
-		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+		const service = await this.getService();
 		if (!this.operationId) {
 			// create once per page
 			this.operationId = generateGuid();
@@ -299,19 +299,16 @@ export class SchemaCompareMainWindow {
 			columns: [
 				{
 					value: localize('schemaCompare.typeColumn', 'Type'),
-					toolTip: localize('schemaCompare.typeColumn', 'Type'),
 					cssClass: 'align-with-header',
 					width: 50
 				},
 				{
 					value: localize('schemaCompare.sourceNameColumn', 'Source Name'),
-					toolTip: localize('schemaCompare.sourceNameColumn', 'Source Name'),
 					cssClass: 'align-with-header',
 					width: 90
 				},
 				{
 					value: localize('schemaCompare.includeColumnName', 'Include'),
-					toolTip: localize('schemaCompare.includeColumnName', 'Include'),
 					cssClass: 'align-with-header',
 					width: 60,
 					type: azdata.ColumnType.checkBox,
@@ -319,13 +316,11 @@ export class SchemaCompareMainWindow {
 				},
 				{
 					value: localize('schemaCompare.actionColumn', 'Action'),
-					toolTip: localize('schemaCompare.actionColumn', 'Action'),
 					cssClass: 'align-with-header',
 					width: 30
 				},
 				{
 					value: localize('schemaCompare.targetNameColumn', 'Target Name'),
-					toolTip: localize('schemaCompare.targetNameColumn', 'Target Name'),
 					cssClass: 'align-with-header',
 					width: 150
 				}
@@ -589,7 +584,7 @@ export class SchemaCompareMainWindow {
 
 		// cancel compare
 		if (this.operationId) {
-			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+			const service = await this.getService();
 			const result = await service.schemaCompareCancel(this.operationId);
 
 			if (!result || !result.success) {
@@ -621,7 +616,7 @@ export class SchemaCompareMainWindow {
 				'startTime:': Date.now().toString(),
 				'operationId': this.comparisonResult.operationId
 			});
-			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+			const service = await this.getService();
 			const result = await service.schemaCompareGenerateScript(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.script);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareGenerateScriptFailed', {
@@ -681,7 +676,7 @@ export class SchemaCompareMainWindow {
 					// disable apply and generate script buttons because the results are no longer valid after applying the changes
 					this.setButtonsForRecompare();
 
-					const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+					const service = await this.getService();
 					const result = await service.schemaComparePublishChanges(this.comparisonResult.operationId, this.targetEndpointInfo.serverName, this.targetEndpointInfo.databaseName, azdata.TaskExecutionMode.execute);
 					if (!result || !result.success) {
 						Telemetry.sendTelemetryEvent('SchemaCompareApplyFailed', {
@@ -850,7 +845,7 @@ export class SchemaCompareMainWindow {
 
 		this.openScmpButton.onDidClick(async (click) => {
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpStarted');
-			const rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -869,7 +864,7 @@ export class SchemaCompareMainWindow {
 			}
 
 			let fileUri = fileUris[0];
-			const service = await SchemaCompareMainWindow.getService('MSSQL');
+			const service = await this.getService();
 			let startTime = Date.now();
 			const result = await service.schemaCompareOpenScmp(fileUri.fsPath);
 			if (!result || !result.success) {
@@ -947,7 +942,7 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.saveScmpButton.onDidClick(async (click) => {
-			const rootPath = vscode.workspace.rootPath ? vscode.workspace.rootPath : os.homedir();
+			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
 			const filePath = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(rootPath),
@@ -968,7 +963,7 @@ export class SchemaCompareMainWindow {
 
 			let startTime = Date.now();
 			Telemetry.sendTelemetryEvent('SchemaCompareSaveScmp');
-			const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+			const service = await this.getService();
 			const result = await service.schemaCompareSaveScmp(this.sourceEndpointInfo, this.targetEndpointInfo, azdata.TaskExecutionMode.execute, this.deploymentOptions, filePath.fsPath, sourceExcludes, targetExcludes);
 			if (!result || !result.success) {
 				Telemetry.sendTelemetryEvent('SchemaCompareSaveScmpFailed', {
@@ -1011,14 +1006,16 @@ export class SchemaCompareMainWindow {
 		}
 	}
 
-	private static async getService(providerName: string): Promise<mssql.ISchemaCompareService> {
-		let service = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.mssql).schemaCompare;
-		return service;
+	private async getService(): Promise<mssql.ISchemaCompareService> {
+		if (isNullOrUndefined(this.schemaCompareService)) {
+			this.schemaCompareService = (vscode.extensions.getExtension(mssql.extension.name).exports as mssql.IExtension).schemaCompare;
+		}
+		return this.schemaCompareService;
 	}
 
 	private async GetDefaultDeploymentOptions(): Promise<void> {
 		// Same as dacfx default options
-		const service = await SchemaCompareMainWindow.getService(msSqlProvider);
+		const service = await this.getService();
 		let result = await service.schemaCompareGetDefaultOptions();
 		this.setDeploymentOptions(result.defaultDeploymentOptions);
 	}

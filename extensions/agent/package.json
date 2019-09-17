@@ -2,12 +2,12 @@
 	"name": "agent",
 	"displayName": "SQL Server Agent",
 	"description": "Manage and troubleshoot SQL Server Agent jobs",
-	"version": "0.41.0",
+	"version": "0.43.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
 	"icon": "images/sqlserver.png",
-	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+	"aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
 	"engines": {
 		"vscode": "^1.25.0"
 	},
@@ -39,7 +39,43 @@
 					}
 				}
 			}
-		]
+		],
+		"commands": [
+			{
+				"command": "agent.openNotebookDialog",
+				"title": "Schedule Notebook",
+				"icon": {
+					"dark": "resources/dark/open_notebook_inverse.svg",
+					"light": "resources/light/open_notebook.svg"
+				}
+			},
+			{
+				"command": "agent.reuploadTemplate",
+				"title": "Update Template",
+				"icon": {
+					"dark": "resources/dark/open_notebook_inverse.svg",
+					"light": "resources/light/open_notebook.svg"
+				}
+			}
+		],
+		"menus": {
+			"notebook/toolbar": [
+				{
+					"command": "agent.openNotebookDialog",
+					"when": "providerId == sql && !agent:trackedTemplate"
+				},
+				{
+					"command": "agent.reuploadTemplate",
+					"when": "agent:trackedTemplate"
+				}
+			],
+			"explorer/context": [
+				{
+					"command": "agent.openNotebookDialog",
+					"when": "resourceExtname == .ipynb"
+				}
+			]
+		}
 	},
 	"dependencies": {
 		"vscode-nls": "^3.2.1"
@@ -48,7 +84,7 @@
 		"mocha-junit-reporter": "^1.17.0",
 		"mocha-multi-reporters": "^1.1.7",
 		"@types/mocha": "^5.2.5",
-		"@types/node": "^8.10.25",
+    "@types/node": "^10.14.8",
 		"mocha": "^5.2.0",
 		"should": "^13.2.1",
 		"typemoq": "^2.1.0",

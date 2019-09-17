@@ -1,67 +1,85 @@
 steps:
-- task: NodeTool@0
-  inputs:
-    versionSpec: '10.15.1'
-  displayName: 'Install Node.js'
+  - script: |
+      export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
+      sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
+      sudo chmod +x /etc/init.d/xvfb
+      sudo update-rc.d xvfb defaults
+      sudo service xvfb start
+      sudo apt-get install -y libkrb5-dev
+      # sh -e /etc/init.d/xvfb start
+      # sleep 3
+    displayName: "Linux preinstall"
+    condition: eq(variables['Agent.OS'], 'Linux')
 
-- script: |
-    npm i -g yarn
-  displayName: 'preinstall'
+  - task: NodeTool@0
+    inputs:
+      versionSpec: "10.15.1"
 
-- script: |
-    export CXX="g++-4.9" CC="gcc-4.9" DISPLAY=:10
-    sudo cp build/azure-pipelines/linux/xvfb.init /etc/init.d/xvfb
-    sudo chmod +x /etc/init.d/xvfb
-    sudo update-rc.d xvfb defaults
-    sudo service xvfb start
-    sudo apt-get install -y libkrb5-dev
-    # sh -e /etc/init.d/xvfb start
-    # sleep 3
-  displayName: 'Linux preinstall'
-  condition: eq(variables['Agent.OS'], 'Linux')
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.RestoreCacheV1.RestoreCache@1
+    inputs:
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
+      targetfolder: "**/node_modules, !**/node_modules/**/node_modules"
+      vstsFeed: "$(build-cache)"
 
-- script: |
-    yarn
-  displayName: 'Install'
+  - task: geeklearningio.gl-vsts-tasks-yarn.yarn-installer-task.YarnInstaller@3
+    inputs:
+      versionSpec: "1.10.1"
 
-- script: |
-    yarn gulp electron-x64
-  displayName: Download Electron
+  - script: |
+      yarn --frozen-lockfile
+    displayName: Install Dependencies
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- script: |
-    yarn gulp hygiene
-  displayName: Run Hygiene Checks
+  - task: 1ESLighthouseEng.PipelineArtifactCaching.SaveCacheV1.SaveCache@1
+    inputs:
+      keyfile: ".yarnrc, remote/.yarnrc, **/yarn.lock, !**/node_modules/**/yarn.lock, !**/.*/**/yarn.lock"
+      targetfolder: "**/node_modules, !**/node_modules/**/node_modules"
+      vstsFeed: "$(build-cache)"
+    condition: and(succeeded(), ne(variables['CacheRestored'], 'true'))
 
-- script: |
-    yarn tslint
-  displayName: 'Run TSLint'
+  - script: |
+      yarn gulp electron-x64
+    displayName: Download Electron
+    env:
+      GITHUB_TOKEN: $(GITHUB_TOKEN)
 
-- script: |
-    yarn strict-null-check
-  displayName: 'Run Strict Null Check'
+  - script: |
+      yarn gulp hygiene --skip-tslint
+    displayName: Run Hygiene Checks
 
-- script: |
-    yarn compile
-  displayName: 'Compile'
+  - script: |
+      yarn tslint
+    displayName: Run TSLint
 
-- script: |
-    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter
-  displayName: 'Tests'
-  condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
+  - script: |
+      yarn strict-null-check
+    displayName: Run Strict Null Check
 
-- script: |
-    DISPLAY=:10 ./scripts/test.sh --reporter mocha-junit-reporter --coverage
-  displayName: 'Tests'
-  condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
+  - script: |
+      yarn compile
+    displayName: Compile
 
-- task: PublishTestResults@2
-  inputs:
-    testResultsFiles: '**/test-results.xml'
-  condition: succeededOrFailed()
+  - script: |
+      DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests"
+    displayName: Run Unit Tests (Linux)
+    condition: and(succeeded(), eq(variables['Agent.OS'], 'Linux'))
 
-- task: PublishCodeCoverageResults@1
-  inputs:
-    codeCoverageTool: 'cobertura'
-    summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
-    reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-reports
-  condition: ne(variables['Agent.OS'], 'Linux')
+  - script: |
+      DISPLAY=:10 ./scripts/test.sh --tfs "Unit Tests" --coverage
+    displayName: Run Unit Tests (Mac)
+    condition: and(succeeded(), ne(variables['Agent.OS'], 'Linux'))
+
+  - task: PublishTestResults@2
+    inputs:
+      testResultsFiles: '*-results.xml'
+      searchFolder: '$(Build.ArtifactStagingDirectory)/test-results'
+    condition: succeededOrFailed()
+
+  - task: PublishCodeCoverageResults@1
+    inputs:
+      codeCoverageTool: 'cobertura'
+      summaryFileLocation: $(System.DefaultWorkingDirectory)/.build/coverage/cobertura-coverage.xml
+      reportDirectory: $(System.DefaultWorkingDirectory)/.build/coverage/lcov-report
+    condition: ne(variables['Agent.OS'], 'Linux')
