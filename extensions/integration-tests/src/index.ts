@@ -12,8 +12,6 @@ import { context } from './testContext';
 
 import path = require('path');
 
-//import testRunner = require('vscode/lib/testrunner');
-
 const suite = getSuiteType();
 
 const options: any = {
@@ -24,6 +22,9 @@ const options: any = {
 
 if (suite === SuiteType.Stress) {
 	options.timeout = 7200000;	// 2 hours
+	// StressRuntime sets the default run time in stress/perf mode for those suites. By default ensure that there is sufficient timeout available.
+	// if ADS_TEST_TIMEOUT is also defined then that value overrides this calculated timeout value. User needs to ensure that ADS_TEST_GREP > StressRuntime if
+	// both are set.
 	if (process.env.StressRuntime) {
 		options.timeout = (120 + 1.2 * parseInt(process.env.StressRuntime)) * 1000; // allow sufficient timeout based on StressRuntime setting
 		console.log(`setting options.timeout to:${options.timeout} based on process.env.StressRuntime value of ${process.env.StressRuntime} seconds`);
@@ -31,29 +32,21 @@ if (suite === SuiteType.Stress) {
 }
 
 // set relevant mocha options from the environment
-if (process.env.mochaGrep) {
-	console.log(`setting options.grep to:${process.env.mochaGrep}`);
-	options.grep = process.env.mochaGrep;
+if (process.env.ADS_TEST_GREP) {
+	options.grep = process.env.ADS_TEST_GREP;
+	console.log(`setting options.grep to:${options.grep}`);
 }
-if (process.env.mochaFgrep) {
-	console.log(`setting options.fgrep to:${process.env.mochaFgrep}`);
-	options.fgrep = process.env.mochaFgrep;
+if (process.env.ADS_TEST_INVERT_GREP) {
+	options.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
+	console.log(`setting options.invert to:${options.invert}`);
 }
-if (process.env.mochaInvert) {
-	console.log(`setting options.invert to:${process.env.mochaInvert}`);
-	options.invert = process.env.mochaInvert;
+if (process.env.ADS_TEST_TIMEOUT) {
+	options.timeout = parseInt(process.env.ADS_TEST_TIMEOUT);
+	console.log(`setting options.timeout to:${options.timeout}`);
 }
-if (process.env.mochaSlow) {
-	console.log(`setting options.slow to:${process.env.mochaSlow}`);
-	options.slow = process.env.mochaSlow;
-}
-if (process.env.mochaTimeout) {
-	console.log(`setting options.timeout to:${process.env.mochaTimeout}`);
-	options.timeout = process.env.mochaTimeout;
-}
-if (process.env.mochaRetries) {
-	console.log(`setting options.retries to:${process.env.mochaRetries}`);
-	options.retries = process.env.mochaRetries;
+if (process.env.ADS_TEST_RETRIES) {
+	options.retries = parseInt(process.env.ADS_TEST_RETRIES);
+	console.log(`setting options.retries to:${options.retries}`);
 }
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
