@@ -233,7 +233,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	private async doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse> {
+	private async doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | void> {
 		// TODO implement selection support
 		let columns = this.resultSet.columnInfo;
 		let rowLength = this.rows.length;
