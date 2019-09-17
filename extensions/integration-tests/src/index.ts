@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as testRunner from 'vscode/lib/testrunner';
 import * as vscode from 'vscode';
 
 import { SuiteType, getSuiteType } from 'adstest';
@@ -10,7 +11,8 @@ import { SuiteType, getSuiteType } from 'adstest';
 import { context } from './testContext';
 
 import path = require('path');
-import testRunner = require('vscode/lib/testrunner');
+
+//import testRunner = require('vscode/lib/testrunner');
 
 const suite = getSuiteType();
 
@@ -38,7 +40,7 @@ if (process.env.mochaFgrep) {
 	options.fgrep = process.env.mochaFgrep;
 }
 if (process.env.mochaInvert) {
-	console.log(`setting options.fgrep to:${process.env.mochaInvert}`);
+	console.log(`setting options.invert to:${process.env.mochaInvert}`);
 	options.invert = process.env.mochaInvert;
 }
 if (process.env.mochaSlow) {
@@ -46,11 +48,11 @@ if (process.env.mochaSlow) {
 	options.slow = process.env.mochaSlow;
 }
 if (process.env.mochaTimeout) {
-	console.log(`setting options.slow to:${process.env.mochaTimeout}`);
+	console.log(`setting options.timeout to:${process.env.mochaTimeout}`);
 	options.timeout = process.env.mochaTimeout;
 }
 if (process.env.mochaRetries) {
-	console.log(`setting options.fgrep to:${process.env.mochaRetries}`);
+	console.log(`setting options.retries to:${process.env.mochaRetries}`);
 	options.retries = process.env.mochaRetries;
 }
 
