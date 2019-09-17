@@ -190,8 +190,7 @@ const tslintBaseFilter = [
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
-	// {{SQL CARBON EDIT}}
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts' // {{SQL CARBON EDIT}}
 ];
 
 const sqlFilter = ['src/sql/**']; // {{SQL CARBON EDIT}}
@@ -327,23 +326,6 @@ function hygiene(some) {
 
 		this.emit('data', file);
 	});
-
-	// {{SQL CARBON EDIT}}
-	// Check for unnecessary 'use strict' lines. These are automatically added by the alwaysStrict compiler option so don't need to be added manually
-	// const useStrict = es.through(function (file) {
-	// 	const lines = file.__lines;
-	// 	// Only take the first 10 lines to reduce false positives- the compiler will throw an error if it's not the first non-comment line in a file
-	// 	// (10 is used to account for copyright and extraneous newlines)
-	// 	lines.slice(0, 10).forEach((line, i) => {
-	// 		if (/\s*'use\s*strict\s*'/.test(line)) {
-	// 			console.error(file.relative + '(' + (i + 1) + ',1): Unnecessary \'use strict\' - this is already added by the compiler');
-	// 			errorCount++;
-	// 		}
-	// 	});
-
-	// 	this.emit('data', file);
-	// });
-	// {{SQL CARBON EDIT}} END
 
 	const formatting = es.map(function (file, cb) {
 		tsfmt.processString(file.path, file.contents.toString('utf8'), {
