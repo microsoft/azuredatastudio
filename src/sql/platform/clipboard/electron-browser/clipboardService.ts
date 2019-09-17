@@ -9,7 +9,7 @@ import { BrowserClipboardService } from 'sql/platform/clipboard/browser/clipboar
 import { clipboard, nativeImage } from 'electron';
 
 export class ClipboardService extends BrowserClipboardService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	constructor(
 		@vsIClipboardService _vsClipboardService: vsIClipboardService,

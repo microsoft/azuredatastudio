@@ -13,7 +13,7 @@ export interface IServerGroupDialogCallbacks {
 }
 export const IServerGroupController = createDecorator<IServerGroupController>('serverGroupController');
 export interface IServerGroupController {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	showCreateGroupDialog(callbacks?: IServerGroupDialogCallbacks): Promise<void>;
 	showEditGroupDialog(group: ConnectionProfileGroup): Promise<void>;
 }

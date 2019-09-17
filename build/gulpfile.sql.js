@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
 const gulp = require('gulp');
 const util = require('./lib/util');
 const tsfmt = require('typescript-formatter');
@@ -87,7 +86,7 @@ const formatStagedFiles = () => {
 };
 
 function installService() {
-	let config = require('../extensions/mssql/src/config.json');
+	let config = require('../extensions/mssql/config.json');
 	return platformInfo.getCurrent().then(p => {
 		let runtime = p.runtimeId;
 		// fix path since it won't be correct
@@ -109,7 +108,7 @@ gulp.task('install-sqltoolsservice', () => {
 });
 
 function installSsmsMin() {
-	const config = require('../extensions/admin-tool-ext-win/src/config.json');
+	const config = require('../extensions/admin-tool-ext-win/config.json');
 	return platformInfo.getCurrent().then(p => {
 		const runtime = p.runtimeId;
 		// fix path since it won't be correct

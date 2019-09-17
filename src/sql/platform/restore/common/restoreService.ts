@@ -13,7 +13,7 @@ export const SERVICE_ID = 'restoreService';
 export const IRestoreService = createDecorator<IRestoreService>(SERVICE_ID);
 
 export interface IRestoreService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Register a disaster recovery provider
@@ -43,6 +43,6 @@ export interface IRestoreService {
 
 export const IRestoreDialogController = createDecorator<IRestoreDialogController>('restoreDialogService');
 export interface IRestoreDialogController {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	showDialog(connection: IConnectionProfile): Promise<void>;
 }

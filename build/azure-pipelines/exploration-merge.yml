@@ -1,0 +1,26 @@
+trigger:
+  branches:
+    include: ['master']
+pr: none
+
+steps:
+- task: NodeTool@0
+  inputs:
+    versionSpec: "10.15.1"
+
+- script: |
+    set -e
+
+    git config user.email "andresse@microsoft.com"
+    git config user.name "AzureDataStudio"
+
+    git remote add explore "$ADS_EXPLORE_REPO"
+    git fetch explore
+
+    git checkout -b merge-branch explore/master
+
+    git merge origin/master
+
+    git push explore HEAD:master
+
+  displayName: Sync & Merge Explore
