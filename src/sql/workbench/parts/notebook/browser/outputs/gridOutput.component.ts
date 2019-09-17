@@ -32,10 +32,11 @@ import { getErrorMessage } from 'vs/base/common/errors';
 import { ISerializationService, SerializeDataParams } from 'sql/platform/serialization/common/serializationService';
 import { SaveResultAction } from 'sql/workbench/parts/query/browser/actions';
 import { ResultSerializer, SaveResultsResponse } from 'sql/workbench/parts/query/common/resultSerializer';
+import { ActionsOrientation } from 'vs/base/browser/ui/actionbar/actionbar';
 
 @Component({
 	selector: GridOutputComponent.SELECTOR,
-	template: `<div #output class="notebook-cellTable"></div>`
+	template: `<div #output class="notebook-cellTable" (mouseover)="hover=true" (mouseleave)="hover=false"></div>`
 })
 export class GridOutputComponent extends AngularDisposable implements IMimeComponent, OnInit {
 	public static readonly SELECTOR: string = 'grid-output';
@@ -46,6 +47,7 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	private _cellModel: ICellModel;
 	private _bundleOptions: MimeModel.IOptions;
 	private _table: DataResourceTable;
+	private _hover: boolean;
 	constructor(
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService,
 		@Inject(IThemeService) private readonly themeService: IThemeService
@@ -73,6 +75,14 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 		}
 	}
 
+	@Input() set hover(value: boolean) {
+		// only reaction on hover changes
+		if (this._hover !== value) {
+			this.toggleActionbar(value);
+			this._hover = value;
+		}
+	}
+
 	ngOnInit() {
 		this.renderGrid();
 	}
@@ -89,6 +99,8 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 			outputElement.appendChild(this._table.element);
 			this._register(attachTableStyler(this._table, this.themeService));
 			this.layout();
+			// By default, do not show the actions
+			this.toggleActionbar(false);
 			this._table.onAdd();
 			this._initialized = true;
 		}
@@ -97,7 +109,19 @@ export class GridOutputComponent extends AngularDisposable implements IMimeCompo
 	layout(): void {
 		if (this._table) {
 			let maxSize = Math.min(this._table.maximumSize, 500);
-			this._table.layout(maxSize);
+			this._table.layout(maxSize, undefined, ActionsOrientation.HORIZONTAL);
+		}
+	}
+
+	private toggleActionbar(visible: boolean) {
+		let outputElement = <HTMLElement>this.output.nativeElement;
+		let actionsContainers: HTMLElement[] = Array.prototype.slice.call(outputElement.getElementsByClassName('actions-container'));
+		if (actionsContainers && actionsContainers.length) {
+			if (visible) {
+				actionsContainers.forEach(container => container.style.visibility = 'visible');
+			} else {
+				actionsContainers.forEach(container => container.style.visibility = 'hidden');
+			}
 		}
 	}
 }
@@ -125,7 +149,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getCurrentActions(): IAction[] {
-		return [];
+		return this.getContextActions();
 	}
 
 	protected getContextActions(): IAction[] {
