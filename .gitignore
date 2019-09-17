@@ -31,4 +31,3 @@ test_data/
 test-results/
 yarn-error.log
 *.vsix
-files.txt

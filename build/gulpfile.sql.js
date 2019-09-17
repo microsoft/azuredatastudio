@@ -13,8 +13,6 @@ const del = require('del');
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platformInfo = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
-const readline = require('readline');
-const fs = require('fs');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
@@ -130,20 +128,4 @@ function installSsmsMin() {
 
 gulp.task('install-ssmsmin', () => {
 	return installSsmsMin();
-});
-
-gulp.task('check-all-files', () => {
-	const rd = readline.createInterface({
-		input: fs.createReadStream('files.txt')
-	});
-	rd.on('line', (line) => {
-		if (line != "") {
-			fs.access(line, fs.F_OK, (err) => {
-				if (err) {
-					console.log(err);
-					throw err;
-				}
-			});
-		}
-	});
 });
