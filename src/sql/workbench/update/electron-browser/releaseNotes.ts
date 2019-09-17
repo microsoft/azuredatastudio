@@ -5,7 +5,7 @@
 
 import nls = require('vs/nls');
 import { Action } from 'vs/base/common/actions';
-import product from 'vs/platform/product/node/product';
+import product from 'vs/platform/product/common/product';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { URI } from 'vs/base/common/uri';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
