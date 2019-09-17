@@ -26,10 +26,12 @@ export class PlatformService implements IPlatformService {
 	}
 
 	copyFile(source: string, target: string): void {
+		// tslint:disable-next-line:no-sync
 		fs.copyFileSync(source, target);
 	}
 
 	fileExists(file: string): boolean {
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(file);
 	}
 
