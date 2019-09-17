@@ -4,7 +4,7 @@ trigger:
 pr: none
 
 jobs:
-  - job: Exploration Merge
+  - job: ExplorationMerge
     container: ubuntu:16.04
     steps:
       - task: NodeTool@0
