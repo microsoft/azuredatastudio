@@ -49,7 +49,7 @@ registry.registerWorkbenchAction(new SyncActionDescriptor(ToggleAutoSaveAction, 
 
 
 const workspacesCategory = nls.localize('workspaces', "Workspaces");
-registry.registerWorkbenchAction(new SyncActionDescriptor(OpenWorkspaceAction, OpenWorkspaceAction.ID, OpenWorkspaceAction.LABEL), 'Workspaces: Open Workspace...', workspacesCategory, SupportsWorkspacesContext);
+registry.registerWorkbenchAction(new SyncActionDescriptor(OpenWorkspaceAction, OpenWorkspaceAction.ID, OpenWorkspaceAction.LABEL), 'Workspaces: Open Workspace...', workspacesCategory);
 
 // Commands
 CommandsRegistry.registerCommand('_files.windowOpen', openWindowCommand);
@@ -522,7 +522,7 @@ MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
 		id: REMOVE_ROOT_FOLDER_COMMAND_ID,
 		title: REMOVE_ROOT_FOLDER_LABEL
 	},
-	when: ContextKeyExpr.and(ExplorerRootContext, ExplorerFolderContext)
+	when: ContextKeyExpr.and(ExplorerRootContext, ExplorerFolderContext, SupportsWorkspacesContext)
 });
 
 MenuRegistry.appendMenuItem(MenuId.ExplorerContext, {
@@ -666,8 +666,7 @@ MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
 		id: OpenWorkspaceAction.ID,
 		title: nls.localize({ key: 'miOpenWorkspace', comment: ['&& denotes a mnemonic'] }, "Open Wor&&kspace...")
 	},
-	order: 3,
-	when: SupportsWorkspacesContext
+	order: 3
 });
 
 MenuRegistry.appendMenuItem(MenuId.MenubarFileMenu, {
