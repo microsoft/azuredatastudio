@@ -6,9 +6,6 @@
 import { escape } from 'vs/base/common/strings';
 import { localize } from 'vs/nls';
 
-export function used() {
-}
-
 let productQuality: string;
 
 export function setProductQuality(quality: string): void {
