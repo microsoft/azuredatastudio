@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IEditorOptions } from 'vs/editor/common/config/editorOptions';
+import { IEditorOptions, EditorOption } from 'vs/editor/common/config/editorOptions';
 import * as nls from 'vs/nls';
 import * as DOM from 'vs/base/browser/dom';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
@@ -150,7 +150,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		let shouldAddHorizontalScrollbarHeight = false;
 		if (!this._editorWorkspaceConfig || configChanged) {
 			this._editorWorkspaceConfig = this.workspaceConfigurationService.getValue('editor');
-			this._lineHeight = editorWidget.getRawOptions().lineHeight;
+			this._lineHeight = editorWidget.getOption(EditorOption.lineHeight) || 18;
 		}
 		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
 		if (wordWrapEnabled) {
