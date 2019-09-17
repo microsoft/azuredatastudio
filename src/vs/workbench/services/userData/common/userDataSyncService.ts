@@ -3,8 +3,7 @@
  *  Licensed under the MIT License. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IUserDataSyncService, SyncStatus, ISynchroniser, USER_DATA_PREVIEW_SCHEME } from 'vs/platform/userDataSync/common/userDataSync';
-import { IUserDataSyncStoreService } from 'vs/workbench/services/userData/common/userData';
+import { IUserDataSyncService, SyncStatus, ISynchroniser, USER_DATA_PREVIEW_SCHEME, IUserDataSyncStoreService } from 'vs/platform/userDataSync/common/userDataSync';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
@@ -12,6 +11,7 @@ import { SettingsSynchroniser } from 'vs/workbench/services/userData/common/sett
 import { Emitter, Event } from 'vs/base/common/event';
 import { IFileService } from 'vs/platform/files/common/files';
 import { InMemoryFileSystemProvider } from 'vs/workbench/services/userData/common/inMemoryUserDataProvider';
+import { URI } from 'vs/base/common/uri';
 
 export class UserDataSyncService extends Disposable implements IUserDataSyncService {
 
@@ -41,8 +41,13 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 		this.onDidChangeLocal = Event.any(...this.synchronisers.map(s => s.onDidChangeLocal));
 	}
 
+	get conflicts(): URI | null {
+		const synchroniser = this.synchronisers.filter(s => s.status === SyncStatus.HasConflicts)[0];
+		return synchroniser ? synchroniser.conflicts : null;
+	}
+
 	async sync(): Promise<boolean> {
-		if (!this.userDataSyncStoreService.isEnabled()) {
+		if (!this.userDataSyncStoreService.enabled) {
 			throw new Error('Not enabled');
 		}
 		for (const synchroniser of this.synchronisers) {
@@ -54,23 +59,11 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 	}
 
 	async continueSync(): Promise<boolean> {
-		if (!this.userDataSyncStoreService.isEnabled()) {
+		if (!this.userDataSyncStoreService.enabled) {
 			throw new Error('Not enabled');
 		}
 		for (const synchroniser of this.synchronisers) {
 			if (await synchroniser.continueSync()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	handleConflicts(): boolean {
-		if (!this.userDataSyncStoreService.isEnabled()) {
-			throw new Error('Not enabled');
-		}
-		for (const synchroniser of this.synchronisers) {
-			if (synchroniser.handleConflicts()) {
 				return true;
 			}
 		}
@@ -89,7 +82,7 @@ export class UserDataSyncService extends Disposable implements IUserDataSyncServ
 	}
 
 	private computeStatus(): SyncStatus {
-		if (!this.userDataSyncStoreService.isEnabled()) {
+		if (!this.userDataSyncStoreService.enabled) {
 			return SyncStatus.Uninitialized;
 		}
 		if (this.synchronisers.some(s => s.status === SyncStatus.HasConflicts)) {

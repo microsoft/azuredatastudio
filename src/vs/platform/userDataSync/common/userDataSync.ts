@@ -58,12 +58,26 @@ export class UserDataSyncStoreError extends Error {
 }
 
 export interface IUserDataSyncStore {
+	readonly name: string;
+	read(key: string): Promise<IUserData | null>;
+	write(key: string, content: string, ref: string | null): Promise<string>;
+}
+
+export const IUserDataSyncStoreService = createDecorator<IUserDataSyncStoreService>('IUserDataSyncStoreService');
+
+export interface IUserDataSyncStoreService {
+	_serviceBrand: undefined;
+
+	readonly onDidChangeEnablement: Event<boolean>;
+	readonly enabled: boolean;
+
+	registerUserDataSyncStore(userDataSyncStore: IUserDataSyncStore): void;
+	deregisterUserDataSyncStore(): void;
 
 	read(key: string): Promise<IUserData | null>;
-
 	write(key: string, content: string, ref: string | null): Promise<string>;
-
 }
+
 
 export enum SyncStatus {
 	Uninitialized = 'uninitialized',
@@ -77,14 +91,13 @@ export const SETTINGS_PREVIEW_RESOURCE = URI.file('Settings-Preview').with({ sch
 
 export interface ISynchroniser {
 
+	readonly conflicts: URI | null;
 	readonly status: SyncStatus;
 	readonly onDidChangeStatus: Event<SyncStatus>;
-
 	readonly onDidChangeLocal: Event<void>;
 
 	sync(): Promise<boolean>;
 	continueSync(): Promise<boolean>;
-	handleConflicts(): boolean;
 }
 
 export const IUserDataSyncService = createDecorator<IUserDataSyncService>('IUserDataSyncService');

@@ -4,8 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
-import { IUserDataSyncService, SyncStatus, USER_DATA_PREVIEW_SCHEME } from 'vs/platform/userDataSync/common/userDataSync';
-import { IUserDataSyncStoreService } from 'vs/workbench/services/userData/common/userData';
+import { IUserDataSyncService, SyncStatus, USER_DATA_PREVIEW_SCHEME, IUserDataSyncStoreService } from 'vs/platform/userDataSync/common/userDataSync';
 import { localize } from 'vs/nls';
 import { Disposable, MutableDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
@@ -25,6 +24,7 @@ import { ResourceContextKey } from 'vs/workbench/common/resources';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ITextFileService } from 'vs/workbench/services/textfile/common/textfiles';
 import { Event } from 'vs/base/common/event';
+import { IHistoryService } from 'vs/workbench/services/history/common/history';
 
 const CONTEXT_SYNC_STATE = new RawContextKey<string>('syncStatus', SyncStatus.Uninitialized);
 
@@ -63,7 +63,7 @@ class UserDataSyncContribution extends Disposable implements IWorkbenchContribut
 	}
 
 	private async sync(loop: boolean): Promise<void> {
-		if (this.configurationService.getValue<boolean>('userConfiguration.enableSync') && this.userDataSyncStoreService.isEnabled()) {
+		if (this.configurationService.getValue<boolean>('userConfiguration.enableSync') && this.userDataSyncStoreService.enabled) {
 			try {
 				await this.userDataSyncService.sync();
 			} catch (e) {
@@ -94,6 +94,7 @@ class SyncActionsContribution extends Disposable implements IWorkbenchContributi
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IEditorService private readonly editorService: IEditorService,
 		@ITextFileService private readonly textFileService: ITextFileService,
+		@IHistoryService private readonly historyService: IHistoryService,
 	) {
 		super();
 		this.syncEnablementContext = CONTEXT_SYNC_STATE.bindTo(contextKeyService);
@@ -127,7 +128,7 @@ class SyncActionsContribution extends Disposable implements IWorkbenchContributi
 					[
 						{
 							label: localize('resolve', "Resolve Conflicts"),
-							run: () => this.userDataSyncService.handleConflicts()
+							run: () => this.handleConflicts()
 						}
 					]);
 				this.conflictsWarningDisposable.value = toDisposable(() => handle.close());
@@ -158,6 +159,22 @@ class SyncActionsContribution extends Disposable implements IWorkbenchContributi
 		// Close the preview editor
 		if (editorInput) {
 			editorInput.dispose();
+		}
+	}
+
+	private async handleConflicts(): Promise<void> {
+		const resource = this.userDataSyncService.conflicts;
+		if (resource) {
+			const resourceInput = {
+				resource,
+				options: {
+					preserveFocus: false,
+					pinned: false,
+					revealIfVisible: true,
+				},
+				mode: 'jsonc'
+			};
+			this.editorService.openEditor(resourceInput).then(() => this.historyService.remove(resourceInput));
 		}
 	}
 
@@ -195,7 +212,7 @@ class SyncActionsContribution extends Disposable implements IWorkbenchContributi
 			},
 			when: CONTEXT_SYNC_STATE.isEqualTo(SyncStatus.HasConflicts),
 		};
-		CommandsRegistry.registerCommand(resolveConflictsMenuItem.command.id, serviceAccessor => serviceAccessor.get(IUserDataSyncService).handleConflicts());
+		CommandsRegistry.registerCommand(resolveConflictsMenuItem.command.id, () => this.handleConflicts());
 		MenuRegistry.appendMenuItem(MenuId.GlobalActivity, resolveConflictsMenuItem);
 		MenuRegistry.appendMenuItem(MenuId.CommandPalette, resolveConflictsMenuItem);
 
