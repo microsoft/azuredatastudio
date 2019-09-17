@@ -152,9 +152,7 @@ export class SaveImageAction extends Action {
 
 	public async run(context: IChartActionContext): Promise<boolean> {
 		if (context.insight instanceof Graph) {
-			let fileFilters = new Array<FileFilter>();
-			let fileFilter: { extensions: string[]; name: string } = { extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") };
-			fileFilters.push(fileFilter);
+			let fileFilters = new Array<FileFilter>({ extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") });
 
 			const filePath = await this.fileDialogService.pickFileToSave({ filters: fileFilters });
 			const data = (<Graph>context.insight).getCanvasData();
