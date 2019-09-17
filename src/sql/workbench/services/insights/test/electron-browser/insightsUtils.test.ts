@@ -51,7 +51,7 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 		} as IWindowConfiguration;
 	}
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	args: ParsedArgs;
 	execPath: string;
 	cliPath: string;

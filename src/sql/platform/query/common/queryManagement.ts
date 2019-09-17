@@ -20,7 +20,7 @@ export const SERVICE_ID = 'queryManagementService';
 export const IQueryManagementService = createDecorator<IQueryManagementService>(SERVICE_ID);
 
 export interface IQueryManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	onHandlerAdded: Event<string>;
 
@@ -91,7 +91,7 @@ export interface IQueryRequestHandler {
 }
 
 export class QueryManagementService implements IQueryManagementService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private _requestHandlers = new Map<string, IQueryRequestHandler>();
 	private _onHandlerAddedEmitter = new Emitter<string>();

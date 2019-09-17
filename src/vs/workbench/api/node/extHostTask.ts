@@ -357,7 +357,7 @@ interface HandlerData {
 
 export class ExtHostTask implements ExtHostTaskShape {
 
-	readonly _serviceBrand: any;
+	readonly _serviceBrand: undefined;
 
 	private readonly _proxy: MainThreadTaskShape;
 	private readonly _workspaceProvider: IExtHostWorkspaceProvider;
@@ -660,6 +660,10 @@ export class ExtHostTask implements ExtHostTaskShape {
 		}
 		return result;*/
 		return undefined;
+	}
+
+	public $getDefaultShellAndArgs(): Promise<{ shell: string, args: string[] | string | undefined }> {
+		return this._terminalService.$requestDefaultShellAndArgs(true);
 	}
 
 	private nextHandle(): number {

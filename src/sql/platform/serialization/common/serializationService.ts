@@ -39,7 +39,7 @@ export interface SerializeDataParams {
 }
 
 export interface ISerializationService {
-	_serviceBrand: ServiceIdentifier<ISerializationService>;
+	_serviceBrand: undefined;
 
 	registerProvider(providerId: string, provider: azdata.SerializationProvider): void;
 
@@ -61,7 +61,7 @@ function getBatchSize(totalRows: number, currentIndex: number): number {
 
 export class SerializationService implements ISerializationService {
 
-	_serviceBrand: ServiceIdentifier<ISerializationService>;
+	_serviceBrand: undefined;
 
 	private providers: { providerId: string, provider: azdata.SerializationProvider }[] = [];
 

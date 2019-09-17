@@ -23,7 +23,7 @@ export enum ScriptOperation {
 }
 
 export interface IScriptingService {
-	_serviceBrand: ServiceIdentifier<IScriptingService>;
+	_serviceBrand: undefined;
 
 	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult>;
 
@@ -50,7 +50,7 @@ export interface IScriptingService {
 
 export class ScriptingService implements IScriptingService {
 
-	public _serviceBrand: ServiceIdentifier<IScriptingService>;
+	_serviceBrand: undefined;
 
 	private _providers: { [handle: string]: azdata.ScriptingProvider; } = Object.create(null);
 
