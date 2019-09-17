@@ -9,7 +9,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 
 import { localize } from 'vs/nls';
 import { Action } from 'vs/base/common/actions';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { URI } from 'vs/base/common/uri';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
@@ -152,7 +152,9 @@ export class SaveImageAction extends Action {
 
 	public async run(context: IChartActionContext): Promise<boolean> {
 		if (context.insight instanceof Graph) {
-			const filePath = await this.fileDialogService.pickFileToSave({});
+			let fileFilters = new Array<FileFilter>({ extensions: ['png'], name: localize('resultsSerializer.saveAsFileExtensionPNGTitle', "PNG") });
+
+			const filePath = await this.fileDialogService.pickFileToSave({ filters: fileFilters });
 			const data = (<Graph>context.insight).getCanvasData();
 			if (!data) {
 				this.notificationService.error(localize('chartNotFound', "Could not find chart to save"));

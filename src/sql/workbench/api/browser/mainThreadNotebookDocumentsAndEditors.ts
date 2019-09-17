@@ -16,8 +16,6 @@ import { ITextEditorOptions } from 'vs/platform/editor/common/editor';
 import { Schemas } from 'vs/base/common/network';
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import * as types from 'vs/base/common/types';
-import * as fs from 'fs';
-
 import {
 	SqlMainContext, MainThreadNotebookDocumentsAndEditorsShape, SqlExtHostContext, ExtHostNotebookDocumentsAndEditorsShape,
 	INotebookDocumentsAndEditorsDelta, INotebookEditorAddData, INotebookShowOptions, INotebookModelAddedData, INotebookModelChangedData
@@ -34,6 +32,7 @@ import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editor
 import { viewColumnToEditorGroup } from 'vs/workbench/api/common/shared/editor';
 import { notebookModeId } from 'sql/workbench/browser/customInputConverter';
 import { localize } from 'vs/nls';
+import { IFileService } from 'vs/platform/files/common/files';
 
 class MainThreadNotebookEditor extends Disposable {
 	private _contentChangedEmitter = new Emitter<NotebookContentChange>();
@@ -329,7 +328,8 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 		@IEditorService private _editorService: IEditorService,
 		@IEditorGroupsService private _editorGroupService: IEditorGroupsService,
 		@ICapabilitiesService private _capabilitiesService: ICapabilitiesService,
-		@INotebookService private readonly _notebookService: INotebookService
+		@INotebookService private readonly _notebookService: INotebookService,
+		@IFileService private readonly _fileService: IFileService
 	) {
 		super();
 		if (extHostContext) {
@@ -709,10 +709,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (result.next.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.next.path)}`);
-						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.next.path).toString(), initialDirtyState: false });
+						let content = await this._fileService.readFile(URI.parse(result.next.path));
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
-						this.doOpenEditor(result.next, {});
+						await this.doOpenEditor(result.next, {});
 					}
 				}
 			},
@@ -721,10 +722,11 @@ export class MainThreadNotebookDocumentsAndEditors extends Disposable implements
 				if (result) {
 					if (result.previous.scheme === Schemas.untitled) {
 						let untitledNbName: URI = URI.parse(`untitled:${path.basename(result.previous.path)}`);
-						this.doOpenEditor(untitledNbName, { initialContent: fs.readFileSync(result.previous.path).toString(), initialDirtyState: false });
+						let content = await this._fileService.readFile(URI.parse(result.previous.path));
+						await this.doOpenEditor(untitledNbName, { initialContent: content.value.toString(), initialDirtyState: false });
 					}
 					else {
-						this.doOpenEditor(result.previous, {});
+						await this.doOpenEditor(result.previous, {});
 					}
 				}
 			}

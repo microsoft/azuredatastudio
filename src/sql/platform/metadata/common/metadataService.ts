@@ -12,7 +12,7 @@ export const SERVICE_ID = 'metadataService';
 export const IMetadataService = createDecorator<IMetadataService>(SERVICE_ID);
 
 export interface IMetadataService {
-	_serviceBrand: ServiceIdentifier<IMetadataService>;
+	_serviceBrand: undefined;
 
 	getMetadata(connectionUri: string): Thenable<azdata.ProviderMetadata>;
 
@@ -30,7 +30,7 @@ export interface IMetadataService {
 
 export class MetadataService implements IMetadataService {
 
-	public _serviceBrand: ServiceIdentifier<IMetadataService>;
+	_serviceBrand: undefined;
 
 	private _providers: { [handle: string]: azdata.MetadataProvider; } = Object.create(null);
 

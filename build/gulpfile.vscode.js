@@ -60,8 +60,7 @@ const nodeModules = [
 const vscodeEntryPoints = _.flatten([
 	buildfile.entrypoint('vs/workbench/workbench.desktop.main'),
 	buildfile.base,
-	buildfile.serviceWorker,
-	buildfile.workbench,
+	buildfile.workbenchDesktop,
 	buildfile.code
 ]);
 
@@ -125,6 +124,7 @@ const optimizeVSCodeTask = task.define('optimize-vscode', task.series(
 		resources: vscodeResources,
 		loaderConfig: common.loaderConfig(nodeModules),
 		out: 'out-vscode',
+		inlineAmdImages: true,
 		bundleInfo: undefined
 	})
 ));
@@ -468,7 +468,7 @@ gulp.task(task.define(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToExtensions = './extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
 
 			return es.merge(
@@ -489,7 +489,7 @@ gulp.task(task.define(
 		optimizeVSCodeTask,
 		function () {
 			const pathToMetadata = './out-vscode/nls.metadata.json';
-			const pathToExtensions = './extensions/*';
+			const pathToExtensions = '.build/extensions/*';
 			const pathToSetup = 'build/win32/**/{Default.isl,messages.en.isl}';
 
 			return es.merge(

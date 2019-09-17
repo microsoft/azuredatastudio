@@ -20,16 +20,13 @@ import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
-import { Deferred } from './util/promise';
-
-const baseConfig = require('./config.json');
+import { promises as fs } from 'fs';
 
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 
 export class SqlToolsServer {
 
-	public sqlToolsServiceReady: Deferred<boolean> = new Deferred();
 	private client: SqlOpsDataClient;
 	private config: IConfig;
 	private disposables = new Array<{ dispose: () => void }>();
@@ -37,13 +34,13 @@ export class SqlToolsServer {
 	public async start(context: AppContext): Promise<SqlOpsDataClient> {
 		try {
 			const installationStart = Date.now();
-			const path = await this.download();
+			const path = await this.download(context);
 			const installationComplete = Date.now();
 			let serverOptions = generateServerOptions(context.extensionContext.logPath, path);
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
-			const clientReadyPromise = this.client.onReady().then(() => {
+			this.client.onReady().then(() => {
 				const processEnd = Date.now();
 				statusView.text = localize('serviceStartedStatusMsg', "{0} Started", Constants.serviceName);
 				setTimeout(() => {
@@ -58,12 +55,11 @@ export class SqlToolsServer {
 					totalTime: String(processEnd - installationStart),
 					beginningTimestamp: String(installationStart)
 				});
-				this.sqlToolsServiceReady.resolve(true);
 			});
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
-			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
+			await this.activateFeatures(context);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
@@ -72,8 +68,9 @@ export class SqlToolsServer {
 		}
 	}
 
-	private download() {
-		this.config = JSON.parse(JSON.stringify(baseConfig));
+	private async download(context: AppContext): Promise<string> {
+		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json'));
+		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 		this.config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;

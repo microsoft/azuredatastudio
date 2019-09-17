@@ -65,7 +65,7 @@ export interface ITelemetryInfo {
 export interface IAdsTelemetryService {
 
 	// ITelemetryService functions
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	setEnabled(value: boolean): void;
 

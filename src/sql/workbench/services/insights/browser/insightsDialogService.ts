@@ -30,7 +30,7 @@ export interface ListResource {
 export const IInsightsDialogService = createDecorator<IInsightsDialogService>('insightsDialogService');
 
 export interface IInsightsDialogService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	show(input: IInsightsConfig, connectionProfile: IConnectionProfile): void;
 	close();
 }

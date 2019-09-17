@@ -67,7 +67,7 @@ export class JupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			this.outputChannel.show(true);
@@ -77,9 +77,6 @@ export class JupyterServerInstallation {
 			try {
 				await this.installPythonPackage(backgroundOperation);
 
-				this.outputChannel.appendLine(msgPythonDownloadComplete);
-				backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
-
 				if (this._usingConda) {
 					await this.installCondaDependencies();
 				} else if (this._usingExistingPython) {
@@ -87,18 +84,10 @@ export class JupyterServerInstallation {
 				} else {
 					await this.installOfflinePipDependencies();
 				}
-				let doOnlineInstall = this._usingExistingPython;
-				await this.installSparkMagic(doOnlineInstall);
 			} catch (err) {
 				this.outputChannel.appendLine(msgDependenciesInstallationFailed(utils.getErrorMessage(err)));
 				throw err;
 			}
-
-			fs.remove(this._pythonPackageDir, (err: Error) => {
-				if (err) {
-					this.outputChannel.appendLine(err.message);
-				}
-			});
 
 			this.outputChannel.appendLine(msgInstallPkgFinish);
 			backgroundOperation.updateStatus(azdata.TaskStatus.Succeeded, msgInstallPkgFinish);
@@ -107,41 +96,34 @@ export class JupyterServerInstallation {
 	}
 
 	private installPythonPackage(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
+		if (this._usingExistingPython) {
+			return Promise.resolve();
+		}
+
 		let bundleVersion = constants.pythonBundleVersion;
 		let pythonVersion = constants.pythonVersion;
 		let platformId = utils.getOSPlatformId();
 		let packageName: string;
 		let pythonDownloadUrl: string;
-		if (this._usingExistingPython) {
-			packageName = `python-${pythonVersion}-${bundleVersion}-offlinePackages.zip`;
-			pythonDownloadUrl = constants.pythonOfflinePipPackagesUrl;
-		} else {
-			let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
-			packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
 
-			switch (utils.getOSPlatform()) {
-				case utils.Platform.Windows:
-					pythonDownloadUrl = constants.pythonWindowsInstallUrl;
-					break;
-				case utils.Platform.Mac:
-					pythonDownloadUrl = constants.pythonMacInstallUrl;
-					break;
-				default:
-					// Default to linux
-					pythonDownloadUrl = constants.pythonLinuxInstallUrl;
-					break;
-			}
+		let extension = process.platform === constants.winPlatform ? 'zip' : 'tar.gz';
+		packageName = `python-${pythonVersion}-${platformId}-${bundleVersion}.${extension}`;
+
+		switch (utils.getOSPlatform()) {
+			case utils.Platform.Windows:
+				pythonDownloadUrl = constants.pythonWindowsInstallUrl;
+				break;
+			case utils.Platform.Mac:
+				pythonDownloadUrl = constants.pythonMacInstallUrl;
+				break;
+			default:
+				// Default to linux
+				pythonDownloadUrl = constants.pythonLinuxInstallUrl;
+				break;
 		}
 
-		let installPath: string;
-		if (this._usingExistingPython) {
-			installPath = utils.getUserHome();
-		} else {
-			installPath = this._pythonInstallationPath;
-		}
-
-		let pythonPackagePathLocal = path.join(installPath, packageName);
 		return new Promise((resolve, reject) => {
+			let installPath = this._pythonInstallationPath;
 			backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgDownloadPython(platformId, pythonDownloadUrl));
 			fs.mkdirs(installPath, (err) => {
 				if (err) {
@@ -179,12 +161,13 @@ export class JupyterServerInstallation {
 						}
 					});
 
+				let pythonPackagePathLocal = path.join(installPath, packageName);
 				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
-					.on('close', () => {
+					.on('close', async () => {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
-						if (!this._usingExistingPython && fs.existsSync(pythonSourcePath)) {
+						if (await utils.exists(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
@@ -201,6 +184,8 @@ export class JupyterServerInstallation {
 								}
 							});
 
+							this.outputChannel.appendLine(msgPythonDownloadComplete);
+							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonDownloadComplete);
 							resolve();
 						}).catch(err => {
 							backgroundOperation.updateStatus(azdata.TaskStatus.InProgress, msgPythonUnpackError);
@@ -223,7 +208,7 @@ export class JupyterServerInstallation {
 			: path.join(this._pythonInstallationPath, constants.pythonBundleVersion);
 
 		if (this._usingExistingPython) {
-			this._pythonPackageDir = path.join(utils.getUserHome(), 'offlinePackages');
+			this._pythonPackageDir = undefined;
 		} else {
 			this._pythonPackageDir = path.join(pythonSourcePath, 'offlinePackages');
 		}
@@ -256,7 +241,7 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		if (fs.existsSync(this._pythonExecutable)) {
+		if (await utils.exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -330,7 +315,7 @@ export class JupyterServerInstallation {
 			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
@@ -438,29 +423,15 @@ export class JupyterServerInstallation {
 			installJupyterCommand = `"${this._pythonExecutable}" -m pip install --force-reinstall --no-index pip --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
 			await this.executeStreamedCommand(installJupyterCommand);
 
+			fs.remove(this._pythonPackageDir, (err: Error) => {
+				if (err) {
+					this.outputChannel.appendLine(err.message);
+				}
+			});
+
 			this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
 		} else {
 			return Promise.resolve();
-		}
-	}
-
-	private async installSparkMagic(doOnlineInstall: boolean): Promise<void> {
-		let installSparkMagic: string;
-		if (process.platform === constants.winPlatform || this._usingExistingPython) {
-			// Overwrite existing install of sparkmagic, since we use a custom version
-			let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-			let sparkWheel = path.join(this._pythonPackageDir, `sparkmagic-${constants.sparkMagicVersion}-py3-none-any.whl`);
-			if (doOnlineInstall) {
-				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} "${sparkWheel}" --no-warn-script-location`;
-			} else {
-				installSparkMagic = `"${this._pythonExecutable}" -m pip install ${cmdOptions} --no-index "${sparkWheel}" --find-links "${this._pythonPackageDir}" --no-warn-script-location`;
-			}
-		}
-
-		if (installSparkMagic) {
-			this.outputChannel.show(true);
-			this.outputChannel.appendLine(localize('msgInstallingSpark', "Installing SparkMagic..."));
-			await this.executeStreamedCommand(installSparkMagic);
 		}
 	}
 
@@ -469,10 +440,10 @@ export class JupyterServerInstallation {
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter==1.0.0 pandas==0.24.2`;
+		let installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} jupyter>=1.0.0 pandas>=0.24.2 sparkmagic>=0.12.9`;
 		await this.executeStreamedCommand(installCommand);
 
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator>=1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
@@ -482,14 +453,14 @@ export class JupyterServerInstallation {
 		this.outputChannel.show(true);
 		this.outputChannel.appendLine(localize('msgInstallStart', "Installing required packages to run Notebooks..."));
 
-		let installCommand = `"${this.getCondaExePath()}" install -y jupyter==1.0.0 pandas==0.24.2`;
+		let installCommand = `"${this.getCondaExePath()}" install -y jupyter>=1.0.0 pandas>=0.24.2`;
 		if (process.platform !== constants.winPlatform) {
-			installCommand = `${installCommand} pykerberos==1.2.1`;
+			installCommand = `${installCommand} pykerberos>=1.2.1`;
 		}
 		await this.executeStreamedCommand(installCommand);
 
 		let cmdOptions = this._usingExistingPython ? '--user' : '';
-		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} prose-codeaccelerator==1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
+		installCommand = `"${this._pythonExecutable}" -m pip install ${cmdOptions} sparkmagic>=0.12.9 prose-codeaccelerator>=1.3.0 --extra-index-url https://prose-python-packages.azurewebsites.net`;
 		await this.executeStreamedCommand(installCommand);
 
 		this.outputChannel.appendLine(localize('msgJupyterInstallDone', "... Jupyter installation complete."));
@@ -522,6 +493,7 @@ export class JupyterServerInstallation {
 		}
 
 		let condaExePath = this.getCondaExePath();
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(condaExePath);
 	}
 
@@ -538,6 +510,7 @@ export class JupyterServerInstallation {
 
 		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(pythonExe);
 	}
 
@@ -568,6 +541,7 @@ export class JupyterServerInstallation {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
 			if (notebookConfig) {
 				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
+				// tslint:disable-next-line:no-sync
 				if (configPythonPath && fs.existsSync(configPythonPath)) {
 					path = configPythonPath;
 				}

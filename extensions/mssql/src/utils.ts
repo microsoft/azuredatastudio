@@ -10,8 +10,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
-import * as fs from 'fs';
-import { promisify } from 'util';
+import { promises as fs } from 'fs';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -28,17 +27,6 @@ export function getAppDataPath() {
 		case 'darwin': return path.join(os.homedir(), 'Library', 'Application Support');
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
-	}
-}
-
-export namespace pfs {
-
-	export function exists(path: string): Promise<boolean> {
-		return promisify(fs.exists)(path);
-	}
-
-	export function mkdir(path: string, mode?: number): Promise<void> {
-		return promisify(fs.mkdir)(path, mode);
 	}
 }
 
@@ -59,14 +47,6 @@ export function findNextUntitledEditorName(filePath: string): string {
 	} while (azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1);
 
 	return title;
-}
-
-export function fileExists(file: string): boolean {
-	return fs.existsSync(file);
-}
-
-export function copyFile(source: string, target: string): void {
-	fs.copyFileSync(source, target);
 }
 
 export function removeOldLogFiles(logPath: string, prefix: string): JSON {
@@ -301,5 +281,14 @@ export function logDebug(msg: any): void {
 		let currentTime = new Date().toLocaleTimeString();
 		let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';
 		console.log(outputMsg);
+	}
+}
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

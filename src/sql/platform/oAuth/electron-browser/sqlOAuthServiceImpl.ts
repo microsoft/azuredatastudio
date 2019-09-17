@@ -12,7 +12,7 @@ import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
  * electron-based services are referenced in unit testable code.
  */
 export class SqlOAuthService implements ISqlOAuthService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	/**
 	 * Sends request to main thread to handle OAuth request

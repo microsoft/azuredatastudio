@@ -17,7 +17,7 @@ import * as strings from 'vs/base/common/strings';
 import { invalidProvider } from 'sql/base/common/errors';
 
 export class FileBrowserService implements IFileBrowserService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.FileBrowserProvider; } = Object.create(null);
 	private _onAddFileTree = new Emitter<FileBrowserTree>();
 	private _onExpandFolder = new Emitter<FileNode>();

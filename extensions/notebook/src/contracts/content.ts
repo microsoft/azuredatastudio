@@ -64,3 +64,55 @@ export type OutputType =
 	| 'stream'
 	| 'error'
 	| 'update_display_data';
+
+export interface IJupyterBookToc {
+	sections: IJupyterBookSection[];
+}
+
+/**
+ * A section of a Jupyter book.
+ *
+ * This is taken from https://github.com/jupyter/jupyter-book/blob/master/jupyter_book/book_template/_data/toc.yml but is not
+ * enforced so invalid JSON may result in expected values being undefined.
+ */
+export interface IJupyterBookSection {
+	/**
+	 * Title of chapter or section
+	 */
+	title?: string;
+	/**
+	 * URL of section relative to the /content/ folder.
+	 */
+	url?: string;
+	/**
+	 * Contains a list of more entries that make up the chapter's/section's sub-sections
+	 */
+	sections?: IJupyterBookSection[];
+	/**
+	 * If the section shouldn't have a number in the sidebar
+	 */
+	not_numbered?: string;
+	/**
+	 * If you'd like the sections of this chapter to always be expanded in the sidebar.
+	 */
+	expand_sections?: boolean;
+	/**
+	 * Whether the URL is an external link or points to content in the book
+	 */
+	external?: boolean;
+
+	// Below are some special values that trigger specific behavior:
+
+	/**
+	 * Will provide a link to a search page
+	 */
+	search?: boolean;
+	/**
+	 * Will insert a divider in the sidebar
+	 */
+	divider?: boolean;
+	/**
+	 * Will insert a header with no link in the sidebar
+	 */
+	header?: boolean;
+}
