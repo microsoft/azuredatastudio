@@ -6,7 +6,7 @@
 'use strict';
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { IConfig, ServerProvider, Events } from 'service-downloader';
+import { ServerProvider, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -18,8 +18,7 @@ import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import * as serviceUtils from './serviceUtils';
-import { promisify } from 'util';
-import { readFile } from 'fs';
+import { promises as fs } from 'fs';
 
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
@@ -29,7 +28,7 @@ export class ServiceClient {
 	}
 
 	public async startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
-		const rawConfig = await promisify(readFile)(path.join(context.extensionPath, 'config.json'));
+		const rawConfig = await fs.readFile(path.join(context.extensionPath, 'config.json'));
 		const config = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');

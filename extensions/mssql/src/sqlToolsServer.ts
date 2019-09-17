@@ -20,8 +20,7 @@ import { AppContext } from './appContext';
 import { DacFxService } from './dacfx/dacFxService';
 import { CmsService } from './cms/cmsService';
 import { CompletionExtensionParams, CompletionExtLoadRequest } from './contracts';
-import { promisify } from 'util';
-import { readFile } from 'fs';
+import { promises as fs } from 'fs';
 
 const outputChannel = vscode.window.createOutputChannel(Constants.serviceName);
 const statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
@@ -70,7 +69,7 @@ export class SqlToolsServer {
 	}
 
 	private async download(context: AppContext): Promise<string> {
-		const rawConfig = await promisify(readFile)(path.join(context.extensionContext.extensionPath, 'config.json'));
+		const rawConfig = await fs.readFile(path.join(context.extensionContext.extensionPath, 'config.json'));
 		this.config = JSON.parse(rawConfig.toString());
 		this.config.installDirectory = path.join(__dirname, this.config.installDirectory);
 		this.config.proxy = vscode.workspace.getConfiguration('http').get('proxy');

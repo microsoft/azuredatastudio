@@ -62,8 +62,13 @@ export class ServerInstanceUtils {
 	public copy(src: string, dest: string): Promise<void> {
 		return fs.copy(src, dest);
 	}
-	public existsSync(dirPath: string): boolean {
-		return fs.existsSync(dirPath);
+	public async exists(path: string): Promise<boolean> {
+		try {
+			await fs.access(path);
+			return true;
+		} catch (e) {
+			return false;
+		}
 	}
 	public generateUuid(): string {
 		return UUID.generateUuid();
@@ -204,7 +209,7 @@ export class PerNotebookServerInstance implements IServerInstance {
 	private async copyKernelsToSystemJupyterDirs(): Promise<void> {
 		let kernelsExtensionSource = path.join(this.options.install.extensionPath, 'kernels');
 		this._systemJupyterDir = path.join(this.getSystemJupyterHomeDir(), 'kernels');
-		if (!this.utils.existsSync(this._systemJupyterDir)) {
+		if (!(await this.utils.exists(this._systemJupyterDir))) {
 			await this.utils.mkDir(this._systemJupyterDir, this.options.install.outputChannel);
 		}
 		await this.utils.copy(kernelsExtensionSource, this._systemJupyterDir);

@@ -67,7 +67,7 @@ export class JupyterServerInstallation {
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			window.showInformationMessage(msgInstallPkgStart);
 
 			this.outputChannel.show(true);
@@ -180,11 +180,11 @@ export class JupyterServerInstallation {
 					});
 
 				downloadRequest.pipe(fs.createWriteStream(pythonPackagePathLocal))
-					.on('close', () => {
+					.on('close', async () => {
 						//unpack python zip/tar file
 						this.outputChannel.appendLine(msgPythonUnpackPending);
 						let pythonSourcePath = path.join(installPath, constants.pythonBundleVersion);
-						if (!this._usingExistingPython && fs.existsSync(pythonSourcePath)) {
+						if (!this._usingExistingPython && await utils.exists(pythonSourcePath)) {
 							try {
 								fs.removeSync(pythonSourcePath);
 							} catch (err) {
@@ -256,7 +256,7 @@ export class JupyterServerInstallation {
 			}
 		}
 
-		if (fs.existsSync(this._pythonExecutable)) {
+		if (await utils.exists(this._pythonExecutable)) {
 			let pythonUserDir = await this.getPythonUserDir(this._pythonExecutable);
 			if (pythonUserDir) {
 				this.pythonEnvVarPath = pythonUserDir + delimiter + this.pythonEnvVarPath;
@@ -330,7 +330,7 @@ export class JupyterServerInstallation {
 			await this.configurePackagePaths();
 		};
 		let installReady = new Deferred<void>();
-		if (!fs.existsSync(this._pythonExecutable) || this._forceInstall || this._usingExistingPython) {
+		if (!(await utils.exists(this._pythonExecutable)) || this._forceInstall || this._usingExistingPython) {
 			this.apiWrapper.startBackgroundOperation({
 				displayName: msgTaskName,
 				description: msgTaskName,
@@ -522,6 +522,7 @@ export class JupyterServerInstallation {
 		}
 
 		let condaExePath = this.getCondaExePath();
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(condaExePath);
 	}
 
@@ -538,6 +539,7 @@ export class JupyterServerInstallation {
 
 		let useExistingInstall = JupyterServerInstallation.getExistingPythonSetting(apiWrapper);
 		let pythonExe = JupyterServerInstallation.getPythonExePath(pathSetting, useExistingInstall);
+		// tslint:disable-next-line:no-sync
 		return fs.existsSync(pythonExe);
 	}
 
@@ -568,6 +570,7 @@ export class JupyterServerInstallation {
 			let notebookConfig = apiWrapper.getConfiguration(constants.notebookConfigKey);
 			if (notebookConfig) {
 				let configPythonPath = notebookConfig[constants.pythonPathConfigKey];
+				// tslint:disable-next-line:no-sync
 				if (configPythonPath && fs.existsSync(configPythonPath)) {
 					path = configPythonPath;
 				}
