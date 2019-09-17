@@ -243,7 +243,8 @@
 					"**/test/**" // testing doesn't matter
 				]
 			}
-		]
+		],
+		"no-useless-strict": true
 	},
 	"defaultSeverity": "warning"
 }
