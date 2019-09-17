@@ -15,6 +15,12 @@ jobs:
       - script: |
           set -e
 
+          cat << EOF > ~/.netrc
+          machine mssqltools.visualstudio.com
+          login azuredatastudio
+          password $(DEVOPS_PASSWORD)
+          EOF
+
           git config user.email "andresse@microsoft.com"
           git config user.name "AzureDataStudio"
 
@@ -30,3 +36,4 @@ jobs:
         displayName: Sync & Merge Explore
         env:
           ADS_EXPLORE_REPO: $(ADS_EXPLORE_REPO)
+          DEVOPS_PASSWORD: $(DEVOPS_PASSWORD)
