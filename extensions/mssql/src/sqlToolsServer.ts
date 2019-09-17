@@ -40,7 +40,7 @@ export class SqlToolsServer {
 			let clientOptions = getClientOptions(context);
 			this.client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			const processStart = Date.now();
-			this.client.onReady().then(() => {
+			const clientReadyPromise = this.client.onReady().then(() => {
 				const processEnd = Date.now();
 				statusView.text = localize('serviceStartedStatusMsg', "{0} Started", Constants.serviceName);
 				setTimeout(() => {
@@ -59,7 +59,7 @@ export class SqlToolsServer {
 			statusView.show();
 			statusView.text = localize('startingServiceStatusMsg', "Starting {0}", Constants.serviceName);
 			this.client.start();
-			await this.activateFeatures(context);
+			await Promise.all([this.activateFeatures(context), clientReadyPromise]);
 			return this.client;
 		} catch (e) {
 			Telemetry.sendTelemetryEvent('ServiceInitializingFailed');

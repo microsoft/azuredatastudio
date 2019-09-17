@@ -39,8 +39,6 @@ export interface IExtension {
 	readonly schemaCompare: ISchemaCompareService;
 
 	readonly dacFx: IDacFxService;
-
-	readonly sqlToolsServiceReady: Promise<boolean>;
 }
 
 /**
