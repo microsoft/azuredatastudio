@@ -78,12 +78,12 @@ export abstract class Task {
 	private readonly _iconClass?: string;
 	private readonly _description?: ITaskHandlerDescription;
 
-	constructor(private opts: ITaskOptions) {
+	constructor(opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
 		if (opts.iconPath) {
 			this.iconPath = {
-				dark: URI.parse(opts.iconPath.dark),
+				dark: opts.iconPath.dark ? URI.parse(opts.iconPath.dark) : undefined,
 				light: opts.iconPath.light ? URI.parse(opts.iconPath.light) : undefined,
 			};
 		}
