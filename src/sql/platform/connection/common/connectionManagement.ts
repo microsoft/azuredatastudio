@@ -304,7 +304,7 @@ export interface IConnectableInput {
 	onConnectReject(error?: string): void;
 	onConnectSuccess(params: INewConnectionParams, profile: IConnectionProfile): void;
 	onDisconnect(): void;
-	onConnectCanceled(): void;
+	onConnectCanceled(skipStateReset?: boolean): void;
 }
 
 export enum ConnectionType {

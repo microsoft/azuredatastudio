@@ -209,7 +209,8 @@ export class ConnectionDialogService implements IConnectionDialogService {
 				this._connectionManagementService.cancelConnection(this._model);
 			}
 			if (params && params.input && params.input.onConnectCanceled) {
-				params.input.onConnectCanceled();
+				// Call onConnectCanceled with 'true' to skip resetting the 'connecting' and 'connected' states to false
+				params.input.onConnectCanceled(true);
 			}
 			this._connectionDialog.resetConnection();
 			this._connecting = false;
