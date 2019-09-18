@@ -505,7 +505,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		row.clearItems();
 		const itemLayout: azdata.FlexItemLayout = { CSSStyles: { 'margin-right': '20px' } };
 		row.addItem(label);
-		if (this.wizard.model.adAuthSupported) {
+		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			row.addItem(dnsInput, itemLayout);
 		}
 		row.addItem(portInput);

@@ -4,9 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard } from '../deployClusterWizard';
-import { SectionInfo, FieldType, FieldInfo, LabelPosition, FontStyle } from '../../../interfaces';
-import { createSection, createGroupContainer } from '../../modelViewUtils';
+import { DeployClusterWizard, AuthenticationMode } from '../deployClusterWizard';
+import { SectionInfo, FieldType, LabelPosition, FontStyle } from '../../../interfaces';
+import { createSection, createGroupContainer, createFlexContainer, createLabel } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 const localize = nls.loadMessageBundle();
@@ -63,7 +63,9 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						}, {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.AuthenticationMode_VariableName),
+							defaultValue: this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory ?
+								localize('deployCluster.AuthenticationMode.ActiveDirectory', "Active Directory") :
+								localize('deployCluster.AuthenticationMode.Basic', "Basic"),
 							fontStyle: FontStyle.Italic
 						}
 					]
@@ -173,91 +175,48 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				}
 			]
 		};
-		const endpointSectionInfo: SectionInfo = {
-			labelPosition: LabelPosition.Left,
-			labelWidth: '150px',
-			inputWidth: '200px',
-			title: localize('deployCluster.EndpointSettings', "Endpoint settings"),
-			rows: [
-				{
-					fields: [{
-						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.ControllerText', "Controller"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.ControllerPort_VariableName),
-						fontStyle: FontStyle.Italic
-					}]
-				},
-				{
-					fields: [{
-						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.SqlServerText', "SQL Server Master"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerPort_VariableName),
-						fontStyle: FontStyle.Italic
-					}]
-				}, {
-					fields: [{
-						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.GatewayText', "Gateway"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.GateWayPort_VariableName),
-						fontStyle: FontStyle.Italic
-					}]
-				}
-			]
-		};
 
-		if (this.wizard.model.adAuthSupported) {
-			endpointSectionInfo.rows![0].fields.unshift(
-				{
-					type: FieldType.ReadonlyText,
-					label: '',
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ControllerDNSName_VariableName),
-					labelWidth: '0px',
-					fontStyle: FontStyle.Italic
-
-				}
-			);
-			endpointSectionInfo.rows![1].fields.unshift(
-				{
-					type: FieldType.ReadonlyText,
-					label: '',
-					defaultValue: this.wizard.model.getStringValue(VariableNames.SQLServerDNSName_VariableName),
-					labelWidth: '0px',
-					fontStyle: FontStyle.Italic
-				}
-			);
-			endpointSectionInfo.rows![2].fields.unshift(
-				{
-					type: FieldType.ReadonlyText,
-					label: '',
-					defaultValue: this.wizard.model.getStringValue(VariableNames.GatewayDNSName_VariableName),
-					labelWidth: '0px',
-					fontStyle: FontStyle.Italic
-				}
-			);
-		}
-
-		if (this.wizard.model.getBooleanValue(VariableNames.EnableHADR_VariableName)) {
-			const secondaryEndpointRow: { fields: FieldInfo[] } = {
-				fields: [{
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryPort_VariableName),
-					fontStyle: FontStyle.Italic
-				}]
+		const createSectionFunc = (sectionInfo: SectionInfo): azdata.FormComponent => {
+			return {
+				title: '',
+				component: createSection({
+					container: this.wizard.wizardObject,
+					sectionInfo: sectionInfo,
+					view: this.view,
+					onNewDisposableCreated: () => { },
+					onNewInputComponentCreated: () => { },
+					onNewValidatorCreated: () => { }
+				})
 			};
-
-			if (this.wizard.model.adAuthSupported) {
-				secondaryEndpointRow.fields.push({
-					type: FieldType.ReadonlyText,
-					label: localize('deployCluster.ReadableSecondaryText', "Readable secondary"),
-					defaultValue: this.wizard.model.getStringValue(VariableNames.ReadableSecondaryDNSName_VariableName),
-					labelWidth: '0px',
-					fontStyle: FontStyle.Italic
-				});
-			}
-			endpointSectionInfo.rows!.push(secondaryEndpointRow);
+		};
+		const clusterSection = createSectionFunc(clusterSectionInfo);
+		const scaleSection = createSectionFunc(scaleSectionInfo);
+		const endpointSection = {
+			title: '',
+			component: this.createEndpointSection()
+		};
+		const storageSection = {
+			title: '',
+			component: this.createStorageSection()
+		};
+		if (this.wizard.model.getStringValue(VariableNames.AksName_VariableName)) {
+			const azureSection = createSectionFunc(azureSectionInfo);
+			this.formItems.push(azureSection);
+			this.form.addFormItem(azureSection);
 		}
+		this.formItems.push(clusterSection, scaleSection, endpointSection);
+		this.form.addFormItems([clusterSection, scaleSection, endpointSection]);
 
+		this.formItems.push(storageSection);
+		this.form.addFormItem(storageSection);
+	}
+
+	private getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
+		const value = this.wizard.model.getStringValue(propertyName);
+		return (value === undefined || value === '') ? this.wizard.model.getStringValue(defaultValuePropertyName) : value;
+	}
+
+	private createStorageSection(): azdata.GroupContainer {
 		const serviceNameColumn: azdata.TableColumn = {
 			value: ' ',
 			width: 150
@@ -310,44 +269,39 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			width: '1000px',
 			height: '140px'
 		}).component();
-
-		const createSectionFunc = (sectionInfo: SectionInfo): azdata.FormComponent => {
-			return {
-				title: '',
-				component: createSection({
-					container: this.wizard.wizardObject,
-					sectionInfo: sectionInfo,
-					view: this.view,
-					onNewDisposableCreated: () => { },
-					onNewInputComponentCreated: () => { },
-					onNewValidatorCreated: () => { }
-				})
-			};
-		};
-		const clusterSection = createSectionFunc(clusterSectionInfo);
-		const scaleSection = createSectionFunc(scaleSectionInfo);
-		const endpointSection = createSectionFunc(endpointSectionInfo);
-		const storageSection = {
-			title: '',
-			component: createGroupContainer(this.view, [storageTable], {
-				header: localize('deployCluster.StorageSettings', "Storage settings"),
-				collapsible: true
-			})
-		};
-		if (this.wizard.model.getStringValue(VariableNames.AksName_VariableName)) {
-			const azureSection = createSectionFunc(azureSectionInfo);
-			this.formItems.push(azureSection);
-			this.form.addFormItem(azureSection);
-		}
-		this.formItems.push(clusterSection, scaleSection, endpointSection);
-		this.form.addFormItems([clusterSection, scaleSection, endpointSection]);
-
-		this.formItems.push(storageSection);
-		this.form.addFormItem(storageSection);
+		return createGroupContainer(this.view, [storageTable], {
+			header: localize('deployCluster.StorageSettings', "Storage settings"),
+			collapsible: true
+		});
 	}
 
-	private getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
-		const value = this.wizard.model.getStringValue(propertyName);
-		return (value === undefined || value === '') ? this.wizard.model.getStringValue(defaultValuePropertyName) : value;
+	private createEndpointSection(): azdata.GroupContainer {
+		const endpointRows = [
+			this.createEndpointRow(localize('deployCluster.ControllerText', "Controller"), VariableNames.ControllerDNSName_VariableName, VariableNames.ControllerPort_VariableName),
+			this.createEndpointRow(localize('deployCluster.SqlServerText', "SQL Server Master"), VariableNames.SQLServerDNSName_VariableName, VariableNames.SQLServerPort_VariableName),
+			this.createEndpointRow(localize('deployCluster.GatewayText', "Gateway"), VariableNames.GatewayDNSName_VariableName, VariableNames.GateWayPort_VariableName)
+		];
+
+		if (this.wizard.model.hadrEnabled) {
+			endpointRows.push(
+				this.createEndpointRow(localize('deployCluster.ReadableSecondaryText', "Readable secondary"), VariableNames.ReadableSecondaryDNSName_VariableName, VariableNames.ReadableSecondaryPort_VariableName)
+			);
+		}
+
+		return createGroupContainer(this.view, endpointRows, {
+			header: localize('deployCluster.EndpointSettings', "Endpoint settings"),
+			collapsible: true
+		});
+	}
+
+	private createEndpointRow(name: string, dnsVariableName: string, portVariableName: string): azdata.FlexContainer {
+		const items = [];
+		items.push(createLabel(this.view, { text: name, width: '150px' }));
+		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px' }));
+		}
+		items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(portVariableName)! }));
+
+		return createFlexContainer(this.view, items);
 	}
 }
