@@ -301,9 +301,9 @@ export class QueryInput extends EditorInput implements IEncodingSupport, IConnec
 		this.state.connected = false;
 	}
 
-	public onConnectCanceled(skipStateReset?: boolean): void {
-		if (!skipStateReset) {
-			this.state.connecting = false;
+	public onConnectCanceled(skipConnectedStateReset?: boolean): void {
+		this.state.connecting = false;
+		if (!skipConnectedStateReset) {
 			this.state.connected = false;
 		}
 	}
