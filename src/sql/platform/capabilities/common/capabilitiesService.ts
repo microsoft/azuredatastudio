@@ -5,7 +5,7 @@
 
 import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/common/connectionProviderExtension';
 
-import * as azdata from 'sqlops';
+import * as azdata from 'azdata';
 
 import { Event } from 'vs/base/common/event';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
@@ -35,12 +35,12 @@ export interface ICapabilitiesService {
 	/**
 	 * Retrieve a list of registered capabilities providers
 	 */
-	getCapabilities(provider: string): ProviderFeatures;
+	getCapabilities(provider: string): ProviderFeatures | undefined;
 
 	/**
 	 * get the old version of provider information
 	 */
-	getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities;
+	getLegacyCapabilities(provider: string): azdata.DataProtocolServerCapabilities | undefined;
 
 	/**
 	 * Register a capabilities provider
