@@ -29,7 +29,7 @@ export interface ITaskService {
 	createNewTask(taskInfo: azdata.TaskInfo): void;
 	updateTask(taskProgressInfo: azdata.TaskProgressInfo): void;
 	onTaskStatusChanged(handle: number, taskProgressInfo: azdata.TaskProgressInfo): void;
-	cancelTask(providerId: string, taskId: string): Thenable<boolean | void>;
+	cancelTask(providerId: string, taskId: string): Promise<boolean | undefined>;
 	/**
 	 * Register a ObjectExplorer provider
 	 */
@@ -105,7 +105,7 @@ export class TaskService implements ITaskService {
 		this.updateTask(taskProgressInfo);
 	}
 
-	public cancelTask(providerId: string, taskId: string): Thenable<boolean | void> {
+	public cancelTask(providerId: string, taskId: string): Promise<boolean | undefined> {
 		let task = this.getTaskInQueue(taskId);
 		if (task) {
 			task.status = TaskStatus.Canceling;
@@ -113,15 +113,15 @@ export class TaskService implements ITaskService {
 			if (providerId) {
 				let provider = this._providers[providerId];
 				if (provider && provider.cancelTask) {
-					return provider.cancelTask({
+					return Promise.resolve(provider.cancelTask({
 						taskId: taskId
-					});
+					}));
 				}
 			} else {
 				return Promise.resolve(true);
 			}
 		}
-		return Promise.resolve();
+		return Promise.resolve(undefined);
 	}
 
 	private cancelAllTasks(): Thenable<void> {

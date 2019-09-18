@@ -25,7 +25,7 @@ export enum ScriptOperation {
 export interface IScriptingService {
 	_serviceBrand: undefined;
 
-	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult | void>;
+	script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult | undefined>;
 
 	/**
 	 * Register a scripting provider
@@ -63,7 +63,7 @@ export class ScriptingService implements IScriptingService {
 	/**
 	 * Call the service for scripting based on provider and scripting operation
 	 */
-	public script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult | void> {
+	public script(connectionUri: string, metadata: azdata.ObjectMetadata, operation: ScriptOperation, paramDetails: azdata.ScriptingParamDetails): Thenable<azdata.ScriptingResult | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 
 		if (providerId) {
@@ -72,7 +72,7 @@ export class ScriptingService implements IScriptingService {
 				return provider.scriptAsOperation(connectionUri, operation, metadata, paramDetails);
 			}
 		}
-		return Promise.resolve();
+		return Promise.resolve(undefined);
 	}
 
 	/**

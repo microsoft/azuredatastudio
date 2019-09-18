@@ -94,7 +94,7 @@ export class ResultSerializer {
 	/**
 	 * Handle save request by getting filename from user and sending request to service
 	 */
-	public handleSerialization(uri: string, format: SaveFormat, sendRequest: ((filePath: string) => Promise<SaveResultsResponse | void>)): Thenable<void> {
+	public handleSerialization(uri: string, format: SaveFormat, sendRequest: ((filePath: string) => Promise<SaveResultsResponse | undefined>)): Thenable<void> {
 		const self = this;
 		return this.promptForFilepath(format, uri).then(filePath => {
 			if (filePath) {
@@ -331,7 +331,7 @@ export class ResultSerializer {
 	/**
 	 * Send request to sql tools service to save a result set
 	 */
-	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse | void>): Promise<void> {
+	private async doSave(filePath: string, format: string, sendRequest: () => Promise<SaveResultsResponse | undefined>): Promise<void> {
 
 		this.logToOutputChannel(LocalizedConstants.msgSaveStarted + filePath);
 

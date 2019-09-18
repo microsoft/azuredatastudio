@@ -46,7 +46,7 @@ export class FileBrowserService implements IFileBrowserService {
 		return this._onPathValidate.event;
 	}
 
-	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean> {
+	public openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			const provider = this.getProvider(ownerUri);
 			if (provider) {
@@ -77,7 +77,7 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 	}
 
-	public expandFolderNode(fileNode: FileNode): Thenable<FileNode[]> {
+	public expandFolderNode(fileNode: FileNode): Promise<FileNode[]> {
 		this._pathToFileNodeMap[fileNode.fullPath] = fileNode;
 		let self = this;
 		return new Promise<FileNode[]>((resolve, reject) => {
@@ -117,7 +117,7 @@ export class FileBrowserService implements IFileBrowserService {
 		}
 	}
 
-	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean> {
+	public validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Promise<boolean> {
 		return new Promise<boolean>((resolve, reject) => {
 			const provider = this.getProvider(ownerUri);
 			if (provider) {
@@ -136,12 +136,12 @@ export class FileBrowserService implements IFileBrowserService {
 		this._onPathValidate.fire(fileBrowserValidatedParams);
 	}
 
-	public closeFileBrowser(ownerUri: string): Thenable<azdata.FileBrowserCloseResponse | void> {
+	public closeFileBrowser(ownerUri: string): Promise<azdata.FileBrowserCloseResponse | undefined> {
 		let provider = this.getProvider(ownerUri);
 		if (provider) {
-			return provider.closeFileBrowser(ownerUri);
+			return Promise.resolve(provider.closeFileBrowser(ownerUri));
 		}
-		return Promise.resolve();
+		return Promise.resolve(undefined);
 	}
 
 	private generateResolveMapKey(ownerUri: string, expandPath: string): string {

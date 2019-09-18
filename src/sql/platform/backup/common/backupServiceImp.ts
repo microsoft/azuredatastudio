@@ -27,7 +27,7 @@ export class BackupService implements IBackupService {
 	/**
 	 * Get database metadata needed to populate backup UI
 	 */
-	public getBackupConfigInfo(connectionUri: string): Promise<azdata.BackupConfigInfo | void> {
+	public getBackupConfigInfo(connectionUri: string): Promise<azdata.BackupConfigInfo | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
@@ -35,7 +35,7 @@ export class BackupService implements IBackupService {
 				return Promise.resolve(provider.getBackupConfigInfo(connectionUri));
 			}
 		}
-		return Promise.resolve();
+		return Promise.resolve(undefined);
 	}
 
 	/**
