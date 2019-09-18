@@ -6,18 +6,16 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as path from 'path';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as yaml from 'js-yaml';
 import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
-import { isEditorTitleFree } from '../common/utils';
+import { isEditorTitleFree, exists } from '../common/utils';
 import * as nls from 'vscode-nls';
-import { promisify } from 'util';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 
 const localize = nls.loadMessageBundle();
-const existsAsync = promisify(fs.exists);
 
 export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeItem>, azdata.nb.NavigationProvider {
 	readonly providerId: string = 'BookNavigator';
@@ -84,7 +82,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 				const bookViewer = vscode.window.createTreeView('bookTreeView', { showCollapseAll: true, treeDataProvider: this });
 				await vscode.commands.executeCommand('workbench.books.action.focusBooksExplorer');
 				this._openAsUntitled = openAsUntitled;
-				let books = this.getBooks();
+				let books = await this.getBooks();
 				if (books && books.length > 0) {
 					const rootTreeItem = books[0];
 					const sectionToOpen = rootTreeItem.findChildSection(urlToOpen);
@@ -92,8 +90,8 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					const urlPath = sectionToOpen ? sectionToOpen.url : rootTreeItem.tableOfContents.sections[0].url;
 					const sectionToOpenMarkdown: string = path.join(bookPath, 'content', urlPath.concat('.md'));
 					const sectionToOpenNotebook: string = path.join(bookPath, 'content', urlPath.concat('.ipynb'));
-					const markdownExists = await existsAsync(sectionToOpenMarkdown);
-					const notebookExists = await existsAsync(sectionToOpenNotebook);
+					const markdownExists = await exists(sectionToOpenMarkdown);
+					const notebookExists = await exists(sectionToOpenNotebook);
 					if (markdownExists) {
 						vscode.commands.executeCommand('markdown.showPreview', vscode.Uri.file(sectionToOpenMarkdown));
 					}
@@ -208,13 +206,13 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
 	}
 
-	public getBooks(): BookTreeItem[] {
+	public async getBooks(): Promise<BookTreeItem[]> {
 		let books: BookTreeItem[] = [];
-		for (let i in this._tableOfContentPaths) {
-			let root = path.dirname(path.dirname(this._tableOfContentPaths[i]));
+		for (const contentPath of this._tableOfContentPaths) {
+			let root = path.dirname(path.dirname(contentPath));
 			try {
-				const config = yaml.safeLoad(fs.readFileSync(path.join(root, '_config.yml'), 'utf-8'));
-				const tableOfContents = yaml.safeLoad(fs.readFileSync(this._tableOfContentPaths[i], 'utf-8'));
+				const config = yaml.safeLoad((await fs.readFile(path.join(root, '_config.yml'), 'utf-8')).toString());
+				const tableOfContents = yaml.safeLoad((await fs.readFile(contentPath, 'utf-8')).toString());
 				try {
 					let book = new BookTreeItem({
 						title: config.title,
@@ -242,7 +240,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 		return books;
 	}
 
-	public getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): BookTreeItem[] {
+	public async getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): Promise<BookTreeItem[]> {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
@@ -267,7 +265,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 					let pathToMarkdown = path.join(root, 'content', sections[i].url.concat('.md'));
 					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 					// Following Jupyter Books behavior for now
-					if (fs.existsSync(pathToNotebook)) {
+					if (await exists(pathToNotebook)) {
 						let notebook = new BookTreeItem({
 							title: sections[i].title,
 							root: root,
@@ -286,7 +284,7 @@ export class BookTreeViewProvider implements vscode.TreeDataProvider<BookTreeIte
 						if (this._openAsUntitled) {
 							this._allNotebooks.set(path.basename(pathToNotebook), notebook);
 						}
-					} else if (fs.existsSync(pathToMarkdown)) {
+					} else if (await exists(pathToMarkdown)) {
 						let markdown = new BookTreeItem({
 							title: sections[i].title,
 							root: root,

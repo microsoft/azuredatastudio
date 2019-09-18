@@ -229,6 +229,21 @@
 		"translation-remind": true,
 		"no-standalone-editor": true,
 		"no-nls-in-standalone-editor": true,
+		"no-sync": [
+			true,
+			{
+				"exclude": [
+					"**/vs/**", // assume they are doing the right thing
+					"**/extensions/git/**", // assume they are doing the right thing,
+					"**/extensions/extension-editing/**", // assume they are doing the right thing,
+					"**/json-language-features/**", // assume they are doing the right thing,
+					"**/vscode-test-resolver/**", // testing doesn't matter
+					"**/integration-tests/**", // testing doesn't matter
+					"**/*.test.*", // testing doesn't matter
+					"**/test/**" // testing doesn't matter
+				]
+			}
+		],
 		"no-useless-strict": true
 	},
 	"defaultSeverity": "warning"

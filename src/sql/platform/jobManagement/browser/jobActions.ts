@@ -180,7 +180,7 @@ export class OpenMaterializedNotebookAction extends Action {
 	constructor(
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'open');
+		super(OpenMaterializedNotebookAction.ID, OpenMaterializedNotebookAction.LABEL, 'openNotebook');
 	}
 
 	public run(context: any): Promise<boolean> {

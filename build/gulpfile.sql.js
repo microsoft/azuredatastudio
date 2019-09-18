@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 'use strict';
-
 const gulp = require('gulp');
 const util = require('./lib/util');
 const tsfmt = require('typescript-formatter');

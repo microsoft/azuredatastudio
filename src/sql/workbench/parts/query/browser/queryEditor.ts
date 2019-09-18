@@ -120,7 +120,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
-	public get input(): QueryInput {
+	public get input(): QueryInput | null {
 		return this._input as QueryInput;
 	}
 
