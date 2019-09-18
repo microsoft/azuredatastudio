@@ -28,7 +28,7 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 		let disposable: IDisposable;
 		let id: string;
 		if (types.isString(idOrTask)) {
-			disposable = CommandsRegistry.registerCommand(idOrTask, handler);
+			disposable = CommandsRegistry.registerCommand(idOrTask, handler!);
 			id = idOrTask;
 		} else {
 			if (idOrTask.iconClass) {
@@ -52,8 +52,8 @@ export const TaskRegistry: ITaskRegistry = new class implements ITaskRegistry {
 		};
 	}
 
-	getOrCreateTaskIconClassName(item: ICommandAction): string {
-		let iconClass = null;
+	getOrCreateTaskIconClassName(item: ICommandAction): string | undefined {
+		let iconClass: string | undefined;
 		if (this.taskIdToIconClassNameMap.has(item.id)) {
 			iconClass = this.taskIdToIconClassNameMap.get(item.id);
 		} else if (item.iconLocation) {
@@ -74,17 +74,19 @@ export abstract class Task {
 	public readonly id: string;
 	public readonly title: string;
 	public readonly iconPathDark: string;
-	public readonly iconPath: { dark: URI; light?: URI; };
-	private readonly _iconClass: string;
-	private readonly _description: ITaskHandlerDescription;
+	public readonly iconPath?: { dark: URI; light?: URI; };
+	private readonly _iconClass?: string;
+	private readonly _description?: ITaskHandlerDescription;
 
 	constructor(private opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
-		this.iconPath = {
-			dark: opts.iconPath ? URI.parse(opts.iconPath.dark) : undefined,
-			light: opts.iconPath ? URI.parse(opts.iconPath.light) : undefined,
-		};
+		if (opts.iconPath.dark) {
+			this.iconPath = {
+				dark: URI.parse(opts.iconPath.dark),
+				light: opts.iconPath.light ? URI.parse(opts.iconPath.light) : undefined,
+			};
+		}
 		this._iconClass = opts.iconClass;
 		this._description = opts.description;
 	}
