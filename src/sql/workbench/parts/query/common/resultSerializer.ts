@@ -4,14 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as ConnectionConstants from 'sql/platform/connection/common/constants';
-import * as Constants from 'sql/workbench/parts/query/common/constants';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import { SaveResultsRequestParams } from 'azdata';
 import { IQueryManagementService } from 'sql/platform/query/common/queryManagement';
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { IWindowsService, FileFilter } from 'vs/platform/windows/common/windows';
+import { FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
@@ -26,6 +25,7 @@ import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platf
 import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 let prevSavePath: string;
 
@@ -60,9 +60,9 @@ export class ResultSerializer {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IEditorService private _editorService: IEditorService,
 		@IWorkspaceContextService private _contextService: IWorkspaceContextService,
-		@IWindowsService private _windowsService: IWindowsService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
-		@INotificationService private _notificationService: INotificationService
+		@INotificationService private _notificationService: INotificationService,
+		@IInstantiationService private readonly _instantiationService: IInstantiationService
 	) { }
 
 	/**
@@ -313,14 +313,14 @@ export class ResultSerializer {
 			[{
 				label: nls.localize('openLocation', "Open file location"),
 				run: () => {
-					let action = new ShowFileInFolderAction(savedFilePath, label || path.sep, this._windowsService);
+					let action = this._instantiationService.createInstance(ShowFileInFolderAction, savedFilePath, label || path.sep);
 					action.run();
 					action.dispose();
 				}
 			}, {
 				label: nls.localize('openFile', "Open file"),
 				run: () => {
-					let action = new OpenFileInFolderAction(savedFilePath, label || path.sep, this._windowsService);
+					let action = this._instantiationService.createInstance(OpenFileInFolderAction, savedFilePath, label || path.sep);
 					action.run();
 					action.dispose();
 				}
