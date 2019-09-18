@@ -83,9 +83,11 @@ export class AzdataService implements IAzdataService {
 				if (error) {
 					reject(error.message);
 				} else {
-					try {
-						const bdcJson = this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json'));
-						const controlJson = this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'));
+					const bdcJsonPromise = this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json'));
+					const controlJsonPromise = this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'));
+					Promise.all([bdcJsonPromise, controlJsonPromise]).then((value) => {
+						const bdcJson = value[0];
+						const controlJson = value[1];
 						resolve({
 							name: profileName,
 							defaultDataSize: (<string>controlJson.spec.storage.data.size).replace('Gi', ''),
@@ -107,14 +109,7 @@ export class AzdataService implements IAzdataService {
 							readableSecondaryPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'MasterSecondary', '31436'),
 							controllerPort: this.getEndpointPort(controlJson.spec.endpoints, 'Controller')
 						});
-					}
-					catch (err) {
-						if (err instanceof Error) {
-							reject(err.message);
-						} else {
-							reject(err);
-						}
-					}
+					});
 				}
 			});
 		});
@@ -138,8 +133,20 @@ export class AzdataService implements IAzdataService {
 		});
 	}
 
-	private getJsonObjectFromFile(path: string): any {
-		return JSON.parse(fs.readFileSync(path, 'utf8'));
+	private getJsonObjectFromFile(path: string): Thenable<any> {
+		return new Promise<any>((resolve, reject) => {
+			fs.readFile(path, 'utf8', (err, data) => {
+				if (err) {
+					reject(err);
+				} else {
+					try {
+						resolve(JSON.parse(data));
+					} catch (error) {
+						reject(error);
+					}
+				}
+			});
+		});
 	}
 
 	private getEndpointPort(endpoints: any, name: string, defaultValue: string = ''): string {

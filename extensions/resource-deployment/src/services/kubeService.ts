@@ -26,30 +26,32 @@ export class KubeService implements IKubeService {
 
 	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]> {
 		return new Promise<KubeClusterContext[]>((resolve, reject) => {
-			try {
-				if (fs.existsSync(configFile)) {
-					const config = yamljs.load(configFile);
-					const rawContexts = <any[]>config['contexts'];
-					const currentContext = <string>config['current-context'];
-					if (currentContext && rawContexts && rawContexts.length > 0) {
-						const contexts: KubeClusterContext[] = [];
-						rawContexts.forEach(rawContext => {
-							const name = <string>rawContext['name'];
-							if (name) {
-								contexts.push({
-									name: name,
-									isCurrentContext: name === currentContext
-								});
-							}
-						});
-						resolve(contexts);
+			fs.access(configFile, (error) => {
+				if (error && error.code === 'ENOENT') {
+					resolve([]);
+				} else {
+					try {
+						const config = yamljs.load(configFile);
+						const rawContexts = <any[]>config['contexts'];
+						const currentContext = <string>config['current-context'];
+						if (currentContext && rawContexts && rawContexts.length > 0) {
+							const contexts: KubeClusterContext[] = [];
+							rawContexts.forEach(rawContext => {
+								const name = <string>rawContext['name'];
+								if (name) {
+									contexts.push({
+										name: name,
+										isCurrentContext: name === currentContext
+									});
+								}
+							});
+							resolve(contexts);
+						}
+					} catch (error) {
+						reject(error);
 					}
 				}
-				resolve([]);
-			}
-			catch (error) {
-				reject(error);
-			}
+			});
 		});
 	}
 }
