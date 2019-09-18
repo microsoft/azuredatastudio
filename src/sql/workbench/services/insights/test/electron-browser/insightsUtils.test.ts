@@ -25,6 +25,7 @@ import { getRandomTestPath } from 'vs/base/test/node/testUtils';
 import { IWorkbenchConstructionOptions } from 'vs/workbench/workbench.web.api';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
+	webviewExternalEndpoint: string;
 	logFile: URI;
 	options?: IWorkbenchConstructionOptions;
 	galleryMachineIdResource?: URI;

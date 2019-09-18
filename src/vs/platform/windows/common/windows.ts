@@ -156,7 +156,6 @@ export interface IWindowsService {
 	openExtensionDevelopmentHostWindow(args: ParsedArgs, env: IProcessEnvironment): Promise<void>;
 	getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]>;
 	getWindowCount(): Promise<number>;
-	log(severity: string, args: string[]): Promise<void>;
 	showItemInFolder(path: URI): Promise<void>;
 	getActiveWindowId(): Promise<number | undefined>;
 
@@ -167,7 +166,6 @@ export interface IWindowsService {
 	// TODO: this is a bit backwards
 	startCrashReporter(config: CrashReporterStartOptions): Promise<void>;
 
-	openAboutDialog(): Promise<void>;
 	resolveProxy(windowId: number, url: string): Promise<string | undefined>;
 }
 
