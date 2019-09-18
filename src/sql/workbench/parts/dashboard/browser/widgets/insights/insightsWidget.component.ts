@@ -12,8 +12,8 @@ import { Observable } from 'rxjs/Observable';
 import { DashboardWidget, IDashboardWidget, WIDGET_CONFIG, WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { ComponentHostDirective } from 'sql/workbench/parts/dashboard/browser/core/componentHost.directive';
-import { InsightAction, InsightActionContext } from 'sql/workbench/common/actions';
-import { Extensions, IInsightRegistry, IInsightsConfig, IInsightsView } from 'sql/platform/dashboard/browser/insightRegistry';
+import { InsightAction, InsightActionContext } from 'sql/workbench/browser/actions';
+import { Extensions, IInsightRegistry, IInsightsConfig, IInsightsView, getWidgetAutoRefreshState } from 'sql/platform/dashboard/browser/insightRegistry';
 import { resolveQueryFilePath } from 'sql/workbench/services/insights/common/insightsUtils';
 
 import { RunInsightQueryAction } from './actions';
@@ -46,6 +46,7 @@ interface IStorageResult {
 	template: `
 				<div *ngIf="error" style="text-align: center; padding-top: 20px">{{error}}</div>
 				<div *ngIf="lastUpdated" style="font-style: italic; font-size: 80%; margin-left: 5px">{{lastUpdated}}</div>
+				<div *ngIf="autoRefreshStatus" style="font-style: italic; font-size: 80%; margin-left: 5px">{{autoRefreshStatus}}</div>
 				<div style="margin: 10px; width: calc(100% - 20px); height: calc(100% - 20px)">
 					<ng-template component-host></ng-template>
 					<loading-spinner [loading]="_loading"></loading-spinner>
@@ -64,6 +65,7 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 
 	public error: string;
 	public lastUpdated: string;
+	public autoRefreshStatus: string;
 
 	constructor(
 		@Inject(forwardRef(() => ComponentFactoryResolver)) private _componentFactoryResolver: ComponentFactoryResolver,
@@ -138,7 +140,22 @@ export class InsightsWidget extends DashboardWidget implements IDashboardWidget,
 		if (this.insightConfig.autoRefreshInterval) {
 			this._intervalTimer = new IntervalTimer();
 			this._register(this._intervalTimer);
-			this._intervalTimer.cancelAndSet(() => this.refresh(), this.insightConfig.autoRefreshInterval * 60 * 1000);
+			this._intervalTimer.cancelAndSet(() => {
+				const autoRefresh = getWidgetAutoRefreshState(this.insightConfig.id, this.actionsContext.profile.id);
+				this.updateAutoRefreshStatus(autoRefresh);
+				if (!autoRefresh) {
+					return;
+				}
+				this.refresh();
+			}, this.insightConfig.autoRefreshInterval * 60 * 1000);
+		}
+	}
+
+	private updateAutoRefreshStatus(autoRefreshOn: boolean): void {
+		let newState = autoRefreshOn ? '' : nls.localize('insights.autoRefreshOffState', "Auto Refresh: OFF");
+		if (this.autoRefreshStatus !== newState) {
+			this.autoRefreshStatus = newState;
+			this._cd.detectChanges();
 		}
 	}
 

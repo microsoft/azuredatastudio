@@ -14,7 +14,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
-import { EditDataInput } from 'sql/workbench/parts/editData/common/editDataInput';
+import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInput';
 
 // map for the version of SQL Server (default is 140)
 const scriptCompatibilityOptionMap = {
@@ -164,7 +164,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 							reject(editorError);
 						});
 					} else {
-						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', 'No script was returned when scripting as {0} on object {1}',
+						let scriptNotFoundMsg = nls.localize('scriptNotFoundForObject', "No script was returned when scripting as {0} on object {1}",
 							GetScriptOperationName(operation), metadata.metadataTypeName);
 						let messageDetail = '';
 						let operationResult = scriptingService.getOperationFailedResult(result.operationId);
@@ -179,7 +179,7 @@ export function script(connectionProfile: IConnectionProfile, metadata: azdata.O
 						reject(scriptNotFoundMsg);
 					}
 				} else {
-					reject(nls.localize('scriptNotFound', 'No script was returned when scripting as {0}', GetScriptOperationName(operation)));
+					reject(nls.localize('scriptNotFound', "No script was returned when scripting as {0}", GetScriptOperationName(operation)));
 				}
 			}, scriptingError => {
 				reject(scriptingError);

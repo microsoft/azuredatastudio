@@ -22,7 +22,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { IEditorGroup, IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 import { SplitView, Sizing } from 'vs/base/browser/ui/splitview/splitview';
 import { Event } from 'vs/base/common/event';
-import { dispose, IDisposable } from 'vs/base/common/lifecycle';
+import { dispose, IDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { ISelectionData } from 'azdata';
 import { Action, IActionViewItem } from 'vs/base/common/actions';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -68,7 +68,7 @@ export class QueryEditor extends BaseEditor {
 	private splitviewContainer: HTMLElement;
 	private splitview: SplitView;
 
-	private inputDisposables: IDisposable[] = [];
+	private inputDisposables = this._register(new DisposableStore());
 
 	private resultsVisible = false;
 
@@ -85,6 +85,7 @@ export class QueryEditor extends BaseEditor {
 	private _estimatedQueryPlanAction: actions.EstimatedQueryPlanAction;
 	private _actualQueryPlanAction: actions.ActualQueryPlanAction;
 	private _listDatabasesActionItem: actions.ListDatabasesActionItem;
+	private _toggleSqlcmdMode: actions.ToggleSqlCmdModeAction;
 
 	constructor(
 		@ITelemetryService telemetryService: ITelemetryService,
@@ -119,7 +120,7 @@ export class QueryEditor extends BaseEditor {
 	}
 
 	// PUBLIC METHODS ////////////////////////////////////////////////////////////
-	public get input(): QueryInput {
+	public get input(): QueryInput | null {
 		return this._input as QueryInput;
 	}
 
@@ -181,6 +182,7 @@ export class QueryEditor extends BaseEditor {
 		this._listDatabasesAction = this.instantiationService.createInstance(actions.ListDatabasesAction, this);
 		this._estimatedQueryPlanAction = this.instantiationService.createInstance(actions.EstimatedQueryPlanAction, this);
 		this._actualQueryPlanAction = this.instantiationService.createInstance(actions.ActualQueryPlanAction, this);
+		this._toggleSqlcmdMode = this.instantiationService.createInstance(actions.ToggleSqlCmdModeAction, this, false);
 
 		this.setTaskbarContent();
 
@@ -203,6 +205,10 @@ export class QueryEditor extends BaseEditor {
 			} else {
 				this.listDatabasesActionItem.onDisconnect();
 			}
+		}
+
+		if (stateChangeEvent.sqlCmdModeChanged) {
+			this._toggleSqlcmdMode.isSqlCmdMode = this.input.state.isSqlCmdMode;
 		}
 
 		if (stateChangeEvent.connectingChange) {
@@ -259,7 +265,8 @@ export class QueryEditor extends BaseEditor {
 			{ action: this._changeConnectionAction },
 			{ action: this._listDatabasesAction },
 			{ element: separator },
-			{ action: this._estimatedQueryPlanAction }
+			{ action: this._estimatedQueryPlanAction },
+			{ action: this._toggleSqlcmdMode }
 		];
 
 		// Remove the estimated query plan action if preview features are not enabled
@@ -306,10 +313,9 @@ export class QueryEditor extends BaseEditor {
 			this.resultsEditor.setInput(newInput.results, options)
 		]);
 
-		dispose(this.inputDisposables);
-		this.inputDisposables = [];
-		this.inputDisposables.push(this.input.state.onChange(c => this.updateState(c)));
-		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true });
+		this.inputDisposables.clear();
+		this.inputDisposables.add(this.input.state.onChange(c => this.updateState(c)));
+		this.updateState({ connectingChange: true, connectedChange: true, executingChange: true, resultsVisibleChange: true, sqlCmdModeChanged: true });
 
 		const editorViewState = this.loadTextEditorViewState(this.input.getResource());
 

@@ -78,8 +78,8 @@ export abstract class TreeNode implements ITreeNode {
 		return undefined;
 	}
 
-	public updateFileSource(connection: SqlClusterConnection): void {
-		this.fileSource = connection.createHdfsFileSource();
+	public async updateFileSource(connection: SqlClusterConnection): Promise<void> {
+		this.fileSource = await connection.createHdfsFileSource();
 	}
 	/**
 	 * The value to use for this node in the node path

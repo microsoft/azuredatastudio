@@ -21,7 +21,7 @@ suite('ExtHostDataProtocol', () => {
 					$registerConnectionProvider: (providerId, handle) => Promise.resolve()
 				} as any;
 			}
-		} as any);
+		} as any, undefined);
 	});
 
 	test('Providers are exposed to other extensions', () => {

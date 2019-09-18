@@ -43,6 +43,7 @@ function prepareDebPackage(arch) {
 			.pipe(replace('@@NAME_LONG@@', product.nameLong))
 			.pipe(replace('@@NAME_SHORT@@', product.nameShort))
 			.pipe(replace('@@NAME@@', product.applicationName))
+			.pipe(replace('@@EXEC@@', `/usr/share/${product.applicationName}/${product.applicationName}`))
 			.pipe(replace('@@ICON@@', product.linuxIconName))
 			.pipe(replace('@@URLPROTOCOL@@', product.urlProtocol));
 
@@ -55,11 +56,13 @@ function prepareDebPackage(arch) {
 		const icon = gulp.src('resources/linux/code.png', { base: '.' })
 			.pipe(rename('usr/share/pixmaps/' + product.linuxIconName + '.png'));
 
-		// const bash_completion = gulp.src('resources/completions/bash/code')
-		// 	.pipe(rename('usr/share/bash-completion/completions/code'));
+		const bash_completion = gulp.src('resources/completions/bash/code')
+			.pipe(replace('@@APPNAME@@', product.applicationName))
+			.pipe(rename('usr/share/bash-completion/completions/' + product.applicationName));
 
-		// const zsh_completion = gulp.src('resources/completions/zsh/_code')
-		// 	.pipe(rename('usr/share/zsh/vendor-completions/_code'));
+		const zsh_completion = gulp.src('resources/completions/zsh/_code')
+			.pipe(replace('@@APPNAME@@', product.applicationName))
+			.pipe(rename('usr/share/zsh/vendor-completions/_' + product.applicationName));
 
 		const code = gulp.src(binaryDir + '/**/*', { base: binaryDir })
 			.pipe(rename(function (p) { p.dirname = 'usr/share/' + product.applicationName + '/' + p.dirname; }));
@@ -95,7 +98,7 @@ function prepareDebPackage(arch) {
 			.pipe(replace('@@UPDATEURL@@', product.updateUrl || '@@UPDATEURL@@'))
 			.pipe(rename('DEBIAN/postinst'));
 
-		const all = es.merge(control, postinst, postrm, prerm, desktops, appdata, icon, /* bash_completion, zsh_completion, */ code);
+		const all = es.merge(control, postinst, postrm, prerm, desktops, appdata, icon, bash_completion, zsh_completion, code);
 
 		return all.pipe(vfs.dest(destination));
 	};
@@ -134,6 +137,7 @@ function prepareRpmPackage(arch) {
 			.pipe(replace('@@NAME_LONG@@', product.nameLong))
 			.pipe(replace('@@NAME_SHORT@@', product.nameShort))
 			.pipe(replace('@@NAME@@', product.applicationName))
+			.pipe(replace('@@EXEC@@', `/usr/share/${product.applicationName}/${product.applicationName}`))
 			.pipe(replace('@@ICON@@', product.linuxIconName))
 			.pipe(replace('@@URLPROTOCOL@@', product.urlProtocol));
 
@@ -146,11 +150,13 @@ function prepareRpmPackage(arch) {
 		const icon = gulp.src('resources/linux/code.png', { base: '.' })
 			.pipe(rename('BUILD/usr/share/pixmaps/' + product.linuxIconName + '.png'));
 
-		// const bash_completion = gulp.src('resources/completions/bash/code')
-		// 	.pipe(rename('BUILD/usr/share/bash-completion/completions/code'));
+		const bash_completion = gulp.src('resources/completions/bash/code')
+			.pipe(replace('@@APPNAME@@', product.applicationName))
+			.pipe(rename('BUILD/usr/share/bash-completion/completions/' + product.applicationName));
 
-		// const zsh_completion = gulp.src('resources/completions/zsh/_code')
-		// 	.pipe(rename('BUILD/usr/share/zsh/site-functions/_code'));
+		const zsh_completion = gulp.src('resources/completions/zsh/_code')
+			.pipe(replace('@@APPNAME@@', product.applicationName))
+			.pipe(rename('BUILD/usr/share/zsh/site-functions/_' + product.applicationName));
 
 		const code = gulp.src(binaryDir + '/**/*', { base: binaryDir })
 			.pipe(rename(function (p) { p.dirname = 'BUILD/usr/share/' + product.applicationName + '/' + p.dirname; }));
@@ -173,7 +179,7 @@ function prepareRpmPackage(arch) {
 		const specIcon = gulp.src('resources/linux/rpm/code.xpm', { base: '.' })
 			.pipe(rename('SOURCES/' + product.applicationName + '.xpm'));
 
-		const all = es.merge(code, desktops, appdata, icon, /* bash_completion, zsh_completion, */ spec, specIcon);
+		const all = es.merge(code, desktops, appdata, icon, bash_completion, zsh_completion, spec, specIcon);
 
 		return all.pipe(vfs.dest(getRpmBuildPath(rpmArch)));
 	};
@@ -202,21 +208,25 @@ function prepareSnapPackage(arch) {
 	const destination = getSnapBuildPath(arch);
 
 	return function () {
+		// A desktop file that is placed in snap/gui will be placed into meta/gui verbatim.
 		const desktop = gulp.src('resources/linux/code.desktop', { base: '.' })
-			.pipe(rename(`usr/share/applications/${product.applicationName}.desktop`));
+			.pipe(rename(`snap/gui/${product.applicationName}.desktop`));
 
+		// A desktop file that is placed in snap/gui will be placed into meta/gui verbatim.
 		const desktopUrlHandler = gulp.src('resources/linux/code-url-handler.desktop', { base: '.' })
-			.pipe(rename(`usr/share/applications/${product.applicationName}-url-handler.desktop`));
+			.pipe(rename(`snap/gui/${product.applicationName}-url-handler.desktop`));
 
 		const desktops = es.merge(desktop, desktopUrlHandler)
 			.pipe(replace('@@NAME_LONG@@', product.nameLong))
 			.pipe(replace('@@NAME_SHORT@@', product.nameShort))
 			.pipe(replace('@@NAME@@', product.applicationName))
-			.pipe(replace('@@ICON@@', `/usr/share/pixmaps/${product.linuxIconName}.png`))
+			.pipe(replace('@@EXEC@@', `${product.applicationName} --force-user-env`))
+			.pipe(replace('@@ICON@@', `\${SNAP}/meta/gui/${product.linuxIconName}.png`))
 			.pipe(replace('@@URLPROTOCOL@@', product.urlProtocol));
 
+		// An icon that is placed in snap/gui will be placed into meta/gui verbatim.
 		const icon = gulp.src('resources/linux/code.png', { base: '.' })
-			.pipe(rename(`usr/share/pixmaps/${product.linuxIconName}.png`));
+			.pipe(rename(`snap/gui/${product.linuxIconName}.png`));
 
 		const code = gulp.src(binaryDir + '/**/*', { base: binaryDir })
 			.pipe(rename(function (p) { p.dirname = `usr/share/${product.applicationName}/${p.dirname}`; }));
@@ -237,7 +247,8 @@ function prepareSnapPackage(arch) {
 
 function buildSnapPackage(arch) {
 	const snapBuildPath = getSnapBuildPath(arch);
-	return shell.task(`cd ${snapBuildPath} && snapcraft build`);
+	// Default target for snapcraft runs: pull, build, stage and prime, and finally assembles the snap.
+	return shell.task(`cd ${snapBuildPath} && snapcraft`);
 }
 
 const BUILD_TARGETS = [

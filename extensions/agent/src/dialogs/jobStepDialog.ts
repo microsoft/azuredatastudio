@@ -169,7 +169,7 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 				isFile: false
 			}).component();
 		this.openButton.onDidClick(e => {
-			let queryContent = e;
+			let queryContent = e.fileContent;
 			this.commandTextBox.value = queryContent;
 		});
 		this.parseButton.onDidClick(e => {
@@ -259,9 +259,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					title: this.CommandLabelString,
 					actions: [this.openButton, this.parseButton]
 				}], {
-						horizontal: false,
-						componentWidth: 420
-					}).component();
+					horizontal: false,
+					componentWidth: 420
+				}).component();
 			this.typeDropdown.onValueChanged((type) => {
 				switch (type.selected) {
 					case (JobStepDialog.TSQLScript):
@@ -375,8 +375,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 						component: this.userInputBox,
 						title: this.RunAsUserLabel
 					}], {
-						componentWidth: 400
-					}).component();
+					componentWidth: 400
+				}).component();
 
 			let formWrapper = view.modelBuilder.loadingComponent().withItem(formModel).component();
 			formWrapper.loading = false;
@@ -419,9 +419,9 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					component: this.retryAttemptsBox,
 					title: this.RetryAttemptsLabel
 				}], {
-					horizontal: false,
-					componentWidth: '100%'
-				})
+				horizontal: false,
+				componentWidth: '100%'
+			})
 			.component();
 
 		let retryIntervalContainer = view.modelBuilder.formContainer()
@@ -430,8 +430,8 @@ export class JobStepDialog extends AgentDialog<JobStepData> {
 					component: this.retryIntervalBox,
 					title: this.RetryIntervalLabel
 				}], {
-					horizontal: false
-				})
+				horizontal: false
+			})
 			.component();
 
 		let retryFlexContainer = view.modelBuilder.flexContainer()

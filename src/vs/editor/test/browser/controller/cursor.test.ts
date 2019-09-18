@@ -711,7 +711,7 @@ suite('Editor Controller - Cursor', () => {
 				position: new Position(4, 4),
 				viewPosition: new Position(4, 4),
 				mouseColumn: 15,
-				setAnchorIfNotSet: false
+				doColumnSelect: true
 			});
 
 			let expectedSelections = [
@@ -747,7 +747,7 @@ suite('Editor Controller - Cursor', () => {
 			position: new Position(4, 1),
 			viewPosition: new Position(4, 1),
 			mouseColumn: 1,
-			setAnchorIfNotSet: false
+			doColumnSelect: true
 		});
 
 		assertCursor(cursor, [
@@ -787,7 +787,7 @@ suite('Editor Controller - Cursor', () => {
 			position: new Position(1, 1),
 			viewPosition: new Position(1, 1),
 			mouseColumn: 1,
-			setAnchorIfNotSet: false
+			doColumnSelect: true
 		});
 		assertCursor(cursor, [
 			new Selection(10, 10, 10, 1),
@@ -806,7 +806,7 @@ suite('Editor Controller - Cursor', () => {
 			position: new Position(1, 1),
 			viewPosition: new Position(1, 1),
 			mouseColumn: 1,
-			setAnchorIfNotSet: false
+			doColumnSelect: true
 		});
 		assertCursor(cursor, [
 			new Selection(10, 10, 10, 1),
@@ -1562,6 +1562,37 @@ suite('Editor Controller - Regression tests', () => {
 				'bbb',
 				'ccc',
 				'',
+			].join('\n'));
+		});
+	});
+
+	test('issue #43722: Multiline paste doesn\'t work anymore', () => {
+		usingCursor({
+			text: [
+				'test',
+				'test',
+				'test',
+				'test'
+			],
+		}, (model, cursor) => {
+			cursor.setSelections('test', [
+				new Selection(1, 1, 1, 5),
+				new Selection(2, 1, 2, 5),
+				new Selection(3, 1, 3, 5),
+				new Selection(4, 1, 4, 5),
+			]);
+
+			cursorCommand(cursor, H.Paste, {
+				text: 'aaa\r\nbbb\r\nccc\r\nddd\r\n',
+				pasteOnNewLine: false,
+				multicursorText: null
+			});
+
+			assert.equal(model.getValue(), [
+				'aaa',
+				'bbb',
+				'ccc',
+				'ddd',
 			].join('\n'));
 		});
 	});
@@ -3633,6 +3664,75 @@ suite('Editor Controller - Indentation Rules', () => {
 		model.dispose();
 		mode.dispose();
 	});
+
+	test('', () => {
+		class JSONMode extends MockMode {
+			private static readonly _id = new LanguageIdentifier('indentRulesMode', 4);
+			constructor() {
+				super(JSONMode._id);
+				this._register(LanguageConfigurationRegistry.register(this.getLanguageIdentifier(), {
+					brackets: [
+						['{', '}'],
+						['[', ']'],
+						['(', ')']
+					],
+					indentationRules: {
+						increaseIndentPattern: new RegExp('^.*\\{[^}\"\\\']*$|^.*\\([^\\)\"\\\']*$|^\\s*(public|private|protected):\\s*$|^\\s*@(public|private|protected)\\s*$|^\\s*\\{\\}$'),
+						decreaseIndentPattern: new RegExp('^\\s*(\\s*/[*].*[*]/\\s*)*\\}|^\\s*(\\s*/[*].*[*]/\\s*)*\\)|^\\s*(public|private|protected):\\s*$|^\\s*@(public|private|protected)\\s*$'),
+					}
+				}));
+			}
+		}
+
+		let mode = new JSONMode();
+		let model = createTextModel(
+			[
+				'{',
+				'  "scripts: {"',
+				'    "watch": "a {"',
+				'    "build{": "b"',
+				'    "tasks": []',
+				'    "tasks": ["a"]',
+				'  "}"',
+				'"}"'
+			].join('\n'),
+			{
+				tabSize: 2,
+				indentSize: 2
+			},
+			mode.getLanguageIdentifier()
+		);
+
+		withTestCodeEditor(null, { model: model, autoIndent: true }, (editor, cursor) => {
+			moveTo(cursor, 3, 19, false);
+			assertCursor(cursor, new Selection(3, 19, 3, 19));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(4), '    ');
+
+			moveTo(cursor, 5, 18, false);
+			assertCursor(cursor, new Selection(5, 18, 5, 18));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(6), '    ');
+
+			moveTo(cursor, 7, 15, false);
+			assertCursor(cursor, new Selection(7, 15, 7, 15));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(8), '      ');
+			assert.deepEqual(model.getLineContent(9), '    ]');
+
+			moveTo(cursor, 10, 18, false);
+			assertCursor(cursor, new Selection(10, 18, 10, 18));
+
+			cursorCommand(cursor, H.Type, { text: '\n' }, 'keyboard');
+			assert.deepEqual(model.getLineContent(11), '    ]');
+		});
+
+		model.dispose();
+		mode.dispose();
+	});
 });
 
 interface ICursorOpts {
@@ -3929,8 +4029,12 @@ suite('autoClosingPairs', () => {
 					{ open: '\'', close: '\'', notIn: ['string', 'comment'] },
 					{ open: '\"', close: '\"', notIn: ['string'] },
 					{ open: '`', close: '`', notIn: ['string', 'comment'] },
-					{ open: '/**', close: ' */', notIn: ['string'] }
+					{ open: '/**', close: ' */', notIn: ['string'] },
+					{ open: 'begin', close: 'end', notIn: ['string'] }
 				],
+				__electricCharacterSupport: {
+					docComment: { open: '/**', close: ' */' }
+				}
 			}));
 		}
 
@@ -4370,6 +4474,28 @@ suite('autoClosingPairs', () => {
 		mode.dispose();
 	});
 
+	test('multi-character autoclose', () => {
+		let mode = new AutoClosingMode();
+		usingCursor({
+			text: [
+				'',
+			],
+			languageIdentifier: mode.getLanguageIdentifier()
+		}, (model, cursor) => {
+
+			model.setValue('begi');
+			cursor.setSelections('test', [new Selection(1, 5, 1, 5)]);
+			cursorCommand(cursor, H.Type, { text: 'n' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'beginend');
+
+			model.setValue('/*');
+			cursor.setSelections('test', [new Selection(1, 3, 1, 3)]);
+			cursorCommand(cursor, H.Type, { text: '*' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), '/** */');
+		});
+		mode.dispose();
+	});
+
 	test('issue #55314: Do not auto-close when ending with open', () => {
 		const languageId = new LanguageIdentifier('myElectricMode', 5);
 		class ElectricMode extends MockMode {
@@ -4408,7 +4534,7 @@ suite('autoClosingPairs', () => {
 			model.forceTokenization(model.getLineCount());
 			assertType(model, cursor, 3, 4, '"', '"', `does not double quote when ending with open`);
 			model.forceTokenization(model.getLineCount());
-			assertType(model, cursor, 4, 2, '"', '""', `double quote when ending with open`);
+			assertType(model, cursor, 4, 2, '"', '"', `does not double quote when ending with open`);
 			model.forceTokenization(model.getLineCount());
 			assertType(model, cursor, 4, 3, '"', '"', `does not double quote when ending with open`);
 		});
@@ -4595,6 +4721,87 @@ suite('autoClosingPairs', () => {
 		mode.dispose();
 	});
 
+	test('issue #78527 - does not close quote on odd count', () => {
+		let mode = new AutoClosingMode();
+		usingCursor({
+			text: [
+				'std::cout << \'"\' << entryMap'
+			],
+			languageIdentifier: mode.getLanguageIdentifier()
+		}, (model, cursor) => {
+			cursor.setSelections('test', [new Selection(1, 29, 1, 29)]);
+
+			cursorCommand(cursor, H.Type, { text: '[' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap[]');
+
+			cursorCommand(cursor, H.Type, { text: '"' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap[""]');
+
+			cursorCommand(cursor, H.Type, { text: 'a' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
+
+			cursorCommand(cursor, H.Type, { text: '"' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
+
+			cursorCommand(cursor, H.Type, { text: ']' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'std::cout << \'"\' << entryMap["a"]');
+		});
+		mode.dispose();
+	});
+
+	test('issue #78975 - Parentheses swallowing does not work when parentheses are inserted by autocomplete', () => {
+		let mode = new AutoClosingMode();
+		usingCursor({
+			text: [
+				'<div id'
+			],
+			languageIdentifier: mode.getLanguageIdentifier()
+		}, (model, cursor) => {
+			cursor.setSelections('test', [new Selection(1, 8, 1, 8)]);
+
+			cursor.executeEdits('snippet', [{ range: new Range(1, 6, 1, 8), text: 'id=""' }], () => [new Selection(1, 10, 1, 10)]);
+			assert.strictEqual(model.getLineContent(1), '<div id=""');
+
+			cursorCommand(cursor, H.Type, { text: 'a' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), '<div id="a"');
+
+			cursorCommand(cursor, H.Type, { text: '"' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), '<div id="a"');
+		});
+		mode.dispose();
+	});
+
+	test('issue #78833 - Add config to use old brackets/quotes overtyping', () => {
+		let mode = new AutoClosingMode();
+		usingCursor({
+			text: [
+				'',
+				'y=();'
+			],
+			languageIdentifier: mode.getLanguageIdentifier(),
+			editorOpts: {
+				autoClosingOvertype: 'always'
+			}
+		}, (model, cursor) => {
+			assertCursor(cursor, new Position(1, 1));
+
+			cursorCommand(cursor, H.Type, { text: 'x=(' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'x=()');
+
+			cursorCommand(cursor, H.Type, { text: ')' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'x=()');
+
+			cursor.setSelections('test', [new Selection(1, 4, 1, 4)]);
+			cursorCommand(cursor, H.Type, { text: ')' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(1), 'x=()');
+
+			cursor.setSelections('test', [new Selection(2, 4, 2, 4)]);
+			cursorCommand(cursor, H.Type, { text: ')' }, 'keyboard');
+			assert.strictEqual(model.getLineContent(2), 'y=();');
+		});
+		mode.dispose();
+	});
+
 	test('issue #15825: accents on mac US intl keyboard', () => {
 		let mode = new AutoClosingMode();
 		usingCursor({
@@ -4653,31 +4860,18 @@ suite('autoClosingPairs', () => {
 
 			// on the mac US intl kb layout
 
-			// Typing ` + space
+			// Typing ' + space
 			cursorCommand(cursor, H.CompositionStart, null, 'keyboard');
 			cursorCommand(cursor, H.Type, { text: '\'' }, 'keyboard');
 			cursorCommand(cursor, H.ReplacePreviousChar, { replaceCharCnt: 1, text: '\'' }, 'keyboard');
 			cursorCommand(cursor, H.CompositionEnd, null, 'keyboard');
-
 			assert.equal(model.getValue(), '\'\'');
 
-			// Typing " + space within string
-			cursor.setSelections('test', [new Selection(1, 2, 1, 2)]);
-			cursorCommand(cursor, H.CompositionStart, null, 'keyboard');
-			cursorCommand(cursor, H.Type, { text: '"' }, 'keyboard');
-			cursorCommand(cursor, H.ReplacePreviousChar, { replaceCharCnt: 1, text: '"' }, 'keyboard');
-			cursorCommand(cursor, H.CompositionEnd, null, 'keyboard');
-
-			assert.equal(model.getValue(), '\'"\'');
-
-			// Typing ' + space after '
-			model.setValue('\'');
-			cursor.setSelections('test', [new Selection(1, 2, 1, 2)]);
+			// Typing one more ' + space
 			cursorCommand(cursor, H.CompositionStart, null, 'keyboard');
 			cursorCommand(cursor, H.Type, { text: '\'' }, 'keyboard');
 			cursorCommand(cursor, H.ReplacePreviousChar, { replaceCharCnt: 1, text: '\'' }, 'keyboard');
 			cursorCommand(cursor, H.CompositionEnd, null, 'keyboard');
-
 			assert.equal(model.getValue(), '\'\'');
 
 			// Typing ' as a closing tag

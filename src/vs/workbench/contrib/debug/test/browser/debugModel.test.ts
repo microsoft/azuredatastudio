@@ -6,16 +6,17 @@
 import * as assert from 'assert';
 import { URI as uri } from 'vs/base/common/uri';
 import severity from 'vs/base/common/severity';
-import { SimpleReplElement, DebugModel, Expression, RawObjectReplElement, StackFrame, Thread } from 'vs/workbench/contrib/debug/common/debugModel';
+import { DebugModel, Expression, StackFrame, Thread } from 'vs/workbench/contrib/debug/common/debugModel';
 import * as sinon from 'sinon';
 import { MockRawSession } from 'vs/workbench/contrib/debug/test/common/mockDebug';
 import { Source } from 'vs/workbench/contrib/debug/common/debugSource';
 import { DebugSession } from 'vs/workbench/contrib/debug/browser/debugSession';
-import { ReplModel } from 'vs/workbench/contrib/debug/common/replModel';
+import { SimpleReplElement, RawObjectReplElement, ReplEvaluationInput, ReplModel } from 'vs/workbench/contrib/debug/common/replModel';
 import { IBreakpointUpdateData } from 'vs/workbench/contrib/debug/common/debug';
+import { NullOpenerService } from 'vs/platform/opener/common/opener';
 
 function createMockSession(model: DebugModel, name = 'mockSession', parentSession?: DebugSession | undefined): DebugSession {
-	return new DebugSession({ resolved: { name, type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, parentSession, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!);
+	return new DebugSession({ resolved: { name, type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, parentSession, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, NullOpenerService);
 }
 
 suite('Debug - Model', () => {
@@ -23,7 +24,7 @@ suite('Debug - Model', () => {
 	let rawSession: MockRawSession;
 
 	setup(() => {
-		model = new DebugModel([], true, [], [], [], <any>{ isDirty: (e: any) => false });
+		model = new DebugModel([], [], [], [], [], <any>{ isDirty: (e: any) => false });
 		rawSession = new MockRawSession();
 	});
 
@@ -347,9 +348,7 @@ suite('Debug - Model', () => {
 
 		assert.equal(replModel.getReplElements().length, 3);
 		replModel.getReplElements().forEach(re => {
-			assert.equal((<Expression>re).available, false);
-			assert.equal((<Expression>re).name, 'myVariable');
-			assert.equal((<Expression>re).reference, 0);
+			assert.equal((<ReplEvaluationInput>re).value, 'myVariable');
 		});
 
 		replModel.removeReplExpressions();
@@ -427,7 +426,7 @@ suite('Debug - Model', () => {
 	// Repl output
 
 	test('repl output', () => {
-		const session = new DebugSession({ resolved: { name: 'mockSession', type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, undefined, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!);
+		const session = new DebugSession({ resolved: { name: 'mockSession', type: 'node', request: 'launch' }, unresolved: undefined }, undefined!, model, undefined, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, undefined!, NullOpenerService);
 		const repl = new ReplModel(session);
 		repl.appendToRepl('first line\n', severity.Error);
 		repl.appendToRepl('second line ', severity.Error);

@@ -19,7 +19,7 @@ import { URI } from 'vs/base/common/uri';
 
 // Read this before there's any chance it is overwritten
 // Related to https://github.com/Microsoft/vscode/issues/30624
-const xdgRuntimeDir = process.env['XDG_RUNTIME_DIR'];
+export const xdgRuntimeDir = process.env['XDG_RUNTIME_DIR'];
 
 function getNixIPCHandle(userDataPath: string, type: string): string {
 	const vscodePortable = process.env['VSCODE_PORTABLE'];
@@ -76,7 +76,7 @@ function getCLIPath(execPath: string, appRoot: string, isBuilt: boolean): string
 
 export class EnvironmentService implements IEnvironmentService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	get args(): ParsedArgs { return this._args; }
 
@@ -103,9 +103,6 @@ export class EnvironmentService implements IEnvironmentService {
 
 		return parseUserDataDir(this._args, process);
 	}
-
-	@memoize
-	get webUserDataHome(): URI { return URI.file(parsePathArg(this._args['web-user-data-dir'], process) || this.userDataPath); }
 
 	get appNameLong(): string { return product.nameLong; }
 
@@ -198,11 +195,6 @@ export class EnvironmentService implements IEnvironmentService {
 				}
 				return URI.file(path.normalize(p));
 			});
-		} else if (s) {
-			if (/^[^:/?#]+?:\/\//.test(s)) {
-				return [URI.parse(s)];
-			}
-			return [URI.file(path.normalize(s))];
 		}
 		return undefined;
 	}
@@ -235,25 +227,14 @@ export class EnvironmentService implements IEnvironmentService {
 		return false;
 	}
 
-	get skipGettingStarted(): boolean { return !!this._args['skip-getting-started']; }
-
-	get skipReleaseNotes(): boolean { return !!this._args['skip-release-notes']; }
-
-	get skipAddToRecentlyOpened(): boolean { return !!this._args['skip-add-to-recently-opened']; }
-
 	@memoize
 	get debugExtensionHost(): IExtensionHostDebugParams { return parseExtensionHostPort(this._args, this.isBuilt); }
-
-	@memoize
-	get debugSearch(): IDebugParams { return parseSearchPort(this._args, this.isBuilt); }
 
 	get isBuilt(): boolean { return !process.env['VSCODE_DEV']; }
 	get verbose(): boolean { return !!this._args.verbose; }
 	get log(): string | undefined { return this._args.log; }
 
 	get wait(): boolean { return !!this._args.wait; }
-
-	get logExtensionHostCommunication(): boolean { return !!this._args.logExtensionHostCommunication; }
 
 	get status(): boolean { return !!this._args.status; }
 
@@ -274,9 +255,6 @@ export class EnvironmentService implements IEnvironmentService {
 
 	get driverHandle(): string | undefined { return this._args['driver']; }
 	get driverVerbose(): boolean { return !!this._args['driver-verbose']; }
-
-	readonly webviewResourceRoot = 'vscode-resource:{{resource}}';
-	readonly webviewCspSource = 'vscode-resource:';
 
 	constructor(private _args: ParsedArgs, private _execPath: string) {
 		if (!process.env['VSCODE_LOGS']) {
@@ -310,7 +288,7 @@ function parseDebugPort(debugArg: string | undefined, debugBrkArg: string | unde
 	return { port, break: brk, debugId };
 }
 
-function parsePathArg(arg: string | undefined, process: NodeJS.Process): string | undefined {
+export function parsePathArg(arg: string | undefined, process: NodeJS.Process): string | undefined {
 	if (!arg) {
 		return undefined;
 	}

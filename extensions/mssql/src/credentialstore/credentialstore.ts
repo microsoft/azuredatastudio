@@ -41,7 +41,7 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 		const client = this._client;
 
 		let readCredential = (credentialId: string): Thenable<azdata.Credential> => {
-			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId });
+			return client.sendRequest(Contracts.ReadCredentialRequest.type, { credentialId, password: undefined });
 		};
 
 		let saveCredential = (credentialId: string, password: string): Thenable<boolean> => {
@@ -49,7 +49,7 @@ class CredentialsFeature extends SqlOpsFeature<any> {
 		};
 
 		let deleteCredential = (credentialId: string): Thenable<boolean> => {
-			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId });
+			return client.sendRequest(Contracts.DeleteCredentialRequest.type, { credentialId, password: undefined });
 		};
 
 		return azdata.credentials.registerProvider({
@@ -70,7 +70,7 @@ export class CredentialStore {
 	private _client: SqlOpsDataClient;
 	private _config: IConfig;
 
-	constructor(baseConfig: IConfig) {
+	constructor(private logPath: string, baseConfig: IConfig) {
 		if (baseConfig) {
 			this._config = JSON.parse(JSON.stringify(baseConfig));
 			this._config.executableFiles = ['MicrosoftSqlToolsCredentials.exe', 'MicrosoftSqlToolsCredentials'];
@@ -83,7 +83,7 @@ export class CredentialStore {
 			providerId: Constants.providerId,
 			features: [CredentialsFeature]
 		};
-		serverdownloader.getOrDownloadServer().then(e => {
+		return serverdownloader.getOrDownloadServer().then(e => {
 			let serverOptions = this.generateServerOptions(e);
 			this._client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 			this._client.start();
@@ -97,7 +97,7 @@ export class CredentialStore {
 	}
 
 	private generateServerOptions(executablePath: string): ServerOptions {
-		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles('credentialstore', executablePath);
+		let launchArgs = Utils.getCommonLaunchArgsAndCleanupOldLogFiles(this.logPath, 'credentialstore.log', executablePath);
 		return { command: executablePath, args: launchArgs, transport: TransportKind.stdio };
 	}
 }

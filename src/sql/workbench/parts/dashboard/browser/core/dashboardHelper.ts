@@ -179,7 +179,7 @@ export function getDashboardContainer(container: object, logService: ILogService
 	if (!containerTypeFound) {
 		const dashboardContainer = dashboardcontainerRegistry.getRegisteredContainer(key);
 		if (!dashboardContainer) {
-			const errorMessage = nls.localize('unknownDashboardContainerError', '{0} is an unknown container.', key);
+			const errorMessage = nls.localize('unknownDashboardContainerError', "{0} is an unknown container.", key);
 			logService.error(errorMessage);
 			return { result: false, message: errorMessage, container: undefined };
 		} else {

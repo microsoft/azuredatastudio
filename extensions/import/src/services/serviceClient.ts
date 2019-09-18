@@ -6,7 +6,7 @@
 'use strict';
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { IConfig, ServerProvider, Events } from 'service-downloader';
+import { ServerProvider, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -18,8 +18,7 @@ import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import * as serviceUtils from './serviceUtils';
-
-const baseConfig = require('./config.json');
+import { promises as fs } from 'fs';
 
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
@@ -28,8 +27,9 @@ export class ServiceClient {
 		this.statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	}
 
-	public startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
-		let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
+	public async startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
+		const rawConfig = await fs.readFile(path.join(context.extensionPath, 'config.json'));
+		const config = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
@@ -49,7 +49,7 @@ export class ServiceClient {
 				const processStart = Date.now();
 				client.onReady().then(() => {
 					const processEnd = Date.now();
-					this.statusView.text = localize('serviceStarted', 'Service Started');
+					this.statusView.text = localize('serviceStarted', "{0} Started", Constants.serviceName);
 					setTimeout(() => {
 						this.statusView.hide();
 					}, 1500);
@@ -61,13 +61,13 @@ export class ServiceClient {
 					});
 				});
 				this.statusView.show();
-				this.statusView.text = localize('serviceStarting', 'Starting service');
+				this.statusView.text = localize('serviceStarting', "Starting {0}", Constants.serviceName);
 				let disposable = client.start();
 				context.subscriptions.push(disposable);
 				resolve(client);
 			}, e => {
 				Telemetry.sendTelemetryEvent('ServiceInitializingFailed');
-				vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', 'Failed to start Import service{0}', e));
+				vscode.window.showErrorMessage(localize('flatFileImport.serviceStartFailed', "Failed to start {0}: {1}", Constants.serviceName, e));
 				// Just resolve to avoid unhandled promise. We show the error to the user.
 				resolve(undefined);
 			});
@@ -113,16 +113,16 @@ export class ServiceClient {
 				case Events.INSTALL_START:
 					this.outputChannel.show(true);
 					this.statusView.show();
-					this.outputChannel.appendLine(localize('installingServiceDetailed', 'Installing {0} service to {1}', Constants.serviceName, args[0]));
-					this.statusView.text = localize('installingService', 'Installing Service');
+					this.outputChannel.appendLine(localize('installingServiceDetailed', "Installing {0} to {1}", Constants.serviceName, args[0]));
+					this.statusView.text = localize('installingService', "Installing {0} Service", Constants.serviceName);
 					break;
 				case Events.INSTALL_END:
-					this.outputChannel.appendLine(localize('serviceInstalled', 'Installed'));
+					this.outputChannel.appendLine(localize('serviceInstalled', "Installed {0}", Constants.serviceName));
 					break;
 				case Events.DOWNLOAD_START:
-					this.outputChannel.appendLine(localize('downloadingService', 'Downloading {0}', args[0]));
-					this.outputChannel.append(localize('downloadingServiceSize', '({0} KB)', Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
-					this.statusView.text = localize('downloadingServiceStatus', 'Downloading Service');
+					this.outputChannel.appendLine(localize('downloadingService', "Downloading {0}", args[0]));
+					this.outputChannel.append(localize('downloadingServiceSize', "({0} KB)", Math.ceil(args[1] / 1024).toLocaleString(vscode.env.language)));
+					this.statusView.text = localize('downloadingServiceStatus', "Downloading {0}", Constants.serviceName);
 					break;
 				case Events.DOWNLOAD_PROGRESS:
 					let newDots = Math.ceil(args[0] / 5);
@@ -132,7 +132,7 @@ export class ServiceClient {
 					}
 					break;
 				case Events.DOWNLOAD_END:
-					this.outputChannel.appendLine(localize('downloadingServiceComplete', 'Done!'));
+					this.outputChannel.appendLine(localize('downloadingServiceComplete', "Done downloading {0}", Constants.serviceName));
 					break;
 				default:
 					console.error(`Unknown event from Server Provider ${e}`);
@@ -163,4 +163,3 @@ class CustomOutputChannel implements vscode.OutputChannel {
 	dispose(): void {
 	}
 }
-

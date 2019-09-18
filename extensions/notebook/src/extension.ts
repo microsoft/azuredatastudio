@@ -27,13 +27,14 @@ let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
-
-	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.rootPath || '', extensionContext);
+	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.workspaceFolders || [], extensionContext);
 	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider));
 	extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(bookTreeViewProvider));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => bookTreeViewProvider.openBook(bookPath, openAsUntitled, urlToOpen)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebookAsUntitled', (resource: string) => bookTreeViewProvider.openNotebookAsUntitled(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource: string) => bookTreeViewProvider.openNotebook(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource: string) => bookTreeViewProvider.openMarkdown(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource: string) => bookTreeViewProvider.openExternalLink(resource)));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
@@ -220,8 +221,8 @@ async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promis
 		providerId: JUPYTER_NOTEBOOK_PROVIDER,
 		preview: false,
 		defaultKernel: {
-			name: 'pyspark3kernel',
-			display_name: 'PySpark3',
+			name: 'pysparkkernel',
+			display_name: 'PySpark',
 			language: 'python'
 		}
 	});
@@ -233,12 +234,11 @@ async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promis
 				+ os.EOL + '.option("header", "true")' + os.EOL + '.csv("{0}"))' + os.EOL + 'df.show(10)';
 
 			editor.edit(editBuilder => {
-				editBuilder.replace(0, {
+				editBuilder.insertCell({
 					cell_type: 'code',
 					source: analyzeCommand.replace('{0}', hdfsPath)
-				});
+				}, 0);
 			});
-
 		}
 	}
 }

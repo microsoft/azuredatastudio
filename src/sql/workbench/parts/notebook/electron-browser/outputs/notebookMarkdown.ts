@@ -3,16 +3,15 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'vs/base/common/path';
-import * as fs from 'fs';
 
 import { URI } from 'vs/base/common/uri';
 
-import { RenderOptions } from 'vs/base/browser/htmlContentRenderer';
 import { IMarkdownString, removeMarkdownEscapes } from 'vs/base/common/htmlContent';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import * as marked from 'vs/base/common/marked/marked';
 import { defaultGenerator } from 'vs/base/common/idGenerator';
 import { revive } from 'vs/base/common/marshalling';
+import { MarkdownRenderOptions } from 'vs/base/browser/markdownRenderer';
 
 // Based off of HtmlContentRenderer
 export class NotebookMarkdownRenderer {
@@ -20,6 +19,7 @@ export class NotebookMarkdownRenderer {
 	private _baseUrls: string[] = [];
 
 	constructor() {
+
 	}
 
 	render(markdown: IMarkdownString): IMarkdownRenderResult {
@@ -30,7 +30,7 @@ export class NotebookMarkdownRenderer {
 		};
 	}
 
-	createElement(options: RenderOptions): HTMLElement {
+	createElement(options: MarkdownRenderOptions): HTMLElement {
 		const tagName = options.inline ? 'span' : 'div';
 		const element = document.createElement(tagName);
 		if (options.className) {
@@ -52,14 +52,14 @@ export class NotebookMarkdownRenderer {
 	 * respects the trusted state of a notebook, and allows command links to
 	 * be clickable.
 	 */
-	renderMarkdown(markdown: IMarkdownString, options: RenderOptions = {}): HTMLElement {
+	renderMarkdown(markdown: IMarkdownString, options: MarkdownRenderOptions = {}): HTMLElement {
 		const element = this.createElement(options);
 
 		// signal to code-block render that the element has been created
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = path.dirname(this._notebookURI.path) + '/';
+		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
 		if (!this._baseUrls.includes(notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
@@ -197,7 +197,7 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		if (base && !originIndependentUrl.test(href) && !fs.existsSync(href)) {
+		if (base && !originIndependentUrl.test(href) && !path.isAbsolute(href)) {
 			href = this.resolveUrl(base, href);
 		}
 		try {
@@ -206,6 +206,7 @@ export class NotebookMarkdownRenderer {
 			return null;
 		}
 		return href;
+
 	}
 
 	resolveUrl(base: string, href: string) {
@@ -226,6 +227,8 @@ export class NotebookMarkdownRenderer {
 			return base.replace(/:[\s\S]*/, ':') + href;
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
+		} else if (href.slice(0, 2) === '..') {
+			return path.join(base, href);
 		} else {
 			return base + href;
 		}

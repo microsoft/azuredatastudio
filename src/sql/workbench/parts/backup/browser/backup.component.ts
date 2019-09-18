@@ -10,7 +10,6 @@ import { Button } from 'sql/base/browser/ui/button/button';
 import { Checkbox } from 'sql/base/browser/ui/checkbox/checkbox';
 import { InputBox } from 'sql/base/browser/ui/inputBox/inputBox';
 import { ListBox } from 'sql/base/browser/ui/listBox/listBox';
-import { ModalFooterStyle } from 'sql/workbench/browser/modal/modal';
 import { SelectBox } from 'sql/base/browser/ui/selectBox/selectBox';
 import { attachButtonStyler, attachListBoxStyler, attachInputBoxStyler, attachSelectBoxStyler, attachCheckboxStyler } from 'sql/platform/theme/common/styler';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
@@ -20,9 +19,9 @@ import * as FileValidationConstants from 'sql/workbench/services/fileBrowser/com
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { IBackupUiService } from 'sql/workbench/services/backup/common/backupUiService';
+import * as cr from 'vs/platform/theme/common/colorRegistry';
 
 import { MessageType } from 'vs/base/browser/ui/inputbox/inputBox';
-import * as lifecycle from 'vs/base/common/lifecycle';
 import { localize } from 'vs/nls';
 import * as types from 'vs/base/common/types';
 import * as strings from 'vs/base/common/strings';
@@ -32,6 +31,9 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ISelectOptionItem } from 'vs/base/browser/ui/selectBox/selectBox';
 import { KeyCode } from 'vs/base/common/keyCodes';
+import { ITheme } from 'vs/platform/theme/common/themeService';
+import { AngularDisposable } from 'sql/base/browser/lifecycle';
+import { SIDE_BAR_BACKGROUND } from 'vs/workbench/common/theme';
 
 export const BACKUP_SELECTOR: string = 'backup-component';
 
@@ -114,7 +116,7 @@ const LocalizedStrings = {
 	selector: BACKUP_SELECTOR,
 	templateUrl: decodeURI(require.toUrl('./backup.component.html'))
 })
-export class BackupComponent {
+export class BackupComponent extends AngularDisposable {
 	@ViewChild('pathContainer', { read: ElementRef }) pathElement;
 	@ViewChild('backupTypeContainer', { read: ElementRef }) backupTypeElement;
 	@ViewChild('backupsetName', { read: ElementRef }) backupNameElement;
@@ -146,7 +148,6 @@ export class BackupComponent {
 	private localizedStrings = LocalizedStrings;
 
 	private _uri: string;
-	private _toDispose: lifecycle.IDisposable[] = [];
 	private _advancedHeaderSize = 32;
 
 	private connection: IConnectionProfile;
@@ -208,6 +209,7 @@ export class BackupComponent {
 		@Inject(IConnectionManagementService) private connectionManagementService: IConnectionManagementService,
 		@Inject(IInstantiationService) private instantiationService: IInstantiationService
 	) {
+		super();
 		this._backupUiService.onShowBackupEvent((param) => this.onGetBackupConfigInfo(param));
 	}
 
@@ -270,6 +272,7 @@ export class BackupComponent {
 
 		// Set backup path list
 		this.pathListBox = new ListBox([], this.contextViewService);
+		this.pathListBox.setAriaLabel(LocalizedStrings.BACKUP_DEVICE);
 		this.pathListBox.onKeyDown(e => {
 			if (this.pathListBox.selectedOptions.length > 0) {
 				const key = e.keyCode;
@@ -291,26 +294,26 @@ export class BackupComponent {
 		this.pathListBox.render(this.pathElement.nativeElement);
 
 		// Set backup path add/remove buttons
-		this.addPathButton = new Button(this.addPathElement.nativeElement);
+		this.addPathButton = this._register(new Button(this.addPathElement.nativeElement));
 		this.addPathButton.label = '+';
 		this.addPathButton.title = localize('addFile', "Add a file");
 
-		this.removePathButton = new Button(this.removePathElement.nativeElement);
+		this.removePathButton = this._register(new Button(this.removePathElement.nativeElement));
 		this.removePathButton.label = '-';
 		this.removePathButton.title = localize('removeFile', "Remove files");
 
 		// Set compression
-		this.compressionSelectBox = new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION });
+		this.compressionSelectBox = this._register(new SelectBox(this.compressionOptions, this.compressionOptions[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.SET_BACKUP_COMPRESSION }));
 		this.compressionSelectBox.render(this.compressionElement.nativeElement);
 
 		// Set encryption
-		this.algorithmSelectBox = new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.ALGORITHM });
+		this.algorithmSelectBox = this._register(new SelectBox(this.encryptionAlgorithms, this.encryptionAlgorithms[0], this.contextViewService, undefined, { ariaLabel: this.localizedStrings.ALGORITHM }));
 		this.algorithmSelectBox.render(this.encryptionAlgorithmElement.nativeElement);
-		this.encryptorSelectBox = new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.CERTIFICATE_OR_ASYMMETRIC_KEY });
+		this.encryptorSelectBox = this._register(new SelectBox([], '', this.contextViewService, undefined, { ariaLabel: this.localizedStrings.CERTIFICATE_OR_ASYMMETRIC_KEY }));
 		this.encryptorSelectBox.render(this.encryptorElement.nativeElement);
 
 		// Set media
-		this.mediaNameBox = new InputBox(this.mediaNameElement.nativeElement,
+		this.mediaNameBox = this._register(new InputBox(this.mediaNameElement.nativeElement,
 			this.contextViewService,
 			{
 				validationOptions: {
@@ -318,15 +321,15 @@ export class BackupComponent {
 				},
 				ariaLabel: LocalizedStrings.NEW_MEDIA_SET_NAME
 			}
-		);
+		));
 
-		this.mediaDescriptionBox = new InputBox(this.mediaDescriptionElement.nativeElement, this.contextViewService, {
+		this.mediaDescriptionBox = this._register(new InputBox(this.mediaDescriptionElement.nativeElement, this.contextViewService, {
 			ariaLabel: LocalizedStrings.NEW_MEDIA_SET_DESCRIPTION
-		});
+		}));
 
 		// Set backup retain days
 		let invalidInputMessage = localize('backupComponent.invalidInput', "Invalid input. Value must be greater than or equal 0.");
-		this.backupRetainDaysBox = new InputBox(this.backupDaysElement.nativeElement,
+		this.backupRetainDaysBox = this._register(new InputBox(this.backupDaysElement.nativeElement,
 			this.contextViewService,
 			{
 				placeholder: '0',
@@ -342,7 +345,7 @@ export class BackupComponent {
 					}
 				},
 				ariaLabel: LocalizedStrings.SET_BACKUP_RETAIN_DAYS
-			});
+			}));
 
 		// Disable elements
 		this.recoveryBox.disable();
@@ -350,7 +353,7 @@ export class BackupComponent {
 		this.mediaDescriptionBox.disable();
 
 		this.registerListeners();
-		this.updateTheme();
+		this.updateTheme(this.themeService.getTheme());
 	}
 
 	ngAfterViewInit() {
@@ -400,24 +403,24 @@ export class BackupComponent {
 
 	private addFooterButtons(): void {
 		// Set script footer button
-		this.scriptButton = new Button(this.scriptButtonElement.nativeElement);
+		this.scriptButton = this._register(new Button(this.scriptButtonElement.nativeElement));
 		this.scriptButton.label = localize('backupComponent.script', "Script");
 		this.addButtonClickHandler(this.scriptButton, () => this.onScript());
-		this._toDispose.push(attachButtonStyler(this.scriptButton, this.themeService));
+		this._register(attachButtonStyler(this.scriptButton, this.themeService));
 		this.scriptButton.enabled = false;
 
 		// Set backup footer button
-		this.backupButton = new Button(this.backupButtonElement.nativeElement);
+		this.backupButton = this._register(new Button(this.backupButtonElement.nativeElement));
 		this.backupButton.label = localize('backupComponent.backup', "Backup");
 		this.addButtonClickHandler(this.backupButton, () => this.onOk());
-		this._toDispose.push(attachButtonStyler(this.backupButton, this.themeService));
+		this._register(attachButtonStyler(this.backupButton, this.themeService));
 		this.backupEnabled = false;
 
 		// Set cancel footer button
-		this.cancelButton = new Button(this.cancelButtonElement.nativeElement);
+		this.cancelButton = this._register(new Button(this.cancelButtonElement.nativeElement));
 		this.cancelButton.label = localize('backupComponent.cancel', "Cancel");
 		this.addButtonClickHandler(this.cancelButton, () => this.onCancel());
-		this._toDispose.push(attachButtonStyler(this.cancelButton, this.themeService));
+		this._register(attachButtonStyler(this.cancelButton, this.themeService));
 	}
 
 	private initialize(isMetadataPopulated: boolean): void {
@@ -521,45 +524,49 @@ export class BackupComponent {
 
 	private registerListeners(): void {
 		// Theme styler
-		this._toDispose.push(attachInputBoxStyler(this.backupNameBox, this.themeService));
-		this._toDispose.push(attachInputBoxStyler(this.recoveryBox, this.themeService));
-		this._toDispose.push(attachSelectBoxStyler(this.backupTypeSelectBox, this.themeService));
-		this._toDispose.push(attachListBoxStyler(this.pathListBox, this.themeService));
-		this._toDispose.push(attachButtonStyler(this.addPathButton, this.themeService));
-		this._toDispose.push(attachButtonStyler(this.removePathButton, this.themeService));
-		this._toDispose.push(attachSelectBoxStyler(this.compressionSelectBox, this.themeService));
-		this._toDispose.push(attachSelectBoxStyler(this.algorithmSelectBox, this.themeService));
-		this._toDispose.push(attachSelectBoxStyler(this.encryptorSelectBox, this.themeService));
-		this._toDispose.push(attachInputBoxStyler(this.mediaNameBox, this.themeService));
-		this._toDispose.push(attachInputBoxStyler(this.mediaDescriptionBox, this.themeService));
-		this._toDispose.push(attachInputBoxStyler(this.backupRetainDaysBox, this.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.copyOnlyCheckBox, this.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.encryptCheckBox, this.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.verifyCheckBox, this.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.checksumCheckBox, this.themeService));
-		this._toDispose.push(attachCheckboxStyler(this.continueOnErrorCheckBox, this.themeService));
+		this._register(attachInputBoxStyler(this.backupNameBox, this.themeService));
+		this._register(attachInputBoxStyler(this.recoveryBox, this.themeService));
+		this._register(attachSelectBoxStyler(this.backupTypeSelectBox, this.themeService));
+		this._register(attachListBoxStyler(this.pathListBox, this.themeService));
+		this._register(attachButtonStyler(this.addPathButton, this.themeService));
+		this._register(attachButtonStyler(this.removePathButton, this.themeService));
+		this._register(attachSelectBoxStyler(this.compressionSelectBox, this.themeService));
+		this._register(attachSelectBoxStyler(this.algorithmSelectBox, this.themeService));
+		this._register(attachSelectBoxStyler(this.encryptorSelectBox, this.themeService));
+		this._register(attachInputBoxStyler(this.mediaNameBox, this.themeService));
+		this._register(attachInputBoxStyler(this.mediaDescriptionBox, this.themeService));
+		this._register(attachInputBoxStyler(this.backupRetainDaysBox, this.themeService));
+		this._register(attachCheckboxStyler(this.copyOnlyCheckBox, this.themeService));
+		this._register(attachCheckboxStyler(this.encryptCheckBox, this.themeService));
+		this._register(attachCheckboxStyler(this.verifyCheckBox, this.themeService));
+		this._register(attachCheckboxStyler(this.checksumCheckBox, this.themeService));
+		this._register(attachCheckboxStyler(this.continueOnErrorCheckBox, this.themeService));
 
-		this._toDispose.push(this.backupTypeSelectBox.onDidSelect(selected => this.onBackupTypeChanged()));
+		this._register(this.backupTypeSelectBox.onDidSelect(selected => this.onBackupTypeChanged()));
 		this.addButtonClickHandler(this.addPathButton, () => this.onAddClick());
 		this.addButtonClickHandler(this.removePathButton, () => this.onRemoveClick());
-		this._toDispose.push(this.mediaNameBox.onDidChange(mediaName => {
+		this._register(this.mediaNameBox.onDidChange(mediaName => {
 			this.mediaNameChanged(mediaName);
 		}));
-		this._toDispose.push(this.backupRetainDaysBox.onDidChange(days => {
+		this._register(this.backupRetainDaysBox.onDidChange(days => {
 			this.backupRetainDaysChanged(days);
 		}));
 
-		this._toDispose.push(this.themeService.onDidColorThemeChange(e => this.updateTheme()));
+		this._register(this.themeService.onDidColorThemeChange(e => this.updateTheme(e)));
 	}
 
 	// Update theming that is specific to backup dialog
-	private updateTheme(): void {
+	private updateTheme(theme: ITheme): void {
 		// set modal footer style
 		let footerHtmlElement: HTMLElement = <HTMLElement>this.modalFooterElement.nativeElement;
-		footerHtmlElement.style.backgroundColor = ModalFooterStyle.backgroundColor;
-		footerHtmlElement.style.borderTopWidth = ModalFooterStyle.borderTopWidth;
-		footerHtmlElement.style.borderTopStyle = ModalFooterStyle.borderTopStyle;
-		footerHtmlElement.style.borderTopColor = ModalFooterStyle.borderTopColor;
+		const backgroundColor = theme.getColor(SIDE_BAR_BACKGROUND);
+		const border = theme.getColor(cr.contrastBorder) ? theme.getColor(cr.contrastBorder).toString() : null;
+		const footerBorderTopWidth = border ? '1px' : null;
+		const footerBorderTopStyle = border ? 'solid' : null;
+		footerHtmlElement.style.backgroundColor = backgroundColor ? backgroundColor.toString() : null;
+		footerHtmlElement.style.borderTopWidth = footerBorderTopWidth;
+		footerHtmlElement.style.borderTopStyle = footerBorderTopStyle;
+		footerHtmlElement.style.borderTopColor = border;
 	}
 
 	private addButtonClickHandler(button: Button, handler: () => void) {

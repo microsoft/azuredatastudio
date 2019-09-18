@@ -11,11 +11,15 @@ import * as utils from './utils';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as mssql from '../../mssql';
+import * as vscode from 'vscode';
 import { context } from './testContext';
 import { getStandaloneServer } from './testConfig';
 import assert = require('assert');
 
 const retryCount = 24; // 2 minutes
+const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
+const bacpac1: string = path.join(__dirname, '../testData/Database1.bacpac');
 if (context.RunTest) {
 	suite('Dacpac integration test suite', () => {
 		suiteSetup(async function () {
@@ -34,11 +38,11 @@ if (context.RunTest) {
 			const databaseName = 'ADS_deployDacpac_' + now.getTime().toString();
 
 			try {
-				const dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+				const dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 				assert(dacfxService, 'DacFx Service Provider is not available');
 
 				// Deploy dacpac
-				const deployResult = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database1.dacpac'), databaseName, false, ownerUri, azdata.TaskExecutionMode.execute);
+				const deployResult = await dacfxService.deployDacpac(dacpac1, databaseName, false, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount);
@@ -70,11 +74,11 @@ if (context.RunTest) {
 			const databaseName = 'ADS_importBacpac_' + now.getTime().toString();
 
 			try {
-				let dacfxService = await azdata.dataprotocol.getProvider<azdata.DacFxServicesProvider>('MSSQL', azdata.DataProviderType.DacFxServicesProvider);
+				let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 				assert(dacfxService, 'DacFx Service Provider is not available');
 
 				// Import bacpac
-				const importResult = await dacfxService.importBacpac(path.join(__dirname, 'testData/Database1.bacpac'), databaseName, ownerUri, azdata.TaskExecutionMode.execute);
+				const importResult = await dacfxService.importBacpac(bacpac1, databaseName, ownerUri, azdata.TaskExecutionMode.execute);
 				await utils.assertDatabaseCreationResult(databaseName, ownerUri, retryCount);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table1', ownerUri, retryCount, true);
 				await utils.assertTableCreationResult(databaseName, 'dbo', 'Table2', ownerUri, retryCount, true);

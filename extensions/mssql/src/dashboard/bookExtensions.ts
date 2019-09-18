@@ -100,6 +100,8 @@ class AzdataExtensionBookContributionProvider extends Disposable implements Book
 				this._onContributionsChanged.fire(this);
 			}
 		}, undefined, this._disposables);
+
+		this.registerCommands();
 	}
 
 	private readonly _onContributionsChanged = this._register(new vscode.EventEmitter<this>());
@@ -116,6 +118,16 @@ class AzdataExtensionBookContributionProvider extends Disposable implements Book
 		return vscode.extensions.all
 			.map(BookContributions.fromExtension)
 			.reduce(BookContributions.merge, []);
+	}
+
+	private registerCommands(): void {
+		this.contributions.map(book => {
+			let bookName: string = path.basename(book.path);
+			vscode.commands.executeCommand('setContext', bookName, true);
+			vscode.commands.registerCommand('books.' + bookName, async (urlToOpen?: string) => {
+				vscode.commands.executeCommand('bookTreeView.openBook', book.path, true, urlToOpen);
+			});
+		});
 	}
 }
 

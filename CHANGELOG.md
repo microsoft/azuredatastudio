@@ -1,5 +1,28 @@
 # Change Log
 
+## Version 1.11.0
+* Release date: September 10, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/41?closed=1).
+
+## Version 1.10.0
+* Release date: August 14, 2019
+* Release status: General Availability
+
+## What's new in this version
+* [SandDance](https://github.com/microsoft/SandDance) integration — A new way to interact with data. Download the extension [here](https://docs.microsoft.com/sql/azure-data-studio/sanddance-extension)
+* Notebook improvements
+   * Better loading performance
+   * Ability to right click SQL results grid to save your results as CSV, JSON, etc.
+   * Buttons to add code or text cells in-line
+   * [Other fixes and improvements](https://github.com/microsoft/azuredatastudio/issues?q=is%3Aissue+label%3A%22Area%3A+Notebooks%22+milestone%3A%22August+2019+Release%22+is%3Aclosed)
+* SQL Server Dacpac extension can support Azure Active Directory authentication
+* Updated SQL Server 2019 extension
+* Visual Studio Code May Release Merge 1.37 - this includes changes from [1.36](https://code.visualstudio.com/updates/v1_37) and [1.37](https://code.visualstudio.com/updates/v1_37)
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/39?closed=1).
+
 ## Version 1.9.0
 * Release date: July 11, 2019
 * Release status: General Availability

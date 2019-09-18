@@ -9,10 +9,10 @@ import { OnInit, Component, Input, Inject, ElementRef, ViewChild, Output, EventE
 import { AngularDisposable } from 'sql/base/browser/lifecycle';
 import { QueryTextEditor } from 'sql/workbench/browser/modelComponents/queryTextEditor';
 import { CellToggleMoreActions } from 'sql/workbench/parts/notebook/browser/cellToggleMoreActions';
-import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { ICellModel, notebookConstants, CellExecutionState } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { RunCellAction, CellContext } from 'sql/workbench/parts/notebook/browser/cellViews/codeActions';
-import { NotebookModel } from 'sql/workbench/parts/notebook/common/models/notebookModel';
+import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 
 import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import * as themeColors from 'vs/workbench/common/theme';
@@ -28,8 +28,8 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
-import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/common/notebookService';
-import * as notebookUtils from 'sql/workbench/parts/notebook/common/models/notebookUtils';
+import { OVERRIDE_EDITOR_THEMING_SETTING } from 'sql/workbench/services/notebook/browser/notebookService';
+import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
@@ -221,6 +221,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
 			this._editor.setHeightToScrollHeight();
+			this.cellModel.modelContentChangedEvent = e;
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();

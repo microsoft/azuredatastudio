@@ -10,8 +10,9 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as os from 'os';
 import { DacFxDataModel } from '../api/models';
-import { DataTierApplicationWizard, DeployOperationPath, Operation } from '../dataTierApplicationWizard';
+import { DataTierApplicationWizard, DeployOperationPath, Operation, DeployNewOperationPath, PageName } from '../dataTierApplicationWizard';
 import { DacFxConfigPage } from '../api/dacFxConfigPage';
+import { DacFxSummaryPage } from './dacFxSummaryPage';
 
 const localize = nls.loadMessageBundle();
 
@@ -28,7 +29,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 	public constructor(instance: DataTierApplicationWizard, wizardPage: azdata.window.WizardPage, model: DacFxDataModel, view: azdata.ModelView) {
 		super(instance, wizardPage, model, view);
-		this.fileExtension = '.bacpac';
+		this.fileExtension = '.dacpac';
 	}
 
 	async start(): Promise<boolean> {
@@ -48,9 +49,9 @@ export class DeployConfigPage extends DacFxConfigPage {
 					radioButtons,
 					this.databaseDropdownComponent
 				], {
-					horizontal: true,
-					componentWidth: 400
-				});
+				horizontal: true,
+				componentWidth: 400
+			});
 
 		this.form = this.formBuilder.component();
 		await this.view.initializeModel(this.form);
@@ -123,9 +124,12 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.formBuilder.addFormItem(this.databaseDropdownComponent, { horizontal: true, componentWidth: 400 });
 			this.model.database = (<azdata.CategoryValue>this.databaseDropdown.value).name;
 
-			// add deploy plan page
-			let deployPlanPage = this.instance.pages.get('deployPlan');
+			// add deploy plan page and remove and re-add summary page so that it has the correct page number
+			this.instance.wizard.removePage(DeployNewOperationPath.summary);
+			let deployPlanPage = this.instance.pages.get(PageName.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
 			this.instance.wizard.addPage(deployPlanPage.wizardPage, DeployOperationPath.deployPlan);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployOperationPath.summary);
 		});
 
 		newRadioButton.onDidClick(() => {
@@ -135,8 +139,11 @@ export class DeployConfigPage extends DacFxConfigPage {
 			this.model.database = this.databaseTextBox.value;
 			this.instance.setDoneButton(Operation.deploy);
 
-			// remove deploy plan page
+			// remove deploy plan page and readd summary page so that it has the correct page number
+			this.instance.wizard.removePage(DeployOperationPath.summary);
 			this.instance.wizard.removePage(DeployOperationPath.deployPlan);
+			let summaryPage = this.instance.pages.get(PageName.summary);
+			this.instance.wizard.addPage(summaryPage.wizardPage, DeployNewOperationPath.summary);
 		});
 
 		//Initialize with upgrade existing true
@@ -157,7 +164,10 @@ export class DeployConfigPage extends DacFxConfigPage {
 	}
 
 	protected async createDeployDatabaseDropdown(): Promise<azdata.FormComponent> {
-		this.databaseDropdown = this.view.modelBuilder.dropDown().component();
+		const targetDatabaseTitle = localize('dacFx.targetDatabaseDropdownTitle', "Database Name");
+		this.databaseDropdown = this.view.modelBuilder.dropDown().withProperties({
+			ariaLabel: targetDatabaseTitle
+		}).component();
 
 		//Handle database changes
 		this.databaseDropdown.onValueChanged(async () => {
@@ -170,7 +180,7 @@ export class DeployConfigPage extends DacFxConfigPage {
 
 		return {
 			component: this.databaseLoader,
-			title: localize('dacFx.targetDatabaseDropdownTitle', 'Database Name')
+			title: targetDatabaseTitle
 		};
 	}
 

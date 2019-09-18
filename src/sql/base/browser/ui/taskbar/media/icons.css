@@ -60,19 +60,13 @@
 	background-repeat: no-repeat;
 }
 
-.vs .icon.estimatedQueryPlan {
-	background-image: url('query-plan.svg');
-}
-
-.vs-dark .icon.estimatedQueryPlan,
-.hc-black .icon.estimatedQueryPlan {
-	background-image: url('query-plan-inverse.svg');
-}
-
+.vs .icon.estimatedQueryPlan,
 .vs .icon.actualQueryPlan {
 	background-image: url('query-plan.svg');
 }
 
+.vs-dark .icon.estimatedQueryPlan,
+.hc-black .icon.estimatedQueryPlan,
 .vs-dark .icon.actualQueryPlan,
 .hc-black .icon.actualQueryPlan {
 	background-image: url('query-plan-inverse.svg');
@@ -103,4 +97,24 @@
 .vs-dark .icon.saveAsImage,
 .hc-black .icon.saveAsImage {
 	background-image: url('save_as_image_inverse.svg');
+}
+
+.vs .icon.enablesqlcmd {
+	background-image: url('enable_sqlcmd.svg');
+}
+
+.vs-dark .icon.enablesqlcmd,
+.hc-black .icon.enablesqlcmd {
+	background-image: url('enable_sqlcmd_inverse.svg');
+	background-repeat: no-repeat;
+}
+
+.vs .icon.disablesqlcmd {
+	background-image: url('disable_sqlcmd.svg');
+}
+
+.vs-dark .icon.disablesqlcmd,
+.hc-black .icon.disablesqlcmd {
+	background-image: url('disable_sqlcmd_inverse.svg');
+	background-repeat: no-repeat;
 }

@@ -10,7 +10,7 @@ import * as crypto from 'crypto';
 import * as os from 'os';
 import * as findRemoveSync from 'find-remove';
 import * as constants from './constants';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 
 const configTracingLevel = 'tracingLevel';
 const configLogRetentionMinutes = 'logRetentionMinutes';
@@ -49,16 +49,8 @@ export function findNextUntitledEditorName(filePath: string): string {
 	return title;
 }
 
-export function fileExists(file: string): boolean {
-	return fs.existsSync(file);
-}
-
-export function copyFile(source: string, target: string): void {
-	fs.copyFileSync(source, target);
-}
-
-export function removeOldLogFiles(prefix: string): JSON {
-	return findRemoveSync(getDefaultLogDir(), { prefix: `${prefix}_`, age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
+export function removeOldLogFiles(logPath: string, prefix: string): JSON {
+	return findRemoveSync(logPath, { age: { seconds: getConfigLogRetentionSeconds() }, limit: getConfigLogFilesRemovalLimit() });
 }
 
 export function getConfiguration(config: string = extensionConfigSectionName): vscode.WorkspaceConfiguration {
@@ -95,24 +87,20 @@ export function getConfigTracingLevel(): string {
 	}
 }
 
-export function getDefaultLogDir(): string {
-	return path.join(process.env['ADS_LOGS'], '..', '..', 'mssql');
+export function getLogFileName(prefix: string, pid: number): string {
+	return `${prefix}_${pid}.log`;
 }
 
-export function getDefaultLogFile(prefix: string, pid: number): string {
-	return path.join(getDefaultLogDir(), `${prefix}_${pid}.log`);
-}
-
-export function getCommonLaunchArgsAndCleanupOldLogFiles(prefix: string, executablePath: string): string[] {
+export function getCommonLaunchArgsAndCleanupOldLogFiles(logPath: string, fileName: string, executablePath: string): string[] {
 	let launchArgs = [];
 	launchArgs.push('--log-file');
-	let logFile = getDefaultLogFile(prefix, process.pid);
+	let logFile = path.join(logPath, fileName);
 	launchArgs.push(logFile);
 
 	console.log(`logFile for ${path.basename(executablePath)} is ${logFile}`);
 	console.log(`This process (ui Extenstion Host) is pid: ${process.pid}`);
 	// Delete old log files
-	let deletedLogFiles = removeOldLogFiles(prefix);
+	let deletedLogFiles = removeOldLogFiles(logPath, fileName);
 	console.log(`Old log files deletion report: ${JSON.stringify(deletedLogFiles)}`);
 	launchArgs.push('--tracing-level');
 	launchArgs.push(getConfigTracingLevel());
@@ -224,36 +212,55 @@ export function getUserHome(): string {
 	return process.env.HOME || process.env.USERPROFILE;
 }
 
-export async function getClusterEndpoint(profileId: string, serviceName: string): Promise<IEndpoint> {
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
+	let endpoints: RawEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
+	if (!endpoints || endpoints.length === 0) { return []; }
 
-	let serverInfo: azdata.ServerInfo = await azdata.connection.getServerInfo(profileId);
-	if (!serverInfo || !serverInfo.options) {
-		return undefined;
+	return endpoints.map(e => {
+		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
+		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
+		let updatedEndpoint: IEndpoint = {
+			serviceName: e.serviceName,
+			description: e.description,
+			endpoint: endpoint,
+			protocol: e.protocol
+		};
+		return updatedEndpoint;
+	});
+}
+
+export type HostAndIp = { host: string, port: string };
+
+export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
+	let authority = vscode.Uri.parse(endpoint).authority;
+	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
+	let match = hostAndPortRegex.exec(authority);
+	if (match) {
+		return {
+			host: match[1],
+			port: match[3]
+		};
 	}
-	let endpoints: IEndpoint[] = serverInfo.options[constants.clusterEndpointsProperty];
-	if (!endpoints || endpoints.length === 0) {
-		return undefined;
-	}
-	let index = endpoints.findIndex(ep => ep.serviceName === serviceName);
-	if (index === -1) {
-		return undefined;
-	}
-	let clusterEndpoint: IEndpoint = {
-		serviceName: endpoints[index].serviceName,
-		ipAddress: endpoints[index].ipAddress,
-		port: endpoints[index].port,
-		isHyperlink: false,
-		hyperlink: null
+	return {
+		host: authority,
+		port: undefined
 	};
-	return clusterEndpoint;
+}
+
+interface RawEndpoint {
+	serviceName: string;
+	description?: string;
+	endpoint?: string;
+	protocol?: string;
+	ipAddress?: string;
+	port?: number;
 }
 
 export interface IEndpoint {
 	serviceName: string;
-	ipAddress: string;
-	port: number;
-	isHyperlink: boolean;
-	hyperlink: string;
+	description: string;
+	endpoint: string;
+	protocol: string;
 }
 
 export function isValidNumber(maybeNumber: any) {
@@ -274,5 +281,14 @@ export function logDebug(msg: any): void {
 		let currentTime = new Date().toLocaleTimeString();
 		let outputMsg = '[' + currentTime + ']: ' + msg ? msg.toString() : '';
 		console.log(outputMsg);
+	}
+}
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

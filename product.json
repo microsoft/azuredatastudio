@@ -25,7 +25,7 @@
 	"urlProtocol": "azuredatastudio",
 	"enableTelemetry": true,
 	"aiConfig": {
-		"asimovKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412"
+		"asimovKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916"
 	},
 	"sendASmile": {
 		"reportIssueUrl": "https://github.com/Microsoft/azuredatastudio/issues/new?labels=customer%20reported%20issue",
@@ -34,7 +34,7 @@
 	"gettingStartedUrl": "https://go.microsoft.com/fwlink/?linkid=862039",
 	"releaseNotesUrl": "https://go.microsoft.com/fwlink/?linkid=875578",
 	"documentationUrl": "https://go.microsoft.com/fwlink/?linkid=862277",
-	"vscodeVersion": "1.37.0",
+	"vscodeVersion": "1.38.0",
 	"commit": "9ca6200018fc206d67a47229f991901a8a453781",
 	"date": "2017-12-15T12:00:00.000Z",
 	"recommendedExtensions": [
@@ -59,6 +59,28 @@
 			"msrvida.azdata-sanddance"
 		]
 	},
+	"extensionAllowedProposedApi": [
+		"ms-vscode.references-view",
+		"ms-vsliveshare.vsliveshare",
+		"ms-vsliveshare.cloudenv",
+		"ms-vsliveshare.cloudenv-explorer",
+		"GitHub.vscode-pull-request-github",
+		"GitHub.vscode-pull-request-github-insiders",
+		"Microsoft.vscode-nmake-tools",
+		"ms-vscode-remote.remote-containers",
+		"ms-vscode-remote.remote-containers-nightly",
+		"ms-vscode-remote.remote-ssh",
+		"ms-vscode-remote.remote-ssh-nightly",
+		"ms-vscode-remote.remote-ssh-edit",
+		"ms-vscode-remote.remote-ssh-edit-nightly",
+		"ms-vscode-remote.remote-ssh-explorer",
+		"ms-vscode-remote.remote-ssh-explorer-nightly",
+		"ms-vscode-remote.remote-wsl",
+		"ms-vscode-remote.remote-wsl-nightly",
+		"ms-vscode-remote.vscode-remote-extensionpack",
+		"ms-vscode-remote.vscode-remote-extensionpack-nightly",
+		"ms-azuretools.vscode-docker"
+	],
 	"extensionsGallery": {
 		"serviceUrl": "https://sqlopsextensions.blob.core.windows.net/marketplace/v1/extensionsGallery.json"
 	}

@@ -6,7 +6,7 @@
 import * as GridContentEvents from 'sql/workbench/parts/grid/common/gridContentEvents';
 import * as LocalizedConstants from 'sql/workbench/parts/query/common/localizedConstants';
 import QueryRunner from 'sql/platform/query/common/queryRunner';
-import { DataService } from 'sql/workbench/parts/grid/services/dataService';
+import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 import { IQueryModelService, IQueryEvent } from 'sql/platform/query/common/queryModel';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 
@@ -53,17 +53,19 @@ export class QueryInfo {
  * Handles running queries and grid interactions for all URIs. Interacts with each URI's results grid via a DataService instance
  */
 export class QueryModelService implements IQueryModelService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _queryInfoMap: Map<string, QueryInfo>;
 	private _onRunQueryStart: Emitter<string>;
+	private _onRunQueryUpdate: Emitter<string>;
 	private _onRunQueryComplete: Emitter<string>;
 	private _onQueryEvent: Emitter<IQueryEvent>;
 	private _onEditSessionReady: Emitter<azdata.EditSessionReadyParams>;
 
 	// EVENTS /////////////////////////////////////////////////////////////
 	public get onRunQueryStart(): Event<string> { return this._onRunQueryStart.event; }
+	public get onRunQueryUpdate(): Event<string> { return this._onRunQueryUpdate.event; }
 	public get onRunQueryComplete(): Event<string> { return this._onRunQueryComplete.event; }
 	public get onQueryEvent(): Event<IQueryEvent> { return this._onQueryEvent.event; }
 	public get onEditSessionReady(): Event<azdata.EditSessionReadyParams> { return this._onEditSessionReady.event; }
@@ -75,6 +77,7 @@ export class QueryModelService implements IQueryModelService {
 	) {
 		this._queryInfoMap = new Map<string, QueryInfo>();
 		this._onRunQueryStart = new Emitter<string>();
+		this._onRunQueryUpdate = new Emitter<string>();
 		this._onRunQueryComplete = new Emitter<string>();
 		this._onQueryEvent = new Emitter<IQueryEvent>();
 		this._onEditSessionReady = new Emitter<azdata.EditSessionReadyParams>();
@@ -254,7 +257,7 @@ export class QueryModelService implements IQueryModelService {
 				if (info.selectionSnippet) {
 					// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 					// executed query text
-					messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+					messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 				} else {
 					link = {
 						text: strings.format(LocalizedConstants.runQueryBatchStartLine, b.selection.startLine + 1)
@@ -280,7 +283,12 @@ export class QueryModelService implements IQueryModelService {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStop',
-				uri: uri
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
@@ -293,11 +301,32 @@ export class QueryModelService implements IQueryModelService {
 			// fire extensibility API event
 			let event: IQueryEvent = {
 				type: 'queryStart',
-				uri: uri
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
 			};
 			this._onQueryEvent.fire(event);
 
 			this._fireQueryEvent(uri, 'start');
+		});
+		queryRunner.onResultSetUpdate(() => {
+			this._onRunQueryUpdate.fire(uri);
+
+			let event: IQueryEvent = {
+				type: 'queryUpdate',
+				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				}
+			};
+			this._onQueryEvent.fire(event);
+
+			this._fireQueryEvent(uri, 'update');
 		});
 
 		queryRunner.onQueryPlanAvailable(planInfo => {
@@ -305,6 +334,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'executionPlan',
 				uri: planInfo.fileUri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				},
 				params: planInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -314,6 +348,11 @@ export class QueryModelService implements IQueryModelService {
 			let event: IQueryEvent = {
 				type: 'visualize',
 				uri: uri,
+				queryInfo:
+				{
+					selection: info.selection,
+					messages: info.queryRunner.messages
+				},
 				params: resultSetInfo
 			};
 			this._onQueryEvent.fire(event);
@@ -405,7 +444,7 @@ export class QueryModelService implements IQueryModelService {
 					if (info.selectionSnippet) {
 						// This indicates it's a query string. Do not include line information since it'll be inaccurate, but show some of the
 						// executed query text
-						messageText = nls.localize('runQueryStringBatchStartMessage', 'Started executing query "{0}"', info.selectionSnippet);
+						messageText = nls.localize('runQueryStringBatchStartMessage', "Started executing query \"{0}\"", info.selectionSnippet);
 					} else {
 						link = {
 							text: strings.format(LocalizedConstants.runQueryBatchStartLine, batch.selection.startLine + 1)
@@ -429,7 +468,12 @@ export class QueryModelService implements IQueryModelService {
 				// fire extensibility API event
 				let event: IQueryEvent = {
 					type: 'queryStop',
-					uri: ownerUri
+					uri: ownerUri,
+					queryInfo:
+					{
+						selection: info.selection,
+						messages: info.queryRunner.messages
+					},
 				};
 				this._onQueryEvent.fire(event);
 
@@ -441,7 +485,12 @@ export class QueryModelService implements IQueryModelService {
 				// fire extensibility API event
 				let event: IQueryEvent = {
 					type: 'queryStart',
-					uri: ownerUri
+					uri: ownerUri,
+					queryInfo:
+					{
+						selection: info.selection,
+						messages: info.queryRunner.messages
+					},
 				};
 				this._onQueryEvent.fire(event);
 

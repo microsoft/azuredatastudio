@@ -4,22 +4,31 @@
  *--------------------------------------------------------------------------------------------*/
 'use strict';
 
-import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
-import { IToolsService } from './toolsService';
+import * as azdata from 'azdata';
+import * as cp from 'child_process';
+import { createWriteStream, promises as fs } from 'fs';
+import * as https from 'https';
+import * as os from 'os';
+import * as path from 'path';
 import * as vscode from 'vscode';
-import { IPlatformService } from './platformService';
 import * as nls from 'vscode-nls';
+import { INotebookService } from './notebookService';
+import { IPlatformService } from './platformService';
+import { IToolsService } from './toolsService';
+import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
+import { NotebookInputDialog } from '../ui/notebookInputDialog';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
 	getResourceTypes(filterByPlatform?: boolean): ResourceType[];
 	validateResourceTypes(resourceTypes: ResourceType[]): string[];
+	startDeployment(provider: DeploymentProvider): void;
 }
 
 export class ResourceTypeService implements IResourceTypeService {
 	private _resourceTypes: ResourceType[] = [];
 
-	constructor(private platformService: IPlatformService, private toolsService: IToolsService) { }
+	constructor(private platformService: IPlatformService, private toolsService: IToolsService, private notebookService: INotebookService) { }
 
 	/**
 	 * Get the supported resource types
@@ -129,8 +138,8 @@ export class ResourceTypeService implements IResourceTypeService {
 			let providerIndex = 1;
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
-				if (!provider.notebook) {
-					errorMessages.push(`Notebook is not specified for the provider, ${providerPositionInfo}`);
+				if (!provider.dialog && !provider.notebook && !provider.downloadUrl && !provider.webPageUrl) {
+					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
 				if (provider.requiredTools && provider.requiredTools.length > 0) {
@@ -182,5 +191,89 @@ export class ResourceTypeService implements IResourceTypeService {
 			}
 		}
 		return undefined;
+	}
+
+	public startDeployment(provider: DeploymentProvider): void {
+		const self = this;
+		if (provider.dialog) {
+			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);
+			dialog.open();
+		} else if (provider.notebook) {
+			this.notebookService.launchNotebook(provider.notebook);
+		} else if (provider.downloadUrl) {
+			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
+			azdata.tasks.startBackgroundOperation({
+				displayName: taskName,
+				description: taskName,
+				isCancelable: false,
+				operation: op => {
+					op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadingText', "Downloading from: {0}", provider.downloadUrl));
+					self.download(provider.downloadUrl).then((downloadedFile) => {
+						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.DownloadCompleteText', "Successfully downloaded: {0}", downloadedFile));
+						op.updateStatus(azdata.TaskStatus.InProgress, localize('resourceDeployment.LaunchingProgramText', "Launching: {0}", downloadedFile));
+						cp.exec(downloadedFile);
+						op.updateStatus(azdata.TaskStatus.Succeeded, localize('resourceDeployment.ProgramLaunchedText', "Successfully launched: {0}", downloadedFile));
+					}, (error) => {
+						op.updateStatus(azdata.TaskStatus.Failed, error);
+					});
+				}
+			});
+		} else if (provider.webPageUrl) {
+			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
+		}
+	}
+
+	private download(url: string): Promise<string> {
+		const self = this;
+		const promise = new Promise<string>((resolve, reject) => {
+			https.get(url, async function (response) {
+				console.log('Download installer from: ' + url);
+				if (response.statusCode === 301 || response.statusCode === 302) {
+					// Redirect and download from new location
+					console.log('Redirecting the download to: ' + response.headers.location);
+					self.download(response.headers.location!).then((result) => {
+						resolve(result);
+					}, (err) => {
+						reject(err);
+					});
+					return;
+				}
+				if (response.statusCode !== 200) {
+					reject(localize('downloadError', "Download failed, status code: {0}, message: {1}", response.statusCode, response.statusMessage));
+					return;
+				}
+				const extension = path.extname(url);
+				const originalFileName = path.basename(url, extension);
+				let fileName = originalFileName;
+				const downloadFolder = os.homedir();
+				let cnt = 1;
+				while (await exists(path.join(downloadFolder, fileName + extension))) {
+					fileName = `${originalFileName}-${cnt}`;
+					cnt++;
+				}
+				fileName = path.join(downloadFolder, fileName + extension);
+				const file = createWriteStream(fileName);
+				response.pipe(file);
+				file.on('finish', () => {
+					file.close();
+					resolve(fileName);
+				});
+				file.on('error', async (err) => {
+					await fs.unlink(fileName);
+					reject(err.message);
+				});
+			});
+		});
+		return promise;
+	}
+
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
 	}
 }

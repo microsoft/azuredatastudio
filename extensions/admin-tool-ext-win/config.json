@@ -1,0 +1,19 @@
+{
+	"downloadUrl": "https://sqlopsextensions.blob.core.windows.net/tools/ssmsmin/{#version#}/{#fileName#}",
+	"version": "15.0.18124.0",
+	"downloadFileNames": {
+		"Windows_64": "SsmsMin-15.0.18124.0-win-x64.zip",
+		"Windows_86": "SsmsMin-15.0.18124.0-win-x86.zip"
+	},
+	"installDirectory": "ssmsmin/{#platform#}/{#version#}",
+	"executableFiles": [
+		"SsmsMin.exe"
+	],
+	"retry": {
+		"retries": 15,
+		"factor": 2,
+		"minTimeout": 1000,
+		"maxTimeout": 300000,
+		"randomize": false
+	}
+}

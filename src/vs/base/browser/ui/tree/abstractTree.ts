@@ -98,9 +98,11 @@ class TreeNodeListDragAndDrop<T, TFilterData, TRef> implements IListDragAndDrop<
 		}
 
 		if (result.bubble === TreeDragOverBubble.Up) {
-			const parentNode = targetNode.parent;
 			const model = this.modelProvider();
-			const parentIndex = parentNode && model.getListIndex(model.getNodeLocation(parentNode));
+			const ref = model.getNodeLocation(targetNode);
+			const parentRef = model.getParentNodeLocation(ref);
+			const parentNode = model.getNode(parentRef);
+			const parentIndex = parentRef && model.getListIndex(parentRef);
 
 			return this.onDragOver(data, parentNode, parentIndex, originalEvent, false);
 		}
@@ -155,7 +157,12 @@ function asListOptions<T, TFilterData, TRef>(modelProvider: () => ITreeModel<T, 
 		enableKeyboardNavigation: options.simpleKeyboardNavigation,
 		ariaProvider: {
 			getSetSize(node) {
-				return node.parent!.visibleChildrenCount;
+				const model = modelProvider();
+				const ref = model.getNodeLocation(node);
+				const parentRef = model.getParentNodeLocation(ref);
+				const parentNode = model.getNode(parentRef);
+
+				return parentNode.visibleChildrenCount;
 			},
 			getPosInSet(node) {
 				return node.visibleChildIndex + 1;
@@ -233,7 +240,7 @@ class EventCollection<T> implements Collection<T> {
 	}
 }
 
-class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITreeNode<T, TFilterData>, ITreeListTemplateData<TTemplateData>> {
+class TreeRenderer<T, TFilterData, TRef, TTemplateData> implements IListRenderer<ITreeNode<T, TFilterData>, ITreeListTemplateData<TTemplateData>> {
 
 	private static DefaultIndent = 8;
 
@@ -244,13 +251,14 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 
 	private _renderIndentGuides: RenderIndentGuides = RenderIndentGuides.None;
 	private renderedIndentGuides = new SetMap<ITreeNode<T, TFilterData>, HTMLDivElement>();
-	private activeParentNodes = new Set<ITreeNode<T, TFilterData>>();
+	private activeIndentNodes = new Set<ITreeNode<T, TFilterData>>();
 	private indentGuidesDisposable: IDisposable = Disposable.None;
 
 	private disposables: IDisposable[] = [];
 
 	constructor(
 		private renderer: ITreeRenderer<T, TFilterData, TTemplateData>,
+		private modelProvider: () => ITreeModel<T, TFilterData, TRef>,
 		onDidChangeCollapseState: Event<ICollapseStateChangeEvent<T, TFilterData>>,
 		private activeNodes: Collection<ITreeNode<T, TFilterData>>,
 		options: ITreeRendererOptions = {}
@@ -353,6 +361,7 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 		}
 
 		this.renderTwistie(node, data.templateData);
+		this._onDidChangeActiveNodes(this.activeNodes.elements);
 		this.renderIndentGuides(node, data.templateData);
 	}
 
@@ -380,13 +389,22 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 		}
 
 		const disposableStore = new DisposableStore();
+		const model = this.modelProvider();
+
 		let node = target;
 
-		while (node.parent && node.parent.parent) {
-			const parent = node.parent;
+		while (true) {
+			const ref = model.getNodeLocation(node);
+			const parentRef = model.getParentNodeLocation(ref);
+
+			if (!parentRef) {
+				break;
+			}
+
+			const parent = model.getNode(parentRef);
 			const guide = $<HTMLDivElement>('.indent-guide', { style: `width: ${this.indent}px` });
 
-			if (this.activeParentNodes.has(parent)) {
+			if (this.activeIndentNodes.has(parent)) {
 				addClass(guide, 'active');
 			}
 
@@ -411,26 +429,32 @@ class TreeRenderer<T, TFilterData, TTemplateData> implements IListRenderer<ITree
 		}
 
 		const set = new Set<ITreeNode<T, TFilterData>>();
+		const model = this.modelProvider();
 
 		nodes.forEach(node => {
-			if (node.parent) {
-				set.add(node.parent);
+			const ref = model.getNodeLocation(node);
+			const parentRef = model.getParentNodeLocation(ref);
+
+			if (node.collapsible && node.children.length > 0 && !node.collapsed) {
+				set.add(node);
+			} else if (parentRef) {
+				set.add(model.getNode(parentRef));
 			}
 		});
 
-		this.activeParentNodes.forEach(node => {
+		this.activeIndentNodes.forEach(node => {
 			if (!set.has(node)) {
 				this.renderedIndentGuides.forEach(node, line => removeClass(line, 'active'));
 			}
 		});
 
 		set.forEach(node => {
-			if (!this.activeParentNodes.has(node)) {
+			if (!this.activeIndentNodes.has(node)) {
 				this.renderedIndentGuides.forEach(node, line => addClass(line, 'active'));
 			}
 		});
 
-		this.activeParentNodes = set;
+		this.activeIndentNodes = set;
 	}
 
 	dispose(): void {
@@ -448,8 +472,8 @@ class TypeFilter<T> implements ITreeFilter<T, FuzzyScore>, IDisposable {
 	private _matchCount = 0;
 	get matchCount(): number { return this._matchCount; }
 
-	private _pattern: string;
-	private _lowercasePattern: string;
+	private _pattern: string = '';
+	private _lowercasePattern: string = '';
 	private disposables: IDisposable[] = [];
 
 	set pattern(pattern: string) {
@@ -540,7 +564,7 @@ class TypeFilterController<T, TFilterData> implements IDisposable {
 	private _filterOnType: boolean;
 	get filterOnType(): boolean { return this._filterOnType; }
 
-	private _empty: boolean;
+	private _empty: boolean = false;
 	get empty(): boolean { return this._empty; }
 
 	private _onDidChangeEmptyState = new Emitter<boolean>();
@@ -894,6 +918,7 @@ export interface IAbstractTreeOptions<T, TFilterData = void> extends IAbstractTr
 	readonly autoExpandSingleChildren?: boolean;
 	readonly keyboardNavigationEventFilter?: IKeyboardNavigationEventFilter;
 	readonly expandOnlyOnTwistieClick?: boolean | ((e: T) => boolean);
+	readonly additionalScrollHeight?: number;
 }
 
 function dfs<T, TFilterData>(node: ITreeNode<T, TFilterData>, fn: (node: ITreeNode<T, TFilterData>) => void): void {
@@ -1049,16 +1074,28 @@ class TreeNodeListMouseController<T, TFilterData, TRef> extends MouseController<
 			return super.onPointer(e);
 		}
 
-		const model = ((this.tree as any).model as ITreeModel<T, TFilterData, TRef>); // internal
-		const location = model.getNodeLocation(node);
-		const recursive = e.browserEvent.altKey;
-		model.setCollapsed(location, undefined, recursive);
+		if (node.collapsible) {
+			const model = ((this.tree as any).model as ITreeModel<T, TFilterData, TRef>); // internal
+			const location = model.getNodeLocation(node);
+			const recursive = e.browserEvent.altKey;
+			model.setCollapsed(location, undefined, recursive);
 
-		if (expandOnlyOnTwistieClick && onTwistie) {
-			return;
+			if (expandOnlyOnTwistieClick && onTwistie) {
+				return;
+			}
 		}
 
 		super.onPointer(e);
+	}
+
+	protected onDoubleClick(e: IListMouseEvent<ITreeNode<T, TFilterData>>): void {
+		const onTwistie = hasClass(e.browserEvent.target as HTMLElement, 'monaco-tl-twistie');
+
+		if (onTwistie) {
+			return;
+		}
+
+		super.onDoubleClick(e);
 	}
 }
 
@@ -1073,6 +1110,7 @@ interface ITreeNodeListOptions<T, TFilterData, TRef> extends IListOptions<ITreeN
 class TreeNodeList<T, TFilterData, TRef> extends List<ITreeNode<T, TFilterData>> {
 
 	constructor(
+		user: string,
 		container: HTMLElement,
 		virtualDelegate: IListVirtualDelegate<ITreeNode<T, TFilterData>>,
 		renderers: IListRenderer<any /* TODO@joao */, any>[],
@@ -1080,7 +1118,7 @@ class TreeNodeList<T, TFilterData, TRef> extends List<ITreeNode<T, TFilterData>>
 		private selectionTrait: Trait<T>,
 		options: ITreeNodeListOptions<T, TFilterData, TRef>
 	) {
-		super(container, virtualDelegate, renderers, options);
+		super(user, container, virtualDelegate, renderers, options);
 	}
 
 	protected createMouseController(options: ITreeNodeListOptions<T, TFilterData, TRef>): MouseController<ITreeNode<T, TFilterData>> {
@@ -1136,7 +1174,7 @@ class TreeNodeList<T, TFilterData, TRef> extends List<ITreeNode<T, TFilterData>>
 export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable {
 
 	protected view: TreeNodeList<T, TFilterData, TRef>;
-	private renderers: TreeRenderer<T, TFilterData, any>[];
+	private renderers: TreeRenderer<T, TFilterData, TRef, any>[];
 	protected model: ITreeModel<T, TFilterData, TRef>;
 	private focus: Trait<T>;
 	private selection: Trait<T>;
@@ -1181,6 +1219,7 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 	get onDidDispose(): Event<void> { return this.view.onDidDispose; }
 
 	constructor(
+		user: string,
 		container: HTMLElement,
 		delegate: IListVirtualDelegate<T>,
 		renderers: ITreeRenderer<T, TFilterData, any>[],
@@ -1193,7 +1232,7 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 		const activeNodes = new EventCollection(onDidChangeActiveNodes.event);
 		this.disposables.push(activeNodes);
 
-		this.renderers = renderers.map(r => new TreeRenderer<T, TFilterData, any>(r, onDidChangeCollapseStateRelay.event, activeNodes, _options));
+		this.renderers = renderers.map(r => new TreeRenderer<T, TFilterData, TRef, any>(r, () => this.model, onDidChangeCollapseStateRelay.event, activeNodes, _options));
 		this.disposables.push(...this.renderers);
 
 		let filter: TypeFilter<T> | undefined;
@@ -1206,9 +1245,9 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 
 		this.focus = new Trait(_options.identityProvider);
 		this.selection = new Trait(_options.identityProvider);
-		this.view = new TreeNodeList(container, treeDelegate, this.renderers, this.focus, this.selection, { ...asListOptions(() => this.model, _options), tree: this });
+		this.view = new TreeNodeList(user, container, treeDelegate, this.renderers, this.focus, this.selection, { ...asListOptions(() => this.model, _options), tree: this });
 
-		this.model = this.createModel(this.view, _options);
+		this.model = this.createModel(user, this.view, _options);
 		onDidChangeCollapseStateRelay.input = this.model.onDidChangeCollapseState;
 
 		this.model.onDidSplice(e => {
@@ -1305,6 +1344,14 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 		this.view.scrollTop = scrollTop;
 	}
 
+	get scrollLeft(): number {
+		return this.view.scrollTop;
+	}
+
+	set scrollLeft(scrollLeft: number) {
+		this.view.scrollLeft = scrollLeft;
+	}
+
 	get scrollHeight(): number {
 		return this.view.scrollHeight;
 	}
@@ -1357,7 +1404,9 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 	// Tree navigation
 
 	getParentElement(location: TRef): T {
-		return this.model.getParentElement(location);
+		const parentRef = this.model.getParentNodeLocation(location);
+		const parentNode = this.model.getNode(parentRef);
+		return parentNode.element;
 	}
 
 	getFirstElementChild(location: TRef): T | undefined {
@@ -1392,6 +1441,10 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 
 	isCollapsible(location: TRef): boolean {
 		return this.model.isCollapsible(location);
+	}
+
+	setCollapsible(location: TRef, collapsible?: boolean): boolean {
+		return this.model.setCollapsible(location, collapsible);
 	}
 
 	isCollapsed(location: TRef): boolean {
@@ -1509,7 +1562,7 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 		if (!didChange) {
 			const parentLocation = this.model.getParentNodeLocation(location);
 
-			if (parentLocation === null) {
+			if (!parentLocation) {
 				return;
 			}
 
@@ -1564,7 +1617,7 @@ export abstract class AbstractTree<T, TFilterData, TRef> implements IDisposable 
 		this.model.setCollapsed(location, undefined, recursive);
 	}
 
-	protected abstract createModel(view: ISpliceable<ITreeNode<T, TFilterData>>, options: IAbstractTreeOptions<T, TFilterData>): ITreeModel<T, TFilterData, TRef>;
+	protected abstract createModel(user: string, view: ISpliceable<ITreeNode<T, TFilterData>>, options: IAbstractTreeOptions<T, TFilterData>): ITreeModel<T, TFilterData, TRef>;
 
 	navigate(start?: TRef): ITreeNavigator<T> {
 		return new TreeNavigator(this.view, this.model, start);
@@ -1608,22 +1661,6 @@ class TreeNavigator<T extends NonNullable<any>, TFilterData, TRef> implements IT
 
 	next(): T | null {
 		this.index++;
-		return this.current();
-	}
-
-	parent(): T | null {
-		if (this.index < 0 || this.index >= this.view.length) {
-			return null;
-		}
-
-		const node = this.view.element(this.index);
-
-		if (!node.parent) {
-			this.index = -1;
-			return this.current();
-		}
-
-		this.index = this.model.getListIndex(this.model.getNodeLocation(node.parent));
 		return this.current();
 	}
 

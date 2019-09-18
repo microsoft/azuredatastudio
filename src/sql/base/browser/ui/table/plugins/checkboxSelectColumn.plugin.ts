@@ -42,7 +42,7 @@ const defaultOptions: ICheckboxSelectColumnOptions = {
 };
 
 const checkboxTemplate = `<div style="display: flex; align-items: center; flex-direction: column">
-								<input type="checkbox" {0}>
+								<input type="checkbox" {0} aria-label={1}>
 							</div>`;
 
 export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Plugin<T> {
@@ -92,18 +92,18 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 				delete this._selectedRowsLookup[row];
 			}
 		}
-		dict.forEach(this._selectedRowsLookup, (e) => this._grid.invalidateRow(e.key));
+		dict.forEach(this._selectedRowsLookup, (e) => this._grid.invalidateRow(Number(e.key)));
 		this._selectedRowsLookup = lookup;
 		this._grid.render();
 
 		if (!this._options.title) {
 			if (selectedRows.length && selectedRows.length === this._grid.getDataLength()) {
 				this._grid.updateColumnHeader(this._options.columnId!,
-					strings.format(checkboxTemplate, 'checked'),
+					strings.format(checkboxTemplate, 'checked', this.getAriaLabel(true)),
 					this._options.toolTip);
 			} else {
 				this._grid.updateColumnHeader(this._options.columnId!,
-					strings.format(checkboxTemplate, ''),
+					strings.format(checkboxTemplate, '', this.getAriaLabel(false)),
 					this._options.toolTip);
 			}
 		}
@@ -187,6 +187,9 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 			this._grid.invalidateRow(row);
 			this._grid.render();
 		}
+
+		//Ensure that the focus stays correct
+		this._grid.getActiveCellNode().focus();
 	}
 
 	private handleHeaderClick(e: Event, args: Slick.OnHeaderClickEventArgs<T>): void {
@@ -207,12 +210,12 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 				const rows = range(this._grid.getDataLength());
 				this._grid.setSelectedRows(rows);
 				this._grid.updateColumnHeader(this._options.columnId!,
-					strings.format(checkboxTemplate, 'checked'),
+					strings.format(checkboxTemplate, 'checked', this.getAriaLabel(true)),
 					this._options.toolTip);
 			} else {
 				this._grid.setSelectedRows([]);
 				this._grid.updateColumnHeader(this._options.columnId!,
-					strings.format(checkboxTemplate, ''), this._options.toolTip);
+					strings.format(checkboxTemplate, '', this.getAriaLabel(false)), this._options.toolTip);
 				e.stopPropagation();
 				e.stopImmediatePropagation();
 			}
@@ -222,7 +225,7 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 	public getColumnDefinition(): Slick.Column<T> {
 		return {
 			id: this._options.columnId,
-			name: this._options.title || strings.format(checkboxTemplate, ''),
+			name: this._options.title || strings.format(checkboxTemplate, '', ''),
 			toolTip: this._options.toolTip,
 			field: 'sel',
 			width: this._options.width,
@@ -240,16 +243,16 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		}
 
 		return this._selectedRowsLookup[row]
-			? strings.format(checkboxTemplate, 'checked')
-			: strings.format(checkboxTemplate, '');
+			? strings.format(checkboxTemplate, 'checked', this.getAriaLabel(true))
+			: strings.format(checkboxTemplate, '', this.getAriaLabel(false));
 	}
 
 	checkboxTemplateCustom(row: number): string {
 		// use state after toggles
 		if (this._useState) {
 			return this._selectedCheckBoxLookup[row]
-				? strings.format(checkboxTemplate, 'checked')
-				: strings.format(checkboxTemplate, '');
+				? strings.format(checkboxTemplate, 'checked', this.getAriaLabel(true))
+				: strings.format(checkboxTemplate, '', this.getAriaLabel(false));
 		}
 
 		// use data for first time rendering
@@ -257,15 +260,20 @@ export class CheckboxSelectColumn<T extends Slick.SlickData> implements Slick.Pl
 		let rowVal = (this._grid) ? this._grid.getDataItem(row) : null;
 		if (rowVal && this._options.title && rowVal[this._options.title] === true) {
 			this._selectedCheckBoxLookup[row] = true;
-			return strings.format(checkboxTemplate, 'checked');
+			return strings.format(checkboxTemplate, 'checked', this.getAriaLabel(true));
 		}
 		else {
 			delete this._selectedCheckBoxLookup[row];
-			return strings.format(checkboxTemplate, '');
+			return strings.format(checkboxTemplate, '', this.getAriaLabel(false));
 		}
 	}
 
 	private isCustomActionRequested(): boolean {
 		return (this._options.actionOnCheck === ActionOnCheck.customAction);
+	}
+
+	private getAriaLabel(checked: boolean): string {
+		return checked ? `"${this._options.title} ${nls.localize("tableCheckboxCell.Checked", "checkbox checked")}"` :
+			`"${this._options.title} ${nls.localize("tableCheckboxCell.unChecked", "checkbox unchecked")}"`;
 	}
 }

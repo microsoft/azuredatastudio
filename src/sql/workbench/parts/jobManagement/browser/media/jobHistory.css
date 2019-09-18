@@ -3,15 +3,22 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-
 jobhistory-component .all-jobs {
 	display: inline-block;
 	cursor: pointer;
 	font-size: 15px;
 	width: 10%;
+	margin-top: 10px;
+}
+notebookhistory-component .all-jobs {
+	display: inline-block;
+	cursor: pointer;
+	font-size: 15px;
+	width: 100%;
 }
 
-.overview-container .overview-tab .resultsViewCollapsible {
+.overview-container .overview-tab .resultsViewCollapsible,
+.overview-container .overview-tab .notebooksgridViewCollapsible {
 	padding: 15px;
 	display: inline;
 }
@@ -24,6 +31,11 @@ jobhistory-component .all-jobs {
 
 .overview-container {
 	padding-top: 10px;
+}
+
+.history-container {
+	position: relative;
+	overflow-y: auto;
 }
 
 .vs-dark .overview-container .overview-tab {
@@ -42,7 +54,13 @@ jobhistory-component .all-jobs {
 	overflow: hidden;
 }
 
-input#accordion {
+input#accordion{
+	position: absolute;
+	opacity: 0;
+	z-index: -1;
+}
+
+.grid-arrow{
 	position: absolute;
 	opacity: 0;
 	z-index: -1;
@@ -72,7 +90,8 @@ input#accordion {
 	background: #333333;
 }
 
-.hc-black .overview-tab .accordion-content {
+.hc-black .overview-tab .accordion-content,
+.grid-arrow {
 	background: #000000;
 	border: 1px solid #2b56f2;
 }
@@ -81,9 +100,9 @@ input#accordion {
 	max-height: 0;
 	overflow: hidden;
 	background: #eaeaea;
-	-webkit-transition: max-height .35s;
-	-o-transition: max-height .35s;
-	transition: max-height .35s;
+	-webkit-transition: max-height 0.35s;
+	-o-transition: max-height 0.35s;
+	transition: max-height 0.35s;
 	width: 100%;
 }
 
@@ -92,7 +111,13 @@ input#accordion {
 }
 
 /* :checked */
-input#accordion:checked ~ .accordion-content {
+input#accordion:checked ~ .accordion-content,
+.grid-arrow:checked {
+	max-height: 10em;
+}
+
+input#accordion:checked ~ .accordion-content,
+.grid-arrow:checked {
 	max-height: 10em;
 }
 
@@ -106,13 +131,13 @@ input#accordion:checked ~ .accordion-content {
 	height: 3em;
 	line-height: 3;
 	text-align: center;
-	-webkit-transition: all .3s;
-	-o-transition: all .3s;
-	transition: all .3s;
+	-webkit-transition: all 0.3s;
+	-o-transition: all 0.3s;
+	transition: all 0.3s;
 }
 
 .all-jobs > .back-button-icon {
-	content: url('back.svg');
+	content: url("back.svg");
 	width: 20px;
 	margin-right: 10px;
 	float: left;
@@ -121,30 +146,34 @@ input#accordion:checked ~ .accordion-content {
 	padding-bottom: 10px;
 }
 
-.vs-dark .all-jobs >.back-button-icon,
-.hc-black .all-jobs >.back-button-icon {
-	content: url('back_inverse.svg');
+.vs-dark .all-jobs > .back-button-icon,
+.hc-black .all-jobs > .back-button-icon {
+	content: url("back_inverse.svg");
 }
 
 .vs .action-label.icon.newStepIcon {
-	background-image: url('new.svg');
+	background-image: url("new.svg");
 }
 
 .vs-dark .action-label.icon.newStepIcon,
 .hc-black .action-label.icon.newStepIcon {
-	background-image: url('new_inverse.svg');
+	background-image: url("new_inverse.svg");
 }
 
 jobhistory-component .hc-black .icon.edit,
-jobhistory-component .vs-dark .icon.edit {
-	background-image: url('edit_inverse.svg');
+jobhistory-component .vs-dark .icon.edit,
+notebookhistory-component .hc-black .icon.edit,
+notebookhistory-component .vs-dark .icon.edit {
+	background-image: url("edit_inverse.svg");
 }
 
-jobhistory-component .vs .icon.edit {
-	background-image: url('edit.svg');
+jobhistory-component .vs .icon.edit,
+notebookhistory-component .vs .icon.edit {
+	background-image: url("edit.svg");
 }
 
-jobhistory-component .actions-container .icon.edit {
+jobhistory-component .actions-container .icon.edit,
+notebookhistory-component .actions-container .icon.edit {
 	background-position: 0% 50%;
 	background-repeat: no-repeat;
 	background-size: 12px;
@@ -210,12 +239,20 @@ table.step-list tr.step-row td {
 	max-height: 200px;
 }
 
-.step-table .monaco-tree .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children > .content:before {
+.step-table
+	.monaco-tree
+	.monaco-tree-rows.show-twisties
+	> .monaco-tree-row.has-children
+	> .content:before {
 	background: none;
 	background-image: none;
 }
 
-.step-table .monaco-tree.focused .monaco-tree-rows.show-twisties > .monaco-tree-row.has-children.selected:not(.loading) > .content:before {
+.step-table
+	.monaco-tree.focused
+	.monaco-tree-rows.show-twisties
+	> .monaco-tree-row.has-children.selected:not(.loading)
+	> .content:before {
 	background-image: none;
 }
 
@@ -258,40 +295,183 @@ table.step-list tr.step-row td {
 	flex-direction: column;
 }
 
-jobhistory-component {
+jobhistory-component,
+notebookhistory-component {
 	display: flex;
 	flex-direction: column;
 	height: 100%;
 	width: 100%;
 }
 
-jobhistory-component > .jobhistory-heading-container {
+jobhistory-component > .jobhistory-heading-container,
+notebookhistory-component > .jobhistory-heading-container {
 	display: flex;
 }
 
-jobhistory-component > .jobhistory-heading-container > .icon.in-progress {
+jobhistory-component > .jobhistory-heading-container > .icon.in-progress,
+notebookhistory-component > .jobhistory-heading-container > .icon.in-progress {
 	width: 20px;
 	height: 20px;
 	padding-top: 16px;
 	padding-left: 20px;
 }
 
-jobhistory-component > .agent-actionbar-container {
+jobhistory-component > .agent-actionbar-container,
+notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #f4f4f4;
 }
 
-.vs-dark jobhistory-component > .agent-actionbar-container {
+.vs-dark jobhistory-component > .agent-actionbar-container,
+.vs-dark notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #444444;
 }
 
-.hc-black jobhistory-component > .agent-actionbar-container {
+.hc-black jobhistory-component > .agent-actionbar-container,
+.hc-black notebookhistory-component > .agent-actionbar-container {
 	border-top: 3px solid #2b56f2;
 }
 
-jobhistory-component .step-table.prev-run-list .monaco-tree-wrapper .monaco-tree-row {
+jobhistory-component
+	.step-table.prev-run-list
+	.monaco-tree-wrapper
+	.monaco-tree-row,
+notebookhistory-component
+	.step-table.prev-run-list
+	.monaco-tree-wrapper
+	.monaco-tree-row {
 	width: 96%;
 }
 
-jobhistory-component .agent-actionbar-container > .monaco-toolbar.carbon-taskbar {
+jobhistory-component
+	.agent-actionbar-container
+	> .monaco-toolbar.carbon-taskbar,
+notebookhistory-component
+	.agent-actionbar-container
+	> .monaco-toolbar.carbon-taskbar {
 	margin: 10px 0px 5px 0px;
+}
+.notebook-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+	grid-gap: 10px;
+	padding: 10px;
+}
+
+.notebook-grid-item {
+	border-radius: 5px;
+	padding-bottom: 5px;
+	height: 95px;
+	display: block;
+	border-radius: 0px;
+}
+
+.notebook-grid-item > img {
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 50px;
+	height: 50px;
+}
+
+.notebook-grid-item:hover {
+	background: #dcdcdc !important;
+}
+
+.vs-dark .notebook-grid-item:hover,
+.hc-black .notebook-grid-item:hover {
+	background: #444444 !important;
+}
+
+.notebook-grid-item > .img-success {
+	background-image: url(./NotebookSuccess_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .notebook-grid-item > .img-success,
+.hc-black .notebook-grid-item > .img-success {
+	background-image: url(./NotebookSuccess_16x_white.svg);
+	background-position: center;
+}
+
+.notebook-grid-item > .img-failure {
+	background-image: url(./NotebookFail_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+}
+
+.vs-dark .notebook-grid-item > .img-failure,
+.hc-black .notebook-grid-item > .img-failure {
+	background-image: url(./NotebookFail_16x_white.svg);
+	background-position: center;
+}
+
+.notebook-grid-item > .img-error {
+	background-image: url(./NotebookError_16x.svg);
+	background-position: center;
+	display: block;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 40px;
+	height: 40px;
+	background-size: 40px 40px;
+	background-repeat: no-repeat;
+	cursor: pointer;
+}
+
+.vs-dark .notebook-grid-item > .img-error,
+.hc-black .notebook-grid-item > .img-error {
+	background-image: url(./NotebookError_16x_white.svg);
+	background-position: center;
+}
+
+.notebook-grid-item > p {
+	display: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 10px;
+	width: 100%;
+	text-align: center;
+}
+
+.notebook-history-container {
+	flex: 1 1 auto;
+	position: relative;
+	overflow-y: auto;
+}
+
+.grid-title {
+	position: relative;
+	display: block;
+	padding: 0 0 0 1em;
+	background: #f4f4f4;
+	font-weight: bold;
+	line-height: 3;
+	cursor: pointer;
+	width: auto;
+}
+
+.vs-dark .grid-title {
+	background: #333333;
+}
+
+.hc-black .grid-title {
+	background: #000000;
+	border: 1px solid #2b56f2;
 }

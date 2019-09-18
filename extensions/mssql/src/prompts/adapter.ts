@@ -1,34 +1,13 @@
 // This code is originally from https://github.com/DonJayamanne/bowerVSCode
 // License: https://github.com/DonJayamanne/bowerVSCode/blob/master/LICENSE
 
-import { window, OutputChannel } from 'vscode';
+import { window } from 'vscode';
 import PromptFactory from './factory';
 import EscapeException from '../escapeException';
 import { IQuestion, IPrompter, IPromptCallback } from './question';
 
 // Supports simple pattern for prompting for user input and acting on this
 export default class CodeAdapter implements IPrompter {
-
-	private outChannel: OutputChannel;
-	constructor() {
-		// TODO Decide whether output channel logging should be saved here?
-		this.outChannel = window.createOutputChannel('test');
-		// this.outChannel.clear();
-	}
-
-	public logError(message: any): void {
-		let line = `error: ${message.message}\n    Code - ${message.code}`;
-
-		this.outChannel.appendLine(line);
-	}
-
-	public clearLog(): void {
-		this.outChannel.clear();
-	}
-
-	public showLog(): void {
-		this.outChannel.show();
-	}
 
 	// TODO define question interface
 	private fixQuestion(question: any): any {

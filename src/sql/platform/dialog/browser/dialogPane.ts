@@ -79,7 +79,7 @@ export class DialogPane extends Disposable implements IThemable {
 							tabContainer.style.display = 'block';
 						},
 						layout: (dimension) => { this.getTabDimension(); },
-						focus: () => { }
+						focus: () => { this.focus(); }
 					}
 				});
 			});
@@ -130,12 +130,20 @@ export class DialogPane extends Disposable implements IThemable {
 			});
 	}
 
-	public show(): void {
+	public show(focus: boolean = false): void {
 		this._body.classList.remove('dialogModal-hidden');
+		if (focus) {
+			this.focus();
+		}
 	}
 
 	public hide(): void {
 		this._body.classList.add('dialogModal-hidden');
+	}
+
+	private focus(): void {
+		let focusedElement = <HTMLElement>this._body.querySelector('a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled])');
+		focusedElement ? focusedElement.focus() : this._body.focus();
 	}
 
 	/**

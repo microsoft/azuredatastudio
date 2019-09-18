@@ -8,25 +8,25 @@ import { IHandleFirewallRuleResult, IResourceProviderService } from 'sql/workben
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
 export class TestResourceProvider implements IResourceProviderService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
-	registerProvider(providerId: string, provider: azdata.ResourceProvider) {
+	registerProvider(providerId: string, provider: azdata.ResourceProvider): void {
 
 	}
 
-	unregisterProvider(ProviderId: string) {
+	unregisterProvider(ProviderId: string): void {
 
 	}
 
 	createFirewallRule(selectedAccount: azdata.Account, firewallruleInfo: azdata.FirewallRuleInfo, resourceProviderId: string): Promise<azdata.CreateFirewallRuleResponse> {
-		return undefined;
+		throw new Error('Method not implemented');
 	}
 
 	handleFirewallRule(errorCode: number, errorMessage: string, connectionTypeId: string): Promise<IHandleFirewallRuleResult> {
-		return undefined;
+		throw new Error('Method not implemented');
 	}
 
 	showFirewallRuleDialog(connection: IConnectionProfile, ipAddress: string, resourceProviderId: string): Promise<boolean> {
-		return undefined;
+		return Promise.resolve(true);
 	}
 }

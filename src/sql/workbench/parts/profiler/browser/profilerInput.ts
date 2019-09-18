@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerSession, IProfilerService, ProfilerSessionID, IProfilerViewTemplate, ProfilerFilter } from 'sql/workbench/services/profiler/browser/interfaces';
 import { ProfilerState } from 'sql/workbench/parts/profiler/common/profilerState';
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 
@@ -17,11 +17,12 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IShowResult } from 'vs/platform/dialogs/common/dialogs';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
-import { FilterData } from 'sql/workbench/services/profiler/common/profilerFilter';
+import { FilterData } from 'sql/workbench/services/profiler/browser/profilerFilter';
+import { uriPrefixes } from 'sql/platform/connection/common/utils';
 
 export class ProfilerInput extends EditorInput implements IProfilerSession {
 
@@ -60,7 +61,7 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 			autoscroll: true
 		});
 
-		this._profilerService.registerSession(generateUuid(), connection, this).then((id) => {
+		this._profilerService.registerSession(uriPrefixes.connection + generateUuid(), connection, this).then((id) => {
 			this._id = id;
 			this.state.change({ isConnected: true });
 		});
@@ -290,11 +291,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					nls.localize('profilerClosingActions.yes', "Yes"),
 					nls.localize('profilerClosingActions.no', "No"),
 					nls.localize('profilerClosingActions.cancel', "Cancel")
-				]).then((selection: number) => {
-					if (selection === 0) {
+				]).then((selection: IShowResult) => {
+					if (selection.choice === 0) {
 						this._profilerService.stopSession(this.id);
 						return ConfirmResult.DONT_SAVE;
-					} else if (selection === 1) {
+					} else if (selection.choice === 1) {
 						return ConfirmResult.DONT_SAVE;
 					} else {
 						return ConfirmResult.CANCEL;

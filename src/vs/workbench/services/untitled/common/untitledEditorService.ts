@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { URI } from 'vs/base/common/uri';
-import { createDecorator, IInstantiationService, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import * as arrays from 'vs/base/common/arrays';
 import { UntitledEditorInput } from 'vs/workbench/common/editor/untitledEditorInput';
 import { IFilesConfiguration, IFileService } from 'vs/platform/files/common/files';
@@ -29,7 +29,7 @@ export interface IModelLoadOrCreateOptions {
 
 export interface IUntitledEditorService {
 
-	_serviceBrand: ServiceIdentifier<IUntitledEditorService>;
+	_serviceBrand: undefined;
 
 	/**
 	 * Events for when untitled editors content changes (e.g. any keystroke).
@@ -55,12 +55,6 @@ export interface IUntitledEditorService {
 	 * Returns if an untitled resource with the given URI exists.
 	 */
 	exists(resource: URI): boolean;
-
-	// {{SQL CARBON EDIT}}
-	/**
-	 * Returns all untitled editor inputs.
-	 */
-	getAll(resources?: URI[]): UntitledEditorInput[];
 
 	/**
 	 * Returns dirty untitled editors as resource URIs.
@@ -118,7 +112,7 @@ export interface IUntitledEditorService {
 
 export class UntitledEditorService extends Disposable implements IUntitledEditorService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	private mapResourceToInput = new ResourceMap<UntitledEditorInput>();
 	private mapResourceToAssociatedFilePath = new ResourceMap<boolean>();
@@ -147,8 +141,7 @@ export class UntitledEditorService extends Disposable implements IUntitledEditor
 		return this.mapResourceToInput.get(resource);
 	}
 
-	// {{SQL CARBON EDIT}}
-	public getAll(resources?: URI[]): UntitledEditorInput[] {
+	protected getAll(resources?: URI[]): UntitledEditorInput[] {
 		if (resources) {
 			return arrays.coalesce(resources.map(r => this.get(r)));
 		}
