@@ -33,7 +33,7 @@ export class FileNode {
 	/**
 	* Parent node
 	*/
-	public parent: FileNode;
+	public parent?: FileNode;
 
 	/**
 	* Children nodes
@@ -55,7 +55,7 @@ export class FileNode {
 	*/
 	public hasChildren: boolean;
 
-	constructor(id: string, name: string, fullPath: string, isFile: boolean, isExpanded: boolean, ownerUri: string, parent: FileNode) {
+	constructor(id: string, name: string, fullPath: string, isFile: boolean, isExpanded: boolean, ownerUri: string, parent?: FileNode) {
 		if (id) {
 			this.id = id;
 		} else {

@@ -110,7 +110,7 @@ export interface IConnectionManagementService {
 
 	onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 
-	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo);
+	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 

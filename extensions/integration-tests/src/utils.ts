@@ -9,12 +9,15 @@ import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { TestServerProfile } from './testConfig';
 
+// default server connection timeout
+export const DefaultConnectTimeoutInMs: number = 10000;
+
 /**
  * @param server test connection profile
  * @param timeout optional timeout parameter
  * Returns connection id for a new connection
  */
-export async function connectToServer(server: TestServerProfile, timeout: number = 10000): Promise<string> {
+export async function connectToServer(server: TestServerProfile, timeout: number = DefaultConnectTimeoutInMs): Promise<string> {
 	let connectionProfile: azdata.IConnectionProfile = {
 		serverName: server.serverName,
 		databaseName: server.database,
