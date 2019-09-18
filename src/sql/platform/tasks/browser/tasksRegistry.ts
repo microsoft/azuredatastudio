@@ -81,7 +81,7 @@ export abstract class Task {
 	constructor(private opts: ITaskOptions) {
 		this.id = opts.id;
 		this.title = opts.title;
-		if (opts.iconPath.dark) {
+		if (opts.iconPath) {
 			this.iconPath = {
 				dark: URI.parse(opts.iconPath.dark),
 				light: opts.iconPath.light ? URI.parse(opts.iconPath.light) : undefined,
