@@ -18,7 +18,6 @@ import './mainThreadCodeInsets';
 import './mainThreadClipboard';
 import './mainThreadCommands';
 import './mainThreadConfiguration';
-import './mainThreadUserData';
 import './mainThreadConsole';
 // import './mainThreadDebugService'; {{SQL CARBON EDIT}} @anthonydresser comment out debug service
 import './mainThreadDecorations';

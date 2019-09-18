@@ -50,6 +50,7 @@ import 'vs/workbench/services/backup/node/backupFileService';
 import 'vs/workbench/services/credentials/node/credentialsService';
 import 'vs/workbench/services/url/electron-browser/urlService';
 import 'vs/workbench/services/workspace/electron-browser/workspacesService';
+import 'vs/workbench/services/userDataSync/electron-browser/userDataSyncService';
 import 'vs/workbench/services/host/electron-browser/desktopHostService';
 
 import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
@@ -252,6 +253,11 @@ import 'vs/workbench/contrib/issue/electron-browser/issue.contribution';
 
 // Tasks
 import 'vs/workbench/contrib/tasks/electron-browser/taskService';
+
+// User Data Sync
+import 'vs/workbench/contrib/userDataSync/electron-browser/userDataSync.contribution';
+
+//#endregion
 
 // {{SQL CARBON EDIT}}
 // SQL
