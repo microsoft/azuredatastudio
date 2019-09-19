@@ -6,9 +6,9 @@
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { assign } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
-import { IWindowsService, OpenContext, INativeOpenDialogOptions, IEnterWorkspaceResult, IMessageBoxResult, IOpenSettings, IURIToOpen } from 'vs/platform/windows/common/windows';
+import { IWindowsService, OpenContext, IEnterWorkspaceResult, IOpenSettings, IURIToOpen } from 'vs/platform/windows/common/windows';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
-import { crashReporter, app, Menu } from 'electron';
+import { crashReporter, app, Menu, MessageBoxReturnValue, SaveDialogReturnValue, OpenDialogReturnValue, CrashReporterStartOptions, BrowserWindow, MessageBoxOptions, SaveDialogOptions, OpenDialogOptions } from 'electron';
 import { Event } from 'vs/base/common/event';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { IWindowsMainService, ISharedProcess, ICodeWindow } from 'vs/platform/windows/electron-main/windows';
@@ -29,13 +29,13 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 
 	private _activeWindowId: number | undefined;
 
-	readonly onWindowOpen: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-created', (_, w: Electron.BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
-	readonly onWindowBlur: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-blur', (_, w: Electron.BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
-	readonly onWindowMaximize: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-maximize', (_, w: Electron.BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
-	readonly onWindowUnmaximize: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-unmaximize', (_, w: Electron.BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
+	readonly onWindowOpen: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-created', (_, w: BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
+	readonly onWindowBlur: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-blur', (_, w: BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
+	readonly onWindowMaximize: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-maximize', (_, w: BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
+	readonly onWindowUnmaximize: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-unmaximize', (_, w: BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id));
 	readonly onWindowFocus: Event<number> = Event.any(
 		Event.map(Event.filter(Event.map(this.windowsMainService.onWindowsCountChanged, () => this.windowsMainService.getLastActiveWindow()), w => !!w), w => w!.id),
-		Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-focus', (_, w: Electron.BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id))
+		Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-focus', (_, w: BrowserWindow) => w.id), id => !!this.windowsMainService.getWindowById(id))
 	);
 
 	readonly onRecentlyOpenedChange: Event<void> = this.historyMainService.onRecentlyOpenedChange;
@@ -57,43 +57,19 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 			(id => this._activeWindowId = id, null, this.disposables);
 	}
 
-	async pickFileFolderAndOpen(options: INativeOpenDialogOptions): Promise<void> {
-		this.logService.trace('windowsService#pickFileFolderAndOpen');
-
-		this.windowsMainService.pickFileFolderAndOpen(options);
-	}
-
-	async pickFileAndOpen(options: INativeOpenDialogOptions): Promise<void> {
-		this.logService.trace('windowsService#pickFileAndOpen');
-
-		this.windowsMainService.pickFileAndOpen(options);
-	}
-
-	async pickFolderAndOpen(options: INativeOpenDialogOptions): Promise<void> {
-		this.logService.trace('windowsService#pickFolderAndOpen');
-
-		this.windowsMainService.pickFolderAndOpen(options);
-	}
-
-	async pickWorkspaceAndOpen(options: INativeOpenDialogOptions): Promise<void> {
-		this.logService.trace('windowsService#pickWorkspaceAndOpen');
-
-		this.windowsMainService.pickWorkspaceAndOpen(options);
-	}
-
-	async showMessageBox(windowId: number, options: Electron.MessageBoxOptions): Promise<IMessageBoxResult> {
+	async showMessageBox(windowId: number, options: MessageBoxOptions): Promise<MessageBoxReturnValue> {
 		this.logService.trace('windowsService#showMessageBox', windowId);
 
 		return this.withWindow(windowId, codeWindow => this.windowsMainService.showMessageBox(options, codeWindow), () => this.windowsMainService.showMessageBox(options))!;
 	}
 
-	async showSaveDialog(windowId: number, options: Electron.SaveDialogOptions): Promise<string> {
+	async showSaveDialog(windowId: number, options: SaveDialogOptions): Promise<SaveDialogReturnValue> {
 		this.logService.trace('windowsService#showSaveDialog', windowId);
 
 		return this.withWindow(windowId, codeWindow => this.windowsMainService.showSaveDialog(options, codeWindow), () => this.windowsMainService.showSaveDialog(options))!;
 	}
 
-	async showOpenDialog(windowId: number, options: Electron.OpenDialogOptions): Promise<string[]> {
+	async showOpenDialog(windowId: number, options: OpenDialogOptions): Promise<OpenDialogReturnValue> {
 		this.logService.trace('windowsService#showOpenDialog', windowId);
 
 		return this.withWindow(windowId, codeWindow => this.windowsMainService.showOpenDialog(options, codeWindow), () => this.windowsMainService.showOpenDialog(options))!;
@@ -318,7 +294,7 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 		return this.windowsMainService.openExternal(url);
 	}
 
-	async startCrashReporter(config: Electron.CrashReporterStartOptions): Promise<void> {
+	async startCrashReporter(config: CrashReporterStartOptions): Promise<void> {
 		this.logService.trace('windowsService#startCrashReporter');
 
 		crashReporter.start(config);

@@ -2813,7 +2813,6 @@ export class InstallVSIXAction extends Action {
 		@IWindowService private readonly windowService: IWindowService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		// {{SQL CARBON EDIT}}
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IStorageService private storageService: IStorageService
@@ -2825,17 +2824,17 @@ export class InstallVSIXAction extends Action {
 		// {{SQL CARBON EDIT}} - Replace run body
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (extensionPolicy === ExtensionsPolicy.allowAll) {
-			return Promise.resolve(this.windowService.showOpenDialog({
+			return Promise.resolve(this.fileDialogService.showOpenDialog({
 				title: localize('installFromVSIX', "Install from VSIX"),
 				filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
-				properties: ['openFile'],
-				buttonLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
+				canSelectFiles: true,
+				openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 			}).then(result => {
 				if (!result) {
 					return Promise.resolve();
 				}
 				return Promise.all(result.map(vsix => {
-					if (!this.storageService.getBoolean(vsix, StorageScope.GLOBAL)) {
+					if (!this.storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
 						this.notificationService.prompt(
 							Severity.Warning,
 							localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
@@ -2843,7 +2842,7 @@ export class InstallVSIXAction extends Action {
 								{
 									label: localize('thirdPartExt.yes', 'Yes'),
 									run: () => {
-										this.extensionsWorkbenchService.install(URI.file(vsix)).then(extension => {
+										this.extensionsWorkbenchService.install(vsix).then(extension => {
 											const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
 											const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
 												: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
@@ -2868,7 +2867,7 @@ export class InstallVSIXAction extends Action {
 									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
 									isSecondary: true,
 									run: () => {
-										this.storageService.store(vsix, true, StorageScope.GLOBAL);
+										this.storageService.store(vsix.fsPath, true, StorageScope.GLOBAL);
 										return Promise.resolve();
 									}
 								}
@@ -2876,7 +2875,7 @@ export class InstallVSIXAction extends Action {
 							{ sticky: true }
 						);
 					} else {
-						this.extensionsWorkbenchService.install(URI.file(vsix)).then(extension => {
+						this.extensionsWorkbenchService.install(vsix).then(extension => {
 							const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
 							const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
 								: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
