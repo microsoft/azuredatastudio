@@ -198,6 +198,8 @@ function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStat
 	const metricsAndLogsRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
 	const nameCell = modelBuilder.text().withProperties({ value: instanceStatus.instanceName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
 	metricsAndLogsRow.addItem(nameCell, { CSSStyles: { 'width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'min-width': `${metricsAndLogsInstanceNameColumnWidth}px`, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
+
+	// Not all instances have all logs available - in that case just display N/A instead of a link
 	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
 		const metricsCell = modelBuilder.text().withProperties({ value: localize('bdc.dashboard.notAvailable', "N/A"), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
 		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px`, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
