@@ -2613,6 +2613,62 @@
 					],
 					"statistics": [],
 					"flags": "preview"
+				},
+				{
+					"extensionId": "55",
+					"extensionName": "simple-data-scripter",
+					"displayName": "Simple Data Scripter",
+					"shortDescription": "Adds ability to script data for a table",
+					"publisher": {
+						"displayName": "Sean Price",
+						"publisherId": "ecirpnaes",
+						"publisherName": "ecirpnaes"
+					},
+					"versions": [
+						{
+							"version": "0.1.0",
+							"lastUpdated": "09/19/2019",
+							"assetUri": "",
+							"fallbackAssetUri": "fallbackAssetUri",
+							"files": [
+								{
+									"assetType": "Microsoft.SQLOps.DownloadPage",
+									"source": "https://github.com/ecirpnaes/SimpleDataScripter/releases/tag/0.1.0"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/SimpleDataScripter/master/images/logo.png"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.Details",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/SimpleDataScripter/master/README.md"														},
+								{
+									"assetType": "Microsoft.VisualStudio.Code.Manifest",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/SimpleDataScripter/master/package.json"
+								},
+								{
+									"assetType": "Microsoft.VisualStudio.Services.Content.License",
+									"source": "https://raw.githubusercontent.com/ecirpnaes/SimpleDataScripter/master/LICENSE"
+								}
+							],
+							"properties": [
+								{
+									"key": "Microsoft.VisualStudio.Code.ExtensionDependencies",
+									"value": ""
+								},
+								{
+									"key": "Microsoft.VisualStudio.Services.Links.Source",
+									"value": "https://github.com/ecirpnaes/simpledatascripter"
+								},
+								{
+									"key": "Microsoft.VisualStudio.Code.Engine",
+									"value": "*"
+								}
+							]
+						}
+					],
+					"statistics": [],
+					"flags": "preview"
 				}
 			],
 			"resultMetadata": [
