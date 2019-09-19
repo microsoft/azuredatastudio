@@ -119,6 +119,6 @@ gulp.task('test', (done) => {
 });
 
 gulp.task('copytypings', function() {
-	return gulp.src(path.join(config.paths.project.root, '..','..', 'src', 'sql', 'azdata.d.ts'))
+	return gulp.src(config.paths.project.root + '/../../src/sql/azdata.d.ts')
 	.pipe(gulp.dest('typings/'));
 });
