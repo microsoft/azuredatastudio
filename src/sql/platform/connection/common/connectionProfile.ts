@@ -215,14 +215,11 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	}
 
 	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile) {
-		if (profile) {
-			if (profile instanceof ConnectionProfile) {
-				return profile;
-			} else {
-				return new ConnectionProfile(capabilitiesService, profile);
-			}
+		if (profile instanceof ConnectionProfile) {
+			return profile;
+		} else {
+			return new ConnectionProfile(capabilitiesService, profile);
 		}
-		return undefined;
 	}
 
 	public static createFromStoredProfile(profile: interfaces.IConnectionProfileStore, capabilitiesService: ICapabilitiesService): ConnectionProfile {
@@ -244,24 +241,18 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public static convertToProfileStore(
 		capabilitiesService: ICapabilitiesService,
-		connectionProfile: interfaces.IConnectionProfile): interfaces.IConnectionProfileStore | undefined {
-		if (connectionProfile) {
-			let connectionInfo = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-			if (connectionInfo) {
-				let profile: interfaces.IConnectionProfileStore = {
-					options: {},
-					groupId: connectionProfile.groupId,
-					providerName: connectionInfo.providerName,
-					savePassword: connectionInfo.savePassword,
-					id: connectionInfo.id
-				};
+		connectionProfile: interfaces.IConnectionProfile): interfaces.IConnectionProfileStore {
+		let connectionInfo = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
+		let profile: interfaces.IConnectionProfileStore = {
+			options: {},
+			groupId: connectionProfile.groupId,
+			providerName: connectionInfo.providerName,
+			savePassword: connectionInfo.savePassword,
+			id: connectionInfo.id
+		};
 
-				profile.options = connectionInfo.options;
+		profile.options = connectionInfo.options;
 
-				return profile;
-			}
-		}
-
-		return undefined;
+		return profile;
 	}
 }

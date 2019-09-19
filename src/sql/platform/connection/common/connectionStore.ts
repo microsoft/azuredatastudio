@@ -73,12 +73,8 @@ export class ConnectionStore {
 	 * @param connection profile
 	 */
 	public isPasswordRequired(connection: IConnectionProfile): boolean {
-		if (connection) {
-			const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection)!;
-			return connectionProfile.isPasswordRequired();
-		} else {
-			return false;
-		}
+		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection)!;
+		return connectionProfile.isPasswordRequired();
 	}
 
 	public addSavedPassword(credentialsItem: IConnectionProfile): Promise<{ profile: IConnectionProfile, savedCred: boolean }> {
@@ -161,34 +157,26 @@ export class ConnectionStore {
 
 	private convertConfigValuesToConnectionProfiles(configValues: IConnectionProfile[]): ConnectionProfile[] {
 		return configValues.map(c => {
-			if (c) {
-				const connectionProfile = new ConnectionProfile(this.capabilitiesService, c);
-				if (connectionProfile.saveProfile) {
-					if (!connectionProfile.groupFullName && connectionProfile.groupId) {
-						connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);
-					}
-					if (!connectionProfile.groupId && connectionProfile.groupFullName) {
-						connectionProfile.groupId = this.getGroupId(connectionProfile.groupFullName);
-					} else if (!connectionProfile.groupId && !connectionProfile.groupFullName) {
-						connectionProfile.groupId = this.getGroupId('');
-					}
+			const connectionProfile = new ConnectionProfile(this.capabilitiesService, c);
+			if (connectionProfile.saveProfile) {
+				if (!connectionProfile.groupFullName && connectionProfile.groupId) {
+					connectionProfile.groupFullName = this.getGroupFullName(connectionProfile.groupId);
 				}
-				return connectionProfile;
-			} else {
-				return undefined!; // non-ideal solution
+				if (!connectionProfile.groupId && connectionProfile.groupFullName) {
+					connectionProfile.groupId = this.getGroupId(connectionProfile.groupFullName);
+				} else if (!connectionProfile.groupId && !connectionProfile.groupFullName) {
+					connectionProfile.groupId = this.getGroupId('');
+				}
 			}
+			return connectionProfile;
 		});
 	}
 
-	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile | undefined {
-		if (conn) {
-			let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn)!; // we know that if we pass a connection we will get a value back
-			savedConn = savedConn.withoutPassword();
+	public getProfileWithoutPassword(conn: IConnectionProfile): ConnectionProfile {
+		let savedConn = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, conn);
+		savedConn = savedConn.withoutPassword();
 
-			return savedConn;
-		} else {
-			return undefined;
-		}
+		return savedConn;
 	}
 
 	/**

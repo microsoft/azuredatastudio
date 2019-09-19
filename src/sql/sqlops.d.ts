@@ -215,7 +215,7 @@ declare module 'sqlops' {
 		password: string;
 		authenticationType: string;
 		savePassword: boolean;
-		groupFullName: string;
+		groupFullName?: string;
 		groupId: string;
 		providerName: string;
 		saveProfile: boolean;

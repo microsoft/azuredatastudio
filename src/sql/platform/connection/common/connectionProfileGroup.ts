@@ -10,8 +10,8 @@ export interface IConnectionProfileGroup {
 	id: string;
 	parentId?: string;
 	name: string;
-	color: string;
-	description: string;
+	color?: string;
+	description?: string;
 }
 
 export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
@@ -24,8 +24,8 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		public name: string,
 		public parent: ConnectionProfileGroup | undefined,
 		public id: string,
-		public color: string,
-		public description: string
+		public color?: string,
+		public description?: string
 	) {
 		super();
 		this.parentId = parent ? parent.id : undefined;
@@ -167,7 +167,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		return isAncestor;
 	}
 
-	public static getGroupFullNameParts(groupFullName: string): string[] {
+	public static getGroupFullNameParts(groupFullName?: string): string[] {
 		groupFullName = groupFullName ? groupFullName : '';
 		let groupNames: string[] = groupFullName.split(ConnectionProfileGroup.GroupNameSeparator);
 		groupNames = groupNames.filter(g => !!g);
