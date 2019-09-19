@@ -124,8 +124,8 @@ export class BdcServiceStatusPage {
 function createResourceHeaderTab(modelBuilder: azdata.ModelBuilder, resourceStatus: ResourceStatusModel): { div: azdata.DivContainer, text: azdata.TextComponent } {
 	const resourceHeaderTab = modelBuilder.divContainer().withLayout({ width: '100px', height: '25px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: '100px', height: '25px', flexFlow: 'row' }).component();
-	innerContainer.addItem(modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right' } }).component(), { flex: '0 0 auto' });
-	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'text-align': 'left' } }).component();
+	innerContainer.addItem(modelBuilder.text().withProperties({ value: getHealthStatusDot(resourceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', 'text-align': 'right', ...cssStyles.nonSelectableText } }).component(), { flex: '0 0 auto' });
+	const resourceHeaderLabel = modelBuilder.text().withProperties({ value: resourceStatus.resourceName, CSSStyles: { 'text-align': 'left', ...cssStyles.text } }).component();
 	innerContainer.addItem(resourceHeaderLabel);
 	resourceHeaderTab.addItem(innerContainer);
 	return { div: resourceHeaderTab, text: resourceHeaderLabel };
