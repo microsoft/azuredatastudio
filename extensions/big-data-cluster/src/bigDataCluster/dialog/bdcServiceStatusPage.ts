@@ -61,7 +61,9 @@ export class BdcServiceStatusPage {
 		}
 
 		const service = bdcStatus.services.find(s => s.serviceName === this.serviceName);
-		this.createResourceNavTabs(service.resources);
+		if (service && service.resources) {
+			this.createResourceNavTabs(service.resources);
+		}
 	}
 
 	private changeSelectedTabPage(newPage: azdata.FlexContainer): void {
