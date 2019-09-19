@@ -35,6 +35,8 @@ const metricsAndLogsInstanceNameColumnWidth = 125;
 const metricsAndLogsMetricsColumnWidth = 75;
 const metricsAndLogsLogsColumnWidth = 75;
 
+const viewText = localize('bdc.dashboard.viewHyperlink', "View");
+const notAvailableText = localize('bdc.dashboard.notAvailable', "N/A");
 
 export class BdcDashboardResourceStatusPage {
 
@@ -201,18 +203,18 @@ function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStat
 
 	// Not all instances have all logs available - in that case just display N/A instead of a link
 	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
-		const metricsCell = modelBuilder.text().withProperties({ value: localize('bdc.dashboard.notAvailable', "N/A"), CSSStyles: { ...cssStyles.text } }).component();
+		const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
 		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px`, ...cssStyles.text } });
 	} else {
-		const metricsCell = modelBuilder.hyperlink().withProperties({ label: localize('bdc.dashboard.viewHyperlink', "View"), url: instanceStatus.dashboards.nodeMetricsUrl, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
+		const metricsCell = modelBuilder.hyperlink().withProperties({ label: viewText, url: instanceStatus.dashboards.nodeMetricsUrl, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
 		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px` } });
 	}
 
 	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
-		const logsCell = modelBuilder.text().withProperties({ value: localize('bdc.dashboard.notAvailable', "N/A"), CSSStyles: { ...cssStyles.text } }).component();
+		const logsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { ...cssStyles.text } }).component();
 		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px`, ...cssStyles.text } });
 	} else {
-		const logsCell = modelBuilder.hyperlink().withProperties({ label: localize('bdc.dashboard.viewHyperlink', "View"), url: instanceStatus.dashboards.logsUrl, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
+		const logsCell = modelBuilder.hyperlink().withProperties({ label: viewText, url: instanceStatus.dashboards.logsUrl, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
 		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px` } });
 	}
 
