@@ -160,6 +160,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageClassName_VariableName, selectedProfile.defaultLogsStorageClass);
 		this.wizard.model.setPropertyValue(VariableNames.ReadableSecondaryPort_VariableName, selectedProfile.readableSecondaryPort);
 		this.wizard.model.adAuthSupported = selectedProfile.activeDirectory;
+		this.wizard.model.selectedProfile = selectedProfile;
 	}
 
 	private loadCards(): Thenable<void> {

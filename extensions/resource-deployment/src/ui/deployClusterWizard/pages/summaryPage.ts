@@ -4,11 +4,16 @@
  *--------------------------------------------------------------------------------------------*/
 import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard, AuthenticationMode } from '../deployClusterWizard';
-import { SectionInfo, FieldType, LabelPosition, FontStyle } from '../../../interfaces';
+import * as vscode from 'vscode';
+import { DeployClusterWizard } from '../deployClusterWizard';
+import { SectionInfo, FieldType, LabelPosition, FontStyle, BdcDeploymentType } from '../../../interfaces';
 import { createSection, createGroupContainer, createFlexContainer, createLabel } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
+import * as os from 'os';
+import { join } from 'path';
+import * as fs from 'fs';
+import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
@@ -22,7 +27,28 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	public initialize(): void {
 		this.pageObject.registerContent((view: azdata.ModelView) => {
 			this.view = view;
-			this.form = view.modelBuilder.formContainer().withFormItems([]);
+			const deploymentJsonSection = createGroupContainer(view, [
+				view.modelBuilder.flexContainer().withItems([
+					this.createSaveJsonButton(localize('deployCluster.SaveBdcJson', "Save bdc.json"), 'bdc.json', () => { return this.wizard.model.getBdcJson(); }),
+					this.createSaveJsonButton(localize('deployCluster.SaveControlJson', "Save control.json"), 'control.json', () => { return this.wizard.model.getControlJson(); })
+				], {
+					CSSStyles: {
+						'margin-right': '10px',
+						'background': 'transparent',
+						'text-decoration': 'underline'
+					}
+				}).withLayout({ flexFlow: 'row', alignItems: 'center' }).component()
+			], {
+				header: localize('deployCluster.DeploymentJSON', "Deployment JSON files"),
+				collapsible: true
+			});
+
+			this.form = view.modelBuilder.formContainer().withFormItems([
+				{
+					title: '',
+					component: deploymentJsonSection
+				}
+			]);
 			return view.initializeModel(this.form!.withLayout({ width: '100%' }).component());
 		});
 	}
@@ -32,6 +58,31 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.form!.removeFormItem(item);
 		});
 		this.formItems = [];
+
+		const deploymentTargetSectionInfo: SectionInfo = {
+			labelPosition: LabelPosition.Left,
+			labelWidth: '150px',
+			inputWidth: '200px',
+			title: localize('deployCluster.DeploymentTarget', "Deployment target"),
+			rows: [
+				{
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.Kubeconfig', "Kube config"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.KubeConfigPath_VariableName),
+							fontStyle: FontStyle.Italic
+						},
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.ClusterContext', "Cluster context"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterContext_VariableName),
+							fontStyle: FontStyle.Italic
+						}]
+				}
+			]
+		};
+
 		const clusterSectionInfo: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
@@ -189,6 +240,12 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				})
 			};
 		};
+
+		if (this.wizard.deploymentType === BdcDeploymentType.ExistingAKS || this.wizard.deploymentType === BdcDeploymentType.ExistingKubeAdm) {
+			const deploymentTargetSection = createSectionFunc(deploymentTargetSectionInfo);
+			this.formItems.push(deploymentTargetSection);
+		}
+
 		const clusterSection = createSectionFunc(clusterSectionInfo);
 		const scaleSection = createSectionFunc(scaleSectionInfo);
 		const endpointSection = {
@@ -202,13 +259,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		if (this.wizard.model.getStringValue(VariableNames.AksName_VariableName)) {
 			const azureSection = createSectionFunc(azureSectionInfo);
 			this.formItems.push(azureSection);
-			this.form.addFormItem(azureSection);
 		}
-		this.formItems.push(clusterSection, scaleSection, endpointSection);
-		this.form.addFormItems([clusterSection, scaleSection, endpointSection]);
 
-		this.formItems.push(storageSection);
-		this.form.addFormItem(storageSection);
+		this.formItems.push(clusterSection, scaleSection, endpointSection, storageSection);
+		this.form.addFormItems(this.formItems);
 	}
 
 	private getStorageSettingValue(propertyName: string, defaultValuePropertyName: string): string | undefined {
@@ -287,7 +341,6 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				this.createEndpointRow(localize('deployCluster.ReadableSecondaryText', "Readable secondary"), VariableNames.ReadableSecondaryDNSName_VariableName, VariableNames.ReadableSecondaryPort_VariableName)
 			);
 		}
-
 		return createGroupContainer(this.view, endpointRows, {
 			header: localize('deployCluster.EndpointSettings', "Endpoint settings"),
 			collapsible: true
@@ -298,10 +351,50 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		const items = [];
 		items.push(createLabel(this.view, { text: name, width: '150px' }));
 		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
-			items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px' }));
+			items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(dnsVariableName)!, width: '200px', fontStyle: FontStyle.Italic }));
 		}
-		items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(portVariableName)! }));
-
+		items.push(createLabel(this.view, { text: this.wizard.model.getStringValue(portVariableName)!, width: '100px', fontStyle: FontStyle.Italic }));
 		return createFlexContainer(this.view, items);
+	}
+
+	private createSaveJsonButton(label: string, fileName: string, getContent: () => string): azdata.ButtonComponent {
+		const button = this.view.modelBuilder.button().withProperties<azdata.ButtonProperties>({
+			title: label,
+			label: fileName,
+			ariaLabel: label,
+			width: '150px'
+		}).component();
+		this.wizard.registerDisposable(button.onDidClick(() => {
+			vscode.window.showSaveDialog({
+				defaultUri: vscode.Uri.file(join(os.homedir(), fileName)),
+				filters: {
+					'JSON': ['json']
+				}
+			}).then((path) => {
+				if (path) {
+					try {
+						fs.writeFile(path.fsPath, getContent(), (error) => {
+							if (error) {
+								this.wizard.wizardObject.message = {
+									text: error.message,
+									level: azdata.window.MessageLevel.Error
+								};
+							} else {
+								this.wizard.wizardObject.message = {
+									text: localize('deployCluster.SaveJsonFileMessage', "File saved: {0}", path.fsPath),
+									level: azdata.window.MessageLevel.Information
+								};
+							}
+						});
+					} catch (error) {
+						this.wizard.wizardObject.message = {
+							text: error.message,
+							level: azdata.window.MessageLevel.Error
+						};
+					}
+				}
+			});
+		}));
+		return button;
 	}
 }

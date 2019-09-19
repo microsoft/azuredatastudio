@@ -6,12 +6,13 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DeployClusterWizard, AuthenticationMode } from '../deployClusterWizard';
+import { DeployClusterWizard } from '../deployClusterWizard';
 import { SectionInfo, FieldType, LabelPosition } from '../../../interfaces';
 import { createSection, InputComponents, setModelValues, Validator, isInputBoxEmpty, getInputBoxComponent, isValidSQLPassword, getInvalidSQLPasswordMessage, getPasswordMismatchMessage, MissingRequiredInformationErrorMessage } from '../../modelViewUtils';
 import { WizardPageBase } from '../../wizardPageBase';
 import * as VariableNames from '../constants';
 import { EOL } from 'os';
+import { AuthenticationMode } from '../deployClusterWizardModel';
 const localize = nls.loadMessageBundle();
 
 const ConfirmPasswordName = 'ConfirmPassword';

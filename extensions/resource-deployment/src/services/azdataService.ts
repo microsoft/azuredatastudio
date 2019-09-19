@@ -28,6 +28,8 @@ export interface DeploymentProfile {
 	controllerPort: string;
 	defaultDataStorageClass: string;
 	defaultLogsStorageClass: string;
+	bdcJson: any;
+	controlJson: any;
 }
 
 interface BdcConfigListOutput {
@@ -38,6 +40,12 @@ export interface IAzdataService {
 	getDeploymentProfiles(): Thenable<DeploymentProfile[]>;
 }
 
+const SqlServerMasterResourceName = 'master';
+const DataResourceName = 'data-0';
+const HdfsResourceName = 'storage-0';
+const ComputeResourceName = 'compute-0';
+const NameNodeResourceName = 'nmnode-0';
+const HadrEnabledSettingName = 'hadr.enabled';
 export class AzdataService implements IAzdataService {
 	constructor(private platformService: IPlatformService) {
 	}
@@ -94,21 +102,25 @@ export class AzdataService implements IAzdataService {
 							defaultLogSize: (<string>controlJson.spec.storage.logs.size).replace('Gi', ''),
 							defaultDataStorageClass: (<string>controlJson.spec.storage.data.className),
 							defaultLogsStorageClass: (<string>controlJson.spec.storage.logs.className),
-							master: <string>bdcJson.spec.resources['master'].spec.replicas,
-							data: <string>bdcJson.spec.resources['data-0'].spec.replicas,
-							compute: <string>bdcJson.spec.resources['compute-0'].spec.replicas,
-							hdfs: <string>bdcJson.spec.resources['storage-0'].spec.replicas,
-							nameNode: <string>bdcJson.spec.resources['nmnode-0'].spec.replicas,
+							master: <string>bdcJson.spec.resources[SqlServerMasterResourceName].spec.replicas,
+							data: <string>bdcJson.spec.resources[DataResourceName].spec.replicas,
+							compute: <string>bdcJson.spec.resources[ComputeResourceName].spec.replicas,
+							hdfs: <string>bdcJson.spec.resources[HdfsResourceName].spec.replicas,
+							nameNode: <string>bdcJson.spec.resources[NameNodeResourceName].spec.replicas,
 							spark: '0',
 							activeDirectory: false, // TODO: implement AD check
-							hadr: <string>bdcJson.spec.resources.master.spec.settings.sql['hadr.enabled'],
-							includeSpark: <string>bdcJson.spec.resources['storage-0'].spec.settings.spark.includeSpark,
+							hadr: <string>bdcJson.spec.resources.master.spec.settings.sql[HadrEnabledSettingName],
+							includeSpark: <string>bdcJson.spec.resources[HdfsResourceName].spec.settings.spark.includeSpark,
 							gatewayPort: this.getEndpointPort(bdcJson.spec.resources.gateway.spec.endpoints, 'Knox'),
 							appProxyPort: this.getEndpointPort(bdcJson.spec.resources.appproxy.spec.endpoints, 'AppServiceProxy'),
 							sqlServerPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'Master'),
 							readableSecondaryPort: this.getEndpointPort(bdcJson.spec.resources.master.spec.endpoints, 'MasterSecondary', '31436'),
-							controllerPort: this.getEndpointPort(controlJson.spec.endpoints, 'Controller')
+							controllerPort: this.getEndpointPort(controlJson.spec.endpoints, 'Controller'),
+							bdcJson: bdcJson,
+							controlJson: controlJson
 						});
+					}).catch((error: Error) => {
+						reject(error.message);
 					});
 				}
 			});
@@ -137,7 +149,7 @@ export class AzdataService implements IAzdataService {
 		return new Promise<any>((resolve, reject) => {
 			fs.readFile(path, 'utf8', (err, data) => {
 				if (err) {
-					reject(err);
+					reject(err.message);
 				} else {
 					try {
 						resolve(JSON.parse(data));
