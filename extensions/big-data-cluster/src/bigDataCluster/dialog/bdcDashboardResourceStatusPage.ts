@@ -214,7 +214,6 @@ function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStat
 		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px` } });
 	}
 
-
 	return metricsAndLogsRow;
 }
 
