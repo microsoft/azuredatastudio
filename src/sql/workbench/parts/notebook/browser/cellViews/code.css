@@ -58,7 +58,7 @@ code-component .toolbarIconStop {
 }
 
 code-component .editor {
-	padding: 5px 0px 5px 0px
+	padding: 5px 0px 0px 0px
 }
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
