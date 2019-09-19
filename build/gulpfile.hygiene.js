@@ -65,6 +65,7 @@ const indentationFilter = [
 
 	// except multiple specific files
 	'!**/package.json',
+	'!**/package-lock.json', // {{SQL CARBON EDIT}}
 	'!**/yarn.lock',
 	'!**/yarn-error.log',
 
