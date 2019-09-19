@@ -35,6 +35,8 @@ const metricsAndLogsInstanceNameColumnWidth = 125;
 const metricsAndLogsMetricsColumnWidth = 75;
 const metricsAndLogsLogsColumnWidth = 75;
 
+const viewText = localize('bdc.dashboard.viewHyperlink', "View");
+const notAvailableText = localize('bdc.dashboard.notAvailable', "N/A");
 
 export class BdcDashboardResourceStatusPage {
 
@@ -201,18 +203,18 @@ function createMetricsAndLogsRow(modelBuilder: azdata.ModelBuilder, instanceStat
 
 	// Not all instances have all logs available - in that case just display N/A instead of a link
 	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.nodeMetricsUrl)) {
-		const metricsCell = modelBuilder.text().withProperties({ value: localize('bdc.dashboard.notAvailable', "N/A"), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
+		const metricsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
 		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px`, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
 	} else {
-		const metricsCell = modelBuilder.hyperlink().withProperties({ label: localize('bdc.dashboard.viewHyperlink', "View"), url: instanceStatus.dashboards.nodeMetricsUrl, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', ...cssStyles.hyperlink } }).component();
+		const metricsCell = modelBuilder.hyperlink().withProperties({ label: viewText, url: instanceStatus.dashboards.nodeMetricsUrl, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', ...cssStyles.hyperlink } }).component();
 		metricsAndLogsRow.addItem(metricsCell, { CSSStyles: { 'width': `${metricsAndLogsMetricsColumnWidth}px`, 'min-width': `${metricsAndLogsMetricsColumnWidth}px` } });
 	}
 
 	if (isNullOrUndefined(instanceStatus.dashboards) || isNullOrUndefined(instanceStatus.dashboards.logsUrl)) {
-		const logsCell = modelBuilder.text().withProperties({ value: localize('bdc.dashboard.notAvailable', "N/A"), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
+		const logsCell = modelBuilder.text().withProperties({ value: notAvailableText, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
 		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px`, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
 	} else {
-		const logsCell = modelBuilder.hyperlink().withProperties({ label: localize('bdc.dashboard.viewHyperlink', "View"), url: instanceStatus.dashboards.logsUrl, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', ...cssStyles.hyperlink } }).component();
+		const logsCell = modelBuilder.hyperlink().withProperties({ label: viewText, url: instanceStatus.dashboards.logsUrl, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', ...cssStyles.hyperlink } }).component();
 		metricsAndLogsRow.addItem(logsCell, { CSSStyles: { 'width': `${metricsAndLogsLogsColumnWidth}px`, 'min-width': `${metricsAndLogsLogsColumnWidth}px` } });
 	}
 
