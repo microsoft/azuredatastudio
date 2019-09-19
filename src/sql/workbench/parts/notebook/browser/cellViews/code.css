@@ -90,7 +90,7 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 	padding-left: 10px
 }
 
-hide-component-button {
+.hide-component-button {
 	height: 18px;
 	width: 100%;
 	align-items: center;
@@ -99,28 +99,25 @@ hide-component-button {
 	padding: 3px;
 	border-width: 0px;
 	text-align: center;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
 }
 
-hidden-component .icon-hide-cell {
+.hide-component-button.icon-hide-cell {
 	background-image: url("./media/light/minus.svg");
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
 }
 
-hidden-component .icon-show-cell {
+.hide-component-button.icon-show-cell {
 	background-image: url("./media/light/plus.svg");
-	background-repeat: no-repeat;
-	background-position: center;
-	background-size: contain;
 }
 
-.vs-dark hidden-component .icon-hide-cell,
-.hc-black hidden-component .icon-hide-cell {
+.vs-dark .hide-component-button.icon-hide-cell,
+.hc-black .hide-component-button.icon-hide-cell {
 	background-image: url("./media/dark/minus_inverse.svg");
 }
 
-.vs-dark hidden-component .icon-show-cell,
-.hc-black hidden-component .icon-show-cell {
+.vs-dark .hide-component-button.icon-show-cell,
+.hc-black .hide-component-button.icon-show-cell {
 	background-image: url("./media/dark/plus_inverse.svg");
 }
