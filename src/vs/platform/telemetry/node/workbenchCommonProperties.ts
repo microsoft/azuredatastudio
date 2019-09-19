@@ -8,7 +8,7 @@ import { resolveCommonProperties } from 'vs/platform/telemetry/node/commonProper
 import { instanceStorageKey, firstSessionDateStorageKey, lastSessionDateStorageKey } from 'vs/platform/telemetry/common/telemetry';
 import { cleanRemoteAuthority } from 'vs/platform/telemetry/common/telemetryUtils';
 
-import product from 'vs/platform/product/node/product'; // {{ SQL CARBON EDIT }}
+import product from 'vs/platform/product/common/product'; // {{ SQL CARBON EDIT }}
 
 export async function resolveWorkbenchCommonProperties(storageService: IStorageService, commit: string | undefined, version: string | undefined, machineId: string, msftInternalDomains: string[] | undefined, installSourcePath: string, remoteAuthority?: string): Promise<{ [name: string]: string | boolean | undefined }> {
 	const result = await resolveCommonProperties(commit, version, machineId, msftInternalDomains, installSourcePath);

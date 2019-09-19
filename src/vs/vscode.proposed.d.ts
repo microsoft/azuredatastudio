@@ -820,12 +820,6 @@ declare module 'vscode' {
 	//#region Tree View
 
 	export interface TreeView<T> {
-
-		/**
-		 * An optional human-readable message that will be rendered in the view.
-		 */
-		message?: string;
-
 		/**
 		 * The name of the tree view. It is set from the extension package.json and can be changed later.
 		 */
@@ -1011,16 +1005,68 @@ declare module 'vscode' {
 
 	//#endregion
 
+	// #region Ben - UIKind
+
+	/**
+	 * Possible kinds of UI that can use extensions.
+	 */
+	export enum UIKind {
+
+		/**
+		 * Extensions are accessed from a desktop application.
+		 */
+		Desktop = 1,
+
+		/**
+		 * Extensions are accessed from a web browser.
+		 */
+		Web = 2
+	}
+
+	export namespace env {
+
+		/**
+		 * The UI kind property indicates from which UI extensions
+		 * are accessed from. For example, extensions could be accessed
+		 * from a desktop application or a web browser.
+		 */
+		export const uiKind: UIKind;
+	}
+
+	//#endregion
+
 	//#region Custom editors, mjbvz
 
 	export enum WebviewEditorState {
+		/**
+		 * The webview editor's content cannot be modified.
+		 *
+		 * This disables save
+		 */
 		Readonly = 1,
+
+		/**
+		 * The webview editor's content has not been changed but they can be modified and saved.
+		 */
 		Unchanged = 2,
+
+		/**
+		 * The webview editor's content has been changed and can be saved.
+		 */
 		Dirty = 3,
 	}
 
 	export interface WebviewEditor extends WebviewPanel {
 		state: WebviewEditorState;
+
+		/**
+		 * Fired when the webview editor is saved.
+		 *
+		 * Both `Unchanged` and `Dirty` editors can be saved.
+		 *
+		 * Extensions should call `waitUntil` to signal when the save operation complete
+		 */
+		readonly onWillSave: Event<{ waitUntil: (thenable: Thenable<boolean>) => void }>;
 	}
 
 	export interface WebviewEditorProvider {
