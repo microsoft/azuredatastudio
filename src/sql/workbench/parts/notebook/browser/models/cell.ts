@@ -597,11 +597,14 @@ export class CellModel implements ICellModel {
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
-		if (this._metadata.tags && this._metadata.tags.includes('hide_input')) {
+
+		this._isHidden = false;
+		if (!this._metadata.tags) {
+			this._metadata.tags = [];
+		} else if (this._metadata.tags.includes('hide_input')) {
 			this._isHidden = true;
-		} else {
-			this._isHidden = false;
 		}
+
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
 		this.setLanguageFromContents(cell);
 		if (cell.outputs) {

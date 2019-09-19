@@ -91,17 +91,15 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 }
 
 .hide-component-button {
-	height: 18px;
+	height: 16px;
 	width: 100%;
 	align-items: center;
 	justify-content: center;
 	box-sizing: border-box;
 	padding: 3px;
 	border-width: 0px;
-	text-align: center;
 	background-repeat: no-repeat;
 	background-position: center;
-	background-size: contain;
 }
 
 .hide-component-button.icon-hide-cell {
