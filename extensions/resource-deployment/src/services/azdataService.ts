@@ -63,7 +63,7 @@ export class AzdataService implements IAzdataService {
 		});
 	}
 
-	private getDeploymentProfileNames(): Thenable<string[]> {
+	private getDeploymentProfileNames(): Promise<string[]> {
 		return new Promise<string[]>((resolve, reject) => {
 			cp.exec('azdata bdc config list -o json', (error, stdout, stderror) => {
 				if (error) {
@@ -85,7 +85,7 @@ export class AzdataService implements IAzdataService {
 		});
 	}
 
-	private getDeploymentProfileInfo(profileName: string): Thenable<DeploymentProfile> {
+	private getDeploymentProfileInfo(profileName: string): Promise<DeploymentProfile> {
 		return new Promise<DeploymentProfile>((resolve, reject) => {
 			cp.exec(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { cwd: this.platformService.storagePath() }, (error, stdout, stderror) => {
 				if (error) {
@@ -127,7 +127,7 @@ export class AzdataService implements IAzdataService {
 		});
 	}
 
-	private ensureWorkingDirectoryExists(): Thenable<void> {
+	private ensureWorkingDirectoryExists(): Promise<void> {
 		return new Promise<void>((resolve, reject) => {
 			fs.access(this.platformService.storagePath(), (error) => {
 				if (error && error.code === 'ENOENT') {
@@ -145,7 +145,7 @@ export class AzdataService implements IAzdataService {
 		});
 	}
 
-	private getJsonObjectFromFile(path: string): Thenable<any> {
+	private getJsonObjectFromFile(path: string): Promise<any> {
 		return new Promise<any>((resolve, reject) => {
 			fs.readFile(path, 'utf8', (err, data) => {
 				if (err) {
