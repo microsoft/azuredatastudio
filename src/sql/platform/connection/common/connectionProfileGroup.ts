@@ -5,6 +5,7 @@
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { isUndefinedOrNull } from 'vs/base/common/types';
 
 export interface IConnectionProfileGroup {
 	id: string;
@@ -186,10 +187,12 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	}
 
 	public static sameGroupName(name1?: string, name2?: string): boolean {
-		if (!name1 && !name2) {
+		const isName1Undefined = isUndefinedOrNull(name1);
+		const isName2Undefined = isUndefinedOrNull(name2);
+		if (isName1Undefined && isName2Undefined) {
 			return true;
 		}
-		if ((name1 && !name2) || !name1 && name2) {
+		if ((isName1Undefined && !isName2Undefined) || !isName1Undefined && isName2Undefined) {
 			return false;
 		}
 		if (name1!.toUpperCase() === name2!.toUpperCase()) {

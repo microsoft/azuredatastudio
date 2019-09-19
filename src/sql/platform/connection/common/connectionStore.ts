@@ -57,7 +57,7 @@ export class ConnectionStore {
 	 * @returns formatted string with server, DB and username
 	 */
 	private formatCredentialId(connectionProfile: IConnectionProfile, itemType?: string): string {
-		const connectionProfileInstance = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connectionProfile)!;
+		const connectionProfileInstance = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connectionProfile);
 		const cred: string[] = [CRED_PREFIX];
 		if (!itemType) {
 			itemType = CRED_PROFILE_USER;
@@ -73,7 +73,7 @@ export class ConnectionStore {
 	 * @param connection profile
 	 */
 	public isPasswordRequired(connection: IConnectionProfile): boolean {
-		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection)!;
+		const connectionProfile = ConnectionProfile.fromIConnectionProfile(this.capabilitiesService, connection);
 		return connectionProfile.isPasswordRequired();
 	}
 
@@ -104,7 +104,7 @@ export class ConnectionStore {
 	 */
 	public saveProfile(profile: IConnectionProfile, forceWritePlaintextPassword?: boolean): Promise<IConnectionProfile> {
 		// Add the profile to the saved list, taking care to clear out the password field if necessary
-		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile)!;
+		const savedProfile = forceWritePlaintextPassword ? profile : this.getProfileWithoutPassword(profile);
 		return this.saveProfileToConfig(savedProfile)
 			.then(savedConnectionProfile => {
 				profile.groupId = savedConnectionProfile.groupId;
@@ -208,7 +208,7 @@ export class ConnectionStore {
 	}
 
 	private addToConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
-		const savedProfile = this.getProfileWithoutPassword(conn)!;
+		const savedProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
@@ -226,7 +226,7 @@ export class ConnectionStore {
 	}
 
 	private removeFromConnectionList(conn: IConnectionProfile, list: ConnectionProfile[]): IConnectionProfile[] {
-		const savedProfile = this.getProfileWithoutPassword(conn)!; // we know its fine since we pass a connection
+		const savedProfile = this.getProfileWithoutPassword(conn);
 
 		// Remove the connection from the list if it already exists
 		list = list.filter(value => {
