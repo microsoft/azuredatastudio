@@ -1385,7 +1385,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	 * Validates `range` is within buffer bounds, but allows it to sit in between surrogate pairs, etc.
 	 * Will try to not allocate if possible.
 	 */
-	private _validateRangeRelaxedNoAllocations(range: IRange): Range {
+	private _validateRangeRelaxedNoAllocations(range: IRange): NotebookRange {
 		const linesCount = this._buffer.getLineCount();
 
 		const initialStartLineNumber = range.startLineNumber;
@@ -1443,13 +1443,16 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			&& initialStartColumn === startColumn
 			&& initialEndLineNumber === endLineNumber
 			&& initialEndColumn === endColumn
-			&& range instanceof Range
+			&& range instanceof NotebookRange
 			&& !(range instanceof Selection)
 		) {
 			return range;
 		}
 
-		return new Range(startLineNumber, startColumn, endLineNumber, endColumn);
+		if (range instanceof NotebookRange) {
+			return range;
+		}
+		return new NotebookRange(undefined, startLineNumber, startColumn, endLineNumber, endColumn);
 	}
 
 	private _changeDecorationImpl(decorationId: string, _range: IRange): void {

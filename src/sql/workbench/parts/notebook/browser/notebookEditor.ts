@@ -240,7 +240,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 			}
 		}
 
-		if (e.searchString) {
+		if (e.searchString || e.isReplaceRevealed || e.isRegex || e.wholeWord || e.matchCase || e.searchScope) {
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._decorations.getFindScope();
@@ -254,14 +254,12 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 							}
 						}
 					}
-					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(p => {
-						if (p) {
-							this._updateFinderMatchState();
-							this._finder.focusFindInput();
-							this.updatePosition(p);
-							// this._findPosition = p;
-						}
-					});
+					let findRange = await this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES);
+					if (findRange) {
+						this._updateFinderMatchState();
+						this._finder.focusFindInput();
+						this.updatePosition(findRange);
+					}
 					this._decorations.set(this._notebookModel.findMatches, this._findPosition);
 					this._findState.changeMatchInfo(
 						this._decorations.getCurrentMatchesPosition(this.getSelection()),
