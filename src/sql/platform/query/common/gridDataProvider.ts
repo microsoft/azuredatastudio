@@ -34,7 +34,7 @@ export interface IGridDataProvider {
 
 	shouldRemoveNewLines(): boolean;
 
-	getColumnHeaders(range: Slick.Range): string[];
+	getColumnHeaders(range: Slick.Range): string[] | undefined;
 
 	readonly canSerialize: boolean;
 

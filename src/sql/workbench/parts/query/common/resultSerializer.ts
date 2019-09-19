@@ -68,12 +68,12 @@ export class ResultSerializer {
 	/**
 	 * Handle save request by getting filename from user and sending request to service
 	 */
-	public saveResults(uri: string, saveRequest: ISaveRequest): Thenable<void> {
+	public saveResults(uri: string, saveRequest: ISaveRequest): Promise<void> {
 		const self = this;
 		return this.promptForFilepath(saveRequest.format, uri).then(filePath => {
 			if (filePath) {
 				if (!path.isAbsolute(filePath)) {
-					filePath = resolveFilePath(uri, filePath, this.rootPath);
+					filePath = resolveFilePath(uri, filePath, this.rootPath)!;
 				}
 				let saveResultsParams = this.getParameters(uri, filePath, saveRequest.batchIndex, saveRequest.resultSetNumber, saveRequest.format, saveRequest.selection ? saveRequest.selection[0] : undefined);
 				let sendRequest = () => this.sendSaveRequestToService(saveResultsParams);
@@ -99,9 +99,9 @@ export class ResultSerializer {
 		return this.promptForFilepath(format, uri).then(filePath => {
 			if (filePath) {
 				if (!path.isAbsolute(filePath)) {
-					filePath = resolveFilePath(uri, filePath, this.rootPath);
+					filePath = resolveFilePath(uri, filePath, this.rootPath)!;
 				}
-				return self.doSave(filePath, format, () => sendRequest(filePath));
+				return self.doSave(filePath, format, () => sendRequest(filePath!));
 			}
 			return Promise.resolve();
 		});
@@ -118,10 +118,10 @@ export class ResultSerializer {
 
 	private get outputChannel(): IOutputChannel {
 		this.ensureOutputChannelExists();
-		return this._outputService.getChannel(ConnectionConstants.outputChannelName);
+		return this._outputService.getChannel(ConnectionConstants.outputChannelName)!;
 	}
 
-	private get rootPath(): string {
+	private get rootPath(): string | undefined {
 		return getRootPath(this._contextService);
 	}
 
@@ -130,7 +130,7 @@ export class ResultSerializer {
 	}
 
 
-	private promptForFilepath(format: SaveFormat, resourceUri: string): Thenable<string | undefined> {
+	private promptForFilepath(format: SaveFormat, resourceUri: string): Promise<string | undefined> {
 		let filepathPlaceHolder = prevSavePath ? path.dirname(prevSavePath) : resolveCurrentDirectory(resourceUri, this.rootPath);
 		if (filepathPlaceHolder) {
 			filepathPlaceHolder = path.join(filepathPlaceHolder, this.getResultsDefaultFilename(format));
@@ -172,7 +172,7 @@ export class ResultSerializer {
 
 	private getResultsFileExtension(format: SaveFormat): FileFilter[] {
 		let fileFilters = new Array<FileFilter>();
-		let fileFilter: { extensions: string[]; name: string } = { extensions: undefined, name: undefined };
+		let fileFilter: { extensions: string[]; name: string } = Object.create(null);
 
 		switch (format) {
 			case SaveFormat.CSV:
@@ -212,7 +212,7 @@ export class ResultSerializer {
 		} else if (format === SaveFormat.XML) {
 			saveResultsParams = this.getConfigForXml();
 		}
-		return saveResultsParams;
+		return saveResultsParams!; // this could be unsafe
 	}
 
 
@@ -281,7 +281,7 @@ export class ResultSerializer {
 	}
 
 
-	private getParameters(uri: string, filePath: string, batchIndex: number, resultSetNo: number, format: string, selection: Slick.Range): SaveResultsRequestParams {
+	private getParameters(uri: string, filePath: string, batchIndex: number, resultSetNo: number, format: string, selection?: Slick.Range): SaveResultsRequestParams {
 		let saveResultsParams = this.getBasicSaveParameters(format);
 		saveResultsParams.filePath = filePath;
 		saveResultsParams.ownerUri = uri;
@@ -299,8 +299,8 @@ export class ResultSerializer {
 	/**
 	 * Check if a range of cells were selected.
 	 */
-	private isSelected(selection: Slick.Range): boolean {
-		return (selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
+	private isSelected(selection?: Slick.Range): selection is Slick.Range {
+		return !!(selection && !((selection.fromCell === selection.toCell) && (selection.fromRow === selection.toRow)));
 	}
 
 

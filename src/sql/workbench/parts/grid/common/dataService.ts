@@ -40,13 +40,8 @@ export class DataService {
 	 * @param rowStart	The row to start retrieving from (inclusive)
 	 * @param numberOfRows	The maximum number of rows to return
 	 */
-	getEditRows(rowStart: number, numberOfRows: number): Observable<EditSubsetResult> {
-		const self = this;
-		return Observable.create(function (observer: Observer<EditSubsetResult>) {
-			self._queryModel.getEditRows(self._uri, rowStart, numberOfRows).then(results => {
-				observer.next(results);
-			});
-		});
+	getEditRows(rowStart: number, numberOfRows: number): Promise<EditSubsetResult | undefined> {
+		return this._queryModel.getEditRows(this._uri, rowStart, numberOfRows);
 	}
 
 	updateCell(rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult> {

@@ -49,14 +49,12 @@ export interface IQueryEvent {
 export interface IQueryModelService {
 	_serviceBrand: undefined;
 
-	getQueryRunner(uri: string): QueryRunner;
+	getQueryRunner(uri: string): QueryRunner | undefined;
 
-	getConfig(): Promise<{ [key: string]: any }>;
-	getShortcuts(): Promise<any>;
-	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Thenable<ResultSetSubset>;
-	runQuery(uri: string, selection: ISelectionData, queryInput: QueryInput, runOptions?: ExecutionPlanOptions): void;
-	runQueryStatement(uri: string, selection: ISelectionData, queryInput: QueryInput): void;
-	runQueryString(uri: string, selection: string, queryInput: QueryInput);
+	getQueryRows(uri: string, rowStart: number, numberOfRows: number, batchId: number, resultId: number): Promise<ResultSetSubset | undefined>;
+	runQuery(uri: string, selection: ISelectionData | undefined, queryInput: QueryInput, runOptions?: ExecutionPlanOptions): void;
+	runQueryStatement(uri: string, selection: ISelectionData | undefined, queryInput: QueryInput): void;
+	runQueryString(uri: string, selection: string | undefined, queryInput: QueryInput): void;
 	cancelQuery(input: QueryRunner | string): void;
 	disposeQuery(uri: string): void;
 	isRunningQuery(uri: string): boolean;
@@ -80,16 +78,16 @@ export interface IQueryModelService {
 
 	// Edit Data Functions
 	initializeEdit(ownerUri: string, schemaName: string, objectName: string, objectType: string, rowLimit: number, queryString: string): void;
-	disposeEdit(ownerUri: string): Thenable<void>;
-	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Thenable<EditUpdateCellResult>;
-	commitEdit(ownerUri): Thenable<void>;
-	createRow(ownerUri: string): Thenable<EditCreateRowResult>;
-	deleteRow(ownerUri: string, rowId: number): Thenable<void>;
-	revertCell(ownerUri: string, rowId: number, columnId: number): Thenable<EditRevertCellResult>;
-	revertRow(ownerUri: string, rowId: number): Thenable<void>;
-	getEditRows(ownerUri: string, rowStart: number, numberOfRows: number): Thenable<EditSubsetResult>;
+	disposeEdit(ownerUri: string): Promise<void>;
+	updateCell(ownerUri: string, rowId: number, columnId: number, newValue: string): Promise<EditUpdateCellResult | undefined>;
+	commitEdit(ownerUri: string): Promise<void>;
+	createRow(ownerUri: string): Promise<EditCreateRowResult | undefined>;
+	deleteRow(ownerUri: string, rowId: number): Promise<void>;
+	revertCell(ownerUri: string, rowId: number, columnId: number): Promise<EditRevertCellResult | undefined>;
+	revertRow(ownerUri: string, rowId: number): Promise<void>;
+	getEditRows(ownerUri: string, rowStart: number, numberOfRows: number): Promise<EditSubsetResult | undefined>;
 
-	_getQueryInfo(uri: string): QueryInfo;
+	_getQueryInfo(uri: string): QueryInfo | undefined;
 	// Edit Data Callbacks
 	onEditSessionReady: Event<EditSessionReadyParams>;
 }

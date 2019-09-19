@@ -37,7 +37,9 @@ export class ConnectionConfig {
 	public getAllGroups(): IConnectionProfileGroup[] {
 
 		let allGroups: IConnectionProfileGroup[] = [];
-		let { user, workspace } = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
+		const config = this.configurationService.inspect<IConnectionProfileGroup[]>(GROUPS_CONFIG_KEY);
+		let { user } = config;
+		const { workspace } = config;
 
 		if (user) {
 			if (workspace) {

@@ -22,7 +22,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 	private _isRenamed: boolean;
 	public constructor(
 		public name: string,
-		public parent: ConnectionProfileGroup,
+		public parent: ConnectionProfileGroup | undefined,
 		public id: string,
 		public color: string,
 		public description: string
@@ -150,7 +150,7 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 		});
 	}
 
-	public getParent(): ConnectionProfileGroup {
+	public getParent(): ConnectionProfileGroup | undefined {
 		return this.parent;
 	}
 
@@ -185,13 +185,17 @@ export class ConnectionProfileGroup extends Disposable implements IConnectionPro
 			name === ConnectionProfileGroup.GroupNameSeparator);
 	}
 
-	public static sameGroupName(name1: string, name2: string): boolean {
-		let sameGroupName: boolean =
-			(!name1 && !name2) ||
-			name1.toUpperCase() === name2.toUpperCase() ||
-			(ConnectionProfileGroup.isRoot(name1) && ConnectionProfileGroup.isRoot(name2));
-
-		return sameGroupName;
+	public static sameGroupName(name1?: string, name2?: string): boolean {
+		if (!name1 && !name2) {
+			return true;
+		}
+		if ((name1 && !name2) || !name1 && name2) {
+			return false;
+		}
+		if (name1!.toUpperCase() === name2!.toUpperCase()) {
+			return true;
+		}
+		return ConnectionProfileGroup.isRoot(name1!) && ConnectionProfileGroup.isRoot(name2!);
 	}
 
 	public static getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {

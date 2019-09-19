@@ -25,7 +25,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 	public parent?: ConnectionProfileGroup;
 	private _id: string;
 	public savePassword: boolean;
-	private _groupName: string;
+	private _groupName?: string;
 	public groupId: string;
 	public saveProfile: boolean;
 
@@ -119,11 +119,11 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this.options['registeredServerDescription'] = value;
 	}
 
-	public get groupFullName(): string {
+	public get groupFullName(): string | undefined {
 		return this._groupName;
 	}
 
-	public set groupFullName(value: string) {
+	public set groupFullName(value: string | undefined) {
 		this._groupName = value;
 	}
 
