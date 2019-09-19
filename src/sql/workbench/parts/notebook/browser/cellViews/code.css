@@ -90,19 +90,29 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 	padding-left: 10px
 }
 
-hidden-component {
+hide-component-button {
+	height: 18px;
 	width: 100%;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	padding: 3px;
+	border-width: 0px;
 	text-align: center;
-	background-repeat: no-repeat;
-	background-size: 18px;
 }
 
 hidden-component .icon-hide-cell {
 	background-image: url("./media/light/minus.svg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
 }
 
 hidden-component .icon-show-cell {
 	background-image: url("./media/light/plus.svg");
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
 }
 
 .vs-dark hidden-component .icon-hide-cell,

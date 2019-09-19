@@ -4,9 +4,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 -->
-<div style="overflow: hidden; width: 100%; height: 100%; display: flex; flex-flow: column">
-	<div class="hidden-component" style="flex: 0 0 auto;">
-		<button *ngIf="isVisible" href="#" (click)="toggleVisibility($event)" class="hidden-component icon-hide-cell"></button>
-		<button *ngIf="!isVisible" href="#" (click)="toggleVisibility($event)" class="hidden-component icon-show-cell"></button>
-	</div>
+<div style="overflow: hidden; width: 100%; display: flex; flex-flow: column">
+	<button *ngIf="isVisible" (click)="toggleVisibility($event)" class="hide-component-button icon-hide-cell"></button>
+	<button *ngIf="!isVisible" (click)="toggleVisibility($event)" class="hide-component-button icon-show-cell"></button>
 </div>
