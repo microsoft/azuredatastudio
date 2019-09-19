@@ -362,7 +362,7 @@ export class ConnectionConfig {
 
 		if (index < groupNames.length) {
 			let groupName: string = groupNames[index];
-			let newGroup = <unknown>{ // janky workaround to make this work properly
+			let newGroup = <unknown>{ // workaround to make this work properly
 				name: groupName,
 				id: undefined,
 				parentId: parentId,

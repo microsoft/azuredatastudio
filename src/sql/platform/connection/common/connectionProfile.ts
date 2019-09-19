@@ -214,7 +214,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		return !profile.databaseName || profile.databaseName.trim() === '';
 	}
 
-	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile) {
+	public static fromIConnectionProfile(capabilitiesService: ICapabilitiesService, profile: azdata.IConnectionProfile): ConnectionProfile {
 		if (profile instanceof ConnectionProfile) {
 			return profile;
 		} else {
