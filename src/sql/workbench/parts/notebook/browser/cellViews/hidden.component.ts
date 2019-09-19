@@ -45,8 +45,6 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 			event.stopPropagation();
 		}
 		this.cellModel.isHidden = !this.cellModel.isHidden;
-
-		// this._model.addCell(<CellType>cellType);
 	}
 
 	get isVisible(): boolean {
