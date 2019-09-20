@@ -10,8 +10,7 @@ import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
 import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-//tslint:disable-next-line:layering
-import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 export class EnablePreviewFeatures implements IWorkbenchContribution {
 
@@ -21,7 +20,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 		@IStorageService storageService: IStorageService,
 		@INotificationService notificationService: INotificationService,
 		@IWindowService windowService: IWindowService,
-		@IWindowsMainService windowsService: IWindowsMainService,
+		@IHostService hostService: IHostService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		let previewFeaturesEnabled = configurationService.getValue('workbench')['enablePreviewFeatures'];
@@ -30,7 +29,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 		}
 		Promise.all([
 			windowService.isFocused(),
-			windowsService.getWindowCount()
+			hostService.windowCount
 		]).then(([focused, count]) => {
 			if (!focused && count > 1) {
 				return null;
