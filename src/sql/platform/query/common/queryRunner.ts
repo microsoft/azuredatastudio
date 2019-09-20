@@ -181,8 +181,7 @@ export default class QueryRunner extends Disposable {
 		this._queryStartTime = undefined;
 		this._queryEndTime = undefined;
 		this._messages = [];
-		if (types.isObject(input) || types.isUndefinedOrNull(input)) {
-			input = input as azdata.ISelectionData;
+		if (isSelectionOrUndefined(input)) {
 			// Update internal state to show that we're executing the query
 			this._resultLineOffset = input ? input.startLine : 0;
 			this._resultColumnOffset = input ? input.startColumn : 0;
@@ -197,7 +196,6 @@ export default class QueryRunner extends Disposable {
 				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
 				: this._queryManagementService.runQuery(this.uri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
 		} else {
-			input = input as string;
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
@@ -673,4 +671,8 @@ export function shouldRemoveNewLines(configurationService: IConfigurationService
 	// get config copyRemoveNewLine option from vscode config
 	let removeNewLines = configurationService.getValue<boolean>('sql.copyRemoveNewLine');
 	return !!removeNewLines;
+}
+
+function isSelectionOrUndefined(input: string | azdata.ISelectionData | undefined): input is azdata.ISelectionData | undefined {
+	return types.isObject(input) || types.isUndefinedOrNull(input);
 }
