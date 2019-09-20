@@ -2,15 +2,20 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
-import { ToolType, ITool } from '../../interfaces';
+
+import { ToolType } from '../../interfaces';
 import * as nls from 'vscode-nls';
-import * as cp from 'child_process';
 import { SemVer } from 'semver';
+import { IPlatformService } from '../platformService';
+import { ToolBase } from './toolBase';
 
 const localize = nls.loadMessageBundle();
 
-export class DockerTool implements ITool {
+export class DockerTool extends ToolBase {
+	constructor(platformService: IPlatformService) {
+		super(platformService);
+	}
+
 	get name(): string {
 		return 'docker';
 	}
@@ -31,31 +36,14 @@ export class DockerTool implements ITool {
 		return 'https://docs.docker.com/install';
 	}
 
-	get isInstalled(): boolean {
-		return this._isInstalled;
+	protected getVersionFromOutput(output: string): SemVer | undefined {
+		let version: SemVer | undefined = undefined;
+		if (output) {
+			version = new SemVer(JSON.parse(output).Client.Version, true);
+		}
+		return version;
 	}
-
-	get version(): SemVer | undefined {
-		return this._version;
+	protected get versionCommand(): string {
+		return 'docker version --format "{{json .}}"';
 	}
-
-	loadInformation(): Thenable<void> {
-		return new Promise<void>((resolve, reject) => {
-			cp.exec('docker version --format "{{json .}}"', (error, stdout, stderror) => {
-				if (stdout) {
-					try {
-						this._version = new SemVer(JSON.parse(stdout).Client.Version, true);
-						this._isInstalled = true;
-					}
-					catch (err) {
-						console.error('error parsing Docker version: ' + err);
-					}
-				}
-				resolve();
-			});
-		});
-	}
-
-	private _isInstalled: boolean = false;
-	private _version: SemVer | undefined = undefined;
 }

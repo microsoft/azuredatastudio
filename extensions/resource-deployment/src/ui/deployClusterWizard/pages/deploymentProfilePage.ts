@@ -75,12 +75,8 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			label: localize('deployCluster.hdfsLabel', "HDFS"),
 			value: profile.hdfsReplicas.toString()
 		}, {
-			label: localize('deployCluster.nameNodeLabel', "HDFS name node"),
-			value: profile.hdfsNameNodeReplicas.toString()
-		}, {
 			label: '' // line separator
-		},
-		{
+		}, {
 			label: localize('deployCluster.defaultDataStorage', "Data storage size (GB)"),
 			value: profile.controllerDataStorageSize.toString()
 		}, {

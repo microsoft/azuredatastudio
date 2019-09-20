@@ -99,7 +99,8 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public get hadrEnabled(): boolean {
-		return <boolean>this._bdcConfig.spec.resources[SqlServerMasterResource].spec.settings.sql[HadrEnabledSetting];
+		const value = this._bdcConfig.spec.resources[SqlServerMasterResource].spec.settings.sql[HadrEnabledSetting];
+		return value === true || value === 'true';
 	}
 
 	public set hadrEnabled(value: boolean) {

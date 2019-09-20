@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -189,11 +188,15 @@ export class ResourceTypePickerDialog extends DialogBase {
 					const tool = this.toolsService.getToolByName(toolRef.name)!;
 					if (!tool.isInstalled) {
 						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
+						if (tool.statusDescription !== undefined) {
+							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
+						}
 					}
 					return [tool.displayName, tool.description, tool.isInstalled ? localize('deploymentDialog.YesText', "Yes") : localize('deploymentDialog.NoText', "No"), tool.version ? tool.version.version : ''];
 				});
 				this._dialogObject.okButton.enabled = messages.length === 0;
 				if (messages.length !== 0) {
+					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You may find additional details in the debug console."));
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
 						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),

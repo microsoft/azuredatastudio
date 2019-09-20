@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -18,7 +17,7 @@ const localize = nls.loadMessageBundle();
 
 export function activate(context: vscode.ExtensionContext) {
 	const platformService = new PlatformService(context.globalStoragePath);
-	const toolsService = new ToolsService();
+	const toolsService = new ToolsService(platformService);
 	const notebookService = new NotebookService(platformService, context.extensionPath);
 	const resourceTypeService = new ResourceTypeService(platformService, toolsService, notebookService);
 	const resourceTypes = resourceTypeService.getResourceTypes();

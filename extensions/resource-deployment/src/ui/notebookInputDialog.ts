@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -64,7 +63,9 @@ export class NotebookInputDialog extends DialogBase {
 		const model: Model = new Model();
 		setModelValues(this.inputComponents, model);
 		model.setEnvironmentVariables();
-		this.notebookService.launchNotebook(this.dialogInfo.notebook);
+		this.notebookService.launchNotebook(this.dialogInfo.notebook).then(() => { }, (error) => {
+			vscode.window.showErrorMessage(error);
+		});
 		this.dispose();
 	}
 }

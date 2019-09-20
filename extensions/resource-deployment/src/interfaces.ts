@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 import * as azdata from 'azdata';
 import { SemVer } from 'semver';
 
@@ -145,6 +144,7 @@ export interface ITool {
 	readonly homePage: string;
 	readonly isInstalled: boolean;
 	loadInformation(): Thenable<void>;
+	readonly statusDescription: string | undefined;
 }
 
 export enum BdcDeploymentType {

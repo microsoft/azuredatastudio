@@ -2,8 +2,9 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
+import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import { SummaryPage } from './pages/summaryPage';
 import { WizardBase } from '../wizardBase';
 import * as nls from 'vscode-nls';
@@ -53,7 +54,16 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 
 	protected onOk(): void {
 		this.model.setEnvironmentVariables();
-		this.notebookService.launchNotebook(this.wizardInfo.notebook);
+		this.notebookService.launchNotebook(this.wizardInfo.notebook).then((notebook: azdata.nb.NotebookEditor) => {
+			notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
+				editBuilder.insertCell({
+					cell_type: 'code',
+					source: 'gagagaga'
+				}, 0);
+			});
+		}, (error) => {
+			vscode.window.showErrorMessage(error);
+		});
 	}
 
 	private getPages(): WizardPageBase<DeployClusterWizard>[] {
