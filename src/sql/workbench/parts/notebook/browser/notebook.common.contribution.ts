@@ -36,6 +36,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -128,6 +129,7 @@ registerAction({
 		const viewletService = accessor.get(IViewletService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
 		const windowService = accessor.get(IWindowService);
+		const hostService = accessor.get(IHostService);
 		let folders = [];
 		if (!options.folderPath) {
 			return;
@@ -139,7 +141,7 @@ registerAction({
 			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
 		else {
-			return windowService.reloadWindow();
+			return hostService.reload();
 		}
 	}
 });

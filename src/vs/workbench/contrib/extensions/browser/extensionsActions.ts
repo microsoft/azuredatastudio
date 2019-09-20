@@ -26,7 +26,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
 import { IFileService, IFileContent } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { URI } from 'vs/base/common/uri';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
@@ -1178,7 +1178,7 @@ export class ReloadAction extends ExtensionAction {
 
 	constructor(
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
@@ -1285,7 +1285,7 @@ export class ReloadAction extends ExtensionAction {
 	}
 
 	run(): Promise<any> {
-		return Promise.resolve(this.windowService.reloadWindow());
+		return Promise.resolve(this.hostService.reload());
 	}
 }
 
@@ -2810,7 +2810,7 @@ export class InstallVSIXAction extends Action {
 		label = InstallVSIXAction.LABEL,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		// {{SQL CARBON EDIT}}
@@ -2848,7 +2848,7 @@ export class InstallVSIXAction extends Action {
 												: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
 											const actions = requireReload ? [{
 												label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-												run: () => this.windowService.reloadWindow()
+												run: () => this.hostService.reload()
 											}] : [];
 											this.notificationService.prompt(
 												Severity.Info,
@@ -2881,7 +2881,7 @@ export class InstallVSIXAction extends Action {
 								: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
 							const actions = requireReload ? [{
 								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-								run: () => this.windowService.reloadWindow()
+								run: () => this.hostService.reload()
 							}] : [];
 							this.notificationService.prompt(
 								Severity.Info,
@@ -2911,7 +2911,7 @@ export class ReinstallAction extends Action {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IExtensionService private readonly extensionService: IExtensionService
 	) {
@@ -2955,7 +2955,7 @@ export class ReinstallAction extends Action {
 							: localize('ReinstallAction.success', "Reinstalling the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-							run: () => this.windowService.reloadWindow()
+							run: () => this.hostService.reload()
 						}] : [];
 						this.notificationService.prompt(
 							Severity.Info,
@@ -2979,7 +2979,7 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
@@ -3041,7 +3041,7 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 							: localize('InstallAnotherVersionExtensionAction.success', "Installing the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallAnotherVersionExtensionAction.reloadNow', "Reload Now"),
-							run: () => this.windowService.reloadWindow()
+							run: () => this.hostService.reload()
 						}] : [];
 						this.notificationService.prompt(
 							Severity.Info,
@@ -3068,7 +3068,7 @@ export class InstallLocalExtensionsInRemoteAction extends Action {
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IProgressService private readonly progressService: IProgressService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -3181,7 +3181,7 @@ export class InstallLocalExtensionsInRemoteAction extends Action {
 			message: localize('finished installing', "Successfully installed extensions in {0}. Please reload the window to enable them.", this.extensionManagementServerService.remoteExtensionManagementServer!.label),
 			actions: {
 				primary: [new Action('realod', localize('reload', "Reload Window"), '', true,
-					() => this.windowService.reloadWindow())]
+					() => this.hostService.reload())]
 			}
 		});
 	}
