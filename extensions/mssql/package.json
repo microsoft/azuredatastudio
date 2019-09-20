@@ -265,7 +265,7 @@
         },
         {
           "command": "mssqlCluster.copyPath",
-          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message",
+          "when": "nodeType=~/^mssqlCluster/ && nodeType != mssqlCluster:connection && nodeType != mssqlCluster:message && nodeType != mssqlCluster:hdfs",
           "group": "1mssqlCluster@3"
         },
         {
@@ -275,7 +275,7 @@
         },
         {
           "command": "mssqlCluster.livy.cmd.submitSparkJob",
-          "when": "connectionProvider == MSSQL && nodeType == dataservices",
+          "when": "nodeType == mssqlCluster:hdfs",
           "group": "1root@1"
         },
         {
