@@ -256,6 +256,9 @@ import 'vs/workbench/contrib/tasks/electron-browser/taskService';
 // User Data Sync
 import 'vs/workbench/contrib/userDataSync/electron-browser/userDataSync.contribution';
 
+// Welcome
+import 'vs/workbench/contrib/welcome/gettingStarted/electron-browser/openWebsite.contribution';
+
 //#endregion
 
 // {{SQL CARBON EDIT}}
