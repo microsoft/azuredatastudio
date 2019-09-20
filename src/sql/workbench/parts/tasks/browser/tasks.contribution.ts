@@ -19,25 +19,24 @@ import { TASKS_PANEL_ID } from 'sql/workbench/parts/tasks/common/tasks';
 import { IPanelService } from 'vs/workbench/services/panel/common/panelService';
 import { ToggleTasksAction } from 'sql/workbench/parts/tasks/browser/tasksActions';
 
-export class StatusUpdater implements ext.IWorkbenchContribution {
+export class StatusUpdater extends lifecycle.Disposable implements ext.IWorkbenchContribution {
 	static ID = 'data.taskhistory.statusUpdater';
 
 	private badgeHandle: lifecycle.IDisposable;
-	private toDispose: lifecycle.IDisposable[];
 
 	constructor(
 		@IActivityService private readonly activityBarService: IActivityService,
 		@ITaskService private readonly taskService: ITaskService,
 		@IPanelService private readonly panelService: IPanelService
 	) {
-		this.toDispose = [];
+		super();
 
-		this.toDispose.push(this.taskService.onAddNewTask(args => {
+		this._register(this.taskService.onAddNewTask(args => {
 			this.panelService.openPanel(TASKS_PANEL_ID, true);
 			this.onServiceChange();
 		}));
 
-		this.toDispose.push(this.taskService.onTaskComplete(task => {
+		this._register(this.taskService.onTaskComplete(task => {
 			this.onServiceChange();
 		}));
 
@@ -55,8 +54,8 @@ export class StatusUpdater implements ext.IWorkbenchContribution {
 	}
 
 	public dispose(): void {
-		this.toDispose = lifecycle.dispose(this.toDispose);
 		lifecycle.dispose(this.badgeHandle);
+		super.dispose();
 	}
 }
 

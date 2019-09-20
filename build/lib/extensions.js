@@ -101,7 +101,7 @@ function fromLocalWebpack(extensionPath) {
                     result.emit('error', compilation.warnings.join('\n'));
                 }
             };
-            const webpackConfig = Object.assign({}, require(webpackConfigPath), { mode: 'production' });
+            const webpackConfig = Object.assign(Object.assign({}, require(webpackConfigPath)), { mode: 'production' });
             const relativeOutputPath = path.relative(extensionPath, webpackConfig.output.path);
             return webpackGulp(webpackConfig, webpack, webpackDone)
                 .pipe(es.through(function (data) {
@@ -199,7 +199,8 @@ const sqlBuiltInExtensions = [
     'admin-pack',
     'dacpac',
     'schema-compare',
-    'cms'
+    'cms',
+    'query-history'
 ];
 // make resource deployment and BDC extension only available in insiders
 if (process.env['VSCODE_QUALITY'] === 'stable') {

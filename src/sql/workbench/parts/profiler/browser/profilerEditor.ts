@@ -7,7 +7,7 @@ import { ProfilerInput } from 'sql/workbench/parts/profiler/browser/profilerInpu
 import { TabbedPanel } from 'sql/base/browser/ui/panel/panel';
 import { Table } from 'sql/base/browser/ui/table/table';
 import { TableDataView } from 'sql/base/browser/ui/table/tableDataView';
-import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/common/interfaces';
+import { IProfilerService, IProfilerViewTemplate } from 'sql/workbench/services/profiler/browser/interfaces';
 import { Taskbar } from 'sql/base/browser/ui/taskbar/taskbar';
 import { attachTableStyler, attachTabbedPanelStyler } from 'sql/platform/theme/common/styler';
 import { IProfilerStateChangedEvent } from 'sql/workbench/parts/profiler/common/profilerState';
@@ -382,9 +382,9 @@ export class ProfilerEditor extends BaseEditor {
 				}
 			]
 		}, {
-				forceFitColumns: true,
-				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
-			});
+			forceFitColumns: true,
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+		});
 
 		this._detailTableData.onRowCountChange(() => {
 			this._detailTable.updateRowCount();

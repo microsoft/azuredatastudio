@@ -11,16 +11,16 @@ import { OpenContext, IRunActionInWindowRequest, getTitleBarStyle, IRunKeybindin
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 import { IUpdateService, StateType } from 'vs/platform/update/common/update';
-import product from 'vs/platform/product/node/product';
+import product from 'vs/platform/product/common/product';
 import { RunOnceScheduler } from 'vs/base/common/async';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ILogService } from 'vs/platform/log/common/log';
 import { mnemonicMenuLabel as baseMnemonicLabel } from 'vs/base/common/labels';
 import { IWindowsMainService, IWindowsCountChangedEvent } from 'vs/platform/windows/electron-main/windows';
-import { IHistoryMainService } from 'vs/platform/history/common/history';
+import { IHistoryMainService } from 'vs/platform/history/electron-main/historyMainService';
 import { IMenubarData, IMenubarKeybinding, MenubarMenuItem, isMenubarMenuItemSeparator, isMenubarMenuItemSubmenu, isMenubarMenuItemAction, IMenubarMenu, isMenubarMenuItemUriAction } from 'vs/platform/menubar/node/menubar';
 import { URI } from 'vs/base/common/uri';
 import { IStateService } from 'vs/platform/state/common/state';
-import { ILifecycleService } from 'vs/platform/lifecycle/electron-main/lifecycleMain';
+import { ILifecycleMainService } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { WorkbenchActionExecutedEvent, WorkbenchActionExecutedClassification } from 'vs/base/common/actions';
 
 const telemetryFrom = 'menu';
@@ -62,14 +62,14 @@ export class Menubar {
 
 	constructor(
 		@IUpdateService private readonly updateService: IUpdateService,
-		@IInstantiationService instantiationService: IInstantiationService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IHistoryMainService private readonly historyMainService: IHistoryMainService,
 		@IStateService private readonly stateService: IStateService,
-		@ILifecycleService private readonly lifecycleService: ILifecycleService
+		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
+		@ILogService private readonly logService: ILogService
 	) {
 		this.menuUpdater = new RunOnceScheduler(() => this.doUpdateMenu(), 0);
 
@@ -118,36 +118,41 @@ export class Menubar {
 		this.fallbackMenuHandlers['workbench.action.clearRecentFiles'] = () => this.historyMainService.clearRecentlyOpened();
 
 		// Help Menu Items
-		if (product.twitterUrl) {
-			this.fallbackMenuHandlers['workbench.action.openTwitterUrl'] = () => this.openUrl(product.twitterUrl, 'openTwitterUrl');
+		const twitterUrl = product.twitterUrl;
+		if (twitterUrl) {
+			this.fallbackMenuHandlers['workbench.action.openTwitterUrl'] = () => this.openUrl(twitterUrl, 'openTwitterUrl');
 		}
 
-		if (product.requestFeatureUrl) {
-			this.fallbackMenuHandlers['workbench.action.openRequestFeatureUrl'] = () => this.openUrl(product.requestFeatureUrl, 'openUserVoiceUrl');
+		const requestFeatureUrl = product.requestFeatureUrl;
+		if (requestFeatureUrl) {
+			this.fallbackMenuHandlers['workbench.action.openRequestFeatureUrl'] = () => this.openUrl(requestFeatureUrl, 'openUserVoiceUrl');
 		}
 
-		if (product.reportIssueUrl) {
-			this.fallbackMenuHandlers['workbench.action.openIssueReporter'] = () => this.openUrl(product.reportIssueUrl, 'openReportIssues');
+		const reportIssueUrl = product.reportIssueUrl;
+		if (reportIssueUrl) {
+			this.fallbackMenuHandlers['workbench.action.openIssueReporter'] = () => this.openUrl(reportIssueUrl, 'openReportIssues');
 		}
 
-		if (product.licenseUrl) {
+		const licenseUrl = product.licenseUrl;
+		if (licenseUrl) {
 			this.fallbackMenuHandlers['workbench.action.openLicenseUrl'] = () => {
 				if (language) {
-					const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-					this.openUrl(`${product.licenseUrl}${queryArgChar}lang=${language}`, 'openLicenseUrl');
+					const queryArgChar = licenseUrl.indexOf('?') > 0 ? '&' : '?';
+					this.openUrl(`${licenseUrl}${queryArgChar}lang=${language}`, 'openLicenseUrl');
 				} else {
-					this.openUrl(product.licenseUrl, 'openLicenseUrl');
+					this.openUrl(licenseUrl, 'openLicenseUrl');
 				}
 			};
 		}
 
-		if (product.privacyStatementUrl) {
+		const privacyStatementUrl = product.privacyStatementUrl;
+		if (privacyStatementUrl && licenseUrl) {
 			this.fallbackMenuHandlers['workbench.action.openPrivacyStatementUrl'] = () => {
 				if (language) {
-					const queryArgChar = product.licenseUrl.indexOf('?') > 0 ? '&' : '?';
-					this.openUrl(`${product.privacyStatementUrl}${queryArgChar}lang=${language}`, 'openPrivacyStatement');
+					const queryArgChar = licenseUrl.indexOf('?') > 0 ? '&' : '?';
+					this.openUrl(`${privacyStatementUrl}${queryArgChar}lang=${language}`, 'openPrivacyStatement');
 				} else {
-					this.openUrl(product.privacyStatementUrl, 'openPrivacyStatement');
+					this.openUrl(privacyStatementUrl, 'openPrivacyStatement');
 				}
 			};
 		}
@@ -155,7 +160,7 @@ export class Menubar {
 
 	private registerListeners(): void {
 		// Keep flag when app quits
-		this.lifecycleService.onWillShutdown(() => this.willShutdown = true);
+		this.lifecycleMainService.onWillShutdown(() => this.willShutdown = true);
 
 		// // Listen to some events from window service to update menu
 		this.windowsMainService.onWindowsCountChanged(e => this.onWindowsCountChanged(e));
@@ -363,7 +368,7 @@ export class Menubar {
 		const servicesMenu = new Menu();
 		const services = new MenuItem({ label: nls.localize('mServices', "Services"), role: 'services', submenu: servicesMenu });
 		const hide = new MenuItem({ label: nls.localize('mHide', "Hide {0}", product.nameLong), role: 'hide', accelerator: 'Command+H' });
-		const hideOthers = new MenuItem({ label: nls.localize('mHideOthers', "Hide Others"), role: 'hideothers', accelerator: 'Command+Alt+H' });
+		const hideOthers = new MenuItem({ label: nls.localize('mHideOthers', "Hide Others"), role: 'hideOthers', accelerator: 'Command+Alt+H' });
 		const showAll = new MenuItem({ label: nls.localize('mShowAll', "Show All"), role: 'unhide' });
 		const quit = new MenuItem(this.likeAction('workbench.action.quit', {
 			label: nls.localize('miQuit', "Quit {0}", product.nameLong), click: () => {
@@ -498,7 +503,7 @@ export class Menubar {
 		}, false));
 	}
 
-	private isOptionClick(event: Electron.Event): boolean {
+	private isOptionClick(event: Electron.KeyboardEvent): boolean {
 		return !!(event && ((!isMacintosh && (event.ctrlKey || event.shiftKey)) || (isMacintosh && (event.metaKey || event.altKey))));
 	}
 
@@ -592,7 +597,7 @@ export class Menubar {
 		}
 	}
 
-	private static _menuItemIsTriggeredViaKeybinding(event: Electron.Event, userSettingsLabel: string): boolean {
+	private static _menuItemIsTriggeredViaKeybinding(event: Electron.KeyboardEvent, userSettingsLabel: string): boolean {
 		// The event coming in from Electron will inform us only about the modifier keys pressed.
 		// The strategy here is to check if the modifier keys match those of the keybinding,
 		// since it is highly unlikely to use modifier keys when clicking with the mouse
@@ -723,6 +728,8 @@ export class Menubar {
 		}
 
 		if (activeWindow) {
+			this.logService.trace('menubar#runActionInRenderer', invocation);
+
 			if (isMacintosh && !this.environmentService.isBuilt && !activeWindow.isReady) {
 				if ((invocation.type === 'commandId' && invocation.commandId === 'workbench.action.toggleDevTools') || (invocation.type !== 'commandId' && invocation.userSettingsLabel === 'alt+cmd+i')) {
 					// prevent this action from running twice on macOS (https://github.com/Microsoft/vscode/issues/62719)
@@ -733,10 +740,12 @@ export class Menubar {
 			}
 
 			if (invocation.type === 'commandId') {
-				this.windowsMainService.sendToFocused('vscode:runAction', { id: invocation.commandId, from: 'menu' } as IRunActionInWindowRequest);
+				activeWindow.sendWhenReady('vscode:runAction', { id: invocation.commandId, from: 'menu' } as IRunActionInWindowRequest);
 			} else {
-				this.windowsMainService.sendToFocused('vscode:runKeybinding', { userSettingsLabel: invocation.userSettingsLabel } as IRunKeybindingInWindowRequest);
+				activeWindow.sendWhenReady('vscode:runKeybinding', { userSettingsLabel: invocation.userSettingsLabel } as IRunKeybindingInWindowRequest);
 			}
+		} else {
+			this.logService.trace('menubar#runActionInRenderer: no active window found', invocation);
 		}
 	}
 

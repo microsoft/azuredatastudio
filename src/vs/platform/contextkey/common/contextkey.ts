@@ -980,7 +980,7 @@ export interface IContextKeyChangeEvent {
 }
 
 export interface IContextKeyService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	dispose(): void;
 
 	onDidChangeContext: Event<IContextKeyChangeEvent>;

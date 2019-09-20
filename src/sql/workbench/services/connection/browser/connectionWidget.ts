@@ -35,7 +35,7 @@ import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-export class ConnectionWidget {
+export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
 	private _serverNameInputBox: InputBox;
@@ -60,7 +60,6 @@ export class ConnectionWidget {
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
-	protected _toDispose: lifecycle.IDisposable[];
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
@@ -103,8 +102,8 @@ export class ConnectionWidget {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
+		super();
 		this._callbacks = callbacks;
-		this._toDispose = [];
 		this._optionsMaps = {};
 		for (let i = 0; i < options.length; i++) {
 			let option = options[i];
@@ -313,22 +312,22 @@ export class ConnectionWidget {
 
 	protected registerListeners(): void {
 		// Theme styler
-		this._toDispose.push(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
-		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
-		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
+		this._register(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
+		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
-			this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
+			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
+			this._register(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
 				this.onGroupSelected(selectedGroup.selected);
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
-			this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
@@ -346,7 +345,7 @@ export class ConnectionWidget {
 				}
 			}));
 
-			this._toDispose.push(this._databaseNameInputBox.onValueChange(s => {
+			this._register(this._databaseNameInputBox.onValueChange(s => {
 				if (s === this._defaultDatabaseName || s === this._loadingDatabaseName) {
 					this._databaseNameInputBox.value = '';
 				} else {
@@ -357,29 +356,29 @@ export class ConnectionWidget {
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
-			this._toDispose.push(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
-			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
+			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
+			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
 				this.setConnectButton();
 			}));
 		}
 
 		if (this._azureAccountDropdown) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
+			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+			this._register(this._azureAccountDropdown.onDidSelect(() => {
 				this.onAzureAccountSelected();
 			}));
 		}
 
 		if (this._azureTenantDropdown) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
-			this._toDispose.push(this._azureTenantDropdown.onDidSelect((selectInfo) => {
+			this._register(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
+			this._register(this._azureTenantDropdown.onDidSelect((selectInfo) => {
 				this.onAzureTenantSelected(selectInfo.index);
 			}));
 		}
 
 		if (this._refreshCredentialsLink) {
-			this._toDispose.push(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
+			this._register(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
 				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
@@ -388,15 +387,15 @@ export class ConnectionWidget {
 			}));
 		}
 
-		this._toDispose.push(this._serverNameInputBox.onDidChange(serverName => {
+		this._register(this._serverNameInputBox.onDidChange(serverName => {
 			this.serverNameChanged(serverName);
 		}));
 
-		this._toDispose.push(this._userNameInputBox.onDidChange(userName => {
+		this._register(this._userNameInputBox.onDidChange(userName => {
 			this.setConnectButton();
 		}));
 
-		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
+		this._register(this._passwordInputBox.onDidChange(passwordInput => {
 			this._password = passwordInput;
 		}));
 	}
@@ -833,10 +832,6 @@ export class ConnectionWidget {
 			group = this._serverGroupOptions.find(g => g.name === groupFullName);
 		}
 		return group ? group.id : undefined;
-	}
-
-	public dispose(): void {
-		this._toDispose = lifecycle.dispose(this._toDispose);
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {

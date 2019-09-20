@@ -28,5 +28,8 @@
 	"title.configurePython": "Configure Python for Notebooks",
 	"title.managePackages": "Manage Packages",
 	"title.SQL19PreviewBook": "SQL Server 2019 Guide",
-	"books-preview-category": "Jupyter Books"
+	"books-preview-category": "Jupyter Books",
+	"title.saveJupyterBook": "Save Book",
+	"title.SavedBooks": "Saved Books",
+	"title.UntitledBooks": "Untitled Books"
 }

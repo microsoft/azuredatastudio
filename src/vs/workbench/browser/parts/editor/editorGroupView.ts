@@ -817,7 +817,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		this._onWillOpenEditor.fire(event);
 		const prevented = event.isPrevented();
 		if (prevented) {
-			return prevented();
+			return withUndefinedAsNull(await prevented());
 		}
 
 		// Proceed with opening
@@ -846,9 +846,13 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 		if (options && options.activation === EditorActivation.ACTIVATE) {
 			// Respect option to force activate an editor group.
 			activateGroup = true;
+		} else if (options && options.activation === EditorActivation.RESTORE) {
+			// Respect option to force restore an editor group.
+			restoreGroup = true;
 		} else if (options && options.activation === EditorActivation.PRESERVE) {
 			// Respect option to preserve active editor group.
 			activateGroup = false;
+			restoreGroup = false;
 		} else if (openEditorOptions.active) {
 			// Finally, we only activate/restore an editor which is
 			// opening as active editor.
@@ -1524,7 +1528,7 @@ export class EditorGroupView extends Themable implements IEditorGroupView {
 }
 
 class EditorOpeningEvent implements IEditorOpeningEvent {
-	private override: () => Promise<IEditor>;
+	private override: () => Promise<IEditor | undefined>;
 
 	constructor(
 		private _group: GroupIdentifier,
@@ -1545,11 +1549,11 @@ class EditorOpeningEvent implements IEditorOpeningEvent {
 		return this._options;
 	}
 
-	prevent(callback: () => Promise<IEditor>): void {
+	prevent(callback: () => Promise<IEditor | undefined>): void {
 		this.override = callback;
 	}
 
-	isPrevented(): () => Promise<IEditor> {
+	isPrevented(): () => Promise<IEditor | undefined> {
 		return this.override;
 	}
 }

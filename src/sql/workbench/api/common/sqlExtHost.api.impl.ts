@@ -118,7 +118,9 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 				registerConnectionEventListener(listener: azdata.connection.ConnectionEventListener): void {
 					return extHostConnectionManagement.$registerConnectionEventListener(mssqlProviderName, listener);
 				},
-
+				getConnection(uri: string): Thenable<azdata.connection.ConnectionProfile> {
+					return extHostConnectionManagement.$getConnection(uri);
+				},
 				// "sqlops" back-compat APIs
 				getActiveConnections(): Thenable<azdata.connection.Connection[]> {
 					console.warn('the method azdata.connection.getActiveConnections has been deprecated, replace it with azdata.connection.getConnections');
@@ -421,7 +423,7 @@ export function createAdsApiFactory(accessor: ServicesAccessor): IAdsExtensionAp
 					return extHostModelViewDialog.closeDialog(dialog);
 				},
 				createWizardPage(title: string): azdata.window.WizardPage {
-					return extHostModelViewDialog.createWizardPage(title);
+					return extHostModelViewDialog.createWizardPage(title, extension);
 				},
 				createWizard(title: string): azdata.window.Wizard {
 					return extHostModelViewDialog.createWizard(title);

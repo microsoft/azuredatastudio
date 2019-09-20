@@ -92,8 +92,8 @@ export class ProfilerTableEditor extends BaseEditor implements IProfilerControll
 				}
 			}
 		}, {
-				dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
-			});
+			dataItemColumnValueExtractor: slickGridDataItemColumnValueExtractor
+		});
 		this._profilerTable.setSelectionModel(new RowSelectionModel());
 		const copyKeybind = new CopyKeybind();
 		copyKeybind.onCopy((e) => {

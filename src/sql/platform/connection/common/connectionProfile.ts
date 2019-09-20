@@ -22,7 +22,7 @@ import * as Constants from 'sql/platform/connection/common/constants';
  */
 export class ConnectionProfile extends ProviderConnectionInfo implements interfaces.IConnectionProfile {
 
-	public parent: ConnectionProfileGroup = null;
+	public parent?: ConnectionProfileGroup;
 	private _id: string;
 	public savePassword: boolean;
 	private _groupName: string;
@@ -33,8 +33,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public constructor(
 		capabilitiesService: ICapabilitiesService,
-		model: string | azdata.IConnectionProfile
-	) {
+		model: string | azdata.IConnectionProfile) {
 		super(capabilitiesService, model);
 		if (model && !isString(model)) {
 			this.groupId = model.groupId;
@@ -89,7 +88,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this._id = generateUuid();
 	}
 
-	public getParent(): ConnectionProfileGroup {
+	public getParent(): ConnectionProfileGroup | undefined {
 		return this.parent;
 	}
 
@@ -104,11 +103,11 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 		this._id = value;
 	}
 
-	public get azureTenantId(): string {
+	public get azureTenantId(): string | undefined {
 		return this.options['azureTenantId'];
 	}
 
-	public set azureTenantId(value: string) {
+	public set azureTenantId(value: string | undefined) {
 		this.options['azureTenantId'] = value;
 	}
 
@@ -186,7 +185,7 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 			databaseName: this.databaseName,
 			authenticationType: this.authenticationType,
 			getOptionsKey: this.getOptionsKey,
-			matches: undefined,
+			matches: this.matches,
 			groupId: this.groupId,
 			groupFullName: this.groupFullName,
 			password: this.password,
@@ -245,22 +244,24 @@ export class ConnectionProfile extends ProviderConnectionInfo implements interfa
 
 	public static convertToProfileStore(
 		capabilitiesService: ICapabilitiesService,
-		connectionProfile: interfaces.IConnectionProfile): interfaces.IConnectionProfileStore {
+		connectionProfile: interfaces.IConnectionProfile): interfaces.IConnectionProfileStore | undefined {
 		if (connectionProfile) {
 			let connectionInfo = ConnectionProfile.fromIConnectionProfile(capabilitiesService, connectionProfile);
-			let profile: interfaces.IConnectionProfileStore = {
-				options: {},
-				groupId: connectionProfile.groupId,
-				providerName: connectionInfo.providerName,
-				savePassword: connectionInfo.savePassword,
-				id: connectionInfo.id
-			};
+			if (connectionInfo) {
+				let profile: interfaces.IConnectionProfileStore = {
+					options: {},
+					groupId: connectionProfile.groupId,
+					providerName: connectionInfo.providerName,
+					savePassword: connectionInfo.savePassword,
+					id: connectionInfo.id
+				};
 
-			profile.options = connectionInfo.options;
+				profile.options = connectionInfo.options;
 
-			return profile;
-		} else {
-			return undefined;
+				return profile;
+			}
 		}
+
+		return undefined;
 	}
 }

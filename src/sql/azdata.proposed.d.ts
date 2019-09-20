@@ -25,6 +25,8 @@ declare module 'azdata' {
 		 * Register a connection event listener
 		 */
 		export function registerConnectionEventListener(listener: connection.ConnectionEventListener): void;
+
+		export function getConnection(uri: string): Thenable<ConnectionProfile>;
 	}
 
 
@@ -65,7 +67,7 @@ declare module 'azdata' {
 	}
 
 	export interface SerializeDataResult {
-		messages: string;
+		messages?: string;
 		succeeded: boolean;
 	}
 

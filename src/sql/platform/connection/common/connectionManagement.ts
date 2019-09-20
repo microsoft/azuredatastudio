@@ -65,7 +65,7 @@ export const SERVICE_ID = 'connectionManagementService';
 export const IConnectionManagementService = createDecorator<IConnectionManagementService>(SERVICE_ID);
 
 export interface IConnectionManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	// Event Emitters
 	onAddConnectionProfile: Event<IConnectionProfile>;
@@ -110,7 +110,7 @@ export interface IConnectionManagementService {
 
 	onIntelliSenseCacheComplete(handle: number, connectionUri: string): void;
 
-	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo);
+	onConnectionChangedNotification(handle: number, changedConnInfo: azdata.ChangedConnectionInfo): void;
 
 	getConnectionGroups(providers?: string[]): ConnectionProfileGroup[];
 
@@ -277,6 +277,8 @@ export interface IConnectionManagementService {
 	 * @returns array of connections
 	 */
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[];
+
+	getConnection(uri: string): ConnectionProfile;
 }
 
 export enum RunQueryOnConnectionMode {

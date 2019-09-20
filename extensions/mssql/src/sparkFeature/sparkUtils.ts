@@ -45,12 +45,12 @@ export function getTemplatePath(extensionPath: string, templateName: string): st
 }
 export function shellWhichResolving(cmd: string): Promise<string> {
 	return new Promise<string>(resolve => {
-		which(cmd, (err, foundPath) => {
+		which(cmd, async (err, foundPath) => {
 			if (err) {
 				resolve(undefined);
 			} else {
 				// NOTE: Using realpath b/c some system installs are symlinked from */bin
-				resolve(fs.realpathSync(foundPath));
+				resolve(await fs.promises.realpath(foundPath));
 			}
 		});
 	});

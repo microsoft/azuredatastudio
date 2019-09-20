@@ -10,6 +10,6 @@ import { FileNode } from 'sql/workbench/services/fileBrowser/common/fileNode';
  */
 export class FileBrowserTree {
 	public rootNode: FileNode;
-	public selectedNode: FileNode;
+	public selectedNode?: FileNode;
 	public expandedNodes: FileNode[];
 }

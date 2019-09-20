@@ -16,7 +16,7 @@ import { ServerGroupViewModel } from 'sql/workbench/parts/objectExplorer/common/
 import { ConnectionProfileGroup, IConnectionProfileGroup } from 'sql/platform/connection/common/connectionProfileGroup';
 
 export class ServerGroupController implements IServerGroupController {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _serverGroupDialog: ServerGroupDialog;
 	private _callbacks: IServerGroupDialogCallbacks;

@@ -13,5 +13,5 @@ export interface IClipboardService extends vsIClipboardService {
 	/**
 	 * Writes the input image as a dataurl to the clipbaord
 	 */
-	writeImageDataUrl(data: string): void;
+	writeImageDataUrl(data: string): Promise<void>;
 }

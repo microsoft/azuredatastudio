@@ -9,7 +9,7 @@ import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer, createDB, deleteDB } from './utils';
+import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs } from './utils';
 import assert = require('assert');
 import { stressify } from 'adstest';
 
@@ -43,7 +43,7 @@ class ObjectExplorerTester {
 	async bdcNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 		const server = await getBdcServer();
-		await this.verifyOeNode(server, 6000, expectedNodeLabel);
+		await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -51,7 +51,7 @@ class ObjectExplorerTester {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 			const server = await getStandaloneServer();
-			await this.verifyOeNode(server, 3000, expectedNodeLabel);
+			await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 		}
 	}
 
@@ -59,7 +59,7 @@ class ObjectExplorerTester {
 	async sqlDbNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		const server = await getAzureServer();
-		await this.verifyOeNode(server, 3000, expectedNodeLabel);
+		await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -80,7 +80,7 @@ class ObjectExplorerTester {
 		else {
 			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
-		await this.verifyDBContextMenu(server, 3000, expectedActions);
+		await this.verifyDBContextMenu(server, DefaultConnectTimeoutInMs, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -98,7 +98,7 @@ class ObjectExplorerTester {
 	}
 
 	async verifyContextMenu(server: TestServerProfile, expectedActions: string[]): Promise<void> {
-		await connectToServer(server, 3000);
+		await connectToServer(server, DefaultConnectTimeoutInMs);
 		const nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
 		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 

@@ -30,10 +30,10 @@ import { IModelService } from 'vs/editor/common/services/modelService';
 import { ModeServiceImpl } from 'vs/editor/common/services/modeServiceImpl';
 import { ModelServiceImpl } from 'vs/editor/common/services/modelServiceImpl';
 import { ITextFileStreamContent, ITextFileService, IResourceEncoding, IReadTextFileOptions } from 'vs/workbench/services/textfile/common/textfiles';
-import { parseArgs } from 'vs/platform/environment/node/argv';
+import { parseArgs, OPTIONS } from 'vs/platform/environment/node/argv';
 import { IModeService } from 'vs/editor/common/services/modeService';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
-import { IInstantiationService, ServicesAccessor, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
 import { IWindowsService, IWindowService, INativeOpenDialogOptions, IEnterWorkspaceResult, IMessageBoxResult, MenuBarVisibility, IURIToOpen, IOpenSettings, IWindowConfiguration } from 'vs/platform/windows/common/windows';
 import { TestWorkspace } from 'vs/platform/workspace/test/common/testWorkspace';
@@ -50,7 +50,7 @@ import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { MockContextKeyService, MockKeybindingService } from 'vs/platform/keybinding/test/common/mockKeybindingService';
 import { ITextBufferFactory, DefaultEndOfLine, EndOfLinePreference, IModelDecorationOptions, ITextModel, ITextSnapshot } from 'vs/editor/common/model';
 import { Range } from 'vs/editor/common/core/range';
-import { IConfirmation, IConfirmationResult, IDialogService, IDialogOptions, IPickAndOpenOptions, ISaveDialogOptions, IOpenDialogOptions, IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IConfirmation, IConfirmationResult, IDialogService, IDialogOptions, IPickAndOpenOptions, ISaveDialogOptions, IOpenDialogOptions, IFileDialogService, IShowResult } from 'vs/platform/dialogs/common/dialogs';
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { TestNotificationService } from 'vs/platform/notification/test/common/testNotificationService';
 import { IExtensionService, NullExtensionService } from 'vs/workbench/services/extensions/common/extensions';
@@ -82,19 +82,20 @@ import { ISharedProcessService } from 'vs/platform/ipc/electron-browser/sharedPr
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
 import { WorkbenchEnvironmentService } from 'vs/workbench/services/environment/node/environmentService';
 import { VSBuffer, VSBufferReadable } from 'vs/base/common/buffer';
-import { NodeTextFileService } from 'vs/workbench/services/textfile/node/textFileService';
+import { NativeTextFileService } from 'vs/workbench/services/textfile/electron-browser/nativeTextFileService';
 import { Schemas } from 'vs/base/common/network';
-import { IProductService } from 'vs/platform/product/common/product';
-import product from 'vs/platform/product/node/product';
+import { IProductService } from 'vs/platform/product/common/productService';
+import product from 'vs/platform/product/common/product';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 export function createFileInput(instantiationService: IInstantiationService, resource: URI): FileEditorInput {
 	return instantiationService.createInstance(FileEditorInput, resource, undefined, undefined);
 }
 
-export const TestEnvironmentService = new WorkbenchEnvironmentService(parseArgs(process.argv) as IWindowConfiguration, process.execPath);
+export const TestEnvironmentService = new WorkbenchEnvironmentService(parseArgs(process.argv, OPTIONS) as IWindowConfiguration, process.execPath);
 
 export class TestContextService implements IWorkspaceContextService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private workspace: Workspace;
 	private options: any;
@@ -106,6 +107,7 @@ export class TestContextService implements IWorkspaceContextService {
 	constructor(workspace: any = TestWorkspace, options: any = null) {
 		this.workspace = workspace;
 		this.options = options || Object.create(null);
+		this._onDidChangeWorkspaceName = new Emitter<void>();
 		this._onDidChangeWorkspaceFolders = new Emitter<IWorkspaceFoldersChangeEvent>();
 		this._onDidChangeWorkbenchState = new Emitter<WorkbenchState>();
 	}
@@ -179,7 +181,7 @@ export class TestContextService implements IWorkspaceContextService {
 	}
 }
 
-export class TestTextFileService extends NodeTextFileService {
+export class TestTextFileService extends NativeTextFileService {
 	public cleanupBackupsBeforeShutdownCalled: boolean;
 
 	private promptPath: URI;
@@ -198,7 +200,7 @@ export class TestTextFileService extends NodeTextFileService {
 		@IWorkbenchEnvironmentService environmentService: IWorkbenchEnvironmentService,
 		@INotificationService notificationService: INotificationService,
 		@IBackupFileService backupFileService: IBackupFileService,
-		@IWindowsService windowsService: IWindowsService,
+		@IHostService hostService: IHostService,
 		@IHistoryService historyService: IHistoryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IDialogService dialogService: IDialogService,
@@ -218,7 +220,7 @@ export class TestTextFileService extends NodeTextFileService {
 			environmentService,
 			notificationService,
 			backupFileService,
-			windowsService,
+			hostService,
 			historyService,
 			contextKeyService,
 			dialogService,
@@ -310,6 +312,7 @@ export function workbenchInstantiationService(): IInstantiationService {
 	instantiationService.stub(IDecorationsService, new TestDecorationsService());
 	instantiationService.stub(IExtensionService, new TestExtensionService());
 	instantiationService.stub(IWindowsService, new TestWindowsService());
+	instantiationService.stub(IHostService, <IHostService>instantiationService.createInstance(TestHostService));
 	instantiationService.stub(ITextFileService, <ITextFileService>instantiationService.createInstance(TestTextFileService));
 	instantiationService.stub(ITextModelService, <ITextModelService>instantiationService.createInstance(TextModelResolverService));
 	instantiationService.stub(IThemeService, new TestThemeService());
@@ -325,7 +328,7 @@ export function workbenchInstantiationService(): IInstantiationService {
 }
 
 export class TestDecorationsService implements IDecorationsService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onDidChangeDecorations: Event<IResourceDecorationChangeEvent> = Event.None;
 	registerDecorationsProvider(_provider: IDecorationsProvider): IDisposable { return Disposable.None; }
 	getDecoration(_uri: URI, _includeChildren: boolean, _overwrite?: IDecorationData): IDecoration | undefined { return undefined; }
@@ -335,7 +338,7 @@ export class TestExtensionService extends NullExtensionService { }
 
 export class TestMenuService implements IMenuService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	createMenu(_id: MenuId, _scopedKeybindingService: IContextKeyService): IMenu {
 		return {
@@ -348,7 +351,7 @@ export class TestMenuService implements IMenuService {
 
 export class TestHistoryService implements IHistoryService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	constructor(private root?: URI) {
 	}
@@ -392,20 +395,24 @@ export class TestHistoryService implements IHistoryService {
 
 export class TestDialogService implements IDialogService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	public confirm(_confirmation: IConfirmation): Promise<IConfirmationResult> {
 		return Promise.resolve({ confirmed: false });
 	}
 
-	public show(_severity: Severity, _message: string, _buttons: string[], _options?: IDialogOptions): Promise<number> {
-		return Promise.resolve(0);
+	public show(_severity: Severity, _message: string, _buttons: string[], _options?: IDialogOptions): Promise<IShowResult> {
+		return Promise.resolve({ choice: 0 });
+	}
+
+	public about(): Promise<void> {
+		return Promise.resolve();
 	}
 }
 
 export class TestFileDialogService implements IFileDialogService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	public defaultFilePath(_schemeFilter?: string): URI | undefined {
 		return undefined;
@@ -441,7 +448,7 @@ export class TestFileDialogService implements IFileDialogService {
 
 export class TestLayoutService implements IWorkbenchLayoutService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	dimension: IDimension = { width: 800, height: 600 };
 
@@ -541,6 +548,8 @@ export class TestLayoutService implements IWorkbenchLayoutService {
 	public addClass(_clazz: string): void { }
 	public removeClass(_clazz: string): void { }
 
+	public getMaximumEditorDimensions(): Dimension { throw new Error('not implemented'); }
+
 	public getWorkbenchContainer(): HTMLElement { throw new Error('not implemented'); }
 	public getWorkbenchElement(): HTMLElement { throw new Error('not implemented'); }
 
@@ -558,7 +567,7 @@ export class TestLayoutService implements IWorkbenchLayoutService {
 let activeViewlet: Viewlet = {} as any;
 
 export class TestViewletService implements IViewletService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	onDidViewletRegisterEmitter = new Emitter<ViewletDescriptor>();
 	onDidViewletDeregisterEmitter = new Emitter<ViewletDescriptor>();
@@ -609,7 +618,7 @@ export class TestViewletService implements IViewletService {
 }
 
 export class TestPanelService implements IPanelService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	onDidPanelOpen = new Emitter<{ panel: IPanel, focus: boolean }>().event;
 	onDidPanelClose = new Emitter<IPanel>().event;
@@ -658,7 +667,7 @@ export class TestStorageService extends InMemoryStorageService { }
 
 export class TestEditorGroupsService implements IEditorGroupsService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	constructor(public groups: TestEditorGroup[] = []) { }
 
@@ -858,7 +867,7 @@ export class TestEditorGroup implements IEditorGroupView {
 
 export class TestEditorService implements EditorServiceImpl {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	onDidActiveEditorChange: Event<void> = Event.None;
 	onDidVisibleEditorsChange: Event<void> = Event.None;
@@ -908,7 +917,7 @@ export class TestEditorService implements EditorServiceImpl {
 
 export class TestFileService implements IFileService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private readonly _onFileChanges: Emitter<FileChangesEvent>;
 	private readonly _onAfterOperation: Emitter<FileOperationEvent>;
@@ -1079,7 +1088,7 @@ export class TestFileService implements IFileService {
 }
 
 export class TestBackupFileService implements IBackupFileService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	public hasBackups(): Promise<boolean> {
 		return Promise.resolve(false);
@@ -1144,7 +1153,7 @@ export class TestBackupFileService implements IBackupFileService {
 }
 
 export class TestCodeEditorService implements ICodeEditorService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	onCodeEditorAdd: Event<ICodeEditor> = Event.None;
 	onCodeEditorRemove: Event<ICodeEditor> = Event.None;
@@ -1170,7 +1179,7 @@ export class TestCodeEditorService implements ICodeEditorService {
 
 export class TestWindowService implements IWindowService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	onDidChangeFocus: Event<boolean> = new Emitter<boolean>().event;
 	onDidChangeMaximize: Event<boolean>;
@@ -1301,7 +1310,7 @@ export class TestWindowService implements IWindowService {
 
 export class TestLifecycleService implements ILifecycleService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	public phase: LifecyclePhase;
 	public startupKind: StartupKind;
@@ -1340,9 +1349,7 @@ export class TestLifecycleService implements ILifecycleService {
 
 export class TestWindowsService implements IWindowsService {
 
-	_serviceBrand: any;
-
-	public windowCount = 1;
+	_serviceBrand: undefined;
 
 	readonly onWindowOpen: Event<number> = Event.None;
 	readonly onWindowFocus: Event<number> = Event.None;
@@ -1483,18 +1490,6 @@ export class TestWindowsService implements IWindowsService {
 		throw new Error('not implemented');
 	}
 
-	getWindowCount(): Promise<number> {
-		return Promise.resolve(this.windowCount);
-	}
-
-	log(_severity: string, _args: string[]): Promise<void> {
-		return Promise.resolve();
-	}
-
-	showItemInFolder(_path: URI): Promise<void> {
-		return Promise.resolve();
-	}
-
 	newWindowTab(): Promise<void> {
 		return Promise.resolve();
 	}
@@ -1550,10 +1545,6 @@ export class TestWindowsService implements IWindowsService {
 		throw new Error('not implemented');
 	}
 
-	openAboutDialog(): Promise<void> {
-		return Promise.resolve();
-	}
-
 	resolveProxy(windowId: number, url: string): Promise<string | undefined> {
 		return Promise.resolve(undefined);
 	}
@@ -1561,7 +1552,7 @@ export class TestWindowsService implements IWindowsService {
 
 export class TestTextResourceConfigurationService implements ITextResourceConfigurationService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	constructor(private configurationService = new TestConfigurationService()) {
 	}
@@ -1579,7 +1570,7 @@ export class TestTextResourceConfigurationService implements ITextResourceConfig
 
 export class TestTextResourcePropertiesService implements ITextResourcePropertiesService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	constructor(
 		@IConfigurationService private readonly configurationService: IConfigurationService,
@@ -1600,7 +1591,7 @@ export class TestTextResourcePropertiesService implements ITextResourcePropertie
 
 export class TestSharedProcessService implements ISharedProcessService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	getChannel(channelName: string): any {
 		return undefined;
@@ -1639,3 +1630,10 @@ export class RemoteFileSystemProvider implements IFileSystemProvider {
 }
 
 export const productService: IProductService = { _serviceBrand: undefined, ...product };
+
+export class TestHostService implements IHostService {
+
+	_serviceBrand: undefined;
+
+	windowCount = Promise.resolve(1);
+}

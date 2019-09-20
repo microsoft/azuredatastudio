@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 import * as path from 'vs/base/common/path';
-import * as fs from 'fs';
 
 import { URI } from 'vs/base/common/uri';
 
@@ -20,6 +19,7 @@ export class NotebookMarkdownRenderer {
 	private _baseUrls: string[] = [];
 
 	constructor() {
+
 	}
 
 	render(markdown: IMarkdownString): IMarkdownRenderResult {
@@ -59,7 +59,7 @@ export class NotebookMarkdownRenderer {
 		let signalInnerHTML: () => void;
 		const withInnerHTML = new Promise(c => signalInnerHTML = c);
 
-		let notebookFolder = path.dirname(this._notebookURI.path) + '/';
+		let notebookFolder = path.dirname(this._notebookURI.fsPath) + '/';
 		if (!this._baseUrls.includes(notebookFolder)) {
 			this._baseUrls.push(notebookFolder);
 		}
@@ -197,7 +197,7 @@ export class NotebookMarkdownRenderer {
 			// ignore
 		}
 		let originIndependentUrl = /^$|^[a-z][a-z0-9+.-]*:|^[?#]/i;
-		if (base && !originIndependentUrl.test(href) && !fs.existsSync(href)) {
+		if (base && !originIndependentUrl.test(href) && !path.isAbsolute(href)) {
 			href = this.resolveUrl(base, href);
 		}
 		try {
@@ -206,6 +206,7 @@ export class NotebookMarkdownRenderer {
 			return null;
 		}
 		return href;
+
 	}
 
 	resolveUrl(base: string, href: string) {
@@ -226,6 +227,8 @@ export class NotebookMarkdownRenderer {
 			return base.replace(/:[\s\S]*/, ':') + href;
 		} else if (href.charAt(0) === '/') {
 			return base.replace(/(:\/*[^/]*)[\s\S]*/, '$1') + href;
+		} else if (href.slice(0, 2) === '..') {
+			return path.join(base, href);
 		} else {
 			return base + href;
 		}

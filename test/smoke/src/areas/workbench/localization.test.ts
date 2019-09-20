@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Application, Quality } from '../../application';
+import { Application, Quality } from '../../../../automation';
 
 export function setup() {
 	describe('Localization', () => {

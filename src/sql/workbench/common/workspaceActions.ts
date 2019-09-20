@@ -5,16 +5,17 @@
 
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
-import { URI } from 'vs/base/common/uri';
+//tslint:disable-next-line:layering
+import { ElectronMainService } from 'vs/platform/electron/electron-main/electronMainService';
 
 export class ShowFileInFolderAction extends Action {
 
-	constructor(private path: string, label: string, private windowsService: IWindowsService) {
+	constructor(private path: string, label: string, private windowsService: ElectronMainService) {
 		super('showItemInFolder.action.id', label);
 	}
 
 	run(): Promise<void> {
-		return this.windowsService.showItemInFolder(URI.file(this.path));
+		return this.windowsService.showItemInFolder(this.path);
 	}
 }
 

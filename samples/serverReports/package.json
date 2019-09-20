@@ -1,236 +1,404 @@
 {
-    "name": "server-report",
-    "displayName": "Server Reports",
-    "description": "Server Reports",
-    "version": "0.1.5",
-    "publisher": "Microsoft",
-    "preview": true,
-    "engines": {
-        "vscode": "^1.26.0",
-        "azdata": "*"
-    },
-    "icon": "images/sqlserver.png",
-    "license": "SEE LICENSE IN LICENSE.txt",
-    "repository": "https://github.com/Microsoft/azuredatastudio",
-    "categories": [
-        "Other"
-    ],
-    "activationEvents": [
-        "*"
-    ],
-    "main": "./out/src/extension",
-    "contributes": {
-        "configuration": [],
-        "commands": [],
-        "views": {},
-        "menus": {},
-        "dashboard.tabs": [
-            {
-                "id": "Server-Reports",
-                "title": "Server Reports",
-                "description": "This extension shows useful reports for a server.",
-                "container": {
-                    "nav-section": [
-                        {
-                            "id": "server-reports-monitoring",
-                            "title": "Monitor",
-                            "icon": {
-                                "light": "./out/src/media/monitor.svg",
-                                "dark": "./out/src/media/monitor_inverse.svg"
-                            },
-                            "container": {
-                                "server-reports-monitoring-container": {}
-                            }
-                        },
-                        {
-                            "id": "server-reports-performance",
-                            "title": "Performance",
-                            "icon": {
-                                "light": "./out/src/media/performance.svg",
-                                "dark": "./out/src/media/performance_inverse.svg"
-                            },
-                            "container": {
-                                "server-reports-performance-container": {}
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-        "dashboard.insights": [
-            {
-                "id": "extension-dbspace-usage",
-                "contrib": {
-                    "type": {
-                        "horizontalBar": {
-                            "dataDirection": "vertical",
-                            "dataType": "number",
-                            "legendPosition": "top",
-                            "labelFirstColumn": false,
-                            "columnsAsLabels": true
-                        }
-                    },
-                    "queryFile": "./out/src/sql/all_db_space_used.sql"
-                }
-            },
-            {
-                "id": "extension-cpu-utilization",
-                "contrib": {
-                    "type": {
-                        "timeSeries": {
-                            "dataDirection": "horizontal",
-                            "dataType": "point",
-                            "legendPosition": "top",
-                            "labelFirstColumn": false,
-                            "columnsAsLabels": false
-                        }
-                    },
-                    "queryFile": "./out/src/sql/cpumetric.sql"
-                }
-            },
-            {
-                "id": "extension-backup-growth-trend",
-                "details": "Abbie wants it",
-                "contrib": {
-                    "type": {
-                        "timeSeries": {
-                            "dataDirection": "horizontal",
-                            "dataType": "point",
-                            "legendPosition": "none",
-                            "labelFirstColumn": false,
-                            "columnsAsLabels": false
-                        }
-                    },
-                    "queryFile": "./out/src/sql/backup_size_trend.sql"
-                }
-            },
-            {
-                "id": "extension-wait-counts-by-Paul-Randal",
-                "contrib": {
-                    "type": {
-                        "horizontalBar": {
-                            "dataDirection": "vertical",
-                            "dataType": "number",
-                            "legendPosition": "none",
-                            "labelFirstColumn": false,
-                            "columnsAsLabels": true
-                        }
-                    },
-                    "queryFile": "./out/src/sql/waits_paul_randal.sql",
-                    "details": {
-                        "queryFile": "./out/src/sql/waits_detail_paul_randal.sql",
-                        "label": {
-                            "column": "WaitType",
-                            "state": []
-                        },
-                        "value": "Percentage"
-                    }
-                }
-            },
-            {
-                "id": "extension-dbbuffer-usage",
-                "contrib": {
-                    "type": {
-                        "horizontalBar": {
-                            "dataDirection": "vertical",
-                            "dataType": "number",
-                            "legendPosition": "top",
-                            "labelFirstColumn": false,
-                            "columnsAsLabels": true
-                        }
-                    },
-                    "queryFile": "./out/src/sql/memorybydb.sql"
-                }
-            }
-        ],
-        "dashboard.containers": [
-            {
-                "id": "server-reports-monitoring-container",
-                "container": {
-                    "widgets-container": [
-                        {
-                            "name": "Top 10 DB Space Usage",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 2
-                            },
-                            "widget": {
-                                "extension-dbspace-usage": {}
-                            }
-                        },
-                        {
-                            "name": "Top 10 DB Buffer Usage",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 2
-                            },
-                            "widget": {
-                                "extension-dbbuffer-usage": {}
-                            }
-                        },
-                        {
-                            "name": "CPU Utilization",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 1
-                            },
-                            "widget": {
-                                "extension-cpu-utilization": {}
-                            }
-                        },
-                        {
-                            "name": "Backup Growth Trend",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 1
-                            },
-                            "widget": {
-                                "extension-backup-growth-trend": {}
-                            }
-                        }
-                    ]
-                }
-            },
-            {
-                "id": "server-reports-performance-container",
-                "container": {
-                    "widgets-container": [
-                        {
-                            "name": "Wait Counts by Paul Randal",
-                            "gridItemConfig": {
-                                "sizex": 2,
-                                "sizey": 2
-                            },
-                            "widget": {
-                                "extension-wait-counts-by-Paul-Randal": {}
-                            }
-                        }
-                    ]
-                }
-            }
-        ],
-        "snippets": []
-    },
-    "scripts": {
-        "build": "gulp build",
-        "compile": "gulp compile",
-        "watch": "gulp watch",
-        "postinstall": "node ./node_modules/vscode/bin/install"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "child-process-promise": "^2.2.1",
-        "del": "^3.0.0",
-        "gulp": "^4.0.0",
-        "gulp-color": "0.0.1",
-        "gulp-sourcemaps": "^2.6.4",
-        "gulp-tslint": "^6.0.2",
-        "gulp-typescript": "^3.2.4",
-        "should": "^13.2.1",
-        "tslint": "^3.14.0",
-        "typemoq": "^2.1.0",
-        "typescript": "^2.6.1",
-        "vsce": "1.36.2",
-        "vscode": "^1.1.6"
-    }
+	"name": "server-report",
+	"displayName": "Server Reports",
+	"description": "Server Reports",
+	"version": "0.1.5",
+	"publisher": "Microsoft",
+	"preview": true,
+	"engines": {
+		"vscode": "^1.26.0",
+		"azdata": "*"
+	},
+	"icon": "images/sqlserver.png",
+	"license": "SEE LICENSE IN LICENSE.txt",
+	"repository": "https://github.com/Microsoft/azuredatastudio",
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"*"
+	],
+	"main": "./out/src/extension",
+	"contributes": {
+		"commands": [
+			{
+				"command": "tempdb.startEvent",
+				"title": "Start",
+				"icon": {
+					"light": "./out/src/media/launch.svg",
+					"dark": "./out/src/media/launch_inverse.svg"
+				}
+			},
+			{
+				"command": "tempdb.stopEvent",
+				"title": "Stop",
+				"icon": {
+					"light": "./out/src/media/blocker.svg",
+					"dark": "./out/src/media/blocker_inverse.svg"
+				}
+			},
+			{
+				"command": "tempdb.contention",
+				"title": "Contention Help for Tempdb",
+				"icon": {
+					"light": "./out/src/media/documentation.svg",
+					"dark": "./out/src/media/documentation_inverse.svg"
+				}
+			},
+			{
+				"command": "tempdb.pauseEvent",
+				"title": "Pause",
+				"icon": {
+					"light": "./out/src/media/insights.svg",
+					"dark": "./out/src/media/insights_inverse.svg"
+				}
+			}
+		],
+		"configuration": [],
+		"views": {},
+		"menus": {},
+		"dashboard.tabs": [
+			{
+				"id": "Server-Reports",
+				"title": "Server Reports",
+				"description": "This extension shows useful reports for a server.",
+				"container": {
+					"nav-section": [
+						{
+							"id": "server-reports-monitoring",
+							"title": "Monitor",
+							"icon": {
+								"light": "./out/src/media/monitor.svg",
+								"dark": "./out/src/media/monitor_inverse.svg"
+							},
+							"container": {
+								"server-reports-monitoring-container": {}
+							}
+						},
+						{
+							"id": "server-reports-performance",
+							"title": "Performance",
+							"icon": {
+								"light": "./out/src/media/performance.svg",
+								"dark": "./out/src/media/performance_inverse.svg"
+							},
+							"container": {
+								"server-reports-performance-container": {}
+							}
+						},
+						{
+							"id": "server-reports-tempdb",
+							"title": "TempDB",
+							"container": {
+								"server-reports-tempdb-container": {}
+							},
+							"icon": {
+								"light": "./out/src/media/tempdb.svg",
+								"dark": "./out/src/media/tempdb_inverse.svg"
+							}
+						}
+					]
+				}
+			}
+		],
+		"dashboard.insights": [
+			{
+				"id": "extension-dbspace-usage",
+				"contrib": {
+					"type": {
+						"horizontalBar": {
+							"dataDirection": "vertical",
+							"dataType": "number",
+							"legendPosition": "top",
+							"labelFirstColumn": false,
+							"columnsAsLabels": true
+						}
+					},
+					"queryFile": "./out/src/sql/all_db_space_used.sql"
+				}
+			},
+			{
+				"id": "extension-cpu-utilization",
+				"contrib": {
+					"type": {
+						"timeSeries": {
+							"dataDirection": "horizontal",
+							"dataType": "point",
+							"legendPosition": "top",
+							"labelFirstColumn": false,
+							"columnsAsLabels": false
+						}
+					},
+					"queryFile": "./out/src/sql/cpumetric.sql"
+				}
+			},
+			{
+				"id": "extension-backup-growth-trend",
+				"details": "Abbie wants it",
+				"contrib": {
+					"type": {
+						"timeSeries": {
+							"dataDirection": "horizontal",
+							"dataType": "point",
+							"legendPosition": "none",
+							"labelFirstColumn": false,
+							"columnsAsLabels": false
+						}
+					},
+					"queryFile": "./out/src/sql/backup_size_trend.sql"
+				}
+			},
+			{
+				"id": "extension-wait-counts-by-Paul-Randal",
+				"contrib": {
+					"type": {
+						"horizontalBar": {
+							"dataDirection": "vertical",
+							"dataType": "number",
+							"legendPosition": "none",
+							"labelFirstColumn": false,
+							"columnsAsLabels": true
+						}
+					},
+					"queryFile": "./out/src/sql/waits_paul_randal.sql",
+					"details": {
+						"queryFile": "./out/src/sql/waits_detail_paul_randal.sql",
+						"label": {
+							"column": "WaitType",
+							"state": []
+						},
+						"value": "Percentage"
+					}
+				}
+			},
+			{
+				"id": "extension-wait-resource-statistics",
+				"contrib": {
+					"type": {
+						"bar": {
+							"dataDirection": "horizontal",
+							"dataType": "number",
+							"legendPosition": "none",
+							"labelFirstColumn": false,
+							"columnsAsLabels": true
+						}
+					},
+					"queryFile": "./out/src/sql/wait_resources.sql",
+					"details": {
+						"queryFile": "./out/src/sql/wait_resources.sql",
+						"label": {
+							"column": "WaitType",
+							"state": []
+						},
+						"value": "Percentage"
+					}
+				}
+			},
+			{
+				"id": "extension-dbbuffer-usage",
+				"contrib": {
+					"type": {
+						"horizontalBar": {
+							"dataDirection": "vertical",
+							"dataType": "number",
+							"legendPosition": "top",
+							"labelFirstColumn": false,
+							"columnsAsLabels": true
+						}
+					},
+					"queryFile": "./out/src/sql/memorybydb.sql"
+				}
+			},
+			{
+				"id": "type-of-contention",
+				"contrib": {
+					"type": {
+						"bar": {
+							"dataDirection": "vertical",
+							"columnsAsLabels": true,
+							"labelFirstColumn": false,
+							"legendPosition": "none"
+						}
+					},
+					"queryFile": "./out/src/sql/typeofContentions.sql",
+					"autoRefreshInterval": 0.05
+				}
+			},
+			{
+				"id": "metadata-contention",
+				"contrib": {
+					"type": {
+						"bar": {
+							"dataDirection": "vertical",
+							"columnsAsLabels": true,
+							"labelFirstColumn": false,
+							"legendPosition": "none",
+							"xAxisLabel": "Object Ids for System Tables"
+						}
+					},
+					"queryFile": "./out/src/sql/metadataContention.sql",
+					"autoRefreshInterval": 0.05
+				}
+			},
+			{
+				"id": "allocation-contention",
+				"contrib": {
+					"type": {
+						"bar": {
+							"dataDirection": "vertical",
+							"columnsAsLabels": true,
+							"labelFirstColumn": false,
+							"legendPosition": "none",
+							"xAxisLabel": "Page Types"
+						}
+					},
+					"queryFile": "./out/src/sql/allocationContention.sql",
+					"autoRefreshInterval": 0.05
+				}
+			}
+		],
+		"dashboard.containers": [
+			{
+				"id": "server-reports-monitoring-container",
+				"container": {
+					"widgets-container": [
+						{
+							"name": "Top 10 DB Space Usage",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 2
+							},
+							"widget": {
+								"extension-dbspace-usage": {}
+							}
+						},
+						{
+							"name": "Top 10 DB Buffer Usage",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 2
+							},
+							"widget": {
+								"extension-dbbuffer-usage": {}
+							}
+						},
+						{
+							"name": "CPU Utilization",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 1
+							},
+							"widget": {
+								"extension-cpu-utilization": {}
+							}
+						},
+						{
+							"name": "Backup Growth Trend",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 1
+							},
+							"widget": {
+								"extension-backup-growth-trend": {}
+							}
+						}
+					]
+				}
+			},
+			{
+				"id": "server-reports-performance-container",
+				"container": {
+					"widgets-container": [
+						{
+							"name": "Wait Counts by Paul Randal",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 2
+							},
+							"widget": {
+								"extension-wait-counts-by-Paul-Randal": {}
+							}
+						}
+					]
+				}
+			},
+			{
+				"id": "server-reports-tempdb-container",
+				"container": {
+					"widgets-container": [
+						{
+							"name": "Tasks",
+							"widget": {
+								"tasks-widget": [
+									"tempdb.startEvent",
+									"tempdb.contention",
+									"tempdb.pauseEvent",
+									"tempdb.stopEvent"
+								]
+							}
+						},
+						{
+							"name": "Overall Contention",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 1
+							},
+							"widget": {
+								"type-of-contention": {}
+							}
+						},
+						{
+							"name": "Metadata Contention",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 1
+							},
+							"widget": {
+								"metadata-contention": {}
+							}
+						},
+						{
+							"name": "Allocation Contention",
+							"gridItemConfig": {
+								"sizex": 2,
+								"sizey": 1
+							},
+							"widget": {
+								"allocation-contention": {}
+							}
+						}
+					]
+				}
+			}
+		],
+		"snippets": []
+	},
+	"scripts": {
+		"build": "gulp build",
+		"compile": "gulp compile",
+		"watch": "gulp watch",
+		"postinstall": "node ./node_modules/vscode/bin/install"
+	},
+	"dependencies": {
+		"fs": "0.0.1-security",
+		"fs-extra": "^8.1.0",
+		"generator-sqlops": "^0.10.4",
+		"handlebars": "^4.1.2",
+		"openurl": "^1.1.1"
+	},
+	"devDependencies": {
+		"child-process-promise": "^2.2.1",
+		"del": "^3.0.0",
+		"gulp": "^4.0.0",
+		"gulp-color": "0.0.1",
+		"gulp-sourcemaps": "^2.6.4",
+		"gulp-tslint": "^6.0.2",
+		"gulp-typescript": "^3.2.4",
+		"should": "^13.2.1",
+		"tslint": "^3.14.0",
+		"typemoq": "^2.1.0",
+		"typescript": "^2.9.2",
+		"vsce": "1.36.2",
+		"vscode": "^1.1.6"
+	}
 }
