@@ -56,6 +56,7 @@ import { renderDashboardContributions } from 'sql/workbench/parts/extensions/bro
 import { generateUuid } from 'vs/base/common/uuid';
 import { platform } from 'vs/base/common/process';
 import { URI } from 'vs/base/common/uri';
+import { Schemas } from 'vs/base/common/network';
 
 function removeEmbeddedSVGs(documentContent: string): string {
 	const newDocument = new DOMParser().parseFromString(documentContent, 'text/html');
@@ -602,7 +603,7 @@ export class ExtensionEditor extends BaseEditor {
 						return;
 					}
 					// Whitelist supported schemes for links
-					if (['http', 'https', 'mailto'].indexOf(link.scheme) >= 0 || (link.scheme === 'command' && link.path === ShowCurrentReleaseNotesActionId)) {
+					if ([Schemas.http, Schemas.https, Schemas.mailto].indexOf(link.scheme) >= 0 || (link.scheme === 'command' && link.path === ShowCurrentReleaseNotesActionId)) {
 						this.openerService.open(link);
 					}
 				}, null, this.contentDisposables));
