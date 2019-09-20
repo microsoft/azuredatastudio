@@ -345,6 +345,7 @@ export class NotebookInput extends EditorInput {
 			}
 			else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
+				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				textOrUntitledEditorModel = await textEditorModelReference.object.load();
 			}
 			this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel);
@@ -385,6 +386,7 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public dispose(): void {
+		this._model.editorModel.textEditorModel.onBeforeDetached();
 		this._disposeContainer();
 		super.dispose();
 	}
