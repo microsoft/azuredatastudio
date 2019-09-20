@@ -8,7 +8,7 @@ import * as os from 'os';
 import * as uuid from 'vs/base/common/uuid';
 import { readFile } from 'vs/base/node/pfs';
 
-import product from 'vs/platform/product/node/product'; // {{SQL CARBON EDIT}}
+import product from 'vs/platform/product/common/product'; // {{SQL CARBON EDIT}}
 const productObject = product; // {{SQL CARBON EDIT}}
 export async function resolveCommonProperties(commit: string | undefined, version: string | undefined, machineId: string | undefined, msftInternalDomains: string[] | undefined, installSourcePath: string, product?: string): Promise<{ [name: string]: string | boolean | undefined; }> {
 	const result: { [name: string]: string | boolean | undefined; } = Object.create(null);

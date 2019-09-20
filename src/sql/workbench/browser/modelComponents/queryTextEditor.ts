@@ -112,14 +112,14 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public setWidth(width: number) {
 		if (this._dimension) {
-			this._dimension.width = width;
+			this._dimension = new DOM.Dimension(width, this._dimension.height);
 			this.layout();
 		}
 	}
 
 	public setHeight(height: number) {
 		if (this._dimension) {
-			this._dimension.height = height;
+			this._dimension = new DOM.Dimension(this._dimension.width, height);
 			this.layout(this._dimension);
 		}
 	}

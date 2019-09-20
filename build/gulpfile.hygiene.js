@@ -73,6 +73,7 @@ const indentationFilter = [
 
 	// except multiple specific folders
 	'!**/octicons/**',
+	'!**/codicon/**',
 	'!**/fixtures/**',
 	'!**/lib/**',
 	'!extensions/**/out/**',
@@ -382,8 +383,6 @@ function hygiene(some) {
 	const sqlTsl = es.through(function (file) { //TODO restore
 		const contents = file.contents.toString('utf8');
 		sqlTsLinter.lint(file.relative, contents, tslintSqlConfiguration.results);
-
-		this.emit('data', file);
 	});
 
 	const productJsonFilter = filter('product.json', { restore: true });
