@@ -283,9 +283,9 @@ describe.skip('BookTreeViewProviderTests', function() {
 			await Promise.race([tocRead, errorCase.then(() => { throw new Error('Table of Contents were not ready in time'); })]);
 		});
 
-		it('should show error if notebook or markdown file is missing', function(): void {
+		it('should show error if notebook or markdown file is missing', async function(): Promise<void> {
 			let books = bookTreeViewProvider.currentBook.bookItems;
-			let children = bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath);
+			let children = await bookTreeViewProvider.currentBook.getSections({ sections: [] }, books[0].sections, rootFolderPath);
 			should(bookTreeViewProvider.errorMessage).equal('Missing file : Notebook1');
 			// Rest of book should be detected correctly even with a missing file
 			equalBookItems(children[0], expectedNotebook2);

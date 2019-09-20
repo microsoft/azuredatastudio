@@ -10,16 +10,17 @@ import * as glob from 'fast-glob';
 import { BookTreeItem, BookTreeItemType } from './bookTreeItem';
 import { maxBookSearchDepth, notebookConfigKey } from '../common/constants';
 import * as path from 'path';
-import * as fs from 'fs';
+import * as fileServices from 'fs';
+import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import { IJupyterBookToc, IJupyterBookSection } from '../contracts/content';
 import { isNullOrUndefined } from 'util';
 
 const localize = nls.loadMessageBundle();
-const fsPromises = fs.promises;
+const fsPromises = fileServices.promises;
 
 export class BookModel implements azdata.nb.NavigationProvider {
-	private _bookItems: BookTreeItem[] = [];
+	private _bookItems: BookTreeItem[];
 	private _allNotebooks = new Map<string, BookTreeItem>();
 	private _tableOfContentPaths: string[] = [];
 	readonly providerId: string = 'BookNavigator';
@@ -27,7 +28,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	constructor(public bookPath: string, public openAsUntitled: boolean, private _extensionContext: vscode.ExtensionContext) {
 		this.bookPath = bookPath;
 		this.openAsUntitled = openAsUntitled;
-		_extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
+		this._bookItems = [];
+		this._extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(this));
 	}
 
 	public async initializeContents(): Promise<void> {
@@ -65,7 +67,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			let root = path.dirname(path.dirname(contentPath));
 			try {
 				let fileContents = await fsPromises.readFile(path.join(root, '_config.yml'), 'utf-8');
-				const config = yaml.safeLoad(fileContents.toString()); //fs.readFileSync(path.join(root, '_config.yml'), 'utf-8')
+				const config = yaml.safeLoad(fileContents.toString());
 				fileContents = await fsPromises.readFile(contentPath, 'utf-8');
 				const tableOfContents = yaml.safeLoad(fileContents.toString());
 				let book = new BookTreeItem({
@@ -95,7 +97,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		return this._bookItems;
 	}
 
-	public getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): BookTreeItem[] {
+	public async getSections(tableOfContents: IJupyterBookToc, sections: IJupyterBookSection[], root: string): Promise<BookTreeItem[]> {
 		let notebooks: BookTreeItem[] = [];
 		for (let i = 0; i < sections.length; i++) {
 			if (sections[i].url) {
@@ -121,7 +123,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 					let pathToMarkdown = path.join(root, 'content', sections[i].url.concat('.md'));
 					// Note: Currently, if there is an ipynb and a md file with the same name, Jupyter Books only shows the notebook.
 					// Following Jupyter Books behavior for now
-					if (fs.existsSync(pathToNotebook)) {
+					if (await fs.pathExists(pathToNotebook)) {
 						let notebook = new BookTreeItem({
 							title: sections[i].title,
 							root: root,
@@ -136,14 +138,20 @@ export class BookModel implements azdata.nb.NavigationProvider {
 								dark: this._extensionContext.asAbsolutePath('resources/dark/notebook_inverse.svg')
 							}
 						);
-						notebooks.push(notebook);
+
 						if (this.openAsUntitled) {
-							this._allNotebooks.set(path.basename(pathToNotebook), notebook);
+							if (!this._allNotebooks.get(path.basename(pathToNotebook))) {
+								this._allNotebooks.set(path.basename(pathToNotebook), notebook);
+								notebooks.push(notebook);
+							}
 						}
 						else {
-							this._allNotebooks.set(pathToNotebook, notebook);
+							if (!this._allNotebooks.get(pathToNotebook)) {
+								this._allNotebooks.set(pathToNotebook, notebook);
+								notebooks.push(notebook);
+							}
 						}
-					} else if (fs.existsSync(pathToMarkdown)) {
+					} else if (await fs.pathExists(pathToMarkdown)) {
 						let markdown = new BookTreeItem({
 							title: sections[i].title,
 							root: root,
@@ -173,13 +181,16 @@ export class BookModel implements azdata.nb.NavigationProvider {
 
 	/**
 	 * Recursively parses out a section of a Jupyter Book.
-	 * @param array The input data to parse
+	 * @param section The input data to parse
 	 */
-	private parseJupyterSection(array: any[]): IJupyterBookSection[] {
+	private parseJupyterSection(section: any[]): IJupyterBookSection[] {
 		try {
-			return array.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
+			return section.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
 		} catch (error) {
-			let err = localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", array[0].title); //need to find a way to get title.
+			let err: string = localize('InvalidError.tocFile', "{0}", error);
+			if (section.length > 0) {
+				err = localize('Invalid toc.yml', "Error: {0} has an incorrect toc.yml file", section[0].title); //need to find a way to get title.
+			}
 			vscode.window.showErrorMessage(err);
 			throw err;
 		}
@@ -196,8 +207,8 @@ export class BookModel implements azdata.nb.NavigationProvider {
 		if (notebook) {
 			result = {
 				hasNavigation: true,
-				previous: notebook.previousUri ? this.openAsUntitled ? vscode.Uri.parse(notebook.previousUri).with({ scheme: 'untitled' }) : vscode.Uri.file(notebook.previousUri) : undefined,
-				next: notebook.nextUri ? this.openAsUntitled ? vscode.Uri.parse(notebook.nextUri).with({ scheme: 'untitled' }) : vscode.Uri.file(notebook.nextUri) : undefined
+				previous: notebook.previousUri ? this.openAsUntitled ? this.getPlatformSpecificUri(notebook.previousUri) : vscode.Uri.file(notebook.previousUri) : undefined,
+				next: notebook.nextUri ? this.openAsUntitled ? this.getPlatformSpecificUri(notebook.nextUri) : vscode.Uri.file(notebook.nextUri) : undefined
 			};
 		} else {
 			result = {
@@ -207,5 +218,14 @@ export class BookModel implements azdata.nb.NavigationProvider {
 			};
 		}
 		return Promise.resolve(result);
+	}
+
+	getPlatformSpecificUri(resource: string): vscode.Uri {
+		if (process.platform === 'win32') {
+			return vscode.Uri.parse(`untitled:${resource}`);
+		}
+		else {
+			return vscode.Uri.parse(resource).with({ scheme: 'untitled' });
+		}
 	}
 }
