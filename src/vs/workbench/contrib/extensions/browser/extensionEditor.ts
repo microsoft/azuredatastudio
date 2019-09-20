@@ -587,10 +587,7 @@ export class ExtensionEditor extends BaseEditor {
 
 	private async openMarkdown(cacheResult: CacheResult<string>, noContentCopy: string, template: IExtensionEditorTemplate): Promise<IActiveElement> {
 		try {
-			const contents = await this.loadContents(() => cacheResult, template);
-			const content = await renderMarkdownDocument(contents, this.extensionService, this.modeService);
-			const documentContent = await this.renderBody(content);
-			const body = removeEmbeddedSVGs(documentContent);
+			const body = await this.renderMarkdown(cacheResult, template);
 
 			const webviewElement = this.contentDisposables.add(this.webviewService.createWebviewEditorOverlay('extensionEditor', {
 				enableFindWidget: true,
@@ -598,6 +595,7 @@ export class ExtensionEditor extends BaseEditor {
 
 			webviewElement.claim(this);
 			webviewElement.layoutWebviewOverElement(template.content);
+			webviewElement.html = body;
 
 			this.contentDisposables.add(webviewElement.onDidFocus(() => this.fireOnDidFocus()));
 			const removeLayoutParticipant = arrays.insert(this.layoutParticipants, {
@@ -608,7 +606,6 @@ export class ExtensionEditor extends BaseEditor {
 			});
 
 			this.contentDisposables.add(toDisposable(removeLayoutParticipant));
-			webviewElement.html = body;
 
 			this.contentDisposables.add(webviewElement.onDidClickLink(link => {
 				if (!link) {
@@ -627,6 +624,13 @@ export class ExtensionEditor extends BaseEditor {
 			p.textContent = noContentCopy;
 			return p;
 		}
+	}
+
+	private async renderMarkdown(cacheResult: CacheResult<string>, template: IExtensionEditorTemplate) {
+		const contents = await this.loadContents(() => cacheResult, template);
+		const content = await renderMarkdownDocument(contents, this.extensionService, this.modeService);
+		const documentContent = await this.renderBody(content);
+		return removeEmbeddedSVGs(documentContent);
 	}
 
 	private async renderBody(body: string): Promise<string> {
