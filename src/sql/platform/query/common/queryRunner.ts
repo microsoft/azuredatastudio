@@ -173,7 +173,7 @@ export default class QueryRunner extends Disposable {
 	private doRunQuery(input: azdata.ISelectionData, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Promise<void>;
 	private doRunQuery(input: string | azdata.ISelectionData, runCurrentStatement: boolean, runOptions?: azdata.ExecutionPlanOptions): Promise<void> {
 		if (this.isExecuting) {
-			return Promise.resolve(undefined);
+			return Promise.resolve();
 		}
 		this._planXml = new Deferred<string>();
 		this._batchSets = [];
@@ -196,7 +196,8 @@ export default class QueryRunner extends Disposable {
 			return runCurrentStatement
 				? this._queryManagementService.runQueryStatement(this.uri, input.startLine, input.startColumn).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e))
 				: this._queryManagementService.runQuery(this.uri, input, runOptions).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
-		} else if (types.isString(input)) {
+		} else {
+			input = input as string;
 			// Update internal state to show that we're executing the query
 			this._isExecuting = true;
 			this._totalElapsedMilliseconds = 0;
@@ -204,8 +205,6 @@ export default class QueryRunner extends Disposable {
 			this._onQueryStart.fire();
 
 			return this._queryManagementService.runQueryString(this.uri, input).then(() => this.handleSuccessRunQueryResult(), e => this.handleFailureRunQueryResult(e));
-		} else {
-			return Promise.reject('Unknown input');
 		}
 	}
 
