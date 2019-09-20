@@ -244,11 +244,11 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 		const endpointCell = modelBuilder.hyperlink()
 			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px' } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden', ...cssStyles.hyperlink } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.hyperlink } });
 	}
 	else if (endpoint.name === Endpoint.sqlServerMaster) {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } })
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.text, ...cssStyles.hyperlink } })
 			.component();
 		endpointCell.onDidClick(async () => {
 			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
@@ -263,13 +263,13 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 				azdata.connection.openConnectionDialog(undefined, connProfile);
 			}
 		});
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px` } });
 	}
 	else {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { ...cssStyles.text } })
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.text } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px` } });
 	}
 	const copyValueCell = modelBuilder.button().component();
 	copyValueCell.iconPath = IconPathHelper.copy;
