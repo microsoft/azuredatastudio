@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -138,7 +138,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@ISerializationService private _serializationService: ISerializationService
+		@optional(ISerializationService) private _serializationService: ISerializationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
@@ -153,7 +153,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		if (!this._serializationService.hasProvider()) {
+		if (!this._serializationService || !this._serializationService.hasProvider()) {
 			return [];
 		}
 		return [
