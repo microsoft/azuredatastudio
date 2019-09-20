@@ -176,9 +176,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}));
 	}
 
-	ngAfterViewInit(): void {
-	}
-
 	get model(): NotebookModel {
 		return this._model;
 	}
