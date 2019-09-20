@@ -14,12 +14,15 @@ import * as os from 'os';
 import { join } from 'path';
 import * as fs from 'fs';
 import { AuthenticationMode } from '../deployClusterWizardModel';
+import { BigDataClusterDeploymentProfile, DataResource, SqlServerMasterResource, HdfsResource } from '../../../services/bigDataClusterDeploymentProfile';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	private formItems: azdata.FormComponent[] = [];
 	private form!: azdata.FormBuilder;
 	private view!: azdata.ModelView;
+	private targetDeploymentProfile!: BigDataClusterDeploymentProfile;
+
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.summaryPageTitle', "Summary"), '', wizard);
 	}
@@ -29,14 +32,10 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.view = view;
 			const deploymentJsonSection = createGroupContainer(view, [
 				view.modelBuilder.flexContainer().withItems([
-					this.createSaveJsonButton(localize('deployCluster.SaveBdcJson', "Save bdc.json"), 'bdc.json', () => { return this.wizard.model.getBdcJson(); }),
-					this.createSaveJsonButton(localize('deployCluster.SaveControlJson', "Save control.json"), 'control.json', () => { return this.wizard.model.getControlJson(); })
+					this.createSaveJsonButton(localize('deployCluster.SaveBdcJson', "Save bdc.json"), 'bdc.json', () => { return this.targetDeploymentProfile.getBdcJson(); }),
+					this.createSaveJsonButton(localize('deployCluster.SaveControlJson', "Save control.json"), 'control.json', () => { return this.targetDeploymentProfile.getControlJson(); })
 				], {
-					CSSStyles: {
-						'margin-right': '10px',
-						'background': 'transparent',
-						'text-decoration': 'underline'
-					}
+					CSSStyles: { 'margin-right': '10px' }
 				}).withLayout({ flexFlow: 'row', alignItems: 'center' }).component()
 			], {
 				header: localize('deployCluster.DeploymentJSON', "Deployment JSON files"),
@@ -54,6 +53,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onEnter() {
+		this.createTargetProfile();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -182,32 +182,17 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			title: localize('deployCluster.ScaleSettings', "Scale settings"),
 			rows: [
 				{
-					fields: [
-						{
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.SqlServerText', "SQL Server Master"),
-							defaultValue: `${this.wizard.model.getStringValue(VariableNames.SQLServerScale_VariableName)} ${this.wizard.model.hadrEnabled ? localize('deployCluster.WithHADR', "(Availability Groups Enabled)") : ''}`,
-							fontStyle: FontStyle.Italic
-						}, {
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.ComputeText', "Compute"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}
-					]
-				}, {
-					fields: [
-						{
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.DataText', "Data"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.DataPoolScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}, {
-							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
-							defaultValue: this.wizard.model.getStringValue(VariableNames.HDFSNameNodeScale_VariableName),
-							fontStyle: FontStyle.Italic
-						}
+					fields: [{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.ComputeText', "Compute"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.ComputePoolScale_VariableName),
+						fontStyle: FontStyle.Italic
+					}, {
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.DataText', "Data"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DataPoolScale_VariableName),
+						fontStyle: FontStyle.Italic
+					}
 					]
 				}, {
 					fields: [
@@ -220,6 +205,44 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 							type: FieldType.ReadonlyText,
 							label: localize('deployCluster.SparkText', "Spark"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.SparkPoolScale_VariableName),
+							fontStyle: FontStyle.Italic
+						}
+					]
+				}
+			]
+		};
+
+		const hadrSectionInfo: SectionInfo = {
+			labelPosition: LabelPosition.Left,
+			labelWidth: '150px',
+			inputWidth: '200px',
+			title: localize('deployCluster.HadrSection', "High availability settings"),
+			rows: [
+				{
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.SqlServerText', "SQL Server Master"),
+							defaultValue: `${this.wizard.model.getStringValue(VariableNames.SQLServerScale_VariableName)} ${this.wizard.model.hadrEnabled ? localize('deployCluster.WithHADR', "(Availability Groups Enabled)") : ''}`,
+							fontStyle: FontStyle.Italic
+						}, {
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.HDFSNameNodeScale_VariableName),
+							fontStyle: FontStyle.Italic
+						}
+					]
+				}, {
+					fields: [
+						{
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.ZooKeeperText', "ZooKeeper"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.ZooKeeperScale_VariableName),
+							fontStyle: FontStyle.Italic
+						}, {
+							type: FieldType.ReadonlyText,
+							label: localize('deployCluster.SparkHeadText', "SparkHead"),
+							defaultValue: this.wizard.model.getStringValue(VariableNames.SparkHeadScale_VariableName),
 							fontStyle: FontStyle.Italic
 						}
 					]
@@ -248,6 +271,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 
 		const clusterSection = createSectionFunc(clusterSectionInfo);
 		const scaleSection = createSectionFunc(scaleSectionInfo);
+		const hadrSection = createSectionFunc(hadrSectionInfo);
 		const endpointSection = {
 			title: '',
 			component: this.createEndpointSection()
@@ -261,7 +285,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.formItems.push(azureSection);
 		}
 
-		this.formItems.push(clusterSection, scaleSection, endpointSection, storageSection);
+		this.formItems.push(clusterSection, scaleSection, hadrSection, endpointSection, storageSection);
 		this.form.addFormItems(this.formItems);
 	}
 
@@ -372,29 +396,74 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 				}
 			}).then((path) => {
 				if (path) {
-					try {
-						fs.writeFile(path.fsPath, getContent(), (error) => {
-							if (error) {
-								this.wizard.wizardObject.message = {
-									text: error.message,
-									level: azdata.window.MessageLevel.Error
-								};
-							} else {
-								this.wizard.wizardObject.message = {
-									text: localize('deployCluster.SaveJsonFileMessage', "File saved: {0}", path.fsPath),
-									level: azdata.window.MessageLevel.Information
-								};
-							}
-						});
-					} catch (error) {
+					fs.promises.writeFile(path.fsPath, getContent()).then(() => {
+						this.wizard.wizardObject.message = {
+							text: localize('deployCluster.SaveJsonFileMessage', "File saved: {0}", path.fsPath),
+							level: azdata.window.MessageLevel.Information
+						};
+					}).catch((error) => {
 						this.wizard.wizardObject.message = {
 							text: error.message,
 							level: azdata.window.MessageLevel.Error
 						};
-					}
+					});
 				}
 			});
 		}));
 		return button;
+	}
+
+	private createTargetProfile(): void {
+		// create a copy of the source files to avoid changing the source profile values
+		const sourceBdcJson = Object.assign({}, this.wizard.model.selectedProfile!.bdcConfig);
+		const sourceControlJson = Object.assign({}, this.wizard.model.selectedProfile!.controlConfig);
+		this.targetDeploymentProfile = new BigDataClusterDeploymentProfile('', sourceBdcJson, sourceControlJson);
+		// cluster name
+		this.targetDeploymentProfile.clusterName = this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName)!;
+		// storage settings
+		this.targetDeploymentProfile.controllerDataStorageClass = this.wizard.model.getStringValue(VariableNames.ControllerDataStorageClassName_VariableName)!;
+		this.targetDeploymentProfile.controllerDataStorageSize = this.wizard.model.getIntegerValue(VariableNames.ControllerDataStorageSize_VariableName)!;
+		this.targetDeploymentProfile.controllerLogsStorageClass = this.wizard.model.getStringValue(VariableNames.ControllerLogsStorageClassName_VariableName)!;
+		this.targetDeploymentProfile.controllerLogsStorageSize = this.wizard.model.getIntegerValue(VariableNames.ControllerLogsStorageSize_VariableName)!;
+		this.targetDeploymentProfile.setResourceStorage(DataResource,
+			this.wizard.model.getStorageSettingValue(VariableNames.DataPoolDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
+			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.DataPoolDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
+			this.wizard.model.getStorageSettingValue(VariableNames.DataPoolLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
+			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
+		);
+		this.targetDeploymentProfile.setResourceStorage(SqlServerMasterResource,
+			this.wizard.model.getStorageSettingValue(VariableNames.SQLServerDNSName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
+			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
+			this.wizard.model.getStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
+			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
+		);
+		this.targetDeploymentProfile.setResourceStorage(HdfsResource,
+			this.wizard.model.getStorageSettingValue(VariableNames.HDFSDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
+			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.HDFSDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
+			this.wizard.model.getStorageSettingValue(VariableNames.HDFSLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
+			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.HDFSLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
+		);
+
+		// scale settings
+		this.targetDeploymentProfile.dataReplicas = this.wizard.model.getIntegerValue(VariableNames.DataPoolScale_VariableName);
+		this.targetDeploymentProfile.computeReplicas = this.wizard.model.getIntegerValue(VariableNames.ComputePoolScale_VariableName);
+		this.targetDeploymentProfile.hdfsReplicas = this.wizard.model.getIntegerValue(VariableNames.HDFSPoolScale_VariableName);
+		this.targetDeploymentProfile.sqlServerReplicas = this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName);
+		this.targetDeploymentProfile.hdfsNameNodeReplicas = this.wizard.model.getIntegerValue(VariableNames.HDFSNameNodeScale_VariableName);
+		this.targetDeploymentProfile.sparkHeadReplicas = this.wizard.model.getIntegerValue(VariableNames.SparkHeadScale_VariableName);
+		this.targetDeploymentProfile.zooKeeperReplicas = this.wizard.model.getIntegerValue(VariableNames.ZooKeeperScale_VariableName);
+		const sparkScale = this.wizard.model.getIntegerValue(VariableNames.SparkPoolScale_VariableName);
+		if (sparkScale > 0) {
+			this.targetDeploymentProfile.addSparkResource(sparkScale);
+		}
+
+		this.targetDeploymentProfile.includeSpark = this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName);
+		this.targetDeploymentProfile.hadrEnabled = this.wizard.model.getBooleanValue(VariableNames.EnableHADR_VariableName);
+
+		// port settings
+		this.targetDeploymentProfile.gatewayPort = this.wizard.model.getIntegerValue(VariableNames.GateWayPort_VariableName);
+		this.targetDeploymentProfile.sqlServerPort = this.wizard.model.getIntegerValue(VariableNames.SQLServerPort_VariableName);
+		this.targetDeploymentProfile.controllerPort = this.wizard.model.getIntegerValue(VariableNames.ControllerPort_VariableName);
+		this.targetDeploymentProfile.sqlServerReadableSecondaryPort = this.wizard.model.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName);
 	}
 }

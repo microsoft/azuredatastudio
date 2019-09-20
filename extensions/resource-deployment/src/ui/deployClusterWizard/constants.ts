@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+
 export const DeploymentProfile_VariableName = 'AZDATA_NB_VAR_BDC_DEPLOYMENT_PROFILE';
 export const ClusterName_VariableName = 'AZDATA_NB_VAR_BDC_CLUSTER_NAME';
 export const AdminUserName_VariableName = 'AZDATA_NB_VAR_BDC_CONTROLLER_USERNAME';
@@ -27,6 +27,8 @@ export const ClusterContext_VariableName = 'AZDATA_NB_VAR_BDC_CLUSTER_CONTEXT';
 export const SQLServerScale_VariableName = 'AZDATA_NB_VAR_BDC_SQLSERVER_SCALE';
 export const HDFSPoolScale_VariableName = 'AZDATA_NB_VAR_BDC_HDFSPOOL_SCALE';
 export const HDFSNameNodeScale_VariableName = 'AZDATA_NB_VAR_BDC_NAMENODE_SCALE';
+export const ZooKeeperScale_VariableName = 'AZDATA_NB_VAR_BDC_ZOOKEEPER_SCALE';
+export const SparkHeadScale_VariableName = 'AZDATA_NB_VAR_BDC_SPARKHEAD_SCALE';
 export const IncludeSpark_VariableName = 'AZDATA_NB_VAR_BDC_INCLUDESPARK';
 export const ComputePoolScale_VariableName = 'AZDATA_NB_VAR_BDC_COMPUTEPOOL_SCALE';
 export const DataPoolScale_VariableName = 'AZDATA_NB_VAR_BDC_DATAPOOL_SCALE';

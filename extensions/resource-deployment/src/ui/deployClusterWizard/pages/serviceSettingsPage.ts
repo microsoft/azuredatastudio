@@ -53,28 +53,13 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			rows: [{
 				fields: [
 					{
-						type: FieldType.Options,
-						label: localize('deployCluster.MasterSqlText', "SQL Server Master"),
-						options: ['1', '3', '4', '5', '6', '7', '8', '9'],
-						defaultValue: '1',
-						variableName: VariableNames.SQLServerScale_VariableName,
-					}, {
-						type: FieldType.Checkbox,
-						label: localize('deployCluster.enableHADR', "Enable Availability Groups"),
-						defaultValue: 'false',
-						variableName: VariableNames.EnableHADR_VariableName,
-						required: false
-					}
-				]
-			}, {
-				fields: [
-					{
 						type: FieldType.Number,
 						label: localize('deployCluster.ComputeText', "Compute"),
 						min: 1,
 						max: 100,
 						defaultValue: '1',
 						useCustomValidator: true,
+						required: true,
 						variableName: VariableNames.ComputePoolScale_VariableName,
 					}
 				]
@@ -86,20 +71,9 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					max: 100,
 					defaultValue: '1',
 					useCustomValidator: true,
+					required: true,
 					variableName: VariableNames.DataPoolScale_VariableName,
 				}]
-			}, {
-				fields: [
-					{
-						type: FieldType.Number,
-						label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
-						min: 1,
-						max: 100,
-						defaultValue: '1',
-						useCustomValidator: true,
-						variableName: VariableNames.HDFSNameNodeScale_VariableName
-					}
-				]
 			}, {
 				fields: [
 					{
@@ -109,6 +83,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						max: 100,
 						defaultValue: '1',
 						useCustomValidator: true,
+						required: true,
 						variableName: VariableNames.HDFSPoolScale_VariableName
 					}, {
 						type: FieldType.Checkbox,
@@ -127,7 +102,73 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 						max: 100,
 						defaultValue: '0',
 						useCustomValidator: true,
+						required: true,
 						variableName: VariableNames.SparkPoolScale_VariableName
+					}
+				]
+			}
+			]
+		};
+
+		const hadrSectionInfo: SectionInfo = {
+			title: localize('deployCluster.HadrSection', "High availability settings"),
+			labelWidth: labelWidth,
+			inputWidth: inputWidth,
+			spaceBetweenFields: spaceBetweenFields,
+			rows: [{
+				fields: [
+					{
+						type: FieldType.Options,
+						label: localize('deployCluster.MasterSqlText', "SQL Server Master"),
+						options: ['1', '3', '4', '5', '6', '7', '8', '9'],
+						defaultValue: '1',
+						required: true,
+						variableName: VariableNames.SQLServerScale_VariableName,
+					}, {
+						type: FieldType.Checkbox,
+						label: localize('deployCluster.EnableHADR', "Enable Availability Groups"),
+						defaultValue: 'false',
+						variableName: VariableNames.EnableHADR_VariableName,
+						required: false
+					}
+				]
+			}, {
+				fields: [
+					{
+						type: FieldType.Number,
+						label: localize('deployCluster.HDFSNameNodeText', "HDFS name node"),
+						min: 1,
+						max: 100,
+						defaultValue: '1',
+						useCustomValidator: true,
+						required: true,
+						variableName: VariableNames.HDFSNameNodeScale_VariableName
+					}
+				]
+			}, {
+				fields: [
+					{
+						type: FieldType.Number,
+						label: localize('deployCluster.SparkHeadText', "SparkHead"),
+						min: 0,
+						max: 100,
+						defaultValue: '1',
+						useCustomValidator: true,
+						required: true,
+						variableName: VariableNames.SparkHeadScale_VariableName
+					}
+				]
+			}, {
+				fields: [
+					{
+						type: FieldType.Number,
+						label: localize('deployCluster.ZooKeeperText', "ZooKeeper"),
+						min: 0,
+						max: 100,
+						defaultValue: '1',
+						useCustomValidator: true,
+						required: true,
+						variableName: VariableNames.ZooKeeperScale_VariableName
 					}
 				]
 			}
@@ -323,6 +364,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				});
 			};
 			const scaleSection = createSectionFunc(scaleSectionInfo);
+			const hadrSection = createSectionFunc(hadrSectionInfo);
 			const endpointSection = this.createEndpointSection(view);
 			const storageSection = createSectionFunc(storageSectionInfo);
 			const advancedStorageSection = createSectionFunc(advancedStorageSectionInfo);
@@ -335,6 +377,9 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 				{
 					title: '',
 					component: scaleSection
+				}, {
+					title: '',
+					component: hadrSection
 				}, {
 					title: '',
 					component: endpointSection
@@ -395,6 +440,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.setInputBoxValue(VariableNames.HDFSPoolScale_VariableName);
 		this.setInputBoxValue(VariableNames.HDFSNameNodeScale_VariableName);
 		this.setInputBoxValue(VariableNames.SparkPoolScale_VariableName);
+		this.setInputBoxValue(VariableNames.SparkHeadScale_VariableName);
+		this.setInputBoxValue(VariableNames.ZooKeeperScale_VariableName);
 		this.setCheckboxValue(VariableNames.IncludeSpark_VariableName);
 		this.setEnableHadrCheckboxState(this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName));
 		this.setInputBoxValue(VariableNames.ControllerPort_VariableName);
@@ -423,6 +470,8 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSNameNodeScale_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.HDFSPoolScale_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SparkPoolScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.SparkHeadScale_VariableName, this.inputComponents))
+					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ZooKeeperScale_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerDataStorageClassName_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerDataStorageSize_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ControllerLogsStorageClassName_VariableName, this.inputComponents))

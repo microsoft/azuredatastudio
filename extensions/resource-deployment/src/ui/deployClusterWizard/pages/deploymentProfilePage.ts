@@ -7,10 +7,10 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { DeployClusterWizard } from '../deployClusterWizard';
 import { WizardPageBase } from '../../wizardPageBase';
-import { DeploymentProfile } from '../../../services/azdataService';
 import * as VariableNames from '../constants';
 import { createFlexContainer } from '../../modelViewUtils';
 import { BdcDeploymentType } from '../../../interfaces';
+import { BigDataClusterDeploymentProfile } from '../../../services/bigDataClusterDeploymentProfile';
 const localize = nls.loadMessageBundle();
 
 export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
@@ -53,7 +53,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			}, (error) => {
 				this.wizard.wizardObject.message = {
 					level: azdata.window.MessageLevel.Error,
-					text: localize('deployCluster.loadProfileFailed', "Failed to load the deployment profiles: {0}", error)
+					text: localize('deployCluster.loadProfileFailed', "Failed to load the deployment profiles: {0}", error.message)
 				};
 				this._loadingComponent!.loading = false;
 			});
@@ -61,39 +61,36 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		});
 	}
 
-	private createProfileCard(profile: DeploymentProfile, view: azdata.ModelView): azdata.CardComponent {
-		const descriptions = [
-			{
-				label: localize('deployCluster.defaultDataStorage', "Data storage size (GB)"),
-				value: profile.defaultDataSize.toString()
-			}, {
-				label: localize('deployCluster.defaultLogStorage', "Log storage size (GB)"),
-				value: profile.defaultLogSize.toString()
-			}, {
-				label: '' // line separator
-			}, {
-				label: localize('deployCluster.masterPoolLabel', "SQL Server Master"),
-				value: profile.master.toString()
-			}, {
-				label: localize('deployCluster.computePoolLable', "Compute"),
-				value: profile.compute.toString()
-			}, {
-				label: localize('deployCluster.dataPoolLabel', "Data"),
-				value: profile.data.toString()
-			}, {
-				label: localize('deployCluster.sparkLabel', "Spark"),
-				value: profile.spark.toString()
-			}, {
-				label: localize('deployCluster.hdfsLabel', "HDFS"),
-				value: profile.hdfs.toString()
-			}, {
-				label: localize('deployCluster.nameNodeLabel', "HDFS name node"),
-				value: profile.nameNode.toString()
-			}, {
-				label: '' // line separator
-			}
+	private createProfileCard(profile: BigDataClusterDeploymentProfile, view: azdata.ModelView): azdata.CardComponent {
+		const descriptions = [{
+			label: localize('deployCluster.masterPoolLabel', "SQL Server Master"),
+			value: profile.sqlServerReplicas.toString()
+		}, {
+			label: localize('deployCluster.computePoolLable', "Compute"),
+			value: profile.computeReplicas.toString()
+		}, {
+			label: localize('deployCluster.dataPoolLabel', "Data"),
+			value: profile.dataReplicas.toString()
+		}, {
+			label: localize('deployCluster.hdfsLabel', "HDFS"),
+			value: profile.hdfsReplicas.toString()
+		}, {
+			label: localize('deployCluster.nameNodeLabel', "HDFS name node"),
+			value: profile.hdfsNameNodeReplicas.toString()
+		}, {
+			label: '' // line separator
+		},
+		{
+			label: localize('deployCluster.defaultDataStorage', "Data storage size (GB)"),
+			value: profile.controllerDataStorageSize.toString()
+		}, {
+			label: localize('deployCluster.defaultLogStorage', "Log storage size (GB)"),
+			value: profile.controllerLogsStorageSize.toString()
+		}, {
+			label: '' // line separator
+		}
 		];
-		if (profile.activeDirectory) {
+		if (profile.activeDirectorySupported) {
 			descriptions.push({
 				label: localize('deployCluster.activeDirectoryAuthentication', "Active Directory authentication"),
 				value: '✅'
@@ -105,7 +102,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			});
 		}
 
-		if (profile.hadr === 'true') {
+		if (profile.hadrEnabled) {
 			descriptions.push({
 				label: localize('deployCluster.hadr', "SQL Server Availability Groups"),
 				value: '✅'
@@ -114,7 +111,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 
 		const card = view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
-			label: profile.name,
+			label: profile.profileName,
 			descriptions: descriptions,
 			width: '240px',
 			height: '330px',
@@ -141,35 +138,37 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		return card;
 	}
 
-	private setModelValuesByProfile(selectedProfile: DeploymentProfile): void {
-		this.wizard.model.setPropertyValue(VariableNames.DeploymentProfile_VariableName, selectedProfile.name);
-		this.wizard.model.setPropertyValue(VariableNames.SparkPoolScale_VariableName, selectedProfile.spark);
-		this.wizard.model.setPropertyValue(VariableNames.DataPoolScale_VariableName, selectedProfile.data);
-		this.wizard.model.setPropertyValue(VariableNames.HDFSPoolScale_VariableName, selectedProfile.hdfs);
-		this.wizard.model.setPropertyValue(VariableNames.ComputePoolScale_VariableName, selectedProfile.compute);
-		this.wizard.model.setPropertyValue(VariableNames.HDFSNameNodeScale_VariableName, selectedProfile.nameNode);
-		this.wizard.model.setPropertyValue(VariableNames.SQLServerScale_VariableName, selectedProfile.master);
-		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageSize_VariableName, selectedProfile.defaultDataSize);
-		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageSize_VariableName, selectedProfile.defaultLogSize);
-		this.wizard.model.setPropertyValue(VariableNames.EnableHADR_VariableName, selectedProfile.hadr);
+	private setModelValuesByProfile(selectedProfile: BigDataClusterDeploymentProfile): void {
+		this.wizard.model.setPropertyValue(VariableNames.DeploymentProfile_VariableName, selectedProfile.profileName);
+		this.wizard.model.setPropertyValue(VariableNames.SparkPoolScale_VariableName, selectedProfile.sparkReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.DataPoolScale_VariableName, selectedProfile.dataReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.HDFSPoolScale_VariableName, selectedProfile.hdfsReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.ComputePoolScale_VariableName, selectedProfile.computeReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.HDFSNameNodeScale_VariableName, selectedProfile.hdfsNameNodeReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.SQLServerScale_VariableName, selectedProfile.sqlServerReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.SparkHeadScale_VariableName, selectedProfile.sparkHeadReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.ZooKeeperScale_VariableName, selectedProfile.zooKeeperReplicas);
+		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageSize_VariableName, selectedProfile.controllerDataStorageSize);
+		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageSize_VariableName, selectedProfile.controllerLogsStorageSize);
+		this.wizard.model.setPropertyValue(VariableNames.EnableHADR_VariableName, selectedProfile.hadrEnabled);
 		this.wizard.model.setPropertyValue(VariableNames.SQLServerPort_VariableName, selectedProfile.sqlServerPort);
 		this.wizard.model.setPropertyValue(VariableNames.GateWayPort_VariableName, selectedProfile.gatewayPort);
 		this.wizard.model.setPropertyValue(VariableNames.ControllerPort_VariableName, selectedProfile.controllerPort);
 		this.wizard.model.setPropertyValue(VariableNames.IncludeSpark_VariableName, selectedProfile.includeSpark);
-		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageClassName_VariableName, selectedProfile.defaultDataStorageClass);
-		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageClassName_VariableName, selectedProfile.defaultLogsStorageClass);
-		this.wizard.model.setPropertyValue(VariableNames.ReadableSecondaryPort_VariableName, selectedProfile.readableSecondaryPort);
-		this.wizard.model.adAuthSupported = selectedProfile.activeDirectory;
+		this.wizard.model.setPropertyValue(VariableNames.ControllerDataStorageClassName_VariableName, selectedProfile.controllerDataStorageClass);
+		this.wizard.model.setPropertyValue(VariableNames.ControllerLogsStorageClassName_VariableName, selectedProfile.controllerLogsStorageClass);
+		this.wizard.model.setPropertyValue(VariableNames.ReadableSecondaryPort_VariableName, selectedProfile.sqlServerReadableSecondaryPort);
+		this.wizard.model.adAuthSupported = selectedProfile.activeDirectorySupported;
 		this.wizard.model.selectedProfile = selectedProfile;
 	}
 
 	private loadCards(): Thenable<void> {
-		return this.wizard.azdataService.getDeploymentProfiles().then((profiles: DeploymentProfile[]) => {
+		return this.wizard.azdataService.getDeploymentProfiles().then((profiles: BigDataClusterDeploymentProfile[]) => {
 			const defaultProfile: string = this.getDefaultProfile();
 
 			profiles.forEach(profile => {
 				const card = this.createProfileCard(profile, this._view!);
-				if (profile.name === defaultProfile) {
+				if (profile.profileName === defaultProfile) {
 					card.selected = true;
 					this.setModelValuesByProfile(profile);
 				}

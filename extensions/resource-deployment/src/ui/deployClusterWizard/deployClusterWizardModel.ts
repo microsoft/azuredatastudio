@@ -3,9 +3,9 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DeploymentProfile } from '../../services/azdataService';
 import { Model } from '../model';
 import * as VariableNames from './constants';
+import { BigDataClusterDeploymentProfile } from '../../services/bigDataClusterDeploymentProfile';
 
 export class DeployClusterWizardModel extends Model {
 	public adAuthSupported: boolean = false;
@@ -60,15 +60,7 @@ export class DeployClusterWizardModel extends Model {
 		super.setEnvironmentVariables();
 	}
 
-	public selectedProfile: DeploymentProfile | undefined;
-
-	public getBdcJson(): string {
-		return JSON.stringify(this.selectedProfile!.bdcJson, undefined, 2);
-	}
-
-	public getControlJson(): string {
-		return JSON.stringify(this.selectedProfile!.controlJson, undefined, 2);
-	}
+	public selectedProfile: BigDataClusterDeploymentProfile | undefined;
 }
 
 export enum AuthenticationMode {

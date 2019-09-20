@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as path from 'path';
 import * as os from 'os';
@@ -25,33 +24,29 @@ export class KubeService implements IKubeService {
 	}
 
 	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]> {
-		return new Promise<KubeClusterContext[]>((resolve, reject) => {
-			fs.access(configFile, (error) => {
-				if (error && error.code === 'ENOENT') {
-					resolve([]);
-				} else {
-					try {
-						const config = yamljs.load(configFile);
-						const rawContexts = <any[]>config['contexts'];
-						const currentContext = <string>config['current-context'];
-						if (currentContext && rawContexts && rawContexts.length > 0) {
-							const contexts: KubeClusterContext[] = [];
-							rawContexts.forEach(rawContext => {
-								const name = <string>rawContext['name'];
-								if (name) {
-									contexts.push({
-										name: name,
-										isCurrentContext: name === currentContext
-									});
-								}
-							});
-							resolve(contexts);
-						}
-					} catch (error) {
-						reject(error);
+		return fs.promises.access(configFile).catch((error) => {
+			if (error && error.code === 'ENOENT') {
+				return [];
+			} else {
+				throw error;
+			}
+		}).then(() => {
+			const config = yamljs.load(configFile);
+			const rawContexts = <any[]>config['contexts'];
+			const currentContext = <string>config['current-context'];
+			const contexts: KubeClusterContext[] = [];
+			if (currentContext && rawContexts && rawContexts.length > 0) {
+				rawContexts.forEach(rawContext => {
+					const name = <string>rawContext['name'];
+					if (name) {
+						contexts.push({
+							name: name,
+							isCurrentContext: name === currentContext
+						});
 					}
-				}
-			});
+				});
+			}
+			return contexts;
 		});
 	}
 }
