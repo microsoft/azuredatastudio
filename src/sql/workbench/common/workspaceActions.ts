@@ -15,7 +15,7 @@ export class ShowFileInFolderAction extends Action {
 	}
 
 	run(): Promise<void> {
-		return this.windowsService.showItemInFolder(this.path);
+		return this.windowsService.showItemInFolder(undefined, this.path);
 	}
 }
 
