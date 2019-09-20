@@ -73,7 +73,7 @@ export class BookModel implements azdata.nb.NavigationProvider {
 				let book = new BookTreeItem({
 					title: config.title,
 					root: root,
-					tableOfContents: { sections: this.parseJupyterSection(tableOfContents) },
+					tableOfContents: { sections: this.parseJupyterSections(tableOfContents) },
 					page: tableOfContents,
 					type: BookTreeItemType.Book,
 					treeItemCollapsibleState: vscode.TreeItemCollapsibleState.Expanded,
@@ -183,9 +183,9 @@ export class BookModel implements azdata.nb.NavigationProvider {
 	 * Recursively parses out a section of a Jupyter Book.
 	 * @param section The input data to parse
 	 */
-	private parseJupyterSection(section: any[]): IJupyterBookSection[] {
+	private parseJupyterSections(section: any[]): IJupyterBookSection[] {
 		try {
-			return section.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSection(val.sections)) : acc.concat(val), []);
+			return section.reduce((acc, val) => Array.isArray(val.sections) ? acc.concat(val).concat(this.parseJupyterSections(val.sections)) : acc.concat(val), []);
 		} catch (error) {
 			let err: string = localize('InvalidError.tocFile', "{0}", error);
 			if (section.length > 0) {
