@@ -112,14 +112,14 @@ export class QueryTextEditor extends BaseTextEditor {
 
 	public setWidth(width: number) {
 		if (this._dimension) {
-			this._dimension.width = width;
+			this._dimension = new DOM.Dimension(width, this._dimension.height);
 			this.layout();
 		}
 	}
 
 	public setHeight(height: number) {
 		if (this._dimension) {
-			this._dimension.height = height;
+			this._dimension = new DOM.Dimension(this._dimension.width, height);
 			this.layout(this._dimension);
 		}
 	}
@@ -155,8 +155,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		let wordWrapEnabled: boolean = this._editorWorkspaceConfig && this._editorWorkspaceConfig['wordWrap'] && this._editorWorkspaceConfig['wordWrap'] === 'on' ? true : false;
 		if (wordWrapEnabled) {
 			for (let line = 1; line <= lineCount; line++) {
-				// 4 columns is equivalent to the viewport column width and the edge of the editor
-				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 4) {
+				// 2 columns is equivalent to the viewport column width and the edge of the editor
+				if (editorWidgetModel.getLineMaxColumn(line) >= layoutInfo.viewportColumn + 2) {
 					// Subtract 1 because the first line should not count as a wrapped line
 					numberWrappedLines += Math.ceil(editorWidgetModel.getLineMaxColumn(line) / layoutInfo.viewportColumn) - 1;
 				}

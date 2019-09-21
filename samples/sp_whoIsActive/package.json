@@ -2,12 +2,12 @@
     "name": "whoisactive",
     "displayName": "whoisactive",
     "description": "sp_whoisactive for Azure Data Studio",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "publisher": "Microsoft",
     "preview": true,
     "engines": {
         "vscode": "^1.26.0",
-        "azdata": "*"
+        "azdata": "^1.11.0"
     },
     "icon": "images/sqlserver.png",
     "license": "SEE LICENSE IN LICENSE.txt",
@@ -241,17 +241,17 @@
         "compile": "gulp compile",
         "watch": "gulp watch",
         "typings": "gulp copytypings",
-        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/sqlops/bin/install && gulp copytypings"
+        "postinstall": "node ./node_modules/vscode/bin/install && node ./node_modules/azdata/bin/install && gulp copytypings"
     },
     "dependencies": {
         "fs-extra": "^5.0.0",
         "handlebars": "^4.0.11",
-        "openurl": "^1.1.1",
-        "sqlops": "github:anthonydresser/sqlops-extension-sqlops"
+        "openurl": "^1.1.1"
     },
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
+        "azdata": "github:microsoft/azdata-extension-azdata",
         "child-process-promise": "^2.2.1",
         "del": "^3.0.0",
         "gulp": "^4.0.0",

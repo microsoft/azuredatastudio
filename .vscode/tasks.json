@@ -45,7 +45,7 @@
 		{
 			"type": "npm",
 			"script": "strict-null-check-watch",
-			"label": "TS - Strict Null Cheks",
+			"label": "TS - Strict Null Checks",
 			"isBackground": true,
 			"presentation": {
 				"reveal": "never"

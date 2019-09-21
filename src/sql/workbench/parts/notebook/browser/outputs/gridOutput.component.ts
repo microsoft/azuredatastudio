@@ -8,7 +8,7 @@ import * as azdata from 'azdata';
 
 import { IGridDataProvider, getResultsString } from 'sql/platform/query/common/gridDataProvider';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
-import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { IInstantiationService, optional } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { IUntitledEditorService } from 'vs/workbench/services/untitled/common/untitledEditorService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
@@ -138,7 +138,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@ISerializationService private _serializationService: ISerializationService
+		@optional(ISerializationService) private _serializationService: ISerializationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
@@ -153,7 +153,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		if (!this._serializationService.hasProvider()) {
+		if (!this._serializationService || !this._serializationService.hasProvider()) {
 			return [];
 		}
 		return [
@@ -180,7 +180,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
-		@ISerializationService private _serializationService: ISerializationService,
+		@optional(ISerializationService) private _serializationService: ISerializationService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this.transformSource(source);
@@ -248,7 +248,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	get canSerialize(): boolean {
-		return this._serializationService.hasProvider();
+		return this._serializationService && this._serializationService.hasProvider();
 	}
 
 
@@ -257,7 +257,10 @@ class DataResourceDataProvider implements IGridDataProvider {
 		return serializer.handleSerialization(this.documentUri, format, (filePath) => this.doSerialize(serializer, filePath, format, selection));
 	}
 
-	private async doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse> {
+	private doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+		if (!this.canSerialize) {
+			return Promise.resolve(undefined);
+		}
 		// TODO implement selection support
 		let columns = this.resultSet.columnInfo;
 		let rowLength = this.rows.length;
@@ -296,8 +299,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 			getRowRange: (rowStart, numberOfRows) => getRows(rowStart, numberOfRows),
 			rowCount: rowLength
 		});
-		let result = await this._serializationService.serializeResults(serializeRequestParams);
-		return result;
+		return this._serializationService.serializeResults(serializeRequestParams);
 	}
 
 	/**

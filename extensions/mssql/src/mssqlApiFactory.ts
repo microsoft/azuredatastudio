@@ -27,6 +27,6 @@ export function createMssqlApi(context: AppContext): IExtension {
 					return <any>oeProvider.findSqlClusterNodeByContext(explorerContext);
 				}
 			};
-		},
+		}
 	};
 }
