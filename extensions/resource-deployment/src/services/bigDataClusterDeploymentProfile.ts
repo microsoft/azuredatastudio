@@ -215,16 +215,16 @@ export class BigDataClusterDeploymentProfile {
 		return false;
 	}
 
-	public getBdcJson(): string {
-		return this.getReadableJson(this._bdcConfig);
+	public getBdcJson(readable: boolean = true): string {
+		return this.stringifyJson(this._bdcConfig, readable);
 	}
 
-	public getControlJson(): string {
-		return this.getReadableJson(this._controlConfig);
+	public getControlJson(readable: boolean = true): string {
+		return this.stringifyJson(this._controlConfig, readable);
 	}
 
-	private getReadableJson(obj: any): string {
-		return JSON.stringify(obj, undefined, 4);
+	private stringifyJson(obj: any, readable: boolean): string {
+		return JSON.stringify(obj, undefined, readable ? 4 : 0);
 	}
 
 	private getReplicas(resourceName: string): number {

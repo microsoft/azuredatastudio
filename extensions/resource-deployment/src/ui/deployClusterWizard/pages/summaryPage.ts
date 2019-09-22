@@ -14,7 +14,7 @@ import * as os from 'os';
 import { join } from 'path';
 import * as fs from 'fs';
 import { AuthenticationMode } from '../deployClusterWizardModel';
-import { BigDataClusterDeploymentProfile, DataResource, SqlServerMasterResource, HdfsResource } from '../../../services/bigDataClusterDeploymentProfile';
+import { BigDataClusterDeploymentProfile } from '../../../services/bigDataClusterDeploymentProfile';
 const localize = nls.loadMessageBundle();
 
 export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
@@ -53,7 +53,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	public onEnter() {
-		this.createTargetProfile();
+		this.targetDeploymentProfile = this.wizard.model.createTargetProfile();
 		this.formItems.forEach(item => {
 			this.form!.removeFormItem(item);
 		});
@@ -411,59 +411,5 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			});
 		}));
 		return button;
-	}
-
-	private createTargetProfile(): void {
-		// create a copy of the source files to avoid changing the source profile values
-		const sourceBdcJson = Object.assign({}, this.wizard.model.selectedProfile!.bdcConfig);
-		const sourceControlJson = Object.assign({}, this.wizard.model.selectedProfile!.controlConfig);
-		this.targetDeploymentProfile = new BigDataClusterDeploymentProfile('', sourceBdcJson, sourceControlJson);
-		// cluster name
-		this.targetDeploymentProfile.clusterName = this.wizard.model.getStringValue(VariableNames.ClusterName_VariableName)!;
-		// storage settings
-		this.targetDeploymentProfile.controllerDataStorageClass = this.wizard.model.getStringValue(VariableNames.ControllerDataStorageClassName_VariableName)!;
-		this.targetDeploymentProfile.controllerDataStorageSize = this.wizard.model.getIntegerValue(VariableNames.ControllerDataStorageSize_VariableName)!;
-		this.targetDeploymentProfile.controllerLogsStorageClass = this.wizard.model.getStringValue(VariableNames.ControllerLogsStorageClassName_VariableName)!;
-		this.targetDeploymentProfile.controllerLogsStorageSize = this.wizard.model.getIntegerValue(VariableNames.ControllerLogsStorageSize_VariableName)!;
-		this.targetDeploymentProfile.setResourceStorage(DataResource,
-			this.wizard.model.getStorageSettingValue(VariableNames.DataPoolDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
-			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.DataPoolDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
-			this.wizard.model.getStorageSettingValue(VariableNames.DataPoolLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
-			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.DataPoolLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
-		);
-		this.targetDeploymentProfile.setResourceStorage(SqlServerMasterResource,
-			this.wizard.model.getStorageSettingValue(VariableNames.SQLServerDNSName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
-			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.SQLServerDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
-			this.wizard.model.getStorageSettingValue(VariableNames.SQLServerLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
-			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.SQLServerLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
-		);
-		this.targetDeploymentProfile.setResourceStorage(HdfsResource,
-			this.wizard.model.getStorageSettingValue(VariableNames.HDFSDataStorageClassName_VariableName, VariableNames.ControllerDataStorageClassName_VariableName)!,
-			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.HDFSDataStorageSize_VariableName, VariableNames.ControllerDataStorageSize_VariableName)!),
-			this.wizard.model.getStorageSettingValue(VariableNames.HDFSLogsStorageClassName_VariableName, VariableNames.ControllerLogsStorageClassName_VariableName)!,
-			Number.parseInt(this.wizard.model.getStorageSettingValue(VariableNames.HDFSLogsStorageSize_VariableName, VariableNames.ControllerLogsStorageSize_VariableName)!)
-		);
-
-		// scale settings
-		this.targetDeploymentProfile.dataReplicas = this.wizard.model.getIntegerValue(VariableNames.DataPoolScale_VariableName);
-		this.targetDeploymentProfile.computeReplicas = this.wizard.model.getIntegerValue(VariableNames.ComputePoolScale_VariableName);
-		this.targetDeploymentProfile.hdfsReplicas = this.wizard.model.getIntegerValue(VariableNames.HDFSPoolScale_VariableName);
-		this.targetDeploymentProfile.sqlServerReplicas = this.wizard.model.getIntegerValue(VariableNames.SQLServerScale_VariableName);
-		this.targetDeploymentProfile.hdfsNameNodeReplicas = this.wizard.model.getIntegerValue(VariableNames.HDFSNameNodeScale_VariableName);
-		this.targetDeploymentProfile.sparkHeadReplicas = this.wizard.model.getIntegerValue(VariableNames.SparkHeadScale_VariableName);
-		this.targetDeploymentProfile.zooKeeperReplicas = this.wizard.model.getIntegerValue(VariableNames.ZooKeeperScale_VariableName);
-		const sparkScale = this.wizard.model.getIntegerValue(VariableNames.SparkPoolScale_VariableName);
-		if (sparkScale > 0) {
-			this.targetDeploymentProfile.addSparkResource(sparkScale);
-		}
-
-		this.targetDeploymentProfile.includeSpark = this.wizard.model.getBooleanValue(VariableNames.IncludeSpark_VariableName);
-		this.targetDeploymentProfile.hadrEnabled = this.wizard.model.getBooleanValue(VariableNames.EnableHADR_VariableName);
-
-		// port settings
-		this.targetDeploymentProfile.gatewayPort = this.wizard.model.getIntegerValue(VariableNames.GateWayPort_VariableName);
-		this.targetDeploymentProfile.sqlServerPort = this.wizard.model.getIntegerValue(VariableNames.SQLServerPort_VariableName);
-		this.targetDeploymentProfile.controllerPort = this.wizard.model.getIntegerValue(VariableNames.ControllerPort_VariableName);
-		this.targetDeploymentProfile.sqlServerReadableSecondaryPort = this.wizard.model.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName);
 	}
 }

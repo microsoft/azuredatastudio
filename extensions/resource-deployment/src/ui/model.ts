@@ -21,8 +21,9 @@ export class Model {
 		return value === undefined ? defaultValue : Number.parseInt(value);
 	}
 
-	public getStringValue(propName: string): string | undefined {
-		return this.propValueObject[propName];
+	public getStringValue(propName: string, defaultValue?: string): string | undefined {
+		const value = this.propValueObject[propName];
+		return value === undefined ? defaultValue : value;
 	}
 
 	public getBooleanValue(propName: string, defaultValue: boolean = false): boolean {

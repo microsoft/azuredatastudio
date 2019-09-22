@@ -19,6 +19,7 @@ import { IAzdataService } from '../../services/azdataService';
 import { DeploymentProfilePage } from './pages/deploymentProfilePage';
 import { INotebookService } from '../../services/notebookService';
 import { DeployClusterWizardModel } from './deployClusterWizardModel';
+import * as VariableNames from './constants';
 const localize = nls.loadMessageBundle();
 
 export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployClusterWizardModel> {
@@ -36,7 +37,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 	}
 
 	constructor(private wizardInfo: WizardInfo, private _kubeService: IKubeService, private _azdataService: IAzdataService, private _notebookService: INotebookService) {
-		super(localize('deployCluster.WizardTitle', "Deploy a SQL Server Big Data Cluster"), new DeployClusterWizardModel());
+		super(DeployClusterWizard.getTitle(wizardInfo.type), new DeployClusterWizardModel(wizardInfo.type));
 	}
 
 	public get deploymentType(): BdcDeploymentType {
@@ -53,13 +54,13 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 	}
 
 	protected onOk(): void {
-		this.model.setEnvironmentVariables();
+		process.env[VariableNames.AdminPassword_VariableName] = this.model.getStringValue(VariableNames.AdminPassword_VariableName);
 		this.notebookService.launchNotebook(this.wizardInfo.notebook).then((notebook: azdata.nb.NotebookEditor) => {
 			notebook.edit((editBuilder: azdata.nb.NotebookEditorEdit) => {
 				editBuilder.insertCell({
 					cell_type: 'code',
-					source: 'gagagaga'
-				}, 0);
+					source: this.model.getCodeCellContentForNotebook()
+				}, 7);
 			});
 		}, (error) => {
 			vscode.window.showErrorMessage(error);
@@ -94,8 +95,22 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 					new SummaryPage(this));
 				break;
 			default:
+				throw new Error(localize('deployCluster.UnknownDeploymentTarget', "Unknow wizard type: {0}", this.deploymentType));
 				break;
 		}
 		return pages;
+	}
+
+	static getTitle(type: BdcDeploymentType): string {
+		switch (type) {
+			case BdcDeploymentType.NewAKS:
+				return localize('deployCluster.NewAKSWizardTitle', "Deploy a SQL Server Big Data Cluster on a new AKS cluster");
+			case BdcDeploymentType.ExistingAKS:
+				return localize('deployCluster.ExistingAKSWizardTitle', "Deploy a SQL Server Big Data Cluster on an existing AKS cluster");
+			case BdcDeploymentType.ExistingKubeAdm:
+				return localize('deployCluster.ExistingKubeAdm', "Deploy a SQL Server Big Data Cluster on an existing kubeadm cluster");
+			default:
+				throw new Error(localize('deployCluster.UnknownDeploymentTarget', "Unknow wizard type: {0}", type));
+		}
 	}
 }
