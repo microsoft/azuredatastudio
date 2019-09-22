@@ -197,7 +197,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				});
 				this._dialogObject.okButton.enabled = messages.length === 0;
 				if (messages.length !== 0) {
-					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You may find additional details in the debug console."));
+					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed after Azure Data Studio is launched to pickup the updated PATH environment variable. You may find additional details in the debug console."));
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
 						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
