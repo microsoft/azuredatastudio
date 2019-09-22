@@ -167,6 +167,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
 		if (toolRequirements.length === 0) {
+			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
 		} else {
 			const tools = toolRequirements.map(toolReq => {
