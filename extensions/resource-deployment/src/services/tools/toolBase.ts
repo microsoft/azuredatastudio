@@ -34,6 +34,9 @@ export abstract class ToolBase implements ITool {
 	}
 
 	public loadInformation(): Thenable<void> {
+		if (this._isInstalled) {
+			return Promise.resolve();
+		}
 		this._isInstalled = false;
 		this._statusDescription = undefined;
 		this._version = undefined;
