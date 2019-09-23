@@ -343,8 +343,8 @@ export const editorActiveLinkForeground = registerColor('editorLink.activeForegr
 /**
  * Editor lighbulb icon colors
  */
-export const editorLightbulbIconForeground = registerColor('editor.lightbulbIcon.foreground', { dark: '#FFCC00', light: '#DDB100', hc: '#FFCC00' }, nls.localize('editorLightbulbIconForeground', "The color used for the lightbulb actions icon."));
-export const editorLightbulbAutoFixIconForeground = registerColor('editor.lightbulbAutoFixIcon.foreground', { dark: '#75BEFF', light: '#007ACC', hc: '#75BEFF' }, nls.localize('editorLightbulbAutoFixIconForeground', "The color used for the lightbulb auto fix actions icon."));
+export const editorLightBulbForeground = registerColor('editorLightBulb.foreground', { dark: '#FFCC00', light: '#DDB100', hc: '#FFCC00' }, nls.localize('editorLightBulbForeground', "The color used for the lightbulb actions icon."));
+export const editorLightBulbAutoFixForeground = registerColor('editorLightBulbAutoFix.foreground', { dark: '#75BEFF', light: '#007ACC', hc: '#75BEFF' }, nls.localize('editorLightBulbAutoFixForeground', "The color used for the lightbulb auto fix actions icon."));
 
 /**
  * Diff Editor Colors
