@@ -94,7 +94,7 @@
 	background-image: url("./media/dark/clear_results_inverse.svg");
 }
 
-.moreActions .action-label.icon.toggle-more {
+.moreActions .action-label.codicon.toggle-more {
 	height: 20px;
 	width: 20px;
 }
