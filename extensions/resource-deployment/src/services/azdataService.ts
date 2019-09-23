@@ -19,7 +19,6 @@ export class AzdataService implements IAzdataService {
 	}
 
 	getDeploymentProfiles(): Thenable<BigDataClusterDeploymentProfile[]> {
-		process.env['ACCEPT_EULA'] = 'Yes';
 		return this.ensureWorkingDirectoryExists().then(() => {
 			return this.getDeploymentProfileNames();
 		}).then((names: string[]) => {
@@ -27,8 +26,14 @@ export class AzdataService implements IAzdataService {
 		});
 	}
 
-	private getDeploymentProfileNames(): Promise<string[]> {
-		return this.platformService.runCommand('azdata bdc config list -o json').then(stdout => {
+	private async getDeploymentProfileNames(): Promise<string[]> {
+		process.env['ACCEPT_EULA'] = 'yes';
+		const cmd = 'azdata bdc config list -o json';
+		// Run the command twice to workaround the issue:
+		// First time use of the azdata will have extra EULA related string in the output
+		// there is not easy and reliable way to filter out the profile names from it.
+		await this.platformService.runCommand(cmd);
+		return this.platformService.runCommand(cmd).then(stdout => {
 			const output = <BdcConfigListOutput>JSON.parse(stdout);
 			return output.stdout;
 		});
