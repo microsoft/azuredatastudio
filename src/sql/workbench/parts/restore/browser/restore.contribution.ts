@@ -8,14 +8,14 @@ import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { MenuRegistry, MenuId } from 'vs/platform/actions/common/actions';
 import { localize } from 'vs/nls';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/common/mssqlNodeContext';
+import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { NodeType } from 'sql/workbench/parts/objectExplorer/common/nodeType';
 import { RestoreAction } from 'sql/workbench/parts/restore/browser/restoreActions';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ConnectionContextKey } from 'sql/workbench/parts/connection/common/connectionContextKey';
-import { ManageActionContext } from 'sql/workbench/common/actions';
+import { ManageActionContext } from 'sql/workbench/browser/actions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ServerInfoContextKey } from 'sql/workbench/parts/connection/common/serverInfoContextKey';
 

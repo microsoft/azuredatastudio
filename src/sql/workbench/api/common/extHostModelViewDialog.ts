@@ -207,6 +207,7 @@ class ButtonImpl implements azdata.window.Button {
 	private _label: string;
 	private _enabled: boolean;
 	private _hidden: boolean;
+	private _focused: boolean;
 
 	private _onClick = new Emitter<void>();
 	public onClick = this._onClick.event;
@@ -241,6 +242,23 @@ class ButtonImpl implements azdata.window.Button {
 	public set hidden(hidden: boolean) {
 		this._hidden = hidden;
 		this._extHostModelViewDialog.updateButton(this);
+	}
+
+	public get focused(): boolean {
+		return this._focused;
+	}
+
+	/**
+	 * Focuses the button when set to "true", then the internal value is immediately reset to 'undefined'.
+	 *
+	 * @remarks
+	 * Because communication between ADS and extensions is unidirectional, a focus change by the user is not
+	 * communicated to the extension.  The internal value is reset to avoid inconsistent models of where focus is.
+	 */
+	public set focused(focused: boolean) {
+		this._focused = focused;
+		this._extHostModelViewDialog.updateButton(this);
+		this._focused = undefined;
 	}
 
 	public getOnClickCallback(): () => void {
@@ -568,7 +586,8 @@ export class ExtHostModelViewDialog implements ExtHostModelViewDialogShape {
 		this._proxy.$setButtonDetails(handle, {
 			label: button.label,
 			enabled: button.enabled,
-			hidden: button.hidden
+			hidden: button.hidden,
+			focused: button.focused
 		});
 	}
 

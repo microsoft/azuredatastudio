@@ -28,9 +28,9 @@ export class BareResultsGridInfo extends BareFontInfo {
 	public static createFromRawSettings(opts: {
 		fontFamily?: string;
 		fontWeight?: string;
-		fontSize?: number | string;
-		lineHeight?: number | string;
-		letterSpacing?: number | string;
+		fontSize?: number;
+		lineHeight?: number;
+		letterSpacing?: number;
 		cellPadding?: number | number[];
 	}, zoomLevel: number): BareResultsGridInfo {
 		let cellPadding = !types.isUndefinedOrNull(opts.cellPadding) ? opts.cellPadding : RESULTS_GRID_DEFAULTS.cellPadding;

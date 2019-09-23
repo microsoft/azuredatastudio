@@ -13,15 +13,15 @@ import { equalsIgnoreCase } from 'vs/base/common/strings';
 import { URI } from 'vs/base/common/uri';
 import { ICodeEditorService } from 'vs/editor/browser/services/codeEditorService';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
-import { ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
-import { IOpener, IOpenerService, IValidator } from 'vs/platform/opener/common/opener';
+import { IOpener, IOpenerService, IValidator, IExternalUriResolver } from 'vs/platform/opener/common/opener';
 
 export class OpenerService extends Disposable implements IOpenerService {
 
-	_serviceBrand!: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	private readonly _openers = new LinkedList<IOpener>();
 	private readonly _validators = new LinkedList<IValidator>();
+	private readonly _resolvers = new LinkedList<IExternalUriResolver>();
 
 	constructor(
 		@ICodeEditorService private readonly _editorService: ICodeEditorService,
@@ -37,6 +37,11 @@ export class OpenerService extends Disposable implements IOpenerService {
 
 	registerValidator(validator: IValidator): IDisposable {
 		const remove = this._validators.push(validator);
+		return { dispose: remove };
+	}
+
+	registerExternalUriResolver(resolver: IExternalUriResolver): IDisposable {
+		const remove = this._resolvers.push(resolver);
 		return { dispose: remove };
 	}
 
@@ -119,7 +124,11 @@ export class OpenerService extends Disposable implements IOpenerService {
 		}
 	}
 
-	private _doOpenExternal(resource: URI): Promise<boolean> {
+	private async _doOpenExternal(resource: URI): Promise<boolean> {
+		for (const resolver of this._resolvers.toArray()) {
+			resource = await resolver.resolveExternalUri(resource);
+		}
+
 		dom.windowOpenNoOpener(encodeURI(resource.toString(true)));
 
 		return Promise.resolve(true);

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import QueryRunner from 'sql/platform/query/common/queryRunner';
+import QueryRunner, { IQueryMessage } from 'sql/platform/query/common/queryRunner';
 import { DataService } from 'sql/workbench/parts/grid/common/dataService';
 import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
@@ -31,9 +31,15 @@ export interface IQueryPlanInfo {
 	planXml: string;
 }
 
+export interface IQueryInfo {
+	selection: ISelectionData[];
+	messages: IQueryMessage[];
+}
+
 export interface IQueryEvent {
-	type: queryeditor.QueryEvent;
+	type: queryeditor.QueryEventType;
 	uri: string;
+	queryInfo: IQueryInfo;
 	params?: any;
 }
 
@@ -41,7 +47,7 @@ export interface IQueryEvent {
  * Interface for the logic of handling running queries and grid interactions for all URIs.
  */
 export interface IQueryModelService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	getQueryRunner(uri: string): QueryRunner;
 

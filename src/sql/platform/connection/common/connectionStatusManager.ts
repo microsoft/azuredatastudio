@@ -189,7 +189,14 @@ export class ConnectionStatusManager {
 		return undefined;
 	}
 
+	private isSharedSession(fileUri: string): boolean {
+		return fileUri && fileUri.startsWith('vsls:');
+	}
+
 	public isConnected(id: string): boolean {
+		if (this.isSharedSession(id)) {
+			return true;
+		}
 		return (id in this._connections && this._connections[id].connectionId && !!this._connections[id].connectionId);
 	}
 

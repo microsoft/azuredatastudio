@@ -189,6 +189,8 @@ export const activeContrastBorder = registerColor('contrastActiveBorder', { ligh
 
 export const selectionBackground = registerColor('selection.background', { light: null, dark: null, hc: null }, nls.localize('selectionBackground', "The background color of text selections in the workbench (e.g. for input fields or text areas). Note that this does not apply to selections within the editor."));
 
+export const iconForeground = registerColor('icon.foreground', { light: '#424242', dark: '#C5C5C5', hc: '#FFFFFF' }, nls.localize('iconForeground', "The default color for icons in the workbench."));
+
 // ------ text colors
 
 export const textSeparatorForeground = registerColor('textSeparator.foreground', { light: '#0000002e', dark: '#ffffff2e', hc: Color.black }, nls.localize('textSeparatorForeground', "Color for text separators."));
@@ -399,6 +401,7 @@ export const overviewRulerFindMatchForeground = registerColor('editorOverviewRul
 export const overviewRulerSelectionHighlightForeground = registerColor('editorOverviewRuler.selectionHighlightForeground', { dark: '#A0A0A0CC', light: '#A0A0A0CC', hc: '#A0A0A0CC' }, nls.localize('overviewRulerSelectionHighlightForeground', 'Overview ruler marker color for selection highlights. The color must not be opaque so as not to hide underlying decorations.'), true);
 
 export const minimapFindMatch = registerColor('minimap.findMatchHighlight', { light: '#d18616', dark: '#d18616', hc: '#AB5A00' }, nls.localize('minimapFindMatchHighlight', 'Minimap marker color for find matches.'), true);
+export const minimapSelection = registerColor('minimap.selectionHighlight', { light: '#ADD6FF', dark: '#264F78', hc: '#f3f518' }, nls.localize('minimapSelectionHighlight', 'Minimap marker color for the current editor selection.'), true);
 
 
 // ----- color functions

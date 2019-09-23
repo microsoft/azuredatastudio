@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import 'vs/css!./media/output';
 import * as nls from 'vs/nls';
 import { Action, IAction } from 'vs/base/common/actions';
 import { IActionViewItem } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -114,8 +113,8 @@ export class OutputPanel extends AbstractTextResourceEditor {
 		return channel ? nls.localize('outputPanelWithInputAriaLabel', "{0}, Output panel", channel.label) : nls.localize('outputPanelAriaLabel', "Output panel");
 	}
 
-	public setInput(input: EditorInput, options: EditorOptions, token: CancellationToken): Promise<void> {
-		this._focus = !options.preserveFocus;
+	public setInput(input: EditorInput, options: EditorOptions | undefined, token: CancellationToken): Promise<void> {
+		this._focus = !(options && options.preserveFocus);
 		if (input.matches(this.input)) {
 			return Promise.resolve(undefined);
 		}

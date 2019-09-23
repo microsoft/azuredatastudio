@@ -10,14 +10,11 @@ import { Event } from 'vs/base/common/event';
 import { ILogService } from 'vs/platform/log/common/log';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
-import { IUpdateService, State } from 'vs/platform/update/common/update';
 import { IWindowService, INativeOpenDialogOptions, IEnterWorkspaceResult, IURIToOpen, IMessageBoxResult, IWindowsService, IOpenSettings, IWindowSettings } from 'vs/platform/windows/common/windows';
-import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier, IWorkspaceFolderCreationData, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
+import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { IRecentlyOpened, IRecent, isRecentFile, isRecentFolder } from 'vs/platform/history/common/history';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
-import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
-import { ITunnelService } from 'vs/platform/remote/common/tunnel';
-import { IWorkspaceContextService, WorkbenchState, IWorkspace } from 'vs/platform/workspace/common/workspace';
+import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { addDisposableListener, EventType, windowOpenNoOpener } from 'vs/base/browser/dom';
 import { IEditorService, IResourceEditor } from 'vs/workbench/services/editor/common/editorService';
 import { pathsToEditors } from 'vs/workbench/common/editor';
@@ -26,53 +23,12 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
 import { IProcessEnvironment } from 'vs/base/common/platform';
 import { toStoreData, restoreRecentlyOpened } from 'vs/platform/history/common/historyStorage';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
-import { IProductService } from 'vs/platform/product/common/product';
-import Severity from 'vs/base/common/severity';
-import { localize } from 'vs/nls';
-import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
-// tslint:disable-next-line: import-patterns
-import { IWorkspaceStatsService, Tags } from 'vs/workbench/contrib/stats/common/workspaceStats';
-
-//#region Update
-
-export class SimpleUpdateService implements IUpdateService {
-
-	_serviceBrand: any;
-
-	onStateChange = Event.None;
-	state: State;
-
-	checkForUpdates(context: any): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	downloadUpdate(): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	applyUpdate(): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	quitAndInstall(): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	isLatestVersion(): Promise<boolean> {
-		return Promise.resolve(true);
-	}
-}
-
-registerSingleton(IUpdateService, SimpleUpdateService);
-
-//#endregion
 
 //#region Window
 
 export class SimpleWindowService extends Disposable implements IWindowService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	readonly onDidChangeFocus: Event<boolean> = Event.None;
 	readonly onDidChangeMaximize: Event<boolean> = Event.None;
@@ -285,7 +241,7 @@ export class SimpleWindowService extends Disposable implements IWindowService {
 		for (let i = 0; i < _uris.length; i++) {
 			const uri = _uris[i];
 			if ('folderUri' in uri) {
-				const newAddress = `${document.location.origin}/?folder=${uri.folderUri.path}`;
+				const newAddress = `${document.location.origin}${document.location.pathname}?folder=${uri.folderUri.path}`;
 				if (openFolderInNewWindow) {
 					window.open(newAddress);
 				} else {
@@ -293,7 +249,7 @@ export class SimpleWindowService extends Disposable implements IWindowService {
 				}
 			}
 			if ('workspaceUri' in uri) {
-				const newAddress = `${document.location.origin}/?workspace=${uri.workspaceUri.path}`;
+				const newAddress = `${document.location.origin}${document.location.pathname}?workspace=${uri.workspaceUri.path}`;
 				if (openFolderInNewWindow) {
 					window.open(newAddress);
 				} else {
@@ -360,9 +316,7 @@ registerSingleton(IWindowService, SimpleWindowService);
 //#region Window
 
 export class SimpleWindowsService implements IWindowsService {
-	_serviceBrand: any;
-
-	windowCount = 1;
+	_serviceBrand: undefined;
 
 	readonly onWindowOpen: Event<number> = Event.None;
 	readonly onWindowFocus: Event<number> = Event.None;
@@ -371,12 +325,6 @@ export class SimpleWindowsService implements IWindowsService {
 	readonly onWindowUnmaximize: Event<number> = Event.None;
 	readonly onRecentlyOpenedChange: Event<void> = Event.None;
 
-	constructor(
-		@IDialogService private readonly dialogService: IDialogService,
-		@IProductService private readonly productService: IProductService,
-		@IClipboardService private readonly clipboardService: IClipboardService
-	) {
-	}
 	isFocused(_windowId: number): Promise<boolean> {
 		return Promise.resolve(true);
 	}
@@ -504,84 +452,11 @@ export class SimpleWindowsService implements IWindowsService {
 	}
 
 	openExtensionDevelopmentHostWindow(args: ParsedArgs, env: IProcessEnvironment): Promise<void> {
-
-		// we pass the "ParsedArgs" as query parameters of the URL
-
-		let newAddress = `${document.location.origin}/?`;
-		let gotFolder = false;
-
-		const addQueryParameter = (key: string, value: string) => {
-			const lastChar = newAddress.charAt(newAddress.length - 1);
-			if (lastChar !== '?' && lastChar !== '&') {
-				newAddress += '&';
-			}
-			newAddress += `${key}=${encodeURIComponent(value)}`;
-		};
-
-		const f = args['folder-uri'];
-		if (f) {
-			let u: URI | undefined;
-			if (Array.isArray(f)) {
-				if (f.length > 0) {
-					u = URI.parse(f[0]);
-				}
-			} else {
-				u = URI.parse(f);
-			}
-			if (u) {
-				gotFolder = true;
-				addQueryParameter('folder', u.path);
-			}
-		}
-		if (!gotFolder) {
-			// request empty window
-			addQueryParameter('ew', 'true');
-		}
-
-		const ep = args['extensionDevelopmentPath'];
-		if (ep) {
-			let u: string | undefined;
-			if (Array.isArray(ep)) {
-				if (ep.length > 0) {
-					u = ep[0];
-				}
-			} else {
-				u = ep;
-			}
-			if (u) {
-				addQueryParameter('edp', u);
-			}
-		}
-
-		const di = args['debugId'];
-		if (di) {
-			addQueryParameter('di', di);
-		}
-
-		const ibe = args['inspect-brk-extensions'];
-		if (ibe) {
-			addQueryParameter('ibe', ibe);
-		}
-
-		window.open(newAddress);
-
 		return Promise.resolve();
 	}
 
 	getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]> {
 		return Promise.resolve([]);
-	}
-
-	getWindowCount(): Promise<number> {
-		return Promise.resolve(this.windowCount);
-	}
-
-	log(_severity: string, _args: string[]): Promise<void> {
-		return Promise.resolve();
-	}
-
-	showItemInFolder(_path: URI): Promise<void> {
-		return Promise.resolve();
 	}
 
 	newWindowTab(): Promise<void> {
@@ -613,7 +488,7 @@ export class SimpleWindowsService implements IWindowsService {
 	}
 
 	getActiveWindowId(): Promise<number | undefined> {
-		return Promise.resolve(undefined);
+		return Promise.resolve(0);
 	}
 
 	// This needs to be handled from browser process to prevent
@@ -641,133 +516,11 @@ export class SimpleWindowsService implements IWindowsService {
 		throw new Error('not implemented');
 	}
 
-	async openAboutDialog(): Promise<void> {
-		const detail = localize('aboutDetail',
-			"Version: {0}\nCommit: {1}\nDate: {2}\nBrowser: {3}",
-			this.productService.version || 'Unknown',
-			this.productService.commit || 'Unknown',
-			this.productService.date || 'Unknown',
-			navigator.userAgent
-		);
-
-		const result = await this.dialogService.show(Severity.Info, this.productService.nameLong, [localize('copy', "Copy"), localize('ok', "OK")], { detail });
-
-		if (result === 0) {
-			this.clipboardService.writeText(detail);
-		}
-	}
-
 	resolveProxy(windowId: number, url: string): Promise<string | undefined> {
 		return Promise.resolve(undefined);
 	}
 }
 
 registerSingleton(IWindowsService, SimpleWindowsService);
-
-//#endregion
-
-//#region Workspace Editing
-
-export class SimpleWorkspaceEditingService implements IWorkspaceEditingService {
-
-	_serviceBrand: any;
-
-	addFolders(folders: IWorkspaceFolderCreationData[], donotNotifyError?: boolean): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	removeFolders(folders: URI[], donotNotifyError?: boolean): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	updateFolders(index: number, deleteCount?: number, foldersToAdd?: IWorkspaceFolderCreationData[], donotNotifyError?: boolean): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	enterWorkspace(path: URI): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	createAndEnterWorkspace(folders: IWorkspaceFolderCreationData[], path?: URI): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	saveAndEnterWorkspace(path: URI): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	copyWorkspaceSettings(toWorkspace: IWorkspaceIdentifier): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	pickNewWorkspacePath(): Promise<URI> {
-		// @ts-ignore
-		return Promise.resolve(undefined);
-	}
-}
-
-registerSingleton(IWorkspaceEditingService, SimpleWorkspaceEditingService, true);
-
-//#endregion
-
-//#region Workspaces
-
-export class SimpleWorkspacesService implements IWorkspacesService {
-
-	_serviceBrand: any;
-
-	createUntitledWorkspace(folders?: IWorkspaceFolderCreationData[], remoteAuthority?: string): Promise<IWorkspaceIdentifier> {
-		// @ts-ignore
-		return Promise.resolve(undefined);
-	}
-
-	deleteUntitledWorkspace(workspace: IWorkspaceIdentifier): Promise<void> {
-		return Promise.resolve(undefined);
-	}
-
-	getWorkspaceIdentifier(workspacePath: URI): Promise<IWorkspaceIdentifier> {
-		// @ts-ignore
-		return Promise.resolve(undefined);
-	}
-}
-
-registerSingleton(IWorkspacesService, SimpleWorkspacesService);
-
-//#endregion
-
-//#region remote
-
-class SimpleTunnelService implements ITunnelService {
-	_serviceBrand: any;
-	openTunnel(remotePort: number) {
-		return undefined;
-	}
-}
-
-registerSingleton(ITunnelService, SimpleTunnelService);
-
-//#endregion
-
-//#region workspace stats
-
-class SimpleWorkspaceStatsService implements IWorkspaceStatsService {
-
-	_serviceBrand: any;
-
-	getTags(): Promise<Tags> {
-		return Promise.resolve({});
-	}
-
-	getTelemetryWorkspaceId(workspace: IWorkspace, state: WorkbenchState): string | undefined {
-		return undefined;
-	}
-
-	getHashedRemotesFromUri(workspaceUri: URI, stripEndingDotGit?: boolean): Promise<string[]> {
-		return Promise.resolve([]);
-	}
-
-}
-
-registerSingleton(IWorkspaceStatsService, SimpleWorkspaceStatsService);
 
 //#endregion

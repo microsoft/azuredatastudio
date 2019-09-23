@@ -8,7 +8,7 @@ import * as nls from 'vs/nls';
 import { IQueryEditorService } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IScriptingService, ScriptOperation } from 'sql/platform/scripting/common/scriptingService';
-import { BaseActionContext } from 'sql/workbench/common/actions';
+import { BaseActionContext } from 'sql/workbench/browser/actions';
 import { scriptSelect, script, scriptEditSelect } from 'sql/workbench/electron-browser/scriptingUtils';
 import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMessageService';
 

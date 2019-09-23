@@ -6,7 +6,7 @@
 import { getConfigurationKeys, IConfigurationOverrides, IConfigurationService, getConfigurationValue, isConfigurationOverrides, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 
 export class TestConfigurationService implements IConfigurationService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private configuration = {
 		user: {},

@@ -5,7 +5,7 @@
 
 import { IConnectionProfile } from 'sql/platform/connection/common/interfaces';
 import { ServerTreeView } from 'sql/workbench/parts/objectExplorer/browser/serverTreeView';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
 
 import { Tree } from 'vs/base/parts/tree/browser/treeImpl';
 import { TestInstantiationService } from 'vs/platform/instantiation/test/common/instantiationServiceMock';

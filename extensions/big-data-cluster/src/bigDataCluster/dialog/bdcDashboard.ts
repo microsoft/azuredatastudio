@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
@@ -123,7 +123,7 @@ export class BdcDashboard {
 				}
 			).component();
 
-			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding-left': '10px', 'border-right': 'solid 1px #ccc' } });
+			this.mainAreaContainer.addItem(this.navContainer, { flex: `0 0 ${navWidth}`, CSSStyles: { 'padding': '0 20px 0 20px', 'border-right': 'solid 1px #ccc' } });
 
 			// Overview nav item - this will be the initial page
 			const overviewNavItemDiv = modelView.modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
@@ -133,14 +133,14 @@ export class BdcDashboard {
 			const overviewPage = new BdcDashboardOverviewPage(this, this.model).create(modelView);
 			this.currentPage = overviewPage;
 			this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
-			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
+			this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 
 			overviewNavItemDiv.onDidClick(() => {
 				if (this.currentTab) {
 					this.currentTab.text.updateCssStyles(unselectedTabCss);
 				}
 				this.mainAreaContainer.removeItem(this.currentPage);
-				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%' });
+				this.mainAreaContainer.addItem(overviewPage, { flex: '0 0 100%', CSSStyles: { 'margin': '0 20px 0 20px' } });
 				this.currentPage = overviewPage;
 				this.currentTab = { div: overviewNavItemDiv, dot: undefined, text: overviewNavItemText };
 				this.currentTab.text.updateCssStyles(selectedTabCss);
@@ -180,7 +180,7 @@ export class BdcDashboard {
 			this.currentTab.text.updateCssStyles(unselectedTabCss);
 		}
 		this.mainAreaContainer.removeItem(this.currentPage);
-		this.mainAreaContainer.addItem(tabPageMapping.servicePage);
+		this.mainAreaContainer.addItem(tabPageMapping.servicePage, { CSSStyles: { 'margin': '0 20px 0 20px' } });
 		this.currentPage = tabPageMapping.servicePage;
 		this.currentTab = tabPageMapping.navTab;
 		this.currentTab.text.updateCssStyles(selectedTabCss);
@@ -209,9 +209,9 @@ export class BdcDashboard {
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
 	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
-	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component();
+	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });
-	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none' } }).component();
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
 	return { div: div, dot: dot, text: text };

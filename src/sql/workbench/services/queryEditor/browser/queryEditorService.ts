@@ -9,7 +9,7 @@ import { EditDataInput } from 'sql/workbench/parts/editData/browser/editDataInpu
 import { IConnectableInput, IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { IQueryEditorService, IQueryEditorOptions } from 'sql/workbench/services/queryEditor/common/queryEditorService';
 import { QueryPlanInput } from 'sql/workbench/parts/queryPlan/common/queryPlanInput';
-import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/common/customInputConverter';
+import { sqlModeId, untitledFilePrefix, getSupportedInputResource } from 'sql/workbench/browser/customInputConverter';
 import * as TaskUtilities from 'sql/workbench/browser/taskUtilities';
 
 import { ITextModel } from 'vs/editor/common/model';
@@ -36,7 +36,7 @@ import { FileEditorInput } from 'vs/workbench/contrib/files/common/editors/fileE
  */
 export class QueryEditorService implements IQueryEditorService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	private static CHANGE_UNSUPPORTED_ERROR_MESSAGE = nls.localize(
 		'queryEditorServiceChangeUnsupportedError',

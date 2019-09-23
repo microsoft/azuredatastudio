@@ -26,6 +26,10 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	public createQueryTab(tab: azdata.window.DialogTab): void {
 		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
 	}
+
+	public connect(connectionProfile: azdata.connection.ConnectionProfile): Thenable<void> {
+		return this._proxy.$connectWithProfile(this.uri, connectionProfile);
+	}
 }
 
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape {

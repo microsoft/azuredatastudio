@@ -1,0 +1,15 @@
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the Source EULA. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+.grid-panel.action-bar.vertical {
+	display : inline-block;
+	height : 100%;
+	vertical-align : top;
+}
+
+.grid-panel.action-bar.horizontal {
+	width : 100%;
+	display: flex;
+}

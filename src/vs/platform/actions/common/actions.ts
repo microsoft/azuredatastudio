@@ -93,6 +93,7 @@ export const enum MenuId {
 	SearchContext,
 	StatusBarWindowIndicatorMenu,
 	TouchBarContext,
+	TitleBarContext,
 	ViewItemContext,
 	ViewTitle,
 	ObjectExplorerItemContext, // {{SQL CARBON EDIT}}
@@ -121,7 +122,7 @@ export const IMenuService = createDecorator<IMenuService>('menuService');
 
 export interface IMenuService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createMenu(id: MenuId, scopedKeybindingService: IContextKeyService): IMenu;
 }

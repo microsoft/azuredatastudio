@@ -87,42 +87,42 @@
 }
 
 /* icons */
-.vs .icon.extendFullScreen {
+.vs .codicon.extendFullScreen {
 	/* ExtendToFullScreen_16x_vscode */
 	background-image: url("extendFullScreen.svg");
 }
 
-.vs .icon.exitFullScreen {
+.vs .codicon.exitFullScreen {
 	/* ExitFullScreen_16x_vscode */
 	background-image: url("exitFullScreen.svg");
 }
 
-.vs .icon.saveJson {
+.vs .codicon.saveJson {
 	/* ResultToJSON_16x_vscode */
 	background-image: url("saveJson.svg");
 }
 
-.vs .icon.saveCsv {
+.vs .codicon.saveCsv {
 	/* ResultToCSV_16x_vscode */
 	background-image: url("saveCsv.svg");
 }
 
-.vs .icon.saveExcel {
+.vs .codicon.saveExcel {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("saveExcel.svg");
 }
 
-.vs .icon.saveXml {
+.vs .codicon.saveXml {
 	/* ResultToXML_16x_vscode */
 	background-image: url("saveXml.svg");
 }
 
-.vs .icon.viewChart {
+.vs .codicon.viewChart {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("viewChart.svg");
 }
 
-.vs .icon.viewVisualizer {
+.vs .codicon.viewVisualizer {
 	background-image: url("viewVisualizer.svg");
 }
 
@@ -222,54 +222,54 @@
 }
 
 /* icons */
-.vs-dark .icon.extendFullScreen,
-.hc-black .icon.extendFullScreen {
+.vs-dark .codicon.extendFullScreen,
+.hc-black .codicon.extendFullScreen {
 	/* ExtendToFullScreen_16x_vscode_inverse.svg */
 	background-image: url("extendFullScreen_inverse.svg");
 }
 
-.vs-dark .icon.exitFullScreen,
-.hc-black .icon.exitFullScreen {
+.vs-dark .codicon.exitFullScreen,
+.hc-black .codicon.exitFullScreen {
 	/* ExitFullScreen_16x_vscode_inverse.svg */
 	background-image: url("exitFullScreen_inverse.svg");
 }
 
-.vs-dark .icon.saveJson,
-.hc-black .icon.saveJson {
+.vs-dark .codicon.saveJson,
+.hc-black .codicon.saveJson {
 	/* ResultToJSON_16x_vscode_inverse.svg */
 	background-image: url("saveJson_inverse.svg");
 }
 
-.vs-dark .icon.saveCsv,
-.hc-black .icon.saveCsv {
+.vs-dark .codicon.saveCsv,
+.hc-black .codicon.saveCsv {
 	/* ResultToCSV_16x_vscode_inverse.svg */
 	background-image: url("saveCsv_inverse.svg");
 }
 
-.vs-dark .icon.saveExcel,
-.hc-black .icon.saveExcel {
+.vs-dark .codicon.saveExcel,
+.hc-black .codicon.saveExcel {
 	/* ResultToXlsx_16x_vscode_inverse.svg */
 	background-image: url("saveExcel_inverse.svg");
 }
 
-.vs-dark .icon.saveXml,
-.hc-black .icon.saveXml {
+.vs-dark .codicon.saveXml,
+.hc-black .codicon.saveXml {
 	/* ResultToXml_16x_vscode_inverse.svg */
 	background-image: url("saveXml_inverse.svg");
 }
 
-.vs-dark .icon.viewChart,
-.hc-black .icon.viewChart {
+.vs-dark .codicon.viewChart,
+.hc-black .codicon.viewChart {
 	/* ResultToXlsx_16x_vscode */
 	background-image: url("viewChart_inverse.svg");
 }
 
-.vs-dark .icon.viewVisualizer,
-.hc-black .icon.viewVisualizer {
+.vs-dark .codicon.viewVisualizer,
+.hc-black .codicon.viewVisualizer {
 	background-image: url("viewVisualizer_inverse.svg");
 }
 
-.grid-panel .action-label.icon {
+.grid-panel .action-label.codicon {
 	height: 16px;
 	min-width: 28px;
 	background-size: 16px;

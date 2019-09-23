@@ -31,7 +31,7 @@ suite('ConnectionStore', () => {
 		groupId: '',
 		groupFullName: '',
 		getOptionsKey: undefined,
-		matches: undefined,
+		matches: () => false,
 		providerName: mssqlProviderName,
 		options: {},
 		saveProfile: true,

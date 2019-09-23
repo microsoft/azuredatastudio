@@ -6,7 +6,7 @@
 'use strict';
 
 import { SqlOpsDataClient, ClientOptions } from 'dataprotocol-client';
-import { IConfig, ServerProvider, Events } from 'service-downloader';
+import { ServerProvider, Events } from 'service-downloader';
 import { ServerOptions, TransportKind } from 'vscode-languageclient';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
@@ -18,8 +18,7 @@ import { Telemetry, LanguageClientErrorHandler } from './telemetry';
 import * as Constants from '../constants';
 import { TelemetryFeature, FlatFileImportFeature } from './features';
 import * as serviceUtils from './serviceUtils';
-
-const baseConfig = require('./config.json');
+import { promises as fs } from 'fs';
 
 export class ServiceClient {
 	private statusView: vscode.StatusBarItem;
@@ -28,8 +27,9 @@ export class ServiceClient {
 		this.statusView = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
 	}
 
-	public startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
-		let config: IConfig = JSON.parse(JSON.stringify(baseConfig));
+	public async startService(context: vscode.ExtensionContext): Promise<SqlOpsDataClient> {
+		const rawConfig = await fs.readFile(path.join(context.extensionPath, 'config.json'));
+		const config = JSON.parse(rawConfig.toString());
 		config.installDirectory = path.join(context.extensionPath, config.installDirectory);
 		config.proxy = vscode.workspace.getConfiguration('http').get('proxy');
 		config.strictSSL = vscode.workspace.getConfiguration('http').get('proxyStrictSSL') || true;
@@ -163,4 +163,3 @@ class CustomOutputChannel implements vscode.OutputChannel {
 	dispose(): void {
 	}
 }
-

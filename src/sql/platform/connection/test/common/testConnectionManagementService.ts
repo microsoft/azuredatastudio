@@ -16,7 +16,7 @@ import { ConnectionProviderProperties } from 'sql/workbench/parts/connection/com
 // Test stubs for commonly used objects
 
 export class TestConnectionManagementService implements IConnectionManagementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onAddConnectionProfile = undefined;
 	onDeleteConnectionProfile = undefined;
 	onConnectionChanged = undefined;
@@ -293,5 +293,9 @@ export class TestConnectionManagementService implements IConnectionManagementSer
 
 	getConnections(activeConnectionsOnly?: boolean): ConnectionProfile[] {
 		return [];
+	}
+
+	getConnection(uri: string): ConnectionProfile {
+		return undefined;
 	}
 }

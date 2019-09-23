@@ -28,6 +28,7 @@ import { registerBooksWidget } from './dashboard/bookWidget';
 import { createMssqlApi } from './mssqlApiFactory';
 import { localize } from './localize';
 import { SqlToolsServer } from './sqlToolsServer';
+import { promises as fs } from 'fs';
 
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', 'This sample code loads the file into a data frame and shows the first 10 results.');
 
@@ -42,8 +43,8 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 	}
 
 	// ensure our log path exists
-	if (!(await Utils.pfs.exists(context.logPath))) {
-		await Utils.pfs.mkdir(context.logPath);
+	if (!(await Utils.exists(context.logPath))) {
+		await fs.mkdir(context.logPath);
 	}
 
 	let prompter: IPrompter = new CodeAdapter();
@@ -70,7 +71,7 @@ export async function activate(context: vscode.ExtensionContext): Promise<IExten
 
 	registerBooksWidget(bookContributionProvider);
 
-	// initalize client last so we don't have features stuck behind it
+	// initialize client last so we don't have features stuck behind it
 	const server = new SqlToolsServer();
 	context.subscriptions.push(server);
 	await server.start(appContext);
@@ -200,7 +201,7 @@ async function handleOpenNotebookTask(profile: azdata.IConnectionProfile): Promi
 async function handleOpenClusterStatusNotebookTask(profile: azdata.IConnectionProfile, appContext: AppContext): Promise<void> {
 	const notebookRelativePath: string = 'notebooks/tsg/cluster-status.ipynb';
 	const notebookFullPath: string = path.join(appContext.extensionContext.extensionPath, notebookRelativePath);
-	if (!Utils.fileExists(notebookFullPath)) {
+	if (!(await Utils.exists(notebookFullPath))) {
 		vscode.window.showErrorMessage(localize("fileNotFound", "Unable to find the file specified"));
 	} else {
 		const title: string = Utils.findNextUntitledEditorName(notebookFullPath);
