@@ -179,8 +179,8 @@ class SchemaCompareTester {
 			fs.unlinkSync(filepath);
 		}
 		finally {
-			await utils.deleteDB(sourceDB, ownerUri);
-			await utils.deleteDB(targetDB, ownerUri);
+			await utils.deleteDB(server, sourceDB, ownerUri);
+			await utils.deleteDB(server, targetDB, ownerUri);
 		}
 	}
 
@@ -249,7 +249,7 @@ class SchemaCompareTester {
 			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 		}
 		finally {
-			await utils.deleteDB(targetDB, ownerUri);
+			await utils.deleteDB(server, targetDB, ownerUri);
 		}
 	}
 

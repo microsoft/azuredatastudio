@@ -8,6 +8,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import { TestServerProfile } from './testConfig';
+import { isNullOrUndefined } from 'util';
 
 // default server connection timeout
 export const DefaultConnectTimeoutInMs: number = 10000;
@@ -79,7 +80,6 @@ export async function sleep(ms: number): Promise<{}> {
 }
 
 export async function createDB(dbName: string, ownerUri: string): Promise<void> {
-	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
 	let query = `BEGIN TRY
 			CREATE DATABASE ${dbName}
 			SELECT 1 AS NoError
@@ -88,12 +88,11 @@ export async function createDB(dbName: string, ownerUri: string): Promise<void> 
 			SELECT ERROR_MESSAGE() AS ErrorMessage;
 		END CATCH`;
 
-	let dbcreatedResult = await queryProvider.runQueryAndReturn(ownerUri, query);
-	assert(dbcreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB creation threw error');
+	let dbCreatedResult = await this.runQuery(query, ownerUri);
+	assert(dbCreatedResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB creation threw error');
 }
 
-export async function deleteDB(dbName: string, ownerUri: string): Promise<void> {
-	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
+export async function deleteDB(server: TestServerProfile, dbName: string, ownerUri: string): Promise<void> {
 	let query = `BEGIN TRY
 			ALTER DATABASE ${dbName}
 			SET OFFLINE
@@ -105,13 +104,33 @@ export async function deleteDB(dbName: string, ownerUri: string): Promise<void> 
 			SELECT ERROR_MESSAGE() AS ErrorMessage;
 		END CATCH`;
 
-	await queryProvider.runQueryAndReturn(ownerUri, query);
+	ownerUri = await ensureServerConnected(server, ownerUri);
+	let dbDeleteResult = await this.runQuery(query, ownerUri);
+	assert(dbDeleteResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB deletion threw error');
 }
 
+export async function ensureServerConnected(server: TestServerProfile, ownerUri: string): Promise<string> {
+	let connection = await azdata.connection.getConnection(ownerUri);
+	if (isNullOrUndefined(connection)) {
+		//create new connection if not present and use OwnerUri from there
+		let connectionId = await connectToServer(server);
+		return azdata.connection.getUriForConnection(connectionId);
+	}
+	return ownerUri;
+}
+
+
 export async function runQuery(query: string, ownerUri: string): Promise<azdata.SimpleExecuteResult> {
-	let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
-	let result = await queryProvider.runQueryAndReturn(ownerUri, query);
-	return result;
+	try {
+		let queryProvider = azdata.dataprotocol.getProvider<azdata.QueryProvider>('MSSQL', azdata.DataProviderType.QueryProvider);
+		let result = await queryProvider.runQueryAndReturn(ownerUri, query);
+		return result;
+	}
+	catch (ex) {
+		console.error(ex);
+		throw ex;
+	}
+
 }
 
 export async function assertThrowsAsync(fn: () => Promise<any>, msg: string): Promise<void> {
