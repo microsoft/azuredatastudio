@@ -36,7 +36,7 @@ registerSingleton(IExtHostConfiguration, ExtHostConfiguration);
 registerSingleton(IExtHostCommands, ExtHostCommands);
 registerSingleton(IExtHostDocumentsAndEditors, ExtHostDocumentsAndEditors);
 registerSingleton(IExtHostTerminalService, ExtHostTerminalService);
-registerSingleton(IExtHostTask, ExtHostTask);
+// registerSingleton(IExtHostTask, ExtHostTask); {{SQL CABON EDIT}} disable exthost tasks
 registerSingleton(IExtHostDebugService, ExtHostDebugService);
 registerSingleton(IExtHostSearch, ExtHostSearch);
 registerSingleton(IExtensionStoragePaths, ExtensionStoragePaths);
