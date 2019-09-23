@@ -21,7 +21,12 @@ export interface IPlatformService {
 	isNotebookNameUsed(title: string): boolean;
 	makeDirectory(path: string): Promise<void>;
 	readTextFile(filePath: string): Promise<string>;
-	runCommand(command: string, workingDirectory?: string): Promise<string>;
+	runCommand(command: string, options?: CommandOptions): Promise<string>;
+}
+
+export interface CommandOptions {
+	workingDirectory?: string;
+	addtionalEnvironmentVariables?: NodeJS.ProcessEnv;
 }
 
 export class PlatformService implements IPlatformService {
@@ -71,10 +76,13 @@ export class PlatformService implements IPlatformService {
 		return fs.promises.readFile(filePath, 'utf8');
 	}
 
-	runCommand(command: string, workingDirectory?: string): Promise<string> {
-
+	runCommand(command: string, options?: CommandOptions): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
-			cp.exec(command, { cwd: workingDirectory }, (error, stdout, stderror) => {
+			const env = Object.assign({}, process.env, options && options.addtionalEnvironmentVariables);
+			cp.exec(command, {
+				cwd: options && options.workingDirectory,
+				env: env
+			}, (error, stdout, stderror) => {
 				if (error) {
 					reject(error);
 				} else {

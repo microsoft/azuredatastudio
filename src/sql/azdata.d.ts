@@ -2943,6 +2943,8 @@ declare module 'azdata' {
 	export interface CardDescriptionItem {
 		label: string;
 		value?: string;
+		tooltip?: string;
+		fontWeight?: 'normal' | 'bold';
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';

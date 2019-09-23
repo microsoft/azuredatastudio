@@ -32,21 +32,21 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			fields: [
 				{
 					type: FieldType.Text,
-					label: localize('deployCluster.ClusterNameField', "Cluster name"),
+					label: localize('deployCluster.ClusterName', "Cluster name"),
 					required: true,
 					variableName: VariableNames.ClusterName_VariableName,
 					defaultValue: 'mssql-cluster',
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.AdminUserNameField', "Admin username"),
+					label: localize('deployCluster.ControllerUsername', "Controller username"),
 					required: true,
 					variableName: VariableNames.AdminUserName_VariableName,
 					defaultValue: 'admin',
 					useCustomValidator: true
 				}, {
 					type: FieldType.Password,
-					label: localize('deployCluster.AdminPasswordField', "Password"),
+					label: localize('deployCluster.AdminPassword', "Password"),
 					required: true,
 					variableName: VariableNames.AdminPassword_VariableName,
 					defaultValue: '',
@@ -61,7 +61,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					useCustomValidator: true,
 				}, {
 					type: FieldType.Options,
-					label: localize('deployCluster.AuthenticationModeField', "Authentication mode"),
+					label: localize('deployCluster.AuthenticationMode', "Authentication mode"),
 					required: true,
 					variableName: VariableNames.AuthenticationMode_VariableName,
 					defaultValue: AuthenticationMode.Basic,

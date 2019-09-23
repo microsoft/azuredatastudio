@@ -108,7 +108,7 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					fields: [
 						{
 							type: FieldType.ReadonlyText,
-							label: localize('deployCluster.AdminUsername', "Admin username"),
+							label: localize('deployCluster.ControllerUsername', "Controller username"),
 							defaultValue: this.wizard.model.getStringValue(VariableNames.AdminUserName_VariableName),
 							fontStyle: FontStyle.Italic
 						}, {

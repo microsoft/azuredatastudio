@@ -62,7 +62,11 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 	}
 
 	private createProfileCard(profile: BigDataClusterDeploymentProfile, view: azdata.ModelView): azdata.CardComponent {
-		const descriptions = [{
+		const descriptions: azdata.CardDescriptionItem[] = [{
+			label: localize('deployCluster.serviceLabel', "Service"),
+			value: localize('deployCluster.instancesLabel', "Instances"),
+			fontWeight: 'bold'
+		}, {
 			label: localize('deployCluster.masterPoolLabel', "SQL Server Master"),
 			value: profile.sqlServerReplicas.toString()
 		}, {
@@ -110,7 +114,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			label: profile.profileName,
 			descriptions: descriptions,
 			width: '240px',
-			height: '330px',
+			height: '300px',
 		}).component();
 		this._cards.push(card);
 		this.wizard.registerDisposable(card.onCardSelectedChanged(() => {

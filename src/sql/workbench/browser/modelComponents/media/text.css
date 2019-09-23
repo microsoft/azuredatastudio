@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-.tooltip {
+.modelview-text-tooltip {
 	background-size: 12px 12px;
 	background-repeat: no-repeat;
 	cursor: pointer;
@@ -12,15 +12,15 @@
 	margin-left: 5px;
 }
 
-.vs .tooltip {
+.vs .modelview-text-tooltip {
 	background-image: url('info.svg')
 }
 
-.vs-dark .tooltip, .hc-black .tooltip {
+.vs-dark .modelview-text-tooltip, .hc-black .modelview-text-tooltip {
 	background-image: url('info_inverse.svg')
 }
 
-.tooltip .tooltiptext {
+.modelview-text-tooltip .modelview-text-tooltip-content {
 	visibility: hidden;
 	text-align: left;
 	border-radius: 5px;
@@ -31,14 +31,14 @@
 	margin-left: 14px;
 }
 
-.vs .tooltip .tooltiptext {
+.vs .modelview-text-tooltip .modelview-text-tooltip-content {
 	background-color: #f5f5f5;
 }
 
-.vs-dark .tooltip .tooltiptext, .hc-black .tooltip .tooltiptext {
+.vs-dark .modelview-text-tooltip .modelview-text-tooltip-content, .hc-black .modelview-text-tooltip .modelview-text-tooltip-content {
 	background-color: #050505;
 }
 
-.tooltip:focus .tooltiptext, .tooltip:hover .tooltiptext {
+.modelview-text-tooltip:focus .modelview-text-tooltip-content, .modelview-text-tooltip:hover .modelview-text-tooltip-content {
 	visibility: visible;
 }

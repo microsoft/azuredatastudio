@@ -193,13 +193,17 @@
 	padding-left: 22px;
 }
 
-.card-description-container {
+.model-card-description-container {
 	border-top-width: 1px;
 	border-top-style: solid;
 	border-color: rgb(214, 214, 214);
 	padding: 5px;
 }
 
-.list-item-description-value {
+.model-card-list-item-description {
+	text-align: left;
+}
+
+.model-card-list-item-description-value {
 	float: right;
 }
