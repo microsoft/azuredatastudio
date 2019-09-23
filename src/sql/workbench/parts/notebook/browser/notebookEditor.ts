@@ -25,7 +25,7 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/note
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, NotebookPosition, NotebookRange } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { INotebookModel, NotebookPosition, NotebookRange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';

@@ -5,7 +5,7 @@
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
-import { NotebookRange, NotebookPosition } from 'sql/workbench/parts/notebook/common/models/modelInterfaces';
+import { NotebookRange, NotebookPosition } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { Range } from 'vs/editor/common/core/range';
 import { FindMatch, IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
