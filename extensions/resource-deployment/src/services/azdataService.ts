@@ -11,14 +11,14 @@ interface BdcConfigListOutput {
 }
 
 export interface IAzdataService {
-	getDeploymentProfiles(): Thenable<BigDataClusterDeploymentProfile[]>;
+	getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]>;
 }
 
 export class AzdataService implements IAzdataService {
 	constructor(private platformService: IPlatformService) {
 	}
 
-	getDeploymentProfiles(): Thenable<BigDataClusterDeploymentProfile[]> {
+	getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]> {
 		return this.ensureWorkingDirectoryExists().then(() => {
 			return this.getDeploymentProfileNames();
 		}).then((names: string[]) => {

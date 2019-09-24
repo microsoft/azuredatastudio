@@ -149,7 +149,7 @@ export interface ITool {
 	readonly version: SemVer | undefined;
 	readonly homePage: string;
 	readonly isInstalled: boolean;
-	loadInformation(): Thenable<void>;
+	loadInformation(): Promise<void>;
 	readonly statusDescription: string | undefined;
 }
 

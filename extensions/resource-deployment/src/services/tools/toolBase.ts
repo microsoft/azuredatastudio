@@ -33,7 +33,7 @@ export abstract class ToolBase implements ITool {
 		return this._statusDescription;
 	}
 
-	public loadInformation(): Thenable<void> {
+	public loadInformation(): Promise<void> {
 		if (this._isInstalled) {
 			return Promise.resolve();
 		}

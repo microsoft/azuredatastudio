@@ -162,7 +162,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 		this.wizard.model.selectedProfile = selectedProfile;
 	}
 
-	private loadCards(): Thenable<void> {
+	private loadCards(): Promise<void> {
 		return this.wizard.azdataService.getDeploymentProfiles().then((profiles: BigDataClusterDeploymentProfile[]) => {
 			const defaultProfile: string = this.getDefaultProfile();
 

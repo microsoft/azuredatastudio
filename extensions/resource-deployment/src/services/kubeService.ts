@@ -15,7 +15,7 @@ export interface KubeClusterContext {
 
 export interface IKubeService {
 	getDefautConfigPath(): string;
-	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]>;
+	getClusterContexts(configFile: string): Promise<KubeClusterContext[]>;
 }
 
 export class KubeService implements IKubeService {
@@ -23,7 +23,7 @@ export class KubeService implements IKubeService {
 		return path.join(os.homedir(), '.kube', 'config');
 	}
 
-	getClusterContexts(configFile: string): Thenable<KubeClusterContext[]> {
+	getClusterContexts(configFile: string): Promise<KubeClusterContext[]> {
 		return fs.promises.access(configFile).catch((error) => {
 			if (error && error.code === 'ENOENT') {
 				return [];
