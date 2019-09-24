@@ -845,7 +845,7 @@ export class SchemaCompareMainWindow {
 
 		this.openScmpButton.onDidClick(async (click) => {
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpStarted');
-			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
+			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -942,7 +942,7 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.saveScmpButton.onDidClick(async (click) => {
-			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
+			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
 			const filePath = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(rootPath),
