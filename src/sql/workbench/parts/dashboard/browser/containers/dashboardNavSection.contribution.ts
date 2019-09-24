@@ -10,6 +10,7 @@ import { join } from 'vs/base/common/path';
 import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
+import * as resources from 'vs/base/common/resources';
 
 import { NavSectionConfig, IUserFriendlyIcon } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { registerContainerType, generateNavSectionContainerTypeSchemaProperties } from 'sql/platform/dashboard/common/dashboardContainerRegistry';
@@ -84,13 +85,13 @@ function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPoin
 	if (icon) {
 		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
-			const path = join(extension.description.extensionLocation.fsPath, icon);
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(URI.file(path))}`);
+			const path = resources.joinPath(extension.description.extensionLocation, icon);
+			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
 		} else {
-			const light = join(extension.description.extensionLocation.fsPath, icon.light);
-			const dark = join(extension.description.extensionLocation.fsPath, icon.dark);
-			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(URI.file(light))}`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(URI.file(dark))}`);
+			const light = resources.joinPath(extension.description.extensionLocation, icon.light);
+			const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
+			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
+			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 		}
 	}
 	return iconClass;
