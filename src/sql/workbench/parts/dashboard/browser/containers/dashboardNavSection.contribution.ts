@@ -7,7 +7,7 @@ import { IExtensionPointUser } from 'vs/workbench/services/extensions/common/ext
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import * as nls from 'vs/nls';
 import { join } from 'vs/base/common/path';
-import { createCSSRule } from 'vs/base/browser/dom';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
 import { URI } from 'vs/base/common/uri';
 import { IdGenerator } from 'vs/base/common/idGenerator';
 
@@ -85,12 +85,12 @@ function createCSSRuleForIcon(icon: IUserFriendlyIcon, extension: IExtensionPoin
 		iconClass = ids.nextId();
 		if (typeof icon === 'string') {
 			const path = join(extension.description.extensionLocation.fsPath, icon);
-			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
+			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(URI.file(path))}`);
 		} else {
 			const light = join(extension.description.extensionLocation.fsPath, icon.light);
 			const dark = join(extension.description.extensionLocation.fsPath, icon.dark);
-			createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
-			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+			createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(URI.file(light))}`);
+			createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(URI.file(dark))}`);
 		}
 	}
 	return iconClass;
