@@ -13,9 +13,18 @@ export const ZooKeeperResource = 'zookeeper';
 export const SparkResource = 'spark-0';
 export const HadrEnabledSetting = 'hadr.enabled';
 
+interface ServiceEndpoint {
+	port: number;
+	serviceType: ServiceType;
+	name: EndpointName;
+}
+type ServiceType = 'NodePort' | 'LoadBalancer';
+type EndpointName = 'Controller' | 'Master' | 'Knox' | 'MasterSecondary';
+
 export class BigDataClusterDeploymentProfile {
 	constructor(private _profileName: string, private _bdcConfig: any, private _controlConfig: any) {
 		// TODO: add validation logic for these 2 objects
+		// https://github.com/microsoft/azuredatastudio/issues/7344
 	}
 
 	public get profileName(): string {
@@ -235,18 +244,17 @@ export class BigDataClusterDeploymentProfile {
 		this._bdcConfig.spec.resources[resourceName].spec.replicas = replicas;
 	}
 
-	private getEndpointPort(endpoints: any, name: string, defaultValue: number): number {
-		const endpoint = (<{ port: number, name: string }[]>endpoints).find(endpoint => endpoint.name === name);
+	private getEndpointPort(endpoints: ServiceEndpoint[], name: EndpointName, defaultValue: number): number {
+		const endpoint = endpoints.find(endpoint => endpoint.name === name);
 		return endpoint ? endpoint.port : defaultValue;
 	}
 
-	private setEndpointPort(endpoints: any, name: string, port: number): void {
-		const endpointArray = <{ port: number, serviceType: string, name: string }[]>endpoints;
-		const endpoint = endpointArray.find(endpoint => endpoint.name === name);
+	private setEndpointPort(endpoints: ServiceEndpoint[], name: EndpointName, port: number): void {
+		const endpoint = endpoints.find(endpoint => endpoint.name === name);
 		if (endpoint) {
 			endpoint.port = port;
 		} else {
-			endpointArray.push({
+			endpoints.push({
 				name: name,
 				serviceType: 'NodePort',
 				port: port

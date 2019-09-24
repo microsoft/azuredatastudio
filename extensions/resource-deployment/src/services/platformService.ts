@@ -26,7 +26,7 @@ export interface IPlatformService {
 
 export interface CommandOptions {
 	workingDirectory?: string;
-	addtionalEnvironmentVariables?: NodeJS.ProcessEnv;
+	additionalEnvironmentVariables?: NodeJS.ProcessEnv;
 }
 
 export class PlatformService implements IPlatformService {
@@ -78,7 +78,7 @@ export class PlatformService implements IPlatformService {
 
 	runCommand(command: string, options?: CommandOptions): Promise<string> {
 		return new Promise<string>((resolve, reject) => {
-			const env = Object.assign({}, process.env, options && options.addtionalEnvironmentVariables);
+			const env = Object.assign({}, process.env, options && options.additionalEnvironmentVariables);
 			cp.exec(command, {
 				cwd: options && options.workingDirectory,
 				env: env

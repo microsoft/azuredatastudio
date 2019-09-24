@@ -110,7 +110,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 			case BdcDeploymentType.ExistingKubeAdm:
 				return localize('deployCluster.ExistingKubeAdm', "Deploy SQL Server 2019 Big Data Cluster on an existing kubeadm cluster");
 			default:
-				throw new Error(localize('deployCluster.UnknownDeploymentTarget', "Unknow wizard type: {0}", type));
+				throw new Error(`Unknown deployment type: ${type}`);
 		}
 	}
 }

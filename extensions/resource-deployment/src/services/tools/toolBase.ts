@@ -19,7 +19,7 @@ export abstract class ToolBase implements ITool {
 	abstract type: ToolType;
 	abstract homePage: string;
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
-	protected abstract versionCommand: string;
+	protected abstract readonly versionCommand: string;
 
 	public get version(): SemVer | undefined {
 		return this._version;

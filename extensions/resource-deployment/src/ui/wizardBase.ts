@@ -4,21 +4,23 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import { Disposable } from 'vscode';
+import * as vscode from 'vscode';
+import * as nls from 'vscode-nls';
 import { WizardPageBase } from './wizardPageBase';
 import { Model } from './model';
+const localize = nls.loadMessageBundle();
 
 export abstract class WizardBase<T, M extends Model> {
 	private customButtons: azdata.window.Button[] = [];
 	private pages: WizardPageBase<T>[] = [];
 
 	public wizardObject: azdata.window.Wizard;
-	public toDispose: Disposable[] = [];
+	public toDispose: vscode.Disposable[] = [];
 	public get model(): M {
 		return this._model;
 	}
 
-	constructor(title: string, private _model: M) {
+	constructor(private title: string, private _model: M) {
 		this.wizardObject = azdata.window.createWizard(title);
 	}
 
@@ -66,15 +68,23 @@ export abstract class WizardBase<T, M extends Model> {
 	}
 
 	private dispose() {
-		this.toDispose.forEach((disposable: Disposable) => {
+		let errorOccured = false;
+		this.toDispose.forEach((disposable: vscode.Disposable) => {
 			try {
 				disposable.dispose();
 			}
-			catch{ }
+			catch (error) {
+				errorOccured = true;
+				console.error(error);
+			}
 		});
+
+		if (errorOccured) {
+			vscode.window.showErrorMessage(localize('resourceDeployment.DisposableError', "Error occured while closing the wizard: {0}, open 'Debugger Console' for more information."), this.title);
+		}
 	}
 
-	public registerDisposable(disposable: Disposable): void {
+	public registerDisposable(disposable: vscode.Disposable): void {
 		this.toDispose.push(disposable);
 	}
 }

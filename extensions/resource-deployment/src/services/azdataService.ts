@@ -18,12 +18,10 @@ export class AzdataService implements IAzdataService {
 	constructor(private platformService: IPlatformService) {
 	}
 
-	getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]> {
-		return this.ensureWorkingDirectoryExists().then(() => {
-			return this.getDeploymentProfileNames();
-		}).then((names: string[]) => {
-			return Promise.all(names.map(name => { return this.getDeploymentProfileInfo(name); }));
-		});
+	public async getDeploymentProfiles(): Promise<BigDataClusterDeploymentProfile[]> {
+		await this.ensureWorkingDirectoryExists();
+		const profileNames = await this.getDeploymentProfileNames();
+		return await Promise.all(profileNames.map(profile => this.getDeploymentProfileInfo(profile)));
 	}
 
 	private async getDeploymentProfileNames(): Promise<string[]> {
@@ -34,35 +32,28 @@ export class AzdataService implements IAzdataService {
 		// Run the command twice to workaround the issue:
 		// First time use of the azdata will have extra EULA related string in the output
 		// there is no easy and reliable way to filter out the profile names from it.
-		await this.platformService.runCommand(cmd, { addtionalEnvironmentVariables: env });
-		return this.platformService.runCommand(cmd).then(stdout => {
-			const output = <BdcConfigListOutput>JSON.parse(stdout);
-			return output.stdout;
-		});
+		await this.platformService.runCommand(cmd, { additionalEnvironmentVariables: env });
+		const stdout = await this.platformService.runCommand(cmd);
+		const output = <BdcConfigListOutput>JSON.parse(stdout);
+		return output.stdout;
 	}
 
-	private getDeploymentProfileInfo(profileName: string): Promise<BigDataClusterDeploymentProfile> {
-		return this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath() }).then(stdout => {
-			return Promise.all([
-				this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json')),
-				this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'))
-			]);
-		}).then((configObjects) => {
-			return new BigDataClusterDeploymentProfile(profileName, configObjects[0], configObjects[1]);
-		});
+	private async getDeploymentProfileInfo(profileName: string): Promise<BigDataClusterDeploymentProfile> {
+		await this.platformService.runCommand(`azdata bdc config init --source ${profileName} --target ${profileName} --force`, { workingDirectory: this.platformService.storagePath() });
+		const configObjects = await Promise.all([
+			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'bdc.json')),
+			this.getJsonObjectFromFile(path.join(this.platformService.storagePath(), profileName, 'control.json'))
+		]);
+		return new BigDataClusterDeploymentProfile(profileName, configObjects[0], configObjects[1]);
 	}
 
-	private ensureWorkingDirectoryExists(): Promise<void> {
-		return this.platformService.fileExists(this.platformService.storagePath()).then(exists => {
-			if (!exists) {
-				return this.platformService.makeDirectory(this.platformService.storagePath());
-			} else {
-				return Promise.resolve();
-			}
-		});
+	private async ensureWorkingDirectoryExists(): Promise<void> {
+		if (! await this.platformService.fileExists(this.platformService.storagePath())) {
+			await this.platformService.makeDirectory(this.platformService.storagePath());
+		}
 	}
 
-	private getJsonObjectFromFile(path: string): Promise<any> {
-		return this.platformService.readTextFile(path).then(result => { return JSON.parse(result); });
+	private async getJsonObjectFromFile(path: string): Promise<any> {
+		return JSON.parse(await this.platformService.readTextFile(path));
 	}
 }
