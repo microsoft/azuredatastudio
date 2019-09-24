@@ -242,12 +242,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		// Generate a new unique model id
 		MODEL_ID++;
 		this.id = '$model' + MODEL_ID;
-
-		this._buffer = createTextBuffer('', NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
-		this._options = TextModel.resolveOptions(this._buffer, NotebookModel.DEFAULT_CREATION_OPTIONS);
-		const bufferLineCount = this._buffer.getLineCount();
-		const bufferTextLength = this._buffer.getValueLengthInRange(new Range(1, 1, bufferLineCount, this._buffer.getLineLength(bufferLineCount) + 1), model.EndOfLinePreference.TextDefined);
-
 	}
 
 	public get notebookManagers(): INotebookManager[] {
@@ -447,6 +441,7 @@ export class NotebookModel extends Disposable implements INotebookModel {
 			if (this._notebookOptions && this._notebookOptions.contentManager) {
 				contents = await this._notebookOptions.contentManager.loadContent();
 			}
+			let notebookContent: string = '';
 			let factory = this._notebookOptions.factory;
 			// if cells already exist, create them with language info (if it is saved)
 			this._cells = [];
@@ -457,8 +452,13 @@ export class NotebookModel extends Disposable implements INotebookModel {
 					this._cells = contents.cells.map(c => {
 						let cellModel = factory.createCell(c, { notebook: this, isTrusted: isTrusted });
 						this.trackMarkdownTelemetry(<nb.ICellContents>c, cellModel);
+						notebookContent = notebookContent.concat(cellModel.source.toString());
 						return cellModel;
 					});
+					this._buffer = createTextBuffer(notebookContent, NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+					this._options = TextModel.resolveOptions(this._buffer, NotebookModel.DEFAULT_CREATION_OPTIONS);
+					const bufferLineCount = this._buffer.getLineCount();
+					const bufferTextLength = this._buffer.getValueLengthInRange(new Range(1, 1, bufferLineCount, this._buffer.getLineLength(bufferLineCount) + 1), model.EndOfLinePreference.TextDefined);
 				}
 			}
 		} catch (error) {

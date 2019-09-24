@@ -538,7 +538,7 @@ class SimpleCheckbox extends Widget {
 		this._checkbox.tabIndex = -1;
 
 		this._label = document.createElement('label');
-		this._label.className = 'label';
+		this._label.className = 'codicon-selection';
 		// Connect the label and the checkbox. Checkbox will get checked when the label recieves a click.
 		this._label.htmlFor = this._checkbox.id;
 		this._label.tabIndex = -1;
