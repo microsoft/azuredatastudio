@@ -53,12 +53,12 @@
 		},
 		"configuration":{
 			"type": "object",
-			"title": "Flat File Import configuration",
+			"title": "%flatfileimport.configuration.title%",
 			"properties": {
 				"flatFileImport.logDebugInfo": {
 					"type": "boolean",
 					"default": false,
-					"description": "[Optional] Log debug output to the console (View -> Output) and then select appropriate output channel from the dropdown"
+					"description": "%flatfileimport.logDebugInfo%"
 				}
 			}
 		}
