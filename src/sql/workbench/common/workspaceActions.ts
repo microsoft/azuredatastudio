@@ -6,22 +6,22 @@
 import { Action } from 'vs/base/common/actions';
 import { IWindowsService } from 'vs/platform/windows/common/windows';
 //tslint:disable-next-line:layering
-import { ElectronMainService } from 'vs/platform/electron/electron-main/electronMainService';
+import { IElectronService } from 'vs/platform/electron/node/electron';
 
 export class ShowFileInFolderAction extends Action {
 
-	constructor(private path: string, label: string, private windowsService: ElectronMainService) {
+	constructor(private path: string, label: string, @IElectronService private readonly electronService: IElectronService) {
 		super('showItemInFolder.action.id', label);
 	}
 
 	run(): Promise<void> {
-		return this.windowsService.showItemInFolder(this.path);
+		return this.electronService.showItemInFolder(this.path);
 	}
 }
 
 export class OpenFileInFolderAction extends Action {
 
-	constructor(private path: string, label: string, private windowsService: IWindowsService) {
+	constructor(private path: string, label: string, @IWindowsService private readonly windowsService: IWindowsService) {
 		super('showItemInFolder.action.id', label);
 	}
 
