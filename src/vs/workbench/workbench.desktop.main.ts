@@ -285,7 +285,7 @@ import 'sql/workbench/parts/query/common/resultsGridContribution';
 import 'sql/workbench/parts/editData/browser/editData.contribution';
 
 // query plan editor
-import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
+import 'sql/workbench/parts/queryPlan/browser/queryPlan.contribution';
 
 // query history
 import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
