@@ -185,18 +185,18 @@ function resolveIconPath(extension: IExtensionPointUser<any>): void {
 			for (let e of iconPath) {
 				e.path = {
 					light: resources.joinPath(extension.description.extensionLocation, e.path.light),
-					dark: resources.joinPath(extension.description.extensionLocation, e.path.dark),
+					dark: resources.joinPath(extension.description.extensionLocation, e.path.dark)
 				};
 			}
 		} else if (typeof iconPath === 'string') {
 			iconPath = {
 				light: resources.joinPath(extension.description.extensionLocation, iconPath),
-				dark: resources.joinPath(extension.description.extensionLocation, iconPath),
+				dark: resources.joinPath(extension.description.extensionLocation, iconPath)
 			};
 		} else {
 			iconPath = {
 				light: resources.joinPath(extension.description.extensionLocation, iconPath.light),
-				dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark),
+				dark: resources.joinPath(extension.description.extensionLocation, iconPath.dark)
 			};
 		}
 	};

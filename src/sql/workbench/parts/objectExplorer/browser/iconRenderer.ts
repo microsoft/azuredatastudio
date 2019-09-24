@@ -16,7 +16,7 @@ class IconRenderer {
 		let iconUid: string = this.getIconUid(iconPath);
 		if (!this.iconRegistered.has(iconUid)) {
 			createCSSRule(`.icon#${iconUid}`, `background: ${asCSSUrl(iconPath.light || iconPath.dark)} center center no-repeat`);
-			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark || iconPath.light)} center center no-repeat`);
+			createCSSRule(`.vs-dark .icon#${iconUid}, .hc-black .icon#${iconUid}`, `background: ${asCSSUrl(iconPath.dark)} center center no-repeat`);
 			this.iconRegistered.add(iconUid);
 		}
 		return iconUid;
