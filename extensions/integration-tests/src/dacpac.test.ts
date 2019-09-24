@@ -59,7 +59,7 @@ if (context.RunTest) {
 
 				assert(extractResult.success === true && extractResult.errorMessage === '', `Extract dacpac should succeed. Expected: there should be no error. Actual Error message: "${extractResult.errorMessage}"`);
 			} finally {
-				await utils.deleteDB(databaseName, ownerUri);
+				await utils.deleteDB(server, databaseName, ownerUri);
 			}
 		});
 
@@ -94,7 +94,7 @@ if (context.RunTest) {
 				await utils.assertFileGenerationResult(packageFilePath, retryCount);
 				assert(exportResult.success === true && exportResult.errorMessage === '', `Expected: Export bacpac should succeed and there should be no error. Actual Error message: "${exportResult.errorMessage}"`);
 			} finally {
-				await utils.deleteDB(databaseName, ownerUri);
+				await utils.deleteDB(server, databaseName, ownerUri);
 			}
 		});
 	});
