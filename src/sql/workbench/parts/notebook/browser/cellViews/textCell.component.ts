@@ -21,7 +21,7 @@ import { IConfigurationService } from 'vs/platform/configuration/common/configur
 import { toDisposable } from 'vs/base/common/lifecycle';
 import { IMarkdownRenderResult } from 'vs/editor/contrib/markdown/markdownRenderer';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
-import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/electron-browser/outputs/notebookMarkdown';
+import { NotebookMarkdownRenderer } from 'sql/workbench/parts/notebook/browser/outputs/notebookMarkdown';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';

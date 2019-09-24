@@ -282,7 +282,7 @@ import 'sql/workbench/parts/query/common/resultsGridContribution';
 import 'sql/workbench/parts/editData/browser/editData.contribution';
 
 // query plan editor
-import 'sql/workbench/parts/queryPlan/electron-browser/queryPlan.contribution';
+import 'sql/workbench/parts/queryPlan/browser/queryPlan.contribution';
 
 // query history
 import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
@@ -329,8 +329,7 @@ import 'sql/workbench/browser/modelComponents/components.contribution';
 /* View Model Editor */
 import 'sql/workbench/browser/modelComponents/modelViewEditor.contribution';
 /* Notebook Editor */
-import 'sql/workbench/parts/notebook/browser/notebook.common.contribution';
-import 'sql/workbench/parts/notebook/electron-browser/notebook.contribution';
+import 'sql/workbench/parts/notebook/browser/notebook.contribution';
 /* Containers */
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardWebviewContainer.contribution';
 import 'sql/workbench/parts/dashboard/browser/containers/dashboardControlHostContainer.contribution';
