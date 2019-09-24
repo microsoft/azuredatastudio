@@ -109,12 +109,19 @@ export async function deleteDB(server: TestServerProfile, dbName: string, ownerU
 	assert(dbDeleteResult.columnInfo[0].columnName !== 'ErrorMessage', 'DB deletion threw error');
 }
 
-export async function ensureServerConnected(server: TestServerProfile, ownerUri: string): Promise<string> {
-	let connection = await azdata.connection.getConnection(ownerUri);
-	if (isNullOrUndefined(connection)) {
-		//create new connection if not present and use OwnerUri from there
-		let connectionId = await connectToServer(server);
-		return azdata.connection.getUriForConnection(connectionId);
+async function ensureServerConnected(server: TestServerProfile, ownerUri: string): Promise<string> {
+	try {
+		// The queries might fail if connection is removed
+		// Check if connection is present - if not create new connection and use OwnerUri from there
+		let connection = await azdata.connection.getConnection(ownerUri);
+		if (isNullOrUndefined(connection)) {
+			let connectionId = await connectToServer(server);
+			return azdata.connection.getUriForConnection(connectionId);
+		}
+	}
+	catch (ex) {
+		console.error('utils.ensureServerConnected : Failed to get or create connection');
+		console.error(ex); // not throwing here because it is a safety net and actual query will throw if failed.
 	}
 	return ownerUri;
 }
@@ -127,6 +134,7 @@ export async function runQuery(query: string, ownerUri: string): Promise<azdata.
 		return result;
 	}
 	catch (ex) {
+		console.error('utils.runQuery : Failed to run query');
 		console.error(ex);
 		throw ex;
 	}
