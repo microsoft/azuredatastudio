@@ -23,12 +23,11 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
 import { IWindowService } from 'vs/platform/windows/common/windows';
-import { IViewContainersRegistry, Extensions as ViewContainerExtensions, ViewContainer } from 'vs/workbench/common/views';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
 import { mssqlProviderName } from 'sql/platform/connection/common/constants';
-import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
+import { CommandsRegistry } from 'vs/platform/commands/common/commands';
 import { TreeViewItemHandleArg } from 'sql/workbench/common/views';
 import { ConnectedContext } from 'azdata';
 import { TreeNodeContextKey } from 'sql/workbench/parts/objectExplorer/common/treeNodeContextKey';
@@ -36,6 +35,9 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
+import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/markdownOutput.component';
+import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegistry';
+import { TextCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/textCell.component';
 
 // Model View editor registration
 const viewModelEditorDescriptor = new EditorDescriptor(
@@ -278,3 +280,16 @@ registerComponentType({
 	ctor: PlotlyOutputComponent,
 	selector: PlotlyOutputComponent.SELECTOR
 });
+
+/**
+ * A mime renderer component for Markdown.
+ */
+registerComponentType({
+	mimeTypes: ['text/markdown'],
+	rank: 60,
+	safe: true,
+	ctor: MarkdownOutputComponent,
+	selector: MarkdownOutputComponent.SELECTOR
+});
+
+registerCellComponent(TextCellComponent);

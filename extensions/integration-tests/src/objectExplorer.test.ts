@@ -160,7 +160,7 @@ class ObjectExplorerTester {
 			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 		}
 		finally {
-			await deleteDB(dbName, ownerUri);
+			await deleteDB(server, dbName, ownerUri);
 		}
 	}
 }
