@@ -19,7 +19,6 @@ import assert = require('assert');
 
 const retryCount = 24; // 2 minutes
 const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
-const bacpac1: string = path.join(__dirname, '../testData/Database1.bacpac');
 if (context.RunTest) {
 	suite('Dacpac integration test suite', () => {
 		suiteSetup(async function () {
@@ -63,6 +62,11 @@ if (context.RunTest) {
 			}
 		});
 
+		/*
+		// Disabling due to intermittent failure with error Editor is not connected
+		// Tracking bug https://github.com/microsoft/azuredatastudio/issues/7323
+
+		const bacpac1: string = path.join(__dirname, '../testData/Database1.bacpac');
 		test('Import and export bacpac', async function () {
 			const server = await getStandaloneServer();
 			await utils.connectToServer(server);
@@ -97,5 +101,6 @@ if (context.RunTest) {
 				await utils.deleteDB(server, databaseName, ownerUri);
 			}
 		});
+		*/
 	});
 }
