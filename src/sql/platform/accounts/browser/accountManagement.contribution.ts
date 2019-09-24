@@ -68,8 +68,6 @@ ExtensionsRegistry.registerExtensionPoint<IAccountContrib | IAccountContrib[]>({
 			} else {
 				const light = resources.joinPath(extension.description.extensionLocation, icon.light);
 				const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
-				console.log(asCSSUrl(light));
-				console.log(light);
 				createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
 				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 			}
