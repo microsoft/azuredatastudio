@@ -18,7 +18,7 @@ export class AzureSettingsPage extends WizardPageBase<DeployClusterWizard> {
 
 	constructor(wizard: DeployClusterWizard) {
 		super(localize('deployCluster.AzureSettingsPageTitle', "Azure settings"),
-			localize('deployCluster.AzureSettingsPageDescription', "Configure the settings to create an Azure Kubernetes service cluster"), wizard);
+			localize('deployCluster.AzureSettingsPageDescription', "Configure the settings to create an Azure Kubernetes Service cluster"), wizard);
 	}
 
 	public initialize(): void {

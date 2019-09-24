@@ -15,7 +15,13 @@ export interface ResourceType {
 	icon: { light: string; dark: string };
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
+	agreement?: AgreementInfo;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+}
+
+export interface AgreementInfo {
+	template: string;
+	links: azdata.LinkArea[];
 }
 
 export interface ResourceTypeOption {

@@ -42,3 +42,7 @@
 .modelview-text-tooltip:focus .modelview-text-tooltip-content, .modelview-text-tooltip:hover .modelview-text-tooltip-content {
 	visibility: visible;
 }
+
+.modelview-text-link {
+	text-decoration: underline !important;
+}

@@ -85,7 +85,7 @@ export default class TextComponent extends ComponentBase implements IComponent, 
 		if (links.length !== 0) {
 			for (let i: number = 0; i < links.length; i++) {
 				let link = links[i];
-				let linkTag = `<a href="${this._domSanitizer.sanitize(SecurityContext.URL, link.url)}" tabIndex="0" target="blank">${this._domSanitizer.sanitize(SecurityContext.HTML, link.text)}</a>`;
+				let linkTag = `<a class="modelview-text-link" href="${this._domSanitizer.sanitize(SecurityContext.URL, link.url)}" tabIndex="0" target="blank">${this._domSanitizer.sanitize(SecurityContext.HTML, link.text)}</a>`;
 				text = text.replace(`{${i}}`, linkTag);
 			}
 		}

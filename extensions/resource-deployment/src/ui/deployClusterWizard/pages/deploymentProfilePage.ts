@@ -21,8 +21,8 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 	private _view: azdata.ModelView | undefined;
 
 	constructor(wizard: DeployClusterWizard) {
-		super(localize('deployCluster.summaryPageTitle', "Deployment profile"),
-			localize('deployCluster.summaryPageDescription', "Select a deployment profile"), wizard);
+		super(localize('deployCluster.summaryPageTitle', "Deployment configuration template"),
+			localize('deployCluster.summaryPageDescription', "Select the target configuration template"), wizard);
 	}
 
 	public initialize(): void {
@@ -76,7 +76,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 			label: localize('deployCluster.dataPoolLabel', "Data"),
 			value: profile.dataReplicas.toString()
 		}, {
-			label: localize('deployCluster.hdfsLabel', "HDFS"),
+			label: localize('deployCluster.hdfsLabel', "HDFS + Spark"),
 			value: profile.hdfsReplicas.toString()
 		}, {
 			label: '' // line separator
@@ -104,7 +104,7 @@ export class DeploymentProfilePage extends WizardPageBase<DeployClusterWizard> {
 
 		if (profile.hadrEnabled) {
 			descriptions.push({
-				label: localize('deployCluster.hadr', "SQL Server Availability Groups"),
+				label: localize('deployCluster.hadr', "High Availability"),
 				value: '✅'
 			});
 		}

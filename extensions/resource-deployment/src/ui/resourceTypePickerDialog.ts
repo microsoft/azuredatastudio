@@ -7,10 +7,11 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
-import { ResourceType, DeploymentProvider } from '../interfaces';
+import { ResourceType, DeploymentProvider, AgreementInfo } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { EOL } from 'os';
+import { createFlexContainer } from './modelViewUtils';
 
 const localize = nls.loadMessageBundle();
 
@@ -25,6 +26,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _cardResourceTypeMap: Map<string, azdata.CardComponent> = new Map();
 	private _optionDropDownMap: Map<string, azdata.DropDownComponent> = new Map();
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
+	private _agreementContainer!: azdata.DivContainer;
+	private _agreementCheckboxChecked: boolean = false;
 
 	constructor(private extensionContext: vscode.ExtensionContext,
 		private toolsService: IToolsService,
@@ -38,6 +41,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 
 	initialize() {
 		let tab = azdata.window.createTab('');
+		this._dialogObject.registerCloseValidator(() => {
+			const isValid = this._selectedResourceType && (this._selectedResourceType.agreement === undefined || this._agreementCheckboxChecked);
+			if (!isValid) {
+				this._dialogObject.message = {
+					text: localize('deploymentDialog.AcceptAgreements', "You must agree to the license agreements in order to proceed."),
+					level: azdata.window.MessageLevel.Error
+				};
+			}
+			return isValid;
+		});
 		tab.registerContent((view: azdata.ModelView) => {
 			const tableWidth = 1126;
 			this._view = view;
@@ -45,7 +58,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
-
+			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
 				value: localize('deploymentDialog.toolNameColumnHeader', 'Tool'),
 				width: 150
@@ -81,6 +94,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 						component: this._resourceDescriptionLabel,
 						title: ''
 					}, {
+						component: this._agreementContainer,
+						title: ''
+					},
+					{
 						component: this._optionsContainer,
 						title: localize('deploymentDialog.OptionsTitle', 'Options')
 					}, {
@@ -138,6 +155,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}
 
 		this._resourceDescriptionLabel.value = resourceType.description;
+		this._agreementCheckboxChecked = false;
+		this._agreementContainer.clearItems();
+		if (resourceType.agreement) {
+			this._agreementContainer.addItem(this.createAgreementCheckbox(resourceType.agreement));
+		}
+
 		this._optionsContainer.clearItems();
 		this._optionDropDownMap.clear();
 		resourceType.options.forEach(option => {
@@ -207,6 +230,19 @@ export class ResourceTypePickerDialog extends DialogBase {
 				this._toolsLoadingComponent.loading = false;
 			});
 		}
+	}
+
+	private createAgreementCheckbox(agreementInfo: AgreementInfo): azdata.FlexContainer {
+		const checkbox = this._view.modelBuilder.checkBox().component();
+		checkbox.checked = false;
+		this._toDispose.push(checkbox.onChanged(() => {
+			this._agreementCheckboxChecked = checkbox.checked;
+		}));
+		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
+			value: agreementInfo.template,
+			links: agreementInfo.links
+		}).component();
+		return createFlexContainer(this._view, [checkbox, text]);
 	}
 
 	private getCurrentProvider(): DeploymentProvider {
