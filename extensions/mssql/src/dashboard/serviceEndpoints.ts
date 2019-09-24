@@ -60,12 +60,16 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
 			endpointsArray.forEach(endpointInfo => {
-
 				const endPointRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
 				const nameCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: endpointInfo.description }).component();
 				endPointRow.addItem(nameCell, { CSSStyles: { 'width': '35%', 'font-weight': '600', 'user-select': 'text' } });
 				if (hyperlinkedEndpoints.findIndex(e => e === endpointInfo.serviceName) >= 0) {
-					const linkCell = view.modelBuilder.hyperlink().withProperties<azdata.HyperlinkComponentProperties>({ label: endpointInfo.endpoint, url: endpointInfo.endpoint }).component();
+					const linkCell = view.modelBuilder.hyperlink()
+						.withProperties<azdata.HyperlinkComponentProperties>({
+							label: endpointInfo.endpoint,
+							title: endpointInfo.endpoint,
+							url: endpointInfo.endpoint
+						}).component();
 					endPointRow.addItem(linkCell, { CSSStyles: { 'width': '62%', 'color': '#0078d4', 'text-decoration': 'underline', 'padding-top': '10px', 'overflow': 'hidden', 'text-overflow': 'ellipsis' } });
 				}
 				else {
@@ -74,6 +78,7 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 							.withProperties<azdata.TextComponentProperties>(
 								{
 									value: endpointInfo.endpoint,
+									title: endpointInfo.endpoint,
 									CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis' }
 								})
 							.component();
