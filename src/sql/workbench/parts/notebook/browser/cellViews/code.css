@@ -101,19 +101,19 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 }
 
 .hide-component-button.icon-hide-cell {
-	background-image: url("./media/light/minus.svg");
+	background-image: url("./media/light/chevron_up.svg");
 }
 
 .hide-component-button.icon-show-cell {
-	background-image: url("./media/light/plus.svg");
+	background-image: url("./media/light/chevron_down.svg");
 }
 
 .vs-dark .hide-component-button.icon-hide-cell,
 .hc-black .hide-component-button.icon-hide-cell {
-	background-image: url("./media/dark/minus_inverse.svg");
+	background-image: url("./media/dark/chevron_up_inverse.svg");
 }
 
 .vs-dark .hide-component-button.icon-show-cell,
 .hc-black .hide-component-button.icon-show-cell {
-	background-image: url("./media/dark/plus_inverse.svg");
+	background-image: url("./media/dark/chevron_down_inverse.svg");
 }
