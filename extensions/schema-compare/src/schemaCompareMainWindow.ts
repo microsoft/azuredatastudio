@@ -11,7 +11,7 @@ import * as path from 'path';
 import * as mssql from '../../mssql';
 import { SchemaCompareOptionsDialog } from './dialogs/schemaCompareOptionsDialog';
 import { Telemetry } from './telemetry';
-import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri } from './utils';
+import { getTelemetryErrorType, getEndpointName, verifyConnectionAndGetOwnerUri, getRootPath } from './utils';
 import { SchemaCompareDialog } from './dialogs/schemaCompareDialog';
 import { isNullOrUndefined } from 'util';
 const localize = nls.loadMessageBundle();
@@ -845,7 +845,7 @@ export class SchemaCompareMainWindow {
 
 		this.openScmpButton.onDidClick(async (click) => {
 			Telemetry.sendTelemetryEvent('SchemaCompareOpenScmpStarted');
-			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
+			const rootPath = getRootPath();
 			let fileUris = await vscode.window.showOpenDialog(
 				{
 					canSelectFiles: true,
@@ -942,7 +942,7 @@ export class SchemaCompareMainWindow {
 		}).component();
 
 		this.saveScmpButton.onDidClick(async (click) => {
-			const rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
+			const rootPath = getRootPath();
 			const filePath = await vscode.window.showSaveDialog(
 				{
 					defaultUri: vscode.Uri.file(rootPath),
