@@ -13,6 +13,10 @@ const del = require('del');
 const serviceDownloader = require('service-downloader').ServiceDownloadProvider;
 const platformInfo = require('service-downloader/out/platform').PlatformInformation;
 const path = require('path');
+const fs = require('fs');
+const rollup = require('rollup');
+const rollupNodeResolve = require('rollup-plugin-node-resolve');
+const rollupCommonJS = require('rollup-plugin-commonjs');
 
 gulp.task('clean-mssql-extension', util.rimraf('extensions/mssql/node_modules'));
 gulp.task('clean-credentials-extension', util.rimraf('extensions/credentials/node_modules'));
@@ -135,11 +139,6 @@ function installSsmsMin() {
 gulp.task('install-ssmsmin', () => {
 	return installSsmsMin();
 });
-
-const rollup = require('rollup');
-const rollupNodeResolve = require('rollup-plugin-node-resolve');
-const rollupCommonJS = require('rollup-plugin-commonjs');
-const fs = require('fs');
 
 async function rollupModule(options) {
 	const moduleName = options.moduleName;
