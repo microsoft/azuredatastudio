@@ -100,6 +100,7 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 	border-width: 0px;
 	background-repeat: no-repeat;
 	background-position: center;
+	background-color: inherit;
 }
 
 .hide-component-button.icon-hide-cell {
