@@ -411,6 +411,7 @@ export class ExtensionsViewlet extends ViewContainerViewlet implements IExtensio
 			const oldStatus = status;
 			status = this.userDataSyncService.status;
 			if (oldStatus === SyncStatus.Uninitialized || status === SyncStatus.Uninitialized) {
+				this.secondaryActions = null;
 				this.updateTitleArea();
 			}
 		}));
