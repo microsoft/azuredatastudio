@@ -22,6 +22,7 @@ if (isWeb) {
 	if (Object.keys(product).length === 0) {
 		assign(product, {
 			version: '1.39.0-dev',
+			vscodeVersion: '1.39.0-dev',
 			nameLong: 'Visual Studio Code Web Dev',
 			nameShort: 'VSCode Web Dev'
 		});
