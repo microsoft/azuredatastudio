@@ -33,7 +33,7 @@ export interface ILanguageMagic {
 }
 
 export interface INotebookService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	readonly onNotebookEditorAdd: Event<INotebookEditor>;
 	readonly onNotebookEditorRemove: Event<INotebookEditor>;

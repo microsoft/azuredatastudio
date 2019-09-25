@@ -6,8 +6,6 @@
 import * as path from 'path';
 import * as os from 'os';
 
-const baseConfig = require('./config.json');
-
 // The function is a duplicate of \src\paths.js. IT would be better to import path.js but it doesn't
 // work for now because the extension is running in different process.
 export function getAppDataPath(): string {
@@ -18,10 +16,6 @@ export function getAppDataPath(): string {
 		case 'linux': return process.env['XDG_CONFIG_HOME'] || path.join(os.homedir(), '.config');
 		default: throw new Error('Platform not supported');
 	}
-}
-
-export function getDefaultLogLocation(): string {
-	return path.join(getAppDataPath(), 'azuredatastudio');
 }
 
 export function ensure(target: object, key: string): any {
@@ -53,25 +47,6 @@ export function verifyPlatform(): Thenable<boolean> {
 	} else {
 		return Promise.resolve(true);
 	}
-}
-
-export function getServiceInstallConfig(basePath?: string): any {
-	if (!basePath) {
-		basePath = __dirname;
-	}
-	let config = JSON.parse(JSON.stringify(baseConfig));
-	config.installDirectory = path.join(basePath, config.installDirectory);
-
-	return config;
-}
-
-export function getResolvedServiceInstallationPath(runtime: Runtime, basePath?: string): string {
-	let config = getServiceInstallConfig(basePath);
-	let dir = config.installDirectory;
-	dir = dir.replace('{#version#}', config.version);
-	dir = dir.replace('{#platform#}', getRuntimeDisplayName(runtime));
-
-	return dir;
 }
 
 export function getRuntimeDisplayName(runtime: Runtime): string {

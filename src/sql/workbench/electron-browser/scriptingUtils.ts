@@ -47,7 +47,7 @@ export function scriptSelect(connectionProfile: IConnectionProfile, metadata: az
 		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
 			let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
-				if (result.script) {
+				if (result && result.script) {
 					queryEditorService.newSqlEditor(result.script).then((owner: IConnectableInput) => {
 						// Connect our editor to the input connection
 						let options: IConnectionCompletionOptions = {
@@ -82,7 +82,7 @@ export function scriptEditSelect(connectionProfile: IConnectionProfile, metadata
 		connectionService.connectIfNotConnected(connectionProfile).then(connectionResult => {
 			let paramDetails: azdata.ScriptingParamDetails = getScriptingParamDetails(connectionService, connectionResult, metadata);
 			scriptingService.script(connectionResult, metadata, ScriptOperation.Select, paramDetails).then(result => {
-				if (result.script) {
+				if (result && result.script) {
 					queryEditorService.newEditDataEditor(metadata.schema, metadata.name, result.script).then((owner: EditDataInput) => {
 						// Connect our editor
 						let options: IConnectionCompletionOptions = {

@@ -150,8 +150,8 @@ export class JupyterController implements vscode.Disposable {
 			providerId: constants.jupyterNotebookProviderId,
 			preview: false,
 			defaultKernel: {
-				name: 'pyspark3kernel',
-				display_name: 'PySpark3',
+				name: 'pysparkkernel',
+				display_name: 'PySpark',
 				language: 'python'
 			}
 		});

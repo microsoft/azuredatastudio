@@ -92,7 +92,7 @@ export class NewFileAction extends Action {
 		@ICommandService private commandService: ICommandService
 	) {
 		super('explorer.newFile', NEW_FILE_LABEL);
-		this.class = 'explorer-action new-file';
+		this.class = 'explorer-action codicon-new-file';
 		this._register(explorerService.onDidChangeEditable(e => {
 			const elementIsBeingEdited = explorerService.isEditable(e);
 			this.enabled = !elementIsBeingEdited;
@@ -114,7 +114,7 @@ export class NewFolderAction extends Action {
 		@ICommandService private commandService: ICommandService
 	) {
 		super('explorer.newFolder', NEW_FOLDER_LABEL);
-		this.class = 'explorer-action new-folder';
+		this.class = 'explorer-action codicon-new-folder';
 		this._register(explorerService.onDidChangeEditable(e => {
 			const elementIsBeingEdited = explorerService.isEditable(e);
 			this.enabled = !elementIsBeingEdited;
@@ -603,7 +603,7 @@ export class SaveAllAction extends BaseSaveAllAction {
 	public static readonly LABEL = SAVE_ALL_LABEL;
 
 	public get class(): string {
-		return 'explorer-action save-all';
+		return 'explorer-action codicon-save-all';
 	}
 
 	protected doRun(context: any): Promise<any> {
@@ -621,7 +621,7 @@ export class SaveAllInGroupAction extends BaseSaveAllAction {
 	public static readonly LABEL = nls.localize('saveAllInGroup', "Save All in Group");
 
 	public get class(): string {
-		return 'explorer-action save-all';
+		return 'explorer-action codicon-save-all';
 	}
 
 	protected doRun(context: any): Promise<any> {
@@ -639,7 +639,7 @@ export class CloseGroupAction extends Action {
 	public static readonly LABEL = nls.localize('closeGroup', "Close Group");
 
 	constructor(id: string, label: string, @ICommandService private readonly commandService: ICommandService) {
-		super(id, label, 'action-close-all-files');
+		super(id, label, 'codicon-close-all');
 	}
 
 	public run(context?: any): Promise<any> {
@@ -702,7 +702,7 @@ export class CollapseExplorerView extends Action {
 		@IViewletService private readonly viewletService: IViewletService,
 		@IExplorerService readonly explorerService: IExplorerService
 	) {
-		super(id, label, 'explorer-action collapse-explorer');
+		super(id, label, 'explorer-action codicon-collapse-all');
 		this._register(explorerService.onDidChangeEditable(e => {
 			const elementIsBeingEdited = explorerService.isEditable(e);
 			this.enabled = !elementIsBeingEdited;
@@ -730,7 +730,7 @@ export class RefreshExplorerView extends Action {
 		@IViewletService private readonly viewletService: IViewletService,
 		@IExplorerService private readonly explorerService: IExplorerService
 	) {
-		super(id, label, 'explorer-action refresh-explorer');
+		super(id, label, 'explorer-action codicon-refresh');
 		this._register(explorerService.onDidChangeEditable(e => {
 			const elementIsBeingEdited = explorerService.isEditable(e);
 			this.enabled = !elementIsBeingEdited;
@@ -938,7 +938,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 		const { stat } = getContext(list);
 		let folder: ExplorerItem;
 		if (stat) {
-			folder = stat.isDirectory ? stat : stat.parent!;
+			folder = stat.isDirectory ? stat : (stat.parent || explorerService.roots[0]);
 		} else {
 			folder = explorerService.roots[0];
 		}
@@ -952,7 +952,7 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 
 		folder.addChild(newStat);
 
-		const onSuccess = async (value: string) => {
+		const onSuccess = (value: string): Promise<void> => {
 			const createPromise = isFolder ? fileService.createFolder(resources.joinPath(folder.resource, value)) : textFileService.create(resources.joinPath(folder.resource, value));
 			return createPromise.then(created => {
 				refreshIfSeparator(value, explorerService);
@@ -970,8 +970,6 @@ async function openExplorerAndCreate(accessor: ServicesAccessor, isFolder: boole
 				explorerService.setEditable(newStat, null);
 				if (success) {
 					onSuccess(value);
-				} else {
-					explorerService.select(folder.resource).then(undefined, onUnexpectedError);
 				}
 			}
 		});

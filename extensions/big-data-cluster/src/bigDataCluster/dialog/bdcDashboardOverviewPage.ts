@@ -16,6 +16,9 @@ import { BdcDashboard } from './bdcDashboard';
 
 const localize = nls.loadMessageBundle();
 
+const clusterStateColumnWidth = 125;
+const healthStatusColumnWidth = 125;
+
 const overviewIconColumnWidthPx = 25;
 const overviewServiceNameCellWidthPx = 175;
 const overviewStateCellWidthPx = 75;
@@ -68,17 +71,17 @@ export class BdcDashboardOverviewPage {
 
 		// Cluster State
 		const clusterStateLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.clusterState', "Cluster State :") }).component();
-		const clusterStateValue = view.modelBuilder.text().withProperties({ CSSStyles: { 'user-select': 'text' } }).component();
+		const clusterStateValue = view.modelBuilder.text().component();
 		this.clusterStateLoadingComponent = view.modelBuilder.loadingComponent().withItem(clusterStateValue).component();
-		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none' } });
+		row1.addItem(clusterStateLabel, { CSSStyles: { 'width': `${clusterStateColumnWidth}px`, 'min-width': `${clusterStateColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
+		row1.addItem(this.clusterStateLoadingComponent, { CSSStyles: { 'width': `${clusterStateColumnWidth}px`, 'min-width': `${clusterStateColumnWidth}px` } });
 
 		// Health Status
 		const healthStatusLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatus', "Health Status :") }).component();
-		const healthStatusValue = view.modelBuilder.text().withProperties({ CSSStyles: { 'user-select': 'text' } }).component();
+		const healthStatusValue = view.modelBuilder.text().component();
 		this.clusterHealthStatusLoadingComponent = view.modelBuilder.loadingComponent().withItem(healthStatusValue).component();
-		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none', 'font-weight': 'bold' } });
-		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': '125px', 'min-width': '125px', 'user-select': 'none' } });
+		row1.addItem(healthStatusLabel, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px`, 'user-select': 'none', 'font-weight': 'bold' } });
+		row1.addItem(this.clusterHealthStatusLoadingComponent, { CSSStyles: { 'width': `${healthStatusColumnWidth}px`, 'min-width': `${healthStatusColumnWidth}px` } });
 
 		rootContainer.addItem(row1, { CSSStyles: { 'padding-left': '10px', 'border-bottom': 'solid 1px #ccc', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
@@ -92,7 +95,7 @@ export class BdcDashboardOverviewPage {
 		const overviewLabel = view.modelBuilder.text()
 			.withProperties<azdata.TextComponentProperties>({
 				value: localize('bdc.dashboard.overviewHeader', "Cluster Overview"),
-				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' }
+				CSSStyles: { ...cssStyles.text }
 			})
 			.component();
 
@@ -101,7 +104,7 @@ export class BdcDashboardOverviewPage {
 		this.lastUpdatedLabel = view.modelBuilder.text()
 			.withProperties({
 				value: localize('bdc.dashboard.lastUpdated', "Last Updated : {0}", '-'),
-				CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'color': '#595959' }
+				CSSStyles: { ...cssStyles.lastUpdatedText }
 			}).component();
 
 		overviewHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
@@ -114,9 +117,9 @@ export class BdcDashboardOverviewPage {
 		// Service name cell covers both icon + service name so width stretches both cells
 		serviceStatusHeaderRow.addItem(nameCell, { CSSStyles: { 'width': `${overviewServiceNameCellWidthPx + overviewIconColumnWidthPx}px`, 'min-width': `${overviewServiceNameCellWidthPx + overviewIconColumnWidthPx}px`, ...cssStyles.tableHeader } });
 		const stateCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.stateHeader', "State"), CSSStyles: { ...cssStyles.tableHeader } }).component();
-		serviceStatusHeaderRow.addItem(stateCell, { CSSStyles: { 'width': `${overviewStateCellWidthPx}px`, 'min-width': `${overviewStateCellWidthPx}px`, 'user-select': 'text' } });
+		serviceStatusHeaderRow.addItem(stateCell, { CSSStyles: { 'width': `${overviewStateCellWidthPx}px`, 'min-width': `${overviewStateCellWidthPx}px` } });
 		const healthStatusCell = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: localize('bdc.dashboard.healthStatusHeader', "Health Status"), CSSStyles: { ...cssStyles.tableHeader } }).component();
-		serviceStatusHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px`, 'user-select': 'text' } });
+		serviceStatusHeaderRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 		overviewContainer.addItem(serviceStatusHeaderRow, { CSSStyles: { 'padding-left': '10px', 'box-sizing': 'border-box', 'user-select': 'text' } });
 
 		// Service Status row container
@@ -211,14 +214,14 @@ export class BdcDashboardOverviewPage {
 		const serviceStatusRow = this.modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '30px' }).component();
 		const statusIconCell = this.modelBuilder.text().withProperties({ value: getHealthStatusIcon(serviceStatus.healthStatus), CSSStyles: { 'user-select': 'none' } }).component();
 		serviceStatusRow.addItem(statusIconCell, { CSSStyles: { 'width': `${overviewIconColumnWidthPx}px`, 'min-width': `${overviewIconColumnWidthPx}px` } });
-		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' } }).component();
+		const nameCell = this.modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } }).component();
 		nameCell.onDidClick(() => {
 			this.dashboard.switchToServiceTab(serviceStatus.serviceName);
 		});
-		serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${overviewServiceNameCellWidthPx}px`, 'min-width': `${overviewServiceNameCellWidthPx}px`, 'user-select': 'text', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
-		const stateCell = this.modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component();
+		serviceStatusRow.addItem(nameCell, { CSSStyles: { 'width': `${overviewServiceNameCellWidthPx}px`, 'min-width': `${overviewServiceNameCellWidthPx}px`, ...cssStyles.text } });
+		const stateCell = this.modelBuilder.text().withProperties({ value: getStateDisplayText(serviceStatus.state), CSSStyles: { ...cssStyles.text } }).component();
 		serviceStatusRow.addItem(stateCell, { CSSStyles: { 'width': `${overviewStateCellWidthPx}px`, 'min-width': `${overviewStateCellWidthPx}px` } });
-		const healthStatusCell = this.modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } }).component();
+		const healthStatusCell = this.modelBuilder.text().withProperties({ value: getHealthStatusDisplayText(serviceStatus.healthStatus), CSSStyles: { ...cssStyles.text } }).component();
 		serviceStatusRow.addItem(healthStatusCell, { CSSStyles: { 'width': `${overviewHealthStatusCellWidthPx}px`, 'min-width': `${overviewHealthStatusCellWidthPx}px` } });
 
 		if (serviceStatus.healthStatus !== 'healthy' && serviceStatus.details && serviceStatus.details.length > 0) {
@@ -235,17 +238,17 @@ export class BdcDashboardOverviewPage {
 
 function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: azdata.FlexContainer, endpoint: EndpointModel, bdcModel: BdcDashboardModel, isHyperlink: boolean, isLastRow: boolean): void {
 	const endPointRow = modelBuilder.flexContainer().withLayout({ flexFlow: 'row', alignItems: 'center', height: '40px' }).component();
-	const nameCell = modelBuilder.text().withProperties({ value: getEndpointDisplayText(endpoint.name, endpoint.description), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px' } }).component();
-	endPointRow.addItem(nameCell, { CSSStyles: { 'width': `${serviceEndpointRowServiceNameCellWidth}px`, 'min-width': `${serviceEndpointRowServiceNameCellWidth}px`, 'user-select': 'text', 'text-align': 'center' } });
+	const nameCell = modelBuilder.text().withProperties({ value: getEndpointDisplayText(endpoint.name, endpoint.description), CSSStyles: { ...cssStyles.text } }).component();
+	endPointRow.addItem(nameCell, { CSSStyles: { 'width': `${serviceEndpointRowServiceNameCellWidth}px`, 'min-width': `${serviceEndpointRowServiceNameCellWidth}px`, 'text-align': 'center' } });
 	if (isHyperlink) {
 		const endpointCell = modelBuilder.hyperlink()
 			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px' } })
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'color': '#0078d4', 'text-decoration': 'underline', 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden', ...cssStyles.hyperlink } });
 	}
 	else if (endpoint.name === Endpoint.sqlServerMaster) {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text', 'cursor': 'pointer', 'color': '#0078d4', 'text-decoration': 'underline' } })
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } })
 			.component();
 		endpointCell.onDidClick(async () => {
 			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
@@ -264,7 +267,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 	}
 	else {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'text' } })
+			.withProperties({ value: endpoint.endpoint, CSSStyles: { ...cssStyles.text } })
 			.component();
 		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden' } });
 	}
@@ -276,7 +279,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 	copyValueCell.title = localize('bdc.dashboard.copyTitle', "Copy");
 	copyValueCell.iconHeight = '14px';
 	copyValueCell.iconWidth = '14px';
-	endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '14px', 'min-width': '14px', 'padding-left': '10px', 'margin-block-start': '0px', 'margin-block-end': '0px' } });
+	endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '14px', 'min-width': '14px', 'padding-left': '10px', ...cssStyles.text } });
 
 	container.addItem(endPointRow, { CSSStyles: { 'padding-left': '10px', 'border-top': 'solid 1px #ccc', 'border-bottom': isLastRow ? 'solid 1px #ccc' : '', 'box-sizing': 'border-box', 'user-select': 'text' } });
 }

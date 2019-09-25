@@ -6,7 +6,7 @@
 import { sep } from 'vs/base/common/path';
 import { URI } from 'vs/base/common/uri';
 import * as glob from 'vs/base/common/glob';
-import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
+import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
 import { Event } from 'vs/base/common/event';
 import { startsWithIgnoreCase } from 'vs/base/common/strings';
 import { IDisposable } from 'vs/base/common/lifecycle';
@@ -18,7 +18,7 @@ export const IFileService = createDecorator<IFileService>('fileService');
 
 export interface IFileService {
 
-	_serviceBrand: ServiceIdentifier<any>;
+	_serviceBrand: undefined;
 
 	/**
 	 * An event that is fired when a file system provider is added or removed
@@ -753,9 +753,6 @@ export enum FileKind {
 	FOLDER,
 	ROOT_FOLDER
 }
-
-export const MIN_MAX_MEMORY_SIZE_MB = 2048;
-export const FALLBACK_MAX_MEMORY_SIZE_MB = 4096;
 
 /**
  * A hint to disable etag checking for reading/writing.

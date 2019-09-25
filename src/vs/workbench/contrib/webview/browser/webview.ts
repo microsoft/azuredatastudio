@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Dimension } from 'vs/base/browser/dom';
 import { Event } from 'vs/base/common/event';
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
@@ -24,7 +25,7 @@ export const IWebviewService = createDecorator<IWebviewService>('webviewService'
  * Handles the creation of webview elements.
  */
 export interface IWebviewService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	createWebview(
 		id: string,
@@ -70,6 +71,7 @@ export interface Webview extends IDisposable {
 	readonly onDidScroll: Event<{ scrollYPercentage: number }>;
 	readonly onDidUpdateState: Event<string | undefined>;
 	readonly onMessage: Event<any>;
+	readonly onMissingCsp: Event<ExtensionIdentifier>;
 
 	sendMessage(data: any): void;
 	update(
@@ -99,6 +101,8 @@ export interface WebviewEditorOverlay extends Webview {
 	release(owner: any): void;
 
 	getInnerWebview(): Webview | undefined;
+
+	layoutWebviewOverElement(element: HTMLElement, dimension?: Dimension): void;
 }
 
 export const webviewDeveloperCategory = nls.localize('developer', "Developer");

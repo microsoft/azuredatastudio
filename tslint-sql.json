@@ -13,19 +13,22 @@
 				"argIndex": 1
 			}
 		],
-		"no-floating-promises":{
+		"no-floating-promises": {
 			"severity": "warn"
 		},
 		"await-promise": {
 			"severity": "warn",
-			"options": ["Thenable"]
+			"options": [
+				"Thenable"
+			]
 		},
-		"no-promise-as-boolean": {
-			"severity": "error",
-			"options": ["Thenable"]
+		"use-isnan": {
+			"severity": "error"
 		}
 	},
 	"linterOptions": {
-		"exclude": ["src/vs/**/*.ts"]
+		"exclude": [
+			"src/vs/**/*.ts"
+		]
 	}
 }

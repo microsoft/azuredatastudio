@@ -56,7 +56,7 @@ class TelemetryEventImpl implements ITelemetryEvent {
 
 export class AdsTelemetryService implements IAdsTelemetryService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	constructor(
 		@ITelemetryService private telemetryService: ITelemetryService,

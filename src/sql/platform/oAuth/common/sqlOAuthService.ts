@@ -13,7 +13,7 @@ export const ISqlOAuthService = createDecorator<ISqlOAuthService>('sqlOAuthServi
  * electron-based services are referenced in unit testable code.
  */
 export interface ISqlOAuthService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	/**
 	 * Sends request to main thread to handle OAuth request
@@ -23,10 +23,4 @@ export interface ISqlOAuthService {
 	 * @return Promise to return an authorization code
 	 */
 	performOAuthAuthorization(eventId: string, url: string, silent: boolean): void;
-
-	/**
-	 * Registers a handler for the oauth-reply event on the IPC channel
-	 * @param handler Handler to call when the event is triggered
-	 */
-	registerOAuthCallback(handler: (event, args) => void): void;
 }

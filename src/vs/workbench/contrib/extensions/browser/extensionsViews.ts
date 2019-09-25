@@ -44,9 +44,10 @@ import { IAction } from 'vs/base/common/actions';
 import { ExtensionType, ExtensionIdentifier, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
-import { IProductService } from 'vs/platform/product/common/product';
+import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
+import { IUserDataSyncService } from 'vs/platform/userDataSync/common/userDataSync';
 
 
 class ExtensionsViewState extends Disposable implements IExtensionsViewState {
@@ -104,6 +105,7 @@ export class ExtensionsListView extends ViewletPanel {
 		@IExtensionManagementServerService protected readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService protected readonly productService: IProductService,
 		@IContextKeyService contextKeyService: IContextKeyService,
+		@IUserDataSyncService private readonly userDataSyncService: IUserDataSyncService,
 	) {
 		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: options.title, showActionsAlways: true }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this.server = options.server;
@@ -125,12 +127,12 @@ export class ExtensionsListView extends ViewletPanel {
 		const delegate = new Delegate();
 		const extensionsViewState = new ExtensionsViewState();
 		const renderer = this.instantiationService.createInstance(Renderer, extensionsViewState);
-		this.list = this.instantiationService.createInstance(WorkbenchPagedList, extensionsList, delegate, [renderer], {
+		this.list = this.instantiationService.createInstance(WorkbenchPagedList, 'Extensions', extensionsList, delegate, [renderer], {
 			ariaLabel: localize('extensions', "Extensions"),
 			multipleSelectionSupport: false,
 			setRowLineHeight: false,
 			horizontalScrolling: false
-		}) as WorkbenchPagedList<IExtension>;
+		});
 		this._register(this.list.onContextMenu(e => this.onContextMenu(e), this));
 		this._register(this.list.onFocusChange(e => extensionsViewState.onFocusChange(coalesce(e.elements)), this));
 		this._register(this.list);
@@ -456,8 +458,10 @@ export class ExtensionsListView extends ViewletPanel {
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options, token);
 			// {{SQL CARBON EDIT}}
-		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) {
+		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) { // {{SQL CARBON EDIT}} add if
 			return this.getAllMarketplaceModel(query, options, token);
+		} else if (ExtensionsListView.isSyncedExtensionsQuery(query.value)) {
+			return this.getSyncedExtensionsModel(query, options, token);
 		}
 
 		if (/\bcurated:([^\s]+)\b/.test(query.value)) {
@@ -765,6 +769,23 @@ export class ExtensionsListView extends ViewletPanel {
 			.then(result => this.getPagedModel(result));
 	}
 
+	private async getSyncedExtensionsModel(query: Query, options: IQueryOptions, token: CancellationToken): Promise<IPagedModel<IExtension>> {
+		const syncedExtensions = await this.userDataSyncService.getRemoteExtensions();
+		if (!syncedExtensions.length) {
+			return this.showEmptyModel();
+		}
+		const ids: string[] = [], names: string[] = [];
+		for (const installed of syncedExtensions) {
+			if (installed.identifier.uuid) {
+				ids.push(installed.identifier.uuid);
+			} else {
+				names.push(installed.identifier.id);
+			}
+		}
+		const pager = await this.extensionsWorkbenchService.queryGallery({ ids, names, pageSize: ids.length }, token);
+		return this.getPagedModel(pager || []);
+	}
+
 	// Sorts the firstPage of the pager in the same order as given array of extension ids
 	private sortFirstPage(pager: IPager<IExtension>, ids: string[]) {
 		ids = ids.map(x => x.toLowerCase());
@@ -904,6 +925,10 @@ export class ExtensionsListView extends ViewletPanel {
 		return /@recommended:keymaps/i.test(query);
 	}
 
+	static isSyncedExtensionsQuery(query: string): boolean {
+		return /@myaccount/i.test(query);
+	}
+
 	focus(): void {
 		super.focus();
 		if (!this.list) {
@@ -944,10 +969,11 @@ export class ServerExtensionsView extends ExtensionsListView {
 		@IExtensionsWorkbenchService extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionManagementServerService extensionManagementServerService: IExtensionManagementServerService,
 		@IProductService productService: IProductService,
-		@IContextKeyService contextKeyService: IContextKeyService
+		@IContextKeyService contextKeyService: IContextKeyService,
+		@IUserDataSyncService userDataSyncService: IUserDataSyncService
 	) {
 		options.server = server;
-		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService, contextKeyService);
+		super(options, notificationService, keybindingService, contextMenuService, instantiationService, themeService, extensionService, extensionsWorkbenchService, editorService, tipsService, telemetryService, configurationService, contextService, experimentService, workbenchThemeService, extensionManagementServerService, productService, contextKeyService, userDataSyncService);
 		this._register(onDidChangeTitle(title => this.updateTitle(title)));
 	}
 
@@ -1000,6 +1026,14 @@ export class BuiltInThemesExtensionsView extends ExtensionsListView {
 export class BuiltInBasicsExtensionsView extends ExtensionsListView {
 	async show(query: string): Promise<IPagedModel<IExtension>> {
 		return (query && query.trim() !== '@builtin') ? this.showEmptyModel() : super.show('@builtin:basics');
+	}
+}
+
+export class SyncedExtensionsView extends ExtensionsListView {
+
+	async show(query: string): Promise<IPagedModel<IExtension>> {
+		query = query || '@myaccount';
+		return ExtensionsListView.isSyncedExtensionsQuery(query) ? super.show(query) : this.showEmptyModel();
 	}
 }
 

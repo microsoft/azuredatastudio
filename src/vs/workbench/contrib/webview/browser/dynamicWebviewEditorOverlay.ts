@@ -3,12 +3,14 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { memoize } from 'vs/base/common/decorators';
 import { Emitter, Event } from 'vs/base/common/event';
 import { Disposable, DisposableStore, MutableDisposable, toDisposable } from 'vs/base/common/lifecycle';
 import { URI } from 'vs/base/common/uri';
+import { ExtensionIdentifier } from 'vs/platform/extensions/common/extensions';
 import { IWebviewService, Webview, WebviewContentOptions, WebviewEditorOverlay, WebviewElement, WebviewOptions } from 'vs/workbench/contrib/webview/browser/webview';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
-import { memoize } from 'vs/base/common/decorators';
+import { Dimension } from 'vs/base/browser/dom';
 
 /**
  * Webview editor overlay that creates and destroys the underlying webview as needed.
@@ -61,6 +63,19 @@ export class DynamicWebviewEditorOverlay extends Disposable implements WebviewEd
 		}
 	}
 
+	public layoutWebviewOverElement(element: HTMLElement, dimension?: Dimension) {
+		if (!this.container || !this.container.parentElement) {
+			return;
+		}
+		const frameRect = element.getBoundingClientRect();
+		const containerRect = this.container.parentElement.getBoundingClientRect();
+		this.container.style.position = 'absolute';
+		this.container.style.top = `${frameRect.top - containerRect.top}px`;
+		this.container.style.left = `${frameRect.left - containerRect.left}px`;
+		this.container.style.width = `${dimension ? dimension.width : frameRect.width}px`;
+		this.container.style.height = `${dimension ? dimension.height : frameRect.height}px`;
+	}
+
 	private show() {
 		if (!this._webview.value) {
 			const webview = this._webviewService.createWebview(this.id, this.options, this._contentOptions);
@@ -76,6 +91,7 @@ export class DynamicWebviewEditorOverlay extends Disposable implements WebviewEd
 			webview.onDidFocus(() => { this._onDidFocus.fire(); }, undefined, this._webviewEvents);
 			webview.onDidClickLink(x => { this._onDidClickLink.fire(x); }, undefined, this._webviewEvents);
 			webview.onMessage(x => { this._onMessage.fire(x); }, undefined, this._webviewEvents);
+			webview.onMissingCsp(x => { this._onMissingCsp.fire(x); }, undefined, this._webviewEvents);
 
 			webview.onDidScroll(x => {
 				this._initialScrollProgress = x.scrollYPercentage;
@@ -131,6 +147,9 @@ export class DynamicWebviewEditorOverlay extends Disposable implements WebviewEd
 
 	private readonly _onMessage = this._register(new Emitter<any>());
 	public readonly onMessage: Event<any> = this._onMessage.event;
+
+	private readonly _onMissingCsp = this._register(new Emitter<ExtensionIdentifier>());
+	public readonly onMissingCsp: Event<any> = this._onMissingCsp.event;
 
 	sendMessage(data: any): void {
 		if (this._webview.value) {

@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as vscode from 'vscode';
-import * as fs from 'fs';
+import { promises as fs } from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as constants from './constants';
@@ -54,12 +54,12 @@ function pushDisposable(disposable: vscode.Disposable): void {
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 	extensionContext = context;
 	const apiWrapper = new ApiWrapper();
 	let appContext = new AppContext(extensionContext, apiWrapper);
 
-	let storagePath = findOrMakeStoragePath();
+	let storagePath = await findOrMakeStoragePath();
 	if (!storagePath) {
 		return undefined;
 	}
@@ -83,13 +83,11 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // Create the folder for storing the token caches
-function findOrMakeStoragePath() {
+async function findOrMakeStoragePath() {
 	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
 	try {
-		if (!fs.existsSync(storagePath)) {
-			fs.mkdirSync(storagePath);
-			console.log('Initialized Azure account extension storage.');
-		}
+		await fs.mkdir(storagePath, { recursive: true });
+		console.log('Initialized Azure account extension storage.');
 	}
 	catch (e) {
 		console.error(`Initialization of Azure account extension storage failed: ${e}`);
@@ -124,4 +122,3 @@ function registerCommands(appContext: AppContext, azureResourceTree: AzureResour
 
 	registerAzureResourceDatabaseCommands(appContext);
 }
-

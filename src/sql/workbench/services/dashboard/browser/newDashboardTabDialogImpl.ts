@@ -169,7 +169,7 @@ export class NewDashboardTabDialog extends Modal {
 		let extensionTabViewContainer = DOM.$('.extensionTab-view');
 		let delegate = new ExtensionListDelegate();
 		let extensionTabRenderer = new ExtensionListRenderer();
-		this._extensionList = new List<IDashboardUITab>(extensionTabViewContainer, delegate, [extensionTabRenderer]);
+		this._extensionList = new List<IDashboardUITab>('NewDashboardTabExtentionList', extensionTabViewContainer, delegate, [extensionTabRenderer]);
 
 		this._extensionList.onMouseDblClick(e => this.onAccept());
 		this._extensionList.onKeyDown(e => {

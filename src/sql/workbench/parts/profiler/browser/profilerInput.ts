@@ -17,7 +17,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { INotificationService } from 'vs/platform/notification/common/notification';
 import { Event, Emitter } from 'vs/base/common/event';
 import { generateUuid } from 'vs/base/common/uuid';
-import { IDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IDialogService, IShowResult } from 'vs/platform/dialogs/common/dialogs';
 import * as types from 'vs/base/common/types';
 import { URI } from 'vs/base/common/uri';
 import Severity from 'vs/base/common/severity';
@@ -291,11 +291,11 @@ export class ProfilerInput extends EditorInput implements IProfilerSession {
 					nls.localize('profilerClosingActions.yes', "Yes"),
 					nls.localize('profilerClosingActions.no', "No"),
 					nls.localize('profilerClosingActions.cancel', "Cancel")
-				]).then((selection: number) => {
-					if (selection === 0) {
+				]).then((selection: IShowResult) => {
+					if (selection.choice === 0) {
 						this._profilerService.stopSession(this.id);
 						return ConfirmResult.DONT_SAVE;
-					} else if (selection === 1) {
+					} else if (selection.choice === 1) {
 						return ConfirmResult.DONT_SAVE;
 					} else {
 						return ConfirmResult.CANCEL;

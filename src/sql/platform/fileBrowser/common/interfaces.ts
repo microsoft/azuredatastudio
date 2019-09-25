@@ -11,7 +11,7 @@ import { createDecorator } from 'vs/platform/instantiation/common/instantiation'
 
 export const IFileBrowserService = createDecorator<IFileBrowserService>('fileBrowserService');
 export interface IFileBrowserService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	onAddFileTree: Event<FileBrowserTree>;
 	onExpandFolder: Event<FileNode>;
 	onPathValidate: Event<azdata.FileBrowserValidatedParams>;
@@ -24,35 +24,35 @@ export interface IFileBrowserService {
 	/**
 	 * Open file browser
 	 */
-	openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Thenable<boolean>;
+	openFileBrowser(ownerUri: string, expandPath: string, fileFilters: string[], changeFilter: boolean): Promise<boolean>;
 
 	/**
 	 * Event called when file browser is opened
 	 */
-	onFileBrowserOpened(handle: number, fileBrowserOpenedParams: azdata.FileBrowserOpenedParams);
+	onFileBrowserOpened(handle: number, fileBrowserOpenedParams: azdata.FileBrowserOpenedParams): void;
 
 	/**
 	 * Expand folder node
 	 */
-	expandFolderNode(fileNode: FileNode): Thenable<FileNode[]>;
+	expandFolderNode(fileNode: FileNode): Promise<FileNode[]>;
 
 	/**
 	 * Event called when children nodes are retrieved
 	 */
-	onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: azdata.FileBrowserExpandedParams);
+	onFolderNodeExpanded(handle: number, fileBrowserExpandedParams: azdata.FileBrowserExpandedParams): void;
 
 	/**
 	 * Validate selected file paths
 	 */
-	validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Thenable<boolean>;
+	validateFilePaths(ownerUri: string, serviceType: string, selectedFiles: string[]): Promise<boolean>;
 
 	/**
 	 * Event called when the validation is complete
 	 */
-	onFilePathsValidated(handle: number, fileBrowserValidatedParams: azdata.FileBrowserValidatedParams);
+	onFilePathsValidated(handle: number, fileBrowserValidatedParams: azdata.FileBrowserValidatedParams): void;
 
 	/**
 	 * Close file browser
 	 */
-	closeFileBrowser(ownerUri: string): Thenable<azdata.FileBrowserCloseResponse>;
+	closeFileBrowser(ownerUri: string): Promise<azdata.FileBrowserCloseResponse | undefined>;
 }

@@ -36,12 +36,12 @@ export class TaskNode {
 	/**
 	 * sever name
 	 */
-	public serverName: string;
+	public serverName?: string;
 
 	/**
 	 * Database Name
 	 */
-	public databaseName: string;
+	public databaseName?: string;
 
 	/**
 	 * Provider Name
@@ -99,7 +99,7 @@ export class TaskNode {
 	 */
 	public script: string;
 
-	constructor(taskName: string, serverName: string, databaseName: string, taskId: string = undefined, taskExecutionMode: TaskExecutionMode = TaskExecutionMode.execute, isCancelable: boolean = true) {
+	constructor(taskName: string, serverName?: string, databaseName?: string, taskId: string | undefined = undefined, taskExecutionMode: TaskExecutionMode = TaskExecutionMode.execute, isCancelable: boolean = true) {
 		this.id = taskId || generateUuid();
 
 		this.taskName = taskName;

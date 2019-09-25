@@ -4,6 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 import 'vs/css!./welcomePage';
+import 'vs/workbench/contrib/welcome/page/browser/vs_code_welcome_page';
 import { URI } from 'vs/base/common/uri';
 import * as strings from 'vs/base/common/strings';
 import { ICommandService } from 'vs/platform/commands/common/commands';
@@ -24,7 +25,6 @@ import { IBackupFileService } from 'vs/workbench/services/backup/common/backup';
 import { getInstalledExtensions, IExtensionStatus, onExtensionChanged, isKeymapExtension } from 'vs/workbench/contrib/extensions/common/extensionsUtils';
 import { IExtensionManagementService, IExtensionGalleryService, ILocalExtension } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionEnablementService, EnablementState, IExtensionTipsService } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
-import { used, setProductQuality } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}} - Redirect to ADS welcome page
 import { ILifecycleService, StartupKind } from 'vs/platform/lifecycle/common/lifecycle';
 import { Disposable } from 'vs/base/common/lifecycle';
 import { splitName } from 'vs/base/common/labels';
@@ -43,8 +43,8 @@ import { joinPath } from 'vs/base/common/resources';
 import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder } from 'vs/platform/history/common/history';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment'; // {{SQL CARBON EDIT}}
-
-used();
+import { setProductQuality } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -266,7 +266,8 @@ class WelcomePage extends Disposable {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService // {{SQL CARBON EDIT}}
+		@IEnvironmentService private readonly environmentService: IEnvironmentService, // {{SQL CARBON EDIT}}
+		@IHostService private readonly hostService: IHostService
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -496,7 +497,7 @@ class WelcomePage extends Disposable {
 													extensionId: extensionSuggestion.id,
 													outcome: installedExtension ? 'enabled' : 'installed',
 												});
-												return this.windowService.reloadWindow();
+												return this.hostService.reload();
 											});
 									} else {
 										/* __GDPR__FRAGMENT__
