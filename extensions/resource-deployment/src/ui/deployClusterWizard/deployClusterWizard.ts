@@ -95,8 +95,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 					new SummaryPage(this));
 				break;
 			default:
-				throw new Error(localize('deployCluster.UnknownDeploymentTarget', "Unknow wizard type: {0}", this.deploymentType));
-				break;
+				throw new Error(`Unknown deployment type: ${this.deploymentType}`);
 		}
 		return pages;
 	}
