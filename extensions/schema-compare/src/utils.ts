@@ -85,3 +85,10 @@ export async function verifyConnectionAndGetOwnerUri(endpoint: mssql.SchemaCompa
 	}
 	return undefined;
 }
+
+/**
+ * Returns the folder open in Explorer if there is one, otherwise returns the home directory
+ */
+export function getRootPath(): string {
+	return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
+}
