@@ -38,7 +38,9 @@ const formatFiles = (some) => {
 			cb(err);
 		});
 	});
-	return gulp.src(some, { base: '.' })
+	return gulp.src(some, {
+			base: '.'
+		})
 		.pipe(filter(f => !f.stat.isDirectory()))
 		.pipe(formatting);
 
@@ -46,7 +48,9 @@ const formatFiles = (some) => {
 
 const formatStagedFiles = () => {
 	const cp = require('child_process');
-	cp.exec('git diff --name-only', { maxBuffer: 2000 * 1024 }, (err, out) => {
+	cp.exec('git diff --name-only', {
+		maxBuffer: 2000 * 1024
+	}, (err, out) => {
 		if (err) {
 			console.error();
 			console.error(err);
@@ -65,7 +69,9 @@ const formatStagedFiles = () => {
 		});
 	});
 
-	cp.exec('git diff --cached --name-only', { maxBuffer: 2000 * 1024 }, (err, out) => {
+	cp.exec('git diff --cached --name-only', {
+		maxBuffer: 2000 * 1024
+	}, (err, out) => {
 		if (err) {
 			console.error();
 			console.error(err);
@@ -188,57 +194,6 @@ async function rollupModule(options) {
 	}
 }
 
-
-gulp.task('rollup-angular-slickgrid', () => {
-	return new Promise(async (resolve, reject) => {
-		const result = await rollupModule({
-			moduleName: 'angular2-slickgrid',
-			inputFile: path.resolve(__dirname, '..', 'remote', 'web', 'node_modules', 'angular2-slickgrid', 'out', 'index.js'),
-			outputDirectory:  path.resolve(__dirname, '..', 'remote', 'web', 'node_modules', 'angular2-slickgrid', 'out', 'bundles'),
-			outputFileName: 'angular2-slickgrid.umd.js'
-		});
-
-		if (!result.result) {
-			return reject('angular2-slickgrid failed to bundle - ', result.exception);
-		}
-		resolve();
-	});
-});
-
-gulp.task('rollup-angular', () => {
-	return new Promise(async (resolve, reject) => {
-
-		const modules = ['core', 'animations', 'common', 'compiler', 'forms', 'http', 'platform-browser', 'platform-browser-dynamic', 'router', 'upgrade'];
-		const tasks = modules.map((module) => {
-			return rollupModule({
-				moduleName: `ng.${module}`,
-				inputFile: path.resolve(__dirname, '..', 'remote', 'web', 'node_modules', '@angular', module, '@angular', `${module}.es5.js`),
-				outputDirectory: path.resolve(__dirname, '..', 'remote', 'web', 'node_modules', '@angular', module, 'bundles'),
-				outputFileName: `${module}.umd.js`,
-				external: modules.map(mn => `@angular/${mn}`)
-			});
-		});
-
-		// array of booleans
-		const x = await Promise.all(tasks);
-
-		const result = x.reduce((prev, current) => {
-			if (!current.result) {
-				prev.fails.push(current.name);
-				prev.exceptions.push(current.exception);
-				prev.result = false;
-			}
-			return prev;
-		}, {
-			fails: [],
-			exceptions: [],
-			result: true,
-		});
-
-		if (!result.result) {
-			return reject(`failures: ${result.fails} - exceptions: ${JSON.stringify(result.exceptions)}`);
-		}
-		resolve();
-	});
-
-});
+module.exports = {
+	rollupModule
+};
