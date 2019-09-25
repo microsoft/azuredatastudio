@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as cp from 'child_process';
@@ -16,7 +15,10 @@ import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
 import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
+import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { NotebookInputDialog } from '../ui/notebookInputDialog';
+import { KubeService } from './kubeService';
+import { AzdataService } from './azdataService';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -138,7 +140,7 @@ export class ResourceTypeService implements IResourceTypeService {
 			let providerIndex = 1;
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
-				if (!provider.dialog && !provider.notebook && !provider.downloadUrl && !provider.webPageUrl) {
+				if (!provider.wizard && !provider.dialog && !provider.notebook && !provider.downloadUrl && !provider.webPageUrl) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
@@ -195,7 +197,10 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
-		if (provider.dialog) {
+		if (provider.wizard) {
+			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);
+			wizard.open();
+		} else if (provider.dialog) {
 			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);
 			dialog.open();
 		} else if (provider.notebook) {

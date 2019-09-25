@@ -15,7 +15,7 @@ import { IColorTheme, IWorkbenchThemeService } from 'vs/workbench/services/theme
 
 import { ComponentWithIconBase } from 'sql/workbench/browser/modelComponents/componentWithIconBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
-import { StatusIndicator, CardProperties, ActionDescriptor } from 'sql/workbench/api/common/sqlExtHostTypes';
+import { StatusIndicator, CardProperties, ActionDescriptor, CardDescriptionItem } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 @Component({
 	templateUrl: decodeURI(require.toUrl('./card.component.html'))
@@ -145,8 +145,8 @@ export default class CardComponent extends ComponentWithIconBase implements ICom
 		return this.selectable && this.selected;
 	}
 
-	public get descriptions(): string[] {
-		return this.getPropertyOrDefault<CardProperties, string[]>((props) => props.descriptions, []);
+	public get descriptions(): CardDescriptionItem[] {
+		return this.getPropertyOrDefault<CardProperties, CardDescriptionItem[]>((props) => props.descriptions, []);
 	}
 
 	public get actions(): ActionDescriptor[] {
