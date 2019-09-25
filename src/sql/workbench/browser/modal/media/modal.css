@@ -139,7 +139,8 @@
 }
 
 .modal .footer-button a.monaco-button.monaco-text-button {
-	width: 100px;
+	min-width: 100px;
+	padding: 4px 10px;
 }
 
 .vs .monaco-text-button:focus {
