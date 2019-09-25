@@ -6,6 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as mssql from '../../mssql';
+import * as os from 'os';
 
 export interface IPackageInfo {
 	name: string;
