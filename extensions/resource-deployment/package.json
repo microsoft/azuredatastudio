@@ -234,8 +234,8 @@
           "displayName": "%bdc-deployment-target%",
           "values": [
             {
-              "name": "aks",
-              "displayName": "%bdc-deployment-target-aks%"
+              "name": "new-aks",
+              "displayName": "%bdc-deployment-target-new-aks%"
             },
             {
               "name": "existing-aks",
@@ -250,96 +250,9 @@
       ],
       "providers": [
         {
-          "dialog": {
-            "notebook": "%bdc-2019-aks-notebook%",
-            "title": "%bdc-new-aks-dialog-title%",
-            "name": "bdc-new-aks-dialog",
-            "tabs": [
-              {
-                "title": "",
-                "sections": [
-                  {
-                    "title": "%bdc-cluster-settings-section-title%",
-                    "fields": [
-                      {
-                        "label": "%bdc-cluster-name-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_NAME",
-                        "type": "text",
-                        "defaultValue": "mssql-cluster",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-controller-username-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_USERNAME",
-                        "type": "text",
-                        "defaultValue": "admin",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-password-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
-                        "type": "sql_password",
-                        "userName": "sa",
-                        "confirmationRequired": true,
-                        "confirmationLabel": "%bdc-confirm-password-field%",
-                        "defaultValue": "",
-                        "required": true
-                      }
-                    ]
-                  },
-                  {
-                    "title": "%bdc-azure-settings-section-title%",
-                    "fields": [
-                      {
-                        "label": "%bdc-azure-subscription-id-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_AZURE_SUBSCRIPTION",
-                        "type": "text",
-                        "defaultValue": "",
-                        "required": false,
-                        "placeHolder": "%bdc-azure-subscription-id-placeholder%"
-                      },
-                      {
-                        "label": "%bdc-azure-resource-group-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_RESOURCEGROUP_NAME",
-                        "type": "datetime_text",
-                        "defaultValue": "mssql-",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-azure-region-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_AZURE_REGION",
-                        "type": "text",
-                        "defaultValue": "eastus",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-azure-aks-name-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_AKS_NAME",
-                        "type": "datetime_text",
-                        "defaultValue": "mssql-",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-azure-vm-size-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_AZURE_VM_SIZE",
-                        "type": "text",
-                        "defaultValue": "Standard_E4s_v3",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-azure-vm-count-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_VM_COUNT",
-                        "type": "number",
-                        "defaultValue": "5",
-                        "min": 1,
-                        "max": 999,
-                        "required": true
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+          "wizard": {
+            "type": "new-aks",
+            "notebook": "%bdc-2019-aks-notebook%"
           },
           "requiredTools": [
             {
@@ -352,49 +265,12 @@
               "name": "azdata"
             }
           ],
-          "when": "target=aks&&version=bdc2019"
+          "when": "target=new-aks&&version=bdc2019"
         },
         {
-          "dialog": {
-            "notebook": "%bdc-2019-existing-aks-notebook%",
-            "title": "%bdc-existing-aks-dialog-title%",
-            "name": "bdc-existing-aks-dialog",
-            "tabs": [
-              {
-                "title": "",
-                "sections": [
-                  {
-                    "title": "%bdc-cluster-settings-section-title%",
-                    "fields": [
-                      {
-                        "label": "%bdc-cluster-name-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_NAME",
-                        "type": "text",
-                        "defaultValue": "mssql-cluster",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-controller-username-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_USERNAME",
-                        "type": "text",
-                        "defaultValue": "admin",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-password-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
-                        "type": "sql_password",
-                        "userName": "sa",
-                        "confirmationRequired": true,
-                        "confirmationLabel": "%bdc-confirm-password-field%",
-                        "defaultValue": "",
-                        "required": true
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+          "wizard": {
+            "type": "existing-aks",
+            "notebook": "%bdc-2019-existing-aks-notebook%"
           },
           "requiredTools": [
             {
@@ -407,69 +283,9 @@
           "when": "target=existing-aks&&version=bdc2019"
         },
         {
-          "dialog": {
-            "title": "%bdc-existing-kubeadm-dialog-title%",
-            "name": "bdc-existing-kubeadm-dialog",
-            "notebook": "%bdc-2019-existing-kubeadm-notebook%",
-            "tabs": [
-              {
-                "title": "",
-                "sections": [
-                  {
-                    "title": "%bdc-cluster-settings-section-title%",
-                    "fields": [
-                      {
-                        "label": "%bdc-cluster-name-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_NAME",
-                        "type": "text",
-                        "defaultValue": "mssql-cluster",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-controller-username-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_USERNAME",
-                        "type": "text",
-                        "defaultValue": "admin",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-password-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_CONTROLLER_PASSWORD",
-                        "type": "sql_password",
-                        "userName": "sa",
-                        "confirmationRequired": true,
-                        "confirmationLabel": "%bdc-confirm-password-field%",
-                        "defaultValue": "",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-storage-class-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_STORAGE_CLASS",
-                        "type": "text",
-                        "defaultValue": "",
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-data-size-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_DATA_SIZE",
-                        "type": "number",
-                        "defaultValue": "100",
-                        "min": 1,
-                        "required": true
-                      },
-                      {
-                        "label": "%bdc-log-size-field%",
-                        "variableName": "AZDATA_NB_VAR_BDC_LOG_SIZE",
-                        "type": "number",
-                        "defaultValue": "50",
-                        "min": 1,
-                        "required": true
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
+          "wizard": {
+            "type": "existing-kubeadm",
+            "notebook": "%bdc-2019-existing-kubeadm-notebook%"
           },
           "requiredTools": [
             {
@@ -481,7 +297,24 @@
           ],
           "when": "target=existing-kubeadm&&version=bdc2019"
         }
-      ]
+      ],
+      "agreement": {
+        "template": "%bdc-agreement%",
+        "links": [
+          {
+            "text": "%bdc-agreement-privacy-statement%",
+            "url": "https://go.microsoft.com/fwlink/?LinkId=853010"
+          },
+          {
+            "text": "%bdc-agreement-bdc-eula%",
+            "url": "https://go.microsoft.com/fwlink/?LinkId=2002534"
+          },
+          {
+            "text": "%bdc-agreement-azdata-eula%",
+            "url": "https://aka.ms/azdata-eula"
+          }
+        ]
+      }
     },
     {
       "name": "sql-windows-setup",
@@ -525,10 +358,12 @@
     }
   ],
   "dependencies": {
-    "vscode-nls": "^4.0.0"
+    "vscode-nls": "^4.0.0",
+    "yamljs": "^0.3.0"
   },
   "devDependencies": {
     "typemoq": "^2.1.0",
-    "vscode": "^1.1.26"
+    "vscode": "^1.1.26",
+    "@types/yamljs": "0.2.30"
   }
 }
