@@ -58,6 +58,15 @@ export class AddControllerDialogModel {
 
 	public async onComplete(url: string, auth: AuthType, username: string, password: string, rememberPassword: boolean): Promise<void> {
 		try {
+
+			if (auth === 'basic') {
+				// Verify username and password as we can't make them required in the UI
+				if (!username) {
+					throw new Error(localize('err.controller.username.required', "Username is required"));
+				} else if (!password) {
+					throw new Error(localize('err.controller.password.required', "Password is required"));
+				}
+			}
 			// We pre-fetch the endpoints here to verify that the information entered is correct (the user is able to connect)
 			let controller = new ClusterController(url, auth, username, password, true);
 			let response = await controller.getEndPoints();
@@ -203,7 +212,10 @@ export class AddControllerDialog {
 			await this.model.onComplete(url, auth, username, password, rememberPassword);
 			return true;
 		} catch (error) {
-			showErrorMessage(error);
+			this.dialog.message = {
+				text: (typeof error === 'string') ? error : error.message,
+				level: azdata.window.MessageLevel.Error
+			};
 			if (this.model && this.model.onError) {
 				await this.model.onError(error as ControllerError);
 			}
