@@ -44,6 +44,7 @@ import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, is
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment'; // {{SQL CARBON EDIT}}
 import { setProductQuality } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 const configurationKey = 'workbench.startupEditor';
 const oldConfigurationKey = 'workbench.welcome.enabled';
@@ -265,7 +266,8 @@ class WelcomePage extends Disposable {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@ILifecycleService lifecycleService: ILifecycleService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
-		@IEnvironmentService private readonly environmentService: IEnvironmentService // {{SQL CARBON EDIT}}
+		@IEnvironmentService private readonly environmentService: IEnvironmentService, // {{SQL CARBON EDIT}}
+		@IHostService private readonly hostService: IHostService
 	) {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
@@ -495,7 +497,7 @@ class WelcomePage extends Disposable {
 													extensionId: extensionSuggestion.id,
 													outcome: installedExtension ? 'enabled' : 'installed',
 												});
-												return this.windowService.reloadWindow();
+												return this.hostService.reload();
 											});
 									} else {
 										/* __GDPR__FRAGMENT__
