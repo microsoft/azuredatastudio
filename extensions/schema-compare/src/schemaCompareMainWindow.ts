@@ -543,8 +543,8 @@ export class SchemaCompareMainWindow {
 		this.compareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.compareButton', 'Compare'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'compare.svg'),
-				dark: path.join(__dirname, 'media', 'compare-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'compare.svg'),
+				dark: path.join(__dirname, '..', 'media', 'compare-inverse.svg')
 			},
 			title: localize('schemaCompare.compareButtonTitle', 'Compare')
 		}).component();
@@ -558,8 +558,8 @@ export class SchemaCompareMainWindow {
 		this.cancelCompareButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.cancelCompareButton', 'Stop'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'stop.svg'),
-				dark: path.join(__dirname, 'media', 'stop-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'stop.svg'),
+				dark: path.join(__dirname, '..', 'media', 'stop-inverse.svg')
 			},
 			title: localize('schemaCompare.cancelCompareButtonTitle', 'Stop')
 		}).component();
@@ -606,8 +606,8 @@ export class SchemaCompareMainWindow {
 		this.generateScriptButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.generateScriptButton', 'Generate script'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'generate-script.svg'),
-				dark: path.join(__dirname, 'media', 'generate-script-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'generate-script.svg'),
+				dark: path.join(__dirname, '..', 'media', 'generate-script-inverse.svg')
 			},
 		}).component();
 
@@ -637,8 +637,8 @@ export class SchemaCompareMainWindow {
 		this.optionsButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.optionsButton', 'Options'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'options.svg'),
-				dark: path.join(__dirname, 'media', 'options-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'options.svg'),
+				dark: path.join(__dirname, '..', 'media', 'options-inverse.svg')
 			},
 			title: localize('schemaCompare.optionsButtonTitle', 'Options')
 		}).component();
@@ -657,8 +657,8 @@ export class SchemaCompareMainWindow {
 		this.applyButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.updateButton', 'Apply'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'start.svg'),
-				dark: path.join(__dirname, 'media', 'start-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'start.svg'),
+				dark: path.join(__dirname, '..', 'media', 'start-inverse.svg')
 			},
 		}).component();
 
@@ -764,8 +764,8 @@ export class SchemaCompareMainWindow {
 		this.switchButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.switchDirectionButton', 'Switch direction'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'switch-directions.svg'),
-				dark: path.join(__dirname, 'media', 'switch-directions-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'switch-directions.svg'),
+				dark: path.join(__dirname, '..', 'media', 'switch-directions-inverse.svg')
 			},
 			title: localize('schemaCompare.switchButtonTitle', 'Switch source and target')
 		}).component();
@@ -837,8 +837,8 @@ export class SchemaCompareMainWindow {
 		this.openScmpButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.openScmpButton', 'Open .scmp file'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'open-scmp.svg'),
-				dark: path.join(__dirname, 'media', 'open-scmp-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'open-scmp.svg'),
+				dark: path.join(__dirname, '..', 'media', 'open-scmp-inverse.svg')
 			},
 			title: localize('schemaCompare.openScmpButtonTitle', 'Load source, target, and options saved in an .scmp file')
 		}).component();
@@ -934,8 +934,8 @@ export class SchemaCompareMainWindow {
 		this.saveScmpButton = view.modelBuilder.button().withProperties({
 			label: localize('schemaCompare.saveScmpButton', 'Save .scmp file'),
 			iconPath: {
-				light: path.join(__dirname, 'media', 'save-scmp.svg'),
-				dark: path.join(__dirname, 'media', 'save-scmp-inverse.svg')
+				light: path.join(__dirname, '..', 'media', 'save-scmp.svg'),
+				dark: path.join(__dirname, '..', 'media', 'save-scmp-inverse.svg')
 			},
 			title: localize('schemaCompare.saveScmpButtonTitle', 'Save source and target, options, and excluded elements'),
 			enabled: false
