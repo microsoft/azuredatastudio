@@ -93,10 +93,7 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 .hide-component-button {
 	height: 16px;
 	width: 100%;
-	align-items: center;
-	justify-content: center;
 	box-sizing: border-box;
-	padding: 3px;
 	border-width: 0px;
 	background-repeat: no-repeat;
 	background-position: center;
