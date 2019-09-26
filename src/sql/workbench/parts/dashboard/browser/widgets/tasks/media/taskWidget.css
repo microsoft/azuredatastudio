@@ -27,6 +27,6 @@ tasks-widget .task-tile > div {
 	align-items: center;
 }
 
-tasks-widget .task-tile .icon {
+tasks-widget .task-tile .codicon {
 	padding: 15px;
 }

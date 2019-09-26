@@ -49,7 +49,6 @@ export class CellRangeSelector<T> implements ICellRangeSelector<T> {
 	public onAppendCellRangeSelected = new Slick.Event<Slick.Range>();
 
 	constructor(private options: ICellRangeSelectorOptions) {
-		require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
 
 		this.options = mixin(this.options, defaultOptions, false);
 	}

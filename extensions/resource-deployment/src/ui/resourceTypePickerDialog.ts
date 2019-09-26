@@ -189,6 +189,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const toolRequirements = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
+		this._dialogObject.message = {
+			text: ''
+		};
 		if (toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
@@ -198,9 +201,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-			this._dialogObject.message = {
-				text: ''
-			};
 
 			Promise.all(tools.map(tool => tool.loadInformation())).then(() => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
@@ -236,11 +236,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const checkbox = this._view.modelBuilder.checkBox().component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
-			this._agreementCheckboxChecked = checkbox.checked;
+			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: agreementInfo.template,
-			links: agreementInfo.links
+			links: agreementInfo.links,
+			requiredIndicator: true
 		}).component();
 		return createFlexContainer(this._view, [checkbox, text]);
 	}

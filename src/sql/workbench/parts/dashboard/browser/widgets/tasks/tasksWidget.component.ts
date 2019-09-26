@@ -131,7 +131,7 @@ export class TasksWidget extends DashboardWidget implements IDashboardWidget, On
 
 		const iconClassName = TaskRegistry.getOrCreateTaskIconClassName(action);
 		if (iconClassName) {
-			const icon = DOM.$('span.icon');
+			const icon = DOM.$('span.codicon');
 			DOM.addClass(icon, iconClassName);
 			innerTile.append(icon);
 		}
