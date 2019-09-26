@@ -358,6 +358,10 @@
     }
   ],
   "dependencies": {
+    "@types/mocha": "^5.2.5",
+    "mocha": "^5.2.0",
+    "mocha-junit-reporter": "^1.17.0",
+		"mocha-multi-reporters": "^1.1.7",
     "vscode-nls": "^4.0.0",
     "yamljs": "^0.3.0"
   },
