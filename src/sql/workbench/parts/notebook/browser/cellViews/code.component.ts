@@ -33,6 +33,9 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { FoldingController } from 'vs/editor/contrib/folding/folding';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
+import { FoldingModel } from 'vs/editor/contrib/folding/foldingModel';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -90,6 +93,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private readonly _maximumHeight = 4000;
 	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
+	private _foldingController: FoldingController;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _model: NotebookModel;
@@ -191,6 +195,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
+		this._foldingController = FoldingController.get(this._editor.getControl() as ICodeEditor);
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
@@ -233,11 +238,14 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				this.setFocusAndScroll();
 			}
 		}));
-		this._register(this.cellModel.onToggleStateChanged(isHidden => {
-			if (isHidden) {
-
-			} else {
-
+		this._register(this.cellModel.onToggleStateChanged(async isHidden => {
+			let foldingModel = await this._foldingController.getFoldingModel();
+			if (foldingModel !== null) {
+				if (isHidden) {
+					console.log(foldingModel.regions.length);
+				} else {
+					console.log(foldingModel.regions.length);
+				}
 			}
 		}));
 		this.layout();

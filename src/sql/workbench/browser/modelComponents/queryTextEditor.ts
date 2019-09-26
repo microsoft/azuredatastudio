@@ -70,7 +70,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		if (this.input) {
 			options.inDiffEditor = true;
 			options.scrollBeyondLastLine = false;
-			options.folding = false;
+			options.folding = true;
 			options.renderIndentGuides = false;
 			options.rulers = [];
 			options.glyphMargin = true;
