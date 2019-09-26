@@ -8,7 +8,7 @@
 import 'vs/editor/editor.all';
 
 import 'vs/workbench/api/browser/extensionHost.contribution';
-import 'sql/workbench/api/electron-browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
+import 'sql/workbench/api/browser/extensionHost.contribution'; // {{SQL CARBON EDIT}} @anthonydresser add our extension contributions
 import 'vs/workbench/browser/workbench.contribution';
 
 //#endregion
