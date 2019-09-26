@@ -2,7 +2,6 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
@@ -16,10 +15,10 @@ export abstract class DialogBase {
 		this._dialogObject.cancelButton.onClick(() => this.onCancel());
 	}
 
-	protected abstract initializeDialog(): void;
+	protected abstract initialize(): void;
 
 	public open(): void {
-		this.initializeDialog();
+		this.initialize();
 		azdata.window.openDialog(this._dialogObject);
 	}
 
