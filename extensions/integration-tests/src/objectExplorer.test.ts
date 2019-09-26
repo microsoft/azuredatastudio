@@ -30,7 +30,7 @@ if (context.RunTest) {
 		test('Azure SQL DB context menu test', async function () {
 			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test('Standalone database context menu test', async function () {
+		test.skip('Standalone database context menu test', async function () {
 			await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
@@ -160,7 +160,7 @@ class ObjectExplorerTester {
 			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 		}
 		finally {
-			await deleteDB(dbName, ownerUri);
+			await deleteDB(server, dbName, ownerUri);
 		}
 	}
 }

@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import * as arrays from 'vs/base/common/arrays';
 import { IStateService } from 'vs/platform/state/common/state';
-import { app } from 'electron';
+import { app, JumpListCategory } from 'electron';
 import { ILogService } from 'vs/platform/log/common/log';
 import { getBaseLabel, getPathLabel } from 'vs/base/common/labels';
 import { IPath } from 'vs/platform/windows/common/windows';
@@ -59,7 +59,7 @@ export class HistoryMainService implements IHistoryMainService {
 
 	_serviceBrand: undefined;
 
-	private _onRecentlyOpenedChange = new Emitter<void>();
+	private readonly _onRecentlyOpenedChange = new Emitter<void>();
 	readonly onRecentlyOpenedChange: CommonEvent<void> = this._onRecentlyOpenedChange.event;
 
 	private macOSRecentDocumentsUpdater: ThrottledDelayer<void>;
@@ -301,7 +301,7 @@ export class HistoryMainService implements IHistoryMainService {
 			return; // only on windows
 		}
 
-		const jumpList: Electron.JumpListCategory[] = [];
+		const jumpList: JumpListCategory[] = [];
 
 		// Tasks
 		jumpList.push({

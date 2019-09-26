@@ -151,57 +151,49 @@ export class TreeUpdateUtils {
 		return isConnected;
 	}
 
-	public static connectIfNotConnected(
+	public static async connectIfNotConnected(
 		connection: IConnectionProfile,
 		options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService,
-		tree: ITree): Promise<ConnectionProfile> {
-		return new Promise<ConnectionProfile>((resolve, reject) => {
-			if (!connectionManagementService.isProfileConnected(connection)) {
-				// don't try to reconnect if currently connecting
-				if (connectionManagementService.isProfileConnecting(connection)) {
-					resolve(undefined);
+		tree: ITree): Promise<ConnectionProfile | undefined> {
+		if (!connectionManagementService.isProfileConnected(connection)) {
+			// don't try to reconnect if currently connecting
+			if (connectionManagementService.isProfileConnecting(connection)) {
+				return undefined;
 
-					// else if we aren't connected or connecting then try to connect
-				} else {
-					let callbacks: IConnectionCallbacks = undefined;
-					if (tree) {
-						// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
-						tree.addTraits('loading', [connection]);
-						let rejectOrCancelCallback = () => {
-							tree.collapse(connection);
-							tree.removeTraits('loading', [connection]);
-						};
-						callbacks = {
-							onConnectStart: undefined,
-							onConnectReject: rejectOrCancelCallback,
-							onConnectSuccess: () => tree.removeTraits('loading', [connection]),
-							onDisconnect: undefined,
-							onConnectCanceled: rejectOrCancelCallback,
-						};
-					}
-					connectionManagementService.connect(connection, undefined, options, callbacks).then(result => {
-						if (result.connected) {
-							let existingConnection = connectionManagementService.findExistingConnection(connection);
-							resolve(existingConnection);
-						} else {
-							reject('connection failed');
-						}
-					}, connectionError => {
-						reject(connectionError);
-					});
-				}
+				// else if we aren't connected or connecting then try to connect
 			} else {
-				let existingConnection = connectionManagementService.findExistingConnection(connection);
-				if (options && options.showDashboard) {
-					connectionManagementService.showDashboard(connection).then((value) => {
-						resolve(existingConnection);
-					});
+				let callbacks: IConnectionCallbacks = undefined;
+				if (tree) {
+					// Show the spinner in OE by adding the 'loading' trait to the connection, and set up callbacks to hide the spinner
+					tree.addTraits('loading', [connection]);
+					let rejectOrCancelCallback = () => {
+						tree.collapse(connection);
+						tree.removeTraits('loading', [connection]);
+					};
+					callbacks = {
+						onConnectStart: undefined,
+						onConnectReject: rejectOrCancelCallback,
+						onConnectSuccess: () => tree.removeTraits('loading', [connection]),
+						onDisconnect: undefined,
+						onConnectCanceled: rejectOrCancelCallback,
+					};
+				}
+				const result = await connectionManagementService.connect(connection, undefined, options, callbacks);
+				if (result.connected) {
+					let existingConnection = connectionManagementService.findExistingConnection(connection);
+					return existingConnection;
 				} else {
-					resolve(existingConnection);
+					throw new Error('connection failed');
 				}
 			}
-		});
+		} else {
+			let existingConnection = connectionManagementService.findExistingConnection(connection);
+			if (options && options.showDashboard) {
+				await connectionManagementService.showDashboard(connection);
+			}
+			return existingConnection;
+		}
 	}
 
 	/**
@@ -213,34 +205,26 @@ export class TreeUpdateUtils {
 	 * @param connectionManagementService Connection management service instance
 	 * @param objectExplorerService Object explorer service instance
 	 */
-	public static connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
+	public static async  connectAndCreateOeSession(connection: IConnectionProfile, options: IConnectionCompletionOptions,
 		connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, tree: ITree): Promise<boolean> {
-		return new Promise<boolean>((resolve, reject) => {
-			TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree).then(connectedConnection => {
-				if (connectedConnection) {
-					// append group ID and original display name to build unique OE session ID
-					connectedConnection.options['groupId'] = connection.groupId;
-					connectedConnection.options['databaseDisplayName'] = connection.databaseName;
+		const connectedConnection = await TreeUpdateUtils.connectIfNotConnected(connection, options, connectionManagementService, tree);
+		if (connectedConnection) {
+			// append group ID and original display name to build unique OE session ID
+			connectedConnection.options['groupId'] = connection.groupId;
+			connectedConnection.options['databaseDisplayName'] = connection.databaseName;
 
-					let rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
-					if (!rootNode) {
-						objectExplorerService.updateObjectExplorerNodes(connectedConnection).then(() => {
-							rootNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
-							resolve(true);
-							// The oe request is sent. an event will be raised when the session is created
-						}, error => {
-							reject('session failed');
-						});
-					} else {
-						resolve(false);
-					}
-				} else {
-					resolve(false);
-				}
-			}, connectionError => {
-				reject(connectionError);
-			});
-		});
+			let rootNode: TreeNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
+			if (!rootNode) {
+				await objectExplorerService.updateObjectExplorerNodes(connectedConnection);
+				rootNode = objectExplorerService.getObjectExplorerNode(connectedConnection);
+				return true;
+				// The oe request is sent. an event will be raised when the session is created
+			} else {
+				return false;
+			}
+		} else {
+			return false;
+		}
 	}
 
 	public static getObjectExplorerNode(connection: ConnectionProfile, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService): Promise<TreeNode[]> {
