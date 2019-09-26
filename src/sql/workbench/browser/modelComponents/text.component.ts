@@ -11,16 +11,16 @@ import {
 
 import * as azdata from 'azdata';
 
-import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
 import { SafeHtml, DomSanitizer } from '@angular/platform-browser';
+import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledComponent';
 
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>`
+		<p [style.width]="getWidth()" [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>`
 })
-export default class TextComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
+export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
 	@Input() modelStore: IModelStore;
 

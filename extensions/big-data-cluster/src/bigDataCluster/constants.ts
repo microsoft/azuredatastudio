@@ -70,3 +70,8 @@ export class IconPathHelper {
 		};
 	}
 }
+
+export namespace cssStyles {
+	export const hyperlink = { 'user-select': 'text', 'color': '#0078d4', 'text-decoration': 'underline', 'cursor': 'pointer' };
+	export const text = { 'margin-block-start': '0px', 'margin-block-end': '0px' };
+}
