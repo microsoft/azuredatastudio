@@ -236,7 +236,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const checkbox = this._view.modelBuilder.checkBox().component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
-			this._agreementCheckboxChecked = checkbox.checked;
+			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: agreementInfo.template,
