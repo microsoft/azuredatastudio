@@ -56,40 +56,31 @@ export class ServerTreeDataSource implements IDataSource {
 	/**
 	 * Returns the element's children as an array in a promise.
 	 */
-	public getChildren(tree: ITree, element: any): Promise<any> {
-		return new Promise<any>((resolve) => {
-			if (element instanceof ConnectionProfile) {
-				TreeUpdateUtils.getObjectExplorerNode(<ConnectionProfile>element, this._connectionManagementService, this._objectExplorerService).then(nodes => {
-					resolve(nodes);
-				}, error => {
-					resolve([]);
-				});
-			} else if (element instanceof ConnectionProfileGroup) {
-				resolve((<ConnectionProfileGroup>element).getChildren());
-			} else if (element instanceof TreeNode) {
-				let node = element;
-				if (node.children) {
-					resolve(node.children);
-				} else {
-					// These similar changes are probably needed for a ConnectionProfile group element as well. However, we do not have a repro of a failiure in that scenario so they will be tackled in a future checkin.
-					// It has been tested for connecting to the server in profile itself and things work fine there.
-					this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node).then(() => {
-						resolve(node.children);
-					}, async expandError => {
-						await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
-						node.errorStateMessage = expandError;
-						this.showError(expandError);
-						// collapse node and refresh in case of error so remove tree cache
-						setTimeout(() => {
-							tree.collapse(element).then(() => tree.refresh(element));
-						});
-						resolve([]);
-					});
-				}
+	public async getChildren(tree: ITree, element: any): Promise<(ConnectionProfile | ConnectionProfileGroup | TreeNode)[]> {
+		if (element instanceof ConnectionProfile) {
+			return TreeUpdateUtils.getObjectExplorerNode(<ConnectionProfile>element, this._connectionManagementService, this._objectExplorerService);
+		} else if (element instanceof ConnectionProfileGroup) {
+			return (element as ConnectionProfileGroup).getChildren();
+		} else if (element instanceof TreeNode) {
+			let node = element;
+			if (node.children) {
+				return node.children;
 			} else {
-				resolve([]);
+				try {
+					return this._objectExplorerService.resolveTreeNodeChildren(node.getSession(), node);
+				} catch (expandError) {
+					await node.setExpandedState(TreeItemCollapsibleState.Collapsed);
+					node.errorStateMessage = expandError;
+					this.showError(expandError);
+					// collapse node and refresh in case of error so remove tree cache
+					setTimeout(() => {
+						tree.collapse(element).then(() => tree.refresh(element));
+					});
+					return [];
+				}
 			}
-		});
+		}
+		return [];
 	}
 
 	/**
