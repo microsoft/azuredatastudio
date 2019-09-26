@@ -11,6 +11,7 @@ import { IObjectExplorerService } from 'sql/workbench/services/objectExplorer/br
 // import { IProgressRunner, IProgressService } from 'vs/platform/progress/common/progress';
 import { TreeNode } from 'sql/workbench/parts/objectExplorer/common/treeNode';
 import { TreeUpdateUtils } from 'sql/workbench/parts/objectExplorer/browser/treeUpdateUtils';
+import { ADSPerformance } from 'sql/workbench/performance/browser/ADSPerformance';
 
 export class TreeSelectionHandler {
 	// progressRunner: IProgressRunner;
@@ -44,16 +45,20 @@ export class TreeSelectionHandler {
 	}
 
 	/**
-	 * Handle select	ion of tree element
+	 * Handle selection of tree element
 	 */
 	public onTreeSelect(event: any, tree: ITree, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, connectionCompleteCallback: () => void) {
 		let sendSelectionEvent = ((event: any, selection: any, isDoubleClick: boolean, userInteraction: boolean) => {
+			const uid = ADSPerformance.getUid();
+			ADSPerformance.transactionMark('treeSelect', uid);
+			console.log(ADSPerformance.getEntries());
+
 			// userInteraction: defensive - don't touch this something else is handling it.
 			if (userInteraction === true && this._lastClicked && this._lastClicked[0] === selection[0]) {
 				this._lastClicked = undefined;
 			}
 			if (!TreeUpdateUtils.isInDragAndDrop) {
-				this.handleTreeItemSelected(connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
+				this.handleTreeItemSelected(uid, connectionManagementService, objectExplorerService, isDoubleClick, this.isKeyboardEvent(event), selection, tree, connectionCompleteCallback);
 			}
 		});
 
@@ -93,7 +98,7 @@ export class TreeSelectionHandler {
 	 *
 	 * @param connectionCompleteCallback A function that gets called after a connection is established due to the selection, if needed
 	 */
-	private handleTreeItemSelected(connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): void {
+	private handleTreeItemSelected(uid: string, connectionManagementService: IConnectionManagementService, objectExplorerService: IObjectExplorerService, isDoubleClick: boolean, isKeyboard: boolean, selection: any[], tree: ITree, connectionCompleteCallback: () => void): void {
 		let connectionProfile: ConnectionProfile = undefined;
 		let options: IConnectionCompletionOptions = {
 			params: undefined,
@@ -109,6 +114,7 @@ export class TreeSelectionHandler {
 				this.onTreeActionStateChange(true);
 
 				TreeUpdateUtils.connectAndCreateOeSession(connectionProfile, options, connectionManagementService, objectExplorerService, tree).then(sessionCreated => {
+					ADSPerformance.transactionMark('completeConnnectAndCreateOeSession', uid);
 					if (!sessionCreated) {
 						this.onTreeActionStateChange(false);
 					}
@@ -116,6 +122,7 @@ export class TreeSelectionHandler {
 						connectionCompleteCallback();
 					}
 				}, error => {
+					ADSPerformance.transactionMark('completeConnnectAndCreateOeSession-error', uid);
 					this.onTreeActionStateChange(false);
 				});
 			}
