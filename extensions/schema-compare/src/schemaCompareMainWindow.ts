@@ -169,7 +169,8 @@ export class SchemaCompareMainWindow {
 			}).component();
 
 			let arrowLabel = view.modelBuilder.text().withProperties({
-				value: localize('schemaCompare.switchLabel', '➔')
+				value: localize('schemaCompare.switchLabel', '➔'),
+				CSSStyles: { 'justify-content': 'center' }
 			}).component();
 
 			this.sourceName = getEndpointName(this.sourceEndpointInfo);

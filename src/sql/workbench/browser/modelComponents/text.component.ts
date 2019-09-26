@@ -18,7 +18,7 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<div style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
+		<div style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()" [style.justifyContent]="getJustifyContent()">
 			<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
 			<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
 			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description">
@@ -77,6 +77,10 @@ export default class TextComponent extends TitledComponent implements IComponent
 
 	public get requiredIndicator(): boolean {
 		return this.getPropertyOrDefault<azdata.TextComponentProperties, boolean>((props) => props.requiredIndicator, false);
+	}
+
+	public getJustifyContent(): string {
+		return this.CSSStyles['justify-content'];
 	}
 
 	public getValue(): SafeHtml {
