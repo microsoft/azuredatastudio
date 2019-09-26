@@ -4,7 +4,6 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { ResourceType, DeploymentProvider, AgreementInfo } from '../interfaces';
@@ -29,7 +28,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 
-	constructor(private extensionContext: vscode.ExtensionContext,
+	constructor(
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
@@ -125,8 +124,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const card = this._view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
 			iconPath: {
-				dark: this.extensionContext.asAbsolutePath(resourceType.icon.dark),
-				light: this.extensionContext.asAbsolutePath(resourceType.icon.light)
+				dark: resourceType.icon.dark,
+				light: resourceType.icon.light
 			},
 			label: resourceType.displayName,
 			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name)

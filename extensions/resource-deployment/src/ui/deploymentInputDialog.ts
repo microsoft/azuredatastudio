@@ -8,19 +8,19 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
-import { DialogInfo } from '../interfaces';
+import { DialogInfoTypes } from '../interfaces';
 import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
 import { Model } from './model';
 import { EOL } from 'os';
 
 const localize = nls.loadMessageBundle();
 
-export class NotebookInputDialog extends DialogBase {
+export class DeploymentInputDialog extends DialogBase {
 
 	private inputComponents: InputComponents = {};
 
 	constructor(private notebookService: INotebookService,
-		private dialogInfo: DialogInfo) {
+		private dialogInfo: DialogInfoTypes) {
 		super(dialogInfo.title, dialogInfo.name, false);
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
@@ -62,10 +62,14 @@ export class NotebookInputDialog extends DialogBase {
 	private onComplete(): void {
 		const model: Model = new Model();
 		setModelValues(this.inputComponents, model);
-		model.setEnvironmentVariables();
-		this.notebookService.launchNotebook(this.dialogInfo.notebook).then(() => { }, (error) => {
-			vscode.window.showErrorMessage(error);
-		});
+		if ('notebook' in this.dialogInfo) {
+			model.setEnvironmentVariables();
+			this.notebookService.launchNotebook(this.dialogInfo.notebook).then(() => { }, (error) => {
+				vscode.window.showErrorMessage(error);
+			});
+		} else {
+			vscode.commands.executeCommand(this.dialogInfo.command, model);
+		}
 		this.dispose();
 	}
 }
