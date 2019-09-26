@@ -146,7 +146,7 @@ async function rollupModule(options) {
 		const inputFile = options.inputFile;
 		const outputDirectory = options.outputDirectory;
 
-		fs.promises.mkdir(outputDirectory, {
+		await fs.promises.mkdir(outputDirectory, {
 			recursive: true
 		});
 
