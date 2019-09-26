@@ -526,7 +526,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			this.setEnableHadrCheckboxState(Number.parseInt(selectedValue));
 		}));
 		this.wizard.registerDisposable(enableHadrCheckbox.onChanged(() => {
-			this.updateReadableSecondaryEndpointComponents(enableHadrCheckbox.checked);
+			this.updateReadableSecondaryEndpointComponents(!!enableHadrCheckbox.checked);
 		}));
 	}
 
@@ -534,7 +534,7 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		// 1. it is ok to enable HADR when there is only 1 replica
 		// 2. if there are multiple replicas, the hadr.enabled switch must be set to true.
 		const enableHadrCheckbox = getCheckboxComponent(VariableNames.EnableHADR_VariableName, this.inputComponents);
-		const hadrEnabled = sqlInstances === 1 ? enableHadrCheckbox.checked : true;
+		const hadrEnabled = sqlInstances === 1 ? !!enableHadrCheckbox.checked : true;
 		if (sqlInstances === 1) {
 			enableHadrCheckbox.enabled = true;
 		} else {

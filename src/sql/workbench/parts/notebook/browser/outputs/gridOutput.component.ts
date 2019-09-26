@@ -138,7 +138,7 @@ class DataResourceTable extends GridTableBase<any> {
 		@IEditorService editorService: IEditorService,
 		@IUntitledEditorService untitledEditorService: IUntitledEditorService,
 		@IConfigurationService configurationService: IConfigurationService,
-		@optional(ISerializationService) private _serializationService: ISerializationService
+		@ISerializationService private _serializationService: ISerializationService
 	) {
 		super(state, createResultSet(source), contextMenuService, instantiationService, editorService, untitledEditorService, configurationService);
 		this._gridDataProvider = this.instantiationService.createInstance(DataResourceDataProvider, source, this.resultSet, documentUri);
@@ -153,7 +153,7 @@ class DataResourceTable extends GridTableBase<any> {
 	}
 
 	protected getContextActions(): IAction[] {
-		if (!this._serializationService || !this._serializationService.hasProvider()) {
+		if (!this._serializationService.hasProvider()) {
 			return [];
 		}
 		return [
@@ -180,7 +180,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
-		@optional(ISerializationService) private _serializationService: ISerializationService,
+		@ISerializationService private _serializationService: ISerializationService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this.transformSource(source);
@@ -248,7 +248,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	get canSerialize(): boolean {
-		return this._serializationService && this._serializationService.hasProvider();
+		return this._serializationService.hasProvider();
 	}
 
 
