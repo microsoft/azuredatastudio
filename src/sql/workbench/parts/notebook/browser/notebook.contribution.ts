@@ -22,7 +22,6 @@ import { MimeRendererComponent } from 'sql/workbench/parts/notebook/browser/outp
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { URI } from 'vs/base/common/uri';
 import { IWorkspaceEditingService } from 'vs/workbench/services/workspace/common/workspaceEditing';
-import { IWindowService } from 'vs/platform/windows/common/windows';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { NodeContextKey } from 'sql/workbench/parts/dataExplorer/browser/nodeContext';
 import { MssqlNodeContext } from 'sql/workbench/parts/dataExplorer/browser/mssqlNodeContext';
