@@ -35,7 +35,7 @@ import { IModeService } from 'vs/editor/common/services/modeService';
 import { IHistoryService } from 'vs/workbench/services/history/common/history';
 import { IInstantiationService, ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { TestConfigurationService } from 'vs/platform/configuration/test/common/testConfigurationService';
-import { IWindowsService, IWindowService, MenuBarVisibility, IURIToOpen, IOpenSettings, IWindowConfiguration } from 'vs/platform/windows/common/windows';
+import { IWindowsService, IWindowService, MenuBarVisibility, IWindowConfiguration, IWindowOpenable, IOpenInWindowOptions, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { TestWorkspace } from 'vs/platform/workspace/test/common/testWorkspace';
 import { createTextBufferFactoryFromStream } from 'vs/editor/common/model/textModel';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
@@ -1206,14 +1206,6 @@ export class TestWindowService implements IWindowService {
 	removeFromRecentlyOpened(_paths: URI[]): Promise<void> {
 		return Promise.resolve();
 	}
-
-	focusWindow(): Promise<void> {
-		return Promise.resolve();
-	}
-
-	openWindow(_uris: IURIToOpen[], _options?: IOpenSettings): Promise<void> {
-		return Promise.resolve();
-	}
 }
 
 export class TestLifecycleService implements ILifecycleService {
@@ -1289,19 +1281,6 @@ export class TestWindowsService implements IWindowsService {
 		});
 	}
 
-	focusWindow(_windowId: number): Promise<void> {
-		return Promise.resolve();
-	}
-
-	// Global methods
-	openWindow(_windowId: number, _uris: IURIToOpen[], _options: IOpenSettings): Promise<void> {
-		return Promise.resolve();
-	}
-
-	getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]> {
-		throw new Error('not implemented');
-	}
-
 	getActiveWindowId(): Promise<number | undefined> {
 		return Promise.resolve(undefined);
 	}
@@ -1367,7 +1346,12 @@ export class RemoteFileSystemProvider implements IFileSystemProvider {
 	readonly capabilities: FileSystemProviderCapabilities = this.diskFileSystemProvider.capabilities;
 	readonly onDidChangeCapabilities: Event<void> = this.diskFileSystemProvider.onDidChangeCapabilities;
 
-	readonly onDidChangeFile: Event<IFileChange[]> = Event.map(this.diskFileSystemProvider.onDidChangeFile, changes => changes.map(c => { c.resource = c.resource.with({ scheme: Schemas.vscodeRemote, authority: this.remoteAuthority }); return c; }));
+	readonly onDidChangeFile: Event<readonly IFileChange[]> = Event.map(this.diskFileSystemProvider.onDidChangeFile, changes => changes.map((c): IFileChange => {
+		return {
+			type: c.type,
+			resource: c.resource.with({ scheme: Schemas.vscodeRemote, authority: this.remoteAuthority }),
+		};
+	}));
 	watch(resource: URI, opts: IWatchOptions): IDisposable { return this.diskFileSystemProvider.watch(this.toFileResource(resource), opts); }
 
 	stat(resource: URI): Promise<IStat> { return this.diskFileSystemProvider.stat(this.toFileResource(resource)); }
@@ -1401,7 +1385,10 @@ export class TestHostService implements IHostService {
 	async reload(): Promise<void> { }
 	async closeWorkspace(): Promise<void> { }
 
-	async openEmptyWindow(options?: { reuse?: boolean, remoteAuthority?: string }): Promise<void> { }
+	async focus(): Promise<void> { }
+
+	async openEmptyWindow(options?: IOpenEmptyWindowOptions): Promise<void> { }
+	async openInWindow(toOpen: IWindowOpenable[], options?: IOpenInWindowOptions): Promise<void> { }
 
 	async toggleFullScreen(): Promise<void> { }
 }

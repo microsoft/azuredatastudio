@@ -130,7 +130,6 @@ registerAction({
 	handler: async (accessor, options: { forceNewWindow: boolean, folderPath: URI }) => {
 		const viewletService = accessor.get(IViewletService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
-		const windowService = accessor.get(IWindowService);
 		const hostService = accessor.get(IHostService);
 		let folders = [];
 		if (!options.folderPath) {
@@ -140,7 +139,7 @@ registerAction({
 		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
 		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
 		if (options.forceNewWindow) {
-			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+			return hostService.openInWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
 		else {
 			return hostService.reload();
