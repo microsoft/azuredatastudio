@@ -239,7 +239,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			if (isHidden) {
 				codeEditor.style.display = 'none';
 				codePlaceholder.style.display = 'block';
-				codePlaceholder.textContent = 'Test';
+				codePlaceholder.textContent = this.cellModel.source[0];
 			} else {
 				codeEditor.style.display = 'block';
 				codePlaceholder.style.display = 'none';
