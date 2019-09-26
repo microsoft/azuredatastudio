@@ -47,7 +47,7 @@ export class DeployClusterWizard extends WizardBase<DeployClusterWizard, DeployC
 	protected initialize(): void {
 		this.setPages(this.getPages());
 		this.wizardObject.generateScriptButton.hidden = true;
-		this.wizardObject.doneButton.label = localize('deployCluster.openNotebook', 'Open Notebook');
+		this.wizardObject.doneButton.label = localize('deployCluster.ScriptToNotebook', 'Script to Notebook');
 	}
 
 	protected onCancel(): void {
