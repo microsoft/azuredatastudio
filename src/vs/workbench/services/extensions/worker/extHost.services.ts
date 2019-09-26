@@ -49,7 +49,7 @@ function NotImplementedProxy<T>(name: ServiceIdentifier<T>): { new(): T } {
 	};
 }
 registerSingleton(IExtHostTerminalService, WorkerExtHostTerminalService);
-registerSingleton(IExtHostTask, WorkerExtHostTask);
+// registerSingleton(IExtHostTask, WorkerExtHostTask); {{SQL CARBON EDIT}} disable tasks
 // registerSingleton(IExtHostDebugService, class extends NotImplementedProxy(IExtHostDebugService) { }); {{SQL CARBON EDIT}} remove debug service
 registerSingleton(IExtHostSearch, class extends NotImplementedProxy(IExtHostSearch) { });
 registerSingleton(IExtensionStoragePaths, class extends NotImplementedProxy(IExtensionStoragePaths) {
