@@ -69,8 +69,14 @@ export class NotebookTextFileModel {
 			} else {
 				newOutput = '\n'.concat(newOutput).concat('\n');
 			}
+
+			// Execution count will always be after the end of the outputs in JSON. This is a safety mechanism.
+			let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
+			if (!executionCountMatch || !executionCountMatch.range) {
+				return false;
+			}
 			let range = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
-			if (range) {
+			if (range && range.startLineNumber > executionCountMatch.range.startLineNumber) {
 				textEditorModel.textEditorModel.applyEdits([{
 					range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
 					text: newOutput
