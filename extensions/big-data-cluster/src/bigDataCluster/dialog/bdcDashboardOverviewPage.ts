@@ -256,7 +256,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 				url: endpoint.endpoint, CSSStyles: { 'height': '15px' }
 			})
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}`, 'min-width': `${serviceEndpointRowEndpointCellWidth}`, 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.hyperlink } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth, 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.hyperlink } });
 	}
 	else if (endpoint.name === Endpoint.sqlServerMaster) {
 		const endpointCell = modelBuilder.text()
@@ -279,7 +279,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 				azdata.connection.openConnectionDialog(undefined, connProfile);
 			}
 		});
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}`, 'min-width': `${serviceEndpointRowEndpointCellWidth}` } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth } });
 	}
 	else {
 		const endpointCell = modelBuilder.text()
@@ -289,7 +289,7 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 				CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.text }
 			})
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}`, 'min-width': `${serviceEndpointRowEndpointCellWidth}` } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': serviceEndpointRowEndpointCellWidth, 'min-width': serviceEndpointRowEndpointCellWidth } });
 	}
 	const copyValueCell = modelBuilder.button().component();
 	copyValueCell.iconPath = IconPathHelper.copy;
