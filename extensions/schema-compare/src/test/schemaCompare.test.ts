@@ -62,7 +62,7 @@ const extensionContext: vscode.ExtensionContext = {
 	asAbsolutePath: (() => { return undefined; }),
 	storagePath: undefined,
 	globalStoragePath: undefined,
-	logPath: undefined;
+	logPath: undefined
 };
 
 describe('SchemaCompareDialog.openDialog', function (): void {
