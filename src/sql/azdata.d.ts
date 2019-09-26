@@ -2745,7 +2745,10 @@ declare module 'azdata' {
 		 * Matches the align-content CSS property.
 		 */
 		alignContent?: string;
-
+		/**
+		 *  Matches the flex-wrap CSS property.
+		 */
+		flexWrap?: string;
 		/**
 		 * Container Height
 		 */
@@ -2919,11 +2922,11 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentWithIcon {
+	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -2935,6 +2938,13 @@ declare module 'azdata' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
+		tooltip?: string;
+		fontWeight?: 'normal' | 'bold';
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -3052,9 +3062,12 @@ declare module 'azdata' {
 		focused?: boolean;
 	}
 
-	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
+	export interface TextComponentProperties {
 		value?: string;
 		links?: LinkArea[];
+		description?: string;
+		requiredIndicator?: boolean;
+		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface ImageComponentProperties {
@@ -3068,7 +3081,7 @@ declare module 'azdata' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -3140,7 +3153,7 @@ declare module 'azdata' {
 		minimumHeight?: number;
 	}
 
-	export interface ButtonProperties extends ComponentProperties, TitledComponentProperties, ComponentWithIcon {
+	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
 		/**
 		 * The label for the button
 		 */
@@ -3153,6 +3166,10 @@ declare module 'azdata' {
 		 * The content of the currently selected file
 		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
+		title?: string;
 		/**
 		 * The accessibility aria label for this component
 		 */
@@ -3181,13 +3198,6 @@ declare module 'azdata' {
 		clickable?: boolean;
 	}
 
-	export interface TitledComponentProperties {
-		/**
-		 * The title for the component. This title will show when hovered over
-		 */
-		title?: string;
-	}
-
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -3197,7 +3207,8 @@ declare module 'azdata' {
 
 	}
 
-	export interface TextComponent extends Component, TextComponentProperties {
+	export interface TextComponent extends Component, ComponentProperties {
+		value: string;
 		/**
 		 * An event called when the text is clicked
 		 */
@@ -3221,7 +3232,9 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component, CheckBoxProperties {
+	export interface CheckBoxComponent extends Component {
+		checked: boolean;
+		label: string;
 		onChanged: vscode.Event<any>;
 	}
 
@@ -3454,7 +3467,6 @@ declare module 'azdata' {
 		/**
 		 * Create a dialog with the given title
 		 * @param title The title of the dialog, displayed at the top
-		 * @param dialogName Name of the dialog, used for telemetry
 		 * @param isWide Indicates whether the dialog is wide or normal
 		 */
 		export function createModelViewDialog(title: string, dialogName?: string, isWide?: boolean): Dialog;

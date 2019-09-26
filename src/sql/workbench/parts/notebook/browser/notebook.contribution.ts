@@ -35,6 +35,7 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { ObjectExplorerActionsContext } from 'sql/workbench/parts/objectExplorer/browser/objectExplorerActions';
 import { ItemContextKey } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerTreeContext';
 import { ManageActionContext } from 'sql/workbench/browser/actions';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { MarkdownOutputComponent } from 'sql/workbench/parts/notebook/browser/outputs/markdownOutput.component';
 import { registerCellComponent } from 'sql/platform/notebooks/common/outputRegistry';
 import { TextCellComponent } from 'sql/workbench/parts/notebook/browser/cellViews/textCell.component';
@@ -130,6 +131,7 @@ registerAction({
 		const viewletService = accessor.get(IViewletService);
 		const workspaceEditingService = accessor.get(IWorkspaceEditingService);
 		const windowService = accessor.get(IWindowService);
+		const hostService = accessor.get(IHostService);
 		let folders = [];
 		if (!options.folderPath) {
 			return;
@@ -141,7 +143,7 @@ registerAction({
 			return windowService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
 		else {
-			return windowService.reloadWindow();
+			return hostService.reload();
 		}
 	}
 });
