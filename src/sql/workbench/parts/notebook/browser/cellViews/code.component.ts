@@ -33,10 +33,6 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
-import { FoldingController } from 'vs/editor/contrib/folding/folding';
-import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { FoldingModel } from 'vs/editor/contrib/folding/foldingModel';
-import { FoldingRegions } from 'vs/editor/contrib/folding/foldingRanges';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -49,6 +45,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
+	@ViewChild('editorPlaceholder', { read: ElementRef }) private codePlaceholderElement: ElementRef;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -94,8 +91,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private readonly _maximumHeight = 4000;
 	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
-	private _foldingController: FoldingController;
-	private _foldingModel: FoldingModel;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _model: NotebookModel;
@@ -224,11 +219,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.modelContentChangedEvent = e;
 			this.cellModel.source = this._editorModel.getValue();
-			let numLines = this.cellModel.source.length;
-			this._foldingModel.update(new FoldingRegions(
-				new Uint32Array([1]),
-				new Uint32Array([numLines])
-			));
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 		}));
@@ -244,16 +234,17 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			}
 		}));
 		this._register(this.cellModel.onToggleStateChanged(isHidden => {
-			this._foldingModel.toggleCollapseState([this._foldingModel.regions[0]]);
+			let codeEditor = <HTMLElement>this.codeElement.nativeElement;
+			let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
+			if (isHidden) {
+				codeEditor.style.display = 'none';
+				codePlaceholder.style.display = 'block';
+				codePlaceholder.textContent = 'Test';
+			} else {
+				codeEditor.style.display = 'block';
+				codePlaceholder.style.display = 'none';
+			}
 		}));
-
-		this._foldingController = FoldingController.get(this._editor.getControl() as ICodeEditor);
-		this._foldingModel = await this._foldingController.getFoldingModel();
-		try {
-			this._foldingModel.update(new FoldingRegions(new Uint32Array([1]), new Uint32Array([1])));
-		} catch (err) {
-			console.log(err.toString());
-		}
 
 		this.layout();
 	}

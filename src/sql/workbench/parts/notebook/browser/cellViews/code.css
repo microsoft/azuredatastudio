@@ -60,6 +60,11 @@ code-component .toolbarIconStop {
 code-component .editor {
 	padding: 5px 0px 0px 0px
 }
+
+code-component .codePlaceholder {
+	padding-left: 62px
+}
+
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
 	visibility: hidden;

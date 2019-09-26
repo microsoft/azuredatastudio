@@ -9,7 +9,8 @@
 	</div>
 	<div style="flex: 1 1 auto; flex-flow: column; overflow: hidden;">
 		<div #editor class="editor"></div>
-		<hidden-component [cellModel]="cellModel"></hidden-component>
+		<div *ngIf="cellModel.cellType === 'code'" #editorPlaceholder class="editor codePlaceholder" style="display:none"></div>
+		<hidden-component *ngIf="cellModel.cellType === 'code'" [cellModel]="cellModel"></hidden-component>
 	</div>
 	<div #moreactions class="moreActions" style="flex: 0 0 auto; display: flex; flex-flow:column;width: 20px; min-height: 20px; max-height: 20px; padding-top: 0px; orientation: portrait">
 	</div>
