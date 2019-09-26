@@ -7,6 +7,7 @@
 
 import * as should from 'should';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
@@ -53,9 +54,20 @@ const mockTargetEndpoint: mssql.SchemaCompareEndpointInfo = {
 	connectionDetails: undefined
 };
 
+const extensionContext: vscode.ExtensionContext = {
+	extensionPath: '.',
+	subscriptions: undefined,
+	workspaceState: undefined,
+	globalState: undefined,
+	asAbsolutePath: (() => { return undefined; }),
+	storagePath: undefined,
+	globalStoragePath: undefined,
+	logPath: undefined;
+};
+
 describe('SchemaCompareDialog.openDialog', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow();
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, extensionContext);
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
@@ -69,7 +81,7 @@ describe('SchemaCompareResult.start', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(sc);
+		let result = new SchemaCompareMainWindow(sc, extensionContext);
 		await result.start(null);
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;
