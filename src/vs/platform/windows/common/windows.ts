@@ -12,10 +12,8 @@ import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platf
 import { IRecentlyOpened, IRecent } from 'vs/platform/history/common/history';
 import { ExportData } from 'vs/base/common/performance';
 import { LogLevel } from 'vs/platform/log/common/log';
-import { DisposableStore, Disposable } from 'vs/base/common/lifecycle';
 import { URI, UriComponents } from 'vs/base/common/uri';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
 
 export const IWindowsService = createDecorator<IWindowsService>('windowsService');
 
@@ -26,49 +24,6 @@ export interface INativeOpenDialogOptions {
 
 	telemetryEventName?: string;
 	telemetryExtraData?: ITelemetryData;
-}
-
-export interface IEnterWorkspaceResult {
-	workspace: IWorkspaceIdentifier;
-	backupPath?: string;
-}
-
-export interface OpenDialogOptions {
-	title?: string;
-	defaultPath?: string;
-	buttonLabel?: string;
-	filters?: FileFilter[];
-	properties?: Array<'openFile' | 'openDirectory' | 'multiSelections' | 'showHiddenFiles' | 'createDirectory' | 'promptToCreate' | 'noResolveAliases' | 'treatPackageAsDirectory'>;
-	message?: string;
-}
-
-export interface FileFilter {
-	extensions: string[];
-	name: string;
-}
-
-export interface MessageBoxOptions {
-	type?: string;
-	buttons?: string[];
-	defaultId?: number;
-	title?: string;
-	message: string;
-	detail?: string;
-	checkboxLabel?: string;
-	checkboxChecked?: boolean;
-	cancelId?: number;
-	noLink?: boolean;
-	normalizeAccessKeys?: boolean;
-}
-
-export interface SaveDialogOptions {
-	title?: string;
-	defaultPath?: string;
-	buttonLabel?: string;
-	filters?: FileFilter[];
-	message?: string;
-	nameFieldLabel?: string;
-	showsTagField?: boolean;
 }
 
 export interface IWindowsService {
@@ -86,18 +41,21 @@ export interface IWindowsService {
 	removeFromRecentlyOpened(paths: URI[]): Promise<void>;
 	clearRecentlyOpened(): Promise<void>;
 	getRecentlyOpened(windowId: number): Promise<IRecentlyOpened>;
-	focusWindow(windowId: number): Promise<void>;
 	isFocused(windowId: number): Promise<boolean>;
-
-	// Global methods
-	openWindow(windowId: number, uris: IURIToOpen[], options: IOpenSettings): Promise<void>;
-	getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]>;
 	getActiveWindowId(): Promise<number | undefined>;
 }
 
 export const IWindowService = createDecorator<IWindowService>('windowService');
 
-export interface IOpenSettings {
+export interface IOpenedWindow {
+	id: number;
+	workspace?: IWorkspaceIdentifier;
+	folderUri?: ISingleFolderWorkspaceIdentifier;
+	title: string;
+	filename?: string;
+}
+
+export interface IOpenInWindowOptions {
 	forceNewWindow?: boolean;
 	forceReuseWindow?: boolean;
 	diffMode?: boolean;
@@ -105,38 +63,42 @@ export interface IOpenSettings {
 	gotoLineMode?: boolean;
 	noRecentEntry?: boolean;
 	waitMarkerFileURI?: URI;
-	args?: ParsedArgs;
 }
 
-export type IURIToOpen = IWorkspaceToOpen | IFolderToOpen | IFileToOpen;
+export interface IOpenEmptyWindowOptions {
+	reuse?: boolean;
+	remoteAuthority?: string;
+}
 
-export interface IWorkspaceToOpen {
+export type IWindowOpenable = IWorkspaceToOpen | IFolderToOpen | IFileToOpen;
+
+export interface IBaseWindowOpenable {
+	label?: string;
+}
+
+export interface IWorkspaceToOpen extends IBaseWindowOpenable {
 	workspaceUri: URI;
-	label?: string;
 }
 
-export interface IFolderToOpen {
+export interface IFolderToOpen extends IBaseWindowOpenable {
 	folderUri: URI;
-	label?: string;
 }
 
-export interface IFileToOpen {
+export interface IFileToOpen extends IBaseWindowOpenable {
 	fileUri: URI;
-	label?: string;
 }
 
-export function isWorkspaceToOpen(uriToOpen: IURIToOpen): uriToOpen is IWorkspaceToOpen {
-	return !!(uriToOpen as IWorkspaceToOpen)['workspaceUri'];
+export function isWorkspaceToOpen(uriToOpen: IWindowOpenable): uriToOpen is IWorkspaceToOpen {
+	return !!(uriToOpen as IWorkspaceToOpen).workspaceUri;
 }
 
-export function isFolderToOpen(uriToOpen: IURIToOpen): uriToOpen is IFolderToOpen {
-	return !!(uriToOpen as IFolderToOpen)['folderUri'];
+export function isFolderToOpen(uriToOpen: IWindowOpenable): uriToOpen is IFolderToOpen {
+	return !!(uriToOpen as IFolderToOpen).folderUri;
 }
 
-export function isFileToOpen(uriToOpen: IURIToOpen): uriToOpen is IFileToOpen {
-	return !!(uriToOpen as IFileToOpen)['fileUri'];
+export function isFileToOpen(uriToOpen: IWindowOpenable): uriToOpen is IFileToOpen {
+	return !!(uriToOpen as IFileToOpen).fileUri;
 }
-
 
 export interface IWindowService {
 
@@ -152,12 +114,10 @@ export interface IWindowService {
 	getRecentlyOpened(): Promise<IRecentlyOpened>;
 	addRecentlyOpened(recents: IRecent[]): Promise<void>;
 	removeFromRecentlyOpened(paths: URI[]): Promise<void>;
-	focusWindow(): Promise<void>;
-	openWindow(uris: IURIToOpen[], options?: IOpenSettings): Promise<void>;
 	isFocused(): Promise<boolean>;
 }
 
-export type MenuBarVisibility = 'default' | 'visible' | 'toggle' | 'hidden';
+export type MenuBarVisibility = 'default' | 'visible' | 'toggle' | 'hidden' | 'compact';
 
 export interface IWindowsConfiguration {
 	window: IWindowSettings;
@@ -351,38 +311,4 @@ export interface IRunActionInWindowRequest {
 
 export interface IRunKeybindingInWindowRequest {
 	userSettingsLabel: string;
-}
-
-export class ActiveWindowManager extends Disposable {
-
-	private readonly disposables = this._register(new DisposableStore());
-	private firstActiveWindowIdPromise: CancelablePromise<number | undefined> | undefined;
-	private activeWindowId: number | undefined;
-
-	constructor(@IWindowsService windowsService: IWindowsService) {
-		super();
-
-		const onActiveWindowChange = Event.latch(Event.any(windowsService.onWindowOpen, windowsService.onWindowFocus));
-		onActiveWindowChange(this.setActiveWindow, this, this.disposables);
-
-		this.firstActiveWindowIdPromise = createCancelablePromise(_ => windowsService.getActiveWindowId());
-		this.firstActiveWindowIdPromise
-			.then(id => this.activeWindowId = typeof this.activeWindowId === 'number' ? this.activeWindowId : id)
-			.finally(this.firstActiveWindowIdPromise = undefined);
-	}
-
-	private setActiveWindow(windowId: number | undefined) {
-		if (this.firstActiveWindowIdPromise) {
-			this.firstActiveWindowIdPromise.cancel();
-			this.firstActiveWindowIdPromise = undefined;
-		}
-
-		this.activeWindowId = windowId;
-	}
-
-	async getActiveClientId(): Promise<string | undefined> {
-		const id = this.firstActiveWindowIdPromise ? (await this.firstActiveWindowIdPromise) : this.activeWindowId;
-
-		return `window:${id}`;
-	}
 }

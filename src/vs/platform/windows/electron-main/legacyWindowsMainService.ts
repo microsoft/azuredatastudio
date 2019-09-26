@@ -6,17 +6,16 @@
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 import { assign } from 'vs/base/common/objects';
 import { URI } from 'vs/base/common/uri';
-import { IWindowsService, OpenContext, IOpenSettings, IURIToOpen } from 'vs/platform/windows/common/windows';
+import { IWindowsService, OpenContext } from 'vs/platform/windows/common/windows';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
-import { app, MessageBoxReturnValue, SaveDialogReturnValue, OpenDialogReturnValue, BrowserWindow, MessageBoxOptions, SaveDialogOptions, OpenDialogOptions } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import { Event } from 'vs/base/common/event';
 import { IURLService, IURLHandler } from 'vs/platform/url/common/url';
 import { IWindowsMainService, ICodeWindow } from 'vs/platform/windows/electron-main/windows';
 import { IRecentlyOpened, IRecent } from 'vs/platform/history/common/history';
 import { IHistoryMainService } from 'vs/platform/history/electron-main/historyMainService';
-import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { Schemas } from 'vs/base/common/network';
-import { isMacintosh, IProcessEnvironment } from 'vs/base/common/platform';
+import { IProcessEnvironment } from 'vs/base/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 
 // @deprecated this should eventually go away and be implemented by host & electron service
@@ -55,24 +54,6 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 			(id => this._activeWindowId = id, null, this.disposables);
 	}
 
-	async showMessageBox(windowId: number, options: MessageBoxOptions): Promise<MessageBoxReturnValue> {
-		this.logService.trace('windowsService#showMessageBox', windowId);
-
-		return this.withWindow(windowId, codeWindow => this.windowsMainService.showMessageBox(options, codeWindow), () => this.windowsMainService.showMessageBox(options))!;
-	}
-
-	async showSaveDialog(windowId: number, options: SaveDialogOptions): Promise<SaveDialogReturnValue> {
-		this.logService.trace('windowsService#showSaveDialog', windowId);
-
-		return this.withWindow(windowId, codeWindow => this.windowsMainService.showSaveDialog(options, codeWindow), () => this.windowsMainService.showSaveDialog(options))!;
-	}
-
-	async showOpenDialog(windowId: number, options: OpenDialogOptions): Promise<OpenDialogReturnValue> {
-		this.logService.trace('windowsService#showOpenDialog', windowId);
-
-		return this.withWindow(windowId, codeWindow => this.windowsMainService.showOpenDialog(options, codeWindow), () => this.windowsMainService.showOpenDialog(options))!;
-	}
-
 	async addRecentlyOpened(recents: IRecent[]): Promise<void> {
 		this.logService.trace('windowsService#addRecentlyOpened');
 		this.historyMainService.addRecentlyOpened(recents);
@@ -96,41 +77,10 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 		return this.withWindow(windowId, codeWindow => this.historyMainService.getRecentlyOpened(codeWindow.config.workspace, codeWindow.config.folderUri, codeWindow.config.filesToOpenOrCreate), () => this.historyMainService.getRecentlyOpened())!;
 	}
 
-	async focusWindow(windowId: number): Promise<void> {
-		this.logService.trace('windowsService#focusWindow', windowId);
-
-		if (isMacintosh) {
-			return this.withWindow(windowId, codeWindow => codeWindow.win.show());
-		} else {
-			return this.withWindow(windowId, codeWindow => codeWindow.win.focus());
-		}
-	}
-
 	async isFocused(windowId: number): Promise<boolean> {
 		this.logService.trace('windowsService#isFocused', windowId);
 
 		return this.withWindow(windowId, codeWindow => codeWindow.win.isFocused(), () => false)!;
-	}
-
-	async openWindow(windowId: number, urisToOpen: IURIToOpen[], options: IOpenSettings): Promise<void> {
-		this.logService.trace('windowsService#openWindow');
-		if (!urisToOpen || !urisToOpen.length) {
-			return undefined;
-		}
-
-		this.windowsMainService.open({
-			context: OpenContext.API,
-			contextWindowId: windowId,
-			urisToOpen: urisToOpen,
-			cli: options.args ? { ...this.environmentService.args, ...options.args } : this.environmentService.args,
-			forceNewWindow: options.forceNewWindow,
-			forceReuseWindow: options.forceReuseWindow,
-			diffMode: options.diffMode,
-			addMode: options.addMode,
-			gotoLineMode: options.gotoLineMode,
-			noRecentEntry: options.noRecentEntry,
-			waitMarkerFileURI: options.waitMarkerFileURI
-		});
 	}
 
 	async openExtensionDevelopmentHostWindow(args: ParsedArgs, env: IProcessEnvironment): Promise<void> {
@@ -146,26 +96,6 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 		}
 	}
 
-	async getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]> {
-		this.logService.trace('windowsService#getWindows');
-
-		const windows = this.windowsMainService.getWindows();
-
-		return windows.map(window => ({
-			id: window.id,
-			workspace: window.openedWorkspace,
-			folderUri: window.openedFolderUri,
-			title: window.win.getTitle(),
-			filename: window.getRepresentedFilename()
-		}));
-	}
-
-	async getWindowCount(): Promise<number> {
-		this.logService.trace('windowsService#getWindowCount');
-
-		return this.windowsMainService.getWindows().length;
-	}
-
 	async getActiveWindowId(): Promise<number | undefined> {
 		return this._activeWindowId;
 	}
@@ -174,16 +104,16 @@ export class LegacyWindowsMainService extends Disposable implements IWindowsServ
 
 		// Catch file URLs
 		if (uri.authority === Schemas.file && !!uri.path) {
-			this.openFileForURI({ fileUri: URI.file(uri.fsPath) }); // using fsPath on a non-file URI...
+			this.openFileForURI(URI.file(uri.fsPath)); // using fsPath on a non-file URI...
 			return true;
 		}
 
 		return false;
 	}
 
-	private openFileForURI(uri: IURIToOpen): void {
+	private openFileForURI(uri: URI): void {
 		const cli = assign(Object.create(null), this.environmentService.args);
-		const urisToOpen = [uri];
+		const urisToOpen = [{ fileUri: uri }];
 
 		this.windowsMainService.open({ context: OpenContext.API, cli, urisToOpen, gotoLineMode: true });
 	}

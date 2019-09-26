@@ -3,33 +3,81 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import { Event } from 'vs/base/common/event';
 import { IWindowsMainService } from 'vs/platform/windows/electron-main/windows';
-import { MessageBoxOptions, MessageBoxReturnValue, shell, OpenDevToolsOptions, SaveDialogOptions, SaveDialogReturnValue, OpenDialogOptions, OpenDialogReturnValue, CrashReporterStartOptions, crashReporter, Menu } from 'electron';
+import { MessageBoxOptions, MessageBoxReturnValue, shell, OpenDevToolsOptions, SaveDialogOptions, SaveDialogReturnValue, OpenDialogOptions, OpenDialogReturnValue, CrashReporterStartOptions, crashReporter, Menu, BrowserWindow, app } from 'electron';
 import { ILifecycleMainService } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
-import { OpenContext, INativeOpenDialogOptions } from 'vs/platform/windows/common/windows';
+import { OpenContext, INativeOpenDialogOptions, IWindowOpenable, IOpenInWindowOptions, IOpenedWindow, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { isMacintosh } from 'vs/base/common/platform';
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
-import { AddContextToFunctions } from 'vs/platform/ipc/node/simpleIpcProxy';
+import { IEnvironmentService } from 'vs/platform/environment/common/environment';
+import { AddFirstParameterToFunctions } from 'vs/base/common/types';
 
-export class ElectronMainService implements AddContextToFunctions<IElectronService, number> {
+export class ElectronMainService implements AddFirstParameterToFunctions<IElectronService, Promise<any> /* only methods, not events */, number /* window ID */> {
 
 	_serviceBrand: undefined;
 
 	constructor(
 		@IWindowsMainService private readonly windowsMainService: IWindowsMainService,
-		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService
+		@ILifecycleMainService private readonly lifecycleMainService: ILifecycleMainService,
+		@IEnvironmentService private readonly environmentService: IEnvironmentService
 	) {
 	}
 
+	//#region Events
+
+	readonly onWindowOpen: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-created', (_, window: BrowserWindow) => window.id), windowId => !!this.windowsMainService.getWindowById(windowId));
+
+	readonly onWindowMaximize: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-maximize', (_, window: BrowserWindow) => window.id), windowId => !!this.windowsMainService.getWindowById(windowId));
+	readonly onWindowUnmaximize: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-unmaximize', (_, window: BrowserWindow) => window.id), windowId => !!this.windowsMainService.getWindowById(windowId));
+
+	readonly onWindowBlur: Event<number> = Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-blur', (_, window: BrowserWindow) => window.id), windowId => !!this.windowsMainService.getWindowById(windowId));
+	readonly onWindowFocus: Event<number> = Event.any(
+		Event.map(Event.filter(Event.map(this.windowsMainService.onWindowsCountChanged, () => this.windowsMainService.getLastActiveWindow()), window => !!window), window => window!.id),
+		Event.filter(Event.fromNodeEventEmitter(app, 'browser-window-focus', (_, window: BrowserWindow) => window.id), windowId => !!this.windowsMainService.getWindowById(windowId))
+	);
+
+	//#endregion
+
 	//#region Window
 
-	async windowCount(windowId: number): Promise<number> {
+	async getWindows(): Promise<IOpenedWindow[]> {
+		const windows = this.windowsMainService.getWindows();
+
+		return windows.map(window => ({
+			id: window.id,
+			workspace: window.openedWorkspace,
+			folderUri: window.openedFolderUri,
+			title: window.win.getTitle(),
+			filename: window.getRepresentedFilename()
+		}));
+	}
+
+	async getWindowCount(windowId: number): Promise<number> {
 		return this.windowsMainService.getWindowCount();
 	}
 
-	async openEmptyWindow(windowId: number, options?: { reuse?: boolean, remoteAuthority?: string }): Promise<void> {
+	async openEmptyWindow(windowId: number, options?: IOpenEmptyWindowOptions): Promise<void> {
 		this.windowsMainService.openEmptyWindow(OpenContext.API, options);
+	}
+
+	async openInWindow(windowId: number, toOpen: IWindowOpenable[], options: IOpenInWindowOptions = Object.create(null)): Promise<void> {
+		if (toOpen.length > 0) {
+			this.windowsMainService.open({
+				context: OpenContext.API,
+				contextWindowId: windowId,
+				urisToOpen: toOpen,
+				cli: this.environmentService.args,
+				forceNewWindow: options.forceNewWindow,
+				forceReuseWindow: options.forceReuseWindow,
+				diffMode: options.diffMode,
+				addMode: options.addMode,
+				gotoLineMode: options.gotoLineMode,
+				noRecentEntry: options.noRecentEntry,
+				waitMarkerFileURI: options.waitMarkerFileURI
+			});
+		}
 	}
 
 	async toggleFullScreen(windowId: number): Promise<void> {
@@ -73,6 +121,21 @@ export class ElectronMainService implements AddContextToFunctions<IElectronServi
 		const window = this.windowsMainService.getWindowById(windowId);
 		if (window) {
 			window.win.minimize();
+		}
+	}
+
+	async focusWindow(windowId: number, options?: { windowId?: number; }): Promise<void> {
+		if (options && typeof options.windowId === 'number') {
+			windowId = options.windowId;
+		}
+
+		const window = this.windowsMainService.getWindowById(windowId);
+		if (window) {
+			if (isMacintosh) {
+				window.win.show();
+			} else {
+				window.win.focus();
+			}
 		}
 	}
 

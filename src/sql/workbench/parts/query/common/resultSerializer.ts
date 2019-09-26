@@ -10,7 +10,6 @@ import { IQueryManagementService } from 'sql/platform/query/common/queryManageme
 import { ISaveRequest, SaveFormat } from 'sql/workbench/parts/grid/common/interfaces';
 
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
-import { FileFilter } from 'vs/platform/windows/common/windows';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { URI } from 'vs/base/common/uri';
 import * as path from 'vs/base/common/path';
@@ -24,7 +23,7 @@ import { IEditorService } from 'vs/workbench/services/editor/common/editorServic
 import { getRootPath, resolveCurrentDirectory, resolveFilePath } from 'sql/platform/common/pathUtilities';
 import { IOutputService, IOutputChannelRegistry, IOutputChannel, Extensions as OutputExtensions } from 'vs/workbench/contrib/output/common/output';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IFileDialogService } from 'vs/platform/dialogs/common/dialogs';
+import { IFileDialogService, FileFilter } from 'vs/platform/dialogs/common/dialogs';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 let prevSavePath: string;

@@ -5,8 +5,8 @@
 
 import { Event } from 'vs/base/common/event';
 import { IChannel } from 'vs/base/parts/ipc/common/ipc';
-import { IWindowsService, IURIToOpen, IOpenSettings } from 'vs/platform/windows/common/windows';
-import { IWorkspaceIdentifier, ISingleFolderWorkspaceIdentifier, reviveWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
+import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { reviveWorkspaceIdentifier } from 'vs/platform/workspaces/common/workspaces';
 import { IRecentlyOpened, IRecent, isRecentWorkspace } from 'vs/platform/history/common/history';
 import { URI } from 'vs/base/common/uri';
 import { ParsedArgs } from 'vs/platform/environment/common/environment';
@@ -50,42 +50,12 @@ export class WindowsService implements IWindowsService {
 		return recentlyOpened;
 	}
 
-	focusWindow(windowId: number): Promise<void> {
-		return this.channel.call('focusWindow', windowId);
-	}
-
 	isFocused(windowId: number): Promise<boolean> {
 		return this.channel.call('isFocused', windowId);
 	}
 
-	openWindow(windowId: number, uris: IURIToOpen[], options: IOpenSettings): Promise<void> {
-		return this.channel.call('openWindow', [windowId, uris, options]);
-	}
-
 	openExtensionDevelopmentHostWindow(args: ParsedArgs, env: IProcessEnvironment): Promise<void> {
 		return this.channel.call('openExtensionDevelopmentHostWindow', [args, env]);
-	}
-
-	async getWindows(): Promise<{ id: number; workspace?: IWorkspaceIdentifier; folderUri?: ISingleFolderWorkspaceIdentifier; title: string; filename?: string; }[]> {
-		const result = await this.channel.call<{
-			id: number;
-			workspace?: IWorkspaceIdentifier;
-			folderUri?: ISingleFolderWorkspaceIdentifier;
-			title: string;
-			filename?: string;
-		}[]>('getWindows');
-
-		for (const win of result) {
-			if (win.folderUri) {
-				win.folderUri = URI.revive(win.folderUri);
-			}
-
-			if (win.workspace) {
-				win.workspace = reviveWorkspaceIdentifier(win.workspace);
-			}
-		}
-
-		return result;
 	}
 
 	getActiveWindowId(): Promise<number | undefined> {
