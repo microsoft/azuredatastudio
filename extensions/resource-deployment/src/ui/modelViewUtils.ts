@@ -415,15 +415,17 @@ export function setModelValues(inputComponents: InputComponents, model: Model): 
 	Object.keys(inputComponents).forEach(key => {
 		let value;
 		const input = inputComponents[key];
-		if ('checked' in input) {
+		if ('checked' in input) { // CheckBoxComponent
 			value = input.checked ? 'true' : 'false';
-		} else {
+		} else if ('value' in input) { // InputBoxComponent or DropDownComponent
 			const inputValue = input.value;
 			if (typeof inputValue === 'string' || typeof inputValue === 'undefined') {
 				value = inputValue;
 			} else {
 				value = inputValue.name;
 			}
+		} else {
+			throw new Error(`Unknown input type with ID ${input.id}`);
 		}
 
 		model.setPropertyValue(key, value);
