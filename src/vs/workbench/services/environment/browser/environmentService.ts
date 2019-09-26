@@ -78,7 +78,7 @@ export class BrowserWorkbenchEnvironmentService implements IWorkbenchEnvironment
 		this.logsPath = options.logsPath.path;
 		this.logFile = joinPath(options.logsPath, 'window.log');
 		this.appRoot = '/web/';
-		this.appNameLong = 'Visual Studio Code - Web';
+		this.appNameLong = 'Azure Data Studio - Web'; // {{SQL CARBON EDIT}} vscode to ads
 
 		this.configuration.remoteAuthority = options.remoteAuthority;
 		this.configuration.machineId = generateUuid();
