@@ -2,7 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
+import * as azdata from 'azdata';
+import { SemVer } from 'semver';
+
+export const NoteBookEnvironmentVariablePrefix = 'AZDATA_NB_VAR_';
 
 export interface ResourceType {
 	name: string;
@@ -12,7 +15,13 @@ export interface ResourceType {
 	icon: { light: string; dark: string };
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];
+	agreement?: AgreementInfo;
 	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
+}
+
+export interface AgreementInfo {
+	template: string;
+	links: azdata.LinkArea[];
 }
 
 export interface ResourceTypeOption {
@@ -32,8 +41,14 @@ export interface DeploymentProvider {
 	notebook: string | NotebookInfo;
 	downloadUrl: string;
 	webPageUrl: string;
+	wizard: WizardInfo;
 	requiredTools: ToolRequirementInfo[];
 	when: string;
+}
+
+export interface WizardInfo {
+	notebook: string | NotebookInfo;
+	type: BdcDeploymentType;
 }
 
 export interface DialogInfo {
@@ -45,27 +60,56 @@ export interface DialogInfo {
 
 export interface DialogTabInfo {
 	title: string;
-	sections: DialogSectionInfo[];
+	sections: SectionInfo[];
+	labelWidth?: string;
+	inputWidth?: string;
 }
 
-export interface DialogSectionInfo {
+export interface SectionInfo {
 	title: string;
-	fields: DialogFieldInfo[];
+	fields?: FieldInfo[]; // Use this if the dialog is not wide. All fields will be displayed in one column, label will be placed on top of the input component.
+	rows?: RowInfo[]; // Use this for wide dialog or wizard. label will be placed to the left of the input component.
+	labelWidth?: string;
+	inputWidth?: string;
+	labelPosition?: LabelPosition; // Default value is top
+	collapsible?: boolean;
+	collapsed?: boolean;
+	spaceBetweenFields?: string;
 }
 
-export interface DialogFieldInfo {
+export interface RowInfo {
+	fields: FieldInfo[];
+}
+
+export interface FieldInfo {
 	label: string;
-	variableName: string;
+	variableName?: string;
 	type: FieldType;
-	defaultValue: string;
-	confirmationRequired: boolean;
-	confirmationLabel: string;
+	defaultValue?: string;
+	confirmationRequired?: boolean;
+	confirmationLabel?: string;
 	min?: number;
 	max?: number;
-	required: boolean;
-	options: string[];
-	placeHolder: string;
-	userName?: string; //needed for sql server's password complexity requirement check, password can not include the login name.
+	required?: boolean;
+	options?: string[] | azdata.CategoryValue[];
+	placeHolder?: string;
+	userName?: string; // needed for sql server's password complexity requirement check, password can not include the login name.
+	labelWidth?: string;
+	inputWidth?: string;
+	description?: string;
+	useCustomValidator?: boolean;
+	labelPosition?: LabelPosition; // overwrite the labelPosition of SectionInfo.
+	fontStyle?: FontStyle;
+}
+
+export enum LabelPosition {
+	Top = 'top',
+	Left = 'left'
+}
+
+export enum FontStyle {
+	Normal = 'normal',
+	Italic = 'italic'
 }
 
 export enum FieldType {
@@ -74,7 +118,9 @@ export enum FieldType {
 	DateTimeText = 'datetime_text',
 	SQLPassword = 'sql_password',
 	Password = 'password',
-	Options = 'options'
+	Options = 'options',
+	ReadonlyText = 'readonly_text',
+	Checkbox = 'checkbox'
 }
 
 export interface NotebookInfo {
@@ -100,4 +146,15 @@ export interface ITool {
 	readonly displayName: string;
 	readonly description: string;
 	readonly type: ToolType;
+	readonly version: SemVer | undefined;
+	readonly homePage: string;
+	readonly isInstalled: boolean;
+	loadInformation(): Promise<void>;
+	readonly statusDescription: string | undefined;
+}
+
+export enum BdcDeploymentType {
+	NewAKS = 'new-aks',
+	ExistingAKS = 'existing-aks',
+	ExistingKubeAdm = 'existing-kubeadm'
 }

@@ -26,7 +26,7 @@ import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { Query } from 'vs/workbench/contrib/extensions/common/extensionQuery';
 import { IFileService, IFileContent } from 'vs/platform/files/common/files';
 import { IWorkspaceContextService, WorkbenchState, IWorkspaceFolder } from 'vs/platform/workspace/common/workspace';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { URI } from 'vs/base/common/uri';
 import { CommandsRegistry, ICommandService } from 'vs/platform/commands/common/commands';
@@ -1178,7 +1178,7 @@ export class ReloadAction extends ExtensionAction {
 
 	constructor(
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService
@@ -1230,7 +1230,7 @@ export class ReloadAction extends ExtensionAction {
 		if (this.extension.local) {
 			const isEnabled = this.extensionEnablementService.isEnabled(this.extension.local);
 
-			// Extension is runningÎ
+			// Extension is running
 			if (runningExtension) {
 				if (isEnabled) {
 					if (!this.extensionService.canAddExtension(toExtensionDescription(this.extension.local))) {
@@ -1241,11 +1241,6 @@ export class ReloadAction extends ExtensionAction {
 								// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
 								this.tooltip = localize('postUpdateTooltip', "Please reload Azure Data Studio to enable the updated extension.");
 							}
-						} else {
-							this.enabled = true;
-							this.label = localize('reloadRequired', "Reload Required");
-							// {{SQL CARBON EDIT}} - replace Visual Studio Code with Azure Data Studio
-							this.tooltip = localize('postEnableTooltip', "Please reload Azure Data Studio to enable this extension.");
 						}
 					}
 				} else {
@@ -1285,7 +1280,7 @@ export class ReloadAction extends ExtensionAction {
 	}
 
 	run(): Promise<any> {
-		return Promise.resolve(this.windowService.reloadWindow());
+		return Promise.resolve(this.hostService.reload());
 	}
 }
 
@@ -1629,6 +1624,29 @@ export class ShowRecommendedExtensionsAction extends Action {
 			.then(viewlet => viewlet as IExtensionsViewlet)
 			.then(viewlet => {
 				viewlet.search('@recommended ', true);
+				viewlet.focus();
+			});
+	}
+}
+
+export class ShowSyncedExtensionsAction extends Action {
+
+	static readonly ID = 'workbench.extensions.action.listSyncedExtensions';
+	static LABEL = localize('showSyncedExtensions', "Show My Accoount Extensions");
+
+	constructor(
+		id: string,
+		label: string,
+		@IViewletService private readonly viewletService: IViewletService
+	) {
+		super(id, label, undefined, true);
+	}
+
+	run(): Promise<void> {
+		return this.viewletService.openViewlet(VIEWLET_ID, true)
+			.then(viewlet => viewlet as IExtensionsViewlet)
+			.then(viewlet => {
+				viewlet.search('@myaccount ');
 				viewlet.focus();
 			});
 	}
@@ -2622,11 +2640,10 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 
 	constructor(
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
-		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IProductService private readonly productService: IProductService,
 		@ILabelService private readonly labelService: ILabelService,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IExtensionService private readonly extensionService: IExtensionService,
+		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
 	) {
 		super('extensions.install', '', `${SystemDisabledWarningAction.CLASS} hide`, false);
 		this._register(this.labelService.onDidChangeFormatters(() => this.update(), this));
@@ -2662,30 +2679,22 @@ export class SystemDisabledWarningAction extends ExtensionAction {
 			return;
 		}
 		const runningExtension = this._runningExtensions.filter(e => areSameExtensions({ id: e.identifier.value, uuid: e.uuid }, this.extension.identifier))[0];
-		const runningExtensionServer = runningExtension ? this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation) : null;
-		const localExtension = this.extensionsWorkbenchService.local.filter(e => areSameExtensions(e.identifier, this.extension.identifier))[0];
-		const localExtensionServer = localExtension ? localExtension.server : null;
-		if (this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && !isUIExtension(this.extension.local.manifest, this.productService, this.configurationService)) {
-			if (runningExtensionServer === this.extensionManagementServerService.remoteExtensionManagementServer) {
+		if (!runningExtension && this.extension.enablementState === EnablementState.DisabledByExtensionKind) {
+			this.class = `${SystemDisabledWarningAction.WARNING_CLASS}`;
+			const server = this.extensionManagementServerService.localExtensionManagementServer === this.extension.server ? this.extensionManagementServerService.remoteExtensionManagementServer : this.extensionManagementServerService.localExtensionManagementServer;
+			this.tooltip = localize('Install in other server to enable', "Install the extension on '{0}' to enable.", server.label);
+			return;
+		}
+		if (this.extensionEnablementService.isEnabled(this.extension.local)) {
+			const runningExtensionServer = runningExtension ? this.extensionManagementServerService.getExtensionManagementServer(runningExtension.extensionLocation) : null;
+			if (this.extension.server === this.extensionManagementServerService.localExtensionManagementServer && runningExtensionServer === this.extensionManagementServerService.remoteExtensionManagementServer) {
 				this.class = `${SystemDisabledWarningAction.INFO_CLASS}`;
 				this.tooltip = localize('disabled locally', "Extension is enabled on '{0}' and disabled locally.", this.extensionManagementServerService.remoteExtensionManagementServer.label);
 				return;
 			}
-			if (localExtensionServer !== this.extensionManagementServerService.remoteExtensionManagementServer) {
-				this.class = `${SystemDisabledWarningAction.WARNING_CLASS}`;
-				this.tooltip = localize('Install in remote server', "Install the extension on '{0}' to enable.", this.extensionManagementServerService.remoteExtensionManagementServer.label);
-				return;
-			}
-		}
-		if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer && isUIExtension(this.extension.local.manifest, this.productService, this.configurationService)) {
-			if (runningExtensionServer === this.extensionManagementServerService.localExtensionManagementServer) {
+			if (this.extension.server === this.extensionManagementServerService.remoteExtensionManagementServer && runningExtensionServer === this.extensionManagementServerService.localExtensionManagementServer) {
 				this.class = `${SystemDisabledWarningAction.INFO_CLASS}`;
 				this.tooltip = localize('disabled remotely', "Extension is enabled locally and disabled on '{0}'.", this.extensionManagementServerService.remoteExtensionManagementServer.label);
-				return;
-			}
-			if (localExtensionServer !== this.extensionManagementServerService.localExtensionManagementServer) {
-				this.class = `${SystemDisabledWarningAction.WARNING_CLASS}`;
-				this.tooltip = localize('Install in local server', "Install the extension locally to enable.");
 				return;
 			}
 		}
@@ -2810,10 +2819,9 @@ export class InstallVSIXAction extends Action {
 		label = InstallVSIXAction.LABEL,
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IFileDialogService private readonly fileDialogService: IFileDialogService,
 		@IExtensionService private readonly extensionService: IExtensionService,
-		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		// {{SQL CARBON EDIT}}
 		@IConfigurationService private configurationService: IConfigurationService,
 		@IStorageService private storageService: IStorageService
@@ -2825,17 +2833,17 @@ export class InstallVSIXAction extends Action {
 		// {{SQL CARBON EDIT}} - Replace run body
 		let extensionPolicy = this.configurationService.getValue<string>(ExtensionsPolicyKey);
 		if (extensionPolicy === ExtensionsPolicy.allowAll) {
-			return Promise.resolve(this.windowService.showOpenDialog({
+			return Promise.resolve(this.fileDialogService.showOpenDialog({
 				title: localize('installFromVSIX', "Install from VSIX"),
 				filters: [{ name: 'VSIX Extensions', extensions: ['vsix'] }],
-				properties: ['openFile'],
-				buttonLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
+				canSelectFiles: true,
+				openLabel: mnemonicButtonLabel(localize({ key: 'installButton', comment: ['&& denotes a mnemonic'] }, "&&Install"))
 			}).then(result => {
 				if (!result) {
 					return Promise.resolve();
 				}
 				return Promise.all(result.map(vsix => {
-					if (!this.storageService.getBoolean(vsix, StorageScope.GLOBAL)) {
+					if (!this.storageService.getBoolean(vsix.fsPath, StorageScope.GLOBAL)) {
 						this.notificationService.prompt(
 							Severity.Warning,
 							localize('thirdPartyExtension.vsix', 'This is a third party extension and might involve security risks. Are you sure you want to install this extension?'),
@@ -2843,13 +2851,13 @@ export class InstallVSIXAction extends Action {
 								{
 									label: localize('thirdPartExt.yes', 'Yes'),
 									run: () => {
-										this.extensionsWorkbenchService.install(URI.file(vsix)).then(extension => {
+										this.extensionsWorkbenchService.install(vsix).then(extension => {
 											const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
 											const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
 												: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
 											const actions = requireReload ? [{
 												label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-												run: () => this.windowService.reloadWindow()
+												run: () => this.hostService.reload()
 											}] : [];
 											this.notificationService.prompt(
 												Severity.Info,
@@ -2868,7 +2876,7 @@ export class InstallVSIXAction extends Action {
 									label: localize('thirdPartyExt.dontShowAgain', 'Don\'t Show Again'),
 									isSecondary: true,
 									run: () => {
-										this.storageService.store(vsix, true, StorageScope.GLOBAL);
+										this.storageService.store(vsix.fsPath, true, StorageScope.GLOBAL);
 										return Promise.resolve();
 									}
 								}
@@ -2876,13 +2884,13 @@ export class InstallVSIXAction extends Action {
 							{ sticky: true }
 						);
 					} else {
-						this.extensionsWorkbenchService.install(URI.file(vsix)).then(extension => {
+						this.extensionsWorkbenchService.install(vsix).then(extension => {
 							const requireReload = !(extension.local && this.extensionService.canAddExtension(toExtensionDescription(extension.local)));
 							const message = requireReload ? localize('InstallVSIXAction.successReload', "Please reload Azure Data Studio to complete installing the extension {0}.", extension.identifier.id)
 								: localize('InstallVSIXAction.success', "Completed installing the extension {0}.", extension.identifier.id);
 							const actions = requireReload ? [{
 								label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-								run: () => this.windowService.reloadWindow()
+								run: () => this.hostService.reload()
 							}] : [];
 							this.notificationService.prompt(
 								Severity.Info,
@@ -2912,7 +2920,7 @@ export class ReinstallAction extends Action {
 		@IExtensionsWorkbenchService private readonly extensionsWorkbenchService: IExtensionsWorkbenchService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IExtensionService private readonly extensionService: IExtensionService
 	) {
@@ -2956,7 +2964,7 @@ export class ReinstallAction extends Action {
 							: localize('ReinstallAction.success', "Reinstalling the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallVSIXAction.reloadNow', "Reload Now"),
-							run: () => this.windowService.reloadWindow()
+							run: () => this.hostService.reload()
 						}] : [];
 						this.notificationService.prompt(
 							Severity.Info,
@@ -2980,7 +2988,7 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
 		@IExtensionService private readonly extensionService: IExtensionService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
@@ -3042,7 +3050,7 @@ export class InstallSpecificVersionOfExtensionAction extends Action {
 							: localize('InstallAnotherVersionExtensionAction.success', "Installing the extension {0} is completed.", extension.identifier.id);
 						const actions = requireReload ? [{
 							label: localize('InstallAnotherVersionExtensionAction.reloadNow', "Reload Now"),
-							run: () => this.windowService.reloadWindow()
+							run: () => this.hostService.reload()
 						}] : [];
 						this.notificationService.prompt(
 							Severity.Info,
@@ -3069,7 +3077,7 @@ export class InstallLocalExtensionsInRemoteAction extends Action {
 		@IExtensionGalleryService private readonly extensionGalleryService: IExtensionGalleryService,
 		@IQuickInputService private readonly quickInputService: IQuickInputService,
 		@INotificationService private readonly notificationService: INotificationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IProgressService private readonly progressService: IProgressService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -3182,7 +3190,7 @@ export class InstallLocalExtensionsInRemoteAction extends Action {
 			message: localize('finished installing', "Successfully installed extensions in {0}. Please reload the window to enable them.", this.extensionManagementServerService.remoteExtensionManagementServer!.label),
 			actions: {
 				primary: [new Action('realod', localize('reload', "Reload Window"), '', true,
-					() => this.windowService.reloadWindow())]
+					() => this.hostService.reload())]
 			}
 		});
 	}
