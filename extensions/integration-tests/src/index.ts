@@ -2,12 +2,15 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-import * as vscode from 'vscode';
-import { context } from './testContext';
-import { getSuiteType, SuiteType } from 'adstest';
 
-const path = require('path');
-const testRunner = require('vscode/lib/testrunner');
+import * as testRunner from 'vscode/lib/testrunner';
+import * as vscode from 'vscode';
+
+import { SuiteType, getSuiteType } from 'adstest';
+
+import { context } from './testContext';
+
+import path = require('path');
 
 const suite = getSuiteType();
 
@@ -19,6 +22,31 @@ const options: any = {
 
 if (suite === SuiteType.Stress) {
 	options.timeout = 7200000;	// 2 hours
+	// StressRuntime sets the default run time in stress/perf mode for those suites. By default ensure that there is sufficient timeout available.
+	// if ADS_TEST_TIMEOUT is also defined then that value overrides this calculated timeout value. User needs to ensure that ADS_TEST_GREP > StressRuntime if
+	// both are set.
+	if (process.env.StressRuntime) {
+		options.timeout = (120 + 1.2 * parseInt(process.env.StressRuntime)) * 1000; // allow sufficient timeout based on StressRuntime setting
+		console.log(`setting options.timeout to:${options.timeout} based on process.env.StressRuntime value of ${process.env.StressRuntime} seconds`);
+	}
+}
+
+// set relevant mocha options from the environment
+if (process.env.ADS_TEST_GREP) {
+	options.grep = process.env.ADS_TEST_GREP;
+	console.log(`setting options.grep to:${options.grep}`);
+}
+if (process.env.ADS_TEST_INVERT_GREP) {
+	options.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
+	console.log(`setting options.invert to:${options.invert}`);
+}
+if (process.env.ADS_TEST_TIMEOUT) {
+	options.timeout = parseInt(process.env.ADS_TEST_TIMEOUT);
+	console.log(`setting options.timeout to:${options.timeout}`);
+}
+if (process.env.ADS_TEST_RETRIES) {
+	options.retries = parseInt(process.env.ADS_TEST_RETRIES);
+	console.log(`setting options.retries to:${options.retries}`);
 }
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {

@@ -61,8 +61,6 @@ suite.skip('EditorGroupsService', () => { // {{SQL CARBON EDIT}} skip suite
 
 		class TestEditorInputFactory implements IEditorInputFactory {
 
-			constructor() { }
-
 			serialize(editorInput: EditorInput): string {
 				const testEditorInput = <TestEditorInput>editorInput;
 				const testInput: ISerializedTestEditorInput = {

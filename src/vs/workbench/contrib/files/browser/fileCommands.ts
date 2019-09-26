@@ -5,9 +5,9 @@
 
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
-// {{SQL CARBON EDIT}} import EditorInput
-import { toResource, IEditorCommandsContext, SideBySideEditor, EditorInput } from 'vs/workbench/common/editor';
-import { IWindowsService, IWindowService, IURIToOpen, IOpenSettings, INewWindowOptions, isWorkspaceToOpen } from 'vs/platform/windows/common/windows';
+import { toResource, IEditorCommandsContext, SideBySideEditor, EditorInput } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} import EditorInput
+import { IWindowService, IURIToOpen, IOpenSettings, isWorkspaceToOpen } from 'vs/platform/windows/common/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { IWorkspaceContextService } from 'vs/platform/workspace/common/workspace';
@@ -101,9 +101,9 @@ export const openWindowCommand = (accessor: ServicesAccessor, urisToOpen: IURITo
 	}
 };
 
-export const newWindowCommand = (accessor: ServicesAccessor, options?: INewWindowOptions) => {
-	const windowsService = accessor.get(IWindowsService);
-	windowsService.openNewWindow(options);
+export const newWindowCommand = (accessor: ServicesAccessor, options?: { reuse?: boolean, remoteAuthority?: string }) => {
+	const hostService = accessor.get(IHostService);
+	hostService.openEmptyWindow(options);
 };
 
 // {{SQL CARBON EDIT}}

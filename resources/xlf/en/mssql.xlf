@@ -550,9 +550,6 @@
     <trans-unit id="hdfsFolder">
       <source xml:lang="en">HDFS</source>
     </trans-unit>
-    <trans-unit id="dataServicesLabel">
-      <source xml:lang="en">Data Services</source>
-    </trans-unit>
   </body></file>
   <file original="extensions/mssql/out/objectExplorerNodeProvider/hdfsProvider" source-language="en" datatype="plaintext"><body>
     <trans-unit id="errorExpanding">

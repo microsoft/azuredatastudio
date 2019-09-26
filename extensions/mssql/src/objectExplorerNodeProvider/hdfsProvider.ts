@@ -233,7 +233,7 @@ export class ConnectionNode extends FolderNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: this._nodeType,
+			nodeType: 'mssqlCluster:hdfs',
 			nodeSubType: undefined,
 			iconType: 'HDFSFolder'
 		};

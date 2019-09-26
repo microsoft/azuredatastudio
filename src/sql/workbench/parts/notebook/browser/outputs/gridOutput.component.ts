@@ -180,7 +180,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 		@IClipboardService private _clipboardService: IClipboardService,
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@ITextResourcePropertiesService private _textResourcePropertiesService: ITextResourcePropertiesService,
-		@ISerializationService private _serializationService: ISerializationService,
+		@optional(ISerializationService) private _serializationService: ISerializationService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
 		this.transformSource(source);
@@ -248,7 +248,7 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	get canSerialize(): boolean {
-		return this._serializationService.hasProvider();
+		return this._serializationService && this._serializationService.hasProvider();
 	}
 
 
@@ -258,6 +258,9 @@ class DataResourceDataProvider implements IGridDataProvider {
 	}
 
 	private doSerialize(serializer: ResultSerializer, filePath: string, format: SaveFormat, selection: Slick.Range[]): Promise<SaveResultsResponse | undefined> {
+		if (!this.canSerialize) {
+			return Promise.resolve(undefined);
+		}
 		// TODO implement selection support
 		let columns = this.resultSet.columnInfo;
 		let rowLength = this.rows.length;

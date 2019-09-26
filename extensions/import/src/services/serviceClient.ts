@@ -44,7 +44,7 @@ export class ServiceClient {
 		return new Promise((resolve, reject) => {
 			serverdownloader.getOrDownloadServer().then(e => {
 				const installationComplete = Date.now();
-				let serverOptions = this.generateServerOptions(e);
+				let serverOptions = this.generateServerOptions(e, context);
 				client = new SqlOpsDataClient(Constants.serviceName, serverOptions, clientOptions);
 				const processStart = Date.now();
 				client.onReady().then(() => {
@@ -90,10 +90,10 @@ export class ServiceClient {
 		};
 	}
 
-	private generateServerOptions(executablePath: string): ServerOptions {
+	private generateServerOptions(executablePath: string, context: vscode.ExtensionContext): ServerOptions {
 		let launchArgs = [];
 		launchArgs.push('--log-dir');
-		let logFileLocation = path.join(serviceUtils.getDefaultLogLocation(), 'flatfileimport');
+		let logFileLocation = context.logPath;
 		launchArgs.push(logFileLocation);
 		let config = vscode.workspace.getConfiguration(Constants.extensionConfigSectionName);
 		if (config) {

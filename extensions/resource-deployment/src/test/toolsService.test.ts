@@ -3,18 +3,19 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import assert = require('assert');
+import * as TypeMoq from 'typemoq';
 import { ToolsService } from '../services/toolsService';
 import { ToolType } from '../interfaces';
 import { isNumber } from 'util';
+import { IPlatformService } from '../services/platformService';
 
 suite('Tools Service Tests', function (): void {
 
 	test('run getToolByName with all known values', () => {
-		const toolsService = new ToolsService();
+		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
+		const toolsService = new ToolsService(mockPlatformService.object);
 
 		const tools: { name: string; type: ToolType }[] = [
 			{ name: 'azcli', type: ToolType.AzCli },
@@ -42,7 +43,8 @@ suite('Tools Service Tests', function (): void {
 	});
 
 	test('run getToolByName with a name that is not defined', () => {
-		const toolsService = new ToolsService();
+		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
+		const toolsService = new ToolsService(mockPlatformService.object);
 		const tool = toolsService.getToolByName('no-such-tool');
 		assert(tool === undefined, 'for a not defined tool, expected value is undefined');
 	});
