@@ -36,6 +36,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { FoldingController } from 'vs/editor/contrib/folding/folding';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 import { FoldingModel } from 'vs/editor/contrib/folding/foldingModel';
+import { FoldingRegions } from 'vs/editor/contrib/folding/foldingRanges';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -94,6 +95,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	private _cellModel: ICellModel;
 	private _editor: QueryTextEditor;
 	private _foldingController: FoldingController;
+	private _foldingModel: FoldingModel;
 	private _editorInput: UntitledEditorInput;
 	private _editorModel: ITextModel;
 	private _model: NotebookModel;
@@ -195,7 +197,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
-		this._foldingController = FoldingController.get(this._editor.getControl() as ICodeEditor);
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
@@ -210,7 +211,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
 
-
 		if (this.destroyed) {
 			// At this point, we may have been disposed (scenario: restoring markdown cell in preview mode).
 			// Exiting early to avoid warnings on registering already disposed items, which causes some churning
@@ -224,6 +224,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this._editor.setHeightToScrollHeight();
 			this.cellModel.modelContentChangedEvent = e;
 			this.cellModel.source = this._editorModel.getValue();
+			let numLines = this.cellModel.source.length;
+			this._foldingModel.update(new FoldingRegions(
+				new Uint32Array([1]),
+				new Uint32Array([numLines])
+			));
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 		}));
@@ -238,16 +243,18 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				this.setFocusAndScroll();
 			}
 		}));
-		this._register(this.cellModel.onToggleStateChanged(async isHidden => {
-			let foldingModel = await this._foldingController.getFoldingModel();
-			if (foldingModel !== null) {
-				if (isHidden) {
-					console.log(foldingModel.regions.length);
-				} else {
-					console.log(foldingModel.regions.length);
-				}
-			}
+		this._register(this.cellModel.onToggleStateChanged(isHidden => {
+			this._foldingModel.toggleCollapseState([this._foldingModel.regions[0]]);
 		}));
+
+		this._foldingController = FoldingController.get(this._editor.getControl() as ICodeEditor);
+		this._foldingModel = await this._foldingController.getFoldingModel();
+		try {
+			this._foldingModel.update(new FoldingRegions(new Uint32Array([1]), new Uint32Array([1])));
+		} catch (err) {
+			console.log(err.toString());
+		}
+
 		this.layout();
 	}
 
