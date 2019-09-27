@@ -552,19 +552,24 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 					this._gracefulExit(error || (typeof failures === 'number' && failures > 0) ? 1 /* ERROR */ : 0 /* OK */);
 				};
 
-				const runResult = testRunner!.run(extensionTestsPath, oldTestRunnerCallback);
+				try {
+					const runResult = testRunner!.run(extensionTestsPath, oldTestRunnerCallback);
 
-				// Using the new API `run(): Promise<void>`
-				if (runResult && runResult.then) {
-					runResult
-						.then(() => {
-							c();
-							this._gracefulExit(0);
-						})
-						.catch((err: Error) => {
-							e(err.toString());
-							this._gracefulExit(1);
-						});
+					// Using the new API `run(): Promise<void>`
+					if (runResult && runResult.then) {
+						runResult
+							.then(() => {
+								c();
+								this._gracefulExit(0);
+							})
+							.catch((err: Error) => {
+								e(err.toString());
+								this._gracefulExit(1);
+							});
+					}
+				} catch (err) {
+					console.log('CARBON-ERROR', err);
+					this._gracefulExit(1);
 				}
 			});
 		}
