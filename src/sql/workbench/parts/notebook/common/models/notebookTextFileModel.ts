@@ -69,17 +69,23 @@ export class NotebookTextFileModel {
 			} else {
 				newOutput = '\n'.concat(newOutput).concat('\n');
 			}
-			let range = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
-			if (range) {
+
+			// Execution count will always be after the end of the outputs in JSON. This is a sanity mechanism.
+			let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
+			if (!executionCountMatch || !executionCountMatch.range) {
+				return false;
+			}
+
+			let endOutputsRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
+			if (endOutputsRange && endOutputsRange.startLineNumber < executionCountMatch.range.startLineNumber) {
 				textEditorModel.textEditorModel.applyEdits([{
-					range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
+					range: new Range(endOutputsRange.startLineNumber, endOutputsRange.startColumn, endOutputsRange.startLineNumber, endOutputsRange.startColumn),
 					text: newOutput
 				}]);
+				return true;
 			}
-		} else {
-			return false;
 		}
-		return true;
+		return false;
 	}
 
 	public transformAndApplyEditForCellUpdated(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
