@@ -27,6 +27,8 @@ let modelId = 0;
 
 
 export class CellModel implements ICellModel {
+	public id: string;
+
 	private _cellType: nb.CellType;
 	private _source: string | string[];
 	private _language: string;
@@ -42,7 +44,6 @@ export class CellModel implements ICellModel {
 	private _hover: boolean;
 	private _executionCount: number | undefined;
 	private _cellUri: URI;
-	public id: string;
 	private _connectionManagementService: IConnectionManagementService;
 	private _stdInHandler: nb.MessageHandler<nb.IStdinMessage>;
 	private _onCellLoaded = new Emitter<string>();
