@@ -64,7 +64,6 @@ code-component .editor {
 code-component .codePlaceholder {
 	/* This padding matches the one introduced by line numbers in the editor. */
 	padding-left: 20px;
-	box-sizing: border-box;
 }
 
 /* overview ruler */

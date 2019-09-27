@@ -345,10 +345,11 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	private updatePlaceholderStyle(): void {
 		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
-		codePlaceholder.style.height = `${this._editor.lineHeight}px`;
+		codePlaceholder.style.minHeight = `${this._editor.lineHeight}px`;
 
 		let fontSize = this._configurationService.getValue<number>('editor.fontSize');
 		codePlaceholder.style.fontSize = `${fontSize}px`;
+		codePlaceholder.style.height = `${fontSize}px`;
 
 		let wordWrap = this._configurationService.getValue<string>('editor.wordWrap');
 		codePlaceholder.style.wordWrap = wordWrap;
