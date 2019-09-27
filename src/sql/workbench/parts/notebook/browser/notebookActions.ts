@@ -268,6 +268,51 @@ export class RunAllCellsAction extends Action {
 	}
 }
 
+export class CollapseCellsAction extends ToggleableAction {
+	// Constants
+	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
+	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
+	private static readonly baseClass = 'notebook-button';
+	private static readonly collapseCssClass = 'icon-hide-cell';
+	private static readonly expandCssClass = 'icon-show-cell';
+
+	// Properties
+
+	constructor(
+		id: string,
+		@INotificationService private _notificationService: INotificationService
+	) {
+		super(id, {
+			baseClass: CollapseCellsAction.baseClass,
+			toggleOnLabel: CollapseCellsAction.collapseCells,
+			toggleOnClass: CollapseCellsAction.collapseCssClass,
+			toggleOffLabel: CollapseCellsAction.expandCells,
+			toggleOffClass: CollapseCellsAction.expandCssClass,
+			isOn: false
+		});
+	}
+
+	public get isCollapsed(): boolean {
+		return this.state.isOn;
+	}
+	public set isCollapsed(value: boolean) {
+		this.toggle(value);
+	}
+
+	public run(context: NotebookComponent): Promise<boolean> {
+		let self = this;
+		return new Promise<boolean>((resolve, reject) => {
+			try {
+				self.isCollapsed = !self.isCollapsed;
+				// context.model.trustedMode = self.isCollapsed;
+				resolve(true);
+			} catch (e) {
+				reject(e);
+			}
+		});
+	}
+}
+
 export class KernelsDropdown extends SelectBox {
 	private model: NotebookModel;
 	constructor(container: HTMLElement, contextViewProvider: IContextViewProvider, modelReady: Promise<INotebookModel>) {
