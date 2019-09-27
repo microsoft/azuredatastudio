@@ -6,6 +6,7 @@
 import { IMenubarService } from 'vs/platform/menubar/node/menubar';
 import { IMainProcessService } from 'vs/platform/ipc/electron-browser/mainProcessService';
 import { createChannelSender } from 'vs/base/parts/ipc/node/ipc';
+import { registerSingleton } from 'vs/platform/instantiation/common/extensions';
 
 export class MenubarService {
 
@@ -15,3 +16,5 @@ export class MenubarService {
 		return createChannelSender<IMenubarService>(mainProcessService.getChannel('menubar'));
 	}
 }
+
+registerSingleton(IMenubarService, MenubarService, true);
