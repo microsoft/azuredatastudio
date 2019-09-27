@@ -54,7 +54,7 @@ const mockTargetEndpoint: mssql.SchemaCompareEndpointInfo = {
 	connectionDetails: undefined
 };
 
-const extensionContext: vscode.ExtensionContext = {
+const mockExtensionContext: vscode.ExtensionContext = {
 	extensionPath: '.',
 	subscriptions: undefined,
 	workspaceState: undefined,
@@ -67,7 +67,7 @@ const extensionContext: vscode.ExtensionContext = {
 
 describe('SchemaCompareDialog.openDialog', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow(undefined, extensionContext);
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext);
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
@@ -81,7 +81,7 @@ describe('SchemaCompareResult.start', function (): void {
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(sc, extensionContext);
+		let result = new SchemaCompareMainWindow(sc, mockExtensionContext);
 		await result.start(null);
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;
