@@ -205,6 +205,18 @@ export class BdcDashboardOverviewPage {
 		}
 
 		this.endpointsRowContainer.clearItems();
+
+		// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
+		// others in alphabetical order by endpoint
+		const sqlServerMasterEndpoints = endpoints.filter(e => e.name === Endpoint.sqlServerMaster);
+		endpoints = endpoints.filter(e => e.name !== Endpoint.sqlServerMaster)
+			.sort((e1, e2) => {
+				if (e1.endpoint < e2.endpoint) { return -1; }
+				if (e1.endpoint > e2.endpoint) { return 1; }
+				return 0;
+			});
+		endpoints.unshift(...sqlServerMasterEndpoints);
+
 		endpoints.forEach((e, i) => {
 			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});

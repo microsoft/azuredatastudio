@@ -56,7 +56,14 @@ export function registerServiceEndpoints(context: vscode.ExtensionContext): void
 			endpointsArray = endpointsArray.map(e => {
 				e.description = getEndpointDisplayText(e.serviceName, e.description);
 				return e;
-			}).sort((a, b) => a.endpoint.localeCompare(b.endpoint));
+			});
+
+			// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
+			// others in alphabetical order by endpoint
+			const sqlServerMasterEndpoints = endpointsArray.filter(e => e.serviceName === Endpoint.sqlServerMaster);
+			endpointsArray = endpointsArray.filter(e => e.serviceName !== Endpoint.sqlServerMaster)
+				.sort((e1, e2) => e1.endpoint.localeCompare(e2.endpoint));
+			endpointsArray.unshift(...sqlServerMasterEndpoints);
 
 			const container = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
 			endpointsArray.forEach(endpointInfo => {
