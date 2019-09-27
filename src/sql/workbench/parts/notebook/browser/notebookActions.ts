@@ -284,10 +284,10 @@ export class CollapseCellsAction extends ToggleableAction {
 	) {
 		super(id, {
 			baseClass: CollapseCellsAction.baseClass,
-			toggleOnLabel: CollapseCellsAction.collapseCells,
-			toggleOnClass: CollapseCellsAction.collapseCssClass,
-			toggleOffLabel: CollapseCellsAction.expandCells,
-			toggleOffClass: CollapseCellsAction.expandCssClass,
+			toggleOnLabel: CollapseCellsAction.expandCells,
+			toggleOnClass: CollapseCellsAction.expandCssClass,
+			toggleOffLabel: CollapseCellsAction.collapseCells,
+			toggleOffClass: CollapseCellsAction.collapseCssClass,
 			isOn: false
 		});
 	}
@@ -304,7 +304,9 @@ export class CollapseCellsAction extends ToggleableAction {
 		return new Promise<boolean>((resolve, reject) => {
 			try {
 				self.isCollapsed = !self.isCollapsed;
-				// context.model.trustedMode = self.isCollapsed;
+				context.cells.forEach(cell => {
+					cell.isHidden = self.isCollapsed;
+				});
 				resolve(true);
 			} catch (e) {
 				reject(e);
