@@ -245,6 +245,10 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}));
 
 		this.layout();
+
+		if (this.cellModel.isHidden) {
+			this.toggleCollapsed(true);
+		}
 	}
 
 	public layout(): void {
