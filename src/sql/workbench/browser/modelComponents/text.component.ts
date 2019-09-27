@@ -18,13 +18,16 @@ import { TitledComponent } from 'sql/workbench/browser/modelComponents/titledCom
 @Component({
 	selector: 'modelview-text',
 	template: `
-		<div style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
-			<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
-			<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
-			<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description">
-				<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
-			</div>
-		<div>`
+		<div *ngIf="showDiv;else noDiv" style="display:flex;flex-flow:row;align-items:center;" [style.width]="getWidth()">
+		<p [innerHTML]="getValue()" [title]="title" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+		<p  *ngIf="requiredIndicator" style="color:red;margin-left:5px;">*</p>
+		<div *ngIf="description" tabindex="0" class="modelview-text-tooltip" [attr.aria-label]="description">
+			<div class="modelview-text-tooltip-content" [innerHTML]="description"></div>
+		</div>
+	</div>
+	<ng-template #noDiv>
+		<p [style.width]="getWidth()" [innerHTML]="getValue()" [ngStyle]="this.CSSStyles" (click)="onClick()"></p>
+	</ng-template>`
 })
 export default class TextComponent extends TitledComponent implements IComponent, OnDestroy, AfterViewInit {
 	@Input() descriptor: IComponentDescriptor;
@@ -90,6 +93,10 @@ export default class TextComponent extends TitledComponent implements IComponent
 			}
 		}
 		return text;
+	}
+
+	public get showDiv(): boolean {
+		return this.requiredIndicator || !!this.description;
 	}
 
 	private onClick() {
