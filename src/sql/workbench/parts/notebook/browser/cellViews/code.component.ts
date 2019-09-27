@@ -192,19 +192,25 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.setVisible(true);
 		this._editor.setMinimumHeight(this._minimumHeight);
 		this._editor.setMaximumHeight(this._maximumHeight);
+
 		let uri = this.cellModel.cellUri;
 		let cellModelSource: string;
 		cellModelSource = Array.isArray(this.cellModel.source) ? this.cellModel.source.join('') : this.cellModel.source;
 		this._editorInput = instantiationService.createInstance(UntitledEditorInput, uri, false, this.cellModel.language, cellModelSource, '');
 		await this._editor.setInput(this._editorInput, undefined);
 		this.setFocusAndScroll();
+
 		let untitledEditorModel: UntitledEditorModel = await this._editorInput.resolve();
 		this._editorModel = untitledEditorModel.textEditorModel;
+
 		let isActive = this.cellModel.id === this._activeCellId;
 		this._editor.toggleEditorSelected(isActive);
+
 		// For markdown cells, don't show line numbers unless we're using editor defaults
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
+
+		this.updatePlaceholderStyle();
 
 		if (this.destroyed) {
 			// At this point, we may have been disposed (scenario: restoring markdown cell in preview mode).
@@ -225,6 +231,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
 				this._editor.setHeightToScrollHeight(true);
+				this.updatePlaceholderStyle();
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
@@ -234,16 +241,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			}
 		}));
 		this._register(this.cellModel.onToggleStateChanged(isHidden => {
-			let codeEditor = <HTMLElement>this.codeElement.nativeElement;
-			let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
-			if (isHidden) {
-				codeEditor.style.display = 'none';
-				codePlaceholder.style.display = 'block';
-				codePlaceholder.textContent = this.cellModel.source[0];
-			} else {
-				codeEditor.style.display = 'block';
-				codePlaceholder.style.display = 'none';
-			}
+			this.toggleCollapsed(isHidden);
 		}));
 
 		this.layout();
@@ -330,5 +328,29 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+	}
+
+	private toggleCollapsed(isHidden: boolean): void {
+		let codeEditor = <HTMLElement>this.codeElement.nativeElement;
+		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
+		if (isHidden) {
+			codeEditor.style.display = 'none';
+			codePlaceholder.style.display = 'block';
+			codePlaceholder.innerHTML = this.cellModel.source[0];
+		} else {
+			codeEditor.style.display = 'block';
+			codePlaceholder.style.display = 'none';
+		}
+	}
+
+	private updatePlaceholderStyle(): void {
+		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
+		codePlaceholder.style.height = `${this._editor.lineHeight}px`;
+
+		let fontSize = this._configurationService.getValue<number>('editor.fontSize');
+		codePlaceholder.style.fontSize = `${fontSize}px`;
+
+		let wordWrap = this._configurationService.getValue<string>('editor.wordWrap');
+		codePlaceholder.style.wordWrap = wordWrap;
 	}
 }

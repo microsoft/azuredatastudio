@@ -203,4 +203,8 @@ export class QueryTextEditor extends BaseTextEditor {
 		let editorSettingsToApply = editorConfiguration;
 		this.getControl().updateOptions(editorSettingsToApply);
 	}
+
+	public get lineHeight(): number {
+		return this._lineHeight;
+	}
 }
