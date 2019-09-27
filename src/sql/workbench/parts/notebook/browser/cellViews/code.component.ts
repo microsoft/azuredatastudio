@@ -113,7 +113,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			(() => this.layout()));
 		// Handle disconnect on removal of the cell, if it was the active cell
 		this._register({ dispose: () => this.updateConnectionState(false) });
-
 	}
 
 	ngOnInit() {
