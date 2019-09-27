@@ -537,7 +537,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			},
 			registerWebviewEditorProvider: (viewType: string, provider: vscode.WebviewEditorProvider) => {
 				checkProposedApiEnabled(extension);
-				return extHostWebviews.registerWebviewEditorProvider(viewType, provider);
+				return extHostWebviews.registerWebviewEditorProvider(extension, viewType, provider);
 			},
 			registerDecorationProvider(provider: vscode.DecorationProvider) {
 				checkProposedApiEnabled(extension);
@@ -912,7 +912,7 @@ export function createApiFactoryAndRegisterActors(accessor: ServicesAccessor): I
 			CallHierarchyItem: extHostTypes.CallHierarchyItem,
 			DebugConsoleMode: extHostTypes.DebugConsoleMode,
 			Decoration: extHostTypes.Decoration,
-			WebviewEditorState: extHostTypes.WebviewEditorState,
+			WebviewContentState: extHostTypes.WebviewContentState,
 			UIKind: UIKind
 		};
 	};
