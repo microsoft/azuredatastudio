@@ -35,24 +35,85 @@ export interface ResourceTypeOptionValue {
 	displayName: string;
 }
 
-export interface DeploymentProvider {
-	title: string;
+export interface DialogDeploymentProvider extends DeploymentProviderBase {
 	dialog: DialogInfo;
-	notebook: string | NotebookInfo;
-	downloadUrl: string;
-	webPageUrl: string;
+}
+
+export interface WizardDeploymentProvider extends DeploymentProviderBase {
 	wizard: WizardInfo;
+}
+
+export interface NotebookDeploymentProvider extends DeploymentProviderBase {
+	notebook: string | NotebookInfo;
+}
+
+export interface WebPageDeploymentProvider extends DeploymentProviderBase {
+	webPageUrl: string;
+}
+
+export interface DownloadDeploymentProvider extends DeploymentProviderBase {
+	downloadUrl: string;
+}
+
+export interface CommandDeploymentProvider extends DeploymentProviderBase {
+	command: string;
+}
+
+export function instanceOfDialogDeploymentProvider(obj: any): obj is DialogDeploymentProvider {
+	return obj && 'dialog' in obj;
+}
+
+export function instanceOfWizardDeploymentProvider(obj: any): obj is WizardDeploymentProvider {
+	return obj && 'wizard' in obj;
+}
+
+export function instanceOfNotebookDeploymentProvider(obj: any): obj is NotebookDeploymentProvider {
+	return obj && 'notebook' in obj;
+}
+
+export function instanceOfWebPageDeploymentProvider(obj: any): obj is WebPageDeploymentProvider {
+	return obj && 'webPageUrl' in obj;
+}
+
+export function instanceOfDownloadDeploymentProvider(obj: any): obj is DownloadDeploymentProvider {
+	return obj && 'downloadUrl' in obj;
+}
+
+export function instanceOfCommandDeploymentProvider(obj: any): obj is CommandDeploymentProvider {
+	return obj && 'command' in obj;
+}
+
+export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
+
+export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
-export interface DialogInfo {
+export interface NotebookBasedDialogInfo extends DialogInfoBase {
 	notebook: string | NotebookInfo;
+}
+
+export interface CommandBasedDialogInfo extends DialogInfoBase {
+	command: string;
+}
+
+export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;
+
+export function instanceOfNotebookBasedDialogInfo(obj: any): obj is NotebookBasedDialogInfo {
+	return obj && 'notebook' in obj;
+}
+
+export function instanceOfCommandBasedDialogInfo(obj: any): obj is CommandBasedDialogInfo {
+	return obj && 'command' in obj;
+}
+
+export interface DialogInfoBase {
 	title: string;
 	name: string;
 	tabs: DialogTabInfo[];
