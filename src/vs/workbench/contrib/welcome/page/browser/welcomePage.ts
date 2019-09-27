@@ -14,7 +14,8 @@ import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError, isPromiseCanceledError } from 'vs/base/common/errors';
-import { IWindowService, IURIToOpen } from 'vs/platform/windows/common/windows';
+import { IWindowOpenable } from 'vs/platform/windows/common/windows';
+import { IWorkspacesHistoryService } from 'vs/workbench/services/workspace/common/workspacesHistoryService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
@@ -40,7 +41,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
-import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder } from 'vs/platform/history/common/history';
+import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder } from 'vs/platform/workspaces/common/workspacesHistory';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment'; // {{SQL CARBON EDIT}}
 import { setProductQuality } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
@@ -254,7 +255,7 @@ class WelcomePage extends Disposable {
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IWorkspacesHistoryService private readonly workspacesHistoryService: IWorkspacesHistoryService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILabelService private readonly labelService: ILabelService,
@@ -272,7 +273,7 @@ class WelcomePage extends Disposable {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 
-		const recentlyOpened = this.windowService.getRecentlyOpened();
+		const recentlyOpened = this.workspacesHistoryService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
 		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
 		setProductQuality(this.environmentService.appQuality);
@@ -347,13 +348,13 @@ class WelcomePage extends Disposable {
 	private createListEntries(recents: (IRecentWorkspace | IRecentFolder)[]) {
 		return recents.map(recent => {
 			let fullPath: string;
-			let uriToOpen: IURIToOpen;
+			let windowOpenable: IWindowOpenable;
 			if (isRecentFolder(recent)) {
-				uriToOpen = { folderUri: recent.folderUri };
+				windowOpenable = { folderUri: recent.folderUri };
 				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.folderUri, { verbose: true });
 			} else {
 				fullPath = recent.label || this.labelService.getWorkspaceLabel(recent.workspace, { verbose: true });
-				uriToOpen = { workspaceUri: recent.workspace.configPath };
+				windowOpenable = { workspaceUri: recent.workspace.configPath };
 			}
 
 			const { name, parentPath } = splitName(fullPath);
@@ -370,7 +371,7 @@ class WelcomePage extends Disposable {
 					id: 'openRecentFolder',
 					from: telemetryFrom
 				});
-				this.windowService.openWindow([uriToOpen], { forceNewWindow: e.ctrlKey || e.metaKey });
+				this.hostService.openInWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
 				e.preventDefault();
 				e.stopPropagation();
 			});

@@ -8,7 +8,6 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { localize } from 'vs/nls';
 import { onUnexpectedError } from 'vs/base/common/errors';
-import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 
@@ -19,7 +18,6 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 	constructor(
 		@IStorageService storageService: IStorageService,
 		@INotificationService notificationService: INotificationService,
-		@IWindowService windowService: IWindowService,
 		@IHostService hostService: IHostService,
 		@IConfigurationService configurationService: IConfigurationService
 	) {
@@ -28,7 +26,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 			return;
 		}
 		Promise.all([
-			windowService.isFocused(),
+			hostService.hasFocus,
 			hostService.windowCount
 		]).then(([focused, count]) => {
 			if (!focused && count > 1) {

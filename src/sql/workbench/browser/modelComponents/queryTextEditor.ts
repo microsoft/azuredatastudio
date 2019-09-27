@@ -22,10 +22,9 @@ import { StandaloneCodeEditor } from 'vs/editor/standalone/browser/standaloneCod
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
-import { IWindowService } from 'vs/platform/windows/common/windows';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { IAccessibilityService } from 'vs/platform/accessibility/common/accessibility';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 /**
  * Extension of TextResourceEditor that is always readonly rather than only with non UntitledInputs
@@ -51,14 +50,13 @@ export class QueryTextEditor extends BaseTextEditor {
 		@ITextFileService textFileService: ITextFileService,
 		@IEditorGroupsService editorGroupService: IEditorGroupsService,
 		@IEditorService protected editorService: IEditorService,
-		@IWindowService windowService: IWindowService,
+		@IHostService hostService: IHostService,
 		@IConfigurationService private workspaceConfigurationService: IConfigurationService,
-		@IAccessibilityService private accessibilityService: IAccessibilityService
 
 	) {
 		super(
 			QueryTextEditor.ID, telemetryService, instantiationService, storageService,
-			configurationService, themeService, textFileService, editorService, editorGroupService, windowService);
+			configurationService, themeService, textFileService, editorService, editorGroupService, hostService);
 	}
 
 	public createEditorControl(parent: HTMLElement, configuration: IEditorOptions): editorCommon.IEditor {
