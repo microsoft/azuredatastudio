@@ -105,12 +105,12 @@ export class SchemaCompareMainWindow {
 				title: localize('schemaCompare.differencesTableTitle', "Comparison between Source and Target")
 			}).component();
 
-			this.diffEditor = view.modelBuilder.diffeditor().withProperties({
-				contentLeft: os.EOL,
-				contentRight: os.EOL,
-				height: 500,
-				title: diffEditorTitle
-			}).component();
+			// this.diffEditor = view.modelBuilder.diffeditor().withProperties({
+			// 	contentLeft: os.EOL,
+			// 	contentRight: os.EOL,
+			// 	height: 500,
+			// 	title: diffEditorTitle
+			// }).component();
 
 			this.splitView = view.modelBuilder.splitViewContainer().component();
 
@@ -387,8 +387,20 @@ export class SchemaCompareMainWindow {
 			let checkboxState = <azdata.ICheckboxCellActionEventArgs>rowState;
 			if (checkboxState) {
 				let diff = this.comparisonResult.differences[checkboxState.row];
-				await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
-				this.saveExcludeState(checkboxState);
+				let result = await service.schemaCompareIncludeExcludeNode(this.comparisonResult.operationId, diff, checkboxState.checked, azdata.TaskExecutionMode.execute);
+				console.error('result.success is ' + result.success);
+				if (result.success) {
+					this.saveExcludeState(checkboxState);
+					this.differencesTable.data[checkboxState.row][checkboxState.column] = checkboxState.checked;
+				} else {
+					vscode.window.showWarningMessage(localize('schemaCompare.cannotExcludeMessage', 'Cannot exclude. Included dependents exist'));
+					this.differencesTable.data[checkboxState.row][checkboxState.column] = true;
+
+					// add and remove table to refresh the checkbox
+					// TODO: need to figure out a better way to do this. For big tables, this will refresh the table and show it from the beginning after
+					this.flexModel.removeItem(this.differencesTable);
+					this.flexModel.addItem(this.differencesTable);
+				}
 			}
 		}));
 	}
