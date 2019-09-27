@@ -23,11 +23,6 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 	constructor(
 		@IQueryHistoryService _queryHistoryService: IQueryHistoryService
 	) {
-		// We need this to be running in the background even if the Panel (which is currently the only thing using it)
-		// isn't shown yet. Otherwise the service won't be initialized until the Panel is which means we might miss out
-		// on some events
-		_queryHistoryService.start();
-
 		// This feature is in preview so for now hide it behind a flag. We expose this as a command
 		// so that the query-history extension can call it. We eventually want to move all this into
 		// the extension itself so this should be a temporary workaround
@@ -38,6 +33,20 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 				// we don't want to try and register multiple times
 				if (!this.queryHistoryEnabled) {
 					this.queryHistoryEnabled = true;
+
+					// We need this to be running in the background even if the Panel (which is currently the only thing using it)
+					// isn't shown yet. Otherwise the service won't be initialized until the Panel is which means we might miss out
+					// on some events
+					_queryHistoryService.start();
+
+					CommandsRegistry.registerCommand({
+						id: 'queryHistory.clear',
+						handler: (accessor) => {
+							const queryHistoryService = accessor.get(IQueryHistoryService);
+							queryHistoryService.clearQueryHistory();
+						}
+					});
+
 					const registry = Registry.as<IWorkbenchActionRegistry>(ActionExtensions.WorkbenchActions);
 					registry.registerWorkbenchAction(
 						new SyncActionDescriptor(

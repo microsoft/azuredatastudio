@@ -52,7 +52,7 @@ export class DeleteAction extends Action {
 
 export class ClearHistoryAction extends Action {
 	public static ID = 'queryHistory.clear';
-	public static LABEL = localize('queryHistory.clear', "Clear All History");
+	public static LABEL = localize('queryHistory.clearLabel', "Clear All History");
 
 	constructor(
 		id: string,
