@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
-import { ResourceType, DeploymentProvider, AgreementInfo } from '../interfaces';
+import { ResourceType, AgreementInfo, DeploymentProvider } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { EOL } from 'os';
@@ -29,7 +28,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 
-	constructor(private extensionContext: vscode.ExtensionContext,
+	constructor(
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
@@ -125,13 +124,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const card = this._view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
 			iconPath: {
-				dark: this.extensionContext.asAbsolutePath(resourceType.icon.dark),
-				light: this.extensionContext.asAbsolutePath(resourceType.icon.light)
+				dark: resourceType.icon.dark,
+				light: resourceType.icon.light
 			},
 			label: resourceType.displayName,
-			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name)
+			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name),
+			width: '220px',
+			height: '180px',
+			iconWidth: '50px',
+			iconHeight: '50px'
 		}).component();
-
 		this._resourceTypeCards.push(card);
 		this._cardResourceTypeMap.set(resourceType.name, card);
 		this._toDispose.push(card.onCardSelectedChanged(() => this.selectResourceType(resourceType)));
@@ -189,6 +191,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const toolRequirements = this.getCurrentProvider().requiredTools;
 		const headerRowHeight = 28;
 		this._toolsTable.height = 25 * Math.max(toolRequirements.length, 1) + headerRowHeight;
+		this._dialogObject.message = {
+			text: ''
+		};
 		if (toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
@@ -198,9 +203,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 			});
 			this._toolsLoadingComponent.loading = true;
 			this._dialogObject.okButton.enabled = false;
-			this._dialogObject.message = {
-				text: ''
-			};
 
 			Promise.all(tools.map(tool => tool.loadInformation())).then(() => {
 				// If the local timestamp does not match the class level timestamp, it means user has changed options, ignore the results
@@ -236,11 +238,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const checkbox = this._view.modelBuilder.checkBox().component();
 		checkbox.checked = false;
 		this._toDispose.push(checkbox.onChanged(() => {
-			this._agreementCheckboxChecked = checkbox.checked;
+			this._agreementCheckboxChecked = !!checkbox.checked;
 		}));
 		const text = this._view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({
 			value: agreementInfo.template,
-			links: agreementInfo.links
+			links: agreementInfo.links,
+			requiredIndicator: true
 		}).component();
 		return createFlexContainer(this._view, [checkbox, text]);
 	}

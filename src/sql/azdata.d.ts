@@ -3062,12 +3062,11 @@ declare module 'azdata' {
 		focused?: boolean;
 	}
 
-	export interface TextComponentProperties {
+	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
 		value?: string;
 		links?: LinkArea[];
 		description?: string;
 		requiredIndicator?: boolean;
-		CSSStyles?: { [key: string]: string };
 	}
 
 	export interface ImageComponentProperties {
@@ -3081,7 +3080,7 @@ declare module 'azdata' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -3198,6 +3197,13 @@ declare module 'azdata' {
 		clickable?: boolean;
 	}
 
+	export interface TitledComponentProperties {
+		/**
+		 * The title for the component. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -3207,8 +3213,7 @@ declare module 'azdata' {
 
 	}
 
-	export interface TextComponent extends Component, ComponentProperties {
-		value: string;
+	export interface TextComponent extends Component, TextComponentProperties {
 		/**
 		 * An event called when the text is clicked
 		 */
@@ -3232,9 +3237,7 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component {
-		checked: boolean;
-		label: string;
+	export interface CheckBoxComponent extends Component, CheckBoxProperties {
 		onChanged: vscode.Event<any>;
 	}
 

@@ -11,23 +11,24 @@ import { assign, mixin } from 'vs/base/common/objects';
 import { IBackupMainService } from 'vs/platform/backup/electron-main/backup';
 import { IEmptyWindowBackupInfo } from 'vs/platform/backup/node/backup';
 import { IEnvironmentService, ParsedArgs } from 'vs/platform/environment/common/environment';
-import { IStateService } from 'vs/platform/state/common/state';
+import { IStateService } from 'vs/platform/state/node/state';
 import { CodeWindow, defaultWindowState } from 'vs/code/electron-main/window';
 import { ipcMain as ipc, screen, BrowserWindow, dialog, systemPreferences, FileFilter, shell, MessageBoxReturnValue, MessageBoxOptions, SaveDialogOptions, SaveDialogReturnValue, OpenDialogOptions, OpenDialogReturnValue, Display } from 'electron';
 import { parseLineAndColumnAware } from 'vs/code/node/paths';
 import { ILifecycleMainService, UnloadReason, LifecycleMainService, LifecycleMainPhase } from 'vs/platform/lifecycle/electron-main/lifecycleMainService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { ILogService } from 'vs/platform/log/common/log';
-import { IWindowSettings, OpenContext, IPath, IWindowConfiguration, INativeOpenDialogOptions, IPathsToWaitFor, IEnterWorkspaceResult, IURIToOpen, isFileToOpen, isWorkspaceToOpen, isFolderToOpen } from 'vs/platform/windows/common/windows';
+import { IWindowSettings, OpenContext, IPath, IWindowConfiguration, IPathsToWaitFor, isFileToOpen, isWorkspaceToOpen, isFolderToOpen, IWindowOpenable, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
+import { INativeOpenDialogOptions } from 'vs/platform/dialogs/node/dialogs';
 import { getLastActiveWindow, findBestWindowOrFolderForFile, findWindowOnWorkspace, findWindowOnExtensionDevelopmentPath, findWindowOnWorkspaceOrFolderUri } from 'vs/code/node/windowsFinder';
 import { Event as CommonEvent, Emitter } from 'vs/base/common/event';
 import product from 'vs/platform/product/common/product';
 import { ITelemetryService, ITelemetryData } from 'vs/platform/telemetry/common/telemetry';
 import { IWindowsMainService, IOpenConfiguration, IWindowsCountChangedEvent, ICodeWindow, IWindowState as ISingleWindowState, WindowMode } from 'vs/platform/windows/electron-main/windows';
-import { IRecent } from 'vs/platform/history/common/history';
-import { IHistoryMainService } from 'vs/platform/history/electron-main/historyMainService';
+import { IRecent } from 'vs/platform/workspaces/common/workspacesHistory';
+import { IWorkspacesHistoryMainService } from 'vs/platform/workspaces/electron-main/workspacesHistoryMainService';
 import { IProcessEnvironment, isMacintosh, isWindows } from 'vs/base/common/platform';
-import { IWorkspaceIdentifier, WORKSPACE_FILTER, isSingleFolderWorkspaceIdentifier, hasWorkspaceFileExtension } from 'vs/platform/workspaces/common/workspaces';
+import { IWorkspaceIdentifier, WORKSPACE_FILTER, isSingleFolderWorkspaceIdentifier, hasWorkspaceFileExtension, IEnterWorkspaceResult } from 'vs/platform/workspaces/common/workspaces';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { mnemonicButtonLabel } from 'vs/base/common/labels';
 import { Schemas } from 'vs/base/common/network';
@@ -192,7 +193,7 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 		@IBackupMainService private readonly backupMainService: IBackupMainService,
 		@ITelemetryService private readonly telemetryService: ITelemetryService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
-		@IHistoryMainService private readonly historyMainService: IHistoryMainService,
+		@IWorkspacesHistoryMainService private readonly workspacesHistoryMainService: IWorkspacesHistoryMainService,
 		@IWorkspacesMainService private readonly workspacesMainService: IWorkspacesMainService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService
 	) {
@@ -508,7 +509,7 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 					recents.push({ label: pathToOpen.label, fileUri: pathToOpen.fileUri });
 				}
 			}
-			this.historyMainService.addRecentlyOpened(recents);
+			this.workspacesHistoryMainService.addRecentlyOpened(recents);
 		}
 
 		// If we got started with --wait from the CLI, we need to signal to the outside when the window
@@ -1018,13 +1019,14 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 		return undefined;
 	}
 
-	private parseUri(uriToOpen: IURIToOpen, options: IPathParseOptions = {}): IPathToOpen | undefined {
-		if (!uriToOpen) {
+	private parseUri(toOpen: IWindowOpenable, options: IPathParseOptions = {}): IPathToOpen | undefined {
+		if (!toOpen) {
 			return undefined;
 		}
-		let uri = resourceFromURIToOpen(uriToOpen);
+
+		let uri = resourceFromURIToOpen(toOpen);
 		if (uri.scheme === Schemas.file) {
-			return this.parsePath(uri.fsPath, options, isFileToOpen(uriToOpen));
+			return this.parsePath(uri.fsPath, options, isFileToOpen(toOpen));
 		}
 
 		// open remote if either specified in the cli or if it's a remotehost URI
@@ -1038,7 +1040,8 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 			uri = removeTrailingPathSeparator(uri);
 		}
 
-		if (isFileToOpen(uriToOpen)) {
+		// File
+		if (isFileToOpen(toOpen)) {
 			if (options.gotoLineMode) {
 				const parsedPath = parseLineAndColumnAware(uri.path);
 				return {
@@ -1052,12 +1055,17 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 				fileUri: uri,
 				remoteAuthority
 			};
-		} else if (isWorkspaceToOpen(uriToOpen)) {
+		}
+
+		// Workspace
+		else if (isWorkspaceToOpen(toOpen)) {
 			return {
 				workspace: getWorkspaceIdentifier(uri),
 				remoteAuthority
 			};
 		}
+
+		// Folder
 		return {
 			folderUri: uri,
 			remoteAuthority
@@ -1121,7 +1129,7 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 			}
 		} catch (error) {
 			const fileUri = URI.file(candidate);
-			this.historyMainService.removeFromRecentlyOpened([fileUri]); // since file does not seem to exist anymore, remove from recent
+			this.workspacesHistoryMainService.removeFromRecentlyOpened([fileUri]); // since file does not seem to exist anymore, remove from recent
 
 			// assume this is a file that does not yet exist
 			if (options && options.ignoreFileNotFound) {
@@ -1582,7 +1590,7 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 	private doEnterWorkspace(win: ICodeWindow, result: IEnterWorkspaceResult): IEnterWorkspaceResult {
 
 		// Mark as recently opened
-		this.historyMainService.addRecentlyOpened([{ workspace: result.workspace }]);
+		this.workspacesHistoryMainService.addRecentlyOpened([{ workspace: result.workspace }]);
 
 		// Trigger Eevent to indicate load of workspace into window
 		this._onWindowReady.fire(win);
@@ -1610,7 +1618,7 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 		return getLastActiveWindow(WindowsManager.WINDOWS.filter(window => window.remoteAuthority === remoteAuthority));
 	}
 
-	openEmptyWindow(context: OpenContext, options?: { reuse?: boolean, remoteAuthority?: string }): ICodeWindow[] {
+	openEmptyWindow(context: OpenContext, options?: IOpenEmptyWindowOptions): ICodeWindow[] {
 		let cli = this.environmentService.args;
 		const remote = options && options.remoteAuthority;
 		if (cli && (cli.remote !== remote)) {
@@ -2098,14 +2106,14 @@ class WorkspacesManager {
 	}
 }
 
-function resourceFromURIToOpen(u: IURIToOpen): URI {
-	if (isWorkspaceToOpen(u)) {
-		return u.workspaceUri;
+function resourceFromURIToOpen(openable: IWindowOpenable): URI {
+	if (isWorkspaceToOpen(openable)) {
+		return openable.workspaceUri;
 	}
 
-	if (isFolderToOpen(u)) {
-		return u.folderUri;
+	if (isFolderToOpen(openable)) {
+		return openable.folderUri;
 	}
 
-	return u.fileUri;
+	return openable.fileUri;
 }

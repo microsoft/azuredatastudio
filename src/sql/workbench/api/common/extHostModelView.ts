@@ -1119,6 +1119,13 @@ class TextComponentWrapper extends ComponentWrapper implements azdata.TextCompon
 		this.setProperty('value', v);
 	}
 
+	public get title(): string {
+		return this.properties['title'];
+	}
+	public set title(title: string) {
+		this.setProperty('title', title);
+	}
+
 	public get onDidClick(): vscode.Event<any> {
 		let emitter = this._emitterMap.get(ComponentEventType.onDidClick);
 		return emitter && emitter.event;

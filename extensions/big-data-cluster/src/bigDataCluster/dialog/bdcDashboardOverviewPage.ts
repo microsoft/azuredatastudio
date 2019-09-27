@@ -205,6 +205,18 @@ export class BdcDashboardOverviewPage {
 		}
 
 		this.endpointsRowContainer.clearItems();
+
+		// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
+		// others in alphabetical order by endpoint
+		const sqlServerMasterEndpoints = endpoints.filter(e => e.name === Endpoint.sqlServerMaster);
+		endpoints = endpoints.filter(e => e.name !== Endpoint.sqlServerMaster)
+			.sort((e1, e2) => {
+				if (e1.endpoint < e2.endpoint) { return -1; }
+				if (e1.endpoint > e2.endpoint) { return 1; }
+				return 0;
+			});
+		endpoints.unshift(...sqlServerMasterEndpoints);
+
 		endpoints.forEach((e, i) => {
 			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});
@@ -242,13 +254,21 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 	endPointRow.addItem(nameCell, { CSSStyles: { 'width': `${serviceEndpointRowServiceNameCellWidth}px`, 'min-width': `${serviceEndpointRowServiceNameCellWidth}px`, 'text-align': 'center' } });
 	if (isHyperlink) {
 		const endpointCell = modelBuilder.hyperlink()
-			.withProperties({ label: endpoint.endpoint, url: endpoint.endpoint, CSSStyles: { 'height': '15px' } })
+			.withProperties<azdata.HyperlinkComponentProperties>({
+				label: endpoint.endpoint,
+				title: endpoint.endpoint,
+				url: endpoint.endpoint, CSSStyles: { 'height': '15px' }
+			})
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden', ...cssStyles.hyperlink } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.hyperlink } });
 	}
 	else if (endpoint.name === Endpoint.sqlServerMaster) {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { ...cssStyles.text, ...cssStyles.hyperlink } })
+			.withProperties<azdata.TextComponentProperties>({
+				value: endpoint.endpoint,
+				title: endpoint.endpoint,
+				CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.text, ...cssStyles.hyperlink }
+			})
 			.component();
 		endpointCell.onDidClick(async () => {
 			const connProfile = bdcModel.getSqlServerMasterConnectionProfile();
@@ -263,20 +283,23 @@ function createServiceEndpointRow(modelBuilder: azdata.ModelBuilder, container: 
 				azdata.connection.openConnectionDialog(undefined, connProfile);
 			}
 		});
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px` } });
 	}
 	else {
 		const endpointCell = modelBuilder.text()
-			.withProperties({ value: endpoint.endpoint, CSSStyles: { ...cssStyles.text } })
+			.withProperties<azdata.TextComponentProperties>({
+				value: endpoint.endpoint,
+				title: endpoint.endpoint,
+				CSSStyles: { 'overflow': 'hidden', 'text-overflow': 'ellipsis', ...cssStyles.text }
+			})
 			.component();
-		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px`, 'overflow': 'hidden' } });
+		endPointRow.addItem(endpointCell, { CSSStyles: { 'width': `${serviceEndpointRowEndpointCellWidth}px`, 'min-width': `${serviceEndpointRowEndpointCellWidth}px` } });
 	}
-	const copyValueCell = modelBuilder.button().component();
+	const copyValueCell = modelBuilder.button().withProperties<azdata.ButtonProperties>({ title: localize('bdc.dashboard.copyTitle', "Copy") }).component();
 	copyValueCell.iconPath = IconPathHelper.copy;
 	copyValueCell.onDidClick(() => {
 		vscode.env.clipboard.writeText(endpoint.endpoint);
 	});
-	copyValueCell.title = localize('bdc.dashboard.copyTitle', "Copy");
 	copyValueCell.iconHeight = '14px';
 	copyValueCell.iconWidth = '14px';
 	endPointRow.addItem(copyValueCell, { CSSStyles: { 'width': '14px', 'min-width': '14px', 'padding-left': '10px', ...cssStyles.text } });

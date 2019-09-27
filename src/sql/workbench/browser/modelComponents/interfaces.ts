@@ -101,3 +101,7 @@ export interface IModelStore {
 	 */
 	validate(component: IComponent): Thenable<boolean>;
 }
+
+export interface ITitledComponent {
+	title?: string;
+}
