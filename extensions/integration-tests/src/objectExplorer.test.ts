@@ -30,7 +30,7 @@ if (context.RunTest) {
 		test('Azure SQL DB context menu test', async function () {
 			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
-		test.skip('Standalone database context menu test', async function () {
+		test('Standalone database context menu test *UNSTABLE*', async function () {
 			await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
