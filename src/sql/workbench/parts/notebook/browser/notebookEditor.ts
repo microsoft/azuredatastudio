@@ -36,6 +36,7 @@ import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, FindMatch } fro
 import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
 import { Range } from 'vs/editor/common/core/range';
 import { TimeoutTimer } from 'vs/base/common/async';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
@@ -64,12 +65,13 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		@IContextViewService private _contextViewService: IContextViewService,
 		@IKeybindingService private _keybindingService: IKeybindingService,
 		@IContextKeyService private _contextKeyService: IContextKeyService,
-		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService
+		@IWorkbenchThemeService private _themeService: IWorkbenchThemeService,
+		@IEditorGroupsService _editorGroupsService: IEditorGroupsService
 	) {
 		super(NotebookEditor.ID, telemetryService, themeService, storageService);
 		this._isDisposed = false;
 		this._startSearchingTimer = new TimeoutTimer();
-		this._decorations = new FindDecorations(this);
+		this._decorations = new FindDecorations(this, _editorGroupsService);
 		this._toDispose.add(this._decorations);
 		this._decorations.setStartPosition(this.getPosition());
 		this._actionMap[ACTION_IDS.FIND_NEXT] = this._instantiationService.createInstance(NotebookFindNext, this);
@@ -243,12 +245,20 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 			}
 		}
 
+		if (e.matchesPosition) {
+			this._decorations.set(this._notebookModel.findMatches, this._findPosition);
+			this._findState.changeMatchInfo(
+				this._decorations.getCurrentMatchesPosition(this.getSelection()),
+				this._decorations.getCount(),
+				this._findPosition
+			);
+		}
 		if (e.searchString) {
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._decorations.getFindScope();
 					if (findScope !== null) {
-						if (findScope.startLineNumber !== findScope.endLineNumber) {
+						if (findScope && findScope.startLineNumber !== findScope.endLineNumber) {
 							if (findScope.endColumn === 1) {
 								findScope = new NotebookRange(findScope.cell, findScope.startLineNumber, 1, findScope.endLineNumber - 1, this._notebookModel.getLineMaxColumn(findScope.endLineNumber - 1));
 							} else {
@@ -260,8 +270,11 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
 						if (findRange) {
 							this.updatePosition(findRange);
-						} else {
+						} else if (this._notebookModel.findMatches.length > 0) {
 							this.updatePosition(this._notebookModel.findMatches[0].range);
+						} else {
+							return;
+							// this._notebookModel.clearFind();
 						}
 						this._updateFinderMatchState();
 						this._finder.focusFindInput();
@@ -310,6 +323,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	private updatePosition(range: NotebookRange): void {
 		this._findPosition = range;
+		this._decorations.setCurrentFindMatch(range);
 	}
 
 	public findPrevious(): void {

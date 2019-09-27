@@ -1299,7 +1299,20 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	public getDecorationRange(id: string): NotebookRange | null {
-		return this._findArray[id];
+		// return this._findArray[id];
+		// return this._getDecorationsInRange[id];
+		const node = this._decorations[id];
+		if (!node) {
+			return null;
+		}
+		const versionId = this.getVersionId();
+		if (node.cachedVersionId !== versionId) {
+			this._decorationsTree.resolveNode(node, versionId);
+		}
+		if (node.range === null) {
+			node.range = this._getRangeAt(node.cachedAbsoluteStart, node.cachedAbsoluteEnd);
+		}
+		return new NotebookRange(this.cells[0], node.range.startLineNumber, node.range.startColumn, node.range.endLineNumber, node.range.endColumn);
 	}
 
 	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): model.IModelDecoration[] {

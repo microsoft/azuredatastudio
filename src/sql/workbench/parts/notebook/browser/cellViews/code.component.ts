@@ -204,6 +204,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		// For markdown cells, don't show line numbers unless we're using editor defaults
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
+		this._cellModel.editor = this._editor;
 
 
 		if (this.destroyed) {

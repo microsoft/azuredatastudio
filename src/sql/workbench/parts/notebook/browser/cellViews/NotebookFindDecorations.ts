@@ -10,6 +10,7 @@ import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLa
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { overviewRulerFindMatchForeground, minimapFindMatch } from 'vs/platform/theme/common/colorRegistry';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
+import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
 
 export class FindDecorations implements IDisposable {
 
@@ -21,7 +22,7 @@ export class FindDecorations implements IDisposable {
 	private _highlightedDecorationId: string | null;
 	private _startPosition: NotebookRange;
 
-	constructor(editor: NotebookEditor) {
+	constructor(editor: NotebookEditor, private _editorGroupsService: IEditorGroupsService) {
 		this._editor = editor;
 		this._decorations = [];
 		this._overviewRulerApproximateDecorations = [];
@@ -94,7 +95,8 @@ export class FindDecorations implements IDisposable {
 		if (nextMatch) {
 			for (let i = 0, len = this._decorations.length; i < len; i++) {
 				let range = this._editor.getNotebookModel().getDecorationRange(this._decorations[i]);
-				if (nextMatch.equalsRange(range)) {
+				if (nextMatch.startLineNumber + 1 === range.startLineNumber && nextMatch.endLineNumber + 1 === range.endLineNumber && nextMatch.startColumn === range.startColumn && nextMatch.endColumn === range.endColumn) {
+					// if (nextMatch.equalsRange(range)) {
 					newCurrentDecorationId = this._decorations[i];
 					matchPosition = (i + 1);
 					break;
@@ -103,7 +105,11 @@ export class FindDecorations implements IDisposable {
 		}
 
 		if (this._highlightedDecorationId !== null || newCurrentDecorationId !== null) {
-			this._editor.changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
+			// nextMatch.cell.cellUri;
+			// let editor = this._editorGService.editors.filter(e => e.getResource() === nextMatch.cell.cellUri);
+			// let editors = this._editorGroupsService.
+
+			nextMatch.cell.editor.getControl().changeDecorations((changeAccessor: IModelDecorationsChangeAccessor) => {
 				if (this._highlightedDecorationId !== null) {
 					changeAccessor.changeDecorationOptions(this._highlightedDecorationId, FindDecorations._FIND_MATCH_DECORATION);
 					this._highlightedDecorationId = null;

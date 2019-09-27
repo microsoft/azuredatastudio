@@ -25,6 +25,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 import { Range, IRange } from 'vs/editor/common/core/range';
 import { IModelDecoration, FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export interface IClientSessionOptions {
 	notebookUri: URI;
@@ -580,6 +581,7 @@ export interface ICellModel {
 	stdInVisible: boolean;
 	readonly onLoaded: Event<string>;
 	modelContentChangedEvent: IModelContentChangedEvent;
+	editor: BaseTextEditor;
 }
 
 export interface FutureInternal extends nb.IFuture {
