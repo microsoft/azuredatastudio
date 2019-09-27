@@ -44,7 +44,7 @@ import { IAction } from 'vs/base/common/actions';
 import { ExtensionType, ExtensionIdentifier, IExtensionDescription, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { CancelablePromise, createCancelablePromise } from 'vs/base/common/async';
-import { IProductService } from 'vs/platform/product/common/product';
+import { IProductService } from 'vs/platform/product/common/productService';
 import { SeverityIcon } from 'vs/platform/severityIcon/common/severityIcon';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
@@ -455,8 +455,7 @@ export class ExtensionsListView extends ViewletPanel {
 			return this.getAllRecommendationsModel(query, options, token);
 		} else if (ExtensionsListView.isRecommendedExtensionsQuery(query.value)) {
 			return this.getRecommendationsModel(query, options, token);
-			// {{SQL CARBON EDIT}}
-		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) {
+		} else if (ExtensionsListView.isAllMarketplaceExtensionsQuery(query.value)) { // {{SQL CARBON EDIT}} add if
 			return this.getAllMarketplaceModel(query, options, token);
 		}
 

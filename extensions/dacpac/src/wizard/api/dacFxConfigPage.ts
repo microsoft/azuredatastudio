@@ -182,7 +182,7 @@ export abstract class DacFxConfigPage extends BasePage {
 		if (this.fileTextBox.value && path.dirname(this.fileTextBox.value)) {
 			return path.dirname(this.fileTextBox.value);
 		} else { // otherwise use the folder open in the Explorer or the home directory
-			return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
+			return vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].uri.fsPath : os.homedir();
 		}
 	}
 

@@ -2745,7 +2745,10 @@ declare module 'azdata' {
 		 * Matches the align-content CSS property.
 		 */
 		alignContent?: string;
-
+		/**
+		 *  Matches the flex-wrap CSS property.
+		 */
+		flexWrap?: string;
 		/**
 		 * Container Height
 		 */
@@ -2919,11 +2922,11 @@ declare module 'azdata' {
 	 * Properties representing the card component, can be used
 	 * when using ModelBuilder to create the component
 	 */
-	export interface CardProperties extends ComponentWithIcon {
+	export interface CardProperties extends ComponentProperties, ComponentWithIcon {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -2935,6 +2938,13 @@ declare module 'azdata' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
+		tooltip?: string;
+		fontWeight?: 'normal' | 'bold';
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -3052,10 +3062,11 @@ declare module 'azdata' {
 		focused?: boolean;
 	}
 
-	export interface TextComponentProperties {
+	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
 		value?: string;
 		links?: LinkArea[];
-		CSSStyles?: { [key: string]: string };
+		description?: string;
+		requiredIndicator?: boolean;
 	}
 
 	export interface ImageComponentProperties {
@@ -3069,7 +3080,7 @@ declare module 'azdata' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -3186,6 +3197,13 @@ declare module 'azdata' {
 		clickable?: boolean;
 	}
 
+	export interface TitledComponentProperties {
+		/**
+		 * The title for the component. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -3195,8 +3213,7 @@ declare module 'azdata' {
 
 	}
 
-	export interface TextComponent extends Component, ComponentProperties {
-		value: string;
+	export interface TextComponent extends Component, TextComponentProperties {
 		/**
 		 * An event called when the text is clicked
 		 */
@@ -3220,9 +3237,7 @@ declare module 'azdata' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component {
-		checked: boolean;
-		label: string;
+	export interface CheckBoxComponent extends Component, CheckBoxProperties {
 		onChanged: vscode.Event<any>;
 	}
 

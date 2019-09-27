@@ -452,7 +452,7 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -464,6 +464,11 @@ declare module 'sqlops' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -545,7 +550,7 @@ declare module 'sqlops' {
 		checked?: boolean;
 	}
 
-	export interface TextComponentProperties {
+	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
 		value?: string;
 		links?: LinkArea[];
 	}
@@ -555,7 +560,7 @@ declare module 'sqlops' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -663,6 +668,13 @@ declare module 'sqlops' {
 		yOffsetChange?: number;
 	}
 
+	export interface TitledComponentProperties {
+		/**
+		 * The title for the component. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -672,8 +684,11 @@ declare module 'sqlops' {
 
 	}
 
-	export interface TextComponent extends Component, ComponentProperties {
-		value: string;
+	export interface TextComponent extends Component, TextComponentProperties {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
@@ -687,9 +702,7 @@ declare module 'sqlops' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component {
-		checked: boolean;
-		label: string;
+	export interface CheckBoxComponent extends Component, CheckBoxProperties {
 		onChanged: vscode.Event<any>;
 	}
 

@@ -178,7 +178,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
 	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
-	@ContentChild(ScrollableDirective) private _scrollable;
+	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,

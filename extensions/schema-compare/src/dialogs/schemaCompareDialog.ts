@@ -11,7 +11,7 @@ import * as os from 'os';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
 import { promises as fs } from 'fs';
 import { Telemetry } from '../telemetry';
-import { getEndpointName } from '../utils';
+import { getEndpointName, getRootPath } from '../utils';
 import * as mssql from '../../../mssql';
 
 const localize = nls.loadMessageBundle();
@@ -314,7 +314,7 @@ export class SchemaCompareDialog {
 
 		currentButton.onDidClick(async (click) => {
 			// file browser should open where the current dacpac is or the appropriate default folder
-			let rootPath = vscode.workspace.workspaceFolders ? vscode.workspace.workspaceFolders[0].name : os.homedir();
+			let rootPath = getRootPath();
 			let defaultUri = endpoint && endpoint.packageFilePath && await exists(endpoint.packageFilePath) ? endpoint.packageFilePath : rootPath;
 
 			let fileUris = await vscode.window.showOpenDialog(

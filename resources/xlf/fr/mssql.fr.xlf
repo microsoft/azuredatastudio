@@ -746,10 +746,6 @@
         <source xml:lang="en">HDFS</source>
         <target state="translated">HDFS</target>
       </trans-unit>
-      <trans-unit id="dataServicesLabel">
-        <source xml:lang="en">Data Services</source>
-        <target state="translated">Services de données</target>
-      </trans-unit>
     </body>
   </file>
   <file original="extensions/mssql/out/objectExplorerNodeProvider/hdfsProvider" source-language="en" target-language="fr" datatype="plaintext">

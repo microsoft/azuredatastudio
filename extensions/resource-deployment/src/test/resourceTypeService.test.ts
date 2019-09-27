@@ -3,8 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import 'mocha';
 import * as TypeMoq from 'typemoq';
 import assert = require('assert');
@@ -18,7 +16,7 @@ suite('Resource Type Service Tests', function (): void {
 
 	test('test resource types', () => {
 		const mockPlatformService = TypeMoq.Mock.ofType<IPlatformService>();
-		const toolsService = new ToolsService();
+		const toolsService = new ToolsService(mockPlatformService.object);
 		const notebookService = new NotebookService(mockPlatformService.object, '');
 		const resourceTypeService = new ResourceTypeService(mockPlatformService.object, toolsService, notebookService);
 		// index 0: platform name, index 1: number of expected resource types

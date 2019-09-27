@@ -9,6 +9,7 @@ import * as fs from 'fs-extra';
 import * as nls from 'vscode-nls';
 import * as vscode from 'vscode';
 import * as path from 'path';
+import { EOL } from 'os';
 import * as utils from '../common/utils';
 const localize = nls.loadMessageBundle();
 
@@ -264,6 +265,11 @@ export class JupyterSession implements nb.ISession {
 				: `%_do_not_call_change_endpoint --username=${connection.options[USER]} --password=${connection.options['password']} --server=${server} --auth=Basic_Access`;
 			let future = this.sessionImpl.kernel.requestExecute({
 				code: doNotCallChangeEndpointParams
+			}, true);
+			await future.done;
+
+			future = this.sessionImpl.kernel.requestExecute({
+				code: `%%configure -f${EOL}{"conf": {"spark.pyspark.python": "python3"}}`
 			}, true);
 			await future.done;
 		}
