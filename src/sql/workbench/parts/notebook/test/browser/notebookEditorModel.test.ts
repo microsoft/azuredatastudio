@@ -589,6 +589,66 @@ suite('Notebook Editor Model', function (): void {
 
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
+	test('should not insert update at incorrect location', async function (): Promise<void> {
+		await createNewNotebookModel();
+		let notebookEditorModel = await createTextEditorModel(this);
+		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
+
+		let newCell = notebookModel.addCell(CellTypes.Code);
+
+		let contentChange: NotebookContentChange = {
+			changeType: NotebookChangeType.CellsModified,
+			cells: [newCell],
+			cellIndex: 0
+		};
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellsModified);
+		should(notebookEditorModel.lastEditFullReplacement).equal(true);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(14)).equal('            "outputs": [');
+
+		// First update the model with unmatched brackets
+		let newUnmatchedBracketOutput: nb.IStreamResult = { output_type: 'stream', name: 'stdout', text: '[0em' };
+		newCell[<any>'_outputs'] = newCell.outputs.concat(newUnmatchedBracketOutput);
+
+		contentChange = {
+			changeType: NotebookChangeType.CellOutputUpdated,
+			cells: [newCell]
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(8)).equal('            "source": [');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(12)).equal('                "azdata_cell_guid": "' + newCell.cellGuid + '"');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(14)).equal('            "outputs": [');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(26)).equal('    "text": "[0em"');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(27)).equal('}');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(28)).equal('            ],');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(29)).equal('            "execution_count": 0');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(30)).equal('        }');
+
+		should(notebookEditorModel.lastEditFullReplacement).equal(false);
+
+		// Now test updating the model after an unmatched bracket was previously output
+		let newBracketlessOutput: nb.IStreamResult = { output_type: 'stream', name: 'stdout', text: 'test test test' };
+		newCell[<any>'_outputs'] = newCell[<any>'_outputs'].concat(newBracketlessOutput);
+
+		contentChange = {
+			changeType: NotebookChangeType.CellOutputUpdated,
+			cells: [newCell]
+		};
+
+		notebookEditorModel.updateModel(contentChange, NotebookChangeType.CellOutputUpdated);
+
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(32)).equal('                    "text": "test test test"');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(33)).equal('                }');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(34)).equal('            ],');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(35)).equal('            "execution_count": 0');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(36)).equal('        }');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(37)).equal('    ]');
+		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(38)).equal('}');
+
+		should(notebookEditorModel.lastEditFullReplacement).equal(true);
+	});
 
 	test('should not replace entire text model for output changes (1st update)', async function (): Promise<void> {
 		await createNewNotebookModel();
