@@ -10,7 +10,8 @@ import { Cookie } from 'tough-cookie';
 import * as through from 'through2';
 import * as nls from 'vscode-nls';
 import * as auth from '../util/auth';
-import { IHdfsOptions, IRequestParams } from './fileSources';
+import { IHdfsOptions, IRequestParams } from '../objectExplorerNodeProvider/fileSources';
+import { IAclStatus, AclEntry, parseAcl, AclPermissionType, parseAclPermissionFromOctal, AclEntryScope } from './aclEntry';
 
 const localize = nls.loadMessageBundle();
 const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', "Invalid Data Structure");
@@ -25,6 +26,7 @@ const emitError = (instance, err) => {
 
 	instance.errorEmitted = true;
 };
+
 export class WebHDFS {
 	private _requestParams: IRequestParams;
 	private _opts: IHdfsOptions;
@@ -75,7 +77,7 @@ export class WebHDFS {
 			params || {}
 		);
 		endpoint.search = querystring.stringify(searchOpts);
-		return encodeURI(url.format(endpoint));
+		return url.format(endpoint);
 	}
 
 	/**
@@ -87,7 +89,7 @@ export class WebHDFS {
 	private toStatusMessage(statusCode: number): string {
 		let statusMessage: string = undefined;
 		switch (statusCode) {
-			case 400: statusMessage = localize('webhdfs.httpError400', "Bad Request");break;
+			case 400: statusMessage = localize('webhdfs.httpError400', "Bad Request"); break;
 			case 401: statusMessage = localize('webhdfs.httpError401', "Unauthorized"); break;
 			case 403: statusMessage = localize('webhdfs.httpError403', "Forbidden"); break;
 			case 404: statusMessage = localize('webhdfs.httpError404', "Not Found"); break;
@@ -417,6 +419,53 @@ export class WebHDFS {
 	}
 
 	/**
+	 * Get ACL status for given path
+	 * @param path The path to the file/folder to get the status of
+	 * @param callback Callback to handle the response
+	 * @returns void
+	 */
+	public getAclStatus(path: string, callback: (error: HdfsError, aclStatus: IAclStatus) => void): void {
+		this.checkArgDefined('path', path);
+
+		let endpoint = this.getOperationEndpoint('getaclstatus', path);
+		this.sendRequest('GET', endpoint, undefined, (error, response) => {
+			if (!callback) { return; }
+			if (error) {
+				callback(error, undefined);
+			} else if (response.body.hasOwnProperty('AclStatus')) {
+				const permissions = parseAclPermissionFromOctal(response.body.AclStatus.permission);
+				const aclStatus: IAclStatus = {
+					owner: new AclEntry(AclEntryScope.access, AclPermissionType.owner, response.body.AclStatus.owner || '', permissions.owner),
+					group: new AclEntry(AclEntryScope.access, AclPermissionType.group, response.body.AclStatus.group || '', permissions.group),
+					other: new AclEntry(AclEntryScope.access, AclPermissionType.other, response.body.AclStatus.other || '', permissions.other),
+					stickyBit: !!response.body.AclStatus.stickyBit,
+					entries: (<any[]>response.body.AclStatus.entries).map(entry => parseAcl(entry)).reduce((acc, parsedEntries) => acc.concat(parsedEntries, []))
+				};
+				callback(undefined, aclStatus);
+			} else {
+				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
+			}
+		});
+	}
+
+	/**
+	 * Set ACL for the given path
+	 * @param path The path to the file/folder to set the ACL on
+	 * @param aclEntries The ACL entries to set
+	 * @param callback Callback to handle the response
+	 * @returns void
+	 */
+	public setAcl(path: string, aclEntries: AclEntry[], callback: (error: HdfsError) => void): void {
+		this.checkArgDefined('path', path);
+		this.checkArgDefined('aclEntries', aclEntries);
+		const aclSpec = aclEntries.join(',');
+		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
+		this.sendRequest('PUT', endpoint, undefined, (error) => {
+			return callback && callback(error);
+		});
+	}
+
+	/**
 	 * Check file existence
 	 * Wraps stat method
 	 *
@@ -649,7 +698,7 @@ export class WebHDFS {
 			src.unpipe(req);
 			req.end();
 		});
-		return <fs.WriteStream><any> req;
+		return <fs.WriteStream><any>req;
 	}
 
 	/**

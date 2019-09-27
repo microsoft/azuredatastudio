@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as fspath from 'path';
 import * as fs from 'fs';
@@ -15,7 +14,8 @@ import * as os from 'os';
 import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
-import { WebHDFS, HdfsError } from './webhdfs';
+import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
+import { AclEntry, IAclStatus } from '../hdfs/aclEntry';
 
 const localize = nls.loadMessageBundle();
 
@@ -58,7 +58,6 @@ export class File implements IFile {
 }
 
 export interface IFileSource {
-
 	enumerateFiles(path: string): Promise<IFile[]>;
 	mkdir(dirName: string, remoteBasePath: string): Promise<void>;
 	createReadStream(path: string): fs.ReadStream;
@@ -66,6 +65,8 @@ export interface IFileSource {
 	readFileLines(path: string, maxLines: number): Promise<Buffer>;
 	writeFile(localFile: IFile, remoteDir: string): Promise<string>;
 	delete(path: string, recursive?: boolean): Promise<void>;
+	getAclStatus(path: string): Promise<IAclStatus>;
+	setAcl(path: string, aclEntries: AclEntry[]): Promise<void>;
 	exists(path: string): Promise<boolean>;
 }
 
@@ -298,6 +299,39 @@ export class HdfsFileSource implements IFileSource {
 					reject(error);
 				} else {
 					resolve(exists);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Get ACL status for given path
+	 * @param path The path to the file/folder to get the status of
+	 */
+	public getAclStatus(path: string): Promise<IAclStatus> {
+		return new Promise((resolve, reject) => {
+			this.client.getAclStatus(path, (error: HdfsError, aclStatus: IAclStatus) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(aclStatus);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Sets the ACL status for given path
+	 * @param path The path to the file/folder to set the ACL on
+	 * @param aclEntries The ACL entries to set
+	 */
+	public setAcl(path: string, aclEntries: AclEntry[]): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.setAcl(path, aclEntries, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
 				}
 			});
 		});
