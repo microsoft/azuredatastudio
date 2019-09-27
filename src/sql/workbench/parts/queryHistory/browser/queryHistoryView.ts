@@ -87,9 +87,6 @@ export class QueryHistoryView extends Disposable {
 		let selectedElement: any;
 		let targetsToExpand: any[];
 
-		// Focus
-		this._tree.domFocus();
-
 		if (this._tree) {
 			const selection = this._tree.getSelection();
 			if (selection && selection.length === 1) {
@@ -121,7 +118,6 @@ export class QueryHistoryView extends Disposable {
 			if (selectedElement) {
 				this._tree.select(selectedElement);
 			}
-			this._tree.getFocus();
 		}, errors.onUnexpectedError);
 	}
 
