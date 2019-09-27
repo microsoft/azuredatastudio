@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
-import { DialogInfoTypes } from '../interfaces';
+import { DialogInfoTypes, instanceOfNotebookBasedDialogInfo } from '../interfaces';
 import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
 import { Model } from './model';
 import { EOL } from 'os';
@@ -62,7 +62,7 @@ export class DeploymentInputDialog extends DialogBase {
 	private onComplete(): void {
 		const model: Model = new Model();
 		setModelValues(this.inputComponents, model);
-		if ('notebook' in this.dialogInfo) {
+		if (instanceOfNotebookBasedDialogInfo(this.dialogInfo)) {
 			model.setEnvironmentVariables();
 			this.notebookService.launchNotebook(this.dialogInfo.notebook).then(() => { }, (error) => {
 				vscode.window.showErrorMessage(error);

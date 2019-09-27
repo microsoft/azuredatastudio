@@ -128,9 +128,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 				light: resourceType.icon.light
 			},
 			label: resourceType.displayName,
-			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name)
+			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name),
+			width: '220px',
+			height: '180px',
+			iconWidth: '50px',
+			iconHeight: '50px'
 		}).component();
-
 		this._resourceTypeCards.push(card);
 		this._cardResourceTypeMap.set(resourceType.name, card);
 		this._toDispose.push(card.onCardSelectedChanged(() => this.selectResourceType(resourceType)));
