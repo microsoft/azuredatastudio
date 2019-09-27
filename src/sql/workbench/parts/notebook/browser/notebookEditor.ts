@@ -104,7 +104,9 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 	async setNotebookModel(): Promise<void> {
 		let notebookEditorModel = await this.notebookInput.resolve();
-		this._notebookModel = notebookEditorModel.getNotebookModel();
+		if (notebookEditorModel) {
+			this._notebookModel = notebookEditorModel.getNotebookModel();
+		}
 	}
 
 	public getNotebookModel(): INotebookModel {
@@ -225,8 +227,10 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 
 
 	private async _onFindStateChange(e: FindReplaceStateChangedEvent): Promise<void> {
-		await this.setNotebookModel();
-		if (this._findCountChangeListener === undefined) {
+		if (!this._notebookModel) {
+			await this.setNotebookModel();
+		}
+		if (this._findCountChangeListener === undefined && this._notebookModel) {
 			this._findCountChangeListener = this._notebookModel.onFindCountChange(() => this._updateFinderMatchState());
 		}
 		if (e.isRevealed) {
