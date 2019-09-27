@@ -85,6 +85,24 @@
 	background-image: url("./media/dark/nottrusted_inverse.svg");
 }
 
+.notebookEditor .notebook-button.icon-show-cells {
+	background-image: url("./media/light/run_cells.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-show-cells,
+.hc-black .notebookEditor .notebook-button.icon-show-cells{
+	background-image: url("./media/dark/run_cells_inverse.svg");
+}
+
+.notebookEditor .notebook-button.icon-hide-cells {
+	background-image: url("./media/light/stop_cell.svg");
+}
+
+.vs-dark .notebookEditor .notebook-button.icon-hide-cells,
+.hc-black .notebookEditor .notebook-button.icon-hide-cells {
+	background-image: url("./media/dark/stop_cell_inverse.svg");
+}
+
 .notebookEditor .notebook-button.icon-clear-results{
 	background-image: url("./media/light/clear_results.svg");
 }

@@ -273,8 +273,8 @@ export class CollapseCellsAction extends ToggleableAction {
 	private static readonly collapseCells = localize('collapseAllCells', "Collapse Cells");
 	private static readonly expandCells = localize('expandAllCells', "Expand Cells");
 	private static readonly baseClass = 'notebook-button';
-	private static readonly collapseCssClass = 'icon-hide-cell';
-	private static readonly expandCssClass = 'icon-show-cell';
+	private static readonly collapseCssClass = 'icon-hide-cells';
+	private static readonly expandCssClass = 'icon-show-cells';
 
 	// Properties
 
