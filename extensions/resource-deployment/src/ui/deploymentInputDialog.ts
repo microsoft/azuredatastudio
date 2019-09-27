@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
 import { INotebookService } from '../services/notebookService';
-import { DialogInfoTypes, instanceOfNotebookBasedDialogInfo } from '../interfaces';
+import { DialogInfo, instanceOfNotebookBasedDialogInfo } from '../interfaces';
 import { Validator, initializeDialog, InputComponents, setModelValues } from './modelViewUtils';
 import { Model } from './model';
 import { EOL } from 'os';
@@ -20,7 +20,7 @@ export class DeploymentInputDialog extends DialogBase {
 	private inputComponents: InputComponents = {};
 
 	constructor(private notebookService: INotebookService,
-		private dialogInfo: DialogInfoTypes) {
+		private dialogInfo: DialogInfo) {
 		super(dialogInfo.title, dialogInfo.name, false);
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
 		this._dialogObject.okButton.onClick(() => this.onComplete());

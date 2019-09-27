@@ -14,9 +14,9 @@ export interface ResourceType {
 	platforms: string[];
 	icon: { light: string; dark: string };
 	options: ResourceTypeOption[];
-	providers: DeploymentProviderTypes[];
+	providers: DeploymentProvider[];
 	agreement?: AgreementInfo;
-	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProviderTypes | undefined;
+	getProvider(selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined;
 }
 
 export interface AgreementInfo {
@@ -35,27 +35,27 @@ export interface ResourceTypeOptionValue {
 	displayName: string;
 }
 
-export interface DialogDeploymentProvider extends DeploymentProvider {
-	dialog: DialogInfoTypes;
+export interface DialogDeploymentProvider extends DeploymentProviderBase {
+	dialog: DialogInfo;
 }
 
-export interface WizardDeploymentProvider extends DeploymentProvider {
+export interface WizardDeploymentProvider extends DeploymentProviderBase {
 	wizard: WizardInfo;
 }
 
-export interface NotebookDeploymentProvider extends DeploymentProvider {
+export interface NotebookDeploymentProvider extends DeploymentProviderBase {
 	notebook: string | NotebookInfo;
 }
 
-export interface WebPageDeploymentProvider extends DeploymentProvider {
+export interface WebPageDeploymentProvider extends DeploymentProviderBase {
 	webPageUrl: string;
 }
 
-export interface DownloadDeploymentProvider extends DeploymentProvider {
+export interface DownloadDeploymentProvider extends DeploymentProviderBase {
 	downloadUrl: string;
 }
 
-export interface CommandDeploymentProvider extends DeploymentProvider {
+export interface CommandDeploymentProvider extends DeploymentProviderBase {
 	command: string;
 }
 
@@ -83,27 +83,27 @@ export function instanceOfCommandDeploymentProvider(obj: any): obj is CommandDep
 	return obj && 'command' in obj;
 }
 
-export interface DeploymentProvider {
+export interface DeploymentProviderBase {
 	requiredTools: ToolRequirementInfo[];
 	when: string;
 }
 
-export type DeploymentProviderTypes = DialogDeploymentProvider | WizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
+export type DeploymentProvider = DialogDeploymentProvider | WizardDeploymentProvider | NotebookDeploymentProvider | WebPageDeploymentProvider | DownloadDeploymentProvider | CommandDeploymentProvider;
 
 export interface WizardInfo {
 	notebook: string | NotebookInfo;
 	type: BdcDeploymentType;
 }
 
-export interface NotebookBasedDialogInfo extends DialogInfo {
+export interface NotebookBasedDialogInfo extends DialogInfoBase {
 	notebook: string | NotebookInfo;
 }
 
-export interface CommandBasedDialogInfo extends DialogInfo {
+export interface CommandBasedDialogInfo extends DialogInfoBase {
 	command: string;
 }
 
-export type DialogInfoTypes = NotebookBasedDialogInfo | CommandBasedDialogInfo;
+export type DialogInfo = NotebookBasedDialogInfo | CommandBasedDialogInfo;
 
 export function instanceOfNotebookBasedDialogInfo(obj: any): obj is NotebookBasedDialogInfo {
 	return obj && 'notebook' in obj;
@@ -113,7 +113,7 @@ export function instanceOfCommandBasedDialogInfo(obj: any): obj is CommandBasedD
 	return obj && 'command' in obj;
 }
 
-export interface DialogInfo {
+export interface DialogInfoBase {
 	title: string;
 	name: string;
 	tabs: DialogTabInfo[];

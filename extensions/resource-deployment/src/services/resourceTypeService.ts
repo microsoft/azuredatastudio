@@ -14,7 +14,7 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, DeploymentProvider, NotebookInfo, DeploymentProviderTypes, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo } from '../interfaces';
+import { ResourceType, ResourceTypeOption, NotebookInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo } from '../interfaces';
 import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
 import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
 import { KubeService } from './kubeService';
@@ -201,7 +201,7 @@ export class ResourceTypeService implements IResourceTypeService {
 	/**
 	 * Get the provider based on the selected options
 	 */
-	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProviderTypes | undefined {
+	private getProvider(resourceType: ResourceType, selectedOptions: { option: string, value: string }[]): DeploymentProvider | undefined {
 		for (let i = 0; i < resourceType.providers.length; i++) {
 			const provider = resourceType.providers[i];
 
@@ -228,7 +228,7 @@ export class ResourceTypeService implements IResourceTypeService {
 		return undefined;
 	}
 
-	public startDeployment(provider: DeploymentProviderTypes): void {
+	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
 		if (instanceOfWizardDeploymentProvider(provider)) {
 			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);

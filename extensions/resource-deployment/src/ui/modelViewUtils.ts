@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfo, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
+import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
 import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
@@ -30,7 +30,7 @@ export const DefaultInputComponentWidth = '400px';
 export const DefaultLabelComponentWidth = '200px';
 
 export interface DialogContext extends CreateContext {
-	dialogInfo: DialogInfo;
+	dialogInfo: DialogInfoBase;
 	container: azdata.window.Dialog;
 }
 
