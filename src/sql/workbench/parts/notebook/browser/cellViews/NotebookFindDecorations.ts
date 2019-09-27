@@ -5,9 +5,8 @@
 
 import { IDisposable } from 'vs/base/common/lifecycle';
 import { NotebookEditor } from 'sql/workbench/parts/notebook/browser/notebookEditor';
-import { NotebookRange, NotebookPosition } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
-import { Range } from 'vs/editor/common/core/range';
-import { FindMatch, IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
+import { NotebookRange, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, OverviewRulerLane, TrackedRangeStickiness, MinimapPosition } from 'vs/editor/common/model';
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import { overviewRulerFindMatchForeground, minimapFindMatch } from 'vs/platform/theme/common/colorRegistry';
 import { themeColorFromId } from 'vs/platform/theme/common/themeService';
@@ -20,7 +19,7 @@ export class FindDecorations implements IDisposable {
 	private _findScopeDecorationId: string | null;
 	private _rangeHighlightDecorationId: string | null;
 	private _highlightedDecorationId: string | null;
-	private _startPosition: NotebookPosition;
+	private _startPosition: NotebookRange;
 
 	constructor(editor: NotebookEditor) {
 		this._editor = editor;
@@ -54,18 +53,18 @@ export class FindDecorations implements IDisposable {
 		return this._decorations.length;
 	}
 
-	public getFindScope(): Range | null {
+	public getFindScope(): NotebookRange | null {
 		if (this._findScopeDecorationId) {
 			return this._editor.getNotebookModel().getDecorationRange(this._findScopeDecorationId);
 		}
 		return null;
 	}
 
-	public getStartPosition(): NotebookPosition {
+	public getStartPosition(): NotebookRange {
 		return this._startPosition;
 	}
 
-	public setStartPosition(newStartPosition: NotebookPosition): void {
+	public setStartPosition(newStartPosition: NotebookRange): void {
 		this._startPosition = newStartPosition;
 		this.setCurrentFindMatch(null);
 	}
@@ -78,7 +77,7 @@ export class FindDecorations implements IDisposable {
 		return 1;
 	}
 
-	public getCurrentMatchesPosition(desiredRange: Range): number {
+	public getCurrentMatchesPosition(desiredRange: NotebookRange): number {
 		let candidates = this._editor.getNotebookModel().getDecorationsInRange(desiredRange);
 		for (const candidate of candidates) {
 			const candidateOpts = candidate.options;
@@ -89,7 +88,7 @@ export class FindDecorations implements IDisposable {
 		return 1;
 	}
 
-	public setCurrentFindMatch(nextMatch: Range | null): number {
+	public setCurrentFindMatch(nextMatch: NotebookRange | null): number {
 		let newCurrentDecorationId: string | null = null;
 		let matchPosition = 0;
 		if (nextMatch) {
@@ -122,7 +121,7 @@ export class FindDecorations implements IDisposable {
 					if (rng.startLineNumber !== rng.endLineNumber && rng.endColumn === 1) {
 						let lineBeforeEnd = rng.endLineNumber - 1;
 						let lineBeforeEndMaxColumn = this._editor.getNotebookModel().getLineMaxColumn(lineBeforeEnd);
-						rng = new Range(rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
+						rng = new NotebookRange(rng.cell, rng.startLineNumber, rng.startColumn, lineBeforeEnd, lineBeforeEndMaxColumn);
 					}
 					this._rangeHighlightDecorationId = changeAccessor.addDecoration(rng, FindDecorations._RANGE_HIGHLIGHT_DECORATION);
 				}
@@ -132,7 +131,7 @@ export class FindDecorations implements IDisposable {
 		return matchPosition;
 	}
 
-	public set(findMatches: FindMatch[], findScope: NotebookRange | null): void {
+	public set(findMatches: NotebookFindMatch[], findScope: NotebookRange | null): void {
 		this._editor.changeDecorations((accessor) => {
 
 			let findMatchesOptions: ModelDecorationOptions = FindDecorations._FIND_MATCH_DECORATION;
@@ -153,14 +152,14 @@ export class FindDecorations implements IDisposable {
 				let prevStartLineNumber = findMatches[0].range.startLineNumber;
 				let prevEndLineNumber = findMatches[0].range.endLineNumber;
 				for (let i = 1, len = findMatches.length; i < len; i++) {
-					const range = findMatches[i].range;
+					const range: NotebookRange = findMatches[i].range;
 					if (prevEndLineNumber + mergeLinesDelta >= range.startLineNumber) {
 						if (range.endLineNumber > prevEndLineNumber) {
 							prevEndLineNumber = range.endLineNumber;
 						}
 					} else {
 						newOverviewRulerApproximateDecorations.push({
-							range: new Range(prevStartLineNumber, 1, prevEndLineNumber, 1),
+							range: new NotebookRange(range.cell, prevStartLineNumber, 1, prevEndLineNumber, 1),
 							options: FindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
 						});
 						prevStartLineNumber = range.startLineNumber;
@@ -169,7 +168,7 @@ export class FindDecorations implements IDisposable {
 				}
 
 				newOverviewRulerApproximateDecorations.push({
-					range: new Range(prevStartLineNumber, 1, prevEndLineNumber, 1),
+					range: new NotebookRange(findMatches[0].range.cell, prevStartLineNumber, 1, prevEndLineNumber, 1),
 					options: FindDecorations._FIND_MATCH_ONLY_OVERVIEW_DECORATION
 				});
 			}
@@ -204,7 +203,7 @@ export class FindDecorations implements IDisposable {
 		});
 	}
 
-	public matchBeforePosition(position: NotebookPosition): Range | null {
+	public matchBeforePosition(position: NotebookRange): NotebookRange | null {
 		if (this._decorations.length === 0) {
 			return null;
 		}
@@ -226,7 +225,7 @@ export class FindDecorations implements IDisposable {
 		return this._editor.getNotebookModel().getDecorationRange(this._decorations[this._decorations.length - 1]);
 	}
 
-	public matchAfterPosition(position: NotebookPosition): Range | null {
+	public matchAfterPosition(position: NotebookRange): NotebookRange | null {
 		if (this._decorations.length === 0) {
 			return null;
 		}

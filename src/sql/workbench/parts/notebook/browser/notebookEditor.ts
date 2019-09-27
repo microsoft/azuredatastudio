@@ -25,7 +25,7 @@ import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/note
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IContextKeyService, ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { INotebookModel, NotebookPosition, NotebookRange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { INotebookModel, NotebookRange } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { Command } from 'vs/editor/browser/editorExtensions';
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
@@ -36,7 +36,6 @@ import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, FindMatch } fro
 import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
 import { Range } from 'vs/editor/common/core/range';
 import { TimeoutTimer } from 'vs/base/common/async';
-import { Selection } from 'vs/editor/common/core/selection';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
@@ -87,7 +86,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		return this.input as NotebookInput;
 	}
 
-	public getPosition(): NotebookPosition {
+	public getPosition(): NotebookRange {
 		return this._findPosition;
 	}
 
@@ -240,32 +239,35 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 			}
 		}
 
-		if (e.searchString || e.isReplaceRevealed || e.isRegex || e.wholeWord || e.matchCase || e.searchScope) {
+		if (e.searchString) {
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
 					let findScope = this._decorations.getFindScope();
 					if (findScope !== null) {
 						if (findScope.startLineNumber !== findScope.endLineNumber) {
 							if (findScope.endColumn === 1) {
-								findScope = new Range(findScope.startLineNumber, 1, findScope.endLineNumber - 1, this._notebookModel.getLineMaxColumn(findScope.endLineNumber - 1));
+								findScope = new NotebookRange(findScope.cell, findScope.startLineNumber, 1, findScope.endLineNumber - 1, this._notebookModel.getLineMaxColumn(findScope.endLineNumber - 1));
 							} else {
 								// multiline find scope => expand to line starts / ends
-								findScope = new Range(findScope.startLineNumber, 1, findScope.endLineNumber, this._notebookModel.getLineMaxColumn(findScope.endLineNumber));
+								findScope = new NotebookRange(findScope.cell, findScope.startLineNumber, 1, findScope.endLineNumber, this._notebookModel.getLineMaxColumn(findScope.endLineNumber));
 							}
 						}
 					}
-					let findRange = await this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES);
-					if (findRange) {
+					this._notebookModel.find(this._findState.searchString, NOTEBOOK_MAX_MATCHES).then(findRange => {
+						if (findRange) {
+							this.updatePosition(findRange);
+						} else {
+							this.updatePosition(this._notebookModel.findMatches[0].range);
+						}
 						this._updateFinderMatchState();
 						this._finder.focusFindInput();
-						this.updatePosition(findRange);
-					}
-					this._decorations.set(this._notebookModel.findMatches, this._findPosition);
-					this._findState.changeMatchInfo(
-						this._decorations.getCurrentMatchesPosition(this.getSelection()),
-						this._decorations.getCount(),
-						this._findPosition
-					);
+						this._decorations.set(this._notebookModel.findMatches, this._findPosition);
+						this._findState.changeMatchInfo(
+							this._decorations.getCurrentMatchesPosition(this.getSelection()),
+							this._decorations.getCount(),
+							this._findPosition
+						);
+					});
 				} else {
 					this._notebookModel.clearFind();
 				}
@@ -273,12 +275,12 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		}
 	}
 
-	public getSelection(): Selection | null {
+	public getSelection(): NotebookRange | null {
 		if (!this._notebookModel) {
 			return null;
 		}
 		// temp
-		return null;
+		return this._findPosition;
 		// return this._notebookModel.cursor.getSelection();
 	}
 

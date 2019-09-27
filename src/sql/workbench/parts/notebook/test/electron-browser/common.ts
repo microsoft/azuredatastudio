@@ -6,12 +6,12 @@
 import { nb, IConnectionProfile } from 'azdata';
 
 import { Event, Emitter } from 'vs/base/common/event';
-import { NotebookRange, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, NotebookPosition } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookRange, INotebookModel, ICellModel, IClientSession, IDefaultConnection, NotebookContentChange, NotebookPosition, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { INotebookManager } from 'sql/workbench/services/notebook/browser/notebookService';
 import { ISingleNotebookEditOperation } from 'sql/workbench/api/common/sqlExtHostTypes';
-import { Range, IRange } from 'vs/editor/common/core/range';
-import { IModelDecoration, FindMatch, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
+import { IRange } from 'vs/editor/common/core/range';
+import { IModelDecoration, IModelDecorationsChangeAccessor } from 'vs/editor/common/model';
 import { IStandardKernelWithProvider } from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
 
 export class NotebookModelStub implements INotebookModel {
@@ -126,7 +126,7 @@ export class NotebookModelStub implements INotebookModel {
 	getFindIndex(): number {
 		throw new Error('Method not implemented.');
 	}
-	getDecorationRange(id: string): Range | null {
+	getDecorationRange(id: string): NotebookRange | null {
 		throw new Error('Method not implemented.');
 	}
 	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): IModelDecoration[] {
@@ -141,7 +141,7 @@ export class NotebookModelStub implements INotebookModel {
 	getLineCount(): number {
 		throw new Error('Method not implemented.');
 	}
-	findMatches: FindMatch[];
+	findMatches: NotebookFindMatch[];
 	onFindCountChange: Event<number>;
 	findArray: NotebookRange[];
 	get onActiveCellChanged(): Event<ICellModel> {

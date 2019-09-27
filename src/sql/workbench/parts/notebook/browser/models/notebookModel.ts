@@ -9,7 +9,7 @@ import { localize } from 'vs/nls';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable, DisposableStore } from 'vs/base/common/lifecycle';
 
-import { NotebookRange, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, NotebookPosition, INotebookContentsEditable } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
+import { NotebookRange, IClientSession, INotebookModel, IDefaultConnection, INotebookModelOptions, ICellModel, NotebookContentChange, notebookConstants, NotebookPosition, INotebookContentsEditable, NotebookFindMatch } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 import { NotebookChangeType, CellType, CellTypes } from 'sql/workbench/parts/notebook/common/models/contracts';
 import { nbversion } from 'sql/workbench/parts/notebook/common/models/notebookConstants';
 import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/notebookUtils';
@@ -36,6 +36,8 @@ import { PieceTreeTextBufferBuilder } from 'vs/editor/common/model/pieceTreeText
 import { VSBufferReadableStream, VSBuffer } from 'vs/base/common/buffer';
 import { CharCode } from 'vs/base/common/charCode';
 import { EDITOR_MODEL_DEFAULTS } from 'vs/editor/common/config/editorOptions';
+import * as strings from 'vs/base/common/strings';
+
 /*
 * Used to control whether a message in a dialog/wizard is displayed as an error,
 * warning, or informational message. Default is error.
@@ -239,6 +241,11 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		this._lastDecorationId = 0;
 		this._decorations = Object.create(null);
 		this._decorationsTree = new DecorationsTrees();
+
+		this._buffer = createTextBuffer('', NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+		this._options = TextModel.resolveOptions(this._buffer, NotebookModel.DEFAULT_CREATION_OPTIONS);
+		const bufferLineCount = this._buffer.getLineCount();
+		const bufferTextLength = this._buffer.getValueLengthInRange(new Range(1, 1, bufferLineCount, this._buffer.getLineLength(bufferLineCount) + 1), model.EndOfLinePreference.TextDefined);
 		// Generate a new unique model id
 		MODEL_ID++;
 		this.id = '$model' + MODEL_ID;
@@ -455,10 +462,6 @@ export class NotebookModel extends Disposable implements INotebookModel {
 						notebookContent = notebookContent.concat(cellModel.source.toString());
 						return cellModel;
 					});
-					this._buffer = createTextBuffer(notebookContent, NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
-					this._options = TextModel.resolveOptions(this._buffer, NotebookModel.DEFAULT_CREATION_OPTIONS);
-					const bufferLineCount = this._buffer.getLineCount();
-					const bufferTextLength = this._buffer.getValueLengthInRange(new Range(1, 1, bufferLineCount, this._buffer.getLineLength(bufferLineCount) + 1), model.EndOfLinePreference.TextDefined);
 				}
 			}
 		} catch (error) {
@@ -1219,10 +1222,10 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		}
 	}
 
-	public get findMatches(): model.FindMatch[] {
-		let findMatches: model.FindMatch[] = [];
+	public get findMatches(): NotebookFindMatch[] {
+		let findMatches: NotebookFindMatch[] = [];
 		this._findArray.forEach(element => {
-			findMatches = findMatches.concat(new model.FindMatch(element, null));
+			findMatches = findMatches.concat(new NotebookFindMatch(element, null));
 		});
 		return findMatches;
 	}
@@ -1300,15 +1303,21 @@ export class NotebookModel extends Disposable implements INotebookModel {
 	}
 
 	getDecorationsInRange(range: IRange, ownerId?: number, filterOutValidation?: boolean): model.IModelDecoration[] {
-		return undefined;
+		let validatedRange = this.validateRange(range);
+		return this._getDecorationsInRange(validatedRange, ownerId, filterOutValidation);
 	}
 
 	getLineMaxColumn(lineNumber: number): number {
-		return undefined;
+		this._assertNotDisposed();
+		if (lineNumber < 1 || lineNumber > this.getLineCount()) {
+			throw new Error('Illegal value for lineNumber');
+		}
+		return this._buffer.getLineLength(lineNumber) + 1;
 	}
 
 	getLineCount(): number {
-		return undefined;
+		this._assertNotDisposed();
+		return this._buffer.getLineCount();
 	}
 
 	//#region Decorations
@@ -1381,11 +1390,134 @@ export class NotebookModel extends Disposable implements INotebookModel {
 		return result;
 	}
 
+	private _getDecorationsInRange(filterRange: NotebookRange, filterOwnerId: number, filterOutValidation: boolean): IntervalNode[] {
+		if (filterRange) {
+			const startOffset = this._buffer.getOffsetAt(filterRange.startLineNumber, filterRange.startColumn);
+			const endOffset = this._buffer.getOffsetAt(filterRange.endLineNumber, filterRange.endColumn);
+
+			const versionId = this.getVersionId();
+			const result = this._decorationsTree.intervalSearch(startOffset, endOffset, filterOwnerId, filterOutValidation, versionId);
+
+			return this._ensureNodesHaveRanges(result);
+		}
+		return [];
+	}
+
+	private _ensureNodesHaveRanges(nodes: IntervalNode[]): IntervalNode[] {
+		for (let i = 0, len = nodes.length; i < len; i++) {
+			const node = nodes[i];
+			if (node.range === null) {
+				node.range = this._getRangeAt(node.cachedAbsoluteStart, node.cachedAbsoluteEnd);
+			}
+		}
+		return nodes;
+	}
+
+	private _getRangeAt(start: number, end: number): Range {
+		return this._buffer.getRangeAt(start, end - start);
+	}
+
+	/**
+	 * @param strict Do NOT allow a range to have its boundaries inside a high-low surrogate pair
+	 */
+	private _isValidRange(range: NotebookRange, strict: boolean): boolean {
+		const startLineNumber = range.startLineNumber;
+		const startColumn = range.startColumn;
+		const endLineNumber = range.endLineNumber;
+		const endColumn = range.endColumn;
+
+		if (!this._isValidPosition(startLineNumber, startColumn, false)) {
+			return false;
+		}
+		if (!this._isValidPosition(endLineNumber, endColumn, false)) {
+			return false;
+		}
+
+		if (strict) {
+			const charCodeBeforeStart = (startColumn > 1 ? this._buffer.getLineCharCode(startLineNumber, startColumn - 2) : 0);
+			const charCodeBeforeEnd = (endColumn > 1 && endColumn <= this._buffer.getLineLength(endLineNumber) ? this._buffer.getLineCharCode(endLineNumber, endColumn - 2) : 0);
+
+			const startInsideSurrogatePair = strings.isHighSurrogate(charCodeBeforeStart);
+			const endInsideSurrogatePair = strings.isHighSurrogate(charCodeBeforeEnd);
+
+			if (!startInsideSurrogatePair && !endInsideSurrogatePair) {
+				return true;
+			}
+
+			return false;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param strict Do NOT allow a position inside a high-low surrogate pair
+	 */
+	private _isValidPosition(lineNumber: number, column: number, strict: boolean): boolean {
+		if (typeof lineNumber !== 'number' || typeof column !== 'number') {
+			return false;
+		}
+
+		if (isNaN(lineNumber) || isNaN(column)) {
+			return false;
+		}
+
+		if (lineNumber < 0 || column < 1) {
+			return false;
+		}
+
+		if ((lineNumber | 0) !== lineNumber || (column | 0) !== column) {
+			return false;
+		}
+
+		const lineCount = this._buffer.getLineCount();
+		if (lineNumber > lineCount) {
+			return false;
+		}
+
+		/* const maxColumn = this.getLineMaxColumn(lineNumber);
+		if (column > maxColumn) {
+			return false;
+		} */
+
+		if (strict) {
+			if (column > 1) {
+				const charCodeBefore = this._buffer.getLineCharCode(lineNumber, column - 2);
+				if (strings.isHighSurrogate(charCodeBefore)) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+
+	public validateRange(_range: IRange): NotebookRange {
+		this._assertNotDisposed();
+
+		// Avoid object allocation and cover most likely case
+		if ((_range instanceof NotebookRange) && !(_range instanceof Selection)) {
+			if (this._isValidRange(_range, true)) {
+				return _range;
+			}
+		}
+
+		return undefined;
+	}
+
 	/**
 	 * Validates `range` is within buffer bounds, but allows it to sit in between surrogate pairs, etc.
 	 * Will try to not allocate if possible.
 	 */
 	private _validateRangeRelaxedNoAllocations(range: IRange): NotebookRange {
+		if (range instanceof NotebookRange) {
+			this._buffer = createTextBuffer(range.cell.source instanceof Array ? range.cell.source.join('\n') : range.cell.source, NotebookModel.DEFAULT_CREATION_OPTIONS.defaultEOL);
+			this._options = TextModel.resolveOptions(this._buffer, NotebookModel.DEFAULT_CREATION_OPTIONS);
+			const bufferLineCount = this._buffer.getLineCount();
+			const bufferTextLength = this._buffer.getValueLengthInRange(new Range(1, 1, bufferLineCount, this._buffer.getLineLength(bufferLineCount) + 1), model.EndOfLinePreference.TextDefined);
+		}
+
 		const linesCount = this._buffer.getLineCount();
 
 		const initialStartLineNumber = range.startLineNumber;

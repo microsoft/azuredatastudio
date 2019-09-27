@@ -434,7 +434,7 @@ export interface INotebookModel {
 	 * @param id The decoration id.
 	 * @return The decoration range or null if the decoration was not found.
 	 */
-	getDecorationRange(id: string): Range | null;
+	getDecorationRange(id: string): NotebookRange | null;
 
 	/**
 	 * Gets all the decorations in a range as an array. Only `startLineNumber` and `endLineNumber` from `range` are used for filtering.
@@ -457,7 +457,7 @@ export interface INotebookModel {
 	 */
 	getLineCount(): number;
 
-	findMatches: FindMatch[];
+	findMatches: NotebookFindMatch[];
 
 	onFindCountChange: Event<number>;
 
@@ -479,6 +479,22 @@ export class NotebookRange extends Range implements NotebookPosition {
 		this.startColumnNumber = startColumn;
 		this.endColumnNumber = endColumn;
 		this.updateActiveCell(cell);
+	}
+}
+
+export class NotebookFindMatch extends FindMatch {
+	_findMatchBrand: void;
+
+	public readonly range: NotebookRange;
+	public readonly matches: string[] | null;
+
+	/**
+	 * @internal
+	 */
+	constructor(range: NotebookRange, matches: string[] | null) {
+		super(new Range(range.lineNumber, range.startColumnNumber, range.endLineNumber, range.endColumnNumber), matches);
+		this.range = range;
+		this.matches = matches;
 	}
 }
 
