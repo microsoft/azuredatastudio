@@ -93,9 +93,6 @@ export class RunCellAction extends MultiStateAction<CellExecutionState> {
 			return;
 		}
 		try {
-			if (context.cell.isHidden) {
-				context.cell.isHidden = false;
-			}
 			await this._context.cell.runCell(this.notificationService, this.connectionManagementService);
 		} catch (error) {
 			let message = getErrorMessage(error);

@@ -289,6 +289,9 @@ export class CellModel implements ICellModel {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
+			if (this.isHidden) {
+				this.isHidden = false;
+			}
 
 			if (connectionManagementService) {
 				this._connectionManagementService = connectionManagementService;
