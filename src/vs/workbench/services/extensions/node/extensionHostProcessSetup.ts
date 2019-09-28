@@ -55,6 +55,7 @@ const args = minimist(process.argv.slice(2), {
 const nativeExit: IExitFn = process.exit.bind(process);
 function patchProcess(allowExit: boolean) {
 	process.exit = function (code?: number) {
+		console.log('exiting through native exit');
 		if (allowExit) {
 			nativeExit(code);
 		} else {

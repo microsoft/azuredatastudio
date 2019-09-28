@@ -253,7 +253,7 @@ export class CodeApplication extends Disposable {
 
 		ipc.on('vscode:exit', (event: Event, code: number) => {
 			this.logService.trace('IPC#vscode:exit', code);
-
+			console.log('exiting - ipc');
 			this.dispose();
 			this.lifecycleMainService.kill(code);
 		});

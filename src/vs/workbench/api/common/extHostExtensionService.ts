@@ -592,11 +592,16 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 		// messages to the main process, we delay the exit() by some time
 		setTimeout(() => {
 			// If extension tests are running, give the exit code to the renderer
-			if (this._initData.remote.isRemote && !!this._initData.environment.extensionTestsLocationURI) {
-				this._mainThreadExtensionsProxy.$onExtensionHostExit(code);
-				return;
+			try {
+				if (this._initData.remote.isRemote && !!this._initData.environment.extensionTestsLocationURI) {
+					console.log('running');
+					this._mainThreadExtensionsProxy.$onExtensionHostExit(code);
+					return;
+				}
+			} catch (ex) {
+				console.log(ex);
 			}
-
+			console.log('exiting');
 			this._hostUtils.exit(code);
 		}, 500);
 	}

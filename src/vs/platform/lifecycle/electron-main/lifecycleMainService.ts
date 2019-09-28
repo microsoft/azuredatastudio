@@ -537,7 +537,7 @@ export class LifecycleMainService extends Disposable implements ILifecycleMainSe
 
 	kill(code?: number): void {
 		this.logService.trace('Lifecycle#kill()');
-
+		console.log('lifecycle-kill');
 		app.exit(code);
 	}
 }
