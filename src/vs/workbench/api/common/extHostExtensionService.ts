@@ -543,6 +543,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 			return new Promise<void>((c, e) => {
 				const oldTestRunnerCallback = (error: Error, failures: number | undefined) => {
 					if (error) {
+						console.log('CARBON1-ERROR', error);
 						e(error.toString());
 					} else {
 						c(undefined);
@@ -563,6 +564,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 								this._gracefulExit(0);
 							})
 							.catch((err: Error) => {
+								console.log('CARBON2-ERROR', err);
 								e(err.toString());
 								this._gracefulExit(1);
 							});
