@@ -10,8 +10,8 @@ fi
 
 cd $ROOT
 
-export ADS_TEST_GREP=*UNSTABLE*
+export ADS_TEST_GREP=\*UNSTABLE\*
 
 echo Running unstable tests
 
-./scripts/code.sh
+./scripts/sql-test-integration.sh
