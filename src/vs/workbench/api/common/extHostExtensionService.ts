@@ -538,8 +538,10 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 			requireError = error;
 		}
 
+		console.log('RunningTest', extensionTestsPath);
 		// Execute the runner if it follows the old `run` spec
 		if (testRunner && typeof testRunner.run === 'function') {
+			console.log('RunningTest2', extensionTestsPath);
 			return new Promise<void>((c, e) => {
 				const oldTestRunnerCallback = (error: Error, failures: number | undefined) => {
 					if (error) {
@@ -555,7 +557,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 
 				try {
 					const runResult = testRunner!.run(extensionTestsPath, oldTestRunnerCallback);
-
+					console.log(runResult);
 					// Using the new API `run(): Promise<void>`
 					if (runResult && runResult.then) {
 						runResult
@@ -578,6 +580,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 
 		// Otherwise make sure to shutdown anyway even in case of an error
 		else {
+			console.log('RunningTest3', extensionTestsPath);
 			this._gracefulExit(1 /* ERROR */);
 		}
 
