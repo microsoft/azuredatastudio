@@ -570,6 +570,9 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 								e(err.toString());
 								this._gracefulExit(1);
 							});
+					} else {
+						console.log('something went wrong??');
+						this._gracefulExit(0);
 					}
 				} catch (err) {
 					console.log('CARBON-ERROR', err);
