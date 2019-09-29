@@ -102,6 +102,7 @@ export class ExtensionHostMain {
 		const mainThreadExtensions = rpcProtocol.getProxy(MainContext.MainThreadExtensionService);
 		const mainThreadErrors = rpcProtocol.getProxy(MainContext.MainThreadErrors);
 		errors.setUnexpectedErrorHandler(err => {
+			console.log('bad error :(', err);
 			const data = errors.transformErrorForSerialization(err);
 			const extension = extensionErrors.get(err);
 			if (extension) {

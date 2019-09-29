@@ -548,12 +548,11 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 					if (error) {
 						console.log('CARBON1-ERROR', error);
 						e(error.toString());
-					} else {
-						c(undefined);
 					}
 
 					// after tests have run, we shutdown the host
 					this._gracefulExit(error || (typeof failures === 'number' && failures > 0) ? 1 /* ERROR */ : 0 /* OK */);
+					c(undefined);
 				};
 
 				try {
