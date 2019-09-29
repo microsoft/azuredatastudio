@@ -1683,6 +1683,7 @@ export class WindowsManager extends Disposable implements IWindowsMainService {
 
 	private onWindowError(window: ICodeWindow, error: WindowError): void {
 		this.logService.error(error === WindowError.CRASHED ? '[VS Code]: render process crashed!' : '[VS Code]: detected unresponsive');
+		console.error(window, error);
 		type WindowErrorClassification = {
 			type: { classification: 'SystemMetaData', purpose: 'PerformanceAndHealth', isMeasurement: true };
 		};
