@@ -136,7 +136,7 @@ export class ElectronWindow extends Disposable {
 		});
 
 		window.onerror = ((err, url, line, colno, errObj) => {
-			console.log('WINDOW ERROR: ', err, url, line, colno, errObj, 'FIN');
+			console.log(`WINDOW ERROR: , ${err}, ${url}, ${line}, ${colno}, ${errObj}, FIN`);
 		});
 
 		// Support runAction event
