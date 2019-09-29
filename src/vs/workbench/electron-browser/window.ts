@@ -135,6 +135,10 @@ export class ElectronWindow extends Disposable {
 			});
 		});
 
+		window.onerror = ((err, url, line) => {
+			console.log('WINDOW ERROR', err, url, line);
+		});
+
 		// Support runAction event
 		ipc.on('vscode:runAction', async (event: Event, request: IRunActionInWindowRequest) => {
 			const args: unknown[] = request.args || [];
