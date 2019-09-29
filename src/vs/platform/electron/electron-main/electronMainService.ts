@@ -11,6 +11,7 @@ import { isMacintosh } from 'vs/base/common/platform';
 import { IElectronService } from 'vs/platform/electron/node/electron';
 import { ISerializableCommandAction } from 'vs/platform/actions/common/actions';
 import { AddContextToFunctions } from 'vs/platform/ipc/node/simpleIpcProxy';
+import * as Sentry from '@sentry/electron';
 
 export class ElectronMainService implements AddContextToFunctions<IElectronService, number> {
 
@@ -241,7 +242,8 @@ export class ElectronMainService implements AddContextToFunctions<IElectronServi
 	}
 
 	async startCrashReporter(windowId: number, options: CrashReporterStartOptions): Promise<void> {
-		crashReporter.start(options);
+		//crashReporter.start(options);
+		Sentry.init({ dsn: 'https://cf92839a9422411ca1bc7f839986e9eb@sentry.io/1764727' });
 	}
 
 	//#endregion

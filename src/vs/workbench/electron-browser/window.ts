@@ -420,6 +420,7 @@ export class ElectronWindow extends Disposable {
 		if (!this.environmentService.disableCrashReporter && product.crashReporter && product.hockeyApp && this.configurationService.getValue('telemetry.enableCrashReporter')) {
 			//this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
 		}
+		this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
 		Sentry.init({ dsn: 'https://cf92839a9422411ca1bc7f839986e9eb@sentry.io/1764727' });
 	}
 
