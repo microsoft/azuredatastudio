@@ -544,6 +544,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 			console.log('RunningTest2', extensionTestsPath);
 			return new Promise<void>((c, e) => {
 				const oldTestRunnerCallback = (error: Error, failures: number | undefined) => {
+					console.log('thiswasoldtest', error, failures);
 					if (error) {
 						console.log('CARBON1-ERROR', error);
 						e(error.toString());
@@ -570,9 +571,6 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 								e(err.toString());
 								this._gracefulExit(1);
 							});
-					} else {
-						console.log('something went wrong??');
-						this._gracefulExit(0);
 					}
 				} catch (err) {
 					console.log('CARBON-ERROR', err);
@@ -591,17 +589,21 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 	}
 
 	private _gracefulExit(code: number): void {
+		console.log('timetoquit');
 		// to give the PH process a chance to flush any outstanding console
 		// messages to the main process, we delay the exit() by some time
 		setTimeout(() => {
 			// If extension tests are running, give the exit code to the renderer
 			try {
+				console.log('timetoquit--', this._initData.remote.isRemote, !!this._initData.environment.extensionTestsLocationURI);
+
 				if (this._initData.remote.isRemote && !!this._initData.environment.extensionTestsLocationURI) {
-					console.log('running');
+					console.log('running onExtHostExit');
 					this._mainThreadExtensionsProxy.$onExtensionHostExit(code);
 					return;
 				}
 			} catch (ex) {
+				console.log('bad stuff happen');
 				console.log(ex);
 			}
 			console.log('exiting');
