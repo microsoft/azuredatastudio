@@ -242,8 +242,12 @@ export class ElectronMainService implements AddContextToFunctions<IElectronServi
 	}
 
 	async startCrashReporter(windowId: number, options: CrashReporterStartOptions): Promise<void> {
-		//crashReporter.start(options);
-		Sentry.init({ dsn: 'https://cf92839a9422411ca1bc7f839986e9eb@sentry.io/1764727' });
+		crashReporter.start({
+			companyName: 'YourCompany',
+			productName: 'YourApp',
+			ignoreSystemCrashHandler: true,
+			submitURL: 'https://sentry.io/api/1764727/minidump/?sentry_key=cf92839a9422411ca1bc7f839986e9eb'
+		});
 	}
 
 	//#endregion

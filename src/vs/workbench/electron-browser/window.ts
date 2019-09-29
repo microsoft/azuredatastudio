@@ -420,8 +420,13 @@ export class ElectronWindow extends Disposable {
 		if (!this.environmentService.disableCrashReporter && product.crashReporter && product.hockeyApp && this.configurationService.getValue('telemetry.enableCrashReporter')) {
 			//this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
 		}
-		this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
-		Sentry.init({ dsn: 'https://cf92839a9422411ca1bc7f839986e9eb@sentry.io/1764727' });
+		this.setupCrashReporter();
+		crashReporter.start({
+			companyName: 'YourCompany',
+			productName: 'YourApp',
+			ignoreSystemCrashHandler: true,
+			submitURL: 'https://sentry.io/api/1764727/minidump/?sentry_key=cf92839a9422411ca1bc7f839986e9eb'
+		});
 	}
 
 	private setupOpenHandlers(): void {
@@ -545,31 +550,8 @@ export class ElectronWindow extends Disposable {
 		}
 	}
 
-	private async setupCrashReporter(companyName: string, productName: string, hockeyAppConfig: typeof product.hockeyApp): Promise<void> {
-		if (!hockeyAppConfig) {
-			return;
-		}
-
-		// base options with product info
-		const options = {
-			companyName,
-			productName,
-			submitURL: isWindows ? hockeyAppConfig[process.arch === 'ia32' ? 'win32-ia32' : 'win32-x64'] : isLinux ? hockeyAppConfig[`linux-x64`] : hockeyAppConfig.darwin,
-			extra: {
-				vscode_version: product.version,
-				vscode_commit: product.commit
-			}
-		};
-
-		// mixin telemetry info
-		const info = await this.telemetryService.getTelemetryInfo();
-		assign(options.extra, { vscode_sessionId: info.sessionId });
-
-		// start crash reporter right here
-		crashReporter.start(deepClone(options));
-
-		// start crash reporter in the main process
-		return this.electronService.startCrashReporter(options);
+	private async setupCrashReporter(): Promise<void> {
+		return this.electronService.startCrashReporter(undefined);
 	}
 
 	private onAddFoldersRequest(request: IAddFoldersRequest): void {
