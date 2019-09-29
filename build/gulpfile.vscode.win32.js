@@ -6,6 +6,7 @@
 'use strict';
 
 const gulp = require('gulp');
+const rename = require('gulp-rename'); // {{SQL CARBON EDIT}}
 const path = require('path');
 const fs = require('fs');
 const assert = require('assert');
@@ -40,6 +41,13 @@ function packageInnoSetup(iss, options, cb) {
 
 	if (process.argv.some(arg => arg === '--sign')) {
 		definitions['Sign'] = 'true';
+	}
+
+	definitions['Quality'] = product.quality; // {{SQL CARBON EDIT}} Modify installer based on quality
+
+	// {{SQL CARBON EDIT}} Switch file icon for non-stable builds
+	if (product.quality !== 'stable') {
+		gulp.src('resources/win32/code_file-insiders.ico').pipe(rename('resources/win32/code_file.ico'));
 	}
 
 	const keys = Object.keys(definitions);
@@ -138,7 +146,7 @@ function copyInnoUpdater(arch) {
 
 function updateIcon(executablePath) {
 	return cb => {
-		const icon = path.join(repoPath, 'resources', 'win32', 'code.ico');
+		const icon = product.quality === 'stable' ? path.join(repoPath, 'resources', 'win32', 'code-insiders.ico') : path.join(repoPath, 'resources', 'win32', 'code.ico'); // {{SQL CARBON EDIT}} Use separate icons for non-stable
 		rcedit(executablePath, { icon }, cb);
 	};
 }
