@@ -60,6 +60,7 @@ import { posix, dirname } from 'vs/base/common/path';
 import { getBaseLabel } from 'vs/base/common/labels';
 import { ITunnelService, extractLocalHostUriMetaDataForPortMapping } from 'vs/platform/remote/common/tunnel';
 import { IWorkbenchLayoutService, Parts } from 'vs/workbench/services/layout/browser/layoutService';
+import * as Sentry from '@sentry/electron';
 
 const TextInputActions: IAction[] = [
 	new Action('undo', nls.localize('undo', "Undo"), undefined, true, () => Promise.resolve(document.execCommand('undo'))),
@@ -417,8 +418,9 @@ export class ElectronWindow extends Disposable {
 
 		// Crash reporter (if enabled)
 		if (!this.environmentService.disableCrashReporter && product.crashReporter && product.hockeyApp && this.configurationService.getValue('telemetry.enableCrashReporter')) {
-			this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
+			//this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
 		}
+		Sentry.init({ dsn: 'https://cf92839a9422411ca1bc7f839986e9eb@sentry.io/1764727' });
 	}
 
 	private setupOpenHandlers(): void {
