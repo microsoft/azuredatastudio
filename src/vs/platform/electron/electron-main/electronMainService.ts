@@ -251,9 +251,6 @@ export class ElectronMainService implements AddContextToFunctions<IElectronServi
 		});
 		console.log('setup crash reporter');
 
-		setTimeout(() => {
-			process.crash();
-		}, 10000);
 	}
 
 	//#endregion
