@@ -3,6 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
+import * as process from 'process';
 import * as nls from 'vs/nls';
 import * as path from 'vs/base/common/path';
 import { originalFSPath, joinPath } from 'vs/base/common/resources';
@@ -544,7 +545,7 @@ export abstract class AbstractExtHostExtensionService implements ExtHostExtensio
 			console.log('RunningTest2', extensionTestsPath);
 			return new Promise<void>((c, e) => {
 				const oldTestRunnerCallback = (error: Error, failures: number | undefined) => {
-					console.log('thiswasoldtest', error, failures);
+					console.log('thiswasoldtest', error, failures, process.memoryUsage());
 					if (error) {
 						console.log('CARBON1-ERROR', error);
 						e(error.toString());
