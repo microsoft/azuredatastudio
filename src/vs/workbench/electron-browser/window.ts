@@ -421,7 +421,9 @@ export class ElectronWindow extends Disposable {
 			//this.setupCrashReporter(product.crashReporter.companyName, product.crashReporter.productName, product.hockeyApp);
 		}
 		this.setupCrashReporter();
-
+		setTimeout(() => {
+			//process.crash();
+		}, 10000);
 	}
 
 	private setupOpenHandlers(): void {
@@ -547,8 +549,8 @@ export class ElectronWindow extends Disposable {
 
 	private async setupCrashReporter(): Promise<void> {
 		crashReporter.start({
-			companyName: 'YourCompany',
-			productName: 'YourApp',
+			companyName: 'zync',
+			productName: 'zync-sv',
 			ignoreSystemCrashHandler: true,
 			submitURL: 'https://sentry.io/api/1764727/minidump/?sentry_key=cf92839a9422411ca1bc7f839986e9eb'
 		});
