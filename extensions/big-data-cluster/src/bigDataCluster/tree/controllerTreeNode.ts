@@ -179,7 +179,7 @@ export class ControllerNode extends ControllerTreeNode {
 		if (!url) {
 			return;
 		}
-		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '').replace(/:(\d+)$/, ',$1');
+		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '');
 	}
 
 	public get url(): string {
