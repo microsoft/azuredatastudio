@@ -15,6 +15,7 @@ import { IQueryHistoryService } from 'sql/platform/queryHistory/common/queryHist
 import { QueryHistoryNode } from 'sql/workbench/parts/queryHistory/browser/queryHistoryNode';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { openNewQuery } from 'sql/workbench/parts/query/browser/queryActions';
+import { ICommandService } from 'vs/platform/commands/common/commands';
 
 export class ToggleQueryHistoryAction extends TogglePanelAction {
 
@@ -42,11 +43,27 @@ export class DeleteAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<boolean> {
+	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			this._queryHistoryService.deleteQueryHistoryInfo(element.info);
 		}
-		return true;
+	}
+}
+
+export class ClearHistoryAction extends Action {
+	public static ID = 'queryHistory.clear';
+	public static LABEL = localize('queryHistory.clearLabel', "Clear All History");
+
+	constructor(
+		id: string,
+		label: string,
+		@ICommandService private _commandService: ICommandService
+	) {
+		super(id, label, 'clear-query-history-action codicon-clear-all');
+	}
+
+	public async run(): Promise<void> {
+		this._commandService.executeCommand('queryHistory.clear');
 	}
 }
 
@@ -63,11 +80,10 @@ export class OpenQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<boolean> {
+	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.none).then(() => true, () => false);
 		}
-		return true;
 	}
 }
 
@@ -83,11 +99,10 @@ export class RunQueryAction extends Action {
 		super(id, label);
 	}
 
-	public async run(element: QueryHistoryNode): Promise<boolean> {
+	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).catch(() => true, () => false);
 		}
-		return true;
 	}
 }
 

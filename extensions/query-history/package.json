@@ -22,6 +22,22 @@
 	},
 	"extensionDependencies": [
 	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "queryHistory.clear",
+				"title": "%queryHistory.clear%",
+				"category": "%queryHistory.displayName%"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "queryHistory.clear"
+				}
+			]
+		}
+	},
 	"dependencies": {
 	},
 	"devDependencies": {
