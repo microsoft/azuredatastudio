@@ -11,7 +11,7 @@ import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/to
 import { IModeService } from 'vs/editor/common/services/modeService';
 import * as nls from 'vs/nls';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
+import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IRequestService, asText } from 'vs/platform/request/common/request';
