@@ -360,6 +360,11 @@
           "name": "python3",
           "displayName": "Python 3",
           "connectionProviderIds": []
+        },
+        {
+          "name": "powershell",
+          "displayName": "PowerShell",
+          "connectionProviderIds": []
         }
       ]
     },
