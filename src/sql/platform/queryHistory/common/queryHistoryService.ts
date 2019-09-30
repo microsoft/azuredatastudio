@@ -21,5 +21,6 @@ export interface IQueryHistoryService {
 
 	getQueryHistoryInfos(): QueryHistoryInfo[];
 	deleteQueryHistoryInfo(info: QueryHistoryInfo): void;
+	clearQueryHistory(): void;
 	start(): void;
 }
