@@ -48,7 +48,7 @@ configurationRegistry.registerConfiguration({
 			type: 'boolean',
 			default: true,
 			scope: ConfigurationScope.APPLICATION,
-			description: localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are fetched from a Microsoft online service."),
+			description: localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are opened in a new web browser window."), // {{SQL CARBON EDIT}} Update text to be correct for ADS
 			tags: ['usesOnlineServices']
 		}
 	}
