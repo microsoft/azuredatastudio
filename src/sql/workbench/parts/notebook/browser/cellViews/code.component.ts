@@ -33,6 +33,7 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
+import { HiddenComponent } from 'sql/workbench/parts/notebook/browser/cellViews/hidden.component';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -46,6 +47,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
 	@ViewChild('editorPlaceholder', { read: ElementRef }) private codePlaceholderElement: ElementRef;
+	@ViewChild(HiddenComponent) private collapseComponent: HiddenComponent;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -82,7 +84,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this.cellModel.hover = value;
 		if (!this.isActive()) {
 			// Only make a change if we're not active, since this has priority
-			this.toggleMoreActionsButton(this.cellModel.hover);
+			this.toggleActionsVisibility(this.cellModel.hover);
 		}
 	}
 
@@ -129,7 +131,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				let changedProp = changes[propName];
 				let isActive = this.cellModel.id === changedProp.currentValue;
 				this.updateConnectionState(isActive);
-				this.toggleMoreActionsButton(isActive);
+				this.toggleActionsVisibility(isActive);
 				if (this._editor) {
 					this._editor.toggleEditorSelected(isActive);
 				}
@@ -329,8 +331,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		return this.cellModel && this.cellModel.id === this.activeCellId;
 	}
 
-	protected toggleMoreActionsButton(isActiveOrHovered: boolean) {
+	protected toggleActionsVisibility(isActiveOrHovered: boolean) {
 		this._cellToggleMoreActions.toggleVisible(!isActiveOrHovered);
+
+		if (this.collapseComponent) {
+			this.collapseComponent.toggleIconVisibility(isActiveOrHovered);
+		}
 	}
 
 	private toggleCollapsed(isHidden: boolean): void {

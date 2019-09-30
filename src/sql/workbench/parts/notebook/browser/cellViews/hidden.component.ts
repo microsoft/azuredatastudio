@@ -17,12 +17,10 @@ export const HIDDEN_SELECTOR: string = 'hidden-component';
 })
 
 export class HiddenComponent extends CellView implements OnInit, OnChanges {
-	@Input() cellModel: ICellModel;
-	@Input() set model(value: NotebookModel) {
-		this._model = value;
-	}
+	@ViewChild('collapseCellButton', { read: ElementRef }) private collapseCellButtonElement: ElementRef;
 
-	private _model: NotebookModel;
+	@Input() cellModel: ICellModel;
+	@Input() model: NotebookModel;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -34,10 +32,6 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
-	}
-
-	get model(): NotebookModel {
-		return this._model;
 	}
 
 	public toggleVisibility(event?: Event): void {
@@ -53,5 +47,17 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 
 	public layout() {
 
+	}
+
+	public toggleIconVisibility(isActiveOrHovered: boolean) {
+		if (this.collapseCellButtonElement) {
+			let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
+			let buttonClass = 'icon-hide-cell';
+			if (isActiveOrHovered) {
+				collapseButton.classList.add(buttonClass);
+			} else {
+				collapseButton.classList.remove(buttonClass);
+			}
+		}
 	}
 }
