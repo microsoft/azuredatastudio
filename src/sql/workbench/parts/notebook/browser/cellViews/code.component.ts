@@ -334,6 +334,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private toggleCollapsed(isHidden: boolean): void {
+		if (!this.codePlaceholderElement) {
+			return;
+		}
 		let codeEditor = <HTMLElement>this.codeElement.nativeElement;
 		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
 		if (isHidden) {
@@ -347,6 +350,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private updatePlaceholderStyle(): void {
+		if (!this.codePlaceholderElement) {
+			return;
+		}
 		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
 		codePlaceholder.style.minHeight = `${this._editor.lineHeight}px`;
 
