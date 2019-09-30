@@ -125,7 +125,7 @@ export class ControllerRootNode extends ControllerTreeNode {
 	}
 
 	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
-		if (!url || !username) {
+		if (!url || (auth === 'basic' && !username)) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
