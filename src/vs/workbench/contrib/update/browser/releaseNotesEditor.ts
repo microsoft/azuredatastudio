@@ -11,7 +11,7 @@ import { generateTokensCSSForColorMap } from 'vs/editor/common/modes/supports/to
 import { IModeService } from 'vs/editor/common/services/modeService';
 import * as nls from 'vs/nls';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { ServicesAccessor } from 'vs/platform/instantiation/common/instantiation';
+import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IKeybindingService } from 'vs/platform/keybinding/common/keybinding';
 import { IOpenerService } from 'vs/platform/opener/common/opener';
 import { IRequestService, asText } from 'vs/platform/request/common/request';
@@ -24,8 +24,9 @@ import { KeybindingParser } from 'vs/base/common/keybindingParser';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
-import { generateUuid } from 'vs/base/common/uuid';
+// import { generateUuid } from 'vs/base/common/uuid'; // {{SQL CARBON EDIT}} Not needed currently
 import { renderMarkdownDocument } from 'vs/workbench/contrib/markdown/common/markdownDocumentRenderer';
+import { OpenLatestReleaseNotesInBrowserAction } from 'vs/workbench/contrib/update/browser/update';
 
 export class ReleaseNotesManager {
 
@@ -62,6 +63,11 @@ export class ReleaseNotesManager {
 		accessor: ServicesAccessor,
 		version: string
 	): Promise<boolean> {
+		// {{SQL CARBON EDIT}} Open release notes in browser until we can get ADS notes from web
+		const action = accessor.get(IInstantiationService).createInstance(OpenLatestReleaseNotesInBrowserAction);
+		await action.run();
+		return true;
+		/*
 		const releaseNoteText = await this.loadReleaseNotes(version);
 		this._lastText = releaseNoteText;
 		const html = await this.renderBody(releaseNoteText);
@@ -99,6 +105,7 @@ export class ReleaseNotesManager {
 		}
 
 		return true;
+		*/
 	}
 
 	private loadReleaseNotes(version: string): Promise<string> {
