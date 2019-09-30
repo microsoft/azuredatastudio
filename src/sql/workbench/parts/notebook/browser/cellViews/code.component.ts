@@ -242,13 +242,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			}
 		}));
 		this._register(this.cellModel.onToggleStateChanged(isHidden => {
-			this.toggleCollapsed(isHidden);
+			this.onCellCollapse(isHidden);
 		}));
 
 		this.layout();
 
 		if (this.cellModel.isHidden) {
-			this.toggleCollapsed(true);
+			this.onCellCollapse(true);
 		}
 	}
 
@@ -339,7 +339,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
-	private toggleCollapsed(isHidden: boolean): void {
+	private onCellCollapse(isHidden: boolean): void {
 		if (!this.codePlaceholderElement) {
 			return;
 		}

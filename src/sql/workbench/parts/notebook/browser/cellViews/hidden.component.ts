@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 import 'vs/css!./code';
 
-import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, OnDestroy, ViewChild, SimpleChange, OnChanges } from '@angular/core';
+import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetectorRef, ViewChild, SimpleChange, OnChanges } from '@angular/core';
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
-import { NotebookModel } from 'sql/workbench/parts/notebook/browser/models/notebookModel';
 
 export const HIDDEN_SELECTOR: string = 'hidden-component';
 
@@ -18,9 +17,9 @@ export const HIDDEN_SELECTOR: string = 'hidden-component';
 
 export class HiddenComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('collapseCellButton', { read: ElementRef }) private collapseCellButtonElement: ElementRef;
+	@ViewChild('expandCellButton', { read: ElementRef }) private expandCellButtonElement: ElementRef;
 
 	@Input() cellModel: ICellModel;
-	@Input() model: NotebookModel;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -34,15 +33,30 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 	ngOnChanges(changes: { [propKey: string]: SimpleChange }) {
 	}
 
-	public toggleVisibility(event?: Event): void {
+	ngAfterContentInit() {
+		this._register(this.cellModel.onToggleStateChanged(isHidden => {
+			this.onCellCollapse(isHidden);
+		}));
+		this.onCellCollapse(this.cellModel.isHidden);
+	}
+
+	private onCellCollapse(isHidden: boolean): void {
+		let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
+		let expandButton = <HTMLElement>this.expandCellButtonElement.nativeElement;
+		if (isHidden) {
+			collapseButton.style.display = 'none';
+			expandButton.style.display = 'block';
+		} else {
+			collapseButton.style.display = 'block';
+			expandButton.style.display = 'none';
+		}
+	}
+
+	public toggleCollapsed(event?: Event): void {
 		if (event) {
 			event.stopPropagation();
 		}
 		this.cellModel.isHidden = !this.cellModel.isHidden;
-	}
-
-	get isVisible(): boolean {
-		return !this.cellModel.isHidden;
 	}
 
 	public layout() {
