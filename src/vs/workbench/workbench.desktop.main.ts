@@ -164,3 +164,6 @@ import 'sql/workbench/parts/scripting/electron-browser/scripting.contribution';
 import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
 
 import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
+
+//getting started
+import 'sql/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';

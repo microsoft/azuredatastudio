@@ -431,7 +431,4 @@ import 'sql/workbench/parts/backup/browser/backup.contribution';
 //restore
 import 'sql/workbench/parts/restore/browser/restore.contribution';
 
-//getting started
-import 'sql/workbench/parts/welcome/gettingStarted/browser/gettingStarted.contribution';
-
 //#endregion

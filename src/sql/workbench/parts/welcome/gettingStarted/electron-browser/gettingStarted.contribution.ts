@@ -6,8 +6,8 @@
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-import { BrowserEnablePreviewFeatures } from 'sql/workbench/browser/enablePreviewFeatures';
+import { NativeEnablePreviewFeatures } from 'sql/workbench/electron-browser/enablePreviewFeatures';
 
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(BrowserEnablePreviewFeatures, LifecyclePhase.Eventually);
+	.registerWorkbenchContribution(NativeEnablePreviewFeatures, LifecyclePhase.Eventually);
