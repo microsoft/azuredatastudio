@@ -96,7 +96,7 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 	padding-left: 10px
 }
 
-.hide-component-button {
+code-component .hide-component-button {
 	height: 16px;
 	width: 100%;
 	box-sizing: border-box;
@@ -106,20 +106,20 @@ code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actio
 	background-color: inherit;
 }
 
-.hide-component-button.icon-hide-cell {
+code-component .hide-component-button.icon-hide-cell {
 	background-image: url("./media/light/chevron_up.svg");
 }
 
-.hide-component-button.icon-show-cell {
+code-component .hide-component-button.icon-show-cell {
 	background-image: url("./media/light/chevron_down.svg");
 }
 
-.vs-dark .hide-component-button.icon-hide-cell,
-.hc-black .hide-component-button.icon-hide-cell {
+code-component .vs-dark .hide-component-button.icon-hide-cell,
+code-component .hc-black .hide-component-button.icon-hide-cell {
 	background-image: url("./media/dark/chevron_up_inverse.svg");
 }
 
-.vs-dark .hide-component-button.icon-show-cell,
-.hc-black .hide-component-button.icon-show-cell {
+code-component .vs-dark .hide-component-button.icon-show-cell,
+code-component .hc-black .hide-component-button.icon-show-cell {
 	background-image: url("./media/dark/chevron_down_inverse.svg");
 }
