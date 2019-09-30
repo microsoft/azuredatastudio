@@ -4,9 +4,8 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
-import * as vscode from 'vscode';
 import { authenticateKerberos, getHostAndPortFromEndpoint } from '../auth';
-import { BdcRouterApi, Authentication, DefaultApi, EndpointModel, BdcStatusModel } from './apiGenerated';
+import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel } from './apiGenerated';
 import { TokenRouterApi } from './clusterApiGenerated2';
 import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
@@ -105,7 +104,7 @@ export class ClusterController {
 
 		try {
 
-			// AD auth is available, login to keberos and
+			// AD auth is available, login to keberos and convert to token auth for all future calls
 			let host = getHostAndPortFromEndpoint(this._url).host;
 			let kerberosToken = await authenticateKerberos(host);
 			let tokenApi = new TokenRouterApi(this._url);
