@@ -195,6 +195,7 @@ export class AddControllerDialog {
 		let isBasic = this.authValue === 'basic';
 		this.usernameInputBox.enabled = isBasic;
 		this.passwordInputBox.enabled = isBasic;
+		this.rememberPwCheckBox.enabled = isBasic;
 		if (!isBasic) {
 			this.usernameInputBox.value = '';
 			this.passwordInputBox.value = '';

@@ -19,15 +19,15 @@ let defaultBasePath = 'https://localhost';
 
 /* tslint:disable:no-unused-variable */
 let primitives = [
-                    "string",
-                    "boolean",
-                    "double",
-                    "integer",
-                    "long",
-                    "float",
-                    "number",
-                    "any"
-                 ];
+    "string",
+    "boolean",
+    "double",
+    "integer",
+    "long",
+    "float",
+    "number",
+    "any"
+];
 
 class ObjectSerializer {
 
@@ -87,7 +87,7 @@ class ObjectSerializer {
 
             // get the map for the correct type.
             let attributeTypes = typeMap[type].getAttributeTypeMap();
-            let instance: {[index: string]: any} = {};
+            let instance: { [index: string]: any } = {};
             for (let index in attributeTypes) {
                 let attributeType = attributeTypes[index];
                 instance[attributeType.baseName] = ObjectSerializer.serialize(data[attributeType.name], attributeType.type);
@@ -142,32 +142,32 @@ export class BdcStatusModel {
 
     static discriminator: string | undefined = undefined;
 
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+    static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
         {
             "name": "bdcName",
-            "baseName": "bdcName",
+            "baseName": "BdcName",
             "type": "string"
         },
         {
             "name": "state",
-            "baseName": "state",
+            "baseName": "State",
             "type": "string"
         },
         {
             "name": "healthStatus",
-            "baseName": "healthStatus",
+            "baseName": "HealthStatus",
             "type": "string"
         },
         {
             "name": "details",
-            "baseName": "details",
+            "baseName": "Details",
             "type": "string"
         },
         {
             "name": "services",
-            "baseName": "services",
+            "baseName": "Services",
             "type": "Array<ServiceStatusModel>"
-        }    ];
+        }];
 
     static getAttributeTypeMap() {
         return BdcStatusModel.attributeTypeMap;
@@ -181,22 +181,22 @@ export class Dashboards {
 
     static discriminator: string | undefined = undefined;
 
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+    static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
         {
             "name": "nodeMetricsUrl",
-            "baseName": "nodeMetricsUrl",
+            "baseName": "NodeMetricsUrl",
             "type": "string"
         },
         {
             "name": "sqlMetricsUrl",
-            "baseName": "sqlMetricsUrl",
+            "baseName": "SqlMetricsUrl",
             "type": "string"
         },
         {
             "name": "logsUrl",
-            "baseName": "logsUrl",
+            "baseName": "LogsUrl",
             "type": "string"
-        }    ];
+        }];
 
     static getAttributeTypeMap() {
         return Dashboards.attributeTypeMap;
@@ -211,7 +211,7 @@ export class EndpointModel {
 
     static discriminator: string | undefined = undefined;
 
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+    static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
         {
             "name": "name",
             "baseName": "name",
@@ -231,7 +231,7 @@ export class EndpointModel {
             "name": "protocol",
             "baseName": "protocol",
             "type": "string"
-        }    ];
+        }];
 
     static getAttributeTypeMap() {
         return EndpointModel.attributeTypeMap;
@@ -247,32 +247,32 @@ export class InstanceStatusModel {
 
     static discriminator: string | undefined = undefined;
 
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+    static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
         {
             "name": "instanceName",
-            "baseName": "instanceName",
+            "baseName": "InstanceName",
             "type": "string"
         },
         {
             "name": "state",
-            "baseName": "state",
+            "baseName": "State",
             "type": "string"
         },
         {
             "name": "healthStatus",
-            "baseName": "healthStatus",
+            "baseName": "HealthStatus",
             "type": "string"
         },
         {
             "name": "details",
-            "baseName": "details",
+            "baseName": "Details",
             "type": "string"
         },
         {
             "name": "dashboards",
-            "baseName": "dashboards",
+            "baseName": "Dashboards",
             "type": "Dashboards"
-        }    ];
+        }];
 
     static getAttributeTypeMap() {
         return InstanceStatusModel.attributeTypeMap;
@@ -288,32 +288,32 @@ export class ResourceStatusModel {
 
     static discriminator: string | undefined = undefined;
 
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+    static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
         {
             "name": "resourceName",
-            "baseName": "resourceName",
+            "baseName": "ResourceName",
             "type": "string"
         },
         {
             "name": "state",
-            "baseName": "state",
+            "baseName": "State",
             "type": "string"
         },
         {
             "name": "healthStatus",
-            "baseName": "healthStatus",
+            "baseName": "HealthStatus",
             "type": "string"
         },
         {
             "name": "details",
-            "baseName": "details",
+            "baseName": "Details",
             "type": "string"
         },
         {
             "name": "instances",
-            "baseName": "instances",
+            "baseName": "Instances",
             "type": "Array<InstanceStatusModel>"
-        }    ];
+        }];
 
     static getAttributeTypeMap() {
         return ResourceStatusModel.attributeTypeMap;
@@ -329,32 +329,32 @@ export class ServiceStatusModel {
 
     static discriminator: string | undefined = undefined;
 
-    static attributeTypeMap: Array<{name: string, baseName: string, type: string}> = [
+    static attributeTypeMap: Array<{ name: string, baseName: string, type: string }> = [
         {
             "name": "serviceName",
-            "baseName": "serviceName",
+            "baseName": "ServiceName",
             "type": "string"
         },
         {
             "name": "state",
-            "baseName": "state",
+            "baseName": "State",
             "type": "string"
         },
         {
             "name": "healthStatus",
-            "baseName": "healthStatus",
+            "baseName": "HealthStatus",
             "type": "string"
         },
         {
             "name": "details",
-            "baseName": "details",
+            "baseName": "Details",
             "type": "string"
         },
         {
             "name": "resources",
-            "baseName": "resources",
+            "baseName": "Resources",
             "type": "Array<ResourceStatusModel>"
-        }    ];
+        }];
 
     static getAttributeTypeMap() {
         return ServiceStatusModel.attributeTypeMap;
@@ -362,10 +362,10 @@ export class ServiceStatusModel {
 }
 
 
-let enumsMap: {[index: string]: any} = {
+let enumsMap: { [index: string]: any } = {
 }
 
-let typeMap: {[index: string]: any} = {
+let typeMap: { [index: string]: any } = {
     "BdcStatusModel": BdcStatusModel,
     "Dashboards": Dashboards,
     "EndpointModel": EndpointModel,
@@ -431,8 +431,8 @@ export enum BdcRouterApiApiKeys {
 
 export class BdcRouterApi {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders : any = {};
-    protected _useQuerystring : boolean = false;
+    protected defaultHeaders: any = {};
+    protected _useQuerystring: boolean = false;
 
     protected authentications = {
         'default': <Authentication>new VoidAuth(),
@@ -468,7 +468,7 @@ export class BdcRouterApi {
     }
 
     public setDefaultAuthentication(auth: Authentication) {
-	this.authentications.default = auth;
+        this.authentications.default = auth;
     }
 
     public setApiKey(key: BdcRouterApiApiKeys, value: string) {
@@ -482,14 +482,14 @@ export class BdcRouterApi {
         this.authentications.basicAuth.password = password;
     }
     /**
-     *
-     * @summary Create a cluster
-     * @param xRequestId
-     * @param connection
-     * @param data Cluster configuration in JSON format
-     * @param {*} [options] Override http request options.
-     */
-    public createCluster (xRequestId: string, connection: string, data: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Create a cluster
+    * @param xRequestId
+    * @param connection
+    * @param data Cluster configuration in JSON format
+    * @param {*} [options] Override http request options.
+    */
+    public createCluster(xRequestId: string, connection: string, data: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/bdc';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -537,7 +537,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -553,11 +553,11 @@ export class BdcRouterApi {
         });
     }
     /**
-     *
-     * @param endpointName
-     * @param {*} [options] Override http request options.
-     */
-    public endpointsByNameGet (endpointName: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: EndpointModel;  }> {
+    *
+    * @param endpointName
+    * @param {*} [options] Override http request options.
+    */
+    public endpointsByNameGet(endpointName: string, options: any = {}): Promise<{ response: http.ClientResponse; body: EndpointModel; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/endpoints/{endpointName}'
             .replace('{' + 'endpointName' + '}', encodeURIComponent(String(endpointName)));
         let localVarQueryParameters: any = {};
@@ -591,7 +591,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: EndpointModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: EndpointModel; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -607,10 +607,10 @@ export class BdcRouterApi {
         });
     }
     /**
-     *
-     * @param {*} [options] Override http request options.
-     */
-    public endpointsGet (options: any = {}) : Promise<{ response: http.ClientResponse; body: Array<EndpointModel>;  }> {
+    *
+    * @param {*} [options] Override http request options.
+    */
+    public endpointsGet(options: any = {}): Promise<{ response: http.ClientResponse; body: Array<EndpointModel>; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/endpoints';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -631,8 +631,6 @@ export class BdcRouterApi {
 
         this.authentications.default.applyToRequest(localVarRequestOptions);
 
-		this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
-
         if (Object.keys(localVarFormParams).length) {
             if (localVarUseFormData) {
                 (<any>localVarRequestOptions).formData = localVarFormParams;
@@ -640,7 +638,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: Array<EndpointModel>;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: Array<EndpointModel>; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -656,15 +654,15 @@ export class BdcRouterApi {
         });
     }
     /**
-     *
-     * @summary Get BDC status of services that contain this resource
-     * @param resourceName The name of the resource you want the services for
-     * @param xRequestId
-     * @param connection
-     * @param all Whether you want all of the instances within the given resource
-     * @param {*} [options] Override http request options.
-     */
-    public getBdcResourceStatus (resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }> {
+    *
+    * @summary Get BDC status of services that contain this resource
+    * @param resourceName The name of the resource you want the services for
+    * @param xRequestId
+    * @param connection
+    * @param all Whether you want all of the instances within the given resource
+    * @param {*} [options] Override http request options.
+    */
+    public getBdcResourceStatus(resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}): Promise<{ response: http.ClientResponse; body: BdcStatusModel; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/resources/{resourceName}/status'
             .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
         let localVarQueryParameters: any = {};
@@ -706,7 +704,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -722,16 +720,16 @@ export class BdcRouterApi {
         });
     }
     /**
-     *
-     * @summary Get resource status within this service
-     * @param serviceName The name of the service in the BDC cluster that you want
-     * @param resourceName The name of the resource in the service that you want
-     * @param xRequestId
-     * @param connection
-     * @param all Whether you want all of the instances within the given resource
-     * @param {*} [options] Override http request options.
-     */
-    public getBdcServiceResourceStatus (serviceName: string, resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: ResourceStatusModel;  }> {
+    *
+    * @summary Get resource status within this service
+    * @param serviceName The name of the service in the BDC cluster that you want
+    * @param resourceName The name of the resource in the service that you want
+    * @param xRequestId
+    * @param connection
+    * @param all Whether you want all of the instances within the given resource
+    * @param {*} [options] Override http request options.
+    */
+    public getBdcServiceResourceStatus(serviceName: string, resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}): Promise<{ response: http.ClientResponse; body: ResourceStatusModel; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/services/{serviceName}/resources/{resourceName}/status'
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
             .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
@@ -779,7 +777,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: ResourceStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: ResourceStatusModel; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -795,14 +793,14 @@ export class BdcRouterApi {
         });
     }
     /**
-     *
-     * @summary Get BDC status
-     * @param xRequestId
-     * @param connection
-     * @param all Whether you want all of the instances within the given resource
-     * @param {*} [options] Override http request options.
-     */
-    public getBdcStatus (xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }> {
+    *
+    * @summary Get BDC status
+    * @param xRequestId
+    * @param connection
+    * @param all Whether you want all of the instances within the given resource
+    * @param {*} [options] Override http request options.
+    */
+    public getBdcStatus(xRequestId?: string, connection?: string, all?: boolean, options: any = {}): Promise<{ response: http.ClientResponse; body: BdcStatusModel; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/status';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -838,7 +836,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: BdcStatusModel; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -852,16 +850,15 @@ export class BdcRouterApi {
                 }
             });
         });
-	}
-
+    }
     /**
-     *
-     * @summary Get cluster config
-     * @param xRequestId
-     * @param connection
-     * @param {*} [options] Override http request options.
-     */
-    public getCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Get cluster config
+    * @param xRequestId
+    * @param connection
+    * @param {*} [options] Override http request options.
+    */
+    public getCluster(xRequestId: string, connection: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -903,7 +900,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -919,14 +916,14 @@ export class BdcRouterApi {
         });
     }
     /**
-     *
-     * @summary Get console logs
-     * @param xRequestId
-     * @param connection
-     * @param offset
-     * @param {*} [options] Override http request options.
-     */
-    public getLogs (xRequestId: string, connection: string, offset: number, options: any = {}) : Promise<{ response: http.ClientResponse; body: string;  }> {
+    *
+    * @summary Get console logs
+    * @param xRequestId
+    * @param connection
+    * @param offset
+    * @param {*} [options] Override http request options.
+    */
+    public getLogs(xRequestId: string, connection: string, offset: number, options: any = {}): Promise<{ response: http.ClientResponse; body: string; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/log';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -977,7 +974,7 @@ export class BdcRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: string;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: string; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -998,8 +995,8 @@ export enum ControlRouterApiApiKeys {
 
 export class ControlRouterApi {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders : any = {};
-    protected _useQuerystring : boolean = false;
+    protected defaultHeaders: any = {};
+    protected _useQuerystring: boolean = false;
 
     protected authentications = {
         'default': <Authentication>new VoidAuth(),
@@ -1035,7 +1032,7 @@ export class ControlRouterApi {
     }
 
     public setDefaultAuthentication(auth: Authentication) {
-	this.authentications.default = auth;
+        this.authentications.default = auth;
     }
 
     public setApiKey(key: ControlRouterApiApiKeys, value: string) {
@@ -1049,26 +1046,28 @@ export class ControlRouterApi {
         this.authentications.basicAuth.password = password;
     }
     /**
-     *
-     * @summary Get control status
-     * @param xRequestId
-     * @param connection
-     * @param {*} [options] Override http request options.
-     */
-    public getControlStatus (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
-        const localVarPath = this.basePath + '/api/v1/control/status';
+    *
+    * @summary Get Control status of this resource
+    * @param resourceName The name of the resource you want the status of
+    * @param xRequestId
+    * @param connection
+    * @param all Whether you want all of the instances within the given resource
+    * @param {*} [options] Override http request options.
+    */
+    public getControlResourceStatus(resourceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}): Promise<{ response: http.ClientResponse; body: ResourceStatusModel; }> {
+        const localVarPath = this.basePath + '/api/v1/control/resources/{resourceName}/status'
+            .replace('{' + 'resourceName' + '}', encodeURIComponent(String(resourceName)));
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
         let localVarFormParams: any = {};
 
-        // verify required parameter 'xRequestId' is not null or undefined
-        if (xRequestId === null || xRequestId === undefined) {
-            throw new Error('Required parameter xRequestId was null or undefined when calling getControlStatus.');
+        // verify required parameter 'resourceName' is not null or undefined
+        if (resourceName === null || resourceName === undefined) {
+            throw new Error('Required parameter resourceName was null or undefined when calling getControlResourceStatus.');
         }
 
-        // verify required parameter 'connection' is not null or undefined
-        if (connection === null || connection === undefined) {
-            throw new Error('Required parameter connection was null or undefined when calling getControlStatus.');
+        if (all !== undefined) {
+            localVarQueryParameters['all'] = ObjectSerializer.serialize(all, "boolean");
         }
 
         localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
@@ -1097,7 +1096,76 @@ export class ControlRouterApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: ResourceStatusModel; }>((resolve, reject) => {
+            localVarRequest(localVarRequestOptions, (error, response, body) => {
+                if (error) {
+                    reject(error);
+                } else {
+                    body = ObjectSerializer.deserialize(body, "ResourceStatusModel");
+                    if (response.statusCode && response.statusCode >= 200 && response.statusCode <= 299) {
+                        resolve({ response: response, body: body });
+                    } else {
+                        reject({ response: response, body: body });
+                    }
+                }
+            });
+        });
+    }
+    /**
+    *
+    * @summary Get control status
+    * @param xRequestId
+    * @param connection
+    * @param all Whether you want all of the instances within the resources
+    * @param {*} [options] Override http request options.
+    */
+    public getControlStatus(xRequestId: string, connection: string, all?: boolean, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
+        const localVarPath = this.basePath + '/api/v1/control/status';
+        let localVarQueryParameters: any = {};
+        let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
+        let localVarFormParams: any = {};
+
+        // verify required parameter 'xRequestId' is not null or undefined
+        if (xRequestId === null || xRequestId === undefined) {
+            throw new Error('Required parameter xRequestId was null or undefined when calling getControlStatus.');
+        }
+
+        // verify required parameter 'connection' is not null or undefined
+        if (connection === null || connection === undefined) {
+            throw new Error('Required parameter connection was null or undefined when calling getControlStatus.');
+        }
+
+        if (all !== undefined) {
+            localVarQueryParameters['all'] = ObjectSerializer.serialize(all, "boolean");
+        }
+
+        localVarHeaderParams['X-Request-Id'] = ObjectSerializer.serialize(xRequestId, "string");
+        localVarHeaderParams['Connection'] = ObjectSerializer.serialize(connection, "string");
+        (<any>Object).assign(localVarHeaderParams, options.headers);
+
+        let localVarUseFormData = false;
+
+        let localVarRequestOptions: localVarRequest.Options = {
+            method: 'GET',
+            qs: localVarQueryParameters,
+            headers: localVarHeaderParams,
+            uri: localVarPath,
+            useQuerystring: this._useQuerystring,
+            json: true,
+        };
+
+        this.authentications.basicAuth.applyToRequest(localVarRequestOptions);
+
+        this.authentications.default.applyToRequest(localVarRequestOptions);
+
+        if (Object.keys(localVarFormParams).length) {
+            if (localVarUseFormData) {
+                (<any>localVarRequestOptions).formData = localVarFormParams;
+            } else {
+                localVarRequestOptions.form = localVarFormParams;
+            }
+        }
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1118,8 +1186,8 @@ export enum DefaultApiApiKeys {
 
 export class DefaultApi {
     protected _basePath = defaultBasePath;
-    protected defaultHeaders : any = {};
-    protected _useQuerystring : boolean = false;
+    protected defaultHeaders: any = {};
+    protected _useQuerystring: boolean = false;
 
     protected authentications = {
         'default': <Authentication>new VoidAuth(),
@@ -1155,7 +1223,7 @@ export class DefaultApi {
     }
 
     public setDefaultAuthentication(auth: Authentication) {
-	this.authentications.default = auth;
+        this.authentications.default = auth;
     }
 
     public setApiKey(key: DefaultApiApiKeys, value: string) {
@@ -1169,16 +1237,16 @@ export class DefaultApi {
         this.authentications.basicAuth.password = password;
     }
     /**
-     *
-     * @summary Create a mount
-     * @param xRequestId
-     * @param connection
-     * @param remote URI of remote store to mount
-     * @param mount Local path to mount on
-     * @param credentials Credentials to create the mount
-     * @param {*} [options] Override http request options.
-     */
-    public createMount (xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Create a mount
+    * @param xRequestId
+    * @param connection
+    * @param remote URI of remote store to mount
+    * @param mount Local path to mount on
+    * @param credentials Credentials to create the mount
+    * @param {*} [options] Override http request options.
+    */
+    public createMount(xRequestId: string, connection: string, remote: string, mount: string, credentials?: any, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1239,7 +1307,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1255,13 +1323,13 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Delete a cluster
-     * @param xRequestId
-     * @param connection
-     * @param {*} [options] Override http request options.
-     */
-    public deleteCluster (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Delete a cluster
+    * @param xRequestId
+    * @param connection
+    * @param {*} [options] Override http request options.
+    */
+    public deleteCluster(xRequestId: string, connection: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1303,7 +1371,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1319,14 +1387,14 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Delete a mount
-     * @param xRequestId
-     * @param connection
-     * @param mount Local HDFS mount path
-     * @param {*} [options] Override http request options.
-     */
-    public deleteMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Delete a mount
+    * @param xRequestId
+    * @param connection
+    * @param mount Local HDFS mount path
+    * @param {*} [options] Override http request options.
+    */
+    public deleteMount(xRequestId: string, connection: string, mount: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1377,7 +1445,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1393,14 +1461,14 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Get health properties with specific query
-     * @param xRequestId
-     * @param connection
-     * @param query The query in the json format for the health properties
-     * @param {*} [options] Override http request options.
-     */
-    public getHealthProperties (xRequestId: string, connection: string, query: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Get health properties with specific query
+    * @param xRequestId
+    * @param connection
+    * @param query The query in the json format for the health properties
+    * @param {*} [options] Override http request options.
+    */
+    public getHealthProperties(xRequestId: string, connection: string, query: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/health';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1451,7 +1519,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1467,13 +1535,13 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Retrieve home page of Controller service
-     * @param xRequestId
-     * @param connection
-     * @param {*} [options] Override http request options.
-     */
-    public getHome (xRequestId: string, connection: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+    *
+    * @summary Retrieve home page of Controller service
+    * @param xRequestId
+    * @param connection
+    * @param {*} [options] Override http request options.
+    */
+    public getHome(xRequestId: string, connection: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
         const localVarPath = this.basePath + '/api/v1';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1515,7 +1583,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1530,16 +1598,16 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Get resource status
-     * @param bdcName The name of the BDC cluster from which you want the status
-     * @param serviceName The name of the service in the BDC cluster that you want
-     * @param xRequestId
-     * @param connection
-     * @param all Whether you want all of the instances within the given resource
-     * @param {*} [options] Override http request options.
-     */
-    public getPoolStatus (bdcName: string, serviceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}) : Promise<{ response: http.ClientResponse; body: ServiceStatusModel;  }> {
+    *
+    * @summary Get resource status
+    * @param bdcName The name of the BDC cluster from which you want the status
+    * @param serviceName The name of the service in the BDC cluster that you want
+    * @param xRequestId
+    * @param connection
+    * @param all Whether you want all of the instances within the given resource
+    * @param {*} [options] Override http request options.
+    */
+    public getPoolStatus(bdcName: string, serviceName: string, xRequestId?: string, connection?: string, all?: boolean, options: any = {}): Promise<{ response: http.ClientResponse; body: ServiceStatusModel; }> {
         const localVarPath = this.basePath + '/api/v1/bdc/services/{serviceName}/status'
             .replace('{' + 'bdcName' + '}', encodeURIComponent(String(bdcName)))
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)));
@@ -1587,7 +1655,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: ServiceStatusModel;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: ServiceStatusModel; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1603,14 +1671,14 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Get list of all mounts
-     * @param xRequestId
-     * @param connection
-     * @param mount
-     * @param {*} [options] Override http request options.
-     */
-    public listMounts (xRequestId: string, connection: string, mount?: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Get list of all mounts
+    * @param xRequestId
+    * @param connection
+    * @param mount
+    * @param {*} [options] Override http request options.
+    */
+    public listMounts(xRequestId: string, connection: string, mount?: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1656,7 +1724,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1672,14 +1740,14 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Refresh a mount
-     * @param xRequestId
-     * @param connection
-     * @param mount Local path to mount on HDFS
-     * @param {*} [options] Override http request options.
-     */
-    public refreshMount (xRequestId: string, connection: string, mount: string, options: any = {}) : Promise<{ response: http.ClientResponse; body: any;  }> {
+    *
+    * @summary Refresh a mount
+    * @param xRequestId
+    * @param connection
+    * @param mount Local path to mount on HDFS
+    * @param {*} [options] Override http request options.
+    */
+    public refreshMount(xRequestId: string, connection: string, mount: string, options: any = {}): Promise<{ response: http.ClientResponse; body: any; }> {
         const localVarPath = this.basePath + '/api/v1/storage/mounts/refresh';
         let localVarQueryParameters: any = {};
         let localVarHeaderParams: any = (<any>Object).assign({}, this.defaultHeaders);
@@ -1730,7 +1798,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);
@@ -1746,16 +1814,16 @@ export class DefaultApi {
         });
     }
     /**
-     *
-     * @summary Update the password for the given service and user
-     * @param xRequestId
-     * @param connection
-     * @param serviceName
-     * @param serviceUsername
-     * @param data Password and cluster name in JSON format
-     * @param {*} [options] Override http request options.
-     */
-    public updatePassword (xRequestId: string, connection: string, serviceName: string, serviceUsername: string, data: string, options: any = {}) : Promise<{ response: http.ClientResponse; body?: any;  }> {
+    *
+    * @summary Update the password for the given service and user
+    * @param xRequestId
+    * @param connection
+    * @param serviceName
+    * @param serviceUsername
+    * @param data Password and cluster name in JSON format
+    * @param {*} [options] Override http request options.
+    */
+    public updatePassword(xRequestId: string, connection: string, serviceName: string, serviceUsername: string, data: string, options: any = {}): Promise<{ response: http.ClientResponse; body?: any; }> {
         const localVarPath = this.basePath + '/api/v1/passwords/{serviceName}/{serviceUsername}'
             .replace('{' + 'serviceName' + '}', encodeURIComponent(String(serviceName)))
             .replace('{' + 'serviceUsername' + '}', encodeURIComponent(String(serviceUsername)));
@@ -1815,7 +1883,7 @@ export class DefaultApi {
                 localVarRequestOptions.form = localVarFormParams;
             }
         }
-        return new Promise<{ response: http.ClientResponse; body?: any;  }>((resolve, reject) => {
+        return new Promise<{ response: http.ClientResponse; body?: any; }>((resolve, reject) => {
             localVarRequest(localVarRequestOptions, (error, response, body) => {
                 if (error) {
                     reject(error);

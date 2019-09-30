@@ -58,7 +58,9 @@ export class BdcDashboardModel {
 				this._endpointsLastUpdated = new Date();
 				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
 			})
-		]).catch(error => showErrorMessage(error));
+		]).catch(error => {
+			showErrorMessage(error);
+		});
 	}
 
 	/**

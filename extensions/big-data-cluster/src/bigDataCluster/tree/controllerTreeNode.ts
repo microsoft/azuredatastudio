@@ -213,7 +213,15 @@ export class ControllerNode extends ControllerTreeNode {
 	}
 
 	public set label(label: string) {
-		super.label = label || `controller: ${ControllerNode.toIpAndPort(this._url)} (${this._username})`;
+		super.label = label || this.generateLabel();
+	}
+
+	private generateLabel(): string {
+		let label = `controller: ${ControllerNode.toIpAndPort(this._url)}`;
+		if (this._auth === 'basic') {
+			label += ` (${this._username})`;
+		}
+		return label;
 	}
 
 	public get label(): string {

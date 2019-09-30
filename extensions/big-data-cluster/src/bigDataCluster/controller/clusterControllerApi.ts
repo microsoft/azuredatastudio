@@ -25,14 +25,42 @@ class SslAuth implements Authentication {
 	}
 }
 
+export class KerberosAuth extends SslAuth implements Authentication {
+
+	constructor(public kerberosToken: string, ignoreSslVerification: boolean) {
+		super(ignoreSslVerification);
+	}
+
+	applyToRequest(requestOptions: request.Options): void {
+		super.applyToRequest(requestOptions);
+		if (requestOptions && requestOptions.headers) {
+			requestOptions.headers['Authorization'] = `Negotiate ${this.kerberosToken}`;
+		}
+		requestOptions.auth = undefined;
+	}
+}
+export class BasicAuth extends SslAuth implements Authentication {
+	constructor(public username: string, public password: string, ignoreSslVerification: boolean) {
+		super(ignoreSslVerification);
+	}
+
+	applyToRequest(requestOptions: request.Options): void {
+		super.applyToRequest(requestOptions);
+		requestOptions.auth = {
+			username: this.username, password: this.password
+		};
+	}
+}
+
 export class OAuthWithSsl extends SslAuth implements Authentication {
 	public accessToken: string = '';
 
 	applyToRequest(requestOptions: request.Options): void {
 		super.applyToRequest(requestOptions);
 		if (requestOptions && requestOptions.headers) {
-			requestOptions.headers['Authorization'] = 'Bearer ' + this.accessToken;
+			requestOptions.headers['Authorization'] = `Bearer ${this.accessToken}`;
 		}
+		requestOptions.auth = undefined;
 	}
 }
 
@@ -63,56 +91,51 @@ export class ClusterController {
 		}
 		this._url = adjustUrl(url);
 		if (this.authType === 'basic') {
-			this.authPromise = Promise.resolve(new SslAuth(!!ignoreSslVerification));
+			this.authPromise = Promise.resolve(new BasicAuth(username, password, !!ignoreSslVerification));
 		} else {
-			this.authPromise = this.requestTokenUsingKerberos(this._url, ignoreSslVerification);
+			this.authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
 		}
 	}
 
-	private async requestTokenUsingKerberos(url: string, ignoreSslVerification?: boolean): Promise<Authentication> {
+	private async requestTokenUsingKerberos(ignoreSslVerification?: boolean): Promise<Authentication> {
 		let supportsKerberos = await this.verifyKerberosSupported(ignoreSslVerification);
 		if (!supportsKerberos) {
 			throw new Error(localize('error.no.activedirectory', "This cluster does not support Windows authentication"));
 		}
 
-		let tokenApi = this.createTokenApi(ignoreSslVerification);
 		try {
 
 			// AD auth is available, login to keberos and
 			let host = getHostAndPortFromEndpoint(this._url).host;
 			let kerberosToken = await authenticateKerberos(host);
-			let result = await tokenApi.apiV1TokenPost({
-				headers: { Authorization: `Negotiate ${kerberosToken}` }
-			});
+			let tokenApi = new TokenRouterApi(this._url);
+			tokenApi.setDefaultAuthentication(new KerberosAuth(kerberosToken, !!ignoreSslVerification));
+			let result = await tokenApi.apiV1TokenPost();
 			let auth = new OAuthWithSsl(ignoreSslVerification);
 			auth.accessToken = result.body.accessToken;
 			return auth;
 		} catch (error) {
-			let controllerErr = new ControllerError(error, localize('bdc.error.tokenPost', "Error during authentication: "));
+			let controllerErr = new ControllerError(error, localize('bdc.error.tokenPost', "Error during authentication"));
 			if (controllerErr.code === 401) {
-				throw new Error(localize('bdc.error.unauthorized', "You do not have permissions to log into this cluster using Windows Authentication"));
+				throw new Error(localize('bdc.error.unauthorized', "You do not have permission to log into this cluster using Windows Authentication"));
 			}
 			// Else throw the error as-is
 			throw controllerErr;
 		}
 	}
 
-	private createTokenApi(ignoreSslVerification: boolean): TokenRouterApi {
-		let tokenApi = new TokenRouterApi(this._url);
-		tokenApi.setDefaultAuthentication(new SslAuth(!!ignoreSslVerification));
-		return tokenApi;
-	}
 
 
 	private async verifyKerberosSupported(ignoreSslVerification: boolean): Promise<boolean> {
-		let tokenApi = this.createTokenApi(ignoreSslVerification);
+		let tokenApi = new TokenRouterApi(this._url);
+		tokenApi.setDefaultAuthentication(new SslAuth(!!ignoreSslVerification));
 		try {
 			await tokenApi.apiV1TokenPost();
 			// If we get to here, the route for endpoints doesn't require auth so state this is false
 			return false;
 		}
 		catch (error) {
-			let auths = error && error.response && error.response.headers['www-authenticate'];
+			let auths = error && error.response && error.response.statusCode === 401 && error.response.headers['www-authenticate'];
 			return auths && auths.includes('Negotiate');
 		}
 	}
@@ -120,9 +143,9 @@ export class ClusterController {
 	public async getEndPoints(): Promise<IEndPointsResponse> {
 		let auth = await this.authPromise;
 		let endPointApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
-
+		let options: any = {};
 		try {
-			let result = await endPointApi.endpointsGet();
+			let result = await endPointApi.endpointsGet(options);
 			return {
 				response: result.response as IHttpResponse,
 				endPoints: result.body as EndpointModel[]
