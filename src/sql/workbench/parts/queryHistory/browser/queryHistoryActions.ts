@@ -63,7 +63,7 @@ export class ClearHistoryAction extends Action {
 	}
 
 	public async run(): Promise<void> {
-		this._commandService.executeCommand('queryHistory.clear');
+		return this._commandService.executeCommand('queryHistory.clear');
 	}
 }
 
@@ -102,6 +102,36 @@ export class RunQueryAction extends Action {
 	public async run(element: QueryHistoryNode): Promise<void> {
 		if (element instanceof QueryHistoryNode && element.info) {
 			return this._instantiationService.invokeFunction(openNewQuery, element.info.connectionProfile, element.info.queryText, RunQueryOnConnectionMode.executeQuery).catch(() => true, () => false);
+		}
+	}
+}
+
+export class ToggleQueryHistoryCaptureAction extends Action {
+	public static ID = 'queryHistory.toggleCapture';
+	public static LABEL = localize('queryHistory.toggleCaptureLabel', "Toggle Query History capture");
+
+	constructor(
+		id: string,
+		label: string,
+		@ICommandService private _commandService: ICommandService,
+		@IQueryHistoryService queryHistoryService: IQueryHistoryService
+	) {
+		super(id, label);
+		this.setClassAndLabel(queryHistoryService.captureEnabled);
+		this._register(queryHistoryService.onQueryHistoryCaptureChanged((captureEnabled: boolean) => { this.setClassAndLabel(captureEnabled); }));
+	}
+
+	public async run(): Promise<void> {
+		return this._commandService.executeCommand('queryHistory.toggleCapture');
+	}
+
+	private setClassAndLabel(enabled: boolean) {
+		if (enabled) {
+			this.class = 'toggle-query-history-capture-action codicon-pause';
+			this.label = localize('queryHistory.disableCapture', "Pause Query History capture");
+		} else {
+			this.class = 'toggle-query-history-capture-action codicon-play';
+			this.label = localize('queryHistory.enableCapture', "Start Query History capture");
 		}
 	}
 }
