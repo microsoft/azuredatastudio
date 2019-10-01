@@ -79,6 +79,14 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	}
 
 	/**
+	 * Clears all infos from the cache
+	 */
+	public clearQueryHistory() {
+		this._infos = [];
+		this._onInfosUpdated.fire(this._infos);
+	}
+
+	/**
 	 * Method to force initialization of the service so that it can start tracking query events
 	 */
 	public start(): void {
