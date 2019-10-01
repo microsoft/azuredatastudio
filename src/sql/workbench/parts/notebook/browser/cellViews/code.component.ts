@@ -34,6 +34,7 @@ import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorMo
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
 import { HiddenComponent } from 'sql/workbench/parts/notebook/browser/cellViews/hidden.component';
+import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 export const CODE_SELECTOR: string = 'code-component';
 const MARKDOWN_CLASS = 'markdown';
@@ -223,9 +224,20 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this._editor);
 		this._register(this._editorInput);
 		this._register(this._editorModel.onDidChangeContent(e => {
-			this._editor.setHeightToScrollHeight();
 			this.cellModel.modelContentChangedEvent = e;
+
+			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
+			if (this.cellModel.isHidden) {
+				if (originalSourceLength !== this.cellModel.source.length) {
+					this.cellModel.isHidden = false;
+					this._editor.setHeightToScrollHeight();
+				}
+				// Skip resize for anything that edits the same line
+			} else {
+				this._editor.setHeightToScrollHeight();
+			}
+
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 		}));
@@ -340,25 +352,21 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private onCellCollapse(isHidden: boolean): void {
-		if (!this.codePlaceholderElement) {
-			return;
-		}
-		let codeEditor = <HTMLElement>this.codeElement.nativeElement;
-		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
+		let editorWidget = this._editor.getControl() as ICodeEditor;
 		if (isHidden) {
-			codeEditor.style.display = 'none';
-			codePlaceholder.style.display = 'block';
-			let firstLine = this.cellModel.source[0];
-			let numLines = this.cellModel.source.length;
-			if (numLines > 1) {
-				let rowsString = numLines === 2 ? 'row' : 'rows';
-				codePlaceholder.innerHTML = `<div>${firstLine}</div><i>(${numLines - 1} ${rowsString} hidden)</i>`;
-			} else {
-				codePlaceholder.innerHTML = `<div>${firstLine.length > 0 ? firstLine : '<br>'}</div>`;
-			}
+			let model = editorWidget.getModel();
+			let totalLines = model.getLineCount();
+			let endColumn = model.getLineMaxColumn(totalLines);
+			editorWidget.setHiddenAreas([{
+				startLineNumber: 2,
+				startColumn: 1,
+				endLineNumber: totalLines,
+				endColumn: endColumn
+			}]);
+			this._editor.setHeight(this._editor.lineHeight);
 		} else {
-			codeEditor.style.display = 'block';
-			codePlaceholder.style.display = 'none';
+			editorWidget.setHiddenAreas([]);
+			this._editor.setHeightToScrollHeight();
 		}
 	}
 
