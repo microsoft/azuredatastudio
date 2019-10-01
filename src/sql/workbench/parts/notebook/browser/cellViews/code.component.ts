@@ -225,8 +225,8 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
-			if (this.cellModel.isHidden && originalSourceLength !== this.cellModel.source.length) {
-				this.cellModel.isHidden = false;
+			if (this._cellModel.isHidden && originalSourceLength !== this.cellModel.source.length) {
+				this._cellModel.isHidden = false;
 			}
 			this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
 
@@ -250,7 +250,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 		this.layout();
 
-		if (this.cellModel.isHidden) {
+		if (this._cellModel.isHidden) {
 			this.onCellCollapse(true);
 		}
 	}
@@ -357,6 +357,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		} else {
 			editorWidget.setHiddenAreas([]);
 		}
-		this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
+		this._editor.setHeightToScrollHeight(false, isHidden);
 	}
 }
