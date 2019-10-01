@@ -20,6 +20,7 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('expandCellButton', { read: ElementRef }) private expandCellButtonElement: ElementRef;
 
 	@Input() cellModel: ICellModel;
+	@Input() activeCellId: string;
 
 	constructor(
 		@Inject(forwardRef(() => ChangeDetectorRef)) private _changeRef: ChangeDetectorRef,
@@ -38,6 +39,9 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 			this.onCellCollapse(isHidden);
 		}));
 		this.onCellCollapse(this.cellModel.isHidden);
+		if (this.activeCellId === this.cellModel.id) {
+			this.toggleIconVisibility(true);
+		}
 	}
 
 	private onCellCollapse(isHidden: boolean): void {

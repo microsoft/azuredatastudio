@@ -348,7 +348,12 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		if (isHidden) {
 			codeEditor.style.display = 'none';
 			codePlaceholder.style.display = 'block';
-			codePlaceholder.innerHTML = this.cellModel.source[0];
+			if (this.cellModel.source.length > 1) {
+				let rowsString = this.cellModel.source.length === 2 ? 'row' : 'rows';
+				codePlaceholder.innerHTML = `<div>${this.cellModel.source[0]}</div><br><i>(${this.cellModel.source.length - 1} ${rowsString} hidden)</i>`;
+			} else {
+				codePlaceholder.innerHTML = `<div>${this.cellModel.source[0]}</div><br>`;
+			}
 		} else {
 			codeEditor.style.display = 'block';
 			codePlaceholder.style.display = 'none';
@@ -364,7 +369,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 		let fontSize = this._configurationService.getValue<number>('editor.fontSize');
 		codePlaceholder.style.fontSize = `${fontSize}px`;
-		codePlaceholder.style.height = `${fontSize}px`;
 
 		let wordWrap = this._configurationService.getValue<string>('editor.wordWrap');
 		codePlaceholder.style.wordWrap = wordWrap;
