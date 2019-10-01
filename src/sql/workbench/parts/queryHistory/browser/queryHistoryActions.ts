@@ -59,7 +59,7 @@ export class ClearHistoryAction extends Action {
 		label: string,
 		@ICommandService private _commandService: ICommandService
 	) {
-		super(id, label, 'clear-query-history-action codicon-clear-all');
+		super(id, label, 'clear-query-history-action clear-query-history');
 	}
 
 	public async run(): Promise<void> {
@@ -127,10 +127,10 @@ export class ToggleQueryHistoryCaptureAction extends Action {
 
 	private setClassAndLabel(enabled: boolean) {
 		if (enabled) {
-			this.class = 'toggle-query-history-capture-action codicon-pause';
+			this.class = 'toggle-query-history-capture-action toggle-query-history-capture-pause';
 			this.label = localize('queryHistory.disableCapture', "Pause Query History capture");
 		} else {
-			this.class = 'toggle-query-history-capture-action codicon-play';
+			this.class = 'toggle-query-history-capture-action toggle-query-history-capture-start';
 			this.label = localize('queryHistory.enableCapture', "Start Query History capture");
 		}
 	}
