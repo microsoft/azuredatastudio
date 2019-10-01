@@ -47,7 +47,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@ViewChild('editorPlaceholder', { read: ElementRef }) private codePlaceholderElement: ElementRef;
 	@ViewChild(HiddenComponent) private collapseComponent: HiddenComponent;
 
 	public get cellModel(): ICellModel {
@@ -212,8 +211,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		let overrideEditorSetting = this._configurationService.getValue<boolean>(OVERRIDE_EDITOR_THEMING_SETTING);
 		this._editor.hideLineNumbers = (overrideEditorSetting && this.cellModel.cellType === CellTypes.Markdown);
 
-		this.updatePlaceholderStyle();
-
 		if (this.destroyed) {
 			// At this point, we may have been disposed (scenario: restoring markdown cell in preview mode).
 			// Exiting early to avoid warnings on registering already disposed items, which causes some churning
@@ -244,7 +241,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
 				this._editor.setHeightToScrollHeight(true);
-				this.updatePlaceholderStyle();
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
@@ -368,19 +364,5 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			editorWidget.setHiddenAreas([]);
 			this._editor.setHeightToScrollHeight();
 		}
-	}
-
-	private updatePlaceholderStyle(): void {
-		if (!this.codePlaceholderElement) {
-			return;
-		}
-		let codePlaceholder = <HTMLElement>this.codePlaceholderElement.nativeElement;
-		codePlaceholder.style.minHeight = `${this._editor.lineHeight}px`;
-
-		let fontSize = this._configurationService.getValue<number>('editor.fontSize');
-		codePlaceholder.style.fontSize = `${fontSize}px`;
-
-		let wordWrap = this._configurationService.getValue<string>('editor.wordWrap');
-		codePlaceholder.style.wordWrap = wordWrap;
 	}
 }
