@@ -14,14 +14,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.42.0",
-							"lastUpdated": "9/9/2019",
+							"version": "0.43.0",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.42.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/agent/agent-0.43.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -75,14 +75,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.1",
-							"lastUpdated": "5/4/2018",
+							"version": "0.1.2",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/whoisactive/whoisactive-0.1.1.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/whoisactive/whoisactive-0.1.2.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -132,14 +132,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.5",
-							"lastUpdated": "2/27/2019",
+							"version": "0.2.0",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.1.5.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -706,14 +706,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.10.0",
-							"lastUpdated": "9/9/2019",
+							"version": "0.11.0",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.10.0.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/import/import-0.11.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
