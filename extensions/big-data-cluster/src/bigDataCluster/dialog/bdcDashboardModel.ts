@@ -7,14 +7,12 @@
 
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
-import { ClusterController } from '../controller/clusterControllerApi';
+import { getBdcStatus, getEndPoints } from '../controller/clusterControllerApi';
 import { EndpointModel, BdcStatusModel } from '../controller/apiGenerated';
 import { showErrorMessage, Endpoint } from '../utils';
-import { AuthType } from '../constants';
 
 export class BdcDashboardModel {
 
-	private _clusterController: ClusterController;
 	private _bdcStatus: BdcStatusModel;
 	private _endpoints: EndpointModel[] = [];
 	private _bdcStatusLastUpdated: Date;
@@ -24,8 +22,7 @@ export class BdcDashboardModel {
 	public onDidUpdateEndpoints = this._onDidUpdateEndpoints.event;
 	public onDidUpdateBdcStatus = this._onDidUpdateBdcStatus.event;
 
-	constructor(url: string, auth: AuthType, username: string, private password: string, ignoreSslVerification = true) {
-		this._clusterController = new ClusterController(url, auth, username, password, ignoreSslVerification);
+	constructor(private url: string, private username: string, private password: string) {
 		this.refresh();
 	}
 
@@ -47,20 +44,18 @@ export class BdcDashboardModel {
 
 	public async refresh(): Promise<void> {
 		await Promise.all([
-			this._clusterController.getBdcStatus().then(response => {
+			getBdcStatus(this.url, this.username, this.password, true).then(response => {
 				this._bdcStatus = response.bdcStatus;
 				this._bdcStatusLastUpdated = new Date();
 				this._onDidUpdateBdcStatus.fire(this.bdcStatus);
 			}),
-			this._clusterController.getEndPoints().then(response => {
+			getEndPoints(this.url, this.username, this.password, true).then(response => {
 				this._endpoints = response.endPoints || [];
 				fixEndpoints(this._endpoints);
 				this._endpointsLastUpdated = new Date();
 				this._onDidUpdateEndpoints.fire(this.serviceEndpoints);
 			})
-		]).catch(error => {
-			showErrorMessage(error);
-		});
+		]).catch(error => showErrorMessage(error));
 	}
 
 	/**
