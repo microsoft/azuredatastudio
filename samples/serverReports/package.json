@@ -19,6 +19,7 @@
 		"*"
 	],
 	"main": "./out/src/extension",
+	"forceReload": true,
 	"contributes": {
 		"commands": [
 			{
