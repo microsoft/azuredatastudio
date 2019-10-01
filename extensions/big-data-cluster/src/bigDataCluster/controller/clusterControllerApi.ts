@@ -4,14 +4,15 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as request from 'request';
-import { BdcRouterApi, Authentication, DefaultApi, EndpointModel, BdcStatusModel } from './apiGenerated';
+import { authenticateKerberos, getHostAndPortFromEndpoint } from '../auth';
+import { BdcRouterApi, Authentication, EndpointModel, BdcStatusModel } from './apiGenerated';
+import { TokenRouterApi } from './clusterApiGenerated2';
+import { AuthType } from '../constants';
 import * as nls from 'vscode-nls';
 
 const localize = nls.loadMessageBundle();
 
-class AuthConfiguration implements Authentication {
-	public username: string = '';
-	public password: string = '';
+class SslAuth implements Authentication {
 
 	constructor(private _ignoreSslVerification: boolean) {
 	}
@@ -23,65 +24,153 @@ class AuthConfiguration implements Authentication {
 	}
 }
 
+export class KerberosAuth extends SslAuth implements Authentication {
+
+	constructor(public kerberosToken: string, ignoreSslVerification: boolean) {
+		super(ignoreSslVerification);
+	}
+
+	applyToRequest(requestOptions: request.Options): void {
+		super.applyToRequest(requestOptions);
+		if (requestOptions && requestOptions.headers) {
+			requestOptions.headers['Authorization'] = `Negotiate ${this.kerberosToken}`;
+		}
+		requestOptions.auth = undefined;
+	}
+}
+export class BasicAuth extends SslAuth implements Authentication {
+	constructor(public username: string, public password: string, ignoreSslVerification: boolean) {
+		super(ignoreSslVerification);
+	}
+
+	applyToRequest(requestOptions: request.Options): void {
+		super.applyToRequest(requestOptions);
+		requestOptions.auth = {
+			username: this.username, password: this.password
+		};
+	}
+}
+
+export class OAuthWithSsl extends SslAuth implements Authentication {
+	public accessToken: string = '';
+
+	applyToRequest(requestOptions: request.Options): void {
+		super.applyToRequest(requestOptions);
+		if (requestOptions && requestOptions.headers) {
+			requestOptions.headers['Authorization'] = `Bearer ${this.accessToken}`;
+		}
+		requestOptions.auth = undefined;
+	}
+}
+
 class BdcApiWrapper extends BdcRouterApi {
-	constructor(basePathOrUsername: string, password?: string, basePath?: string, ignoreSslVerification?: boolean) {
-		super(basePathOrUsername, password, basePath);
-		this.authentications.default = new AuthConfiguration(!!ignoreSslVerification);
-		this.password = password;
-		this.username = basePathOrUsername;
+	constructor(basePathOrUsername: string, password: string, basePath: string, auth: Authentication) {
+		if (password) {
+			super(basePathOrUsername, password, basePath);
+		} else {
+			super(basePath, undefined, undefined);
+		}
+		this.authentications.default = auth;
 	}
 }
 
-export async function getEndPoints(
-	url: string,
-	username: string,
-	password: string,
-	ignoreSslVerification?: boolean
-): Promise<IEndPointsResponse> {
+export class ClusterController {
 
-	if (!url || !username || !password) {
-		return undefined;
+	private authPromise: Promise<Authentication>;
+	private _url: string;
+
+	constructor(url: string,
+		private authType: AuthType,
+		private username?: string,
+		private password?: string,
+		ignoreSslVerification?: boolean
+	) {
+		if (!url || (authType === 'basic' && (!username || !password))) {
+			throw new Error('Missing required inputs for Cluster controller API (URL, username, password)');
+		}
+		this._url = adjustUrl(url);
+		if (this.authType === 'basic') {
+			this.authPromise = Promise.resolve(new BasicAuth(username, password, !!ignoreSslVerification));
+		} else {
+			this.authPromise = this.requestTokenUsingKerberos(ignoreSslVerification);
+		}
 	}
 
-	url = adjustUrl(url);
-	let endPointApi = new BdcApiWrapper(username, password, url, !!ignoreSslVerification);
+	private async requestTokenUsingKerberos(ignoreSslVerification?: boolean): Promise<Authentication> {
+		let supportsKerberos = await this.verifyKerberosSupported(ignoreSslVerification);
+		if (!supportsKerberos) {
+			throw new Error(localize('error.no.activedirectory', "This cluster does not support Windows authentication"));
+		}
 
-	try {
-		let result = await endPointApi.endpointsGet();
-		return {
-			response: result.response as IHttpResponse,
-			endPoints: result.body as EndpointModel[]
-		};
-	} catch (error) {
-		throw new ControllerError(error, localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", url));
+		try {
+
+			// AD auth is available, login to keberos and convert to token auth for all future calls
+			let host = getHostAndPortFromEndpoint(this._url).host;
+			let kerberosToken = await authenticateKerberos(host);
+			let tokenApi = new TokenRouterApi(this._url);
+			tokenApi.setDefaultAuthentication(new KerberosAuth(kerberosToken, !!ignoreSslVerification));
+			let result = await tokenApi.apiV1TokenPost();
+			let auth = new OAuthWithSsl(ignoreSslVerification);
+			auth.accessToken = result.body.accessToken;
+			return auth;
+		} catch (error) {
+			let controllerErr = new ControllerError(error, localize('bdc.error.tokenPost', "Error during authentication"));
+			if (controllerErr.code === 401) {
+				throw new Error(localize('bdc.error.unauthorized', "You do not have permission to log into this cluster using Windows Authentication"));
+			}
+			// Else throw the error as-is
+			throw controllerErr;
+		}
+	}
+
+
+
+	private async verifyKerberosSupported(ignoreSslVerification: boolean): Promise<boolean> {
+		let tokenApi = new TokenRouterApi(this._url);
+		tokenApi.setDefaultAuthentication(new SslAuth(!!ignoreSslVerification));
+		try {
+			await tokenApi.apiV1TokenPost();
+			// If we get to here, the route for endpoints doesn't require auth so state this is false
+			return false;
+		}
+		catch (error) {
+			let auths = error && error.response && error.response.statusCode === 401 && error.response.headers['www-authenticate'];
+			return auths && auths.includes('Negotiate');
+		}
+	}
+
+	public async getEndPoints(): Promise<IEndPointsResponse> {
+		let auth = await this.authPromise;
+		let endPointApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
+		let options: any = {};
+		try {
+			let result = await endPointApi.endpointsGet(options);
+			return {
+				response: result.response as IHttpResponse,
+				endPoints: result.body as EndpointModel[]
+			};
+		} catch (error) {
+			// TODO handle 401 by reauthenticating
+			throw new ControllerError(error, localize('bdc.error.getEndPoints', "Error retrieving endpoints from {0}", this._url));
+		}
+	}
+
+	public async getBdcStatus(): Promise<IBdcStatusResponse> {
+		let auth = await this.authPromise;
+		const bdcApi = new BdcApiWrapper(this.username, this.password, this._url, auth);
+
+		try {
+			const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
+			return {
+				response: bdcStatus.response,
+				bdcStatus: bdcStatus.body
+			};
+		} catch (error) {
+			// TODO handle 401 by reauthenticating
+			throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
+		}
 	}
 }
-
-export async function getBdcStatus(
-	url: string,
-	username: string,
-	password: string,
-	ignoreSslVerification?: boolean
-): Promise<IBdcStatusResponse> {
-
-	if (!url) {
-		return undefined;
-	}
-
-	url = adjustUrl(url);
-	const bdcApi = new BdcApiWrapper(username, password, url, ignoreSslVerification);
-
-	try {
-		const bdcStatus = await bdcApi.getBdcStatus('', '', /*all*/ true);
-		return {
-			response: bdcStatus.response,
-			bdcStatus: bdcStatus.body
-		};
-	} catch (error) {
-		throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", url));
-	}
-}
-
 /**
  * Fixes missing protocol and wrong character for port entered by user
  */
@@ -122,8 +211,7 @@ export interface IHttpResponse {
 }
 
 export class ControllerError extends Error {
-	public code?: string;
-	public errno?: string;
+	public code?: number;
 	public reason?: string;
 	public address?: string;
 
@@ -136,7 +224,7 @@ export class ControllerError extends Error {
 		super(messagePrefix);
 		// Pull out the response information containing details about the failure
 		if (error.response) {
-			this.code = error.response.statusCode || '';
+			this.code = error.response.statusCode;
 			this.message += `${error.response.statusMessage ? ` - ${error.response.statusMessage}` : ''}` || '';
 			this.address = error.response.url || '';
 		}
