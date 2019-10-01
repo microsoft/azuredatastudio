@@ -13,10 +13,10 @@ Initially this view will be empty but once you execute a query editor that will 
 ![Query History tab with queries](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryTabWithQueries.PNG?raw=true)
 
 Each row consists of 3 parts :
-	1. Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌is shown.
-	2. Query Text : This is the text of the query that was executed
-	3. Connection Info : The Server and Database the query was executed against
-	4. Timestamp : The date and time the query was executed
+- Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌ is shown.
+- Query Text : This is the text of the query that was executed
+- Connection Info : The Server and Database the query was executed against
+- Timestamp : The date and time the query was executed
 
 ### Query History row actions
 
