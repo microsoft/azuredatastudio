@@ -30,6 +30,8 @@ const args = parseCLIArgs();
 // {{SQL CARBON EDIT}}
 if (args['nogpu']) {
 	app.disableHardwareAcceleration();
+	app.commandLine.appendSwitch('headless');
+	app.commandLine.appendSwitch('disable-gpu');
 }
 
 const userDataPath = getUserDataPath(args);
