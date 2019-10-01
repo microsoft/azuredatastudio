@@ -4,10 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { OpenWelcomePageInBrowser } from './openWebsite';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
+import { BrowserEnablePreviewFeatures } from 'sql/workbench/browser/enablePreviewFeatures';
 
 Registry
 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(OpenWelcomePageInBrowser, LifecyclePhase.Restored);
+	.registerWorkbenchContribution(BrowserEnablePreviewFeatures, LifecyclePhase.Eventually);

@@ -138,7 +138,7 @@ registerAction({
 		await workspaceEditingService.addFolders(folders.map(folder => ({ uri: folder })));
 		await viewletService.openViewlet(viewletService.getDefaultViewletId(), true);
 		if (options.forceNewWindow) {
-			return hostService.openInWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
+			return hostService.openWindow([{ folderUri: folders[0] }], { forceNewWindow: options.forceNewWindow });
 		}
 		else {
 			return hostService.reload();

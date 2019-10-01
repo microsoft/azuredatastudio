@@ -146,7 +146,7 @@ import 'vs/workbench/contrib/tasks/electron-browser/taskService';
 import 'vs/workbench/contrib/userDataSync/electron-browser/userDataSync.contribution';
 
 // Welcome
-import 'vs/workbench/contrib/welcome/gettingStarted/electron-browser/openWebsite.contribution';
+import 'vs/workbench/contrib/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
 
 // Configuration Exporter
 import 'vs/workbench/contrib/configExporter/node/configurationExportHelper.contribution';
@@ -164,3 +164,6 @@ import 'sql/workbench/parts/scripting/electron-browser/scripting.contribution';
 import 'sql/workbench/parts/queryHistory/electron-browser/queryHistory.contribution';
 
 import 'sql/workbench/parts/commandLine/electron-browser/commandLine.contribution';
+
+//getting started
+import 'sql/workbench/parts/welcome/gettingStarted/electron-browser/gettingStarted.contribution';
