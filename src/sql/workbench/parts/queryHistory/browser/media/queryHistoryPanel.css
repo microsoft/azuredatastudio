@@ -54,3 +54,32 @@
 	background-image: url("status_error.svg");
 }
 
+.monaco-workbench .clear-query-history-action.clear-query-history {
+	background: url('clear-light.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-workbench .clear-query-history-action.clear-query-history {
+	background: url('clear-dark.svg') center center no-repeat;
+}
+
+.hc-black .monaco-workbench .clear-query-history-action.clear-query-history {
+	background: url('clear-hc.svg') center center no-repeat;
+}
+
+.monaco-workbench .toggle-query-history-capture-action.toggle-query-history-capture-pause {
+	background: url('pause.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-workbench .toggle-query-history-capture-action.toggle-query-history-capture-pause,
+.hc-black .monaco-workbench .toggle-query-history-capture-action.toggle-query-history-capture-pause {
+	background: url('pause_inverse.svg') center center no-repeat;
+}
+
+.monaco-workbench .toggle-query-history-capture-action.toggle-query-history-capture-start {
+	background: url('start.svg') center center no-repeat;
+}
+
+.vs-dark .monaco-workbench .toggle-query-history-capture-action.toggle-query-history-capture-start,
+.hc-black .monaco-workbench .toggle-query-history-capture-action.toggle-query-history-capture-start {
+	background: url('start_inverse.svg') center center no-repeat;
+}
