@@ -59,9 +59,10 @@ export function showErrorMessage(error: any, prefixText?: string): void {
 		if (typeof error === 'string') {
 			text += error as string;
 		} else if (typeof error === 'object' && error !== null) {
-			let message = error.message;
-			let code = error.code || error.errno;
-			text += `${message}${code ? ` (${code})` : ''}`;
+			text += error.message;
+			if (error.code && error.code > 0) {
+				text += ` (${error.code})`;
+			}
 		} else {
 			text += `${error}`;
 		}
