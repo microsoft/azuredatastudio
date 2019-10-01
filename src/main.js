@@ -27,6 +27,11 @@ bootstrap.enableASARSupport();
 
 // Set userData path before app 'ready' event and call to process.chdir
 const args = parseCLIArgs();
+// {{SQL CARBON EDIT}}
+if (args['nogpu']) {
+	app.disableHardwareAcceleration();
+}
+
 const userDataPath = getUserDataPath(args);
 app.setPath('userData', userDataPath);
 
