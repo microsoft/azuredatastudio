@@ -18,7 +18,7 @@ const paths = require('./paths');
 const product = require('../product.json');
 // @ts-ignore
 const { app, protocol } = require('electron');
-
+app.disableHardwareAcceleration();
 // Enable portable support
 const portable = bootstrap.configurePortable();
 
@@ -27,9 +27,9 @@ bootstrap.enableASARSupport();
 
 // Set userData path before app 'ready' event and call to process.chdir
 const args = parseCLIArgs();
+console.log(args);
 const userDataPath = getUserDataPath(args);
 app.setPath('userData', userDataPath);
-
 // Update cwd based on environment and platform
 setCurrentWorkingDirectory();
 
