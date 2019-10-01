@@ -6,7 +6,7 @@
 import * as nls from 'vs/nls';
 import { URI } from 'vs/base/common/uri';
 import { toResource, IEditorCommandsContext, SideBySideEditor, EditorInput } from 'vs/workbench/common/editor'; // {{SQL CARBON EDIT}} add edit input
-import { IWindowOpenable, IOpenInWindowOptions, isWorkspaceToOpen, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
+import { IWindowOpenable, IOpenWindowOptions, isWorkspaceToOpen, IOpenEmptyWindowOptions } from 'vs/platform/windows/common/windows';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { ServicesAccessor, IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
@@ -81,7 +81,7 @@ export const ResourceSelectedForCompareContext = new RawContextKey<boolean>('res
 export const REMOVE_ROOT_FOLDER_COMMAND_ID = 'removeRootFolder';
 export const REMOVE_ROOT_FOLDER_LABEL = nls.localize('removeFolderFromWorkspace', "Remove Folder from Workspace");
 
-export const openWindowCommand = (accessor: ServicesAccessor, toOpen: IWindowOpenable[], options?: IOpenInWindowOptions) => {
+export const openWindowCommand = (accessor: ServicesAccessor, toOpen: IWindowOpenable[], options?: IOpenWindowOptions) => {
 	if (Array.isArray(toOpen)) {
 		const hostService = accessor.get(IHostService);
 		const environmentService = accessor.get(IEnvironmentService);
@@ -97,13 +97,13 @@ export const openWindowCommand = (accessor: ServicesAccessor, toOpen: IWindowOpe
 			return openable;
 		});
 
-		hostService.openInWindow(toOpen, options);
+		hostService.openWindow(toOpen, options);
 	}
 };
 
 export const newWindowCommand = (accessor: ServicesAccessor, options?: IOpenEmptyWindowOptions) => {
 	const hostService = accessor.get(IHostService);
-	hostService.openEmptyWindow(options);
+	hostService.openWindow(options);
 };
 
 // {{SQL CARBON EDIT}}
