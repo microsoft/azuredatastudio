@@ -348,11 +348,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		if (isHidden) {
 			codeEditor.style.display = 'none';
 			codePlaceholder.style.display = 'block';
-			if (this.cellModel.source.length > 1) {
-				let rowsString = this.cellModel.source.length === 2 ? 'row' : 'rows';
-				codePlaceholder.innerHTML = `<div>${this.cellModel.source[0]}</div><br><i>(${this.cellModel.source.length - 1} ${rowsString} hidden)</i>`;
+			let firstLine = this.cellModel.source[0];
+			let numLines = this.cellModel.source.length;
+			if (numLines > 1) {
+				let rowsString = numLines === 2 ? 'row' : 'rows';
+				codePlaceholder.innerHTML = `<div>${firstLine}</div><i>(${numLines - 1} ${rowsString} hidden)</i>`;
 			} else {
-				codePlaceholder.innerHTML = `<div>${this.cellModel.source[0]}</div><br>`;
+				codePlaceholder.innerHTML = `<div>${firstLine.length > 0 ? firstLine : '<br>'}</div>`;
 			}
 		} else {
 			codeEditor.style.display = 'block';
