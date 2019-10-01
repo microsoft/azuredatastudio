@@ -36,6 +36,14 @@ export class AzCliTool extends ToolBase {
 		return 'https://docs.microsoft.com/cli/azure/install-azure-cli';
 	}
 
+	get autoInstallSupported(): boolean {
+		return true;
+	}
+
+	public install(): Promise<void> {
+		return Promise.reject('not implemented');
+	}
+
 	protected getVersionFromOutput(output: string): SemVer | undefined {
 		if (output && output.includes('azure-cli')) {
 			return new SemVer(output.split(EOL)[0].replace('azure-cli', '').replace(/ /g, '').replace('*', ''));

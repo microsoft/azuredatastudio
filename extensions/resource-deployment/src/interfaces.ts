@@ -210,8 +210,10 @@ export interface ITool {
 	readonly version: SemVer | undefined;
 	readonly homePage: string;
 	readonly isInstalled: boolean;
-	loadInformation(): Promise<void>;
 	readonly statusDescription: string | undefined;
+	readonly autoInstallSupported: boolean;
+	loadInformation(): Promise<void>;
+	install(): Promise<void>;
 }
 
 export enum BdcDeploymentType {

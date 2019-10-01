@@ -27,6 +27,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _toolsLoadingComponent!: azdata.LoadingComponent;
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
+	private _installToolButton: azdata.window.Button;
 
 	constructor(
 		private toolsService: IToolsService,
@@ -36,6 +37,12 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
 		this._dialogObject.okButton.onClick(() => this.onComplete());
+		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', 'Install tools'));
+		this._toDispose.push(this._installToolButton.onClick(() => {
+			this.installTools();
+		}));
+		this._dialogObject.customButtons = [this._installToolButton];
+		this._installToolButton.hidden = true;
 	}
 
 	initialize() {
@@ -194,6 +201,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		this._dialogObject.message = {
 			text: ''
 		};
+		this._installToolButton.hidden = true;
 		if (toolRequirements.length === 0) {
 			this._dialogObject.okButton.enabled = true;
 			this._toolsTable.data = [[localize('deploymentDialog.NoRequiredTool', "No tools required"), '']];
@@ -209,17 +217,24 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
 				}
+				let enableInstallButton = false;
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolRef => {
 					const tool = this.toolsService.getToolByName(toolRef.name)!;
-					if (!tool.isInstalled) {
+					if (!tool.isInstalled && !tool.autoInstallSupported) {
 						messages.push(localize('deploymentDialog.ToolInformation', "{0}: {1}", tool.displayName, tool.homePage));
 						if (tool.statusDescription !== undefined) {
 							console.warn(localize('deploymentDialog.DetailToolStatusDescription', "Additional status information for tool: {0}. {1}", tool.name, tool.statusDescription));
 						}
 					}
+
+					if (!tool.isInstalled && tool.autoInstallSupported) {
+						enableInstallButton = true;
+					}
 					return [tool.displayName, tool.description, tool.isInstalled ? localize('deploymentDialog.YesText', "Yes") : localize('deploymentDialog.NoText', "No"), tool.version ? tool.version.version : ''];
 				});
+
+				this._installToolButton.hidden = !enableInstallButton;
 				this._dialogObject.okButton.enabled = messages.length === 0;
 				if (messages.length !== 0) {
 					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console."));
@@ -262,5 +277,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private onComplete(): void {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
 		this.dispose();
+	}
+
+	private installTools(): void {
+		// TODO
 	}
 }
