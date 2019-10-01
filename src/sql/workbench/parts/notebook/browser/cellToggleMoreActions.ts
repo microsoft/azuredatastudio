@@ -203,12 +203,12 @@ export class CollapseCellAction extends CellActionBase {
 			let cell = context.cell || context.model.activeCell;
 			if (cell) {
 				if (this.collapseCell) {
-					if (!cell.isHidden) {
-						cell.isHidden = true;
+					if (!cell.isCollapsed) {
+						cell.isCollapsed = true;
 					}
 				} else {
-					if (cell.isHidden) {
-						cell.isHidden = false;
+					if (cell.isCollapsed) {
+						cell.isCollapsed = false;
 					}
 				}
 			}

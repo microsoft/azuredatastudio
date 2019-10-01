@@ -50,7 +50,7 @@ export class CellModel implements ICellModel {
 	private _loaded: boolean;
 	private _stdInVisible: boolean;
 	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
-	private _isHidden: boolean;
+	private _isCollapsed: boolean;
 	private _onToggleStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 
@@ -102,17 +102,17 @@ export class CellModel implements ICellModel {
 		return this._future;
 	}
 
-	public get isHidden() {
-		return this._isHidden;
+	public get isCollapsed() {
+		return this._isCollapsed;
 	}
 
-	public set isHidden(isHidden: boolean) {
-		this._isHidden = isHidden;
+	public set isCollapsed(value: boolean) {
+		this._isCollapsed = value;
 		let index;
 		if (this._metadata && Array.isArray(this._metadata.tags)) {
 			index = this._metadata.tags.findIndex(tag => tag === 'hide_input');
 		}
-		if (this._isHidden) {
+		if (this._isCollapsed) {
 			if (index > -1) {
 				this._metadata.tags.splice(index, 1);
 			} else {
@@ -125,7 +125,7 @@ export class CellModel implements ICellModel {
 				this._metadata.tags.splice(index, 1);
 			}
 		}
-		this._onToggleStateChanged.fire(this._isHidden);
+		this._onToggleStateChanged.fire(this._isCollapsed);
 		this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
 	}
 
@@ -290,8 +290,8 @@ export class CellModel implements ICellModel {
 				this.notebookModel.updateActiveCell(this);
 				this.active = true;
 			}
-			if (this.isHidden) {
-				this.isHidden = false;
+			if (this.isCollapsed) {
+				this.isCollapsed = false;
 			}
 
 			if (connectionManagementService) {
@@ -602,11 +602,11 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata;
 
-		this._isHidden = false;
+		this._isCollapsed = false;
 		if (!this._metadata.tags) {
 			this._metadata.tags = [];
 		} else if (this._metadata.tags.includes('hide_input')) {
-			this._isHidden = true;
+			this._isCollapsed = true;
 		}
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();

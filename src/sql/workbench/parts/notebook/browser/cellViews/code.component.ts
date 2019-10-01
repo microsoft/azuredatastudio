@@ -33,7 +33,7 @@ import * as notebookUtils from 'sql/workbench/parts/notebook/browser/models/note
 import { UntitledEditorModel } from 'vs/workbench/common/editor/untitledEditorModel';
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { ILogService } from 'vs/platform/log/common/log';
-import { HiddenComponent } from 'sql/workbench/parts/notebook/browser/cellViews/hidden.component';
+import { CollapseComponent } from 'sql/workbench/parts/notebook/browser/cellViews/collapse.component';
 import { ICodeEditor } from 'vs/editor/browser/editorBrowser';
 
 export const CODE_SELECTOR: string = 'code-component';
@@ -47,7 +47,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	@ViewChild('toolbar', { read: ElementRef }) private toolbarElement: ElementRef;
 	@ViewChild('moreactions', { read: ElementRef }) private moreActionsElementRef: ElementRef;
 	@ViewChild('editor', { read: ElementRef }) private codeElement: ElementRef;
-	@ViewChild(HiddenComponent) private collapseComponent: HiddenComponent;
+	@ViewChild(CollapseComponent) private collapseComponent: CollapseComponent;
 
 	public get cellModel(): ICellModel {
 		return this._cellModel;
@@ -225,17 +225,17 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
-			if (this._cellModel.isHidden && originalSourceLength !== this.cellModel.source.length) {
-				this._cellModel.isHidden = false;
+			if (this._cellModel.isCollapsed && originalSourceLength !== this.cellModel.source.length) {
+				this._cellModel.isCollapsed = false;
 			}
-			this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
+			this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
 
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
-				this._editor.setHeightToScrollHeight(true, this._cellModel.isHidden);
+				this._editor.setHeightToScrollHeight(true, this._cellModel.isCollapsed);
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
@@ -244,13 +244,13 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				this.setFocusAndScroll();
 			}
 		}));
-		this._register(this.cellModel.onToggleStateChanged(isHidden => {
-			this.onCellCollapse(isHidden);
+		this._register(this.cellModel.onToggleStateChanged(isCollapsed => {
+			this.onCellCollapse(isCollapsed);
 		}));
 
 		this.layout();
 
-		if (this._cellModel.isHidden) {
+		if (this._cellModel.isCollapsed) {
 			this.onCellCollapse(true);
 		}
 	}
@@ -259,7 +259,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.layout(new DOM.Dimension(
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
-		this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
+		this._editor.setHeightToScrollHeight(false, this._cellModel.isCollapsed);
 	}
 
 	protected initActionBar() {
@@ -342,9 +342,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}
 	}
 
-	private onCellCollapse(isHidden: boolean): void {
+	private onCellCollapse(isCollapsed: boolean): void {
 		let editorWidget = this._editor.getControl() as ICodeEditor;
-		if (isHidden) {
+		if (isCollapsed) {
 			let model = editorWidget.getModel();
 			let totalLines = model.getLineCount();
 			let endColumn = model.getLineMaxColumn(totalLines);
@@ -357,6 +357,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		} else {
 			editorWidget.setHiddenAreas([]);
 		}
-		this._editor.setHeightToScrollHeight(false, isHidden);
+		this._editor.setHeightToScrollHeight(false, isCollapsed);
 	}
 }

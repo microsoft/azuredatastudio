@@ -35,7 +35,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	private _model: NotebookModel;
 	private _activeCellId: string;
-	private _isHidden: boolean;
 
 	public inputDeferred: Deferred<string>;
 	public stdIn: nb.IStdinMessage;
@@ -48,9 +47,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		if (this.cellModel) {
-			this._isHidden = this.cellModel.isHidden;
 			this._register(this.cellModel.onToggleStateChanged((state) => {
-				this._isHidden = state;
 				this._changeRef.detectChanges();
 			}));
 			this._register(this.cellModel.onOutputsChanged(() => {
@@ -78,10 +75,6 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	get activeCellId(): string {
 		return this._activeCellId;
-	}
-
-	get isVisible(): boolean {
-		return !this._isHidden;
 	}
 
 	public layout() {

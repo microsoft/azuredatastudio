@@ -305,7 +305,7 @@ export class CollapseCellsAction extends ToggleableAction {
 			try {
 				self.isCollapsed = !self.isCollapsed;
 				context.cells.forEach(cell => {
-					cell.isHidden = self.isCollapsed;
+					cell.isCollapsed = self.isCollapsed;
 				});
 				resolve(true);
 			} catch (e) {

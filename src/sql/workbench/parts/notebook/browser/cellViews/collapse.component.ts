@@ -8,14 +8,14 @@ import { OnInit, Component, Input, Inject, forwardRef, ElementRef, ChangeDetecto
 import { CellView } from 'sql/workbench/parts/notebook/browser/cellViews/interfaces';
 import { ICellModel } from 'sql/workbench/parts/notebook/browser/models/modelInterfaces';
 
-export const HIDDEN_SELECTOR: string = 'hidden-component';
+export const COLLAPSE_SELECTOR: string = 'collapse-component';
 
 @Component({
-	selector: HIDDEN_SELECTOR,
-	templateUrl: decodeURI(require.toUrl('./hidden.component.html'))
+	selector: COLLAPSE_SELECTOR,
+	templateUrl: decodeURI(require.toUrl('./collapse.component.html'))
 })
 
-export class HiddenComponent extends CellView implements OnInit, OnChanges {
+export class CollapseComponent extends CellView implements OnInit, OnChanges {
 	@ViewChild('collapseCellButton', { read: ElementRef }) private collapseCellButtonElement: ElementRef;
 	@ViewChild('expandCellButton', { read: ElementRef }) private expandCellButtonElement: ElementRef;
 
@@ -35,19 +35,19 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngAfterContentInit() {
-		this._register(this.cellModel.onToggleStateChanged(isHidden => {
-			this.onCellCollapse(isHidden);
+		this._register(this.cellModel.onToggleStateChanged(isCollapsed => {
+			this.onCellCollapse(isCollapsed);
 		}));
-		this.onCellCollapse(this.cellModel.isHidden);
+		this.onCellCollapse(this.cellModel.isCollapsed);
 		if (this.activeCellId === this.cellModel.id) {
 			this.toggleIconVisibility(true);
 		}
 	}
 
-	private onCellCollapse(isHidden: boolean): void {
+	private onCellCollapse(isCollapsed: boolean): void {
 		let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
 		let expandButton = <HTMLElement>this.expandCellButtonElement.nativeElement;
-		if (isHidden) {
+		if (isCollapsed) {
 			collapseButton.style.display = 'none';
 			expandButton.style.display = 'block';
 		} else {
@@ -60,7 +60,7 @@ export class HiddenComponent extends CellView implements OnInit, OnChanges {
 		if (event) {
 			event.stopPropagation();
 		}
-		this.cellModel.isHidden = !this.cellModel.isHidden;
+		this.cellModel.isCollapsed = !this.cellModel.isCollapsed;
 	}
 
 	public layout() {
