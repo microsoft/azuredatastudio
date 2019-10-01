@@ -80,8 +80,8 @@
           "linux"
         ],
         "icon": {
-          "light": "./images/sql_server.svg",
-          "dark": "./images/sql_server_inverse.svg"
+          "light": "./images/sql_server_container.svg",
+          "dark": "./images/sql_server_container_inverse.svg"
         },
         "options": [
           {
@@ -323,8 +323,8 @@
           "win32"
         ],
         "icon": {
-          "light": "./images/sql_server.svg",
-          "dark": "./images/sql_server_inverse.svg"
+          "light": "./images/sql_server_on_windows.svg",
+          "dark": "./images/sql_server_on_windows_inverse.svg"
         },
         "options": [
           {
