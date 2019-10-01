@@ -4,7 +4,7 @@
  *--------------------------------------------------------------------------------------------*/
 
 const path = require('path');
-import * as testRunner from 'vscodetestcover';
+const testRunner = require('vscode/lib/testrunner');
 
 const suite = 'DacFx Tests';
 
@@ -14,9 +14,9 @@ const testOptions: any = {
 	timeout: 60000
 };
 
-const coverageConfig: any = {
-	coverConfig: '../../coverageConfig.json'
-};
+// const coverageConfig: any = {
+// 	coverConfig: '../../coverageConfig.json'
+// };
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	testOptions.reporter = 'mocha-multi-reporters';
@@ -29,6 +29,6 @@ if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {
 	};
 }
 
-testRunner.configure(testOptions, coverageConfig);
+testRunner.configure(testOptions);
 
 export = testRunner;
