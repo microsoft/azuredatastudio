@@ -21,7 +21,7 @@ export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 	) {
 		super(storageService, notificationService, hostService, configurationService);
 
-		this.handleTelemetryOptOut();
+		this.handlePreviewFeatures();
 	}
 
 	protected getWindowCount(): Promise<number> {

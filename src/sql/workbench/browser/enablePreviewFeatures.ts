@@ -19,7 +19,7 @@ export class BrowserEnablePreviewFeatures extends AbstractEnablePreviewFeatures 
 	) {
 		super(storageService, notificationService, hostService, configurationService);
 
-		this.handleTelemetryOptOut();
+		this.handlePreviewFeatures();
 	}
 
 	protected async getWindowCount(): Promise<number> {

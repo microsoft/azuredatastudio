@@ -22,7 +22,7 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 		@IConfigurationService private readonly configurationService: IConfigurationService
 	) { }
 
-	protected async handleTelemetryOptOut(): Promise<void> {
+	protected async handlePreviewFeatures(): Promise<void> {
 		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
 		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
