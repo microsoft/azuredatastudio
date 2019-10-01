@@ -108,7 +108,7 @@ export class RunQueryAction extends Action {
 
 export class ToggleQueryHistoryCaptureAction extends Action {
 	public static ID = 'queryHistory.toggleCapture';
-	public static LABEL = localize('queryHistory.toggleCaptureLabel', "Toggle Query History capture");
+	public static LABEL = localize('queryHistory.toggleCaptureLabel', "Toggle Query History Capture");
 
 	constructor(
 		id: string,
@@ -128,10 +128,10 @@ export class ToggleQueryHistoryCaptureAction extends Action {
 	private setClassAndLabel(enabled: boolean) {
 		if (enabled) {
 			this.class = 'toggle-query-history-capture-action toggle-query-history-capture-pause';
-			this.label = localize('queryHistory.disableCapture', "Pause Query History capture");
+			this.label = localize('queryHistory.disableCapture', "Pause Query History Capture");
 		} else {
 			this.class = 'toggle-query-history-capture-action toggle-query-history-capture-start';
-			this.label = localize('queryHistory.enableCapture', "Start Query History capture");
+			this.label = localize('queryHistory.enableCapture', "Start Query History Capture");
 		}
 	}
 }
