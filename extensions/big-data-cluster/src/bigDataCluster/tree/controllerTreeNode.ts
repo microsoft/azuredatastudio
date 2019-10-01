@@ -10,7 +10,7 @@ import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { IControllerTreeChangeHandler } from './controllerTreeChangeHandler';
 import { TreeNode } from './treeNode';
-import { IconPathHelper, BdcItemType, IconPath, AuthType } from '../constants';
+import { IconPathHelper, BdcItemType, IconPath } from '../constants';
 
 const localize = nls.loadMessageBundle();
 
@@ -108,28 +108,27 @@ export class ControllerRootNode extends ControllerTreeNode {
 
 	public addControllerNode(
 		url: string,
-		auth: AuthType,
 		username: string,
 		password: string,
 		rememberPassword: boolean
 	): void {
-		let controllerNode = this.getExistingControllerNode(url, auth, username);
+		let controllerNode = this.getExistingControllerNode(url, username);
 		if (controllerNode) {
 			controllerNode.password = password;
 			controllerNode.rememberPassword = rememberPassword;
 			controllerNode.clearChildren();
 		} else {
-			controllerNode = new ControllerNode(url, auth, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
+			controllerNode = new ControllerNode(url, username, password, rememberPassword, undefined, this, this.treeChangeHandler, undefined);
 			this.addChild(controllerNode);
 		}
 	}
 
-	public deleteControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
-		if (!url || (auth === 'basic' && !username)) {
+	public deleteControllerNode(url: string, username: string): ControllerNode {
+		if (!url || !username) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
-		let index = nodes.findIndex(e => isControllerMatch(e, url, auth, username));
+		let index = nodes.findIndex(e => e.url === url && e.username === username);
 		let deleted = undefined;
 		if (index >= 0) {
 			deleted = nodes.splice(index, 1);
@@ -137,12 +136,12 @@ export class ControllerRootNode extends ControllerTreeNode {
 		return deleted;
 	}
 
-	private getExistingControllerNode(url: string, auth: AuthType, username: string): ControllerNode {
+	private getExistingControllerNode(url: string, username: string): ControllerNode {
 		if (!url || !username) {
 			return undefined;
 		}
 		let nodes = this.children as ControllerNode[];
-		return nodes.find(e => isControllerMatch(e, url, auth, username));
+		return nodes.find(e => e.url === url && e.username === username);
 	}
 }
 
@@ -150,7 +149,6 @@ export class ControllerNode extends ControllerTreeNode {
 
 	constructor(
 		private _url: string,
-		private _auth: AuthType,
 		private _username: string,
 		private _password: string,
 		private _rememberPassword: boolean,
@@ -179,24 +177,26 @@ export class ControllerNode extends ControllerTreeNode {
 		if (!url) {
 			return;
 		}
-		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '');
+		return url.trim().replace(/ /g, '').replace(/^.+\:\/\//, '').replace(/:(\d+)$/, ',$1');
 	}
 
-	public get url(): string {
+	public get url() {
 		return this._url;
 	}
 
-
-	public get auth(): AuthType {
-		return this._auth;
+	public set url(url: string) {
+		this._url = url;
 	}
 
-
-	public get username(): string {
+	public get username() {
 		return this._username;
 	}
 
-	public get password(): string {
+	public set username(username: string) {
+		this._username = username;
+	}
+
+	public get password() {
 		return this._password;
 	}
 
@@ -213,15 +213,7 @@ export class ControllerNode extends ControllerTreeNode {
 	}
 
 	public set label(label: string) {
-		super.label = label || this.generateLabel();
-	}
-
-	private generateLabel(): string {
-		let label = `controller: ${ControllerNode.toIpAndPort(this._url)}`;
-		if (this._auth === 'basic') {
-			label += ` (${this._username})`;
-		}
-		return label;
+		super.label = label || `controller: ${ControllerNode.toIpAndPort(this._url)} (${this._username})`;
 	}
 
 	public get label(): string {
@@ -235,9 +227,5 @@ export class ControllerNode extends ControllerTreeNode {
 	public get description(): string {
 		return super.description;
 	}
-}
-
-function isControllerMatch(node: ControllerNode, url: string, auth: string, username: string): unknown {
-	return node.url === url && node.auth === auth && node.username === username;
 }
 
