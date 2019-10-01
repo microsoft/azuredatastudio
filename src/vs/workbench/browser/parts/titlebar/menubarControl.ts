@@ -7,7 +7,6 @@ import * as nls from 'vs/nls';
 import { IMenuService, MenuId, IMenu, SubmenuItemAction } from 'vs/platform/actions/common/actions';
 import { registerThemingParticipant, ITheme, ICssStyleCollector, IThemeService } from 'vs/platform/theme/common/themeService';
 import { MenuBarVisibility, getTitleBarStyle, IWindowOpenable } from 'vs/platform/windows/common/windows';
-import { IWorkspacesHistoryService } from 'vs/workbench/services/workspace/common/workspacesHistoryService';
 import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 import { IAction, Action } from 'vs/base/common/actions';
 import { Separator } from 'vs/base/browser/ui/actionbar/actionbar';
@@ -17,7 +16,7 @@ import { isMacintosh, isWeb } from 'vs/base/common/platform';
 import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
-import { IRecentlyOpened, isRecentFolder, IRecent, isRecentWorkspace } from 'vs/platform/workspaces/common/workspacesHistory';
+import { IRecentlyOpened, isRecentFolder, IRecent, isRecentWorkspace, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { MENUBAR_SELECTION_FOREGROUND, MENUBAR_SELECTION_BACKGROUND, MENUBAR_SELECTION_BORDER, TITLE_BAR_ACTIVE_FOREGROUND, TITLE_BAR_INACTIVE_FOREGROUND, ACTIVITY_BAR_FOREGROUND, ACTIVITY_BAR_INACTIVE_FOREGROUND } from 'vs/workbench/common/theme';
 import { URI } from 'vs/base/common/uri';
@@ -86,7 +85,7 @@ export abstract class MenubarControl extends Disposable {
 
 	constructor(
 		protected readonly menuService: IMenuService,
-		protected readonly workspacesHistoryService: IWorkspacesHistoryService,
+		protected readonly workspacesService: IWorkspacesService,
 		protected readonly contextKeyService: IContextKeyService,
 		protected readonly keybindingService: IKeybindingService,
 		protected readonly configurationService: IConfigurationService,
@@ -129,7 +128,7 @@ export abstract class MenubarControl extends Disposable {
 		this.updateService.onStateChange(() => this.updateMenubar());
 
 		// Listen for changes in recently opened menu
-		this._register(this.workspacesHistoryService.onRecentlyOpenedChange(() => { this.onRecentlyOpenedChange(); }));
+		this._register(this.workspacesService.onRecentlyOpenedChange(() => { this.onRecentlyOpenedChange(); }));
 
 		// Listen to keybindings change
 		this._register(this.keybindingService.onDidUpdateKeybindings(() => this.updateMenubar()));
@@ -191,7 +190,7 @@ export abstract class MenubarControl extends Disposable {
 	}
 
 	private onRecentlyOpenedChange(): void {
-		this.workspacesHistoryService.getRecentlyOpened().then(recentlyOpened => {
+		this.workspacesService.getRecentlyOpened().then(recentlyOpened => {
 			this.recentlyOpened = recentlyOpened;
 			this.updateMenubar();
 		});
@@ -224,7 +223,7 @@ export abstract class MenubarControl extends Disposable {
 		const ret: IAction = new Action(commandId, unmnemonicLabel(label), undefined, undefined, (event) => {
 			const openInNewWindow = event && ((!isMacintosh && (event.ctrlKey || event.shiftKey)) || (isMacintosh && (event.metaKey || event.altKey)));
 
-			return this.hostService.openInWindow([openable], {
+			return this.hostService.openWindow([openable], {
 				forceNewWindow: openInNewWindow
 			});
 		});
@@ -271,7 +270,7 @@ export class CustomMenubarControl extends MenubarControl {
 
 	constructor(
 		@IMenuService menuService: IMenuService,
-		@IWorkspacesHistoryService workspacesHistoryService: IWorkspacesHistoryService,
+		@IWorkspacesService workspacesService: IWorkspacesService,
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IConfigurationService configurationService: IConfigurationService,
@@ -291,7 +290,7 @@ export class CustomMenubarControl extends MenubarControl {
 
 		super(
 			menuService,
-			workspacesHistoryService,
+			workspacesService,
 			contextKeyService,
 			keybindingService,
 			configurationService,
@@ -308,7 +307,7 @@ export class CustomMenubarControl extends MenubarControl {
 		this._onVisibilityChange = this._register(new Emitter<boolean>());
 		this._onFocusStateChange = this._register(new Emitter<boolean>());
 
-		this.workspacesHistoryService.getRecentlyOpened().then((recentlyOpened) => {
+		this.workspacesService.getRecentlyOpened().then((recentlyOpened) => {
 			this.recentlyOpened = recentlyOpened;
 		});
 

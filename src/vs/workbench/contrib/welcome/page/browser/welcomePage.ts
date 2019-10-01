@@ -15,7 +15,6 @@ import { IInstantiationService } from 'vs/platform/instantiation/common/instanti
 import { IEditorService } from 'vs/workbench/services/editor/common/editorService';
 import { onUnexpectedError, isPromiseCanceledError } from 'vs/base/common/errors';
 import { IWindowOpenable } from 'vs/platform/windows/common/windows';
-import { IWorkspacesHistoryService } from 'vs/workbench/services/workspace/common/workspacesHistoryService';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
 import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configuration/common/configuration';
 import { localize } from 'vs/nls';
@@ -41,7 +40,7 @@ import { ILabelService } from 'vs/platform/label/common/label';
 import { IFileService } from 'vs/platform/files/common/files';
 import { ExtensionType } from 'vs/platform/extensions/common/extensions';
 import { joinPath } from 'vs/base/common/resources';
-import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder } from 'vs/platform/workspaces/common/workspacesHistory';
+import { IRecentlyOpened, isRecentWorkspace, IRecentWorkspace, IRecentFolder, isRecentFolder, IWorkspacesService } from 'vs/platform/workspaces/common/workspaces';
 import { CancellationToken } from 'vs/base/common/cancellation';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment'; // {{SQL CARBON EDIT}}
 import { setProductQuality } from 'sql/workbench/contrib/welcome/page/browser/az_data_welcome_page'; // {{SQL CARBON EDIT}}
@@ -255,7 +254,7 @@ class WelcomePage extends Disposable {
 	constructor(
 		@IEditorService private readonly editorService: IEditorService,
 		@IInstantiationService private readonly instantiationService: IInstantiationService,
-		@IWorkspacesHistoryService private readonly workspacesHistoryService: IWorkspacesHistoryService,
+		@IWorkspacesService private readonly workspacesService: IWorkspacesService,
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IConfigurationService private readonly configurationService: IConfigurationService,
 		@ILabelService private readonly labelService: ILabelService,
@@ -273,7 +272,7 @@ class WelcomePage extends Disposable {
 		super();
 		this._register(lifecycleService.onShutdown(() => this.dispose()));
 
-		const recentlyOpened = this.workspacesHistoryService.getRecentlyOpened();
+		const recentlyOpened = this.workspacesService.getRecentlyOpened();
 		const installedExtensions = this.instantiationService.invokeFunction(getInstalledExtensions);
 		// {{SQL CARBON EDIT}} - Redirect to ADS welcome page
 		setProductQuality(this.environmentService.appQuality);
@@ -371,7 +370,7 @@ class WelcomePage extends Disposable {
 					id: 'openRecentFolder',
 					from: telemetryFrom
 				});
-				this.hostService.openInWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
+				this.hostService.openWindow([windowOpenable], { forceNewWindow: e.ctrlKey || e.metaKey });
 				e.preventDefault();
 				e.stopPropagation();
 			});

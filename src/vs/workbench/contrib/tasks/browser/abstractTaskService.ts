@@ -6,13 +6,13 @@
 import * as nls from 'vs/nls';
 import Severity from 'vs/base/common/severity';
 import * as Objects from 'vs/base/common/objects';
+import * as resources from 'vs/base/common/resources';
 import { URI } from 'vs/base/common/uri';
 import { IStringDictionary } from 'vs/base/common/collections';
 import { Action } from 'vs/base/common/actions';
 import { IDisposable, Disposable } from 'vs/base/common/lifecycle';
 import { Event, Emitter } from 'vs/base/common/event';
 import * as Types from 'vs/base/common/types';
-import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
 import { TerminateResponseCode } from 'vs/base/common/processes';
 import * as strings from 'vs/base/common/strings';
 import { ValidationStatus, ValidationState } from 'vs/base/common/parsers';
@@ -27,7 +27,6 @@ import { IConfigurationService, ConfigurationTarget } from 'vs/platform/configur
 import { IFileService, IFileStat } from 'vs/platform/files/common/files';
 import { IExtensionService } from 'vs/workbench/services/extensions/common/extensions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
-import { KeybindingsRegistry, KeybindingWeight } from 'vs/platform/keybinding/common/keybindingsRegistry';
 import { ProblemMatcherRegistry, NamedProblemMatcher } from 'vs/workbench/contrib/tasks/common/problemMatcher';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IProgressService, IProgressOptions, ProgressLocation } from 'vs/platform/progress/common/progress';
@@ -77,6 +76,7 @@ import { ITextModelService } from 'vs/editor/common/services/resolverService';
 import { applyEdits } from 'vs/base/common/jsonEdit';
 import { ITextEditor } from 'vs/workbench/common/editor';
 import { ITextEditorSelection } from 'vs/platform/editor/common/editor';
+import { IPreferencesService } from 'vs/workbench/services/preferences/common/preferences';
 
 export namespace ConfigureTaskAction {
 	export const ID = 'workbench.action.tasks.configureTaskRunner';
@@ -224,7 +224,8 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		@IWorkbenchLayoutService private readonly layoutService: IWorkbenchLayoutService,
 		@ITerminalInstanceService private readonly terminalInstanceService: ITerminalInstanceService,
 		@IRemoteAgentService private readonly remoteAgentService: IRemoteAgentService,
-		@ITextModelService private readonly textModelResolverService: ITextModelService
+		@ITextModelService private readonly textModelResolverService: ITextModelService,
+		@IPreferencesService private readonly preferencesService: IPreferencesService
 	) {
 		super();
 
@@ -351,13 +352,6 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 			this.runBuildCommand();
 		});
 
-		KeybindingsRegistry.registerKeybindingRule({
-			id: 'workbench.action.tasks.build',
-			weight: KeybindingWeight.WorkbenchContrib,
-			when: undefined,
-			primary: KeyMod.CtrlCmd | KeyMod.Shift | KeyCode.KEY_B
-		});
-
 		CommandsRegistry.registerCommand('workbench.action.tasks.test', () => {
 			if (!this.canRunCommand()) {
 				return;
@@ -387,6 +381,13 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				this.layoutService.setPanelHidden(true);
 			} else {
 				this.panelService.openPanel(Constants.MARKERS_PANEL_ID, true);
+			}
+		});
+
+		CommandsRegistry.registerCommand('workbench.action.tasks.configureUserTask', async () => {
+			const resource = this.getResourceForKind(TaskSourceKind.User);
+			if (resource) {
+				this.openTaskFile(resource);
 			}
 		});
 	}
@@ -963,10 +964,34 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		}
 	}
 
+	private getResourceForKind(kind: string): URI | undefined {
+		switch (kind) {
+			case TaskSourceKind.User: {
+				return resources.joinPath(resources.dirname(this.preferencesService.userSettingsResource), 'tasks.json');
+			}
+			case TaskSourceKind.WorkspaceFile: {
+				if (this._workspace && this._workspace.configuration) {
+					return this._workspace.configuration;
+				}
+			}
+			default: {
+				return undefined;
+			}
+		}
+	}
+
+	private getResourceForTask(task: CustomTask): URI {
+		let uri = this.getResourceForKind(task._source.kind);
+		if (!uri) {
+			uri = task.getWorkspaceFolder().toResource(task._source.config.file);
+		}
+		return uri;
+	}
+
 	public openConfig(task: CustomTask | undefined): Promise<void> {
 		let resource: URI | undefined;
 		if (task) {
-			resource = task.getWorkspaceFolder().toResource(task._source.config.file);
+			resource = this.getResourceForTask(task);
 		} else {
 			resource = (this._workspaceFolders && (this._workspaceFolders.length > 0)) ? this._workspaceFolders[0].toResource('.vscode/tasks.json') : undefined;
 		}
@@ -2206,6 +2231,52 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		return result;
 	}
 
+	private openTaskFile(resource: URI) {
+		let configFileCreated = false;
+		this.fileService.resolve(resource).then((stat) => stat, () => undefined).then((stat) => {
+			if (stat) {
+				return stat.resource;
+			}
+			return this.quickInputService.pick(getTaskTemplates(), { placeHolder: nls.localize('TaskService.template', 'Select a Task Template') }).then((selection) => {
+				if (!selection) {
+					return Promise.resolve(undefined);
+				}
+				let content = selection.content;
+				let editorConfig = this.configurationService.getValue<any>();
+				if (editorConfig.editor.insertSpaces) {
+					content = content.replace(/(\n)(\t+)/g, (_, s1, s2) => s1 + strings.repeat(' ', s2.length * editorConfig.editor.tabSize));
+				}
+				configFileCreated = true;
+				type TaskServiceTemplateClassification = {
+					templateId?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
+					autoDetect: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
+				};
+				type TaskServiceEvent = {
+					templateId?: string;
+					autoDetect: boolean;
+				};
+				return this.textFileService.create(resource, content).then((result): URI => {
+					this.telemetryService.publicLog2<TaskServiceEvent, TaskServiceTemplateClassification>('taskService.template', {
+						templateId: selection.id,
+						autoDetect: selection.autoDetect
+					});
+					return result.resource;
+				});
+			});
+		}).then((resource) => {
+			if (!resource) {
+				return;
+			}
+			this.editorService.openEditor({
+				resource,
+				options: {
+					pinned: configFileCreated // pin only if config file is created #8727
+				}
+			});
+		});
+	}
+
+
 	private runConfigureTasks(): void {
 		if (!this.canRunCommand()) {
 			return undefined;
@@ -2216,52 +2287,6 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 		} else {
 			taskPromise = Promise.resolve(new TaskMap());
 		}
-
-		let openTaskFile = (workspaceFolder: IWorkspaceFolder): void => {
-			let resource = workspaceFolder.toResource('.vscode/tasks.json');
-			let configFileCreated = false;
-			this.fileService.resolve(resource).then((stat) => stat, () => undefined).then((stat) => {
-				if (stat) {
-					return stat.resource;
-				}
-				return this.quickInputService.pick(getTaskTemplates(), { placeHolder: nls.localize('TaskService.template', 'Select a Task Template') }).then((selection) => {
-					if (!selection) {
-						return Promise.resolve(undefined);
-					}
-					let content = selection.content;
-					let editorConfig = this.configurationService.getValue<any>();
-					if (editorConfig.editor.insertSpaces) {
-						content = content.replace(/(\n)(\t+)/g, (_, s1, s2) => s1 + strings.repeat(' ', s2.length * editorConfig.editor.tabSize));
-					}
-					configFileCreated = true;
-					type TaskServiceTemplateClassification = {
-						templateId?: { classification: 'SystemMetaData', purpose: 'FeatureInsight' };
-						autoDetect: { classification: 'SystemMetaData', purpose: 'FeatureInsight', isMeasurement: true };
-					};
-					type TaskServiceEvent = {
-						templateId?: string;
-						autoDetect: boolean;
-					};
-					return this.textFileService.create(resource, content).then((result): URI => {
-						this.telemetryService.publicLog2<TaskServiceEvent, TaskServiceTemplateClassification>('taskService.template', {
-							templateId: selection.id,
-							autoDetect: selection.autoDetect
-						});
-						return result.resource;
-					});
-				});
-			}).then((resource) => {
-				if (!resource) {
-					return;
-				}
-				this.editorService.openEditor({
-					resource,
-					options: {
-						pinned: configFileCreated // pin only if config file is created #8727
-					}
-				});
-			});
-		};
 
 		let configureTask = (task: Task): void => {
 			if (ContributedTask.is(task)) {
@@ -2343,7 +2368,7 @@ export abstract class AbstractTaskService extends Disposable implements ITaskSer
 				if (isTaskEntry(selection)) {
 					configureTask(selection.task);
 				} else {
-					openTaskFile(selection.folder);
+					this.openTaskFile(selection.folder.toResource('.vscode/tasks.json'));
 				}
 			});
 	}

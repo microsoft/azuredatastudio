@@ -207,7 +207,7 @@
 			"FROM INFORMATION_SCHEMA.TABLES",
 			"GO"
 		],
-		"description": "List tables and vies in the current database"
+		"description": "List tables and views in the current database"
 	},
 
 	"List databases": {

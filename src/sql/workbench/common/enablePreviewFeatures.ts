@@ -11,7 +11,7 @@ import { onUnexpectedError } from 'vs/base/common/errors';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 import { IHostService } from 'vs/workbench/services/host/browser/host';
 
-export class EnablePreviewFeatures implements IWorkbenchContribution {
+export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContribution {
 
 	private static ENABLE_PREVIEW_FEATURES_SHOWN = 'workbench.enablePreviewFeaturesShown';
 
@@ -22,12 +22,12 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 		@IConfigurationService configurationService: IConfigurationService
 	) {
 		let previewFeaturesEnabled = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled || storageService.get(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
+		if (previewFeaturesEnabled || storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
 		}
 		Promise.all([
 			hostService.hasFocus,
-			hostService.windowCount
+			this.getWindowCount()
 		]).then(([focused, count]) => {
 			if (!focused && count > 1) {
 				return null;
@@ -42,7 +42,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 					label: localize('enablePreviewFeatures.yes', "Yes"),
 					run: () => {
 						configurationService.updateValue('workbench.enablePreviewFeatures', true);
-						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
+						storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
@@ -53,7 +53,7 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
 						configurationService.updateValue('workbench.enablePreviewFeatures', false);
-						storageService.store(EnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
+						storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					},
 					isSecondary: true
 				}]
@@ -61,4 +61,6 @@ export class EnablePreviewFeatures implements IWorkbenchContribution {
 		})
 			.then(null, onUnexpectedError);
 	}
+
+	protected abstract getWindowCount(): Promise<number>;
 }
