@@ -225,22 +225,17 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 
 			let originalSourceLength = this.cellModel.source.length;
 			this.cellModel.source = this._editorModel.getValue();
-			if (this.cellModel.isHidden) {
-				if (originalSourceLength !== this.cellModel.source.length) {
-					this.cellModel.isHidden = false;
-					this._editor.setHeightToScrollHeight();
-				}
-				// Skip resize for anything that edits the same line
-			} else {
-				this._editor.setHeightToScrollHeight();
+			if (this.cellModel.isHidden && originalSourceLength !== this.cellModel.source.length) {
+				this.cellModel.isHidden = false;
 			}
+			this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
 
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
-				this._editor.setHeightToScrollHeight(true);
+				this._editor.setHeightToScrollHeight(true, this._cellModel.isHidden);
 			}
 		}));
 		this._register(this.model.layoutChanged(() => this._layoutEmitter.fire(), this));
@@ -264,7 +259,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		this._editor.layout(new DOM.Dimension(
 			DOM.getContentWidth(this.codeElement.nativeElement),
 			DOM.getContentHeight(this.codeElement.nativeElement)));
-		this._editor.setHeightToScrollHeight();
+		this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
 	}
 
 	protected initActionBar() {
@@ -359,10 +354,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				endLineNumber: totalLines,
 				endColumn: endColumn
 			}]);
-			this._editor.setHeight(this._editor.lineHeight);
 		} else {
 			editorWidget.setHiddenAreas([]);
-			this._editor.setHeightToScrollHeight();
 		}
+		this._editor.setHeightToScrollHeight(false, this._cellModel.isHidden);
 	}
 }
