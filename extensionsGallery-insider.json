@@ -15,7 +15,7 @@
 					"versions": [
 						{
 							"version": "0.43.0",
-							"lastUpdated": "9/12/2019",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -132,14 +132,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.1.5",
-							"lastUpdated": "2/27/2019",
+							"version": "0.2.0",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.VisualStudio.Services.VSIXPackage",
-									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.1.5.vsix"
+									"source": "https://sqlopsextensions.blob.core.windows.net/extensions/ServerReports/server-report-0.2.0.vsix"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
@@ -707,7 +707,7 @@
 					"versions": [
 						{
 							"version": "0.11.0",
-							"lastUpdated": "9/12/2019",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1273,7 +1273,7 @@
 					"versions": [
 						{
 							"version": "0.7.0",
-							"lastUpdated": "9/12/2019",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1505,7 +1505,7 @@
 					"versions": [
 						{
 							"version": "0.7.0",
-							"lastUpdated": "9/12/2019",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
@@ -1741,7 +1741,7 @@
 					"versions": [
 						{
 							"version": "0.0.2",
-							"lastUpdated": "9/12/2019",
+							"lastUpdated": "10/2/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
