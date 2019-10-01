@@ -15,6 +15,7 @@ import { PanelRegistry, Extensions as PanelExtensions, PanelDescriptor } from 'v
 import { QUERY_HISTORY_PANEL_ID } from 'sql/workbench/parts/queryHistory/common/constants';
 import { ToggleQueryHistoryAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
 import { CommandsRegistry } from 'vs/platform/commands/common/commands';
+import { IConfigurationRegistry, ConfigurationScope, Extensions } from 'vs/platform/configuration/common/configurationRegistry';
 
 export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution {
 
@@ -34,6 +35,21 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 				if (!this.queryHistoryEnabled) {
 					this.queryHistoryEnabled = true;
 
+					const configurationRegistry = Registry.as<IConfigurationRegistry>(Extensions.Configuration);
+					configurationRegistry.registerConfiguration({
+						id: 'queryHistory',
+						title: localize('queryHistoryConfigurationTitle', "QueryHistory"),
+						type: 'object',
+						properties: {
+							'queryHistory.captureEnabled': {
+								type: 'boolean',
+								default: true,
+								scope: ConfigurationScope.APPLICATION,
+								description: localize('queryHistoryCaptureEnabled', "Whether Query History capture is enabled. If false queries executed will not be captured.")
+							}
+						}
+					});
+
 					// We need this to be running in the background even if the Panel (which is currently the only thing using it)
 					// isn't shown yet. Otherwise the service won't be initialized until the Panel is which means we might miss out
 					// on some events
@@ -44,6 +60,14 @@ export class QueryHistoryWorkbenchContribution implements IWorkbenchContribution
 						handler: (accessor) => {
 							const queryHistoryService = accessor.get(IQueryHistoryService);
 							queryHistoryService.clearQueryHistory();
+						}
+					});
+
+					CommandsRegistry.registerCommand({
+						id: 'queryHistory.toggleCapture',
+						handler: (accessor) => {
+							const queryHistoryService = accessor.get(IQueryHistoryService);
+							queryHistoryService.toggleCaptureEnabled();
 						}
 					});
 

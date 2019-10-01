@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { DeleteAction, OpenQueryAction, RunQueryAction, ClearHistoryAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
+import { DeleteAction, OpenQueryAction, RunQueryAction, ClearHistoryAction, ToggleQueryHistoryCaptureAction } from 'sql/workbench/parts/queryHistory/browser/queryHistoryActions';
 import { ITree } from 'vs/base/parts/tree/browser/tree';
 import { ContributableActionProvider } from 'vs/workbench/browser/actions';
 import { IAction } from 'vs/base/common/actions';
@@ -19,7 +19,8 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 		openQueryAction: IAction,
 		runQueryAction: IAction,
 		deleteAction: IAction,
-		clearAction: IAction
+		clearAction: IAction,
+		toggleCaptureAction: IAction
 	};
 
 	constructor(
@@ -30,7 +31,8 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 			openQueryAction: instantiationService.createInstance(OpenQueryAction, OpenQueryAction.ID, OpenQueryAction.LABEL),
 			runQueryAction: instantiationService.createInstance(RunQueryAction, RunQueryAction.ID, RunQueryAction.LABEL),
 			deleteAction: instantiationService.createInstance(DeleteAction, DeleteAction.ID, DeleteAction.LABEL),
-			clearAction: instantiationService.createInstance(ClearHistoryAction, ClearHistoryAction.ID, ClearHistoryAction.LABEL)
+			clearAction: instantiationService.createInstance(ClearHistoryAction, ClearHistoryAction.ID, ClearHistoryAction.LABEL),
+			toggleCaptureAction: instantiationService.createInstance(ToggleQueryHistoryCaptureAction, ToggleQueryHistoryCaptureAction.ID, ToggleQueryHistoryCaptureAction.LABEL)
 		};
 	}
 
@@ -43,6 +45,7 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 	 */
 	public getActions(element: any): IAction[] {
 		const actions: IAction[] = [];
+		// Actions we only want to display if we're on a valid QueryHistoryNode
 		if (element instanceof QueryHistoryNode && element.info) {
 			if (element.info && element.info.queryText && element.info.queryText !== '') {
 				actions.push(this._actions.openQueryAction);
@@ -50,7 +53,8 @@ export class QueryHistoryActionProvider extends ContributableActionProvider {
 			}
 			actions.push(this._actions.deleteAction);
 		}
-		actions.push(this._actions.clearAction);
+		// Common actions we want to always display
+		actions.push(this._actions.clearAction, this._actions.toggleCaptureAction);
 		return actions;
 	}
 
