@@ -4,8 +4,24 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { AbstractEnablePreviewFeatures } from 'sql/workbench/common/enablePreviewFeatures';
+import { IStorageService } from 'vs/platform/storage/common/storage';
+import { INotificationService } from 'vs/platform/notification/common/notification';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
+import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
 export class BrowserEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
+
+	constructor(
+		@IStorageService storageService: IStorageService,
+		@INotificationService notificationService: INotificationService,
+		@IHostService hostService: IHostService,
+		@IConfigurationService configurationService: IConfigurationService
+	) {
+		super(storageService, notificationService, hostService, configurationService);
+
+		this.handleTelemetryOptOut();
+	}
+
 	protected async getWindowCount(): Promise<number> {
 		return 1;
 	}
