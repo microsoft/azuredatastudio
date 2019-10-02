@@ -3,23 +3,34 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IFileSource } from '../objectExplorerNodeProvider/fileSources';
 import * as vscode from 'vscode';
+import { IFileSource } from '../objectExplorerNodeProvider/fileSources';
 import { IAclStatus, AclEntry, AclEntryScope, AclEntryType, AclEntryPermission } from './aclEntry';
 
+/**
+ * Model for storing the state of a specified file/folder in HDFS
+ */
 export class HdfsModel {
 
 	private readonly _onAclStatusUpdated = new vscode.EventEmitter<IAclStatus>();
+	/**
+	 * Event that's fired anytime changes are made by the model to the ACLStatus
+	 */
 	public onAclStatusUpdated = this._onAclStatusUpdated.event;
 
+	/**
+	 * The ACL status of the file/folder
+	 */
 	public aclStatus: IAclStatus;
 
 	constructor(private fileSource: IFileSource, private path: string) {
 		this.refresh();
 	}
 
+	/**
+	 * Refresh the ACL status with the current values on HDFS
+	 */
 	public async refresh(): Promise<void> {
-		// await this.fileSource.setAcl(this.path, parseAcl('user:bob:r--,user::rwx,group::r--,other::rwx'));
 		this.aclStatus = await this.fileSource.getAclStatus(this.path);
 		this._onAclStatusUpdated.fire(this.aclStatus);
 	}
@@ -54,7 +65,13 @@ export class HdfsModel {
 	}
 
 
+	/**
+	 * Applies the changes made to this model to HDFS. Note that this will overwrite ALL permissions so any
+	 * permissions that shouldn't change need to still exist and have the same values.
+	 * @param recursive Whether to apply the changes recursively (to all sub-folders and files)
+	 */
 	public apply(recursive: boolean = false): Promise<void> {
+		// TODO Apply recursive
 		return this.fileSource.setAcl(this.path, this.aclStatus.owner, this.aclStatus.group, this.aclStatus.other, this.aclStatus.entries);
 	}
 }
