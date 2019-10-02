@@ -691,39 +691,6 @@ suite('Notebook Editor Model', function (): void {
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
 
-	test('should parse metadata\'s hide_input tag correctly', async function (): Promise<void> {
-		let contents: nb.ICellContents = {
-			cell_type: CellTypes.Code,
-			source: ''
-		};
-		let model = new CellModel(contents, undefined, undefined);
-
-		should(model.isCollapsed).be.false();
-		model.isCollapsed = true;
-		should(model.isCollapsed).be.true();
-		model.isCollapsed = false;
-		should(model.isCollapsed).be.false();
-
-		let modelJson = model.toJSON();
-		should(modelJson.metadata.tags).not.be.undefined();
-		should(modelJson.metadata.tags).not.containEql('hide_input');
-
-		contents.metadata = {
-			tags: ['hide_input']
-		};
-		model = new CellModel(contents, undefined, undefined);
-
-		should(model.isCollapsed).be.true();
-		model.isCollapsed = false;
-		should(model.isCollapsed).be.false();
-		model.isCollapsed = true;
-		should(model.isCollapsed).be.true();
-
-		modelJson = model.toJSON();
-		should(modelJson.metadata.tags).not.be.undefined();
-		should(modelJson.metadata.tags).containEql('hide_input');
-	});
-
 	async function createNewNotebookModel() {
 		let options: INotebookModelOptions = Object.assign({}, defaultModelOptions, <Partial<INotebookModelOptions>><unknown>{
 			factory: mockModelFactory.object
