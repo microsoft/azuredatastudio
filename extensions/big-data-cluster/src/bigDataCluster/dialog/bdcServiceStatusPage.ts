@@ -35,16 +35,14 @@ export class BdcServiceStatusPage {
 			{
 				flexFlow: 'column',
 				width: '100%',
-				height: '100%',
-				alignItems: 'left'
+				height: '100%'
 			}).component();
 
 		this.resourceHeader = this.modelView.modelBuilder.flexContainer().withLayout(
 			{
 				flexFlow: 'row',
 				width: '100%',
-				height: '25px',
-				alignItems: 'left'
+				height: '25px'
 			}
 		).component();
 
