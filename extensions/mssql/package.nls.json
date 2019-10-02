@@ -12,6 +12,7 @@
 	"mssqlCluster.previewFile": "Preview",
 	"mssqlCluster.saveFile": "Save",
 	"mssqlCluster.copyPath": "Copy Path",
+	"mssqlCluster.manageAccess": "Manage Access",
 
 	"notebook.command.new": "New Notebook",
 	"notebook.command.open": "Open Notebook",
