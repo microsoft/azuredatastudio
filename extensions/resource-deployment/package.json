@@ -74,11 +74,7 @@
         "name": "sql-image",
         "displayName": "%resource-type-sql-image-display-name%",
         "description": "%resource-type-sql-image-description%",
-        "platforms": [
-          "darwin",
-          "win32",
-          "linux"
-        ],
+        "platforms": "*",
         "icon": {
           "light": "./images/sql_server_container.svg",
           "dark": "./images/sql_server_container_inverse.svg"
@@ -208,11 +204,7 @@
         "name": "sql-bdc",
         "displayName": "%resource-type-sql-bdc-display-name%",
         "description": "%resource-type-sql-bdc-description%",
-        "platforms": [
-          "darwin",
-          "linux",
-          "win32"
-        ],
+        "platforms": "*",
         "icon": {
           "light": "./images/sql_bdc.svg",
           "dark": "./images/sql_bdc_inverse.svg"
