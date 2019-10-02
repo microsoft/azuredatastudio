@@ -18,7 +18,7 @@ import { IStorageService } from 'vs/platform/storage/common/storage';
 import { ACTION_IDS, NOTEBOOK_MAX_MATCHES, INotebookController, FindWidget, IConfigurationChangedEvent } from 'sql/workbench/parts/notebook/browser/notebookFindWidget';
 import { IOverlayWidget } from 'vs/editor/browser/editorBrowser';
 import { FindReplaceState, FindReplaceStateChangedEvent } from 'vs/editor/contrib/find/findState';
-import { IEditorAction } from 'vs/editor/common/editorCommon';
+import { IEditorAction, ScrollType } from 'vs/editor/common/editorCommon';
 import { Event, Emitter } from 'vs/base/common/event';
 import { IContextViewService } from 'vs/platform/contextview/browser/contextView';
 import { NotebookFindNext, NotebookFindPrevious } from 'sql/workbench/parts/notebook/browser/notebookActions';
@@ -34,9 +34,9 @@ import { NOTEBOOK_COMMAND_SEARCH, NOTEBOOK_COMMAND_CLOSE_SEARCH, NotebookEditorV
 import { IDisposable, DisposableStore, dispose } from 'vs/base/common/lifecycle';
 import { IModelDecorationsChangeAccessor, IModelDeltaDecoration, FindMatch } from 'vs/editor/common/model';
 import { FindDecorations } from 'sql/workbench/parts/notebook/browser/cellViews/NotebookFindDecorations';
-import { Range } from 'vs/editor/common/core/range';
 import { TimeoutTimer } from 'vs/base/common/async';
 import { IEditorGroupsService } from 'vs/workbench/services/editor/common/editorGroupsService';
+import { BaseTextEditor } from 'vs/workbench/browser/parts/editor/textEditor';
 
 export class NotebookEditor extends BaseEditor implements INotebookController {
 
@@ -51,7 +51,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	public onDidChangeConfiguration: Event<IConfigurationChangedEvent> = this._onDidChangeConfiguration.event;
 	private _notebookModel: INotebookModel;
 	private _findCountChangeListener: IDisposable;
-	private _findPosition: NotebookRange;
+	private _currentPosition: NotebookRange;
 	private readonly _decorations: FindDecorations;
 	private readonly _toDispose = new DisposableStore();
 	private _isDisposed: boolean;
@@ -89,7 +89,7 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 	}
 
 	public getPosition(): NotebookRange {
-		return this._findPosition;
+		return this._currentPosition;
 	}
 
 	public changeDecorations(callback: (changeAccessor: IModelDecorationsChangeAccessor) => any): any {
@@ -245,14 +245,6 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 			}
 		}
 
-		if (e.matchesPosition) {
-			this._decorations.set(this._notebookModel.findMatches, this._findPosition);
-			this._findState.changeMatchInfo(
-				this._decorations.getCurrentMatchesPosition(this.getSelection()),
-				this._decorations.getCount(),
-				this._findPosition
-			);
-		}
 		if (e.searchString) {
 			if (this._notebookModel) {
 				if (this._findState.searchString) {
@@ -278,12 +270,13 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 						}
 						this._updateFinderMatchState();
 						this._finder.focusFindInput();
-						this._decorations.set(this._notebookModel.findMatches, this._findPosition);
+						this._decorations.set(this._notebookModel.findMatches, this._currentPosition);
 						this._findState.changeMatchInfo(
 							this._decorations.getCurrentMatchesPosition(this.getSelection()),
 							this._decorations.getCount(),
-							this._findPosition
+							this._currentPosition
 						);
+						this._setCurrentFindMatch(this._currentPosition);
 					});
 				} else {
 					this._notebookModel.clearFind();
@@ -297,8 +290,12 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 			return null;
 		}
 		// temp
-		return this._findPosition;
+		return this._currentPosition;
 		// return this._notebookModel.cursor.getSelection();
+	}
+
+	public setSelection(range: NotebookRange): void {
+		this._currentPosition = range;
 	}
 
 	public toggleSearch(reveal: boolean): void {
@@ -318,24 +315,45 @@ export class NotebookEditor extends BaseEditor implements INotebookController {
 		this._notebookModel.findNext().then(p => {
 			this.updatePosition(p);
 			this._updateFinderMatchState();
+			this._setCurrentFindMatch(p);
 		}, er => { });
 	}
 
 	private updatePosition(range: NotebookRange): void {
-		this._findPosition = range;
-		this._decorations.setCurrentFindMatch(range);
+		this._currentPosition = range;
 	}
+
+	private _setCurrentFindMatch(match: NotebookRange): void {
+		let matchesPosition = this._decorations.setCurrentFindMatch(match);
+		this._findState.changeMatchInfo(
+			matchesPosition,
+			this._decorations.getCount(),
+			match
+		);
+		this.setSelection(match);
+		this._revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
+	}
+
+	private _revealRangeInCenterIfOutsideViewport(match: NotebookRange, scrollType: ScrollType): void {
+		this._notebookModel.updateActiveCell(match.cell);
+		if (this._notebookModel.activeCell.editor instanceof BaseTextEditor) {
+			this._notebookModel.activeCell.editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+			this._notebookModel.activeCell.editor.getControl().revealRangeInCenterIfOutsideViewport(match, ScrollType.Smooth);
+		}
+	}
+
 
 	public findPrevious(): void {
 		this._notebookModel.findPrevious().then(p => {
 			this.updatePosition(p);
 			this._updateFinderMatchState();
+			this._setCurrentFindMatch(p);
 		}, er => { });
 	}
 
 	private _updateFinderMatchState(): void {
 		if (this.notebookInput && this._notebookModel) {
-			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), this._findPosition);
+			this._findState.changeMatchInfo(this._notebookModel.getFindIndex(), this._notebookModel.getFindCount(), this._currentPosition);
 		} else {
 			this._findState.changeMatchInfo(0, 0, undefined);
 		}

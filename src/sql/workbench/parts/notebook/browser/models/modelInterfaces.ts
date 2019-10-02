@@ -403,6 +403,8 @@ export interface INotebookModel {
 
 	getApplicableConnectionProviderIds(kernelName: string): string[];
 
+	updateActiveCell(cell: ICellModel): void;
+
 	/**
 	 * Get the standardKernelWithProvider by name
 	 * @param name The kernel name
