@@ -12,6 +12,7 @@ import * as nls from 'vscode-nls';
 import * as auth from '../util/auth';
 import { IHdfsOptions, IRequestParams } from '../objectExplorerNodeProvider/fileSources';
 import { IAclStatus, AclEntry, parseAcl, AclPermissionType, parseAclPermissionFromOctal, AclEntryScope } from './aclEntry';
+import { Mount } from './mount';
 
 const localize = nls.loadMessageBundle();
 const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', "Invalid Data Structure");
@@ -462,6 +463,27 @@ export class WebHDFS {
 		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);
+		});
+	}
+
+	/**
+	 * Get ACL status for given path
+	 * @param path The path to the file/folder to get the status of
+	 * @param callback Callback to handle the response
+	 * @returns void
+	 */
+	public getMounts(callback: (error: HdfsError, mounts: Mount[]) => void): void {
+		let endpoint = this.getOperationEndpoint('listmounts', '');
+		this.sendRequest('GET', endpoint, undefined, (error, response) => {
+			if (!callback) { return; }
+			if (error) {
+				callback(error, undefined);
+			} else if (response.body.hasOwnProperty('Mounts')) {
+				const mounts = response.body.Mounts;
+				callback(undefined, mounts);
+			} else {
+				callback(new HdfsError(ErrorMessageInvalidDataStructure), undefined);
+			}
 		});
 	}
 
