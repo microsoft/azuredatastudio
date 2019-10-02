@@ -129,8 +129,8 @@ class ObjectExplorerTester {
 		let children: azdata.objectexplorer.ObjectExplorerNode[];
 		try {
 			children = await asyncTimeout(nodes[index].getChildren(), timeout);
-		} catch(e) {
-			return assert.fail('HDFS children timed out...', e);
+		} catch (e) {
+			return assert.fail('getChildren() timed out...', e);
 		}
 
 		const nonHDFSChildren = children.filter(c => c.label !== 'HDFS');
