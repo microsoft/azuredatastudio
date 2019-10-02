@@ -55,7 +55,7 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 }
 
 /**
- * Wait for a promise to resolve but timeout after a certain amount of time
+ * Wait for a promise to resolve but timeout after a certain amount of time. It will return undefined after that amount of time has passed.
  * @param p promise to wait on
  * @param timeout time to wait
  */
