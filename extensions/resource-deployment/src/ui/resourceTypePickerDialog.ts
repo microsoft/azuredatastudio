@@ -248,8 +248,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 					// either we don't support auto install: docker, or we support auto install for all required tools
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Information,
-						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"Install tools\" button to install them."),
-						description: messages.join(EOL)
+						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"Install tools\" button to install them.")
 					};
 				}
 				this._toolsLoadingComponent.loading = false;
