@@ -112,12 +112,13 @@ export class CellModel implements ICellModel {
 		let tagIndex = -1;
 		if (Array.isArray(this._metadata.tags)) {
 			tagIndex = this._metadata.tags.findIndex(tag => tag === this._hideInputTag);
-		} else {
-			this._metadata.tags = [];
 		}
 
 		if (this._isCollapsed) {
 			if (tagIndex === -1) {
+				if (!this._metadata.tags) {
+					this._metadata.tags = [];
+				}
 				this._metadata.tags.push(this._hideInputTag);
 			}
 		} else {
@@ -578,15 +579,16 @@ export class CellModel implements ICellModel {
 	}
 
 	public toJSON(): nb.ICellContents {
+		let metadata = this._metadata || {};
 		let cellJson: Partial<nb.ICellContents> = {
 			cell_type: this._cellType,
 			source: this._source,
-			metadata: this._metadata || {}
+			metadata: metadata
 		};
 		cellJson.metadata.azdata_cell_guid = this._cellGuid;
 		if (this._cellType === CellTypes.Code) {
 			cellJson.metadata.language = this._language;
-			cellJson.metadata.tags = this._metadata.tags;
+			cellJson.metadata.tags = metadata.tags;
 			cellJson.outputs = this._outputs;
 			cellJson.execution_count = this.executionCount ? this.executionCount : 0;
 		}
@@ -602,11 +604,10 @@ export class CellModel implements ICellModel {
 		this._source = this.getMultilineSource(cell.source);
 		this._metadata = cell.metadata || {};
 
-		this._isCollapsed = false;
-		if (!this._metadata.tags) {
-			this._metadata.tags = [];
-		} else if (this._metadata.tags.includes(this._hideInputTag)) {
+		if (this._metadata.tags && this._metadata.tags.includes(this._hideInputTag)) {
 			this._isCollapsed = true;
+		} else {
+			this._isCollapsed = false;
 		}
 
 		this._cellGuid = cell.metadata && cell.metadata.azdata_cell_guid ? cell.metadata.azdata_cell_guid : generateUuid();
