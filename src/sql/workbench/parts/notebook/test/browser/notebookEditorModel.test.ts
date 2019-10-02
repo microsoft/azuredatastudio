@@ -694,18 +694,7 @@ suite('Notebook Editor Model', function (): void {
 	test('should parse metadata\'s hide_input tag correctly', async function (): Promise<void> {
 		let contents: nb.ICellContents = {
 			cell_type: CellTypes.Code,
-			source: '',
-			outputs: [
-				<nb.IDisplayData>{
-					output_type: 'display_data',
-					data: {
-						'text/html': [
-							'<div>',
-							'</div>'
-						]
-					}
-				}
-			]
+			source: ''
 		};
 		let model = new CellModel(contents, undefined, undefined);
 
