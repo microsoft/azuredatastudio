@@ -52,7 +52,7 @@ export class ResourceTypeService implements IResourceTypeService {
 
 		let resourceTypes = this._resourceTypes;
 		if (filterByPlatform) {
-			resourceTypes = resourceTypes.filter(resourceType => resourceType.platforms.includes(this.platformService.platform()));
+			resourceTypes = resourceTypes.filter(resourceType => (typeof resourceType.platforms === 'string' && resourceType.platforms === '*') || resourceType.platforms.includes(this.platformService.platform()));
 		}
 
 		return resourceTypes;
