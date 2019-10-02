@@ -126,9 +126,11 @@ class ObjectExplorerTester {
 		// TODO: #7146 HDFS isn't always filled in by the call to getChildren since it's loaded asynchronously. To avoid this test being flaky just removing
 		// the node for now if it exists until a proper fix can be made.
 
-		const children = await asyncTimeout(nodes[index].getChildren(), timeout);
-		if (!children) {
-			assert.fail('HDFS children timed out...');
+		let children: azdata.objectexplorer.ObjectExplorerNode[];
+		try {
+			children = await asyncTimeout(nodes[index].getChildren(), timeout);
+		} catch(e) {
+			return assert.fail('HDFS children timed out...', e);
 		}
 
 		const nonHDFSChildren = children.filter(c => c.label !== 'HDFS');

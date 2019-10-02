@@ -54,15 +54,17 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 	return result.connectionId;
 }
 
+export class PromiseCancelledError extends Error { }
 /**
- * Wait for a promise to resolve but timeout after a certain amount of time. It will return undefined after that amount of time has passed.
+ * Wait for a promise to resolve but timeout after a certain amount of time.
+ * It will throw CancelledError when it fails.
  * @param p promise to wait on
  * @param timeout time to wait
  */
 export async function asyncTimeout<T>(p: Thenable<T>, timeout: number): Promise<(T | undefined)> {
 	const timeoutPromise = new Promise<T>((done, reject) => {
 		setTimeout(() => {
-			done(undefined);
+			reject(new PromiseCancelledError('Promise did not resolve in time'));
 		}, timeout);
 	});
 
