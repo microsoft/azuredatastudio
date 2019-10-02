@@ -54,6 +54,8 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	}
 
 	private setFocusAndScroll(node: HTMLElement): void {
+		// If offsetParent is null, the element isn't visible
+		// In this case, we don't want a cell to grab focus for an editor that isn't in the foreground
 		if (node && node.offsetParent) {
 			node.focus();
 			node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
