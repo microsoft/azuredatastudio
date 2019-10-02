@@ -116,15 +116,18 @@ class ObjectExplorerTester {
 	async verifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
 		await connectToServer(server, timeout);
 		const nodes = <azdata.objectexplorer.ObjectExplorerNode[]>await azdata.objectexplorer.getActiveConnectionNodes();
+		console.log(nodes);
 		assert(nodes.length > 0, `Expecting at least one active connection, actual: ${nodes.length}`);
 
 		const index = nodes.findIndex(node => node.nodePath.includes(server.serverName));
 		assert(index !== -1, `Failed to find server: "${server.serverName}" in OE tree`);
+		console.log(index);
 		// TODO: #7146 HDFS isn't always filled in by the call to getChildren since it's loaded asynchronously. To avoid this test being flaky just removing
 		// the node for now if it exists until a proper fix can be made.
 		const children = (await nodes[index].getChildren()).filter(c => c.label !== 'HDFS');
 		const actualLabelsString = children.map(c => c.label).join(',');
 		const expectedLabelString = expectedNodeLabel.join(',');
+		console.log(actualLabelsString, expectedLabelString);
 		return assert(expectedNodeLabel.length === children.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
 
 	}
