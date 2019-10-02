@@ -54,7 +54,7 @@ export class OutputAreaComponent extends AngularDisposable implements OnInit {
 	}
 
 	private setFocusAndScroll(node: HTMLElement): void {
-		if (node) {
+		if (node && node.offsetParent) {
 			node.focus();
 			node.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}
