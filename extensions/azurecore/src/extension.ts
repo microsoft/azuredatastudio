@@ -84,15 +84,29 @@ export async function activate(context: vscode.ExtensionContext) {
 
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
-	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
+	let defaultLogLocation = getDefaultLogLocation();
+	let storagePath = path.join(defaultLogLocation, constants.extensionName);
+
+	try {
+		await fs.mkdir(defaultLogLocation, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.log(`Creating the base directory failed... ${e}`);
+			return undefined;
+		}
+	}
+
 	try {
 		await fs.mkdir(storagePath, { recursive: true });
-		console.log('Initialized Azure account extension storage.');
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.error(`Initialization of Azure account extension storage failed: ${e}`);
+			console.error('Azure accounts will not be available');
+			return undefined;
+		}
 	}
-	catch (e) {
-		console.error(`Initialization of Azure account extension storage failed: ${e}`);
-		console.error('Azure accounts will not be available');
-	}
+
+	console.log('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
