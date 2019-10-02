@@ -21,13 +21,13 @@ if (context.RunTest) {
 		test('Standalone instance node label test', async function () {
 			return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
-		test('Azure SQL DB instance node label test', async function () {
+		test.skip('Azure SQL DB instance node label test', async function () {
 			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
 		test('BDC instance context menu test', async function () {
 			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
-		test.skip('Azure SQL DB context menu test', async function () {
+		test('Azure SQL DB context menu test', async function () {
 			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
 		test.skip('Standalone database context menu test', async function () {
