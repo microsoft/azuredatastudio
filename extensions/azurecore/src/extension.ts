@@ -86,19 +86,22 @@ export async function activate(context: vscode.ExtensionContext) {
 async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
 	let storagePath = path.join(defaultLogLocation, constants.extensionName);
-	try {
-		await fs.mkdir(defaultLogLocation, { recursive: true });
-	}
-	catch (e) {
-		console.error(`Create Directory 1: ${e}`);
-	}
 
-	try {
-		await fs.mkdir(storagePath, { recursive: true });
-	} catch (e) {
-		console.error(`Initialization of Azure account extension storage failed: ${e}`);
-		console.error('Azure accounts will not be available');
-		return undefined;
+	const stat = await fs.stat(storagePath);
+	if (!stat || !stat.isDirectory()) {
+		try {
+			await fs.mkdir(defaultLogLocation, { recursive: true });
+		} catch (e) {
+			console.log(`Creating the base directory failed (probably not an issue): ${e}`);
+		}
+
+		try {
+			await fs.mkdir(storagePath, { recursive: true });
+		} catch (e) {
+			console.error(`Initialization of Azure account extension storage failed: ${e}`);
+			console.error('Azure accounts will not be available');
+			return undefined;
+		}
 	}
 
 	console.log('Initialized Azure account extension storage.');
