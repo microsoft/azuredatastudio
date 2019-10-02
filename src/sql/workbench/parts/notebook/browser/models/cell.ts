@@ -54,6 +54,8 @@ export class CellModel implements ICellModel {
 	private _onToggleStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 
+	private readonly _hideInputTag = 'hide_input';
+
 	constructor(cellData: nb.ICellContents,
 		private _options: ICellModelOptions,
 		@optional(INotebookService) private _notebookService?: INotebookService
@@ -108,21 +110,21 @@ export class CellModel implements ICellModel {
 
 	public set isCollapsed(value: boolean) {
 		this._isCollapsed = value;
-		let index;
-		if (this._metadata && Array.isArray(this._metadata.tags)) {
-			index = this._metadata.tags.findIndex(tag => tag === 'hide_input');
+
+		let tagIndex = -1;
+		if (Array.isArray(this._metadata.tags)) {
+			tagIndex = this._metadata.tags.findIndex(tag => tag === this._hideInputTag);
+		} else {
+			this._metadata.tags = [];
 		}
+
 		if (this._isCollapsed) {
-			if (index > -1) {
-				this._metadata.tags.splice(index, 1);
-			} else {
-				this._metadata.tags.push('hide_input');
+			if (tagIndex === -1) {
+				this._metadata.tags.push(this._hideInputTag);
 			}
 		} else {
-			if (isNullOrUndefined(index)) {
-				this._metadata.tags = ['hide_input'];
-			} else if (index > -1) {
-				this._metadata.tags.splice(index, 1);
+			if (tagIndex > -1) {
+				this._metadata.tags.splice(tagIndex, 1);
 			}
 		}
 		this._onToggleStateChanged.fire(this._isCollapsed);
@@ -600,12 +602,12 @@ export class CellModel implements ICellModel {
 		this._cellType = cell.cell_type;
 		this.executionCount = cell.execution_count;
 		this._source = this.getMultilineSource(cell.source);
-		this._metadata = cell.metadata;
+		this._metadata = cell.metadata || {};
 
 		this._isCollapsed = false;
 		if (!this._metadata.tags) {
 			this._metadata.tags = [];
-		} else if (this._metadata.tags.includes('hide_input')) {
+		} else if (this._metadata.tags.includes(this._hideInputTag)) {
 			this._isCollapsed = true;
 		}
 
