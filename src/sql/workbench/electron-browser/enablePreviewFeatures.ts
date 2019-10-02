@@ -20,7 +20,10 @@ export class NativeEnablePreviewFeatures extends AbstractEnablePreviewFeatures {
 		@IElectronService private readonly electronService: IElectronService
 	) {
 		super(storageService, notificationService, hostService, configurationService);
+
+		this.handlePreviewFeatures();
 	}
+
 	protected getWindowCount(): Promise<number> {
 		return this.electronService.getWindowCount();
 	}
