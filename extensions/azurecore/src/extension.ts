@@ -84,8 +84,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
 // Create the folder for storing the token caches
 async function findOrMakeStoragePath() {
-	let storagePath = path.join(getDefaultLogLocation(), constants.extensionName);
+	let defaultLogLocation = getDefaultLogLocation();
+	let storagePath = path.join(defaultLogLocation, constants.extensionName);
 	try {
+		await fs.mkdir(defaultLogLocation, { recursive: true });
 		await fs.mkdir(storagePath, { recursive: true });
 		console.log('Initialized Azure account extension storage.');
 	}
