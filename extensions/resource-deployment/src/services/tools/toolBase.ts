@@ -18,6 +18,8 @@ export abstract class ToolBase implements ITool {
 	abstract description: string;
 	abstract type: ToolType;
 	abstract homePage: string;
+	abstract autoInstallSupported: boolean;
+	public abstract install(): Promise<void>;
 	protected abstract getVersionFromOutput(output: string): SemVer | undefined;
 	protected abstract readonly versionCommand: string;
 

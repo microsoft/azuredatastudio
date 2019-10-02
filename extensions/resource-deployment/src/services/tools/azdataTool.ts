@@ -48,4 +48,12 @@ export class AzdataTool extends ToolBase {
 		}
 		return version;
 	}
+
+	get autoInstallSupported(): boolean {
+		return true;
+	}
+
+	public install(): Promise<void> {
+		return Promise.reject('not implemented');
+	}
 }

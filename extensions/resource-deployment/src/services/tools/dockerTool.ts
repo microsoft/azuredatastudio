@@ -46,4 +46,12 @@ export class DockerTool extends ToolBase {
 	protected get versionCommand(): string {
 		return 'docker version --format "{{json .}}"';
 	}
+
+	get autoInstallSupported(): boolean {
+		return false;
+	}
+
+	public install(): Promise<void> {
+		return Promise.reject('Auto install is not supported for docker');
+	}
 }

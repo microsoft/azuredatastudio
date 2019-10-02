@@ -48,4 +48,12 @@ export class KubeCtlTool extends ToolBase {
 	protected get versionCommand(): string {
 		return 'kubectl version -o json --client';
 	}
+
+	get autoInstallSupported(): boolean {
+		return true;
+	}
+
+	public install(): Promise<void> {
+		return Promise.reject('not implemented');
+	}
 }
