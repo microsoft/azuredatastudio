@@ -301,7 +301,6 @@ export class NotebookDialog extends AgentDialog<NotebookData>  {
 	private createRowContainer(view: azdata.ModelView): azdata.FlexBuilder {
 		return view.modelBuilder.flexContainer().withLayout({
 			flexFlow: 'row',
-			alignItems: 'left',
 			justifyContent: 'space-between'
 		});
 	}

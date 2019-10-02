@@ -16,44 +16,46 @@ export abstract class AbstractEnablePreviewFeatures implements IWorkbenchContrib
 	private static ENABLE_PREVIEW_FEATURES_SHOWN = 'workbench.enablePreviewFeaturesShown';
 
 	constructor(
-		@IStorageService storageService: IStorageService,
-		@INotificationService notificationService: INotificationService,
-		@IHostService hostService: IHostService,
-		@IConfigurationService configurationService: IConfigurationService
-	) {
-		let previewFeaturesEnabled = configurationService.getValue('workbench')['enablePreviewFeatures'];
-		if (previewFeaturesEnabled || storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
+		@IStorageService private readonly storageService: IStorageService,
+		@INotificationService private readonly notificationService: INotificationService,
+		@IHostService private readonly hostService: IHostService,
+		@IConfigurationService private readonly configurationService: IConfigurationService
+	) { }
+
+	protected async handlePreviewFeatures(): Promise<void> {
+		let previewFeaturesEnabled = this.configurationService.getValue('workbench')['enablePreviewFeatures'];
+		if (previewFeaturesEnabled || this.storageService.get(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, StorageScope.GLOBAL)) {
 			return;
 		}
 		Promise.all([
-			hostService.hasFocus,
+			this.hostService.hasFocus,
 			this.getWindowCount()
 		]).then(([focused, count]) => {
 			if (!focused && count > 1) {
 				return null;
 			}
-			configurationService.updateValue('workbench.enablePreviewFeatures', false);
+			this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
 
 			const enablePreviewFeaturesNotice = localize('enablePreviewFeatures.notice', "Preview features are required in order for extensions to be fully supported and for some actions to be available.  Would you like to enable preview features?");
-			notificationService.prompt(
+			this.notificationService.prompt(
 				Severity.Info,
 				enablePreviewFeaturesNotice,
 				[{
 					label: localize('enablePreviewFeatures.yes', "Yes"),
 					run: () => {
-						configurationService.updateValue('workbench.enablePreviewFeatures', true);
-						storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', true);
+						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.no', "No"),
 					run: () => {
-						configurationService.updateValue('workbench.enablePreviewFeatures', false);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
 					}
 				}, {
 					label: localize('enablePreviewFeatures.never', "No, don't show again"),
 					run: () => {
-						configurationService.updateValue('workbench.enablePreviewFeatures', false);
-						storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
+						this.configurationService.updateValue('workbench.enablePreviewFeatures', false);
+						this.storageService.store(AbstractEnablePreviewFeatures.ENABLE_PREVIEW_FEATURES_SHOWN, true, StorageScope.GLOBAL);
 					},
 					isSecondary: true
 				}]
