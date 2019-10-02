@@ -61,11 +61,6 @@ code-component .editor {
 	padding: 5px 0px 5px 0px
 }
 
-code-component .codePlaceholder {
-	/* This padding matches the one introduced by line numbers in the editor. */
-	padding-left: 20px;
-}
-
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
 	visibility: hidden;
