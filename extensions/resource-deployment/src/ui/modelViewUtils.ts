@@ -214,7 +214,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 
 export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true): azdata.FlexContainer {
 	const flexFlow = rowLayout ? 'row' : 'column';
-	const alignItems = rowLayout ? 'center' : '';
+	const alignItems = rowLayout ? 'center' : undefined;
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px' } } : {};
 	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout({ flexFlow: flexFlow, alignItems: alignItems }).component();
 }
