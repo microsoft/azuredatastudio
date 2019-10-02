@@ -87,7 +87,13 @@ async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
 	let storagePath = path.join(defaultLogLocation, constants.extensionName);
 
-	const stat = await fs.stat(storagePath);
+	let stat;
+	try {
+		stat = await fs.stat(storagePath);
+	} catch (ex) {
+		console.log(`Folder doesn't exist. Creating...`);
+	}
+
 	if (!stat || !stat.isDirectory()) {
 		try {
 			await fs.mkdir(defaultLogLocation, { recursive: true });
