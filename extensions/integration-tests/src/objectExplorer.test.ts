@@ -9,7 +9,7 @@ import 'mocha';
 import * as azdata from 'azdata';
 import { context } from './testContext';
 import { getBdcServer, TestServerProfile, getAzureServer, getStandaloneServer } from './testConfig';
-import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs } from './utils';
+import { connectToServer, createDB, deleteDB, DefaultConnectTimeoutInMs, asyncTimeout } from './utils';
 import assert = require('assert');
 import { stressify } from 'adstest';
 
@@ -125,12 +125,17 @@ class ObjectExplorerTester {
 		console.log('index..', index);
 		// TODO: #7146 HDFS isn't always filled in by the call to getChildren since it's loaded asynchronously. To avoid this test being flaky just removing
 		// the node for now if it exists until a proper fix can be made.
-		const children = (await nodes[index].getChildren()).filter(c => c.label !== 'HDFS');
-		const actualLabelsString = children.map(c => c.label).join(',');
-		const expectedLabelString = expectedNodeLabel.join(',');
-		console.log(actualLabelsString, expectedLabelString);
-		return assert(expectedNodeLabel.length === children.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
 
+		const children = await asyncTimeout(nodes[index].getChildren(), timeout);
+		if (!children) {
+			assert.fail('HDFS children timed out...');
+		}
+
+		const nonHDFSChildren = children.filter(c => c.label !== 'HDFS');
+		const actualLabelsString = nonHDFSChildren.map(c => c.label).join(',');
+		const expectedLabelString = expectedNodeLabel.join(',');
+		console.log('label..', actualLabelsString, expectedLabelString);
+		return assert(expectedNodeLabel.length === nonHDFSChildren.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
 	}
 
 	async verifyDBContextMenu(server: TestServerProfile, timeoutinMS: number, expectedActions: string[]): Promise<void> {

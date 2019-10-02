@@ -54,6 +54,21 @@ export async function connectToServer(server: TestServerProfile, timeout: number
 	return result.connectionId;
 }
 
+/**
+ * Wait for a promise to resolve but timeout after a certain amount of time
+ * @param p promise to wait on
+ * @param timeout time to wait
+ */
+export async function asyncTimeout<T>(p: Thenable<T>, timeout: number): Promise<(T | undefined)> {
+	const timeoutPromise = new Promise<T>((done, reject) => {
+		setTimeout(() => {
+			done(undefined);
+		}, timeout);
+	});
+
+	return Promise.race([p, timeoutPromise]);
+}
+
 export async function pollTimeout(predicate: () => Thenable<boolean>, intervalDelay: number, timeoutTime: number): Promise<boolean> {
 	let interval: NodeJS.Timer;
 	return new Promise(pollOver => {
