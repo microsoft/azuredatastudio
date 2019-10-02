@@ -114,12 +114,12 @@ code-component .hide-component-button.icon-show-cell {
 	background-image: url("./media/light/chevron_down.svg");
 }
 
-code-component .vs-dark .hide-component-button.icon-hide-cell,
-code-component .hc-black .hide-component-button.icon-hide-cell {
+.vs-dark code-component .hide-component-button.icon-hide-cell,
+.hc-black code-component .hide-component-button.icon-hide-cell {
 	background-image: url("./media/dark/chevron_up_inverse.svg");
 }
 
-code-component .vs-dark .hide-component-button.icon-show-cell,
-code-component .hc-black .hide-component-button.icon-show-cell {
+.vs-dark code-component .hide-component-button.icon-show-cell,
+.hc-black code-component .hide-component-button.icon-show-cell {
 	background-image: url("./media/dark/chevron_down_inverse.svg");
 }
