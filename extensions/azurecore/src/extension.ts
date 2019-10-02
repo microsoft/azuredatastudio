@@ -87,23 +87,19 @@ async function findOrMakeStoragePath() {
 	let defaultLogLocation = getDefaultLogLocation();
 	let storagePath = path.join(defaultLogLocation, constants.extensionName);
 
-	let stat;
 	try {
-		stat = await fs.stat(storagePath);
-	} catch (ex) {
-		console.log(`Folder doesn't exist. Creating...`);
+		await fs.mkdir(defaultLogLocation, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
+			console.log(`Creating the base directory failed... ${e}`);
+			return undefined;
+		}
 	}
 
-	if (!stat || !stat.isDirectory()) {
-		try {
-			await fs.mkdir(defaultLogLocation, { recursive: true });
-		} catch (e) {
-			console.log(`Creating the base directory failed (probably not an issue): ${e}`);
-		}
-
-		try {
-			await fs.mkdir(storagePath, { recursive: true });
-		} catch (e) {
+	try {
+		await fs.mkdir(storagePath, { recursive: true });
+	} catch (e) {
+		if (e.code !== 'EEXIST') {
 			console.error(`Initialization of Azure account extension storage failed: ${e}`);
 			console.error('Azure accounts will not be available');
 			return undefined;
