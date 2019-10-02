@@ -10,7 +10,7 @@
 	"aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
 	"engines": {
 		"vscode": "^1.30.1",
-		"azdata": ">=1.9.0"
+		"azdata": ">=1.12.0"
 	},
 	"activationEvents": [
 		"*"
@@ -22,6 +22,30 @@
 	},
 	"extensionDependencies": [
 	],
+	"contributes": {
+		"commands": [
+			{
+				"command": "queryHistory.clear",
+				"title": "%queryHistory.clear%",
+				"category": "%queryHistory.displayName%"
+			},
+			{
+				"command": "queryHistory.toggleCapture",
+				"title": "%queryHistory.toggleCapture%",
+				"category": "%queryHistory.displayName%"
+			}
+		],
+		"menus": {
+			"commandPalette": [
+				{
+					"command": "queryHistory.clear"
+				},
+				{
+					"command": "queryHistory.toggleCapture"
+				}
+			]
+		}
+	},
 	"dependencies": {
 	},
 	"devDependencies": {

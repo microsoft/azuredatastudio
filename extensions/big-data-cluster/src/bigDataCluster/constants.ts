@@ -70,3 +70,5 @@ export namespace cssStyles {
 	export const unselectedTabDiv = { 'border-bottom': '1px solid #ccc' };
 	export const lastUpdatedText = { ...text, 'color': '#595959' };
 }
+
+export type AuthType = 'integrated' | 'basic';

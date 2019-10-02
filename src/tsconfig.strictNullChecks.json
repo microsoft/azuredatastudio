@@ -14,7 +14,7 @@
 		"./sql/azdata.d.ts",
 		"./sql/azdata.proposed.d.ts",
 		"./vs/base/**/*.ts",
-		"./vs/platform/**/*.ts",
+		// "./vs/platform/**/*.ts",
 		"./sql/base/**/*.ts",
 		"./sql/editor/**/*.ts",
 		"./sql/platform/angularEventing/**/*.ts",

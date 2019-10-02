@@ -1,84 +1,86 @@
 {
-	"name": "admin-tool-ext-win",
-	"displayName": "%adminToolExtWin.displayName%",
-	"description": "%adminToolExtWin.description%",
-	"version": "0.0.2",
-	"publisher": "Microsoft",
-	"preview": true,
-	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/license/Azure%20Data%20Studio%20Extension%20-%20Standalone%20(free)%20Use%20Terms.txt",
-	"icon": "images/sqlserver.png",
-	"aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
-	"engines": {
-		"vscode": "^1.30.1",
-		"azdata": ">=1.8.0"
-	},
-	"activationEvents": [
-		"*"
-	],
-	"main": "./out/main",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/Microsoft/azuredatastudio.git"
-	},
-	"extensionDependencies": [
-		"Microsoft.mssql"
-	],
-	"contributes": {
-		"commands": [
-			{
-				"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-				"title": "%adminToolExtWin.propertiesMenuItem%",
-				"category": "AdminToolExtWin"
-			},
-			{
-				"command": "adminToolExtWin.launchSsmsMinGswDialog",
-				"title": "%adminToolExtWin.launchGswMenuItem%",
-				"category": "AdminToolExtWin"
-			}
-		],
-		"menus": {
-			"commandPalette": [
-				{
-					"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-					"when": "false"
-				},
-				{
-					"command": "adminToolExtWin.launchSsmsMinGswDialog",
-					"when": "false"
-				}
-			],
-			"objectExplorer/item/context": [
-				{
-					"command": "adminToolExtWin.launchSsmsMinGswDialog",
-					"when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType == Database",
-					"group": "z-AdminToolExt@1"
-				},
-				{
-					"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-					"when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType == Server",
-					"group": "z-AdminToolExt@2"
-				},
-				{
-					"command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
-					"when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
-					"group": "z-AdminToolExt@2"
-				}
-			]
-		},
-		"outputChannels": [
-			"admin-tool-ext-win"
-		]
-	},
-	"dependencies": {
-		"ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
-		"vscode-nls": "^3.2.1"
-	},
-	"devDependencies": {
-		"vscode": "1.0.1"
-	},
-	"__metadata": {
-		"id": "41",
-		"publisherDisplayName": "Microsoft",
-		"publisherId": "Microsoft"
-	}
+  "name": "admin-tool-ext-win",
+  "displayName": "%adminToolExtWin.displayName%",
+  "description": "%adminToolExtWin.description%",
+  "version": "0.0.2",
+  "publisher": "Microsoft",
+  "preview": true,
+  "license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/extensions/admin-tool-ext-win/license/Azure%20Data%20Studio%20Extension%20-%20Standalone%20(free)%20Use%20Terms.txt",
+  "icon": "images/sqlserver.png",
+  "aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
+  "engines": {
+    "vscode": "^1.30.1",
+    "azdata": ">=1.8.0"
+  },
+  "activationEvents": [
+    "*"
+  ],
+  "main": "./out/main",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Microsoft/azuredatastudio.git"
+  },
+  "extensionDependencies": [
+    "Microsoft.mssql"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+        "title": "%adminToolExtWin.propertiesMenuItem%",
+        "category": "AdminToolExtWin"
+      },
+      {
+        "command": "adminToolExtWin.launchSsmsMinGswDialog",
+        "title": "%adminToolExtWin.launchGswMenuItem%",
+        "category": "AdminToolExtWin"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+          "when": "false"
+        },
+        {
+          "command": "adminToolExtWin.launchSsmsMinGswDialog",
+          "when": "false"
+        }
+      ],
+      "objectExplorer/item/context": [
+        {
+          "command": "adminToolExtWin.launchSsmsMinGswDialog",
+          "when": "isWindows && connectionProvider == MSSQL && nodeType && nodeType == Database",
+          "group": "z-AdminToolExt@1"
+        },
+        {
+          "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+          "when": "isWindows && connectionProvider == MSSQL && serverInfo && !isCloud && nodeType && nodeType == Server",
+          "group": "z-AdminToolExt@2"
+        },
+        {
+          "command": "adminToolExtWin.launchSsmsMinPropertiesDialog",
+          "when": "isWindows && connectionProvider == MSSQL && serverInfo && nodeType && nodeType =~ /^(Database|Table|Column|Index|Statistic|View|ServerLevelLogin|ServerLevelServerRole|ServerLevelCredential|ServerLevelServerAudit|ServerLevelServerAuditSpecification|StoredProcedure|ScalarValuedFunction|TableValuedFunction|AggregateFunction|Synonym|Assembly|UserDefinedDataType|UserDefinedType|UserDefinedTableType|Sequence|User|DatabaseRole|ApplicationRole|Schema|SecurityPolicy|ServerLevelLinkedServer)$/",
+          "group": "z-AdminToolExt@2"
+        }
+      ]
+    },
+    "outputChannels": [
+      "admin-tool-ext-win"
+    ]
+  },
+  "dependencies": {
+    "ads-extension-telemetry": "github:Charles-Gagnon/ads-extension-telemetry#0.1.0",
+    "vscode-nls": "^3.2.1"
+  },
+  "devDependencies": {
+    "vscode": "^1.1.10",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.7"
+  },
+  "__metadata": {
+    "id": "41",
+    "publisherDisplayName": "Microsoft",
+    "publisherId": "Microsoft"
+  }
 }

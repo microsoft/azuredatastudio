@@ -11,7 +11,7 @@ export interface ResourceType {
 	name: string;
 	displayName: string;
 	description: string;
-	platforms: string[];
+	platforms: string[] | '*';
 	icon: { light: string; dark: string };
 	options: ResourceTypeOption[];
 	providers: DeploymentProvider[];

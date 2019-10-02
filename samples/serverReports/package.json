@@ -2,7 +2,7 @@
 	"name": "server-report",
 	"displayName": "Server Reports",
 	"description": "Server Reports",
-	"version": "0.1.5",
+	"version": "0.2.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"engines": {
@@ -19,6 +19,7 @@
 		"*"
 	],
 	"main": "./out/src/extension",
+	"forceReload": true,
 	"contributes": {
 		"commands": [
 			{

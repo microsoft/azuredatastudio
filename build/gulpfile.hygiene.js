@@ -103,7 +103,8 @@ const indentationFilter = [
 	'!extensions/admin-tool-ext-win/ssmsmin/**',
 	'!extensions/resource-deployment/notebooks/**',
 	'!extensions/mssql/notebooks/**',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts'
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts',
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/clusterApiGenerated2.ts'
 ];
 
 const copyrightFilter = [
@@ -191,7 +192,8 @@ const tslintBaseFilter = [
 	'!extensions/vscode-api-tests/testWorkspace2/**',
 	'!extensions/**/*.test.ts',
 	'!extensions/html-language-features/server/lib/jquery.d.ts',
-	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts' // {{SQL CARBON EDIT}}
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/apiGenerated.ts', // {{SQL CARBON EDIT}},
+	'!extensions/big-data-cluster/src/bigDataCluster/controller/tokenApiGenerated.ts' // {{SQL CARBON EDIT}}
 ];
 
 const sqlFilter = ['src/sql/**']; // {{SQL CARBON EDIT}}
