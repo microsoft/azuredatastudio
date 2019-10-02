@@ -16,22 +16,22 @@ import { stressify } from 'adstest';
 if (context.RunTest) {
 	suite('Object Explorer integration suite', () => {
 		test('BDC instance node label test', async function () {
-			await (new ObjectExplorerTester()).bdcNodeLabelTest();
+			return await (new ObjectExplorerTester()).bdcNodeLabelTest();
 		});
 		test('Standalone instance node label test', async function () {
-			await (new ObjectExplorerTester()).standaloneNodeLabelTest();
+			return await (new ObjectExplorerTester()).standaloneNodeLabelTest();
 		});
 		test('Azure SQL DB instance node label test', async function () {
-			await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
+			return await (new ObjectExplorerTester()).sqlDbNodeLabelTest();
 		});
 		test('BDC instance context menu test', async function () {
-			await (new ObjectExplorerTester()).bdcContextMenuTest();
+			return await (new ObjectExplorerTester()).bdcContextMenuTest();
 		});
 		test('Azure SQL DB context menu test', async function () {
-			await (new ObjectExplorerTester()).sqlDbContextMenuTest();
+			return await (new ObjectExplorerTester()).sqlDbContextMenuTest();
 		});
 		test.skip('Standalone database context menu test', async function () {
-			await (new ObjectExplorerTester()).standaloneContextMenuTest();
+			return await (new ObjectExplorerTester()).standaloneContextMenuTest();
 		});
 	});
 }
@@ -43,7 +43,7 @@ class ObjectExplorerTester {
 	async bdcNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 		const server = await getBdcServer();
-		await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
+		return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -51,7 +51,7 @@ class ObjectExplorerTester {
 		if (process.platform === 'win32') {
 			const expectedNodeLabel = ['Databases', 'Security', 'Server Objects'];
 			const server = await getStandaloneServer();
-			await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
+			return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 		}
 	}
 
@@ -59,14 +59,14 @@ class ObjectExplorerTester {
 	async sqlDbNodeLabelTest(): Promise<void> {
 		const expectedNodeLabel = ['Databases', 'Security'];
 		const server = await getAzureServer();
-		await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
+		return await this.verifyOeNode(server, DefaultConnectTimeoutInMs, expectedNodeLabel);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
 	async sqlDbContextMenuTest(): Promise<void> {
 		const server = await getAzureServer();
 		const expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
-		await this.verifyContextMenu(server, expectedActions);
+		return await this.verifyContextMenu(server, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -80,7 +80,7 @@ class ObjectExplorerTester {
 		else {
 			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Refresh', 'Backup', 'Restore', 'Data-tier Application wizard', 'Schema Compare', 'Import wizard'];
 		}
-		await this.verifyDBContextMenu(server, DefaultConnectTimeoutInMs, expectedActions);
+		return await this.verifyDBContextMenu(server, DefaultConnectTimeoutInMs, expectedActions);
 	}
 
 	@stressify({ dop: ObjectExplorerTester.ParallelCount })
@@ -94,7 +94,7 @@ class ObjectExplorerTester {
 		else {
 			expectedActions = ['Manage', 'New Query', 'New Notebook', 'Disconnect', 'Delete Connection', 'Refresh', 'Data-tier Application wizard', 'Launch Profiler'];
 		}
-		await this.verifyContextMenu(server, expectedActions);
+		return await this.verifyContextMenu(server, expectedActions);
 	}
 
 	async verifyContextMenu(server: TestServerProfile, expectedActions: string[]): Promise<void> {
@@ -110,7 +110,7 @@ class ObjectExplorerTester {
 
 		const expectedString = expectedActions.join(',');
 		const actualString = actions.join(',');
-		assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+		return assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 	}
 
 	async verifyOeNode(server: TestServerProfile, timeout: number, expectedNodeLabel: string[]): Promise<void> {
@@ -125,7 +125,7 @@ class ObjectExplorerTester {
 		const children = (await nodes[index].getChildren()).filter(c => c.label !== 'HDFS');
 		const actualLabelsString = children.map(c => c.label).join(',');
 		const expectedLabelString = expectedNodeLabel.join(',');
-		assert(expectedNodeLabel.length === children.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
+		return assert(expectedNodeLabel.length === children.length && expectedLabelString === actualLabelsString, `Expected node label: "${expectedLabelString}", Actual: "${actualLabelsString}"`);
 
 	}
 
@@ -157,7 +157,7 @@ class ObjectExplorerTester {
 
 			const expectedString = expectedActions.join(',');
 			const actualString = actions.join(',');
-			assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
+			return assert(expectedActions.length === actions.length && expectedString === actualString, `Expected actions: "${expectedString}", Actual actions: "${actualString}"`);
 		}
 		finally {
 			await deleteDB(server, dbName, ownerUri);
