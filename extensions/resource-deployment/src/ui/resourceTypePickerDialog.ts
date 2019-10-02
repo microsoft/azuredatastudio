@@ -35,9 +35,9 @@ export class ResourceTypePickerDialog extends DialogBase {
 		resourceType: ResourceType) {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 		this._dialogObject.okButton.onClick(() => this.onComplete());
-		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', 'Install tools'));
+		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
 			this.installTools();
 		}));
@@ -66,19 +66,19 @@ export class ResourceTypePickerDialog extends DialogBase {
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
 			const toolColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolNameColumnHeader', 'Tool'),
+				value: localize('deploymentDialog.toolNameColumnHeader', "Tool"),
 				width: 150
 			};
 			const descriptionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolDescriptionColumnHeader', 'Description'),
+				value: localize('deploymentDialog.toolDescriptionColumnHeader', "Description"),
 				width: 650
 			};
 			const installStatusColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolStatusColumnHeader', 'Installed'),
+				value: localize('deploymentDialog.toolStatusColumnHeader', "Installed"),
 				width: 100
 			};
 			const versionColumn: azdata.TableColumn = {
-				value: localize('deploymentDialog.toolVersionColumnHeader', 'Version'),
+				value: localize('deploymentDialog.toolVersionColumnHeader', "Version"),
 				width: 100
 			};
 
@@ -105,10 +105,10 @@ export class ResourceTypePickerDialog extends DialogBase {
 					},
 					{
 						component: this._optionsContainer,
-						title: localize('deploymentDialog.OptionsTitle', 'Options')
+						title: localize('deploymentDialog.OptionsTitle', "Options")
 					}, {
 						component: this._toolsLoadingComponent,
-						title: localize('deploymentDialog.RequiredToolsTitle', 'Required tools')
+						title: localize('deploymentDialog.RequiredToolsTitle', "Required tools")
 					}
 				],
 				{
@@ -217,7 +217,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 				if (this.toolRefreshTimestamp !== currentRefreshTimestamp) {
 					return;
 				}
-				let enableInstallButton = false;
+				let autoInstallRequired = false;
 				const messages: string[] = [];
 				this._toolsTable.data = toolRequirements.map(toolRef => {
 					const tool = this.toolsService.getToolByName(toolRef.name)!;
@@ -229,18 +229,26 @@ export class ResourceTypePickerDialog extends DialogBase {
 					}
 
 					if (!tool.isInstalled && tool.autoInstallSupported) {
-						enableInstallButton = true;
+						autoInstallRequired = true;
 					}
 					return [tool.displayName, tool.description, tool.isInstalled ? localize('deploymentDialog.YesText', "Yes") : localize('deploymentDialog.NoText', "No"), tool.version ? tool.version.version : ''];
 				});
 
-				this._installToolButton.hidden = !enableInstallButton;
-				this._dialogObject.okButton.enabled = messages.length === 0;
+				this._installToolButton.hidden = !autoInstallRequired;
+				this._dialogObject.okButton.enabled = messages.length === 0 && !autoInstallRequired;
 				if (messages.length !== 0) {
 					messages.push(localize('deploymentDialog.VersionInformationDebugHint', "You will need to restart Azure Data Studio if the tools are installed after Azure Data Studio is launched to pick up the updated PATH environment variable. You may find additional details in the debug console."));
 					this._dialogObject.message = {
 						level: azdata.window.MessageLevel.Error,
-						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed or do not meet the minimum version requirement."),
+						text: localize('deploymentDialog.ToolCheckFailed', "Some required tools are not installed."),
+						description: messages.join(EOL)
+					};
+				} else if (autoInstallRequired) {
+					// we don't have scenarioes that have mixed type of tools
+					// either we don't support auto install: docker, or we support auto install for all required tools
+					this._dialogObject.message = {
+						level: azdata.window.MessageLevel.Information,
+						text: localize('deploymentDialog.InstallToolsHint', "Some required tools are not installed, you can click the \"Install tools\" button to install them."),
 						description: messages.join(EOL)
 					};
 				}
@@ -280,6 +288,11 @@ export class ResourceTypePickerDialog extends DialogBase {
 	}
 
 	private installTools(): void {
+		this._dialogObject.message = {
+			level: azdata.window.MessageLevel.Information,
+			text: localize('deploymentDialog.InstallingTools', "Required tools are being installed now.")
+		};
+		this._installToolButton.enabled = false;
 		// TODO
 	}
 }
