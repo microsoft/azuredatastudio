@@ -20,11 +20,9 @@ import { Schemas } from 'vs/base/common/network';
 import { INotebookService } from 'sql/workbench/services/notebook/browser/notebookService';
 import { optional } from 'vs/platform/instantiation/common/instantiation';
 import { getErrorMessage } from 'vs/base/common/errors';
-import { isNullOrUndefined } from 'util';
 import { generateUuid } from 'vs/base/common/uuid';
 import { IModelContentChangedEvent } from 'vs/editor/common/model/textModelEvents';
 let modelId = 0;
-
 
 export class CellModel implements ICellModel {
 	public id: string;
