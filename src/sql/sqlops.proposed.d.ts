@@ -270,6 +270,13 @@ declare module 'sqlops' {
 
 	}
 
+	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+
 	/**
 	 * The config for a FlexBox-based container. This supports easy
 	 * addition of content to a container with a flexible layout
@@ -285,15 +292,15 @@ declare module 'sqlops' {
 		/**
 		 * Matches the justify-content CSS property.
 		 */
-		justifyContent?: string;
+		justifyContent?: JustifyContentType;
 		/**
 		 * Matches the align-items CSS property.
 		 */
-		alignItems?: string;
+		alignItems?: AlignItemsType;
 		/**
 		 * Matches the align-content CSS property.
 		 */
-		alignContent?: string;
+		alignContent?: AlignContentType;
 
 		/**
 		 * Container Height
@@ -308,7 +315,7 @@ declare module 'sqlops' {
 		/**
 		 *
 		 */
-		textAlign?: string;
+		textAlign?: TextAlignType;
 
 		/**
 		 * The position CSS property. Empty by default.
@@ -317,7 +324,7 @@ declare module 'sqlops' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself.
 		 */
-		position?: string;
+		position?: PositionType;
 	}
 
 	export interface FlexItemLayout {
