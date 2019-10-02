@@ -88,13 +88,22 @@ async function findOrMakeStoragePath() {
 	let storagePath = path.join(defaultLogLocation, constants.extensionName);
 	try {
 		await fs.mkdir(defaultLogLocation, { recursive: true });
-		await fs.mkdir(storagePath, { recursive: true });
-		console.log('Initialized Azure account extension storage.');
 	}
 	catch (e) {
 		console.error(`Initialization of Azure account extension storage failed: ${e}`);
 		console.error('Azure accounts will not be available');
+		return undefined;
 	}
+
+	try {
+		await fs.mkdir(storagePath, { recursive: true });
+	} catch (e) {
+		console.error(`Initialization of Azure account extension storage failed: ${e}`);
+		console.error('Azure accounts will not be available');
+		return undefined;
+	}
+
+	console.log('Initialized Azure account extension storage.');
 	return storagePath;
 }
 
