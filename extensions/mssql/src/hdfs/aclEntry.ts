@@ -164,15 +164,21 @@ export class AclEntry {
  * @param type The type to convert
  */
 function getAclEntryType(type: AclEntryType | AclPermissionType): AclEntryType {
-	switch (type) {
-		case AclPermissionType.owner:
-			return AclEntryType.user;
-		case AclPermissionType.group:
-			return AclEntryType.group;
-		case AclPermissionType.other:
-			return AclEntryType.other;
+	// We only need to map AclPermissionType - AclEntryType is already the
+	// correct values we're mapping to.
+	if (type in AclPermissionType) {
+		switch (type) {
+			case AclPermissionType.owner:
+				return AclEntryType.user;
+			case AclPermissionType.group:
+				return AclEntryType.group;
+			case AclPermissionType.other:
+				return AclEntryType.other;
+			default:
+				throw new Error(`Unknown AclPermissionType : ${type}`);
+		}
 	}
-	return type;
+	return <AclEntryType>type;
 }
 
 /**

@@ -4,13 +4,13 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import { HdfsModel } from '../hdfsModel';
 import { IFileSource } from '../../objectExplorerNodeProvider/fileSources';
 import { IAclStatus, AclEntry, AclEntryType } from '../../hdfs/aclEntry';
 import { cssStyles } from './uiConstants';
 import { ownersHeader, permissionsHeader, stickyHeader, readHeader, writeHeader, executeHeader, manageAccessTitle, allOthersHeader, addUserOrGroupHeader, enterNamePlaceholder, addLabel, accessHeader, defaultHeader, applyText, applyRecursivelyText, userLabel, groupLabel, errorApplyingAclChanges } from '../../localizedConstants';
 import { HdfsError } from '../webhdfs';
+import { ApiWrapper } from '../../apiWrapper';
 
 const permissionsNameColumnWidth = 250;
 const permissionsStickyColumnWidth = 50;
@@ -36,14 +36,14 @@ export class ManageAccessDialog {
 
 	private addUserOrGroupSelectedType: AclEntryType;
 
-	constructor(private hdfsPath: string, private fileSource: IFileSource) {
+	constructor(private hdfsPath: string, private fileSource: IFileSource, private readonly apiWrapper: ApiWrapper) {
 		this.hdfsModel = new HdfsModel(this.fileSource, this.hdfsPath);
 		this.hdfsModel.onAclStatusUpdated(aclStatus => this.handleAclStatusUpdated(aclStatus));
 	}
 
 	public openDialog(): void {
 		if (!this.dialog) {
-			this.dialog = azdata.window.createModelViewDialog(manageAccessTitle, 'HdfsManageAccess', true);
+			this.dialog = this.apiWrapper.createDialog(manageAccessTitle, 'HdfsManageAccess', true);
 			this.dialog.okButton.label = applyText;
 
 			const applyRecursivelyButton = azdata.window.createButton(applyRecursivelyText);
@@ -51,7 +51,7 @@ export class ManageAccessDialog {
 				try {
 					await this.hdfsModel.apply(true);
 				} catch (err) {
-					vscode.window.showErrorMessage(errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
+					this.apiWrapper.showErrorMessage(errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 			});
 			this.dialog.customButtons = [applyRecursivelyButton];
@@ -60,12 +60,11 @@ export class ManageAccessDialog {
 					await this.hdfsModel.apply();
 					return true;
 				} catch (err) {
-					vscode.window.showErrorMessage(errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
+					this.apiWrapper.showErrorMessage(errorApplyingAclChanges(err instanceof HdfsError ? err.message : err));
 				}
 				return false;
 			});
 			const tab = azdata.window.createTab(manageAccessTitle);
-
 			tab.registerContent(async (modelView: azdata.ModelView) => {
 				this.modelBuilder = modelView.modelBuilder;
 
