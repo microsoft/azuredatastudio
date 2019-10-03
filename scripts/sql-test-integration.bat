@@ -9,7 +9,7 @@ echo VSCODEEXTENSIONSDIR=%VSCODEEXTENSIONSDIR%
 
 if "%ADS_TEST_GREP%" == "" (
 	echo Running stable tests only
-	set ADS_TEST_GREP=\*UNSTABLE\*
+	set ADS_TEST_GREP=@UNSTABLE@
 	SET ADS_TEST_INVERT_GREP=1
 )
 

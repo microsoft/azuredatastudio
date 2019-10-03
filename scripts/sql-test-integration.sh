@@ -14,7 +14,7 @@ fi
 
 if [[ "$ADS_TEST_GREP" == "" ]]; then
 	echo Running stable tests only
-	export ADS_TEST_GREP=\*UNSTABLE\*
+	export ADS_TEST_GREP=@UNSTABLE@
 	export ADS_TEST_INVERT_GREP=1
 fi
 

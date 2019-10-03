@@ -1,6 +1,6 @@
 setlocal
 
-set ADS_TEST_GREP=\*UNSTABLE\*
+set ADS_TEST_GREP=@UNSTABLE@
 
 echo Running unstable tests
 
