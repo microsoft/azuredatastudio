@@ -7,7 +7,9 @@
 
 import * as should from 'should';
 import * as azdata from 'azdata';
+import * as vscode from 'vscode';
 import * as mssql from '../../../mssql';
+import * as TypeMoq from 'typemoq';
 import 'mocha';
 import { SchemaCompareDialog } from './../dialogs/schemaCompareDialog';
 import { SchemaCompareMainWindow } from '../schemaCompareMainWindow';
@@ -53,9 +55,16 @@ const mockTargetEndpoint: mssql.SchemaCompareEndpointInfo = {
 	connectionDetails: undefined
 };
 
+let mockExtensionContext: TypeMoq.IMock<vscode.ExtensionContext>;
+
 describe('SchemaCompareDialog.openDialog', function (): void {
+	beforeEach(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
+	});
+
 	it('Should be correct when created.', async function (): Promise<void> {
-		let schemaCompareResult = new SchemaCompareMainWindow();
+		let schemaCompareResult = new SchemaCompareMainWindow(undefined, mockExtensionContext.object);
 		let dialog = new SchemaCompareDialog(schemaCompareResult);
 		await dialog.openDialog();
 
@@ -66,10 +75,14 @@ describe('SchemaCompareDialog.openDialog', function (): void {
 });
 
 describe('SchemaCompareResult.start', function (): void {
+	beforeEach(() => {
+		mockExtensionContext = TypeMoq.Mock.ofType<vscode.ExtensionContext>();
+		mockExtensionContext.setup(x => x.extensionPath).returns(() => '');
+	});
 	it('Should be correct when created.', async function (): Promise<void> {
 		let sc = new SchemaCompareTestService();
 
-		let result = new SchemaCompareMainWindow(sc);
+		let result = new SchemaCompareMainWindow(sc, mockExtensionContext.object);
 		await result.start(null);
 		let promise = new Promise(resolve => setTimeout(resolve, 5000)); // to ensure comparison result view is initialized
 		await promise;
