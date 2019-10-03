@@ -12,6 +12,7 @@ import * as nls from 'vscode-nls';
 import * as auth from '../util/auth';
 import { IHdfsOptions, IRequestParams } from '../objectExplorerNodeProvider/fileSources';
 import { IAclStatus, AclEntry, parseAcl, AclPermissionType, parseAclPermissionFromOctal, AclEntryScope } from './aclEntry';
+import { everyoneName } from '../localizedConstants';
 
 const localize = nls.loadMessageBundle();
 const ErrorMessageInvalidDataStructure = localize('webhdfs.invalidDataStructure', "Invalid Data Structure");
@@ -435,11 +436,11 @@ export class WebHDFS {
 			} else if (response.body.hasOwnProperty('AclStatus')) {
 				const permissions = parseAclPermissionFromOctal(response.body.AclStatus.permission);
 				const aclStatus: IAclStatus = {
-					owner: new AclEntry(AclEntryScope.access, AclPermissionType.owner, response.body.AclStatus.owner || '', permissions.owner),
-					group: new AclEntry(AclEntryScope.access, AclPermissionType.group, response.body.AclStatus.group || '', permissions.group),
-					other: new AclEntry(AclEntryScope.access, AclPermissionType.other, response.body.AclStatus.other || '', permissions.other),
+					owner: new AclEntry(AclEntryScope.access, AclPermissionType.owner, '', response.body.AclStatus.owner || '', permissions.owner),
+					group: new AclEntry(AclEntryScope.access, AclPermissionType.group, '', response.body.AclStatus.group || '', permissions.group),
+					other: new AclEntry(AclEntryScope.access, AclPermissionType.other, '', everyoneName, permissions.other),
 					stickyBit: !!response.body.AclStatus.stickyBit,
-					entries: (<any[]>response.body.AclStatus.entries).map(entry => parseAcl(entry)).reduce((acc, parsedEntries) => acc.concat(parsedEntries, []))
+					entries: (<any[]>response.body.AclStatus.entries).map(entry => parseAcl(entry)).reduce((acc, parsedEntries) => acc.concat(parsedEntries), [])
 				};
 				callback(undefined, aclStatus);
 			} else {
@@ -449,16 +450,22 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Set ACL for the given path
+	 * Set ACL for the given path. The owner, group and other fields are required - other entries are optional.
 	 * @param path The path to the file/folder to set the ACL on
-	 * @param aclEntries The ACL entries to set
+	 * @param ownerEntry The entry corresponding to the path owner
+	 * @param groupEntry The entry corresponding to the path owning group
+	 * @param otherEntry The entry corresponding to default permissions for all other users
+	 * @param aclEntries The optional additional ACL entries to set
 	 * @param callback Callback to handle the response
 	 * @returns void
 	 */
-	public setAcl(path: string, aclEntries: AclEntry[], callback: (error: HdfsError) => void): void {
+	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[], callback: (error: HdfsError) => void): void {
 		this.checkArgDefined('path', path);
+		this.checkArgDefined('ownerEntry', ownerEntry);
+		this.checkArgDefined('groupEntry', groupEntry);
+		this.checkArgDefined('otherEntry', otherEntry);
 		this.checkArgDefined('aclEntries', aclEntries);
-		const aclSpec = aclEntries.join(',');
+		const aclSpec = [ownerEntry, groupEntry, otherEntry].concat(aclEntries).map(entry => entry.toAclString()).join(',');
 		let endpoint = this.getOperationEndpoint('setacl', path, { aclspec: aclSpec });
 		this.sendRequest('PUT', endpoint, undefined, (error) => {
 			return callback && callback(error);

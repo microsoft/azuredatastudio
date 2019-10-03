@@ -75,7 +75,7 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 }
 
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, protected fileSource: IFileSource) {
+	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource) {
 		super();
 	}
 

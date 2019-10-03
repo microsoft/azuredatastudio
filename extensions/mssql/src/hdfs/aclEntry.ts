@@ -101,7 +101,7 @@ export class AclEntryPermission {
  * e.g. The following are all valid strings
  *		rwx
  *		---
- * 		-w-
+ *		-w-
  * @param permissionString The string representation of the permission
  */
 function parseAclPermission(permissionString: string): AclEntryPermission {
@@ -113,10 +113,11 @@ function parseAclPermission(permissionString: string): AclEntryPermission {
 }
 
 /**
- * A single ACL Entry. This consists of up to 4 values
- *	scope - The scope of the entry @see AclEntryScope
- * 	type - The type of the entry @see AclEntryType
- *  name - The name of the user/group. Optional.
+ * A single ACL Permission entry
+ *  scope - The scope of the entry @see AclEntryScope
+ *  type - The type of the entry @see AclEntryType
+ *  name - The name of the user/group used to set ACLs Optional.
+ *  displayName - The name to display in the UI
  *  permission - The permission set for this ACL. @see AclPermission
  */
 export class AclEntry {
@@ -124,6 +125,7 @@ export class AclEntry {
 		public readonly scope: AclEntryScope,
 		public readonly type: AclEntryType | AclPermissionType,
 		public readonly name: string,
+		public readonly displayName: string,
 		public readonly permission: AclEntryPermission,
 	) { }
 
@@ -135,12 +137,48 @@ export class AclEntry {
 	 * Example strings :
 	 *		user:bob:rwx
 	 *		default:user:bob:rwx
-	 * 		user::r-x
-	 * 		default:group::r--
+	 *		user::r-x
+	 *		default:group::r--
 	 */
-	toString(): string {
-		return `${this.scope === AclEntryScope.default ? 'default:' : ''}${this.type}:${this.name}:${this.permission.toString()}`;
+	toAclString(): string {
+		return `${this.scope === AclEntryScope.default ? 'default:' : ''}${getAclEntryType(this.type)}:${this.name}:${this.permission.toString()}`;
 	}
+
+	/**
+	 * Checks whether this and the specified AclEntry are equal. Two entries are considered equal
+	 * if their scope, type and name are equal.
+	 * @param other The other entry to compare against
+	 */
+	public isEqual(other: AclEntry): boolean {
+		if (!other) {
+			return false;
+		}
+		return this.scope === other.scope &&
+			this.type === other.type &&
+			this.name === other.name;
+	}
+}
+
+/**
+ * Maps the possible entry types into their corresponding values for using in an ACL string
+ * @param type The type to convert
+ */
+function getAclEntryType(type: AclEntryType | AclPermissionType): AclEntryType {
+	// We only need to map AclPermissionType - AclEntryType is already the
+	// correct values we're mapping to.
+	if (type in AclPermissionType) {
+		switch (type) {
+			case AclPermissionType.owner:
+				return AclEntryType.user;
+			case AclPermissionType.group:
+				return AclEntryType.group;
+			case AclPermissionType.other:
+				return AclEntryType.other;
+			default:
+				throw new Error(`Unknown AclPermissionType : ${type}`);
+		}
+	}
+	return <AclEntryType>type;
 }
 
 /**
@@ -156,7 +194,7 @@ export class AclEntry {
  *		default:other:r--
  *
  * So a valid ACL string might look like this
- * 		user:bob:rwx,user::rwx,default::bob:rwx,group::r-x,default:other:r--
+ *		user:bob:rwx,user::rwx,default::bob:rwx,group::r-x,default:other:r--
  * @param aclString The string representation of the ACL
  */
 export function parseAcl(aclString: string): AclEntry[] {
@@ -194,7 +232,7 @@ export function parseAclEntry(aclString: string): AclEntry {
 	}
 	const name = parts[i++];
 	const permission = parseAclPermission(parts[i++]);
-	return new AclEntry(scope, type, name, permission);
+	return new AclEntry(scope, type, name, name, permission);
 }
 
 /**
@@ -208,7 +246,7 @@ export function parseAclEntry(aclString: string): AclEntry {
  * So an octal of 730 would map to :
  * 	- The owner with rwx permissions
  * 	- The group with -wx permissions
- *  - All others with --- permissions
+ * 	- All others with --- permissions
  * @param octal The octal string to parse
  */
 export function parseAclPermissionFromOctal(octal: string): { owner: AclEntryPermission, group: AclEntryPermission, other: AclEntryPermission } {

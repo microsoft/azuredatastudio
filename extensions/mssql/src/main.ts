@@ -13,7 +13,7 @@ import ContextProvider from './contextProvider';
 import * as Utils from './utils';
 import { AppContext } from './appContext';
 import { ApiWrapper } from './apiWrapper';
-import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand } from './objectExplorerNodeProvider/hdfsCommands';
+import { UploadFilesCommand, MkDirCommand, SaveFileCommand, PreviewFileCommand, CopyPathCommand, DeleteFilesCommand, ManageAccessCommand } from './objectExplorerNodeProvider/hdfsCommands';
 import { IPrompter } from './prompts/question';
 import CodeAdapter from './prompts/adapter';
 import { IExtension } from './mssql';
@@ -99,6 +99,7 @@ function registerHdfsCommands(context: vscode.ExtensionContext, prompter: IPromp
 	context.subscriptions.push(new PreviewFileCommand(prompter, appContext));
 	context.subscriptions.push(new CopyPathCommand(appContext));
 	context.subscriptions.push(new DeleteFilesCommand(prompter, appContext));
+	context.subscriptions.push(new ManageAccessCommand(appContext));
 }
 
 function activateSparkFeatures(appContext: AppContext): void {
