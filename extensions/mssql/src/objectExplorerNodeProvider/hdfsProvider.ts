@@ -16,6 +16,7 @@ import { CancelableStream } from './cancelableStream';
 import { TreeNode } from './treeNodes';
 import * as utils from '../utils';
 import { IFileNode } from './types';
+import { MountStatus } from '../hdfs/mount';
 
 export interface ITreeChangeHandler {
 	notifyNodeChanged(node: TreeNode): void;
@@ -103,7 +104,7 @@ export abstract class HdfsFileSourceNode extends TreeNode {
 export class FolderNode extends HdfsFileSourceNode {
 	private children: TreeNode[];
 	protected _nodeType: string;
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string) {
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, nodeType?: string, private mountStatus?: MountStatus) {
 		super(context, path, fileSource);
 		this._nodeType = nodeType ? nodeType : Constants.MssqlClusterItems.Folder;
 	}
@@ -126,8 +127,8 @@ export class FolderNode extends HdfsFileSourceNode {
 				if (files) {
 					// Note: for now, assuming HDFS-provided sorting is sufficient
 					this.children = files.map((file) => {
-						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource)
-							: new FileNode(this.context, file.path, this.fileSource);
+						let node: TreeNode = file.isDirectory ? new FolderNode(this.context, file.path, this.fileSource, Constants.MssqlClusterItems.Folder, this.getChildMountStatus(file))
+							: new FileNode(this.context, file.path, this.fileSource, this.getChildMountStatus(file));
 						node.parent = this;
 						return node;
 					});
@@ -137,6 +138,17 @@ export class FolderNode extends HdfsFileSourceNode {
 			}
 		}
 		return this.children;
+	}
+
+	private getChildMountStatus(file: IFile): MountStatus {
+		if (file.mountStatus !== undefined && file.mountStatus !== MountStatus.None) {
+			return file.mountStatus;
+		}
+		else if (this.mountStatus !== undefined && this.mountStatus !== MountStatus.None) {
+			// Any child node of a mount (or subtree) must be a mount child
+			return MountStatus.Mount_Child;
+		}
+		return MountStatus.None;
 	}
 
 	getTreeItem(): vscode.TreeItem | Promise<vscode.TreeItem> {
@@ -161,10 +173,24 @@ export class FolderNode extends HdfsFileSourceNode {
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
 			nodeType: this._nodeType,
-			nodeSubType: undefined,
-			iconType: 'Folder'
+			nodeSubType: this.getSubType(),
+			iconType: this.isMounted() ? 'Folder_mounted' : 'Folder'
 		};
 		return nodeInfo;
+	}
+
+	private isMounted(): boolean {
+		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
+	}
+
+	private getSubType(): string | undefined {
+		if (this.mountStatus === MountStatus.Mount) {
+			return Constants.MssqlClusterItemsSubType.Mount;
+		} else if (this.mountStatus === MountStatus.Mount_Child) {
+			return Constants.MssqlClusterItemsSubType.MountChild;
+		}
+
+		return undefined;
 	}
 
 	public async writeFile(localFile: IFile): Promise<FileNode> {
@@ -243,7 +269,7 @@ export class ConnectionNode extends FolderNode {
 
 export class FileNode extends HdfsFileSourceNode implements IFileNode {
 
-	constructor(context: TreeDataContext, path: string, fileSource: IFileSource) {
+	constructor(context: TreeDataContext, path: string, fileSource: IFileSource, private mountStatus?: MountStatus) {
 		super(context, path, fileSource);
 	}
 
@@ -322,12 +348,15 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 		});
 	}
 
-	private getSubType(): string {
+	private getSubType(): string | undefined {
+		let subType = '';
 		if (this.getDisplayName().toLowerCase().endsWith('.jar') || this.getDisplayName().toLowerCase().endsWith('.py')) {
-			return Constants.MssqlClusterItemsSubType.Spark;
+			subType += Constants.MssqlClusterItemsSubType.Spark;
+		} else if (this.mountStatus === MountStatus.Mount_Child) {
+			subType += Constants.MssqlClusterItemsSubType.MountChild;
 		}
 
-		return undefined;
+		return subType.length > 0 ? subType : undefined;
 	}
 }
 
