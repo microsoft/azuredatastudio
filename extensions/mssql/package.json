@@ -45,6 +45,10 @@
         "title": "%mssqlCluster.copyPath%"
       },
       {
+        "command": "mssqlCluster.manageAccess",
+        "title": "%mssqlCluster.manageAccess%"
+      },
+      {
         "command": "mssqlCluster.task.newNotebook",
         "title": "%notebook.command.new%",
         "icon": {
@@ -219,6 +223,10 @@
         },
         {
           "command": "mssqlCluster.copyPath",
+          "when": "false"
+        },
+        {
+          "command": "mssqlCluster.manageAccess",
           "when": "false"
         },
         {

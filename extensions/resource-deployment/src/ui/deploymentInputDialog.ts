@@ -23,7 +23,6 @@ export class DeploymentInputDialog extends DialogBase {
 		private dialogInfo: DialogInfo) {
 		super(dialogInfo.title, dialogInfo.name, false);
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Open Notebook');
-		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	protected initialize() {
@@ -59,7 +58,7 @@ export class DeploymentInputDialog extends DialogBase {
 		});
 	}
 
-	private onComplete(): void {
+	protected onComplete(): void {
 		const model: Model = new Model();
 		setModelValues(this.inputComponents, model);
 		if (instanceOfNotebookBasedDialogInfo(this.dialogInfo)) {
@@ -70,6 +69,5 @@ export class DeploymentInputDialog extends DialogBase {
 		} else {
 			vscode.commands.executeCommand(this.dialogInfo.command, model);
 		}
-		this.dispose();
 	}
 }
