@@ -2,7 +2,7 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-define(["require", "vs/base/common/errors", "exports"], function (require, errors) {
+define(["require", "exports", "vs/base/common/errors"], function (require, errors) {
 	const jquerylib = require.__$__nodeRequire('jquery');
 
 	window['jQuery'] = jquerylib;
