@@ -283,6 +283,40 @@ suite('Cell Model', function (): void {
 		should(modelJson.metadata.tags).containEql('hide_input');
 	});
 
+	test('Should emit event after collapsing cell', async function (): Promise<void> {
+		let notebookModel = new NotebookModelStub({
+			name: '',
+			version: '',
+			mimetype: ''
+		});
+		let contents: nb.ICellContents = {
+			cell_type: CellTypes.Code,
+			source: ''
+		};
+		let model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		should(model.isCollapsed).be.false();
+
+		let createCollapsePromise = () => {
+			return new Promise((resolve, reject) => {
+				setTimeout(() => reject(), 2000);
+				model.onToggleStateChanged(isCollapsed => {
+					resolve(isCollapsed);
+				});
+			});
+		};
+
+		should(model.isCollapsed).be.false();
+		let collapsePromise = createCollapsePromise();
+		model.isCollapsed = true;
+		let isCollapsed = await collapsePromise;
+		should(isCollapsed).be.true();
+
+		collapsePromise = createCollapsePromise();
+		model.isCollapsed = false;
+		isCollapsed = await collapsePromise;
+		should(isCollapsed).be.false();
+	});
+
 	suite('Model Future handling', function (): void {
 		let future: TypeMoq.Mock<EmptyFuture>;
 		let cell: ICellModel;
