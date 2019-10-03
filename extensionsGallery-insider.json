@@ -991,14 +991,14 @@
 					},
 					"versions": [
 						{
-							"version": "0.0.1",
-							"lastUpdated": "11/13/2018",
+							"version": "1.0.1",
+							"lastUpdated": "10/3/2019",
 							"assetUri": "",
 							"fallbackAssetUri": "fallbackAssetUri",
 							"files": [
 								{
 									"assetType": "Microsoft.SQLOps.DownloadPage",
-									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/releases/tag/0.0.1"
+									"source": "https://github.com/PejmanNik/sqlops-spexecutesql-to-sql/releases/tag/v1.0.1"
 								},
 								{
 									"assetType": "Microsoft.VisualStudio.Services.Icons.Default",
