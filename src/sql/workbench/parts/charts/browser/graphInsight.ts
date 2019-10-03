@@ -128,7 +128,7 @@ export class Graph implements IInsight {
 					chartData = data.rows.map((row, i) => {
 						return {
 							data: row.map(item => Number(item)),
-							label: localize('series', 'Series {0}', i)
+							label: localize('series', "Series {0}", i)
 						};
 					});
 				}
@@ -144,7 +144,7 @@ export class Graph implements IInsight {
 					chartData = data.rows[0].slice(1).map((row, i) => {
 						return {
 							data: data.rows.map(row => Number(row[i + 1])),
-							label: localize('series', 'Series {0}', i + 1)
+							label: localize('series', "Series {0}", i + 1)
 						};
 					});
 				}

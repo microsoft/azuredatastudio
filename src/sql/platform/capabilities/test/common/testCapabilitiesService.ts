@@ -14,7 +14,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class TestCapabilitiesService implements ICapabilitiesService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	public capabilities: { [id: string]: ProviderFeatures } = {};
 
@@ -23,11 +23,11 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 		let connectionProvider: azdata.ConnectionOption[] = [
 			{
 				name: 'connectionName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.connectionName,
@@ -35,11 +35,11 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			},
 			{
 				name: 'serverName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.serverName,
@@ -47,11 +47,11 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			},
 			{
 				name: 'databaseName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.databaseName,
@@ -59,11 +59,11 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			},
 			{
 				name: 'userName',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.userName,
@@ -71,11 +71,11 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			},
 			{
 				name: 'authenticationType',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.authType,
@@ -83,11 +83,11 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 			},
 			{
 				name: 'password',
-				displayName: undefined,
-				description: undefined,
-				groupName: undefined,
-				categoryValues: undefined,
-				defaultValue: undefined,
+				displayName: undefined!,
+				description: undefined!,
+				groupName: undefined!,
+				categoryValues: undefined!,
+				defaultValue: undefined!,
 				isIdentity: true,
 				isRequired: true,
 				specialValueType: ConnectionOptionSpecialType.password,
@@ -125,7 +125,7 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 
 	// Event Emitters
 	public get onProviderRegisteredEvent(): Event<azdata.DataProtocolServerCapabilities> {
-		return undefined;
+		return Event.None;
 	}
 
 	public isFeatureAvailable(featureName: Action, connectionManagementInfo: ConnectionManagementInfo): boolean {
@@ -133,7 +133,7 @@ export class TestCapabilitiesService implements ICapabilitiesService {
 	}
 
 	public onCapabilitiesReady(): Promise<void> {
-		return Promise.resolve(null);
+		return Promise.resolve();
 	}
 
 	public fireCapabilitiesRegistered(providerFeatures: ProviderFeatures): void {

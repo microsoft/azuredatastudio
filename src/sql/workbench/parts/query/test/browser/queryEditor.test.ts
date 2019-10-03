@@ -13,7 +13,7 @@ import { QueryResultsInput } from 'sql/workbench/parts/query/common/queryResults
 import { QueryModelService } from 'sql/platform/query/common/queryModelService';
 import { QueryInput } from 'sql/workbench/parts/query/common/queryInput';
 import { INewConnectionParams, ConnectionType, RunQueryOnConnectionMode } from 'sql/platform/connection/common/connectionManagement';
-import { ConnectionManagementService } from 'sql/platform/connection/common/connectionManagementService';
+import { ConnectionManagementService } from 'sql/platform/connection/browser/connectionManagementService';
 import { RunQueryAction, ListDatabasesActionItem } from 'sql/workbench/parts/query/browser/queryActions';
 import { EditorDescriptorService } from 'sql/workbench/services/queryEditor/browser/editorDescriptorService';
 
@@ -294,6 +294,7 @@ suite('SQL QueryEditor Tests', () => {
 				undefined,
 				connectionManagementService.object,
 				queryModelService.object,
+				undefined,
 				undefined
 			);
 		});

@@ -31,9 +31,9 @@ export interface IDashboardWidgetRegistry {
 }
 
 class DashboardWidgetRegistry implements IDashboardWidgetRegistry {
-	private _allSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.all', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
-	private _dashboardWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.database', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
-	private _serverWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.server', 'Widget used in the dashboards'), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _allSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.all', "Widget used in the dashboards"), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _dashboardWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.database', "Widget used in the dashboards"), properties: {}, extensionProperties: {}, additionalProperties: false };
+	private _serverWidgetSchema: CustomIJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.server', "Widget used in the dashboards"), properties: {}, extensionProperties: {}, additionalProperties: false };
 
 	/**
 	 * Register a dashboard widget

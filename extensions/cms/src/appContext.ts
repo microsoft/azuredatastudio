@@ -18,8 +18,5 @@ export class AppContext {
 		public readonly extensionContext: vscode.ExtensionContext,
 		public readonly apiWrapper: ApiWrapper,
 		public readonly cmsUtils: CmsUtils
-	) {
-		this.apiWrapper = apiWrapper || new ApiWrapper();
-		this.cmsUtils = cmsUtils || new CmsUtils();
-	}
+	) { }
 }

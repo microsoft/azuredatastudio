@@ -12,11 +12,11 @@ const insightRegistry = Registry.as<IInsightRegistry>(InsightExtensions.InsightC
 
 export const insightsSchema: IJSONSchema = {
 	type: 'object',
-	description: nls.localize('insightWidgetDescription', 'Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more'),
+	description: nls.localize('insightWidgetDescription', "Adds a widget that can query a server or database and display the results in multiple ways - as a chart, summarized count, and more"),
 	properties: {
 		cacheId: {
 			type: 'string',
-			description: nls.localize('insightIdDescription', 'Unique Identifier used for cacheing the results of the insight.')
+			description: nls.localize('insightIdDescription', "Unique Identifier used for caching the results of the insight.")
 		},
 		type: {
 			type: 'object',
@@ -26,15 +26,15 @@ export const insightsSchema: IJSONSchema = {
 		},
 		query: {
 			type: ['string', 'array'],
-			description: nls.localize('insightQueryDescription', 'SQL query to run. This should return exactly 1 resultset.')
+			description: nls.localize('insightQueryDescription', "SQL query to run. This should return exactly 1 resultset.")
 		},
 		queryFile: {
 			type: 'string',
-			description: nls.localize('insightQueryFileDescription', '[Optional] path to a file that contains a query. Use if "query" is not set')
+			description: nls.localize('insightQueryFileDescription', "[Optional] path to a file that contains a query. Use if 'query' is not set")
 		},
 		autoRefreshInterval: {
 			type: 'number',
-			description: nls.localize('insightAutoRefreshIntervalDescription', '[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh')
+			description: nls.localize('insightAutoRefreshIntervalDescription', "[Optional] Auto refresh interval in minutes, if not set, there will be no auto refresh")
 		},
 		details: {
 			type: 'object',
@@ -97,15 +97,15 @@ export const insightsSchema: IJSONSchema = {
 						},
 						database: {
 							type: 'string',
-							description: nls.localize('actionDatabaseDescription', 'Target database for the action; can use the format "${columnName}" to use a data driven column name.')
+							description: nls.localize('actionDatabaseDescription', "Target database for the action; can use the format '${ columnName }' to use a data driven column name.")
 						},
 						server: {
 							type: 'string',
-							description: nls.localize('actionServerDescription', 'Target server for the action; can use the format "${columnName}" to use a data driven column name.')
+							description: nls.localize('actionServerDescription', "Target server for the action; can use the format '${ columnName }' to use a data driven column name.")
 						},
 						user: {
 							type: 'string',
-							description: nls.localize('actionUserDescription', 'Target user for the action; can use the format "${columnName}" to use a data driven column name.')
+							description: nls.localize('actionUserDescription', "Target user for the action; can use the format '${ columnName }' to use a data driven column name.")
 						}
 					}
 				}
@@ -118,7 +118,7 @@ const insightType: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			description: nls.localize('carbon.extension.contributes.insightType.id', 'Identifier of the insight'),
+			description: nls.localize('carbon.extension.contributes.insightType.id', "Identifier of the insight"),
 			type: 'string'
 		},
 		contrib: insightsSchema

@@ -4,20 +4,21 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { ConnectionProfile } from 'sql/platform/connection/common/connectionProfile';
+import { Disposable } from 'vs/base/common/lifecycle';
 
 export interface IConnectionProfileGroup {
 	id: string;
-	parentId: string;
+	parentId?: string;
 	name: string;
 	color: string;
 	description: string;
 }
 
-export class ConnectionProfileGroup implements IConnectionProfileGroup {
+export class ConnectionProfileGroup extends Disposable implements IConnectionProfileGroup {
 
 	public children: ConnectionProfileGroup[];
 	public connections: ConnectionProfile[];
-	public parentId: string;
+	public parentId?: string;
 	private _isRenamed: boolean;
 	public constructor(
 		public name: string,
@@ -26,6 +27,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		public color: string,
 		public description: string
 	) {
+		super();
 		this.parentId = parent ? parent.id : undefined;
 		if (this.name === ConnectionProfileGroup.RootGroupName) {
 			this.name = '';
@@ -51,8 +53,8 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		return this.name;
 	}
 
-	public get fullName(): string {
-		let fullName: string = (this.id === 'root') ? undefined : this.name;
+	public get fullName(): string | undefined {
+		let fullName: string | undefined = (this.id === 'root') ? undefined : this.name;
 		if (this.parent) {
 			let parentFullName = this.parent.fullName;
 			if (parentFullName) {
@@ -100,9 +102,8 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		}
 	}
 
-	public getChildren(): any {
-		let allChildren = [];
-
+	public getChildren(): (ConnectionProfile | ConnectionProfileGroup)[] {
+		let allChildren: (ConnectionProfile | ConnectionProfileGroup)[] = [];
 		if (this.connections) {
 			this.connections.forEach((conn) => {
 				allChildren.push(conn);
@@ -131,6 +132,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		connections.forEach((conn) => {
 			this.connections = this.connections.filter((curConn) => { return curConn.id !== conn.id; });
 			conn.parent = this;
+			this._register(conn);
 			this.connections.push(conn);
 		});
 
@@ -143,6 +145,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 		groups.forEach((group) => {
 			this.children = this.children.filter((grp) => { return group.id !== grp.id; });
 			group.parent = this;
+			this._register(group);
 			this.children.push(group);
 		});
 	}
@@ -153,7 +156,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 
 	public isAncestorOf(node: ConnectionProfileGroup | ConnectionProfile): boolean {
 		let isAncestor = false;
-		let currentNode = node;
+		let currentNode: ConnectionProfileGroup | ConnectionProfile | undefined = node;
 		while (currentNode) {
 			if (currentNode.parent && currentNode.parent.id === this.id) {
 				isAncestor = true;
@@ -192,7 +195,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 	}
 
 	public static getConnectionsInGroup(group: ConnectionProfileGroup): ConnectionProfile[] {
-		let connections = [];
+		let connections: ConnectionProfile[] = [];
 		if (group && group.connections) {
 			group.connections.forEach((con) => connections.push(con));
 		}
@@ -205,7 +208,7 @@ export class ConnectionProfileGroup implements IConnectionProfileGroup {
 	}
 
 	public static getSubgroups(group: ConnectionProfileGroup): ConnectionProfileGroup[] {
-		let subgroups = [];
+		let subgroups: ConnectionProfileGroup[] = [];
 		if (group && group.children) {
 			group.children.forEach((grp) => subgroups.push(grp));
 			group.children.forEach((subgroup) => {

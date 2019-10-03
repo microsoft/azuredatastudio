@@ -6,9 +6,8 @@
 import { IExtensionPointUser, ExtensionsRegistry } from 'vs/workbench/services/extensions/common/extensionsRegistry';
 import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { localize } from 'vs/nls';
-import { join } from 'path';
-import { createCSSRule } from 'vs/base/browser/dom';
-import { URI } from 'vs/base/common/uri';
+import { createCSSRule, asCSSUrl } from 'vs/base/browser/dom';
+import * as resources from 'vs/base/common/resources';
 
 export interface IAccountContrib {
 	id: string;
@@ -21,11 +20,11 @@ const account: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			description: localize('carbon.extension.contributes.account.id', 'Identifier of the account type'),
+			description: localize('carbon.extension.contributes.account.id', "Identifier of the account type"),
 			type: 'string'
 		},
 		icon: {
-			description: localize('carbon.extension.contributes.account.icon', '(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration'),
+			description: localize('carbon.extension.contributes.account.icon', "(Optional) Icon which is used to represent the accpunt in the UI. Either a file path or a themable configuration"),
 			anyOf: [{
 				type: 'string'
 			},
@@ -33,11 +32,11 @@ const account: IJSONSchema = {
 				type: 'object',
 				properties: {
 					light: {
-						description: localize('carbon.extension.contributes.account.icon.light', 'Icon path when a light theme is used'),
+						description: localize('carbon.extension.contributes.account.icon.light', "Icon path when a light theme is used"),
 						type: 'string'
 					},
 					dark: {
-						description: localize('carbon.extension.contributes.account.icon.dark', 'Icon path when a dark theme is used'),
+						description: localize('carbon.extension.contributes.account.icon.dark', "Icon path when a dark theme is used"),
 						type: 'string'
 					}
 				}
@@ -64,13 +63,13 @@ ExtensionsRegistry.registerExtensionPoint<IAccountContrib | IAccountContrib[]>({
 		if (icon) {
 			const iconClass = id;
 			if (typeof icon === 'string') {
-				const path = join(extension.description.extensionLocation.fsPath, icon);
-				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(path).toString()}")`);
+				const path = resources.joinPath(extension.description.extensionLocation, icon);
+				createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(path)}`);
 			} else {
-				const light = join(extension.description.extensionLocation.fsPath, icon.light);
-				const dark = join(extension.description.extensionLocation.fsPath, icon.dark);
-				createCSSRule(`.icon.${iconClass}`, `background-image: url("${URI.file(light).toString()}")`);
-				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: url("${URI.file(dark).toString()}")`);
+				const light = resources.joinPath(extension.description.extensionLocation, icon.light);
+				const dark = resources.joinPath(extension.description.extensionLocation, icon.dark);
+				createCSSRule(`.icon.${iconClass}`, `background-image: ${asCSSUrl(light)}`);
+				createCSSRule(`.vs-dark .icon.${iconClass}, .hc-black .icon.${iconClass}`, `background-image: ${asCSSUrl(dark)}`);
 			}
 		}
 	}

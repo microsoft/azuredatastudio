@@ -24,6 +24,7 @@ import { append, $ } from 'vs/base/browser/dom';
 import { IThemeService } from 'vs/platform/theme/common/themeService';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class WizardModal extends Modal {
 	private _dialogPanes = new Map<WizardPage, DialogPane>();
@@ -53,9 +54,10 @@ export class WizardModal extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IInstantiationService private _instantiationService: IInstantiationService,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
+		super(_wizard.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 		this._useDefaultMessageBoxLocation = false;
 	}
 
@@ -80,7 +82,7 @@ export class WizardModal extends Modal {
 		}
 
 		this._previousButton = this.addDialogButton(this._wizard.backButton, () => this.showPage(this._wizard.currentPage - 1));
-		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1), true, true);
+		this._nextButton = this.addDialogButton(this._wizard.nextButton, () => this.showPage(this._wizard.currentPage + 1, true, true), true, true);
 		this._generateScriptButton = this.addDialogButton(this._wizard.generateScriptButton, () => undefined);
 		this._doneButton = this.addDialogButton(this._wizard.doneButton, () => this.done(), false, true);
 		this._wizard.doneButton.registerClickEvent(this._onDone.event);
@@ -117,6 +119,11 @@ export class WizardModal extends Modal {
 		buttonElement.label = dialogButton.label;
 		buttonElement.enabled = requirePageValid ? dialogButton.enabled && this._wizard.pages[this._wizard.currentPage].valid : dialogButton.enabled;
 		dialogButton.hidden ? buttonElement.element.parentElement.classList.add('dialogModal-hidden') : buttonElement.element.parentElement.classList.remove('dialogModal-hidden');
+
+		if (dialogButton.focused) {
+			buttonElement.focus();
+		}
+
 		this.setButtonsForPage(this._wizard.currentPage);
 	}
 
@@ -162,7 +169,7 @@ export class WizardModal extends Modal {
 		page.onUpdate(() => this.setButtonsForPage(this._wizard.currentPage));
 	}
 
-	private async showPage(index: number, validate: boolean = true): Promise<void> {
+	private async showPage(index: number, validate: boolean = true, focus: boolean = false): Promise<void> {
 		let pageToShow = this._wizard.pages[index];
 		if (!pageToShow) {
 			this.done(validate);
@@ -173,7 +180,7 @@ export class WizardModal extends Modal {
 		}
 		this._dialogPanes.forEach((dialogPane, page) => {
 			if (page === pageToShow) {
-				dialogPane.show();
+				dialogPane.show(focus);
 			} else {
 				dialogPane.hide();
 			}
@@ -225,14 +232,14 @@ export class WizardModal extends Modal {
 			'wizard-navigation',
 			{
 				wizard: this._wizard,
-				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage)
+				navigationHandler: (index: number) => this.showPage(index, index > this._wizard.currentPage, true)
 			},
 			undefined,
 			() => undefined);
 	}
 
 	public open(): void {
-		this.showPage(0, false);
+		this.showPage(0, false, true);
 		this.show();
 	}
 
@@ -290,7 +297,7 @@ export class WizardModal extends Modal {
 			this.done();
 		} else {
 			if (this._nextButton.enabled) {
-				this.showPage(this._wizard.currentPage + 1);
+				this.showPage(this._wizard.currentPage + 1, true, true);
 			}
 		}
 	}

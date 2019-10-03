@@ -20,7 +20,7 @@ import { INotificationService } from 'vs/platform/notification/common/notificati
 import Severity from 'vs/base/common/severity';
 import { IJSONEditingService } from 'vs/workbench/services/configuration/common/jsonEditing';
 import { IEnvironmentService } from 'vs/platform/environment/common/environment';
-import { IWindowsService } from 'vs/platform/windows/common/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { IStorageService, StorageScope } from 'vs/platform/storage/common/storage';
 import { IViewletService } from 'vs/workbench/services/viewlet/browser/viewlet';
 import { VIEWLET_ID as EXTENSIONS_VIEWLET_ID, IExtensionsViewlet } from 'vs/workbench/contrib/extensions/common/extensions';
@@ -39,7 +39,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 		@INotificationService private readonly notificationService: INotificationService,
 		@IJSONEditingService private readonly jsonEditingService: IJSONEditingService,
 		@IEnvironmentService private readonly environmentService: IEnvironmentService,
-		@IWindowsService private readonly windowsService: IWindowsService,
+		@IHostService private readonly hostService: IHostService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IExtensionManagementService private readonly extensionManagementService: IExtensionManagementService,
 		@IExtensionGalleryService private readonly galleryService: IExtensionGalleryService,
@@ -68,27 +68,26 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 	}
 
 	private onDidInstallExtension(e: DidInstallExtensionEvent): void {
-		const donotAskUpdateKey = 'langugage.update.donotask';
-		if (!this.storageService.getBoolean(donotAskUpdateKey, StorageScope.GLOBAL) && e.local && e.operation === InstallOperation.Install && e.local.manifest.contributes && e.local.manifest.contributes.localizations && e.local.manifest.contributes.localizations.length) {
+		if (e.local && e.operation === InstallOperation.Install && e.local.manifest.contributes && e.local.manifest.contributes.localizations && e.local.manifest.contributes.localizations.length) {
 			const locale = e.local.manifest.contributes.localizations[0].languageId;
 			if (platform.language !== locale) {
 				const updateAndRestart = platform.locale !== locale;
 				this.notificationService.prompt(
 					Severity.Info,
-					updateAndRestart ? localize('updateLocale', "Would you like to change VS Code's UI language to {0} and restart?", e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
-						: localize('activateLanguagePack', "In order to use VS Code in {0}, VS Code needs to restart.", e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
+					// {{SQL CARBON EDIT}} - Update 'VS Code' to 'Azure Data Studio'
+					updateAndRestart ? localize('updateLocale', "Would you like to change Azure Data Studio's UI language to {0} and restart?", e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId)
+						: localize('activateLanguagePack', "In order to use Azure Data Studio in {0}, Azure Data Studio needs to restart.", e.local.manifest.contributes.localizations[0].languageName || e.local.manifest.contributes.localizations[0].languageId),
 					[{
 						label: updateAndRestart ? localize('yes', "Yes") : localize('restart now', "Restart Now"),
 						run: () => {
-							const updatePromise = updateAndRestart ? this.jsonEditingService.write(this.environmentService.localeResource, { key: 'locale', value: locale }, true) : Promise.resolve(undefined);
-							updatePromise.then(() => this.windowsService.relaunch({}), e => this.notificationService.error(e));
+							const updatePromise = updateAndRestart ? this.jsonEditingService.write(this.environmentService.localeResource, [{ key: 'locale', value: locale }], true) : Promise.resolve(undefined);
+							updatePromise.then(() => this.hostService.restart(), e => this.notificationService.error(e));
 						}
-					}, {
-						label: localize('neverAgain', "Don't Show Again"),
-						isSecondary: true,
-						run: () => this.storageService.store(donotAskUpdateKey, true, StorageScope.GLOBAL)
 					}],
-					{ sticky: true }
+					{
+						sticky: true,
+						neverShowAgain: { id: 'langugage.update.donotask', isSecondary: true }
+					}
 				);
 			}
 		}
@@ -172,7 +171,7 @@ export class LocalizationWorkbenchContribution extends Disposable implements IWo
 								label: translations['installAndRestart'],
 								run: () => {
 									logUserReaction('installAndRestart');
-									this.installExtension(extensionToInstall).then(() => this.windowsService.relaunch({}));
+									this.installExtension(extensionToInstall).then(() => this.hostService.restart());
 								}
 							};
 
@@ -234,6 +233,7 @@ function registerLocaleDefinitionSchema(languages: string[]): void {
 	jsonRegistry.registerSchema(localeDefinitionFileSchemaId, {
 		id: localeDefinitionFileSchemaId,
 		allowComments: true,
+		allowTrailingCommas: true,
 		description: 'Locale Definition file',
 		type: 'object',
 		default: {

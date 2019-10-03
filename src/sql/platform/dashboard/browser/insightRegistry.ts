@@ -25,6 +25,7 @@ export interface IInsightsConfig {
 	queryFile?: string;
 	details?: IInsightsConfigDetails;
 	autoRefreshInterval?: number;
+	id?: string;
 }
 
 export interface IInsightsLabel {
@@ -77,7 +78,7 @@ export interface IInsightRegistry {
 }
 
 class InsightRegistry implements IInsightRegistry {
-	private _insightSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.InsightsRegistry', 'Widget used in the dashboards'), properties: {}, additionalProperties: false };
+	private _insightSchema: IJSONSchema = { type: 'object', description: nls.localize('schema.dashboardWidgets.InsightsRegistry', "Widget used in the dashboards"), properties: {}, additionalProperties: false };
 	private _extensionInsights: { [x: string]: IInsightsConfig } = {};
 	private _idToCtor: { [x: string]: Type<IInsightsView> } = {};
 
@@ -123,4 +124,15 @@ platform.Registry.add(Extensions.InsightContribution, insightRegistry);
 
 export function registerInsight(id: string, description: string, schema: IJSONSchema, ctor: Type<IInsightsView>): InsightIdentifier {
 	return insightRegistry.registerInsight(id, description, schema, ctor);
+}
+
+const WidgetAutoRefreshState: { [key: string]: boolean } = {};
+
+export function getWidgetAutoRefreshState(widgetId: string, connectionId: string): boolean {
+	const key = widgetId + connectionId;
+	return Object.keys(WidgetAutoRefreshState).indexOf(key) === -1 || WidgetAutoRefreshState[key];
+}
+
+export function setWidgetAutoRefreshState(widgetId: string, connectionId: string, state: boolean): void {
+	WidgetAutoRefreshState[widgetId + connectionId] = state;
 }

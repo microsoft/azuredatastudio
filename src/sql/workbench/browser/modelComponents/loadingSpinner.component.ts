@@ -17,7 +17,7 @@ import * as nls from 'vs/nls';
 	`
 })
 export default class LoadingSpinner {
-	private readonly _loadingTitle = nls.localize('loadingMessage', 'Loading');
+	private readonly _loadingTitle = nls.localize('loadingMessage', "Loading");
 
 	@Input() loading: boolean;
 }

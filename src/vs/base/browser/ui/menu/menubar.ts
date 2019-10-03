@@ -10,7 +10,7 @@ import * as nls from 'vs/nls';
 import { domEvent } from 'vs/base/browser/event';
 import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
 import { EventType, Gesture, GestureEvent } from 'vs/base/browser/touch';
-import { cleanMnemonic, IMenuOptions, Menu, MENU_ESCAPED_MNEMONIC_REGEX, MENU_MNEMONIC_REGEX, SubmenuAction, IMenuStyles } from 'vs/base/browser/ui/menu/menu';
+import { cleanMnemonic, IMenuOptions, Menu, MENU_ESCAPED_MNEMONIC_REGEX, MENU_MNEMONIC_REGEX, SubmenuAction, IMenuStyles, Direction } from 'vs/base/browser/ui/menu/menu';
 import { ActionRunner, IAction, IActionRunner } from 'vs/base/common/actions';
 import { RunOnceScheduler } from 'vs/base/common/async';
 import { Event, Emitter } from 'vs/base/common/event';
@@ -29,6 +29,7 @@ export interface IMenuBarOptions {
 	visibility?: string;
 	getKeybinding?: (action: IAction) => ResolvedKeybinding | undefined;
 	alwaysOnMnemonics?: boolean;
+	compactMode?: Direction;
 }
 
 export interface MenuBarMenu {
@@ -92,6 +93,9 @@ export class MenuBar extends Disposable {
 		super();
 
 		this.container.setAttribute('role', 'menubar');
+		if (this.options.compactMode !== undefined) {
+			DOM.addClass(this.container, 'compact');
+		}
 
 		this.menuCache = [];
 		this.mnemonics = new Map<string, number>();
@@ -209,7 +213,7 @@ export class MenuBar extends Disposable {
 
 			// Register mnemonics
 			if (mnemonicMatches) {
-				let mnemonic = !!mnemonicMatches[1] ? mnemonicMatches[1] : mnemonicMatches[2];
+				let mnemonic = !!mnemonicMatches[1] ? mnemonicMatches[1] : mnemonicMatches[3];
 
 				this.registerMnemonic(this.menuCache.length, mnemonic);
 			}
@@ -234,7 +238,7 @@ export class MenuBar extends Disposable {
 				}
 			}));
 
-			Gesture.addTarget(buttonElement);
+			this._register(Gesture.addTarget(buttonElement));
 			this._register(DOM.addDisposableListener(buttonElement, EventType.Tap, (e: GestureEvent) => {
 				// Ignore this touch if the menu is touched
 				if (this.isOpen && this.focusedMenu && this.focusedMenu.holder && DOM.isAncestor(e.initialTarget as HTMLElement, this.focusedMenu.holder)) {
@@ -292,7 +296,7 @@ export class MenuBar extends Disposable {
 	}
 
 	createOverflowMenu(): void {
-		const label = nls.localize('mMore', "...");
+		const label = this.options.compactMode !== undefined ? nls.localize('mAppMenu', 'Application Menu') : nls.localize('mMore', "...");
 		const buttonElement = $('div.menubar-menu-button', { 'role': 'menuitem', 'tabindex': -1, 'aria-label': label, 'aria-haspopup': true });
 		const titleElement = $('div.menubar-menu-title.toolbar-toggle-more', { 'role': 'none', 'aria-hidden': true });
 
@@ -318,7 +322,7 @@ export class MenuBar extends Disposable {
 			}
 		}));
 
-		Gesture.addTarget(buttonElement);
+		this._register(Gesture.addTarget(buttonElement));
 		this._register(DOM.addDisposableListener(buttonElement, EventType.Tap, (e: GestureEvent) => {
 			// Ignore this touch if the menu is touched
 			if (this.isOpen && this.focusedMenu && this.focusedMenu.holder && DOM.isAncestor(e.initialTarget as HTMLElement, this.focusedMenu.holder)) {
@@ -421,7 +425,7 @@ export class MenuBar extends Disposable {
 
 		const sizeAvailable = this.container.offsetWidth;
 		let currentSize = 0;
-		let full = false;
+		let full = this.options.compactMode !== undefined;
 		const prevNumMenusShown = this.numMenusShown;
 		this.numMenusShown = 0;
 		for (let menuBarMenu of this.menuCache) {
@@ -472,15 +476,34 @@ export class MenuBar extends Disposable {
 		const cleanMenuLabel = cleanMnemonic(label);
 
 		// Update the button label to reflect mnemonics
-		titleElement.innerHTML = this.options.enableMnemonics ?
-			strings.escape(label).replace(MENU_ESCAPED_MNEMONIC_REGEX, '<mnemonic aria-hidden="true">$1</mnemonic>').replace(/&amp;&amp;/g, '&amp;') :
-			cleanMenuLabel.replace(/&&/g, '&');
+
+		if (this.options.enableMnemonics) {
+			let innerHtml = strings.escape(label);
+
+			// This is global so reset it
+			MENU_ESCAPED_MNEMONIC_REGEX.lastIndex = 0;
+			let escMatch = MENU_ESCAPED_MNEMONIC_REGEX.exec(innerHtml);
+
+			// We can't use negative lookbehind so we match our negative and skip
+			while (escMatch && escMatch[1]) {
+				escMatch = MENU_ESCAPED_MNEMONIC_REGEX.exec(innerHtml);
+			}
+
+			if (escMatch) {
+				innerHtml = `${innerHtml.substr(0, escMatch.index)}<mnemonic aria-hidden="true">${escMatch[3]}</mnemonic>${innerHtml.substr(escMatch.index + escMatch[0].length)}`;
+			}
+
+			innerHtml = innerHtml.replace(/&amp;&amp;/g, '&amp;');
+			titleElement.innerHTML = innerHtml;
+		} else {
+			titleElement.innerHTML = cleanMenuLabel.replace(/&&/g, '&');
+		}
 
 		let mnemonicMatches = MENU_MNEMONIC_REGEX.exec(label);
 
 		// Register mnemonics
 		if (mnemonicMatches) {
-			let mnemonic = !!mnemonicMatches[1] ? mnemonicMatches[1] : mnemonicMatches[2];
+			let mnemonic = !!mnemonicMatches[1] ? mnemonicMatches[1] : mnemonicMatches[3];
 
 			if (this.options.enableMnemonics) {
 				buttonElement.setAttribute('aria-keyshortcuts', 'Alt+' + mnemonic.toLocaleLowerCase());
@@ -675,7 +698,7 @@ export class MenuBar extends Disposable {
 
 	private focusPrevious(): void {
 
-		if (!this.focusedMenu) {
+		if (!this.focusedMenu || this.numMenusShown === 0) {
 			return;
 		}
 
@@ -705,7 +728,7 @@ export class MenuBar extends Disposable {
 	}
 
 	private focusNext(): void {
-		if (!this.focusedMenu) {
+		if (!this.focusedMenu || this.numMenusShown === 0) {
 			return;
 		}
 
@@ -739,7 +762,7 @@ export class MenuBar extends Disposable {
 				if (menuBarMenu.titleElement.children.length) {
 					let child = menuBarMenu.titleElement.children.item(0) as HTMLElement;
 					if (child) {
-						child.style.textDecoration = (this.options.alwaysOnMnemonics || visible) ? 'underline' : null;
+						child.style.textDecoration = (this.options.alwaysOnMnemonics || visible) ? 'underline' : '';
 					}
 				}
 			});
@@ -865,8 +888,19 @@ export class MenuBar extends Disposable {
 		const menuHolder = $('div.menubar-menu-items-holder');
 
 		DOM.addClass(customMenu.buttonElement, 'open');
-		menuHolder.style.top = `${this.container.clientHeight}px`;
-		menuHolder.style.left = `${customMenu.buttonElement.getBoundingClientRect().left}px`;
+
+		if (this.options.compactMode === Direction.Right) {
+			menuHolder.style.top = `0px`;
+			menuHolder.style.left = `${customMenu.buttonElement.getBoundingClientRect().left + this.container.clientWidth}px`;
+		} else if (this.options.compactMode === Direction.Left) {
+			menuHolder.style.top = `0px`;
+			menuHolder.style.right = `${this.container.clientWidth}px`;
+			menuHolder.style.left = 'auto';
+			console.log(customMenu.buttonElement.getBoundingClientRect().right - this.container.clientWidth);
+		} else {
+			menuHolder.style.top = `${this.container.clientHeight}px`;
+			menuHolder.style.left = `${customMenu.buttonElement.getBoundingClientRect().left}px`;
+		}
 
 		customMenu.buttonElement.appendChild(menuHolder);
 
@@ -874,7 +908,8 @@ export class MenuBar extends Disposable {
 			getKeyBinding: this.options.getKeybinding,
 			actionRunner: this.actionRunner,
 			enableMnemonics: this.options.alwaysOnMnemonics || (this.mnemonicsInUse && this.options.enableMnemonics),
-			ariaLabel: withNullAsUndefined(customMenu.buttonElement.getAttribute('aria-label'))
+			ariaLabel: withNullAsUndefined(customMenu.buttonElement.getAttribute('aria-label')),
+			expandDirection: this.options.compactMode !== undefined ? this.options.compactMode : Direction.Right
 		};
 
 		let menuWidget = this._register(new Menu(menuHolder, customMenu.actions, menuOptions));

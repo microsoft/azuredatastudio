@@ -41,7 +41,7 @@ export class BreadcrumbService implements IBreadcrumbService {
 	private getBreadcrumbsLink(page: BreadcrumbClass): MenuItem[] {
 		this.itemBreadcrums = [];
 		const profile = this.commonService.connectionManagementService.connectionInfo.connectionProfile;
-		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', 'Home') });
+		this.itemBreadcrums.push({ label: nls.localize('homeCrumb', "Home") });
 		switch (page) {
 			case BreadcrumbClass.DatabasePage:
 				this.itemBreadcrums.push(this.getServerBreadcrumb(profile));

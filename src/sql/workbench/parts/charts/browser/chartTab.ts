@@ -11,7 +11,7 @@ import { localize } from 'vs/nls';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 
 export class ChartTab implements IPanelTab {
-	public readonly title = localize('chartTabTitle', 'Chart');
+	public readonly title = localize('chartTabTitle', "Chart");
 	public readonly identifier = 'ChartTab';
 	public readonly view: ChartView;
 

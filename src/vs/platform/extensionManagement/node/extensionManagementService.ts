@@ -28,7 +28,7 @@ import { Limiter, createCancelablePromise, CancelablePromise, Queue } from 'vs/b
 import { Event, Emitter } from 'vs/base/common/event';
 import * as semver from 'semver-umd';
 import { URI } from 'vs/base/common/uri';
-import pkg from 'vs/platform/product/node/package';
+import product from 'vs/platform/product/common/product';
 import { isMacintosh, isWindows } from 'vs/base/common/platform';
 import { ILogService } from 'vs/platform/log/common/log';
 import { ExtensionsManifestCache } from 'vs/platform/extensionManagement/node/extensionsManifestCache';
@@ -45,9 +45,6 @@ import { CancellationToken } from 'vs/base/common/cancellation';
 import { getPathFromAmdModule } from 'vs/base/common/amd';
 import { getManifest } from 'vs/platform/extensionManagement/node/extensionManagementUtil';
 import { IExtensionManifest, ExtensionType } from 'vs/platform/extensions/common/extensions';
-
-// {{SQL CARBON EDIT}
-import product from 'vs/platform/product/node/product';
 
 const ERROR_SCANNING_SYS_EXTENSIONS = 'scanningSystem';
 const ERROR_SCANNING_USER_EXTENSIONS = 'scanningUser';
@@ -104,7 +101,7 @@ interface InstallableExtension {
 
 export class ExtensionManagementService extends Disposable implements IExtensionManagementService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private systemExtensionsPath: string;
 	private extensionsPath: string;
@@ -164,6 +161,12 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		return this.install(zipLocation, type).then(local => local.identifier);
 	}
 
+	async getManifest(vsix: URI): Promise<IExtensionManifest> {
+		const downloadLocation = await this.downloadVsix(vsix);
+		const zipPath = path.resolve(downloadLocation.fsPath);
+		return getManifest(zipPath);
+	}
+
 	private collectFiles(extension: ILocalExtension): Promise<IFile[]> {
 
 		const collectFilesFromDirectory = async (dir: string): Promise<string[]> => {
@@ -204,8 +207,8 @@ export class ExtensionManagementService extends Disposable implements IExtension
 						const identifier = { id: getGalleryExtensionId(manifest.publisher, manifest.name) };
 						let operation: InstallOperation = InstallOperation.Install;
 						// {{SQL CARBON EDIT - Check VSCode and ADS version}}
-						if (manifest.engines && ((manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) || (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, pkg.version)))) {
-							return Promise.reject(new Error(nls.localize('incompatible', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, pkg.version, manifest.version)));
+						if (manifest.engines && ((manifest.engines.vscode && !isEngineValid(manifest.engines.vscode, product.vscodeVersion)) || (manifest.engines.azdata && !isEngineValid(manifest.engines.azdata, product.version)))) {
+							return Promise.reject(new Error(nls.localize('incompatible', "Unable to install extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", identifier.id, product.version)));
 						}
 						const identifierWithVersion = new ExtensionIdentifierWithVersion(identifier, manifest.version);
 						return this.getInstalled(ExtensionType.User)
@@ -370,7 +373,7 @@ export class ExtensionManagementService extends Disposable implements IExtension
 		const compatibleExtension = await this.galleryService.getCompatibleExtension(extension);
 
 		if (!compatibleExtension) {
-			return Promise.reject(new ExtensionManagementError(nls.localize('notFoundCompatibleDependency', "Unable to install '{0}' extension because it is not compatible with the current version of VS Code (version {1}).", extension.identifier.id, pkg.version), INSTALL_ERROR_INCOMPATIBLE));
+			return Promise.reject(new ExtensionManagementError(nls.localize('notFoundCompatibleDependency', "Unable to install '{0}' extension because it is not compatible with the current version of VS Code (version {1}).", extension.identifier.id, product.version), INSTALL_ERROR_INCOMPATIBLE));
 		}
 
 		return compatibleExtension;

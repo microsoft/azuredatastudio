@@ -4,27 +4,10 @@
  *--------------------------------------------------------------------------------------------*/
 
 import { Registry } from 'vs/platform/registry/common/platform';
-import { GettingStarted } from './gettingStarted';
-import { TelemetryOptOut } from './telemetryOptOut';
 import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions } from 'vs/workbench/common/contributions';
 import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
-// {{SQL CARBON EDIT}} - Add preview feature switch
-import { EnablePreviewFeatures } from 'sql/workbench/common/enablePreviewFeatures';
+import { NativeTelemetryOptOut } from 'vs/workbench/contrib/welcome/gettingStarted/electron-browser/telemetryOptOut';
+import { OpenWelcomePageInBrowser } from 'vs/workbench/contrib/welcome/gettingStarted/electron-browser/openWebsite';
 
-// {{SQL CARBON EDIT}}
-// Registry
-// 	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-// 	.registerWorkbenchContribution(GettingStarted, LifecyclePhase.Running);
-
-Registry
-	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(GettingStarted, LifecyclePhase.Restored);
-
-Registry
-	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(TelemetryOptOut, LifecyclePhase.Eventually);
-
-// {{SQL CARBON EDIT}} - Add preview feature switch
-Registry
-	.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench)
-	.registerWorkbenchContribution(EnablePreviewFeatures, LifecyclePhase.Eventually);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(OpenWelcomePageInBrowser, LifecyclePhase.Restored);
+Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench).registerWorkbenchContribution(NativeTelemetryOptOut, LifecyclePhase.Eventually);

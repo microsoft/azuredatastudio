@@ -28,7 +28,7 @@ export function validateGridContainerContribution(extension: IExtensionPointUser
 		const widgetOrWebviewKey = allKeys.find(key => key === 'widget' || key === 'webview');
 		if (!widgetOrWebviewKey) {
 			result = false;
-			extension.collector.error(nls.localize('gridContainer.invalidInputs', 'widgets or webviews are expected inside widgets-container for extension.'));
+			extension.collector.error(nls.localize('gridContainer.invalidInputs', "widgets or webviews are expected inside widgets-container for extension."));
 			return;
 		}
 	});

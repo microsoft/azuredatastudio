@@ -12,7 +12,7 @@ import { ISqlOAuthService } from 'sql/platform/oAuth/common/sqlOAuthService';
  * electron-based services are referenced in unit testable code.
  */
 export class SqlOAuthService implements ISqlOAuthService {
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 
 	/**
 	 * Sends request to main thread to handle OAuth request
@@ -31,13 +31,5 @@ export class SqlOAuthService implements ISqlOAuthService {
 				eventId: eventId
 			}
 		);
-	}
-
-	/**
-	 * Registers a handler for the oauth-reply event on the IPC channel
-	 * @param handler Handler to call when the event is triggered
-	 */
-	registerOAuthCallback(handler: (event, args) => void): void {
-		electron.ipcRenderer.on('oauth-reply', handler);
 	}
 }

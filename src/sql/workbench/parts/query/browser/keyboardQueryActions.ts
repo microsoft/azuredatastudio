@@ -60,7 +60,7 @@ function escapeSqlString(input: string, escapeChar: string) {
 export class FocusOnCurrentQueryKeyboardAction extends Action {
 
 	public static ID = 'focusOnCurrentQueryKeyboardAction';
-	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', 'Focus on Current Query');
+	public static LABEL = nls.localize('focusOnCurrentQueryKeyboardAction', "Focus on Current Query");
 
 	constructor(
 		id: string,
@@ -86,7 +86,7 @@ export class FocusOnCurrentQueryKeyboardAction extends Action {
 export class RunQueryKeyboardAction extends Action {
 
 	public static ID = 'runQueryKeyboardAction';
-	public static LABEL = nls.localize('runQueryKeyboardAction', 'Run Query');
+	public static LABEL = nls.localize('runQueryKeyboardAction', "Run Query");
 
 	constructor(
 		id: string,
@@ -111,7 +111,7 @@ export class RunQueryKeyboardAction extends Action {
  */
 export class RunCurrentQueryKeyboardAction extends Action {
 	public static ID = 'runCurrentQueryKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', 'Run Current Query');
+	public static LABEL = nls.localize('runCurrentQueryKeyboardAction', "Run Current Query");
 
 	constructor(
 		id: string,
@@ -133,7 +133,7 @@ export class RunCurrentQueryKeyboardAction extends Action {
 
 export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 	public static ID = 'runCurrentQueryWithActualPlanKeyboardAction';
-	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', 'Run Current Query with Actual Plan');
+	public static LABEL = nls.localize('runCurrentQueryWithActualPlanKeyboardAction', "Run Current Query with Actual Plan");
 
 	constructor(
 		id: string,
@@ -159,7 +159,7 @@ export class RunCurrentQueryWithActualPlanKeyboardAction extends Action {
 export class CancelQueryKeyboardAction extends Action {
 
 	public static ID = 'cancelQueryKeyboardAction';
-	public static LABEL = nls.localize('cancelQueryKeyboardAction', 'Cancel Query');
+	public static LABEL = nls.localize('cancelQueryKeyboardAction', "Cancel Query");
 
 	constructor(
 		id: string,
@@ -184,7 +184,7 @@ export class CancelQueryKeyboardAction extends Action {
  */
 export class RefreshIntellisenseKeyboardAction extends Action {
 	public static ID = 'refreshIntellisenseKeyboardAction';
-	public static LABEL = nls.localize('refreshIntellisenseKeyboardAction', 'Refresh IntelliSense Cache');
+	public static LABEL = nls.localize('refreshIntellisenseKeyboardAction', "Refresh IntelliSense Cache");
 
 	constructor(
 		id: string,
@@ -211,7 +211,7 @@ export class RefreshIntellisenseKeyboardAction extends Action {
  */
 export class ToggleQueryResultsKeyboardAction extends Action {
 	public static ID = 'toggleQueryResultsKeyboardAction';
-	public static LABEL = nls.localize('toggleQueryResultsKeyboardAction', 'Toggle Query Results');
+	public static LABEL = nls.localize('toggleQueryResultsKeyboardAction', "Toggle Query Results");
 
 	constructor(
 		id: string,
@@ -265,7 +265,7 @@ export class RunQueryShortcutAction extends Action {
 	 */
 	public runQueryShortcut(editor: QueryEditor, shortcutIndex: number): Thenable<void> {
 		if (!editor) {
-			throw new Error(nls.localize('queryShortcutNoEditor', 'Editor parameter is required for a shortcut to be executed'));
+			throw new Error(nls.localize('queryShortcutNoEditor', "Editor parameter is required for a shortcut to be executed"));
 		}
 
 		if (isConnected(editor, this.connectionManagementService)) {
@@ -388,7 +388,7 @@ export class RunQueryShortcutAction extends Action {
 export class ParseSyntaxAction extends Action {
 
 	public static ID = 'parseQueryAction';
-	public static LABEL = nls.localize('parseSyntaxLabel', 'Parse Query');
+	public static LABEL = nls.localize('parseSyntaxLabel', "Parse Query");
 
 	constructor(
 		id: string,
@@ -415,10 +415,10 @@ export class ParseSyntaxAction extends Action {
 						if (result && result.parseable) {
 							this.notificationService.notify({
 								severity: Severity.Info,
-								message: nls.localize('queryActions.parseSyntaxSuccess', 'Commands completed successfully')
+								message: nls.localize('queryActions.parseSyntaxSuccess', "Commands completed successfully")
 							});
 						} else if (result && result.errors.length > 0) {
-							let errorMessage = nls.localize('queryActions.parseSyntaxFailure', 'Command failed: ');
+							let errorMessage = nls.localize('queryActions.parseSyntaxFailure', "Command failed: ");
 							this.notificationService.error(`${errorMessage}${result.errors[0]}`);
 
 						}
@@ -426,7 +426,7 @@ export class ParseSyntaxAction extends Action {
 				} else {
 					this.notificationService.notify({
 						severity: Severity.Error,
-						message: nls.localize('queryActions.notConnected', 'Please connect to a server')
+						message: nls.localize('queryActions.notConnected', "Please connect to a server")
 					});
 				}
 			}

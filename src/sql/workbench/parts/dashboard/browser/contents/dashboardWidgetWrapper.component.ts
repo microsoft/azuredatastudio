@@ -22,7 +22,7 @@ import { PropertiesWidgetComponent } from 'sql/workbench/parts/dashboard/browser
 import { ExplorerWidget } from 'sql/workbench/parts/dashboard/browser/widgets/explorer/explorerWidget.component';
 import { TasksWidget } from 'sql/workbench/parts/dashboard/browser/widgets/tasks/tasksWidget.component';
 import { InsightsWidget } from 'sql/workbench/parts/dashboard/browser/widgets/insights/insightsWidget.component';
-import { WebviewWidget } from 'sql/workbench/parts/dashboard/electron-browser/widgets/webview/webviewWidget.component';
+import { WebviewWidget } from 'sql/workbench/parts/dashboard/browser/widgets/webview/webviewWidget.component';
 
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 

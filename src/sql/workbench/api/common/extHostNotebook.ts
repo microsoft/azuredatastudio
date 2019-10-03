@@ -212,7 +212,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	//#region APIs called by extensions
 	registerNotebookProvider(provider: azdata.nb.NotebookProvider): vscode.Disposable {
 		if (!provider || !provider.providerId) {
-			throw new Error(localize('providerRequired', 'A NotebookProvider with valid providerId must be passed to this method'));
+			throw new Error(localize('providerRequired', "A NotebookProvider with valid providerId must be passed to this method"));
 		}
 		const handle = this._addNewAdapter(provider);
 		this._proxy.$registerNotebookProvider(provider.providerId, handle);
@@ -263,7 +263,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _withProvider<R>(handle: number, callback: (provider: azdata.nb.NotebookProvider) => R | PromiseLike<R>): Promise<R> {
 		let provider = this._adapters.get(handle) as azdata.nb.NotebookProvider;
 		if (provider === undefined) {
-			return Promise.reject(new Error(localize('errNoProvider', 'no notebook provider found')));
+			return Promise.reject(new Error(localize('errNoProvider', "no notebook provider found")));
 		}
 		return Promise.resolve(callback(provider));
 	}
@@ -271,7 +271,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 	private _withNotebookManager<R>(handle: number, callback: (manager: NotebookManagerAdapter) => R | PromiseLike<R>): Promise<R> {
 		let manager = this._adapters.get(handle) as NotebookManagerAdapter;
 		if (manager === undefined) {
-			return Promise.reject(new Error(localize('errNoManager', 'No Manager found')));
+			return Promise.reject(new Error(localize('errNoManager', "No Manager found")));
 		}
 		return this.callbackWithErrorWrap<R>(callback, manager);
 	}
@@ -285,31 +285,31 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 	}
 
-	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => R | PromiseLike<R>): Promise<R> {
+	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let serverManager = notebookManager.serverManager;
 			if (!serverManager) {
-				return Promise.reject(new Error(localize('noServerManager', 'Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noServerManager', "Notebook Manager for notebook {0} does not have a server manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(serverManager);
 		});
 	}
 
-	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => R | PromiseLike<R>): Promise<R> {
+	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let contentManager = notebookManager.contentManager;
 			if (!contentManager) {
-				return Promise.reject(new Error(localize('noContentManager', 'Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noContentManager', "Notebook Manager for notebook {0} does not have a content manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(contentManager);
 		});
 	}
 
-	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => R | PromiseLike<R>): Promise<R> {
+	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let sessionManager = notebookManager.sessionManager;
 			if (!sessionManager) {
-				return Promise.reject(new Error(localize('noSessionManager', 'Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it', notebookManager.uriString)));
+				return Promise.reject(new Error(localize('noSessionManager', "Notebook Manager for notebook {0} does not have a session manager. Cannot perform operations on it", notebookManager.uriString)));
 			}
 			return callback(sessionManager);
 		});

@@ -14,7 +14,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonServiceInterface.service';
 import { RunJobAction, StopJobAction, EditJobAction, JobsRefreshAction } from 'sql/platform/jobManagement/browser/jobActions';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import {
 	JobHistoryController, JobHistoryDataSource,
@@ -222,9 +222,9 @@ export class JobHistoryComponent extends JobManagementView implements OnInit {
 				});
 				self._stepRows.unshift(new JobStepsViewRow());
 				self._stepRows[0].rowID = 'stepsColumn' + self._agentJobInfo.jobId;
-				self._stepRows[0].stepId = nls.localize('stepRow.stepID', 'Step ID');
-				self._stepRows[0].stepName = nls.localize('stepRow.stepName', 'Step Name');
-				self._stepRows[0].message = nls.localize('stepRow.message', 'Message');
+				self._stepRows[0].stepId = nls.localize('stepRow.stepID', "Step ID");
+				self._stepRows[0].stepName = nls.localize('stepRow.stepName', "Step Name");
+				self._stepRows[0].message = nls.localize('stepRow.message', "Message");
 				this._showSteps = self._stepRows.length > 1;
 			} else {
 				self._showSteps = false;

@@ -12,7 +12,7 @@ import * as nls from 'vs/nls';
 
 const tableInsightSchema: IJSONSchema = {
 	type: 'null',
-	description: nls.localize('tableInsightDescription', 'Displays the results in a simple table')
+	description: nls.localize('tableInsightDescription', "Displays the results in a simple table")
 };
 
 registerInsight('table', '', tableInsightSchema, TableInsight);

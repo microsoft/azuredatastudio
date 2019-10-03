@@ -23,6 +23,7 @@ import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { append, $ } from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 export class DialogModal extends Modal {
 	private _dialogPane: DialogPane;
@@ -43,9 +44,10 @@ export class DialogModal extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IClipboardService clipboardService: IClipboardService,
 		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService,
 		@IInstantiationService private _instantiationService: IInstantiationService
 	) {
-		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, options);
+		super(_dialog.title, name, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, options);
 	}
 
 	public layout(): void {

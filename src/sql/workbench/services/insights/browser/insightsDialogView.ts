@@ -41,6 +41,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
 import { IInsightsConfigDetails } from 'sql/platform/dashboard/browser/insightRegistry';
 import { TaskRegistry } from 'sql/platform/tasks/browser/tasksRegistry';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 const labelDisplay = nls.localize("insights.item", "Item");
 const valueDisplay = nls.localize("insights.value", "Value");
@@ -58,9 +59,10 @@ class InsightTableView<T> extends ViewletPanel {
 		options: IViewletPanelOptions,
 		@IKeybindingService keybindingService: IKeybindingService,
 		@IContextMenuService contextMenuService: IContextMenuService,
-		@IConfigurationService configurationService: IConfigurationService
+		@IConfigurationService configurationService: IConfigurationService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
 	}
 
 	protected renderBody(container: HTMLElement): void {
@@ -165,9 +167,10 @@ export class InsightsDialogView extends Modal {
 		@IInstantiationService private readonly _instantiationService: IInstantiationService,
 		@IContextMenuService private readonly _contextMenuService: IContextMenuService,
 		@ICommandService private readonly _commandService: ICommandService,
-		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService
+		@ICapabilitiesService private readonly _capabilitiesService: ICapabilitiesService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService);
+		super(nls.localize("InsightsDialogTitle", "Insights"), TelemetryKeys.Insights, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService);
 		this._model.onDataChange(e => this.build());
 	}
 

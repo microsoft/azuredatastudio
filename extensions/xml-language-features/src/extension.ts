@@ -14,5 +14,5 @@ export function activate(context: vscode.ExtensionContext) {
 
 function format(document: vscode.TextDocument): vscode.ProviderResult<vscode.TextEdit[]> {
 	const range = new vscode.Range(0, 0, document.lineCount, document.lineAt(document.lineCount - 1).range.end.character);
-	return xml.Compiler.formatXmlString(document.getText()).then(formatted => [new vscode.TextEdit(range, formatted)]);
+	return xml.Compiler.formatXmlString(document.getText()).then(formatted => [new vscode.TextEdit(range, formatted)], () => [new vscode.TextEdit(range, document.getText())]);
 }

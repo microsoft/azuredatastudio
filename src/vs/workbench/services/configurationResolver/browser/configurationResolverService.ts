@@ -55,7 +55,7 @@ export abstract class BaseConfigurationResolverService extends AbstractVariableR
 				if (activeEditor instanceof DiffEditorInput) {
 					activeEditor = activeEditor.modifiedInput;
 				}
-				const fileResource = toResource(activeEditor, { filterByScheme: Schemas.file });
+				const fileResource = toResource(activeEditor, { filterByScheme: [Schemas.file, Schemas.userData] });
 				if (!fileResource) {
 					return undefined;
 				}
@@ -86,12 +86,12 @@ export abstract class BaseConfigurationResolverService extends AbstractVariableR
 		}, envVariables);
 	}
 
-	public resolveWithInteractionReplace(folder: IWorkspaceFolder | undefined, config: any, section?: string, variables?: IStringDictionary<string>): Promise<any> {
-		// resolve any non-interactive variables
-		config = this.resolveAny(folder, config);
+	public async resolveWithInteractionReplace(folder: IWorkspaceFolder | undefined, config: any, section?: string, variables?: IStringDictionary<string>): Promise<any> {
+		// resolve any non-interactive variables and any contributed variables
+		config = await this.resolveAny(folder, config);
 
 		// resolve input variables in the order in which they are encountered
-		return this.resolveWithInteraction(folder, config, section, variables).then(mapping => {
+		return this.resolveWithInteraction(folder, config, section, variables, true).then(mapping => {
 			// finally substitute evaluated command variables (if there are any)
 			if (!mapping) {
 				return null;
@@ -103,9 +103,9 @@ export abstract class BaseConfigurationResolverService extends AbstractVariableR
 		});
 	}
 
-	public resolveWithInteraction(folder: IWorkspaceFolder | undefined, config: any, section?: string, variables?: IStringDictionary<string>): Promise<Map<string, string> | undefined> {
-		// resolve any non-interactive variables
-		const resolved = this.resolveAnyMap(folder, config);
+	public async resolveWithInteraction(folder: IWorkspaceFolder | undefined, config: any, section?: string, variables?: IStringDictionary<string>, skipContributed: boolean = false): Promise<Map<string, string> | undefined> {
+		// resolve any non-interactive variables and any contributed variables
+		const resolved = await this.resolveAnyMap(folder, config);
 		config = resolved.newConfig;
 		const allVariableMapping: Map<string, string> = resolved.resolvedVariables;
 
@@ -227,6 +227,10 @@ export abstract class BaseConfigurationResolverService extends AbstractVariableR
 	 */
 	private showUserInput(variable: string, inputInfos: ConfiguredInput[]): Promise<string | undefined> {
 
+		if (!inputInfos) {
+			return Promise.reject(new Error(nls.localize('inputVariable.noInputSection', "Variable '{0}' must be defined in an '{1}' section of the debug or task configuration.", variable, 'input')));
+		}
+
 		// find info for the given input variable
 		const info = inputInfos.filter(item => item.id === variable).pop();
 		if (info) {
@@ -246,7 +250,7 @@ export abstract class BaseConfigurationResolverService extends AbstractVariableR
 						inputOptions.value = info.default;
 					}
 					return this.quickInputService.input(inputOptions).then(resolvedInput => {
-						return resolvedInput ? resolvedInput : undefined;
+						return resolvedInput;
 					});
 				}
 

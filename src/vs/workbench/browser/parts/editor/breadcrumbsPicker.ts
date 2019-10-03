@@ -25,10 +25,9 @@ import { ResourceLabels, IResourceLabel, DEFAULT_LABELS_CONTAINER } from 'vs/wor
 import { BreadcrumbsConfig } from 'vs/workbench/browser/parts/editor/breadcrumbs';
 import { BreadcrumbElement, FileElement } from 'vs/workbench/browser/parts/editor/breadcrumbsModel';
 import { IFileIconTheme, IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
-import { IAsyncDataSource, ITreeRenderer, ITreeNode, ITreeFilter, TreeVisibility, ITreeSorter, IDataSource } from 'vs/base/browser/ui/tree/tree';
-import { OutlineVirtualDelegate, OutlineGroupRenderer, OutlineElementRenderer, OutlineItemComparator, OutlineIdentityProvider, OutlineNavigationLabelProvider, OutlineDataSource, OutlineSortOrder, OutlineItem } from 'vs/editor/contrib/documentSymbols/outlineTree';
+import { IAsyncDataSource, ITreeRenderer, ITreeNode, ITreeFilter, TreeVisibility, ITreeSorter } from 'vs/base/browser/ui/tree/tree';
+import { OutlineVirtualDelegate, OutlineGroupRenderer, OutlineElementRenderer, OutlineItemComparator, OutlineIdentityProvider, OutlineNavigationLabelProvider, OutlineDataSource, OutlineSortOrder } from 'vs/editor/contrib/documentSymbols/outlineTree';
 import { IIdentityProvider, IListVirtualDelegate, IKeyboardNavigationLabelProvider } from 'vs/base/browser/ui/list/list';
-import { IDataTreeOptions } from 'vs/base/browser/ui/tree/dataTree';
 
 export function createBreadcrumbsPicker(instantiationService: IInstantiationService, parent: HTMLElement, element: BreadcrumbElement): BreadcrumbsPicker {
 	const ctor: IConstructorSignature1<HTMLElement, BreadcrumbsPicker> = element instanceof FileElement
@@ -57,11 +56,11 @@ export abstract class BreadcrumbsPicker {
 
 	protected readonly _disposables = new DisposableStore();
 	protected readonly _domNode: HTMLDivElement;
-	protected _arrow: HTMLDivElement;
-	protected _treeContainer: HTMLDivElement;
-	protected _tree: Tree<any, any>;
+	protected _arrow!: HTMLDivElement;
+	protected _treeContainer!: HTMLDivElement;
+	protected _tree!: Tree<any, any>;
 	protected _fakeEvent = new UIEvent('fakeEvent');
-	protected _layoutInfo: ILayoutInfo;
+	protected _layoutInfo!: ILayoutInfo;
 
 	private readonly _onDidPickElement = new Emitter<SelectEvent>();
 	readonly onDidPickElement: Event<SelectEvent> = this._onDidPickElement.event;
@@ -375,13 +374,13 @@ export class BreadcrumbsFilePicker extends BreadcrumbsPicker {
 		const labels = this._instantiationService.createInstance(ResourceLabels, DEFAULT_LABELS_CONTAINER /* TODO@Jo visibility propagation */);
 		this._disposables.add(labels);
 
-		return this._instantiationService.createInstance(WorkbenchAsyncDataTree, container, new FileVirtualDelegate(), [this._instantiationService.createInstance(FileRenderer, labels)], this._instantiationService.createInstance(FileDataSource), {
+		return this._instantiationService.createInstance(WorkbenchAsyncDataTree, 'BreadcrumbsFilePicker', container, new FileVirtualDelegate(), [this._instantiationService.createInstance(FileRenderer, labels)], this._instantiationService.createInstance(FileDataSource), {
 			multipleSelectionSupport: false,
 			sorter: new FileSorter(),
 			filter: this._instantiationService.createInstance(FileFilter),
 			identityProvider: new FileIdentityProvider(),
 			keyboardNavigationLabelProvider: new FileNavigationLabelProvider()
-		}) as WorkbenchAsyncDataTree<BreadcrumbElement | IFileStat, any, FuzzyScore>;
+		});
 	}
 
 	_setInput(element: BreadcrumbElement): Promise<void> {
@@ -439,15 +438,9 @@ export class BreadcrumbsOutlinePicker extends BreadcrumbsPicker {
 	}
 
 	protected _createTree(container: HTMLElement) {
-		return this._instantiationService.createInstance<
-			HTMLElement,
-			IListVirtualDelegate<OutlineItem>,
-			ITreeRenderer<any, FuzzyScore, any>[],
-			IDataSource<OutlineModel, OutlineItem>,
-			IDataTreeOptions<OutlineItem, FuzzyScore>,
-			WorkbenchDataTree<OutlineModel, OutlineItem, FuzzyScore>
-		>(
+		return this._instantiationService.createInstance(
 			WorkbenchDataTree,
+			'BreadcrumbsOutlinePicker',
 			container,
 			new OutlineVirtualDelegate(),
 			[new OutlineGroupRenderer(), this._instantiationService.createInstance(OutlineElementRenderer)],
@@ -459,7 +452,7 @@ export class BreadcrumbsOutlinePicker extends BreadcrumbsPicker {
 				identityProvider: new OutlineIdentityProvider(),
 				keyboardNavigationLabelProvider: new OutlineNavigationLabelProvider()
 			}
-		) as WorkbenchDataTree<OutlineModel, OutlineItem, FuzzyScore>;
+		);
 	}
 
 	dispose(): void {

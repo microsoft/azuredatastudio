@@ -26,6 +26,10 @@ class ExtHostQueryDocument implements azdata.queryeditor.QueryDocument {
 	public createQueryTab(tab: azdata.window.DialogTab): void {
 		this._proxy.$createQueryTab(this.uri, tab.title, tab.content);
 	}
+
+	public connect(connectionProfile: azdata.connection.ConnectionProfile): Thenable<void> {
+		return this._proxy.$connectWithProfile(this.uri, connectionProfile);
+	}
 }
 
 export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
@@ -44,8 +48,8 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 		return this._proxy.$connect(fileUri, connectionId);
 	}
 
-	public $runQuery(fileUri: string): void {
-		return this._proxy.$runQuery(fileUri);
+	public $runQuery(fileUri: string, runCurrentQuery: boolean = true): void {
+		return this._proxy.$runQuery(fileUri, runCurrentQuery);
 	}
 
 	public $registerQueryInfoListener(providerId: string, listener: azdata.queryeditor.QueryEventListener): void {
@@ -57,8 +61,8 @@ export class ExtHostQueryEditor implements ExtHostQueryEditorShape {
 	public $onQueryEvent(handle: number, fileUri: string, event: IQueryEvent): void {
 		let listener: azdata.queryeditor.QueryEventListener = this._queryListeners[handle];
 		if (listener) {
-			let planXml = event.params ? event.params.planXml : undefined;
-			listener.onQueryEvent(event.type, new ExtHostQueryDocument(mssqlProviderName, fileUri, this._proxy), planXml);
+			let params = event.params && event.params.planXml ? event.params.planXml : event.params;
+			listener.onQueryEvent(event.type, new ExtHostQueryDocument(mssqlProviderName, fileUri, this._proxy), params);
 		}
 	}
 

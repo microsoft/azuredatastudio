@@ -14,7 +14,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 export class BackupService implements IBackupService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.BackupProvider; } = Object.create(null);
 
 	constructor(
@@ -27,12 +27,12 @@ export class BackupService implements IBackupService {
 	/**
 	 * Get database metadata needed to populate backup UI
 	 */
-	public getBackupConfigInfo(connectionUri: string): Thenable<azdata.BackupConfigInfo> {
+	public getBackupConfigInfo(connectionUri: string): Promise<azdata.BackupConfigInfo | undefined> {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			let provider = this._providers[providerId];
 			if (provider) {
-				return provider.getBackupConfigInfo(connectionUri);
+				return Promise.resolve(provider.getBackupConfigInfo(connectionUri));
 			}
 		}
 		return Promise.resolve(undefined);
@@ -57,7 +57,7 @@ export class BackupService implements IBackupService {
 		});
 	}
 
-	private getProvider(connectionUri: string): { provider: azdata.BackupProvider, providerName: string } {
+	private getProvider(connectionUri: string): { provider: azdata.BackupProvider, providerName: string } | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(connectionUri);
 		if (providerId) {
 			return { provider: this._providers[providerId], providerName: providerId };

@@ -23,7 +23,7 @@ import { mssqlProviderName } from 'sql/platform/connection/common/constants';
 
 export class ServerDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
-		name: nls.localize('serverPageName', 'SERVER DASHBOARD'),
+		name: nls.localize('serverPageName', "SERVER DASHBOARD"),
 		widget: {
 			'properties-widget': undefined
 		},

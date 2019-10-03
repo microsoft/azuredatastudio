@@ -94,10 +94,20 @@ export enum Platform {
 	Others
 }
 
+interface RawEndpoint {
+	serviceName: string;
+	description?: string;
+	endpoint?: string;
+	protocol?: string;
+	ipAddress?: string;
+	port?: number;
+}
+
 export interface IEndpoint {
 	serviceName: string;
-	ipAddress: string;
-	port: number;
+	description: string;
+	endpoint: string;
+	protocol: string;
 }
 
 export function getOSPlatform(): Platform {
@@ -141,4 +151,49 @@ export function isEditorTitleFree(title: string): boolean {
 	let hasTextDoc = vscode.workspace.textDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
 	let hasNotebookDoc = azdata.nb.notebookDocuments.findIndex(doc => doc.isUntitled && doc.fileName === title) > -1;
 	return !hasTextDoc && !hasNotebookDoc;
+}
+
+export function getClusterEndpoints(serverInfo: azdata.ServerInfo): IEndpoint[] | undefined {
+	let endpoints: RawEndpoint[] = serverInfo.options['clusterEndpoints'];
+	if (!endpoints || endpoints.length === 0) { return []; }
+
+	return endpoints.map(e => {
+		// If endpoint is missing, we're on CTP bits. All endpoints from the CTP serverInfo should be treated as HTTPS
+		let endpoint = e.endpoint ? e.endpoint : `https://${e.ipAddress}:${e.port}`;
+		let updatedEndpoint: IEndpoint = {
+			serviceName: e.serviceName,
+			description: e.description,
+			endpoint: endpoint,
+			protocol: e.protocol
+		};
+		return updatedEndpoint;
+	});
+}
+
+
+export type HostAndIp = { host: string, port: string };
+
+export function getHostAndPortFromEndpoint(endpoint: string): HostAndIp {
+	let authority = vscode.Uri.parse(endpoint).authority;
+	let hostAndPortRegex = /^(.*)([,:](\d+))/g;
+	let match = hostAndPortRegex.exec(authority);
+	if (match) {
+		return {
+			host: match[1],
+			port: match[3]
+		};
+	}
+	return {
+		host: authority,
+		port: undefined
+	};
+}
+
+export async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

@@ -43,6 +43,7 @@ import { IClipboardService } from 'sql/platform/clipboard/common/clipboardServic
 import { IFileBrowserDialogController } from 'sql/workbench/services/fileBrowser/common/fileBrowserDialogController';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 interface FileListElement {
 	logicalFileName: string;
@@ -53,7 +54,7 @@ interface FileListElement {
 
 const LocalizedStrings = {
 	BACKFILEPATH: localize('backupFilePath', "Backup file path"),
-	TARGETDATABASE: localize('targetDatabase', 'Target database')
+	TARGETDATABASE: localize('targetDatabase', "Target database")
 };
 
 export class RestoreDialog extends Modal {
@@ -62,7 +63,7 @@ export class RestoreDialog extends Modal {
 	private _scriptButton: Button;
 	private _restoreButton: Button;
 	private _closeButton: Button;
-	private _optionsMap: { [name: string]: Widget } = {};
+	private _optionsMap: { [name: string]: SelectBox | InputBox | Checkbox } = {};
 	private _restoreLabel: string;
 	private _restoreTitle: string;
 	private _databaseTitle: string;
@@ -136,9 +137,10 @@ export class RestoreDialog extends Modal {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IFileBrowserDialogController private fileBrowserDialogService: IFileBrowserDialogController,
 		@IClipboardService clipboardService: IClipboardService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
+		super(localize('RestoreDialogTitle', "Restore database"), TelemetryKeys.Restore, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { hasErrors: true, isWide: true, hasSpinner: true });
 		this._restoreTitle = localize('restoreDialog.restoreTitle', "Restore database");
 		this._databaseTitle = localize('restoreDialog.database', "Database");
 		this._backupFileTitle = localize('restoreDialog.backupFile', "Backup file");
@@ -161,8 +163,8 @@ export class RestoreDialog extends Modal {
 	public render() {
 		super.render();
 		attachModalDialogStyler(this, this._themeService);
-		let cancelLabel = localize('restoreDialog.cancel', 'Cancel');
-		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', 'Script'), () => this.restore(true));
+		let cancelLabel = localize('restoreDialog.cancel', "Cancel");
+		this._scriptButton = this.addFooterButton(localize('restoreDialog.script', "Script"), () => this.restore(true));
 		this._restoreButton = this.addFooterButton(this._restoreLabel, () => this.restore(false));
 		this._closeButton = this.addFooterButton(cancelLabel, () => this.cancel());
 		this.registerListeners();
@@ -217,7 +219,7 @@ export class RestoreDialog extends Modal {
 			{
 				strictSelection: false,
 				ariaLabel: LocalizedStrings.TARGETDATABASE,
-				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+				actionLabel: localize('restoreDialog.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			}
 		);
 		this._databaseDropdown.onValueChange(s => {
@@ -248,6 +250,7 @@ export class RestoreDialog extends Modal {
 		this._restorePlanData = new TableDataView<Slick.SlickData>();
 		this._restorePlanTable = new Table<Slick.SlickData>(this._restorePlanTableContainer,
 			{ dataProvider: this._restorePlanData, columns: this._restorePlanColumn }, { enableColumnReorder: false });
+		this._restorePlanTable.setTableTitle(localize('restorePlan', "Restore plan"));
 		this._restorePlanTable.setSelectionModel(new RowSelectionModel({ selectActiveRow: false }));
 		this._restorePlanTable.onSelectedRowsChanged((e, data) => this.backupFileCheckboxChanged(e, data));
 
@@ -331,37 +334,37 @@ export class RestoreDialog extends Modal {
 		attachTabbedPanelStyler(this._panel, this._themeService);
 		this._generalTabId = this._panel.pushTab({
 			identifier: 'general',
-			title: localize('generalTitle', 'General'),
+			title: localize('generalTitle', "General"),
 			view: {
 				render: c => {
 					DOM.append(c, generalTab);
 				},
 				layout: () => { },
-				focus: () => generalTab.focus()
+				focus: () => this._restoreFromSelectBox ? this._restoreFromSelectBox.focus() : generalTab.focus()
 			}
 		});
 
 		const fileTab = this._panel.pushTab({
 			identifier: 'fileContent',
-			title: localize('filesTitle', 'Files'),
+			title: localize('filesTitle', "Files"),
 			view: {
 				layout: () => { },
 				render: c => {
 					c.appendChild(fileContentElement);
 				},
-				focus: () => fileContentElement.focus()
+				focus: () => this._optionsMap[this._relocateDatabaseFilesOption] ? this._optionsMap[this._relocateDatabaseFilesOption].focus() : fileContentElement.focus()
 			}
 		});
 
 		this._panel.pushTab({
 			identifier: 'options',
-			title: localize('optionsTitle', 'Options'),
+			title: localize('optionsTitle', "Options"),
 			view: {
 				layout: () => { },
 				render: c => {
 					c.appendChild(optionsContentElement);
 				},
-				focus: () => optionsContentElement.focus()
+				focus: () => this._optionsMap[this._withReplaceDatabaseOption] ? this._optionsMap[this._withReplaceDatabaseOption].focus() : optionsContentElement.focus()
 			}
 		});
 
@@ -796,7 +799,8 @@ export class RestoreDialog extends Modal {
 			DOM.show(this._fileListTableContainer);
 			this._fileListData.push(data);
 
-			// Select the first row for the table by default
+			// Set data and Select the first row for the table by default
+			this._fileListTable.setData(this._fileListData);
 			this._fileListTable.setSelectedRows([0]);
 			this._fileListTable.setActiveCell(0, 0);
 		}

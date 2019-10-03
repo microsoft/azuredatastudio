@@ -11,7 +11,7 @@ import { CommonServiceInterface } from 'sql/platform/bootstrap/browser/commonSer
 import { TabConfig, WidgetConfig } from 'sql/workbench/parts/dashboard/browser/core/dashboardWidget';
 import { DashboardWidgetWrapper } from 'sql/workbench/parts/dashboard/browser/contents/dashboardWidgetWrapper.component';
 import { DashboardTab } from 'sql/workbench/parts/dashboard/browser/core/interfaces';
-import { WebviewContent } from 'sql/workbench/parts/dashboard/electron-browser/contents/webviewContent.component';
+import { WebviewContent } from 'sql/workbench/parts/dashboard/browser/contents/webviewContent.component';
 import { TabChild } from 'sql/base/browser/ui/panel/tab.component';
 
 import { Event, Emitter } from 'vs/base/common/event';
@@ -178,7 +178,7 @@ export class DashboardGridContainer extends DashboardTab implements OnDestroy {
 
 	@ViewChildren(DashboardWidgetWrapper) private _widgets: QueryList<DashboardWidgetWrapper>;
 	@ViewChildren(WebviewContent) private _webViews: QueryList<WebviewContent>;
-	@ContentChild(ScrollableDirective) private _scrollable;
+	@ContentChild(ScrollableDirective) private _scrollable: ScrollableDirective;
 	constructor(
 		@Inject(forwardRef(() => CommonServiceInterface)) protected dashboardService: CommonServiceInterface,
 		@Inject(forwardRef(() => ElementRef)) protected _el: ElementRef,

@@ -20,7 +20,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 export class AddAccountAction extends Action {
 	// CONSTANTS ///////////////////////////////////////////////////////////
 	public static ID = 'account.addLinkedAccount';
-	public static LABEL = localize('addAccount', 'Add an account');
+	public static LABEL = localize('addAccount', "Add an account");
 
 	// EVENTING ////////////////////////////////////////////////////////////
 	private _addAccountCompleteEmitter: Emitter<void>;
@@ -67,7 +67,7 @@ export class AddAccountAction extends Action {
  */
 export class RemoveAccountAction extends Action {
 	public static ID = 'account.removeAccount';
-	public static LABEL = localize('removeAccount', 'Remove account');
+	public static LABEL = localize('removeAccount', "Remove account");
 
 	constructor(
 		private _account: azdata.Account,
@@ -82,8 +82,8 @@ export class RemoveAccountAction extends Action {
 		// Ask for Confirm
 		const confirm: IConfirmation = {
 			message: localize('confirmRemoveUserAccountMessage', "Are you sure you want to remove '{0}'?", this._account.displayInfo.displayName),
-			primaryButton: localize('accountActions.yes', 'Yes'),
-			secondaryButton: localize('accountActions.no', 'No'),
+			primaryButton: localize('accountActions.yes', "Yes"),
+			secondaryButton: localize('accountActions.no', "No"),
 			type: 'question'
 		};
 
@@ -95,7 +95,7 @@ export class RemoveAccountAction extends Action {
 					// Must handle here as this is an independent action
 					this._notificationService.notify({
 						severity: Severity.Error,
-						message: localize('removeAccountFailed', 'Failed to remove account')
+						message: localize('removeAccountFailed', "Failed to remove account")
 					});
 					return false;
 				});
@@ -109,7 +109,7 @@ export class RemoveAccountAction extends Action {
  */
 export class ApplyFilterAction extends Action {
 	public static ID = 'account.applyFilters';
-	public static LABEL = localize('applyFilters', 'Apply Filters');
+	public static LABEL = localize('applyFilters', "Apply Filters");
 
 	constructor(
 		id: string,
@@ -129,7 +129,7 @@ export class ApplyFilterAction extends Action {
  */
 export class RefreshAccountAction extends Action {
 	public static ID = 'account.refresh';
-	public static LABEL = localize('refreshAccount', 'Reenter your credentials');
+	public static LABEL = localize('refreshAccount', "Reenter your credentials");
 	public account: azdata.Account;
 
 	constructor(
@@ -148,7 +148,7 @@ export class RefreshAccountAction extends Action {
 					}
 				));
 		} else {
-			const errorMessage = localize('NoAccountToRefresh', 'There is no account to refresh');
+			const errorMessage = localize('NoAccountToRefresh', "There is no account to refresh");
 			return Promise.reject(errorMessage);
 		}
 	}

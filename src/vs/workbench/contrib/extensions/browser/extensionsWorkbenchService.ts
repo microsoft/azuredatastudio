@@ -15,13 +15,13 @@ import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
 // {{SQL CARBON EDIT}}
 import {
 	IExtensionManagementService, IExtensionGalleryService, ILocalExtension, IGalleryExtension, IQueryOptions,
-	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier, INSTALL_ERROR_INCOMPATIBLE
+	InstallExtensionEvent, DidInstallExtensionEvent, DidUninstallExtensionEvent, IExtensionIdentifier
 } from 'vs/platform/extensionManagement/common/extensionManagement';
 import { IExtensionEnablementService, EnablementState, IExtensionManagementServerService, IExtensionManagementServer } from 'vs/workbench/services/extensionManagement/common/extensionManagement';
 import { getGalleryExtensionTelemetryData, getLocalExtensionTelemetryData, areSameExtensions, getMaliciousExtensionsSet, groupByExtension, ExtensionIdentifierWithVersion } from 'vs/platform/extensionManagement/common/extensionManagementUtil';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
-import { IWindowService } from 'vs/platform/windows/common/windows';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 import { URI } from 'vs/base/common/uri';
 import { IExtension, ExtensionState, IExtensionsWorkbenchService, AutoUpdateConfigurationKey, AutoCheckUpdatesConfigurationKey, ExtensionsPolicyKey, ExtensionsPolicy } from 'vs/workbench/contrib/extensions/common/extensions';
 import { IEditorService, SIDE_GROUP, ACTIVE_GROUP } from 'vs/workbench/services/editor/common/editorService';
@@ -36,13 +36,11 @@ import { IStorageService, StorageScope } from 'vs/platform/storage/common/storag
 import { IFileService } from 'vs/platform/files/common/files';
 import { IExtensionManifest, ExtensionType, IExtension as IPlatformExtension, isLanguagePackExtension } from 'vs/platform/extensions/common/extensions';
 import { IModeService } from 'vs/editor/common/services/modeService';
-import { IProductService } from 'vs/platform/product/common/product';
+import { IProductService } from 'vs/platform/product/common/productService';
 import { asDomUri } from 'vs/base/browser/dom';
 
-// {{SQL CARBON EDIT}}
-import { ExtensionManagementError } from 'vs/platform/extensionManagement/node/extensionManagementService';
-import pkg from 'vs/platform/product/node/package';
-import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator';
+import { isEngineValid } from 'vs/platform/extensions/common/extensionValidator'; // {{SQL CARBON EDIT}}
+import { IOpenerService } from 'vs/platform/opener/common/opener'; // {{SQL CARBON EDIT}}
 
 interface IExtensionStateProvider<T> {
 	(extension: Extension): T;
@@ -124,7 +122,7 @@ class Extension implements IExtension {
 			return undefined;
 		}
 
-		return this.productService.extensionsGallery.itemUrl && `${this.productService.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`; // {{SQL CARBON EDIT}} add check for itemurl
+		return `${this.productService.extensionsGallery.itemUrl}?itemName=${this.publisher}.${this.name}`;
 	}
 
 	// {{SQL CARBON EDIT}}
@@ -133,7 +131,6 @@ class Extension implements IExtension {
 			return null;
 		}
 
-		// {{SQL CARBON EDIT}}
 		return this.gallery && this.gallery.assets && this.gallery.assets.downloadPage && this.gallery.assets.downloadPage.uri;
 	}
 
@@ -147,7 +144,7 @@ class Extension implements IExtension {
 
 	private get localIconUrl(): string | null {
 		if (this.local && this.local.manifest.icon) {
-			return asDomUri(resources.joinPath(this.local.location, this.local.manifest.icon)).toString();
+			return asDomUri(resources.joinPath(this.local.location, this.local.manifest.icon)).toString(true);
 		}
 		return null;
 	}
@@ -464,7 +461,7 @@ class Extensions extends Disposable {
 		}
 	}
 
-	private onEnablementChanged(platformExtensions: IPlatformExtension[]) {
+	private onEnablementChanged(platformExtensions: readonly IPlatformExtension[]) {
 		const extensions = this.local.filter(e => platformExtensions.some(p => areSameExtensions(e.identifier, p.identifier)));
 		for (const extension of extensions) {
 			if (extension.local) {
@@ -492,7 +489,7 @@ class Extensions extends Disposable {
 export class ExtensionsWorkbenchService extends Disposable implements IExtensionsWorkbenchService, IURLHandler {
 
 	private static readonly SyncPeriod = 1000 * 60 * 60 * 12; // 12 hours
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private readonly localExtensions: Extensions | null = null;
 	private readonly remoteExtensions: Extensions | null = null;
@@ -502,7 +499,6 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	private readonly _onChange: Emitter<IExtension | undefined> = new Emitter<IExtension | undefined>();
 	get onChange(): Event<IExtension | undefined> { return this._onChange.event; }
 
-	private _extensionAllowedBadgeProviders: string[];
 	private installing: IExtension[] = [];
 
 	constructor(
@@ -515,12 +511,13 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		@INotificationService private readonly notificationService: INotificationService,
 		@IURLService urlService: IURLService,
 		@IExtensionEnablementService private readonly extensionEnablementService: IExtensionEnablementService,
-		@IWindowService private readonly windowService: IWindowService,
+		@IHostService private readonly hostService: IHostService,
 		@IProgressService private readonly progressService: IProgressService,
 		@IExtensionManagementServerService private readonly extensionManagementServerService: IExtensionManagementServerService,
 		@IStorageService private readonly storageService: IStorageService,
 		@IModeService private readonly modeService: IModeService,
-		@IProductService private readonly productService: IProductService
+		@IProductService private readonly productService: IProductService,
+		@IOpenerService private readonly openerService: IOpenerService // {{SQL CARBON EDIT}}
 	) {
 		super();
 		if (this.extensionManagementServerService.localExtensionManagementServer) {
@@ -555,6 +552,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			this.resetIgnoreAutoUpdateExtensions();
 			this.eventuallySyncWithGallery(true);
 		});
+
+		this._register(this.onChange(() => this.updateActivity()));
 	}
 
 	get local(): IExtension[] {
@@ -833,8 +832,8 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		// Check both the vscode version and azure data studio version
 		// The check is added here because we want to fail fast instead of downloading the VSIX and then fail.
 		if (gallery.properties.engine && (!isEngineValid(gallery.properties.engine, this.productService.vscodeVersion)
-			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, pkg.version)))) {
-			return Promise.reject(new ExtensionManagementError(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, pkg.version, gallery.version), INSTALL_ERROR_INCOMPATIBLE));
+			|| (gallery.properties.azDataEngine && !isEngineValid(gallery.properties.azDataEngine, this.productService.version)))) {
+			return Promise.reject(new Error(nls.localize('incompatible2', "Unable to install version '{2}' of extension '{0}' as it is not compatible with Azure Data Studio '{1}'.", extension.gallery!.identifier.id, this.productService.version, gallery.version)));
 		}
 
 		return this.installWithProgress(async () => {
@@ -854,7 +853,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	// {{SQL CARBON EDIT}}
 	private downloadOrBrowse(ext: IExtension): Promise<any> {
 		if (ext.gallery.assets.downloadPage && ext.gallery.assets.downloadPage.uri) {
-			window.open(ext.gallery.assets.downloadPage.uri);
+			this.openerService.open(URI.parse(ext.gallery.assets.downloadPage.uri));
 			return Promise.resolve(undefined);
 		} else {
 			return this.extensionService.installFromGallery(ext.gallery);
@@ -1075,11 +1074,19 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 		return changed;
 	}
 
-	get allowedBadgeProviders(): string[] {
-		if (!this._extensionAllowedBadgeProviders) {
-			this._extensionAllowedBadgeProviders = (this.productService.extensionAllowedBadgeProviders || []).map(s => s.toLowerCase());
+	private _activityCallBack: (() => void) | null = null;
+	private updateActivity(): void {
+		if ((this.localExtensions && this.localExtensions.local.some(e => e.state === ExtensionState.Installing || e.state === ExtensionState.Uninstalling))
+			|| (this.remoteExtensions && this.remoteExtensions.local.some(e => e.state === ExtensionState.Installing || e.state === ExtensionState.Uninstalling))) {
+			if (!this._activityCallBack) {
+				this.progressService.withProgress({ location: ProgressLocation.Extensions }, () => new Promise(c => this._activityCallBack = c));
+			}
+		} else {
+			if (this._activityCallBack) {
+				this._activityCallBack();
+			}
+			this._activityCallBack = null;
 		}
-		return this._extensionAllowedBadgeProviders;
 	}
 
 	private onError(err: any): void {
@@ -1118,7 +1125,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 			const extension = local.filter(local => areSameExtensions(local.identifier, { id: extensionId }))[0];
 
 			if (extension) {
-				return this.windowService.focusWindow()
+				return this.hostService.focus()
 					.then(() => this.open(extension));
 			}
 			return this.queryGallery({ names: [extensionId], source: 'uri' }, CancellationToken.None).then(result => {
@@ -1128,7 +1135,7 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 
 				const extension = result.firstPage[0];
 
-				return this.windowService.focusWindow().then(() => {
+				return this.hostService.focus().then(() => {
 					return this.open(extension);
 				});
 			});
@@ -1136,12 +1143,12 @@ export class ExtensionsWorkbenchService extends Disposable implements IExtension
 	}
 
 
-	private _ignoredAutoUpdateExtensions: string[];
+	private _ignoredAutoUpdateExtensions: string[] | undefined;
 	private get ignoredAutoUpdateExtensions(): string[] {
 		if (!this._ignoredAutoUpdateExtensions) {
 			this._ignoredAutoUpdateExtensions = JSON.parse(this.storageService.get('extensions.ignoredAutoUpdateExtension', StorageScope.GLOBAL, '[]') || '[]');
 		}
-		return this._ignoredAutoUpdateExtensions;
+		return this._ignoredAutoUpdateExtensions!;
 	}
 
 	private set ignoredAutoUpdateExtensions(extensionIds: string[]) {

@@ -9,17 +9,13 @@ import { IJSONSchema } from 'vs/base/common/jsonSchema';
 import { Registry } from 'vs/platform/registry/common/platform';
 import { IViewContainersRegistry, ViewContainer, Extensions as ViewContainerExtensions, ITreeViewDescriptor, IViewsRegistry } from 'vs/workbench/common/views';
 import { IExtensionPoint, ExtensionsRegistry, ExtensionMessageCollector } from 'vs/workbench/services/extensions/common/extensionsRegistry';
-import { IWorkbenchContributionsRegistry, Extensions as WorkbenchExtensions, IWorkbenchContribution } from 'vs/workbench/common/contributions';
+import { IWorkbenchContribution } from 'vs/workbench/common/contributions';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { ContextKeyExpr } from 'vs/platform/contextkey/common/contextkey';
-import { CustomTreeViewPanel } from 'vs/workbench/browser/parts/views/customView';
 import { coalesce } from 'vs/base/common/arrays';
-import { LifecyclePhase } from 'vs/platform/lifecycle/common/lifecycle';
 
-import { CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
-
-export const VIEWLET_ID = 'workbench.view.connections';
-export const VIEW_CONTAINER: ViewContainer = Registry.as<IViewContainersRegistry>(ViewContainerExtensions.ViewContainersRegistry).registerViewContainer(VIEWLET_ID);
+import { CustomTreeViewPanel, CustomTreeView } from 'sql/workbench/browser/parts/views/customView';
+import { VIEWLET_ID } from 'sql/workbench/parts/dataExplorer/browser/dataExplorerViewlet';
 
 interface IUserFriendlyViewDescriptor {
 	id: string;
@@ -31,15 +27,15 @@ const viewDescriptor: IJSONSchema = {
 	type: 'object',
 	properties: {
 		id: {
-			description: localize('vscode.extension.contributes.view.id', 'Identifier of the view. Use this to register a data provider through `vscode.window.registerTreeDataProviderForView` API. Also to trigger activating your extension by registering `onView:${id}` event to `activationEvents`.'),
+			description: localize('vscode.extension.contributes.view.id', "Identifier of the view. Use this to register a data provider through `vscode.window.registerTreeDataProviderForView` API. Also to trigger activating your extension by registering `onView:${id}` event to `activationEvents`."),
 			type: 'string'
 		},
 		name: {
-			description: localize('vscode.extension.contributes.view.name', 'The human-readable name of the view. Will be shown'),
+			description: localize('vscode.extension.contributes.view.name', "The human-readable name of the view. Will be shown"),
 			type: 'string'
 		},
 		when: {
-			description: localize('vscode.extension.contributes.view.when', 'Condition which must be true to show this view'),
+			description: localize('vscode.extension.contributes.view.when', "Condition which must be true to show this view"),
 			type: 'string'
 		},
 	}
@@ -67,7 +63,7 @@ const dataExplorerContribution: IJSONSchema = {
 
 const dataExplorerExtensionPoint: IExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }> = ExtensionsRegistry.registerExtensionPoint<{ [loc: string]: IUserFriendlyViewDescriptor[] }>({ extensionPoint: 'dataExplorer', jsonSchema: dataExplorerContribution });
 
-class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
+export class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 	private viewContainersRegistry: IViewContainersRegistry;
 
@@ -133,15 +129,15 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 
 		for (let descriptor of viewDescriptors) {
 			if (typeof descriptor.id !== 'string') {
-				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'id'));
+				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", "id"));
 				return false;
 			}
 			if (typeof descriptor.name !== 'string') {
-				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", 'name'));
+				collector.error(localize('requirestring', "property `{0}` is mandatory and must be of type `string`", "name"));
 				return false;
 			}
 			if (descriptor.when && typeof descriptor.when !== 'string') {
-				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", 'when'));
+				collector.error(localize('optstring', "property `{0}` can be omitted or must be of type `string`", "when"));
 				return false;
 			}
 		}
@@ -154,5 +150,3 @@ class DataExplorerContainerExtensionHandler implements IWorkbenchContribution {
 	}
 }
 
-const workbenchRegistry = Registry.as<IWorkbenchContributionsRegistry>(WorkbenchExtensions.Workbench);
-workbenchRegistry.registerWorkbenchContribution(DataExplorerContainerExtensionHandler, LifecyclePhase.Starting);

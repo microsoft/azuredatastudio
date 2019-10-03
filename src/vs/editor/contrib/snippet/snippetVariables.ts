@@ -27,6 +27,7 @@ export const KnownSnippetVariableNames: { [key: string]: true } = Object.freeze(
 	'CURRENT_DAY_NAME_SHORT': true,
 	'CURRENT_MONTH_NAME': true,
 	'CURRENT_MONTH_NAME_SHORT': true,
+	'CURRENT_SECONDS_UNIX': true,
 	'SELECTION': true,
 	'CLIPBOARD': true,
 	'TM_SELECTED_TEXT': true,
@@ -168,7 +169,8 @@ export class ClipboardBasedVariableResolver implements VariableResolver {
 	constructor(
 		private readonly _clipboardText: string | undefined,
 		private readonly _selectionIdx: number,
-		private readonly _selectionCount: number
+		private readonly _selectionCount: number,
+		private readonly _spread: boolean
 	) {
 		//
 	}
@@ -182,12 +184,16 @@ export class ClipboardBasedVariableResolver implements VariableResolver {
 			return undefined;
 		}
 
-		const lines = this._clipboardText.split(/\r\n|\n|\r/).filter(s => !isFalsyOrWhitespace(s));
-		if (lines.length === this._selectionCount) {
-			return lines[this._selectionIdx];
-		} else {
-			return this._clipboardText;
+		// `spread` is assigning each cursor a line of the clipboard
+		// text whenever there the line count equals the cursor count
+		// and when enabled
+		if (this._spread) {
+			const lines = this._clipboardText.split(/\r\n|\n|\r/).filter(s => !isFalsyOrWhitespace(s));
+			if (lines.length === this._selectionCount) {
+				return lines[this._selectionIdx];
+			}
 		}
+		return this._clipboardText;
 	}
 }
 export class CommentBasedVariableResolver implements VariableResolver {
@@ -245,6 +251,8 @@ export class TimeBasedVariableResolver implements VariableResolver {
 			return TimeBasedVariableResolver.monthNames[new Date().getMonth()];
 		} else if (name === 'CURRENT_MONTH_NAME_SHORT') {
 			return TimeBasedVariableResolver.monthNamesShort[new Date().getMonth()];
+		} else if (name === 'CURRENT_SECONDS_UNIX') {
+			return String(Math.floor(Date.now() / 1000));
 		}
 
 		return undefined;

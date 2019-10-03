@@ -1,0 +1,6 @@
+{
+	"queryHistory.displayName": "Query History",
+	"queryHistory.description": "View and run previously executed queries",
+	"queryHistory.clear": "Clear All History",
+	"queryHistory.toggleCapture": "Toggle Query History Capture"
+}

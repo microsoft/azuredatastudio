@@ -13,7 +13,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 
 export class CancelAction extends Action {
 	public static ID = 'taskHistory.cancel';
-	public static LABEL = localize('cancelTask.cancel', 'Cancel');
+	public static LABEL = localize('cancelTask.cancel', "Cancel");
 
 	constructor(
 		id: string,
@@ -27,7 +27,7 @@ export class CancelAction extends Action {
 		if (element instanceof TaskNode) {
 			this._taskService.cancelTask(element.providerName, element.id).then((result) => {
 				if (!result) {
-					let error = localize('errorMsgFromCancelTask', 'The task is failed to cancel.');
+					let error = localize('errorMsgFromCancelTask', "The task is failed to cancel.");
 					this.showError(error);
 				}
 			}, error => {
@@ -47,7 +47,7 @@ export class CancelAction extends Action {
 
 export class ScriptAction extends Action {
 	public static ID = 'taskHistory.script';
-	public static LABEL = localize('taskAction.script', 'Script');
+	public static LABEL = localize('taskAction.script', "Script");
 
 	constructor(
 		id: string,

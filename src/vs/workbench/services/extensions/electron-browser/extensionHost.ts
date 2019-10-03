@@ -13,9 +13,9 @@ import { Emitter, Event } from 'vs/base/common/event';
 import { toDisposable, DisposableStore } from 'vs/base/common/lifecycle';
 import * as objects from 'vs/base/common/objects';
 import * as platform from 'vs/base/common/platform';
-import pkg from 'vs/platform/product/node/package';
 import { URI } from 'vs/base/common/uri';
-import { IRemoteConsoleLog, log, parse } from 'vs/base/common/console';
+import { IRemoteConsoleLog, log } from 'vs/base/common/console';
+import { logRemoteEntry } from 'vs/workbench/services/extensions/common/remoteConsoleUtil';
 import { findFreePort, randomPort } from 'vs/base/node/ports';
 import { IMessagePassingProtocol } from 'vs/base/parts/ipc/common/ipc';
 import { PersistentProtocol } from 'vs/base/parts/ipc/common/ipc.net';
@@ -24,12 +24,12 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 import { ILabelService } from 'vs/platform/label/common/label';
 import { ILifecycleService, WillShutdownEvent } from 'vs/platform/lifecycle/common/lifecycle';
 import { ILogService } from 'vs/platform/log/common/log';
-import product from 'vs/platform/product/node/product';
+import product from 'vs/platform/product/common/product';
 import { INotificationService, Severity } from 'vs/platform/notification/common/notification';
 import { ITelemetryService } from 'vs/platform/telemetry/common/telemetry';
-import { IWindowService, IWindowsService } from 'vs/platform/windows/common/windows';
+import { IElectronService } from 'vs/platform/electron/node/electron';
 import { IWorkspaceContextService, WorkbenchState } from 'vs/platform/workspace/common/workspace';
-import { IInitData } from 'vs/workbench/api/common/extHost.protocol';
+import { IInitData, UIKind } from 'vs/workbench/api/common/extHost.protocol';
 import { MessageType, createMessageOfType, isMessageOfType } from 'vs/workbench/services/extensions/common/extensionHostProtocol';
 import { withNullAsUndefined } from 'vs/base/common/types';
 import { IExtensionDescription } from 'vs/platform/extensions/common/extensions';
@@ -38,6 +38,7 @@ import { VSBuffer } from 'vs/base/common/buffer';
 import { IExtensionHostDebugService } from 'vs/platform/debug/common/extensionHostDebug';
 import { IExtensionHostStarter } from 'vs/workbench/services/extensions/common/extensions';
 import { isEqualOrParent } from 'vs/base/common/resources';
+import { IHostService } from 'vs/workbench/services/host/browser/host';
 
 export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 
@@ -68,14 +69,14 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		private readonly _extensionHostLogsLocation: URI,
 		@IWorkspaceContextService private readonly _contextService: IWorkspaceContextService,
 		@INotificationService private readonly _notificationService: INotificationService,
-		@IWindowsService private readonly _windowsService: IWindowsService,
-		@IWindowService private readonly _windowService: IWindowService,
+		@IElectronService private readonly _electronService: IElectronService,
 		@ILifecycleService private readonly _lifecycleService: ILifecycleService,
 		@IWorkbenchEnvironmentService private readonly _environmentService: IWorkbenchEnvironmentService,
 		@ITelemetryService private readonly _telemetryService: ITelemetryService,
 		@ILogService private readonly _logService: ILogService,
 		@ILabelService private readonly _labelService: ILabelService,
-		@IExtensionHostDebugService private readonly _extensionHostDebugService: IExtensionHostDebugService
+		@IExtensionHostDebugService private readonly _extensionHostDebugService: IExtensionHostDebugService,
+		@IHostService private readonly _hostService: IHostService
 	) {
 		const devOpts = parseExtensionDevOptions(this._environmentService);
 		this._isExtensionDevHost = devOpts.isExtensionDevHost;
@@ -87,6 +88,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		this._terminating = false;
 
 		this._namedPipeServer = null;
+		this._inspectPort = null;
 		this._extensionHostProcess = null;
 		this._extensionHostConnection = null;
 		this._messageProtocol = null;
@@ -96,12 +98,12 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		this._toDispose.add(this._lifecycleService.onShutdown(reason => this.terminate()));
 		this._toDispose.add(this._extensionHostDebugService.onClose(event => {
 			if (this._isExtensionDevHost && this._environmentService.debugExtensionHost.debugId === event.sessionId) {
-				this._windowService.closeWindow();
+				this._electronService.closeWindow();
 			}
 		}));
 		this._toDispose.add(this._extensionHostDebugService.onReload(event => {
 			if (this._isExtensionDevHost && this._environmentService.debugExtensionHost.debugId === event.sessionId) {
-				this._windowService.reloadWindow();
+				this._hostService.reload();
 			}
 		}));
 
@@ -192,7 +194,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 					const inspectorUrlMatch = output.data && output.data.match(/ws:\/\/([^\s]+:(\d+)\/[^\s]+)/);
 					if (inspectorUrlMatch) {
 						if (!this._environmentService.isBuilt) {
-							console.log(`%c[Extension Host] %cdebugger inspector at chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=${inspectorUrlMatch[1]}`, 'color: blue', 'color: black');
+							console.log(`%c[Extension Host] %cdebugger inspector at chrome-devtools://devtools/bundled/inspector.html?experiments=true&v8only=true&ws=${inspectorUrlMatch[1]}`, 'color: blue', 'color:');
 						}
 						if (!this._inspectPort) {
 							this._inspectPort = Number(inspectorUrlMatch[2]);
@@ -234,7 +236,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 						this._notificationService.prompt(Severity.Warning, msg,
 							[{
 								label: nls.localize('reloadWindow', "Reload Window"),
-								run: () => this._windowService.reloadWindow()
+								run: () => this._hostService.reload()
 							}],
 							{ sticky: true }
 						);
@@ -282,15 +284,15 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 		return new Promise(resolve => {
 			return findFreePort(startPort, 10 /* try 10 ports */, 5000 /* try up to 5 seconds */).then(port => {
 				if (!port) {
-					console.warn('%c[Extension Host] %cCould not find a free port for debugging', 'color: blue', 'color: black');
+					console.warn('%c[Extension Host] %cCould not find a free port for debugging', 'color: blue', 'color:');
 				} else {
 					if (expected && port !== expected) {
-						console.warn(`%c[Extension Host] %cProvided debugging port ${expected} is not free, using ${port} instead.`, 'color: blue', 'color: black');
+						console.warn(`%c[Extension Host] %cProvided debugging port ${expected} is not free, using ${port} instead.`, 'color: blue', 'color:');
 					}
 					if (this._isExtensionDevDebugBrk) {
-						console.warn(`%c[Extension Host] %cSTOPPED on first line for debugging on port ${port}`, 'color: blue', 'color: black');
+						console.warn(`%c[Extension Host] %cSTOPPED on first line for debugging on port ${port}`, 'color: blue', 'color:');
 					} else {
-						console.info(`%c[Extension Host] %cdebugger listening on port ${port}`, 'color: blue', 'color: black');
+						console.info(`%c[Extension Host] %cdebugger listening on port ${port}`, 'color: blue', 'color:');
 					}
 				}
 				return resolve({ expected, actual: port });
@@ -387,7 +389,8 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 				const workspace = this._contextService.getWorkspace();
 				const r: IInitData = {
 					commit: product.commit,
-					version: pkg.version,
+					version: product.version,
+					vscodeVersion: product.vscodeVersion, // {{SQL CARBON EDIT}} add vscode version
 					parentPid: process.pid,
 					environment: {
 						isExtensionDevelopmentDebug: this._isExtensionDevDebug,
@@ -419,7 +422,8 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 					telemetryInfo,
 					logLevel: this._logService.getLevel(),
 					logsLocation: this._extensionHostLogsLocation,
-					autoStart: this._autoStart
+					autoStart: this._autoStart,
+					uiKind: UIKind.Desktop
 				};
 				return r;
 			});
@@ -434,7 +438,7 @@ export class ExtensionHostProcessWorker implements IExtensionHostStarter {
 
 		// Log on main side if running tests from cli
 		if (this._isExtensionDevTestFromCli) {
-			this._windowsService.log(entry.severity, ...parse(entry).args);
+			logRemoteEntry(this._logService, entry);
 		}
 
 		// Broadcast to other windows if we are in development mode

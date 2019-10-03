@@ -22,7 +22,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 export class DatabaseDashboardPage extends DashboardPage implements OnInit {
 	protected propertiesWidget: WidgetConfig = {
-		name: nls.localize('databasePageName', 'DATABASE DASHBOARD'),
+		name: nls.localize('databasePageName', "DATABASE DASHBOARD"),
 		widget: {
 			'properties-widget': undefined
 		},

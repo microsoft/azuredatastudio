@@ -2,38 +2,44 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
-import * as vscode from 'vscode';
 import * as azdata from 'azdata';
-import { NotebookInfo } from '../interfaces';
-import { isString } from 'util';
 import * as path from 'path';
+import { isString } from 'util';
+import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { IPlatformService } from './platformService';
+import { NotebookInfo } from '../interfaces';
 const localize = nls.loadMessageBundle();
 
 export interface INotebookService {
-	launchNotebook(notebook: string | NotebookInfo): void;
+	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor>;
 }
 
 export class NotebookService implements INotebookService {
 
-	constructor(private platformService: IPlatformService) { }
+	constructor(private platformService: IPlatformService, private extensionPath: string) { }
 
 	/**
 	 * Copy the notebook to the user's home directory and launch the notebook from there.
 	 * @param notebook the path of the notebook
 	 */
-	launchNotebook(notebook: string | NotebookInfo): void {
-		const notebookRelativePath = this.getNotebook(notebook);
-		const notebookFullPath = path.join(__dirname, '../../', notebookRelativePath);
-		if (notebookRelativePath && this.platformService.fileExists(notebookFullPath)) {
-			this.showNotebookAsUntitled(notebookFullPath);
-		}
-		else {
-			this.platformService.showErrorMessage(localize('resourceDeployment.notebookNotFound', 'The notebook {0} does not exist', notebookFullPath));
-		}
+	launchNotebook(notebook: string | NotebookInfo): Thenable<azdata.nb.NotebookEditor> {
+		const notebookPath = this.getNotebook(notebook);
+		const notebookFullPath = path.join(this.extensionPath, notebookPath);
+		return this.platformService.fileExists(notebookPath).then((notebookPathExists) => {
+			if (notebookPathExists) {
+				return this.showNotebookAsUntitled(notebookPath);
+			} else {
+				return this.platformService.fileExists(notebookFullPath).then(notebookFullPathExists => {
+					if (notebookFullPathExists) {
+						return this.showNotebookAsUntitled(notebookFullPath);
+					} else {
+						throw localize('resourceDeployment.notebookNotFound', "The notebook {0} does not exist", notebookPath);
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -71,12 +77,12 @@ export class NotebookService implements INotebookService {
 		return title;
 	}
 
-	showNotebookAsUntitled(notebookPath: string): void {
+	showNotebookAsUntitled(notebookPath: string): Thenable<azdata.nb.NotebookEditor> {
 		let targetFileName: string = this.findNextUntitledEditorName(notebookPath);
 		const untitledFileName: vscode.Uri = vscode.Uri.parse(`untitled:${targetFileName}`);
-		vscode.workspace.openTextDocument(notebookPath).then((document) => {
+		return vscode.workspace.openTextDocument(notebookPath).then((document) => {
 			let initialContent = document.getText();
-			azdata.nb.showNotebookDocument(untitledFileName, {
+			return azdata.nb.showNotebookDocument(untitledFileName, {
 				connectionProfile: undefined,
 				preview: false,
 				initialContent: initialContent,

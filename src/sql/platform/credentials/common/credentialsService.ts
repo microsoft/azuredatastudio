@@ -3,8 +3,8 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { IDisposable, dispose } from 'vs/base/common/lifecycle';
-import { createDecorator } from 'vs/platform/instantiation/common/instantiation';
+import { IDisposable } from 'vs/base/common/lifecycle';
+import { createDecorator, ServiceIdentifier } from 'vs/platform/instantiation/common/instantiation';
 import * as azdata from 'azdata';
 import { Deferred } from 'sql/base/common/promise';
 
@@ -21,7 +21,7 @@ export interface CredentialManagementEvents {
 export const ICredentialsService = createDecorator<ICredentialsService>(SERVICE_ID);
 
 export interface ICredentialsService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	saveCredential(credentialId: string, password: string): Promise<boolean>;
 
@@ -34,9 +34,7 @@ export interface ICredentialsService {
 
 export class CredentialsService implements ICredentialsService {
 
-	_serviceBrand: any;
-
-	private disposables: IDisposable[] = [];
+	_serviceBrand: undefined;
 
 	private _serverEvents: { [handle: number]: CredentialManagementEvents; } = Object.create(null);
 
@@ -70,9 +68,5 @@ export class CredentialsService implements ICredentialsService {
 
 	public deleteCredential(credentialId: string): Promise<boolean> {
 		return this._onServerEventsReady.promise.then(() => this._serverEvents[this._lastHandle].onDeleteCredential(credentialId));
-	}
-
-	public dispose(): void {
-		this.disposables = dispose(this.disposables);
 	}
 }

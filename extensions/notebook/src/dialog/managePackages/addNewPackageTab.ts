@@ -35,35 +35,35 @@ export class AddNewPackageTab {
 		this.addNewPkgTab = azdata.window.createTab(localize('managePackages.addNewTabTitle', "Add new"));
 
 		this.addNewPkgTab.registerContent(async view => {
-			this.newPackagesSearchBar = view.modelBuilder.inputBox().component();
+			this.newPackagesSearchBar = view.modelBuilder.inputBox().withProperties({ width: '400px' }).component();
 
 			this.packagesSearchButton = view.modelBuilder.button()
 				.withProperties<azdata.ButtonProperties>({
 					label: localize('managePackages.searchButtonLabel', "Search"),
-					width: '80px'
+					width: '200px'
 				}).component();
 			this.packagesSearchButton.onDidClick(() => {
 				this.loadNewPackageInfo();
 			});
 
-			this.newPackagesName = view.modelBuilder.text().component();
+			this.newPackagesName = view.modelBuilder.text().withProperties({ width: '400px' }).component();
 			this.newPackagesNameLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesName)
 				.component();
 
-			this.newPackagesVersions = view.modelBuilder.dropDown().component();
+			this.newPackagesVersions = view.modelBuilder.dropDown().withProperties({ width: '400px' }).component();
 			this.newPackagesVersionsLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesVersions)
 				.component();
 
-			this.newPackagesSummary = view.modelBuilder.text().component();
+			this.newPackagesSummary = view.modelBuilder.text().withProperties({ width: '400px' }).component();
 			this.newPackagesSummaryLoader = view.modelBuilder.loadingComponent()
 				.withItem(this.newPackagesSummary)
 				.component();
 
 			this.packageInstallButton = view.modelBuilder.button().withProperties({
 				label: localize('managePackages.installButtonText', "Install"),
-				width: '80px'
+				width: '200px'
 			}).component();
 			this.packageInstallButton.onDidClick(() => {
 				this.doPackageInstall();

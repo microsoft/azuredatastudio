@@ -32,7 +32,9 @@ export class DacFxSummaryPage extends BasePage {
 	}
 
 	async start(): Promise<boolean> {
-		this.table = this.view.modelBuilder.table().component();
+		this.table = this.view.modelBuilder.table().withProperties({
+			title: localize('dacfx.summaryTableTitle', 'Summary of settings')
+		}).component();
 		this.loader = this.view.modelBuilder.loadingComponent().withItem(this.table).component();
 		this.form = this.view.modelBuilder.formContainer().withFormItems(
 			[
@@ -52,6 +54,9 @@ export class DacFxSummaryPage extends BasePage {
 		if (this.model.upgradeExisting && this.instance.selectedOperation === Operation.deploy) {
 			this.instance.wizard.generateScriptButton.hidden = false;
 		}
+
+		this.instance.wizard.doneButton.focused = true;
+
 		return true;
 	}
 
@@ -128,8 +133,8 @@ export class DacFxSummaryPage extends BasePage {
 					cssClass: 'align-with-header'
 				}],
 			width: 700,
-			height: 200
+			height: 200,
+			moveFocusOutWithTab: true
 		});
 	}
 }
-

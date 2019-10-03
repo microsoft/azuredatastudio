@@ -122,7 +122,8 @@ class RequestOracle {
 		let handle: any;
 		let contentListener = codeEditor.onDidChangeModelContent(event => {
 			clearTimeout(handle);
-			handle = setTimeout(() => this._callback(codeEditor!, event), 350);
+			const timeout = OutlineModel.getRequestDelay(codeEditor!.getModel());
+			handle = setTimeout(() => this._callback(codeEditor!, event), timeout);
 		});
 		let modeListener = codeEditor.onDidChangeModelLanguage(_ => {
 			this._callback(codeEditor!, undefined);
@@ -168,7 +169,7 @@ class OutlineViewState {
 	private _filterOnType = true;
 	private _sortBy = OutlineSortOrder.ByKind;
 
-	private _onDidChange = new Emitter<{ followCursor?: boolean, sortBy?: boolean, filterOnType?: boolean }>();
+	private readonly _onDidChange = new Emitter<{ followCursor?: boolean, sortBy?: boolean, filterOnType?: boolean }>();
 	readonly onDidChange = this._onDidChange.event;
 
 	set followCursor(value: boolean) {
@@ -238,14 +239,14 @@ export class OutlinePanel extends ViewletPanel {
 	private _editorDisposables = new DisposableStore();
 	private _outlineViewState = new OutlineViewState();
 	private _requestOracle?: RequestOracle;
-	private _domNode: HTMLElement;
-	private _message: HTMLDivElement;
-	private _inputContainer: HTMLDivElement;
-	private _progressBar: ProgressBar;
-	private _tree: WorkbenchDataTree<OutlineModel, OutlineItem, FuzzyScore>;
-	private _treeDataSource: OutlineDataSource;
-	private _treeRenderer: OutlineElementRenderer;
-	private _treeComparator: OutlineItemComparator;
+	private _domNode!: HTMLElement;
+	private _message!: HTMLDivElement;
+	private _inputContainer!: HTMLDivElement;
+	private _progressBar!: ProgressBar;
+	private _tree!: WorkbenchDataTree<OutlineModel, OutlineItem, FuzzyScore>;
+	private _treeDataSource!: OutlineDataSource;
+	private _treeRenderer!: OutlineElementRenderer;
+	private _treeComparator!: OutlineItemComparator;
 	private _treeStates = new LRUCache<string, IDataTreeViewState>(10);
 
 	private _treeFakeUIEvent = new UIEvent('me');
@@ -266,7 +267,7 @@ export class OutlinePanel extends ViewletPanel {
 		@IContextKeyService contextKeyService: IContextKeyService,
 		@IContextMenuService contextMenuService: IContextMenuService,
 	) {
-		super(options, keybindingService, contextMenuService, configurationService);
+		super(options, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this._outlineViewState.restore(this._storageService);
 		this._contextKeyFocused = OutlineViewFocused.bindTo(contextKeyService);
 		this._contextKeyFiltered = OutlineViewFiltered.bindTo(contextKeyService);
@@ -316,9 +317,11 @@ export class OutlinePanel extends ViewletPanel {
 		this._treeComparator = new OutlineItemComparator(this._outlineViewState.sortBy);
 		this._tree = this._instantiationService.createInstance(
 			WorkbenchDataTree,
+			'OutlinePanel',
 			treeContainer,
 			new OutlineVirtualDelegate(),
 			[new OutlineGroupRenderer(), this._treeRenderer],
+			// https://github.com/microsoft/TypeScript/issues/32526
 			this._treeDataSource as IDataSource<OutlineModel, OutlineItem>,
 			{
 				expandOnlyOnTwistieClick: true,
@@ -328,7 +331,7 @@ export class OutlinePanel extends ViewletPanel {
 				identityProvider: new OutlineIdentityProvider(),
 				keyboardNavigationLabelProvider: new OutlineNavigationLabelProvider()
 			}
-		) as WorkbenchDataTree<OutlineModel, OutlineItem, FuzzyScore>;
+		);
 
 		this._disposables.push(this._tree);
 		this._disposables.push(this._outlineViewState.onDidChange(this._onDidChangeUserState, this));
@@ -382,7 +385,7 @@ export class OutlinePanel extends ViewletPanel {
 
 	getActions(): IAction[] {
 		return [
-			new Action('collapse', localize('collapse', "Collapse All"), 'explorer-action collapse-explorer', true, () => {
+			new Action('collapse', localize('collapse', "Collapse All"), 'explorer-action codicon-collapse-all', true, () => {
 				return new CollapseAction(this._tree, true, undefined).run();
 			})
 		];

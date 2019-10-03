@@ -43,22 +43,27 @@ export interface IGridDataProvider {
 }
 
 export async function getResultsString(provider: IGridDataProvider, selection: Slick.Range[], includeHeaders?: boolean): Promise<string> {
-	let copyString = '';
+	let headers: Map<Number, string> = new Map();
+	let rows: Map<Number, Map<Number, string>> = new Map();
+	let copyTable: string[][] = [];
 	const eol = provider.getEolString();
 
 	// create a mapping of the ranges to get promises
 	let tasks = selection.map((range, i) => {
 		return async () => {
+			let selectionsCopy = selection;
+			let startCol = range.fromCell;
+			let startRow = range.fromRow;
+
 			const result = await provider.getRowData(range.fromRow, range.toRow - range.fromRow + 1);
 			// If there was a previous selection separate it with a line break. Currently
 			// when there are multiple selections they are never on the same line
-			if (i > 0) {
-				copyString += eol;
-			}
-			if (provider.shouldIncludeHeaders(includeHeaders)) {
-				let columnHeaders = provider.getColumnHeaders(range);
-				if (columnHeaders !== undefined) {
-					copyString += columnHeaders.join('\t') + eol;
+			let columnHeaders = provider.getColumnHeaders(range);
+			if (columnHeaders !== undefined) {
+				let idx = 0;
+				for (let header of columnHeaders) {
+					headers.set(startCol + idx, header);
+					idx++;
 				}
 			}
 			// Iterate over the rows to paste into the copy string
@@ -69,9 +74,17 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 				let cells = provider.shouldRemoveNewLines()
 					? cellObjects.map(x => removeNewLines(x.displayValue))
 					: cellObjects.map(x => x.displayValue);
-				copyString += cells.join('\t');
-				if (rowIndex < result.resultSubset.rows.length - 1) {
-					copyString += eol;
+
+				let idx = 0;
+				for (let cell of cells) {
+					let map = rows.get(rowIndex + startRow);
+					if (!map) {
+						map = new Map();
+						rows.set(rowIndex + startRow, map);
+					}
+
+					map.set(startCol + idx, cell);
+					idx++;
 				}
 			}
 		};
@@ -84,6 +97,29 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 		}
 		await p;
 	}
+
+	let copyString = '';
+	if (includeHeaders) {
+		copyString = [...headers.values()].join('\t').concat(eol);
+	}
+
+	const rowKeys = [...headers.keys()];
+
+	for (let rowEntry of rows) {
+		let rowMap = rowEntry[1];
+		for (let rowIdx of rowKeys) {
+
+			let value = rowMap.get(rowIdx);
+			if (value) {
+				copyString = copyString.concat(value);
+			}
+			copyString = copyString.concat('\t');
+		}
+		copyString = copyString.concat(eol);
+	}
+	// Removes EoL from the end of the string
+	copyString = copyString.slice(0, -1 * eol.length);
+
 	return copyString;
 }
 

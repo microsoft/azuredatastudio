@@ -49,7 +49,7 @@ export abstract class ChartInsight extends Disposable implements IInsightsView {
 	protected _config: IChartConfig;
 	protected _data: IInsightData;
 
-	protected readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', 'Chart cannot be displayed with the given data');
+	protected readonly CHART_ERROR_MESSAGE = nls.localize('chartErrorMessage', "Chart cannot be displayed with the given data");
 
 	protected abstract get chartType(): ChartType;
 

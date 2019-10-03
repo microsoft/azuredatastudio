@@ -10,6 +10,7 @@ import {
 } from '@angular/core';
 
 import * as azdata from 'azdata';
+import { ColumnSizingMode } from 'sql/workbench/api/common/sqlExtHostTypes';
 
 import { ComponentBase } from 'sql/workbench/browser/modelComponents/componentBase';
 import { IComponent, IComponentDescriptor, IModelStore, ComponentEventType } from 'sql/workbench/browser/modelComponents/interfaces';
@@ -20,8 +21,11 @@ import { attachTableStyler } from 'sql/platform/theme/common/styler';
 import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/workbenchThemeService';
 import { getContentHeight, getContentWidth, Dimension } from 'vs/base/browser/dom';
 import { RowSelectionModel } from 'sql/base/browser/ui/table/plugins/rowSelectionModel.plugin';
-import { CheckboxSelectColumn, ICheckboxCellActionEventArgs, ActionOnCheck } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
+import { CheckboxSelectColumn, ICheckboxCellActionEventArgs } from 'sql/base/browser/ui/table/plugins/checkboxSelectColumn.plugin';
 import { Emitter, Event as vsEvent } from 'vs/base/common/event';
+import { StandardKeyboardEvent } from 'vs/base/browser/keyboardEvent';
+import { KeyMod, KeyCode } from 'vs/base/common/keyCodes';
+import { slickGridDataItemColumnValueWithNoData, textFormatter } from 'sql/base/browser/ui/table/formatters';
 
 @Component({
 	selector: 'modelview-table',
@@ -69,13 +73,15 @@ export default class TableComponent extends ComponentBase implements IComponent,
 						width: col.width,
 						cssClass: col.cssClass,
 						headerCssClass: col.headerCssClass,
-						toolTip: col.toolTip
+						toolTip: col.toolTip,
+						formatter: textFormatter,
 					});
 				} else {
 					mycolumns.push(<Slick.Column<any>>{
 						name: <string>col,
 						id: <string>col,
-						field: <string>col
+						field: <string>col,
+						formatter: textFormatter
 					});
 				}
 				index++;
@@ -91,8 +97,6 @@ export default class TableComponent extends ComponentBase implements IComponent,
 			});
 		}
 	}
-
-
 
 	public static transformData(rows: string[][], columns: any[]): { [key: string]: string }[] {
 		if (rows && columns) {
@@ -119,7 +123,8 @@ export default class TableComponent extends ComponentBase implements IComponent,
 				syncColumnCellResize: true,
 				enableColumnReorder: false,
 				enableCellNavigation: true,
-				forceFitColumns: true
+				forceFitColumns: true, // default to true during init, actual value will be updated when setProperties() is called
+				dataItemColumnValueExtractor: slickGridDataItemColumnValueWithNoData // must change formatter if you are changing explicit column value extractor
 			};
 
 			this._table = new Table<Slick.SlickData>(this._inputContainer.nativeElement, { dataProvider: this._tableData, columns: this._tableColumns }, options);
@@ -135,6 +140,20 @@ export default class TableComponent extends ComponentBase implements IComponent,
 					args: e
 				});
 			}));
+
+			this._table.grid.onKeyDown.subscribe((e: KeyboardEvent) => {
+				if (this.moveFocusOutWithTab) {
+					let event = new StandardKeyboardEvent(e);
+					if (event.equals(KeyMod.Shift | KeyCode.Tab)) {
+						e.stopImmediatePropagation();
+						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).previousElementSibling).focus();
+
+					} else if (event.equals(KeyCode.Tab)) {
+						e.stopImmediatePropagation();
+						(<HTMLElement>(<HTMLElement>this._inputContainer.nativeElement).nextElementSibling).focus();
+					}
+				}
+			});
 		}
 	}
 
@@ -159,9 +178,40 @@ export default class TableComponent extends ComponentBase implements IComponent,
 	private layoutTable(): void {
 		let width: number = this.convertSizeToNumber(this.width);
 		let height: number = this.convertSizeToNumber(this.height);
+		let forceFit: boolean = true;
+
+		// convert the tri-state viewmodel columnSizingMode to be either true or false for SlickGrid
+		switch (this.forceFitColumns) {
+			case ColumnSizingMode.DataFit: {
+				forceFit = false;
+				break;
+			}
+			case ColumnSizingMode.AutoFit: {
+				// determine if force fit should be on or off based on the number of columns
+				// this can be made more sophisticated if need be in the future.  a simple
+				// check for 3 or less force fits causes the small number of columns to fill the
+				// screen better.  4 or more, slickgrid seems to do a good job filling the view and having forceFit
+				// false enables the scroll bar and avoids the over-packing should there be a very large
+				// number of columns
+				forceFit = (this._table.columns.length <= 3);
+				break;
+			}
+			case ColumnSizingMode.ForceFit:
+			default: {
+				// default behavior for the table component (used primarily in wizards) is to forcefit the columns
+				forceFit = true;
+				break;
+			}
+		}
+		let updateOptions = <Slick.GridOptions<any>>{
+			forceFitColumns: forceFit
+		};
+		this._table.setOptions(updateOptions);
+
 		this._table.layout(new Dimension(
 			width && width > 0 ? width : getContentWidth(this._inputContainer.nativeElement),
 			height && height > 0 ? height : getContentHeight(this._inputContainer.nativeElement)));
+		this._table.resizeCanvas();
 	}
 
 	public setLayout(): void {
@@ -176,12 +226,33 @@ export default class TableComponent extends ComponentBase implements IComponent,
 		this._tableColumns = this.transformColumns(this.columns);
 		this._table.columns = this._tableColumns;
 		this._table.setData(this._tableData);
+		this._table.setTableTitle(this.title);
 		if (this.selectedRows) {
 			this._table.setSelectedRows(this.selectedRows);
 		}
 
-		for (let col in this._checkboxColumns) {
-			this.registerCheckboxPlugin(this._checkboxColumns[col]);
+		Object.keys(this._checkboxColumns).forEach(col => this.registerCheckboxPlugin(this._checkboxColumns[col]));
+
+		if (this.ariaRowCount === -1) {
+			this._table.removeAriaRowCount();
+		}
+		else {
+			this._table.ariaRowCount = this.ariaRowCount;
+		}
+
+		if (this.ariaColumnCount === -1) {
+			this._table.removeAriaColumnCount();
+		}
+		else {
+			this._table.ariaColumnCount = this.ariaColumnCount;
+		}
+
+		if (this.ariaRole) {
+			this._table.ariaRole = this.ariaRole;
+		}
+
+		if (this.focused) {
+			this._table.focus();
 		}
 
 		this.layoutTable();
@@ -249,5 +320,41 @@ export default class TableComponent extends ComponentBase implements IComponent,
 
 	public set selectedRows(newValue: number[]) {
 		this.setPropertyFromUI<azdata.TableComponentProperties, number[]>((props, value) => props.selectedRows = value, newValue);
+	}
+
+	public get forceFitColumns() {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, ColumnSizingMode>((props) => props.forceFitColumns, ColumnSizingMode.ForceFit);
+	}
+
+	public get title() {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.title, '');
+	}
+
+	public get ariaRowCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaRowCount, -1);
+	}
+
+	public get ariaColumnCount(): number {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, number>((props) => props.ariaColumnCount, -1);
+	}
+
+	public get ariaRole(): string {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, string>((props) => props.ariaRole, undefined);
+	}
+
+	public set moveFocusOutWithTab(newValue: boolean) {
+		this.setPropertyFromUI<azdata.TableComponentProperties, boolean>((props, value) => props.moveFocusOutWithTab = value, newValue);
+	}
+
+	public get moveFocusOutWithTab(): boolean {
+		return this.getPropertyOrDefault<azdata.TableComponentProperties, boolean>((props) => props.moveFocusOutWithTab, false);
+	}
+
+	public get focused(): boolean {
+		return this.getPropertyOrDefault<azdata.RadioButtonProperties, boolean>((props) => props.focused, false);
+	}
+
+	public set focused(newValue: boolean) {
+		this.setPropertyFromUI<azdata.RadioButtonProperties, boolean>((properties, value) => { properties.focused = value; }, newValue);
 	}
 }

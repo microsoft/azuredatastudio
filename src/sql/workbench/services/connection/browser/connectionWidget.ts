@@ -35,7 +35,7 @@ import { endsWith, startsWith } from 'vs/base/common/strings';
 import { IClipboardService } from 'vs/platform/clipboard/common/clipboardService';
 import { IConfigurationService } from 'vs/platform/configuration/common/configuration';
 
-export class ConnectionWidget {
+export class ConnectionWidget extends lifecycle.Disposable {
 	private _previousGroupOption: string;
 	private _serverGroupOptions: IConnectionProfileGroup[];
 	private _serverNameInputBox: InputBox;
@@ -46,7 +46,7 @@ export class ConnectionWidget {
 	private _azureAccountDropdown: SelectBox;
 	private _azureTenantDropdown: SelectBox;
 	private _refreshCredentialsLink: HTMLLinkElement;
-	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', 'Add an account...');
+	private _addAzureAccountMessage: string = localize('connectionWidget.AddAzureAccount', "Add an account...");
 	private readonly _azureProviderId = 'azurePublicCloud';
 	private _azureTenantId: string;
 	private _azureAccountList: azdata.Account[];
@@ -54,13 +54,12 @@ export class ConnectionWidget {
 	private _focusedBeforeHandleOnConnection: HTMLElement;
 	private _saveProfile: boolean;
 	private _databaseDropdownExpanded: boolean = false;
-	private _defaultDatabaseName: string = localize('defaultDatabaseOption', '<Default>');
-	private _loadingDatabaseName: string = localize('loadingDatabaseOption', 'Loading...');
-	private _serverGroupDisplayString: string = localize('serverGroup', 'Server group');
+	private _defaultDatabaseName: string = localize('defaultDatabaseOption', "<Default>");
+	private _loadingDatabaseName: string = localize('loadingDatabaseOption', "Loading...");
+	private _serverGroupDisplayString: string = localize('serverGroup', "Server group");
 	protected _container: HTMLElement;
 	protected _serverGroupSelectBox: SelectBox;
 	protected _authTypeSelectBox: SelectBox;
-	protected _toDispose: lifecycle.IDisposable[];
 	protected _optionsMaps: { [optionType: number]: azdata.ConnectionOption };
 	protected _tableContainer: HTMLElement;
 	protected _providerName: string;
@@ -72,7 +71,7 @@ export class ConnectionWidget {
 	protected _advancedButton: Button;
 	public DefaultServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('defaultServerGroup', '<Default>'),
+		name: localize('defaultServerGroup', "<Default>"),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
@@ -80,14 +79,14 @@ export class ConnectionWidget {
 
 	private _addNewServerGroup = {
 		id: '',
-		name: localize('addNewServerGroup', 'Add new group...'),
+		name: localize('addNewServerGroup', "Add new group..."),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
 	};
 	public NoneServerGroup: IConnectionProfileGroup = {
 		id: '',
-		name: localize('noneServerGroup', '<Do not save>'),
+		name: localize('noneServerGroup', "<Do not save>"),
 		parentId: undefined,
 		color: undefined,
 		description: undefined,
@@ -103,8 +102,8 @@ export class ConnectionWidget {
 		@IConfigurationService private _configurationService: IConfigurationService,
 		@IAccountManagementService private _accountManagementService: IAccountManagementService
 	) {
+		super();
 		this._callbacks = callbacks;
-		this._toDispose = [];
 		this._optionsMaps = {};
 		for (let i = 0; i < options.length; i++) {
 			let option = options[i];
@@ -193,9 +192,9 @@ export class ConnectionWidget {
 			validationOptions: {
 				validation: (value: string) => {
 					if (!value) {
-						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', serverNameOption.displayName) });
+						return ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", serverNameOption.displayName) });
 					} else if (startsWith(value, ' ') || endsWith(value, ' ')) {
-						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', '{0} will be trimmed.', serverNameOption.displayName) });
+						return ({ type: MessageType.WARNING, content: localize('connectionWidget.fieldWillBeTrimmed', "{0} will be trimmed.", serverNameOption.displayName) });
 					}
 					return undefined;
 				}
@@ -211,7 +210,7 @@ export class ConnectionWidget {
 		let userName = DialogHelper.appendRow(this._tableContainer, userNameOption.displayName, 'connection-label', 'connection-input', 'username-password-row');
 		this._userNameInputBox = new InputBox(userName, this._contextViewService, {
 			validationOptions: {
-				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', '{0} is required.', userNameOption.displayName) }) : null
+				validation: (value: string) => self.validateUsername(value, userNameOption.isRequired) ? ({ type: MessageType.ERROR, content: localize('connectionWidget.missingRequireField', "{0} is required.", userNameOption.displayName) }) : null
 			},
 			ariaLabel: userNameOption.displayName
 		});
@@ -223,20 +222,20 @@ export class ConnectionWidget {
 		this._password = '';
 
 		// Remember password
-		let rememberPasswordLabel = localize('rememberPassword', 'Remember password');
+		let rememberPasswordLabel = localize('rememberPassword', "Remember password");
 		this._rememberPasswordCheckBox = this.appendCheckbox(this._tableContainer, rememberPasswordLabel, 'connection-input', 'username-password-row', false);
 
 		// Azure account picker
-		let accountLabel = localize('connection.azureAccountDropdownLabel', 'Account');
+		let accountLabel = localize('connection.azureAccountDropdownLabel', "Account");
 		let accountDropdown = DialogHelper.appendRow(this._tableContainer, accountLabel, 'connection-label', 'connection-input', 'azure-account-row');
 		this._azureAccountDropdown = new SelectBox([], undefined, this._contextViewService, accountDropdown, { ariaLabel: accountLabel });
 		DialogHelper.appendInputSelectBox(accountDropdown, this._azureAccountDropdown);
 		let refreshCredentials = DialogHelper.appendRow(this._tableContainer, '', 'connection-label', 'connection-input', ['azure-account-row', 'refresh-credentials-link']);
 		this._refreshCredentialsLink = DOM.append(refreshCredentials, DOM.$('a'));
 		this._refreshCredentialsLink.href = '#';
-		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', 'Refresh account credentials');
+		this._refreshCredentialsLink.innerText = localize('connectionWidget.refreshAzureCredentials', "Refresh account credentials");
 		// Azure tenant picker
-		let tenantLabel = localize('connection.azureTenantDropdownLabel', 'Azure AD tenant');
+		let tenantLabel = localize('connection.azureTenantDropdownLabel', "Azure AD tenant");
 		let tenantDropdown = DialogHelper.appendRow(this._tableContainer, tenantLabel, 'connection-label', 'connection-input', ['azure-account-row', 'azure-tenant-row']);
 		this._azureTenantDropdown = new SelectBox([], undefined, this._contextViewService, tenantDropdown, { ariaLabel: tenantLabel });
 		DialogHelper.appendInputSelectBox(tenantDropdown, this._azureTenantDropdown);
@@ -253,7 +252,7 @@ export class ConnectionWidget {
 				placeholder: this._defaultDatabaseName,
 				maxHeight: 125,
 				ariaLabel: databaseOption.displayName,
-				actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', 'Select Database Toggle Dropdown')
+				actionLabel: localize('connectionWidget.toggleDatabaseNameDropdown', "Select Database Toggle Dropdown")
 			});
 		}
 	}
@@ -269,13 +268,13 @@ export class ConnectionWidget {
 	protected addConnectionNameOptions(): void {
 		// Connection name
 		let connectionNameOption = this._optionsMaps[ConnectionOptionSpecialType.connectionName];
-		connectionNameOption.displayName = localize('connectionName', 'Name (optional)');
+		connectionNameOption.displayName = localize('connectionName', "Name (optional)");
 		let connectionNameBuilder = DialogHelper.appendRow(this._tableContainer, connectionNameOption.displayName, 'connection-label', 'connection-input');
 		this._connectionNameInputBox = new InputBox(connectionNameBuilder, this._contextViewService, { ariaLabel: connectionNameOption.displayName });
 	}
 
 	protected addAdvancedOptions(): void {
-		let AdvancedLabel = localize('advanced', 'Advanced...');
+		let AdvancedLabel = localize('advanced', "Advanced...");
 		this._advancedButton = this.createAdvancedButton(this._tableContainer, AdvancedLabel);
 	}
 
@@ -313,22 +312,22 @@ export class ConnectionWidget {
 
 	protected registerListeners(): void {
 		// Theme styler
-		this._toDispose.push(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
-		this._toDispose.push(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
-		this._toDispose.push(styler.attachButtonStyler(this._advancedButton, this._themeService));
-		this._toDispose.push(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
-		this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._serverNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._connectionNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._userNameInputBox, this._themeService));
+		this._register(styler.attachInputBoxStyler(this._passwordInputBox, this._themeService));
+		this._register(styler.attachButtonStyler(this._advancedButton, this._themeService));
+		this._register(styler.attachCheckboxStyler(this._rememberPasswordCheckBox, this._themeService));
+		this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
 		if (this._serverGroupSelectBox) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
-			this._toDispose.push(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
+			this._register(styler.attachSelectBoxStyler(this._serverGroupSelectBox, this._themeService));
+			this._register(this._serverGroupSelectBox.onDidSelect(selectedGroup => {
 				this.onGroupSelected(selectedGroup.selected);
 			}));
 		}
 		if (this._databaseNameInputBox) {
-			this._toDispose.push(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
-			this._toDispose.push(this._databaseNameInputBox.onFocus(() => {
+			this._register(styler.attachEditableDropdownStyler(this._databaseNameInputBox, this._themeService));
+			this._register(this._databaseNameInputBox.onFocus(() => {
 				this._databaseDropdownExpanded = true;
 				if (this.serverName) {
 					this._databaseNameInputBox.values = [this._loadingDatabaseName];
@@ -346,7 +345,7 @@ export class ConnectionWidget {
 				}
 			}));
 
-			this._toDispose.push(this._databaseNameInputBox.onValueChange(s => {
+			this._register(this._databaseNameInputBox.onValueChange(s => {
 				if (s === this._defaultDatabaseName || s === this._loadingDatabaseName) {
 					this._databaseNameInputBox.value = '';
 				} else {
@@ -357,29 +356,29 @@ export class ConnectionWidget {
 
 		if (this._authTypeSelectBox) {
 			// Theme styler
-			this._toDispose.push(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
-			this._toDispose.push(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
+			this._register(styler.attachSelectBoxStyler(this._authTypeSelectBox, this._themeService));
+			this._register(this._authTypeSelectBox.onDidSelect(selectedAuthType => {
 				this.onAuthTypeSelected(selectedAuthType.selected);
 				this.setConnectButton();
 			}));
 		}
 
 		if (this._azureAccountDropdown) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
-			this._toDispose.push(this._azureAccountDropdown.onDidSelect(() => {
+			this._register(styler.attachSelectBoxStyler(this._azureAccountDropdown, this._themeService));
+			this._register(this._azureAccountDropdown.onDidSelect(() => {
 				this.onAzureAccountSelected();
 			}));
 		}
 
 		if (this._azureTenantDropdown) {
-			this._toDispose.push(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
-			this._toDispose.push(this._azureTenantDropdown.onDidSelect((selectInfo) => {
+			this._register(styler.attachSelectBoxStyler(this._azureTenantDropdown, this._themeService));
+			this._register(this._azureTenantDropdown.onDidSelect((selectInfo) => {
 				this.onAzureTenantSelected(selectInfo.index);
 			}));
 		}
 
 		if (this._refreshCredentialsLink) {
-			this._toDispose.push(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
+			this._register(DOM.addDisposableListener(this._refreshCredentialsLink, DOM.EventType.CLICK, async () => {
 				let account = this._azureAccountList.find(account => account.key.accountId === this._azureAccountDropdown.value);
 				if (account) {
 					await this._accountManagementService.refreshAccount(account);
@@ -388,15 +387,15 @@ export class ConnectionWidget {
 			}));
 		}
 
-		this._toDispose.push(this._serverNameInputBox.onDidChange(serverName => {
+		this._register(this._serverNameInputBox.onDidChange(serverName => {
 			this.serverNameChanged(serverName);
 		}));
 
-		this._toDispose.push(this._userNameInputBox.onDidChange(userName => {
+		this._register(this._userNameInputBox.onDidChange(userName => {
 			this.setConnectButton();
 		}));
 
-		this._toDispose.push(this._passwordInputBox.onDidChange(passwordInput => {
+		this._register(this._passwordInputBox.onDidChange(passwordInput => {
 			this._password = passwordInput;
 		}));
 	}
@@ -754,7 +753,7 @@ export class ConnectionWidget {
 		if (selected === '' || selected === this._addAzureAccountMessage) {
 			if (showMessage) {
 				this._azureAccountDropdown.showMessage({
-					content: localize('connectionWidget.invalidAzureAccount', 'You must select an account'),
+					content: localize('connectionWidget.invalidAzureAccount', "You must select an account"),
 					type: MessageType.ERROR
 				});
 			}
@@ -833,10 +832,6 @@ export class ConnectionWidget {
 			group = this._serverGroupOptions.find(g => g.name === groupFullName);
 		}
 		return group ? group.id : undefined;
-	}
-
-	public dispose(): void {
-		this._toDispose = lifecycle.dispose(this._toDispose);
 	}
 
 	private getMatchingAuthType(displayName: string): AuthenticationType {

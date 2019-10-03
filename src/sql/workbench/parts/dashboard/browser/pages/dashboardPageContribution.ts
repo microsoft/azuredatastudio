@@ -32,7 +32,7 @@ export function generateDashboardWidgetSchema(type?: 'database' | 'server', exte
 				type: 'string'
 			},
 			when: {
-				description: localize('azdata.extension.contributes.widget.when', 'Condition which must be true to show this item'),
+				description: localize('azdata.extension.contributes.widget.when', "Condition which must be true to show this item"),
 				type: 'string'
 			},
 			gridItemConfig: {
@@ -118,7 +118,7 @@ export function generateDashboardGridLayoutSchema(type?: 'database' | 'server', 
 				]
 			},
 			when: {
-				description: localize('azdata.extension.contributes.widget.when', 'Condition which must be true to show this item'),
+				description: localize('azdata.extension.contributes.widget.when', "Condition which must be true to show this item"),
 				type: 'string'
 			}
 		}

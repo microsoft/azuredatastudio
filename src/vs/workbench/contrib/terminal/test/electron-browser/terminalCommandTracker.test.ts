@@ -4,23 +4,17 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as assert from 'assert';
-import { Terminal, TerminalCore } from 'xterm';
-import { TerminalCommandTracker } from 'vs/workbench/contrib/terminal/browser/terminalCommandTracker';
+import { Terminal } from 'xterm';
+import { CommandTrackerAddon } from 'vs/workbench/contrib/terminal/browser/addons/commandTrackerAddon';
 import { isWindows } from 'vs/base/common/platform';
-
-interface TestTerminalCore extends TerminalCore {
-	writeBuffer: string[];
-	_innerWrite(): void;
-}
+import { XTermCore } from 'vs/workbench/contrib/terminal/browser/xterm-private';
 
 interface TestTerminal extends Terminal {
-	_core: TestTerminalCore;
+	_core: XTermCore;
 }
 
-function syncWrite(term: TestTerminal, data: string): void {
-	// Terminal.write is asynchronous
-	term._core.writeBuffer.push(data);
-	term._core._innerWrite();
+function writePromise(term: Terminal, data: string): Promise<void> {
+	return new Promise(r => term.write(data, r));
 }
 
 const ROWS = 10;

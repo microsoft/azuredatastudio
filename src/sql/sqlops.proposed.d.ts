@@ -161,6 +161,13 @@ declare module 'sqlops' {
 		 */
 		updateProperty(key: string, value: any): Thenable<void>;
 
+		/**
+		 * Updates the specified CSS Styles and notifies the UI
+		 * @param cssStyles The styles to update
+		 * @returns Thenable that completes once the update has been applied to the UI
+		 */
+		updateCssStyles(cssStyles: { [key: string]: string }): Thenable<void>;
+
 		enabled: boolean;
 		/**
 		 * Event fired to notify that the component's validity has changed
@@ -263,6 +270,13 @@ declare module 'sqlops' {
 
 	}
 
+	export type AlignItemsType = 'normal' | 'stretch' | 'center' | 'start' | 'end' | 'flex-start' | 'flex-end' | 'baseline' | 'first baseline' | 'last baseline' | 'safe center' | 'unsafe center' | 'inherit' | 'initial' | 'unset';
+	export type JustifyContentType = 'flex-start' | 'flex-end' | 'center' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type AlignContentType = 'stretch' | 'center' | 'flex-start' | 'flex-end' | 'space-between' | 'space-around' | 'initial' | 'inherit';
+	export type FlexWrapType = 'nowrap' | 'wrap' | 'wrap-reverse';
+	export type TextAlignType = 'left' | 'right' | 'center' | 'justify' | 'initial' | 'inherit';
+	export type PositionType = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+
 	/**
 	 * The config for a FlexBox-based container. This supports easy
 	 * addition of content to a container with a flexible layout
@@ -278,15 +292,15 @@ declare module 'sqlops' {
 		/**
 		 * Matches the justify-content CSS property.
 		 */
-		justifyContent?: string;
+		justifyContent?: JustifyContentType;
 		/**
 		 * Matches the align-items CSS property.
 		 */
-		alignItems?: string;
+		alignItems?: AlignItemsType;
 		/**
 		 * Matches the align-content CSS property.
 		 */
-		alignContent?: string;
+		alignContent?: AlignContentType;
 
 		/**
 		 * Container Height
@@ -301,7 +315,7 @@ declare module 'sqlops' {
 		/**
 		 *
 		 */
-		textAlign?: string;
+		textAlign?: TextAlignType;
 
 		/**
 		 * The position CSS property. Empty by default.
@@ -310,7 +324,7 @@ declare module 'sqlops' {
 		 * set to 'absolute', with the parent FlexContainer having 'relative' position.
 		 * Without this the component will fail to correctly size itself.
 		 */
-		position?: string;
+		position?: PositionType;
 	}
 
 	export interface FlexItemLayout {
@@ -445,7 +459,7 @@ declare module 'sqlops' {
 		label: string;
 		value?: string;
 		actions?: ActionDescriptor[];
-		descriptions?: string[];
+		descriptions?: CardDescriptionItem[];
 		status?: StatusIndicator;
 
 		/**
@@ -457,6 +471,11 @@ declare module 'sqlops' {
 		 * Card Type, default: Details
 		 */
 		cardType?: CardType;
+	}
+
+	export interface CardDescriptionItem {
+		label: string;
+		value?: string;
 	}
 
 	export type InputBoxInputType = 'color' | 'date' | 'datetime-local' | 'email' | 'month' | 'number' | 'password' | 'range' | 'search' | 'text' | 'time' | 'url' | 'week';
@@ -538,7 +557,7 @@ declare module 'sqlops' {
 		checked?: boolean;
 	}
 
-	export interface TextComponentProperties {
+	export interface TextComponentProperties extends ComponentProperties, TitledComponentProperties {
 		value?: string;
 		links?: LinkArea[];
 	}
@@ -548,7 +567,7 @@ declare module 'sqlops' {
 		url: string;
 	}
 
-	export interface HyperlinkComponentProperties extends ComponentProperties {
+	export interface HyperlinkComponentProperties extends ComponentProperties, TitledComponentProperties {
 		label: string;
 		url: string;
 	}
@@ -620,10 +639,23 @@ declare module 'sqlops' {
 	}
 
 	export interface ButtonProperties extends ComponentProperties, ComponentWithIcon {
+		/**
+		 * The label for the button
+		 */
 		label?: string;
+		/**
+		 * Whether the button opens the file browser dialog
+		 */
 		isFile?: boolean;
+		/**
+		 * The content of the currently selected file
+		 */
 		fileContent?: string;
+		/**
+		 * The title for the button. This title will show when hovered over
+		 */
 		title?: string;
+		fileType?: string;
 	}
 
 	export interface LoadingComponentProperties {
@@ -643,6 +675,13 @@ declare module 'sqlops' {
 		yOffsetChange?: number;
 	}
 
+	export interface TitledComponentProperties {
+		/**
+		 * The title for the component. This title will show when hovered over
+		 */
+		title?: string;
+	}
+
 	export interface CardComponent extends Component, CardProperties {
 		onDidActionClick: vscode.Event<ActionDescriptor>;
 		onCardSelectedChanged: vscode.Event<any>;
@@ -652,13 +691,14 @@ declare module 'sqlops' {
 
 	}
 
-	export interface TextComponent extends Component, ComponentProperties {
-		value: string;
+	export interface TextComponent extends Component, TextComponentProperties {
+		/**
+		 * An event called when the text is clicked
+		 */
+		onDidClick: vscode.Event<any>;
 	}
 
 	export interface HyperlinkComponent extends Component, HyperlinkComponentProperties {
-		label: string;
-		url: string;
 	}
 
 	export interface InputBoxComponent extends Component, InputBoxProperties {
@@ -669,15 +709,11 @@ declare module 'sqlops' {
 		onDidClick: vscode.Event<any>;
 	}
 
-	export interface CheckBoxComponent extends Component {
-		checked: boolean;
-		label: string;
+	export interface CheckBoxComponent extends Component, CheckBoxProperties {
 		onChanged: vscode.Event<any>;
 	}
 
 	export interface DropDownComponent extends Component, DropDownProperties {
-		value: string | CategoryValue;
-		values: string[] | CategoryValue[];
 		onValueChanged: vscode.Event<any>;
 	}
 
@@ -692,8 +728,6 @@ declare module 'sqlops' {
 	}
 
 	export interface ListBoxComponent extends Component, ListBoxProperties {
-		selectedRow?: number;
-		values: string[];
 		onRowSelected: vscode.Event<any>;
 	}
 
@@ -757,19 +791,6 @@ declare module 'sqlops' {
 	}
 
 	export interface ButtonComponent extends Component, ButtonProperties {
-		/**
-		 * The label for the button
-		 */
-		label: string;
-		/**
-		 * The title for the button. This title will show when it hovers
-		 */
-		title: string;
-		/**
-		 * Icon Path for the button.
-		 */
-		iconPath: string | vscode.Uri | { light: string | vscode.Uri; dark: string | vscode.Uri };
-
 		/**
 		 * An event called when the button is clicked
 		 */
@@ -1596,10 +1617,9 @@ declare module 'sqlops' {
 		AdminServicesProvider = 'AdminServicesProvider',
 		AgentServicesProvider = 'AgentServicesProvider',
 		CapabilitiesProvider = 'CapabilitiesProvider',
-		DacFxServicesProvider = 'DacFxServicesProvider',
-		SchemaCompareServicesProvider = 'SchemaCompareServicesProvider',
 		ObjectExplorerNodeProvider = 'ObjectExplorerNodeProvider',
-		IconProvider = 'IconProvider'
+		IconProvider = 'IconProvider',
+		SerializationProvider = 'SerializationProvider'
 	}
 
 	export namespace dataprotocol {

@@ -17,7 +17,7 @@ import * as nls from 'vs/nls';
 @Component({
 	selector: 'modelview-loadingComponent',
 	template: `
-		<div class="modelview-loadingComponent-container" *ngIf="loading">
+		<div class="modelview-loadingComponent-container" role="alert" aria-busy="true" *ngIf="loading">
 			<div class="modelview-loadingComponent-spinner" *ngIf="loading" [title]=_loadingTitle #spinnerElement></div>
 		</div>
 		<model-component-wrapper #childElement [descriptor]="_component" [modelStore]="modelStore" *ngIf="_component" [ngClass]="{'modelview-loadingComponent-content-loading': loading}">
@@ -25,7 +25,7 @@ import * as nls from 'vs/nls';
 	`
 })
 export default class LoadingComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
-	private readonly _loadingTitle = nls.localize('loadingMessage', 'Loading');
+	private readonly _loadingTitle = nls.localize('loadingMessage', "Loading");
 	private _component: IComponentDescriptor;
 
 	@Input() descriptor: IComponentDescriptor;

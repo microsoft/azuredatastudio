@@ -22,8 +22,15 @@ import { IConfigurationResolverService } from 'vs/workbench/services/configurati
 import { IFileService } from 'vs/platform/files/common/files';
 import * as pfs from 'vs/base/node/pfs';
 import { getRandomTestPath } from 'vs/base/test/node/testUtils';
+import { IWorkbenchConstructionOptions } from 'vs/workbench/workbench.web.api';
 
 class TestEnvironmentService implements IWorkbenchEnvironmentService {
+	userDataSyncLogResource: URI;
+	settingsSyncPreviewResource: URI;
+	webviewExternalEndpoint: string;
+	logFile: URI;
+	options?: IWorkbenchConstructionOptions;
+	galleryMachineIdResource?: URI;
 	webviewCspSource: string;
 	webviewCspRule: string;
 	localeResource: URI;
@@ -47,7 +54,7 @@ class TestEnvironmentService implements IWorkbenchEnvironmentService {
 		} as IWindowConfiguration;
 	}
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	args: ParsedArgs;
 	execPath: string;
 	cliPath: string;

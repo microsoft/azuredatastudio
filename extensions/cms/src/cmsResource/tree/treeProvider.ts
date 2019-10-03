@@ -36,10 +36,9 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 			try {
 				// Call to collect all locally saved CMS servers
 				// to determine whether the system has been initialized.
-				let cmsConfig = this._appContext.cmsUtils.getConfiguration();
-				let cachedServers = cmsConfig.servers ? cmsConfig.servers : [];
+				const cachedServers = this._appContext.cmsUtils.getSavedServers();
 				if (cachedServers && cachedServers.length > 0) {
-					let servers = [];
+					const servers = [];
 					cachedServers.forEach(async (server) => {
 						servers.push(new CmsResourceTreeNode(
 							server.name,
@@ -47,7 +46,7 @@ export class CmsResourceTreeProvider implements TreeDataProvider<TreeNode>, ICms
 							server.ownerUri,
 							server.connection,
 							this._appContext, this, null));
-						this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
+						await this.appContext.cmsUtils.cacheRegisteredCmsServer(server.name, server.description,
 							server.ownerUri, server.connection);
 					});
 					return servers;

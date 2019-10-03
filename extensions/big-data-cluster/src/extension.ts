@@ -8,19 +8,27 @@
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { ControllerTreeDataProvider } from './bigDataCluster/tree/controllerTreeDataProvider';
-import { IconPath } from './bigDataCluster/constants';
+import { IconPathHelper } from './bigDataCluster/constants';
 import { TreeNode } from './bigDataCluster/tree/treeNode';
 import { AddControllerDialogModel, AddControllerDialog } from './bigDataCluster/dialog/addControllerDialog';
 import { ControllerNode } from './bigDataCluster/tree/controllerTreeNode';
+import { BdcDashboard } from './bigDataCluster/dialog/bdcDashboard';
+import { BdcDashboardModel } from './bigDataCluster/dialog/bdcDashboardModel';
 
 const localize = nls.loadMessageBundle();
 
-export function activate(extensionContext: vscode.ExtensionContext) {
-	IconPath.setExtensionContext(extensionContext);
-	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
+const AddControllerCommand = 'bigDataClusters.command.addController';
+const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
+const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
+const ManageControllerCommand = 'bigDataClusters.command.manageController';
 
+let throttleTimers: { [key: string]: any } = {};
+
+export function activate(extensionContext: vscode.ExtensionContext) {
+	IconPathHelper.setExtensionContext(extensionContext);
+	let treeDataProvider = new ControllerTreeDataProvider(extensionContext.globalState);
 	registerTreeDataProvider(treeDataProvider);
-	registerCommands(treeDataProvider);
+	registerCommands(extensionContext, treeDataProvider);
 }
 
 export function deactivate() {
@@ -30,20 +38,26 @@ function registerTreeDataProvider(treeDataProvider: ControllerTreeDataProvider):
 	vscode.window.registerTreeDataProvider('sqlBigDataCluster', treeDataProvider);
 }
 
-function registerCommands(treeDataProvider: ControllerTreeDataProvider): void {
-	vscode.commands.registerCommand('bigDataClusters.command.addController', (node?: TreeNode) => {
-		addBdcController(treeDataProvider, node);
+function registerCommands(context: vscode.ExtensionContext, treeDataProvider: ControllerTreeDataProvider): void {
+	vscode.commands.registerCommand(AddControllerCommand, (node?: TreeNode) => {
+		runThrottledAction(AddControllerCommand, () => addBdcController(treeDataProvider, node));
 	});
 
-	vscode.commands.registerCommand('bigDataClusters.command.deleteController', (node: TreeNode) => {
+	vscode.commands.registerCommand(DeleteControllerCommand, (node: TreeNode) => {
 		deleteBdcController(treeDataProvider, node);
 	});
 
-	vscode.commands.registerCommand('bigDataClusters.command.refreshController', (node: TreeNode) => {
+	vscode.commands.registerCommand(RefreshControllerCommand, (node: TreeNode) => {
 		if (!node) {
 			return;
 		}
 		treeDataProvider.notifyNodeChanged(node);
+	});
+
+	vscode.commands.registerCommand(ManageControllerCommand, async (node: ControllerNode) => {
+		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(node.url)}`;
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.url, node.auth, node.username, node.password));
+		dashboard.showDashboard();
 	});
 }
 
@@ -78,8 +92,24 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 }
 
 function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): void {
-	let deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.username);
+	let deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
 	if (deleted) {
 		treeDataProvider.saveControllers();
 	}
+}
+
+/**
+ * Throttles actions to avoid bug where on clicking in tree, action gets called twice
+ * instead of once. Any right-click action is safe, just the default on-click action in a tree
+ */
+function runThrottledAction(id: string, action: () => void) {
+	let timer = throttleTimers[id];
+	if (!timer) {
+		throttleTimers[id] = timer = setTimeout(() => {
+			action();
+			clearTimeout(timer);
+			throttleTimers[id] = undefined;
+		}, 150);
+	}
+	// else ignore this as we got an identical action in the last 150ms
 }

@@ -25,15 +25,16 @@ import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/
 import { ILabelService } from 'vs/platform/label/common/label';
 import { Schemas } from 'vs/base/common/network';
 import { isWeb } from 'vs/base/common/platform';
+import { IContextKeyService } from 'vs/platform/contextkey/common/contextkey';
 
 export class EmptyView extends ViewletPanel {
 
 	static readonly ID: string = 'workbench.explorer.emptyView';
 	static readonly NAME = nls.localize('noWorkspace', "No Folder Opened");
 
-	private button: Button;
-	private messageElement: HTMLElement;
-	private titleElement: HTMLElement;
+	private button!: Button;
+	private messageElement!: HTMLElement;
+	private titleElement!: HTMLElement;
 
 	constructor(
 		options: IViewletViewOptions,
@@ -44,20 +45,24 @@ export class EmptyView extends ViewletPanel {
 		@IWorkspaceContextService private readonly contextService: IWorkspaceContextService,
 		@IConfigurationService configurationService: IConfigurationService,
 		@IWorkbenchEnvironmentService private environmentService: IWorkbenchEnvironmentService,
-		@ILabelService private labelService: ILabelService
+		@ILabelService private labelService: ILabelService,
+		@IContextKeyService contextKeyService: IContextKeyService
 	) {
-		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: nls.localize('explorerSection', "Files Explorer Section") }, keybindingService, contextMenuService, configurationService);
+		super({ ...(options as IViewletPanelOptions), ariaHeaderLabel: nls.localize('explorerSection', "Files Explorer Section") }, keybindingService, contextMenuService, configurationService, contextKeyService);
 		this._register(this.contextService.onDidChangeWorkbenchState(() => this.setLabels()));
 		this._register(this.labelService.onDidChangeFormatters(() => this.setLabels()));
 	}
 
 	renderHeader(container: HTMLElement): void {
+		const twisties = document.createElement('div');
+		DOM.addClasses(twisties, 'twisties', 'codicon', 'codicon-chevron-right');
+		container.appendChild(twisties);
+
 		const titleContainer = document.createElement('div');
 		DOM.addClass(titleContainer, 'title');
 		container.appendChild(titleContainer);
 
 		this.titleElement = document.createElement('span');
-		this.titleElement.textContent = name;
 		titleContainer.appendChild(this.titleElement);
 	}
 

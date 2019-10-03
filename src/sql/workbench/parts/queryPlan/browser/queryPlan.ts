@@ -13,7 +13,7 @@ import { dispose } from 'vs/base/common/lifecycle';
 import { QueryPlanState } from 'sql/workbench/parts/queryPlan/common/queryPlanState';
 
 export class QueryPlanTab implements IPanelTab {
-	public readonly title = localize('queryPlanTitle', 'Query Plan');
+	public readonly title = localize('queryPlanTitle', "Query Plan");
 	public readonly identifier = 'QueryPlanTab';
 	public readonly view: QueryPlanView;
 

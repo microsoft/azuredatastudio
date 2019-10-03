@@ -13,7 +13,7 @@ import { IErrorMessageService } from 'sql/platform/errorMessage/common/errorMess
 
 export class ErrorMessageService implements IErrorMessageService {
 
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _errorDialog: ErrorMessageDialog;
 
@@ -43,13 +43,13 @@ export class ErrorMessageService implements IErrorMessageService {
 		let defaultTitle: string;
 		switch (severity) {
 			case Severity.Error:
-				defaultTitle = localize('error', 'Error');
+				defaultTitle = localize('error', "Error");
 				break;
 			case Severity.Warning:
-				defaultTitle = localize('warning', 'Warning');
+				defaultTitle = localize('warning', "Warning");
 				break;
 			case Severity.Info:
-				defaultTitle = localize('info', 'Info');
+				defaultTitle = localize('info', "Info");
 		}
 		return defaultTitle;
 	}

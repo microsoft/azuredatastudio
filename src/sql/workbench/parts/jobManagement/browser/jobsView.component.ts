@@ -15,7 +15,7 @@ import { AgentViewComponent } from 'sql/workbench/parts/jobManagement/browser/ag
 import { RowDetailView } from 'sql/base/browser/ui/table/plugins/rowDetailView';
 import { JobCacheObject } from 'sql/platform/jobManagement/common/jobManagementService';
 import { EditJobAction, DeleteJobAction, NewJobAction, RunJobAction } from 'sql/platform/jobManagement/browser/jobActions';
-import { JobManagementUtilities } from 'sql/platform/jobManagement/common/jobManagementUtilities';
+import { JobManagementUtilities } from 'sql/platform/jobManagement/browser/jobManagementUtilities';
 import { HeaderFilter } from 'sql/base/browser/ui/table/plugins/headerFilter.plugin';
 import { IJobManagementService } from 'sql/platform/jobManagement/common/interfaces';
 import { JobManagementView, JobActionContext } from 'sql/workbench/parts/jobManagement/browser/jobManagementView';
@@ -52,22 +52,22 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 
 	private columns: Array<Slick.Column<any>> = [
 		{
-			name: nls.localize('jobColumns.name', 'Name'),
+			name: nls.localize('jobColumns.name', "Name"),
 			field: 'name',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
 			width: 150,
 			id: 'name'
 		},
-		{ name: nls.localize('jobColumns.lastRun', 'Last Run'), field: 'lastRun', width: 80, id: 'lastRun' },
-		{ name: nls.localize('jobColumns.nextRun', 'Next Run'), field: 'nextRun', width: 80, id: 'nextRun' },
-		{ name: nls.localize('jobColumns.enabled', 'Enabled'), field: 'enabled', width: 60, id: 'enabled' },
-		{ name: nls.localize('jobColumns.status', 'Status'), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
-		{ name: nls.localize('jobColumns.category', 'Category'), field: 'category', width: 100, id: 'category' },
-		{ name: nls.localize('jobColumns.runnable', 'Runnable'), field: 'runnable', width: 70, id: 'runnable' },
-		{ name: nls.localize('jobColumns.schedule', 'Schedule'), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
-		{ name: nls.localize('jobColumns.lastRunOutcome', 'Last Run Outcome'), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
+		{ name: nls.localize('jobColumns.lastRun', "Last Run"), field: 'lastRun', width: 80, id: 'lastRun' },
+		{ name: nls.localize('jobColumns.nextRun', "Next Run"), field: 'nextRun', width: 80, id: 'nextRun' },
+		{ name: nls.localize('jobColumns.enabled', "Enabled"), field: 'enabled', width: 60, id: 'enabled' },
+		{ name: nls.localize('jobColumns.status', "Status"), field: 'currentExecutionStatus', width: 50, id: 'currentExecutionStatus' },
+		{ name: nls.localize('jobColumns.category', "Category"), field: 'category', width: 100, id: 'category' },
+		{ name: nls.localize('jobColumns.runnable', "Runnable"), field: 'runnable', width: 70, id: 'runnable' },
+		{ name: nls.localize('jobColumns.schedule', "Schedule"), field: 'hasSchedule', width: 60, id: 'hasSchedule' },
+		{ name: nls.localize('jobColumns.lastRunOutcome', "Last Run Outcome"), field: 'lastRunOutcome', width: 100, id: 'lastRunOutcome' },
 		{
-			name: nls.localize('jobColumns.previousRuns', 'Previous Runs'),
+			name: nls.localize('jobColumns.previousRuns', "Previous Runs"),
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderChartsPostHistory(row, cell, value, columnDef, dataContext),
 			field: 'previousRuns',
 			width: 100,
@@ -507,11 +507,11 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 		if (runChart && runChart.length > 0) {
 			return `<table class="jobprevruns" id="${dataContext.id}">
 				<tr>
-					<td>${runChart[0] ? runChart[0] : '<div></div>'}</td>
-					<td>${runChart[1] ? runChart[1] : '<div></div>'}</td>
-					<td>${runChart[2] ? runChart[2] : '<div></div>'}</td>
-					<td>${runChart[3] ? runChart[3] : '<div></div>'}</td>
-					<td>${runChart[4] ? runChart[4] : '<div></div>'}</td>
+					<td>${runChart[0] ? runChart[0] : '<div class="bar0"></div>'}</td>
+					<td>${runChart[1] ? runChart[1] : '<div class="bar1"></div>'}</td>
+					<td>${runChart[2] ? runChart[2] : '<div class="bar2"></div>'}</td>
+					<td>${runChart[3] ? runChart[3] : '<div class="bar3"></div>'}</td>
+					<td>${runChart[4] ? runChart[4] : '<div class="bar4"></div>'}</td>
 				</tr>
 			</table>`;
 		} else {
@@ -610,10 +610,10 @@ export class JobsViewComponent extends JobManagementView implements OnInit, OnDe
 				if (self._agentViewComponent.expanded.has(job.jobId)) {
 					let lastJobHistory = jobHistories[jobHistories.length - 1];
 					let item = self.dataView.getItemById(job.jobId + '.error');
-					let noStepsMessage = nls.localize('jobsView.noSteps', 'No Steps available for this job.');
+					let noStepsMessage = nls.localize('jobsView.noSteps', "No Steps available for this job.");
 					let errorMessage = lastJobHistory ? lastJobHistory.message : noStepsMessage;
 					if (item) {
-						item['name'] = nls.localize('jobsView.error', 'Error: ') + errorMessage;
+						item['name'] = nls.localize('jobsView.error', "Error: ") + errorMessage;
 						self._agentViewComponent.setExpanded(job.jobId, item['name']);
 						self.dataView.updateItem(job.jobId + '.error', item);
 					}

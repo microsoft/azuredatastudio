@@ -26,7 +26,7 @@ export class NotebookConnection {
 
 	constructor(private _connectionProfile: IConnectionProfile) {
 		if (!this._connectionProfile) {
-			throw new Error(localize('connectionInfoMissing', 'connectionInfo is required'));
+			throw new Error(localize('connectionInfoMissing', "connectionInfo is required"));
 		}
 	}
 

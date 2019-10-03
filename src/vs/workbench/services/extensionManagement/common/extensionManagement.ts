@@ -19,7 +19,7 @@ export interface IExtensionManagementServer {
 }
 
 export interface IExtensionManagementServerService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	readonly localExtensionManagementServer: IExtensionManagementServer | null;
 	readonly remoteExtensionManagementServer: IExtensionManagementServer | null;
 	getExtensionManagementServer(location: URI): IExtensionManagementServer | null;
@@ -37,14 +37,14 @@ export const enum EnablementState {
 export const IExtensionEnablementService = createDecorator<IExtensionEnablementService>('extensionEnablementService');
 
 export interface IExtensionEnablementService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	readonly allUserExtensionsDisabled: boolean;
 
 	/**
 	 * Event to listen on for extension enablement changes
 	 */
-	onEnablementChanged: Event<IExtension[]>;
+	readonly onEnablementChanged: Event<readonly IExtension[]>;
 
 	/**
 	 * Returns the enablement state for the given extension
@@ -97,7 +97,7 @@ export interface IExtensionRecommendation {
 export const IExtensionTipsService = createDecorator<IExtensionTipsService>('extensionTipsService');
 
 export interface IExtensionTipsService {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 	getAllRecommendationsWithReason(): { [id: string]: { reasonId: ExtensionRecommendationReason, reasonText: string }; };
 	getFileBasedRecommendations(): IExtensionRecommendation[];
 	getOtherRecommendations(): Promise<IExtensionRecommendation[]>;
@@ -106,6 +106,10 @@ export interface IExtensionTipsService {
 	toggleIgnoredRecommendation(extensionId: string, shouldIgnore: boolean): void;
 	getAllIgnoredRecommendations(): { global: string[], workspace: string[] };
 	onRecommendationChange: Event<RecommendationChangeNotification>;
+	// {{SQL CARBON EDIT}}
+	getRecommendedExtensionsByScenario(scenarioType: string): Promise<IExtensionRecommendation[]>;
+	promptRecommendedExtensionsByScenario(scenarioType: string): void;
+	// {{SQL CARBON EDIT}} - End
 }
 
 export const enum ExtensionRecommendationReason {

@@ -19,7 +19,7 @@ import { IModelDeltaDecoration, TrackedRangeStickiness } from 'vs/editor/common/
 import { ModelDecorationOptions } from 'vs/editor/common/model/textModel';
 import * as nls from 'vs/nls';
 import { ConfigurationTarget, IConfigurationService, overrideIdentifierFromKey } from 'vs/platform/configuration/common/configuration';
-import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationPropertySchema, IConfigurationRegistry, IConfigurationNode } from 'vs/platform/configuration/common/configurationRegistry';
+import { ConfigurationScope, Extensions as ConfigurationExtensions, IConfigurationPropertySchema, IConfigurationRegistry, IConfigurationNode, OVERRIDE_PROPERTY_PATTERN } from 'vs/platform/configuration/common/configurationRegistry';
 import { IContextMenuService } from 'vs/platform/contextview/browser/contextView';
 import { IInstantiationService } from 'vs/platform/instantiation/common/instantiation';
 import { Registry } from 'vs/platform/registry/common/platform';
@@ -31,6 +31,7 @@ import { IFilterResult, IPreferencesEditorModel, IPreferencesService, ISetting, 
 import { DefaultSettingsEditorModel, SettingsEditorModel, WorkspaceConfigurationEditorModel } from 'vs/workbench/services/preferences/common/preferencesModels';
 import { IMarkerService, IMarkerData, MarkerSeverity, MarkerTag } from 'vs/platform/markers/common/markers';
 import { IWorkbenchEnvironmentService } from 'vs/workbench/services/environment/common/environmentService';
+import { EditorOption } from 'vs/editor/common/config/editorOptions';
 
 export interface IPreferencesRenderer<T> extends IDisposable {
 	readonly preferencesModel: IPreferencesEditorModel<T>;
@@ -56,7 +57,7 @@ export class UserSettingsRenderer extends Disposable implements IPreferencesRend
 	private editSettingActionRenderer: EditSettingRenderer;
 	private highlightMatchesRenderer: HighlightMatchesRenderer;
 	private modelChangeDelayer: Delayer<void> = new Delayer<void>(200);
-	private associatedPreferencesModel: IPreferencesEditorModel<ISetting>;
+	private associatedPreferencesModel!: IPreferencesEditorModel<ISetting>;
 
 	private readonly _onFocusPreference = this._register(new Emitter<ISetting>());
 	readonly onFocusPreference: Event<ISetting> = this._onFocusPreference.event;
@@ -228,7 +229,7 @@ export class FolderSettingsRenderer extends UserSettingsRenderer implements IPre
 
 export class DefaultSettingsRenderer extends Disposable implements IPreferencesRenderer<ISetting> {
 
-	private _associatedPreferencesModel: IPreferencesEditorModel<ISetting>;
+	private _associatedPreferencesModel!: IPreferencesEditorModel<ISetting>;
 	private settingHighlighter: SettingHighlighter;
 	private settingsHeaderRenderer: DefaultSettingsHeaderRenderer;
 	private settingsGroupTitleRenderer: SettingsGroupTitleRenderer;
@@ -362,7 +363,7 @@ export interface HiddenAreasProvider {
 
 export class BracesHidingRenderer extends Disposable implements HiddenAreasProvider {
 	private _result: IFilterResult | undefined;
-	private _settingsGroups: ISettingsGroup[];
+	private _settingsGroups!: ISettingsGroup[];
 
 	constructor(private editor: ICodeEditor) {
 		super();
@@ -444,9 +445,9 @@ export class SettingsGroupTitleRenderer extends Disposable implements HiddenArea
 	private readonly _onHiddenAreasChanged = this._register(new Emitter<void>());
 	readonly onHiddenAreasChanged: Event<void> = this._onHiddenAreasChanged.event;
 
-	private settingsGroups: ISettingsGroup[];
+	private settingsGroups!: ISettingsGroup[];
 	private hiddenGroups: ISettingsGroup[] = [];
-	private settingsGroupTitleWidgets: SettingsGroupTitleWidget[];
+	private settingsGroupTitleWidgets!: SettingsGroupTitleWidget[];
 	private readonly renderDisposables = this._register(new DisposableStore());
 
 	constructor(private editor: ICodeEditor,
@@ -648,7 +649,7 @@ class EditSettingRenderer extends Disposable {
 	private editPreferenceWidgetForMouseMove: EditPreferenceWidget<IIndexedSetting>;
 
 	private settingsGroups: ISettingsGroup[] = [];
-	associatedPreferencesModel: IPreferencesEditorModel<ISetting>;
+	associatedPreferencesModel!: IPreferencesEditorModel<ISetting>;
 	private toggleEditPreferencesForMouseMoveDelayer: Delayer<void>;
 
 	private readonly _onUpdateSetting: Emitter<{ key: string, value: any, source: IIndexedSetting }> = new Emitter<{ key: string, value: any, source: IIndexedSetting }>();
@@ -690,7 +691,7 @@ class EditSettingRenderer extends Disposable {
 	}
 
 	private onConfigurationChanged(): void {
-		if (!this.editor.getConfiguration().viewInfo.glyphMargin) {
+		if (!this.editor.getOption(EditorOption.glyphMargin)) {
 			this.editPreferenceWidgetForCursorPosition.hide();
 			this.editPreferenceWidgetForMouseMove.hide();
 		}
@@ -740,7 +741,7 @@ class EditSettingRenderer extends Disposable {
 
 	private showEditPreferencesWidget(editPreferencesWidget: EditPreferenceWidget<ISetting>, settings: IIndexedSetting[]) {
 		const line = settings[0].valueRange.startLineNumber;
-		if (this.editor.getConfiguration().viewInfo.glyphMargin && this.marginFreeFromOtherDecorations(line)) {
+		if (this.editor.getOption(EditorOption.glyphMargin) && this.marginFreeFromOtherDecorations(line)) {
 			editPreferencesWidget.show(line, nls.localize('editTtile', "Edit"), settings);
 			const editPreferenceWidgetToHide = editPreferencesWidget === this.editPreferenceWidgetForCursorPosition ? this.editPreferenceWidgetForMouseMove : this.editPreferenceWidgetForCursorPosition;
 			editPreferenceWidgetToHide.hide();
@@ -915,7 +916,7 @@ class SettingHighlighter extends Disposable {
 
 	private fixedHighlighter: RangeHighlightDecorations;
 	private volatileHighlighter: RangeHighlightDecorations;
-	private highlightedSetting: ISetting;
+	private highlightedSetting!: ISetting;
 
 	constructor(private editor: ICodeEditor, private readonly focusEventEmitter: Emitter<ISetting>, private readonly clearFocusEventEmitter: Emitter<ISetting>,
 		@IInstantiationService instantiationService: IInstantiationService
@@ -960,9 +961,15 @@ class UnsupportedSettingsRenderer extends Disposable {
 		private settingsEditorModel: SettingsEditorModel,
 		@IMarkerService private markerService: IMarkerService,
 		@IWorkbenchEnvironmentService private workbenchEnvironmentService: IWorkbenchEnvironmentService,
+		@IConfigurationService private configurationService: IConfigurationService,
 	) {
 		super();
-		this._register(this.editor.getModel()!.onDidChangeContent(() => this.renderingDelayer.trigger(() => this.render())));
+		this._register(this.editor.getModel()!.onDidChangeContent(() => this.delayedRender()));
+		this._register(Event.filter(this.configurationService.onDidChangeConfiguration, e => e.source === ConfigurationTarget.DEFAULT)(() => this.delayedRender()));
+	}
+
+	private delayedRender(): void {
+		this.renderingDelayer.trigger(() => this.render());
 	}
 
 	public render(): void {
@@ -996,14 +1003,11 @@ class UnsupportedSettingsRenderer extends Disposable {
 								this.handleWorkspaceFolderConfiguration(setting, configuration, markerData);
 								break;
 						}
-					} else {
+					} else if (!OVERRIDE_PROPERTY_PATTERN.test(setting.key)) { // Ignore override settings (language specific settings)
 						markerData.push({
 							severity: MarkerSeverity.Hint,
 							tags: [MarkerTag.Unnecessary],
-							startLineNumber: setting.keyRange.startLineNumber,
-							startColumn: setting.keyRange.startColumn,
-							endLineNumber: setting.valueRange.endLineNumber,
-							endColumn: setting.valueRange.endColumn,
+							...setting.range,
 							message: nls.localize('unknown configuration setting', "Unknown Configuration Setting")
 						});
 					}
@@ -1014,15 +1018,12 @@ class UnsupportedSettingsRenderer extends Disposable {
 	}
 
 	private handleLocalUserConfiguration(setting: ISetting, configuration: IConfigurationNode, markerData: IMarkerData[]): void {
-		if (this.workbenchEnvironmentService.configuration.remote && configuration.scope === ConfigurationScope.MACHINE) {
+		if (this.workbenchEnvironmentService.configuration.remoteAuthority && (configuration.scope === ConfigurationScope.MACHINE || configuration.scope === ConfigurationScope.MACHINE_OVERRIDABLE)) {
 			markerData.push({
 				severity: MarkerSeverity.Hint,
 				tags: [MarkerTag.Unnecessary],
-				startLineNumber: setting.keyRange.startLineNumber,
-				startColumn: setting.keyRange.startColumn,
-				endLineNumber: setting.valueRange.endLineNumber,
-				endColumn: setting.valueRange.endColumn,
-				message: nls.localize('unsupportedRemoteMachineSetting', "This setting can be applied only in remote machine settings")
+				...setting.range,
+				message: nls.localize('unsupportedRemoteMachineSetting', "This setting cannot be applied now. It will be applied when you open local window.")
 			});
 		}
 	}
@@ -1056,10 +1057,7 @@ class UnsupportedSettingsRenderer extends Disposable {
 			markerData.push({
 				severity: MarkerSeverity.Hint,
 				tags: [MarkerTag.Unnecessary],
-				startLineNumber: setting.keyRange.startLineNumber,
-				startColumn: setting.keyRange.startColumn,
-				endLineNumber: setting.valueRange.endLineNumber,
-				endColumn: setting.valueRange.endColumn,
+				...setting.range,
 				message: nls.localize('unsupportedWindowSetting', "This setting cannot be applied now. It will be applied when you open this folder directly.")
 			});
 		}
@@ -1069,10 +1067,7 @@ class UnsupportedSettingsRenderer extends Disposable {
 		return {
 			severity: MarkerSeverity.Hint,
 			tags: [MarkerTag.Unnecessary],
-			startLineNumber: setting.keyRange.startLineNumber,
-			startColumn: setting.keyRange.startColumn,
-			endLineNumber: setting.keyRange.endLineNumber,
-			endColumn: setting.keyRange.endColumn,
+			...setting.range,
 			message: nls.localize('unsupportedApplicationSetting', "This setting can be applied only in application user settings")
 		};
 	}
@@ -1081,11 +1076,8 @@ class UnsupportedSettingsRenderer extends Disposable {
 		return {
 			severity: MarkerSeverity.Hint,
 			tags: [MarkerTag.Unnecessary],
-			startLineNumber: setting.keyRange.startLineNumber,
-			startColumn: setting.keyRange.startColumn,
-			endLineNumber: setting.valueRange.endLineNumber,
-			endColumn: setting.valueRange.endColumn,
-			message: nls.localize('unsupportedMachineSetting', "This setting can be applied only in user settings")
+			...setting.range,
+			message: nls.localize('unsupportedMachineSetting', "This setting can only be applied in user settings in local window or in remote settings in remote window.")
 		};
 	}
 
@@ -1099,7 +1091,7 @@ class UnsupportedSettingsRenderer extends Disposable {
 class WorkspaceConfigurationRenderer extends Disposable {
 
 	private decorationIds: string[] = [];
-	private associatedSettingsEditorModel: IPreferencesEditorModel<ISetting>;
+	private associatedSettingsEditorModel!: IPreferencesEditorModel<ISetting>;
 	private renderingDelayer: Delayer<void> = new Delayer<void>(200);
 
 	constructor(private editor: ICodeEditor, private workspaceSettingsEditorModel: SettingsEditorModel,

@@ -50,7 +50,7 @@ class ListElement implements IListElement {
 	saneDescription?: string;
 	saneDetail?: string;
 	hidden = false;
-	private _onChecked = new Emitter<boolean>();
+	private readonly _onChecked = new Emitter<boolean>();
 	onChecked = this._onChecked.event;
 	_checked?: boolean;
 	get checked() {
@@ -114,7 +114,7 @@ class ListElementRenderer implements IListRenderer<ListElement, IListElementTemp
 		const row2 = dom.append(rows, $('.quick-input-list-row'));
 
 		// Label
-		data.label = new IconLabel(row1, { supportHighlights: true, supportDescriptionHighlights: true });
+		data.label = new IconLabel(row1, { supportHighlights: true, supportDescriptionHighlights: true, supportOcticons: true });
 
 		// Detail
 		const detailContainer = dom.append(row2, $('.quick-input-list-label-meta'));
@@ -222,17 +222,17 @@ export class QuickInputList {
 	matchOnDescription = false;
 	matchOnDetail = false;
 	matchOnLabel = true;
-	private _onChangedAllVisibleChecked = new Emitter<boolean>();
+	private readonly _onChangedAllVisibleChecked = new Emitter<boolean>();
 	onChangedAllVisibleChecked: Event<boolean> = this._onChangedAllVisibleChecked.event;
-	private _onChangedCheckedCount = new Emitter<number>();
+	private readonly _onChangedCheckedCount = new Emitter<number>();
 	onChangedCheckedCount: Event<number> = this._onChangedCheckedCount.event;
-	private _onChangedVisibleCount = new Emitter<number>();
+	private readonly _onChangedVisibleCount = new Emitter<number>();
 	onChangedVisibleCount: Event<number> = this._onChangedVisibleCount.event;
-	private _onChangedCheckedElements = new Emitter<IQuickPickItem[]>();
+	private readonly _onChangedCheckedElements = new Emitter<IQuickPickItem[]>();
 	onChangedCheckedElements: Event<IQuickPickItem[]> = this._onChangedCheckedElements.event;
-	private _onButtonTriggered = new Emitter<IQuickPickItemButtonEvent<IQuickPickItem>>();
+	private readonly _onButtonTriggered = new Emitter<IQuickPickItemButtonEvent<IQuickPickItem>>();
 	onButtonTriggered = this._onButtonTriggered.event;
-	private _onLeave = new Emitter<void>();
+	private readonly _onLeave = new Emitter<void>();
 	onLeave: Event<void> = this._onLeave.event;
 	private _fireCheckedEvents = true;
 	private elementDisposables: IDisposable[] = [];
@@ -246,13 +246,13 @@ export class QuickInputList {
 		this.id = id;
 		this.container = dom.append(this.parent, $('.quick-input-list'));
 		const delegate = new ListElementDelegate();
-		this.list = this.instantiationService.createInstance(WorkbenchList, this.container, delegate, [new ListElementRenderer()], {
+		this.list = this.instantiationService.createInstance(WorkbenchList, 'QuickInput', this.container, delegate, [new ListElementRenderer()], {
 			identityProvider: { getId: element => element.saneLabel },
 			openController: { shouldOpen: () => false }, // Workaround #58124
 			setRowLineHeight: false,
 			multipleSelectionSupport: false,
 			horizontalScrolling: false
-		} as IListOptions<ListElement>) as WorkbenchList<ListElement>;
+		} as IListOptions<ListElement>);
 		this.list.getHTMLElement().id = id;
 		this.disposables.push(this.list);
 		this.disposables.push(this.list.onKeyDown(e => {

@@ -38,14 +38,14 @@ export class OperatorsViewComponent extends JobManagementView implements OnInit,
 
 	private columns: Array<Slick.Column<any>> = [
 		{
-			name: nls.localize('jobOperatorsView.name', 'Name'),
+			name: nls.localize('jobOperatorsView.name', "Name"),
 			field: 'name',
 			formatter: (row, cell, value, columnDef, dataContext) => this.renderName(row, cell, value, columnDef, dataContext),
 			width: 200,
 			id: 'name'
 		},
-		{ name: nls.localize('jobOperatorsView.emailAddress', 'Email Address'), field: 'emailAddress', width: 200, id: 'emailAddress' },
-		{ name: nls.localize('jobOperatorsView.enabled', 'Enabled'), field: 'enabled', width: 200, id: 'enabled' },
+		{ name: nls.localize('jobOperatorsView.emailAddress', "Email Address"), field: 'emailAddress', width: 200, id: 'emailAddress' },
+		{ name: nls.localize('jobOperatorsView.enabled', "Enabled"), field: 'enabled', width: 200, id: 'enabled' },
 	];
 
 	private options: Slick.GridOptions<any> = {

@@ -66,7 +66,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 	protected registerListeners(): void {
 		super.registerListeners();
 		if (this._serverDescriptionInputBox) {
-			this._toDispose.push(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
+			this._register(styler.attachInputBoxStyler(this._serverDescriptionInputBox, this._themeService));
 		}
 	}
 
@@ -118,7 +118,7 @@ export class CmsConnectionWidget extends ConnectionWidget {
 		// Registered Server Description
 		let serverDescriptionOption = this._optionsMaps['serverDescription'];
 		if (serverDescriptionOption) {
-			serverDescriptionOption.displayName = localize('serverDescription', 'Server Description (optional)');
+			serverDescriptionOption.displayName = localize('serverDescription', "Server Description (optional)");
 			let serverDescriptionBuilder = DialogHelper.appendRow(this._tableContainer, serverDescriptionOption.displayName, 'connection-label', 'connection-input', 'server-description-input');
 			this._serverDescriptionInputBox = new InputBox(serverDescriptionBuilder, this._contextViewService, { type: 'textarea', flexibleHeight: true });
 			this._serverDescriptionInputBox.setHeight('75px');

@@ -3,7 +3,7 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-import { Disposable } from 'vs/base/common/lifecycle';
+import { Disposable, dispose, IDisposable } from 'vs/base/common/lifecycle';
 import { isString } from 'vs/base/common/types';
 
 import * as azdata from 'azdata';
@@ -19,6 +19,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	options: { [name: string]: any } = {};
 
 	private _providerName: string;
+	private _onCapabilitiesRegisteredDisposable: IDisposable;
 	protected _serverCapabilities: ConnectionProviderProperties;
 	private static readonly SqlAuthentication = 'SqlLogin';
 	public static readonly ProviderPropertyName = 'providerName';
@@ -69,17 +70,27 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 	public set providerName(name: string) {
 		this._providerName = name;
-		if (!this._serverCapabilities) {
+		if (!this._serverCapabilities && this.capabilitiesService) {
 			let capabilities = this.capabilitiesService.getCapabilities(this.providerName);
 			if (capabilities) {
 				this._serverCapabilities = capabilities.connection;
 			}
-			this._register(this.capabilitiesService.onCapabilitiesRegistered(e => {
+			if (this._onCapabilitiesRegisteredDisposable) {
+				dispose(this._onCapabilitiesRegisteredDisposable);
+			}
+			this._onCapabilitiesRegisteredDisposable = this.capabilitiesService.onCapabilitiesRegistered(e => {
 				if (e.connection.providerId === this.providerName) {
 					this._serverCapabilities = e.connection;
 				}
-			}));
+			});
 		}
+	}
+
+	public dispose(): void {
+		if (this._onCapabilitiesRegisteredDisposable) {
+			dispose(this._onCapabilitiesRegisteredDisposable);
+		}
+		super.dispose();
 	}
 
 	public clone(): ProviderConnectionInfo {
@@ -93,27 +104,27 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public get connectionName(): string {
-		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.connectionName);
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.connectionName)!;
 	}
 
 	public get serverName(): string {
-		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.serverName);
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.serverName)!;
 	}
 
 	public get databaseName(): string {
-		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.databaseName);
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.databaseName)!;
 	}
 
 	public get userName(): string {
-		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.userName);
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.userName)!;
 	}
 
 	public get password(): string {
-		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.password);
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.password)!;
 	}
 
 	public get authenticationType(): string {
-		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.authType);
+		return this.getSpecialTypeOptionValue(ConnectionOptionSpecialType.authType)!;
 	}
 
 	public set connectionName(value: string) {
@@ -181,6 +192,11 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 	}
 
 	public isPasswordRequired(): boolean {
+		// if there is no provider capabilities metadata assume a password is not required
+		if (!this._serverCapabilities) {
+			return false;
+		}
+
 		let optionMetadata = this._serverCapabilities.connectionOptions.find(
 			option => option.specialValueType === ConnectionOptionSpecialType.password);
 		let isPasswordRequired: boolean = optionMetadata.isRequired;
@@ -190,7 +206,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return isPasswordRequired;
 	}
 
-	private getSpecialTypeOptionValue(type: string): string {
+	private getSpecialTypeOptionValue(type: string): string | undefined {
 		let name = this.getSpecialTypeOptionName(type);
 		if (name) {
 			return this.options[name];
@@ -227,7 +243,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 
 		let idValues: string[] = [];
 		for (let index = 0; index < idNames.length; index++) {
-			let value = this.options[idNames[index]];
+			let value = this.options[idNames[index]!];
 			value = value ? value : '';
 			idValues.push(`${idNames[index]}${ProviderConnectionInfo.nameValueSeparator}${value}`);
 		}
@@ -250,7 +266,7 @@ export class ProviderConnectionInfo extends Disposable implements azdata.Connect
 		return providerId;
 	}
 
-	public getSpecialTypeOptionName(type: string): string {
+	public getSpecialTypeOptionName(type: string): string | undefined {
 		if (this._serverCapabilities) {
 			let optionMetadata = this._serverCapabilities.connectionOptions.find(o => o.specialValueType === type);
 			return !!optionMetadata ? optionMetadata.name : undefined;

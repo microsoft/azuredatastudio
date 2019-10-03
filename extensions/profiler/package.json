@@ -2,12 +2,12 @@
 	"name": "profiler",
 	"displayName": "SQL Server Profiler",
 	"description": "SQL Server Profiler for Azure Data Studio",
-	"version": "0.9.0",
+	"version": "0.10.0",
 	"publisher": "Microsoft",
 	"preview": true,
 	"license": "https://raw.githubusercontent.com/Microsoft/azuredatastudio/master/LICENSE.txt",
 	"icon": "images/sqlserver.png",
-	"aiKey": "AIF-5574968e-856d-40d2-af67-c89a14e76412",
+	"aiKey": "AIF-444c3af9-8e69-4462-ab49-4191e6ad1916",
 	"engines": {
 		"vscode": "0.10.x"
 	},

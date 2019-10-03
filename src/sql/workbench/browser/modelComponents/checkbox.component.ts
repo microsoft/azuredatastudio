@@ -20,7 +20,7 @@ import { IWorkbenchThemeService } from 'vs/workbench/services/themes/common/work
 @Component({
 	selector: 'modelview-checkbox',
 	template: `
-		<div #input [style.width]="getWidth()"></div>
+		<div #input [style.width]="getWidth()" [style.height]="getHeight()"></div>
 	`
 })
 export default class CheckBoxComponent extends ComponentBase implements IComponent, OnDestroy, AfterViewInit {
@@ -81,6 +81,12 @@ export default class CheckBoxComponent extends ComponentBase implements ICompone
 			this._input.enable();
 		} else {
 			this._input.disable();
+		}
+		if (this.width) {
+			this._input.setWidth(this.convertSize(this.width));
+		}
+		if (this.height) {
+			this._input.setHeight(this.convertSize(this.height));
 		}
 	}
 

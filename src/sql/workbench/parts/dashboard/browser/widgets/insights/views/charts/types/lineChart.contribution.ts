@@ -16,7 +16,7 @@ const properties: IJSONSchema = {
 	properties: {
 		dataType: {
 			type: 'string',
-			description: nls.localize('dataTypeDescription', 'Indicates data property of a data set for a chart.'),
+			description: nls.localize('dataTypeDescription', "Indicates data property of a data set for a chart."),
 			default: 'number',
 			enum: ['number', 'point'],
 			enumDescriptions: ['Set "number" if the data values are contained in 1 column.', 'Set "point" if the data is an {x,y} combination requiring 2 columns for each value.']

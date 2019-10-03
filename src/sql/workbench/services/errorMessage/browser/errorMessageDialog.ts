@@ -22,6 +22,7 @@ import { IAction } from 'vs/base/common/actions';
 import * as DOM from 'vs/base/browser/dom';
 import { ILogService } from 'vs/platform/log/common/log';
 import { IWorkbenchLayoutService } from 'vs/workbench/services/layout/browser/layoutService';
+import { ITextResourcePropertiesService } from 'vs/editor/common/services/resourceConfiguration';
 
 const maxActions = 1;
 
@@ -47,11 +48,12 @@ export class ErrorMessageDialog extends Modal {
 		@IWorkbenchLayoutService layoutService: IWorkbenchLayoutService,
 		@ITelemetryService telemetryService: ITelemetryService,
 		@IContextKeyService contextKeyService: IContextKeyService,
-		@ILogService logService: ILogService
+		@ILogService logService: ILogService,
+		@ITextResourcePropertiesService textResourcePropertiesService: ITextResourcePropertiesService
 	) {
-		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
-		this._okLabel = localize('errorMessageDialog.ok', 'OK');
-		this._closeLabel = localize('errorMessageDialog.close', 'Close');
+		super('', TelemetryKeys.ErrorMessage, telemetryService, layoutService, clipboardService, themeService, logService, textResourcePropertiesService, contextKeyService, { isFlyout: false, hasTitleIcon: true });
+		this._okLabel = localize('errorMessageDialog.ok', "OK");
+		this._closeLabel = localize('errorMessageDialog.close', "Close");
 	}
 
 	protected renderBody(container: HTMLElement) {
@@ -71,7 +73,7 @@ export class ErrorMessageDialog extends Modal {
 	}
 
 	private createCopyButton() {
-		let copyButtonLabel = localize('copyDetails', 'Copy details');
+		let copyButtonLabel = localize('copyDetails', "Copy details");
 		this._copyButton = this.addFooterButton(copyButtonLabel, () => this._clipboardService.writeText(this._messageDetails), 'left');
 		this._copyButton.icon = 'icon scriptToClipboard';
 		this._copyButton.element.title = copyButtonLabel;

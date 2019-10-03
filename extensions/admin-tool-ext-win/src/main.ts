@@ -10,8 +10,9 @@ import * as vscode from 'vscode';
 import { TelemetryReporter, TelemetryViews } from './telemetry';
 import { doubleEscapeSingleQuotes, backEscapeDoubleQuotes, getTelemetryErrorType } from './utils';
 import { ChildProcess, exec } from 'child_process';
+import { promises as fs } from 'fs';
+
 const localize = nls.loadMessageBundle();
-const ssmsMinVer = JSON.parse(JSON.stringify(require('./config.json'))).version;
 
 let exePath: string;
 const runningProcesses: Map<number, ChildProcess> = new Map<number, ChildProcess>();
@@ -66,6 +67,8 @@ export interface LaunchSsmsDialogParams {
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
 	// This is for Windows-specific support so do nothing on other platforms
 	if (process.platform === 'win32') {
+		const rawConfig = await fs.readFile(path.join(context.extensionPath, 'config.json'));
+		const ssmsMinVer = JSON.parse(rawConfig.toString()).version;
 		exePath = path.join(context.extensionPath, 'ssmsmin', 'Windows', ssmsMinVer, 'ssmsmin.exe');
 		registerCommands(context);
 	}
