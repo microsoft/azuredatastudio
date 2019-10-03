@@ -36,15 +36,15 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 
 	ngAfterContentInit() {
 		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
-			this.onCellCollapse(isCollapsed);
+			this.handleCellCollapse(isCollapsed);
 		}));
-		this.onCellCollapse(this.cellModel.isCollapsed);
+		this.handleCellCollapse(this.cellModel.isCollapsed);
 		if (this.activeCellId === this.cellModel.id) {
 			this.toggleIconVisibility(true);
 		}
 	}
 
-	private onCellCollapse(isCollapsed: boolean): void {
+	private handleCellCollapse(isCollapsed: boolean): void {
 		let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
 		let expandButton = <HTMLElement>this.expandCellButtonElement.nativeElement;
 		if (isCollapsed) {
