@@ -163,7 +163,7 @@ export class AclEntry {
  * Maps the possible entry types into their corresponding values for using in an ACL string
  * @param type The type to convert
  */
-function getAclEntryType(type: AclEntryType | AclPermissionType) {
+function getAclEntryType(type: AclEntryType | AclPermissionType): AclEntryType {
 	switch (type) {
 		case AclPermissionType.owner:
 			return AclEntryType.user;
