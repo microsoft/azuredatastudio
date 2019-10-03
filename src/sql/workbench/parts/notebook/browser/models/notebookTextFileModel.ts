@@ -104,10 +104,9 @@ export class NotebookTextFileModel {
 					text: textEscapedQuotesAndBackslashes.split(this._eol).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
 				}]);
 			});
-		} else {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public transformAndApplyEditForOutputUpdate(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel): boolean {
