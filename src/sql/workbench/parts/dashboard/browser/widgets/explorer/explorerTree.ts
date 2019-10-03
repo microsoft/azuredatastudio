@@ -220,7 +220,7 @@ export class ExplorerRenderer implements tree.IRenderer {
 					templateData.icon.className = 'icon scalarvaluedfunction';
 					break;
 				case MetadataType.SProc:
-					templateData.icon.className = 'icon stored-procedure';
+					templateData.icon.className = 'icon storedprocedure';
 					break;
 				case MetadataType.Table:
 					templateData.icon.className = 'icon table';

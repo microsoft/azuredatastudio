@@ -115,7 +115,10 @@ export async function getResultsString(provider: IGridDataProvider, selection: S
 			}
 			copyString = copyString.concat('\t');
 		}
+		copyString = copyString.concat(eol);
 	}
+	// Removes EoL from the end of the string
+	copyString = copyString.slice(0, -1 * eol.length);
 
 	return copyString;
 }

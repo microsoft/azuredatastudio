@@ -753,7 +753,7 @@
       <source xml:lang="en">default</source>
     </trans-unit>
   </body></file>
-  <file original="extensions/schema-compare/out/schemaCompareResult" source-language="en" datatype="plaintext"><body>
+  <file original="extensions/schema-compare/out/schemaCompareMainWindow" source-language="en" datatype="plaintext"><body>
     <trans-unit id="schemaCompare.CompareDetailsTitle">
       <source xml:lang="en">Compare Details</source>
     </trans-unit>

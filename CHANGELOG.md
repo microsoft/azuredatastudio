@@ -1,5 +1,16 @@
 # Change Log
 
+## Version 1.12.0
+* Release date: October 2, 2019
+* Release status: General Availability
+
+## What's new in this version
+* Announcing the Query History panel
+* Improved Query Results Grid copy selection support
+* TempDB page added to Server Reports extension
+* PowerShell extension update
+* Resolved [bugs and issues](https://github.com/microsoft/azuredatastudio/milestone/42?closed=1).
+
 ## Version 1.11.0
 * Release date: September 10, 2019
 * Release status: General Availability

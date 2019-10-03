@@ -19,9 +19,10 @@ import { getStandaloneServer } from './testConfig';
 import { stressify } from 'adstest';
 
 let schemaCompareService: mssql.ISchemaCompareService;
+let dacfxService: mssql.IDacFxService;
 let schemaCompareTester: SchemaCompareTester;
-let dacpac1: string = path.join(__dirname, 'testData/Database1.dacpac');
-let dacpac2: string = path.join(__dirname, 'testData/Database2.dacpac');
+const dacpac1: string = path.join(__dirname, '../testData/Database1.dacpac');
+const dacpac2: string = path.join(__dirname, '../testData/Database2.dacpac');
 const SERVER_CONNECTION_TIMEOUT: number = 3000;
 const retryCount = 24; // 2 minutes
 const folderPath = path.join(os.tmpdir(), 'SchemaCompareTest');
@@ -38,13 +39,14 @@ if (context.RunTest) {
 				attempts--;
 				await utils.sleep(1000); // To ensure the providers are registered.
 			}
+			dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 			schemaCompareTester = new SchemaCompareTester();
 			console.log(`Start schema compare tests`);
 		});
 		test('Schema compare dacpac to dacpac comparison and scmp', async function () {
 			await schemaCompareTester.SchemaCompareDacpacToDacpac();
 		});
-		test('Schema compare database to database comparison, script generation, and scmp', async function () {
+		test('Schema compare database to database comparison, script generation, and scmp @UNSTABLE@', async function () {
 			await schemaCompareTester.SchemaCompareDatabaseToDatabase();
 		});
 		// TODO: figure out why this is failing with Error: This editor is not connected to a database Parameter name: OwnerUri
@@ -120,7 +122,6 @@ class SchemaCompareTester {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			let dacfxService = ((await vscode.extensions.getExtension(mssql.extension.name).activate() as mssql.IExtension)).dacFx;
 			assert(dacfxService, 'DacFx Service Provider is not available');
 			let result1 = await dacfxService.deployDacpac(dacpac1, sourceDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 			let result2 = await dacfxService.deployDacpac(dacpac2, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
@@ -178,8 +179,8 @@ class SchemaCompareTester {
 			fs.unlinkSync(filepath);
 		}
 		finally {
-			await utils.deleteDB(sourceDB, ownerUri);
-			await utils.deleteDB(targetDB, ownerUri);
+			await utils.deleteDB(server, sourceDB, ownerUri);
+			await utils.deleteDB(server, targetDB, ownerUri);
 		}
 	}
 
@@ -200,9 +201,8 @@ class SchemaCompareTester {
 		const targetDB: string = 'ads_schemaCompare_targetDB_' + now.getTime().toString();
 
 		try {
-			let dacfxService = (vscode.extensions.getExtension('mssql').exports as mssql.IExtension).dacFx;
 			assert(dacfxService, 'DacFx Service Provider is not available');
-			let result = await dacfxService.deployDacpac(path.join(__dirname, 'testData/Database2.dacpac'), targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
+			let result = await dacfxService.deployDacpac(dacpac2, targetDB, true, ownerUri, azdata.TaskExecutionMode.execute);
 
 			assert(result.success === true, 'Deploy database 2 (target) should succeed');
 
@@ -249,7 +249,7 @@ class SchemaCompareTester {
 			assert(openScmpResult.targetEndpointInfo.databaseName === target.databaseName, `Expected: target database to be ${target.databaseName}, Actual: ${openScmpResult.targetEndpointInfo.databaseName}`);
 		}
 		finally {
-			await utils.deleteDB(targetDB, ownerUri);
+			await utils.deleteDB(server, targetDB, ownerUri);
 		}
 	}
 

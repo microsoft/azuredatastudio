@@ -22,19 +22,22 @@ const localize = nls.loadMessageBundle();
 const JUPYTER_NOTEBOOK_PROVIDER = 'jupyter';
 const msgSampleCodeDataFrame = localize('msgSampleCodeDataFrame', "This sample code loads the file into a data frame and shows the first 10 results.");
 const noNotebookVisible = localize('noNotebookVisible', "No notebook editor is active");
-
+const BOOKS_VIEWID = 'bookTreeView';
+const READONLY_BOOKS_VIEWID = 'untitledBookTreeView';
 let controller: JupyterController;
 type ChooseCellType = { label: string, id: CellType };
 
 export async function activate(extensionContext: vscode.ExtensionContext): Promise<IExtensionApi> {
-	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.workspaceFolders || [], extensionContext);
-	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider('bookTreeView', bookTreeViewProvider));
-	extensionContext.subscriptions.push(azdata.nb.registerNavigationProvider(bookTreeViewProvider));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => bookTreeViewProvider.openBook(bookPath, openAsUntitled, urlToOpen)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebookAsUntitled', (resource: string) => bookTreeViewProvider.openNotebookAsUntitled(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource: string) => bookTreeViewProvider.openNotebook(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource: string) => bookTreeViewProvider.openMarkdown(resource)));
-	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource: string) => bookTreeViewProvider.openExternalLink(resource)));
+	const bookTreeViewProvider = new BookTreeViewProvider(vscode.workspace.workspaceFolders || [], extensionContext, false, BOOKS_VIEWID);
+	const untitledBookTreeViewProvider = new BookTreeViewProvider([], extensionContext, true, READONLY_BOOKS_VIEWID);
+	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(BOOKS_VIEWID, bookTreeViewProvider));
+	extensionContext.subscriptions.push(vscode.window.registerTreeDataProvider(READONLY_BOOKS_VIEWID, untitledBookTreeViewProvider));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openBook', (bookPath: string, openAsUntitled: boolean, urlToOpen?: string) => openAsUntitled ? untitledBookTreeViewProvider.openBook(bookPath, urlToOpen) : bookTreeViewProvider.openBook(bookPath, urlToOpen)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openNotebook', (resource) => bookTreeViewProvider.openNotebook(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openUntitledNotebook', (resource) => untitledBookTreeViewProvider.openNotebookAsUntitled(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openMarkdown', (resource) => bookTreeViewProvider.openMarkdown(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('bookTreeView.openExternalLink', (resource) => bookTreeViewProvider.openExternalLink(resource)));
+	extensionContext.subscriptions.push(vscode.commands.registerCommand('notebook.command.saveBook', () => untitledBookTreeViewProvider.saveJupyterBooks()));
 
 	extensionContext.subscriptions.push(vscode.commands.registerCommand('_notebook.command.new', (context?: azdata.ConnectedContext) => {
 		let connectionProfile: azdata.IConnectionProfile = undefined;
@@ -221,8 +224,8 @@ async function analyzeNotebook(oeContext?: azdata.ObjectExplorerContext): Promis
 		providerId: JUPYTER_NOTEBOOK_PROVIDER,
 		preview: false,
 		defaultKernel: {
-			name: 'pyspark3kernel',
-			display_name: 'PySpark3',
+			name: 'pysparkkernel',
+			display_name: 'PySpark',
 			language: 'python'
 		}
 	});

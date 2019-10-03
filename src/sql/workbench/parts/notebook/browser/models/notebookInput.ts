@@ -341,10 +341,17 @@ export class NotebookInput extends EditorInput {
 		} else {
 			let textOrUntitledEditorModel: UntitledEditorModel | IEditorModel;
 			if (this.resource.scheme === Schemas.untitled) {
-				textOrUntitledEditorModel = this._untitledEditorModel ? this._untitledEditorModel : await this._textInput.resolve();
-			}
-			else {
+				if (this._untitledEditorModel) {
+					this._untitledEditorModel.textEditorModel.onBeforeAttached();
+					textOrUntitledEditorModel = this._untitledEditorModel;
+				} else {
+					let resolvedInput = await this._textInput.resolve();
+					resolvedInput.textEditorModel.onBeforeAttached();
+					textOrUntitledEditorModel = resolvedInput;
+				}
+			} else {
 				const textEditorModelReference = await this.textModelService.createModelReference(this.resource);
+				textEditorModelReference.object.textEditorModel.onBeforeAttached();
 				textOrUntitledEditorModel = await textEditorModelReference.object.load();
 			}
 			this._model = this.instantiationService.createInstance(NotebookEditorModel, this.resource, textOrUntitledEditorModel);
@@ -385,6 +392,9 @@ export class NotebookInput extends EditorInput {
 	}
 
 	public dispose(): void {
+		if (this._model) {
+			this._model.editorModel.textEditorModel.onBeforeDetached();
+		}
 		this._disposeContainer();
 		super.dispose();
 	}

@@ -16,6 +16,7 @@ define(["require", "vs/base/common/errors", "exports"], function (require, error
 	require.__$__nodeRequire('slickgrid/slick.grid');
 	require.__$__nodeRequire('slickgrid/slick.editors');
 	require.__$__nodeRequire('slickgrid/slick.dataview');
+	require.__$__nodeRequire('slickgrid/plugins/slick.cellrangedecorator');
 	require.__$__nodeRequire('reflect-metadata');
 	require.__$__nodeRequire('zone.js/dist/zone');
 	require.__$__nodeRequire('zone.js/dist/zone-error');

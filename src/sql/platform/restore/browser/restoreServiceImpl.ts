@@ -29,7 +29,7 @@ import { ILogService } from 'vs/platform/log/common/log';
 
 export class RestoreService implements IRestoreService {
 
-	public _serviceBrand: any;
+	public _serviceBrand: undefined;
 	private _providers: { [handle: string]: azdata.RestoreProvider; } = Object.create(null);
 
 	constructor(
@@ -132,7 +132,7 @@ export class RestoreService implements IRestoreService {
 }
 
 export class RestoreDialogController implements IRestoreDialogController {
-	_serviceBrand: any;
+	_serviceBrand: undefined;
 
 	private _restoreDialogs: { [provider: string]: RestoreDialog | OptionsDialog } = {};
 	private _currentProvider: string;

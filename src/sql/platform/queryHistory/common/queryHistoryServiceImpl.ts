@@ -13,6 +13,8 @@ import { QueryHistoryInfo, QueryStatus } from 'sql/platform/queryHistory/common/
 import { IConnectionManagementService } from 'sql/platform/connection/common/connectionManagement';
 import { Event, Emitter } from 'vs/base/common/event';
 import { Disposable } from 'vs/base/common/lifecycle';
+import { IConfigurationService, IConfigurationChangeEvent } from 'vs/platform/configuration/common/configuration';
+import { IConfigurationChangedEvent } from 'sql/workbench/parts/profiler/browser/profilerFindWidget';
 
 /**
  * Service that collects the results of executed queries
@@ -23,20 +25,30 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	// MEMBER VARIABLES ////////////////////////////////////////////////////
 	private _infos: QueryHistoryInfo[] = [];
 	private _onInfosUpdated: Emitter<QueryHistoryInfo[]> = new Emitter<QueryHistoryInfo[]>();
-
+	private _onQueryHistoryCaptureChanged: Emitter<boolean> = new Emitter<boolean>();
+	private _captureEnabled;
 	// EVENTS //////////////////////////////////////////////////////////////
 	public get onInfosUpdated(): Event<QueryHistoryInfo[]> { return this._onInfosUpdated.event; }
-
+	public get onQueryHistoryCaptureChanged(): Event<boolean> { return this._onQueryHistoryCaptureChanged.event; }
 	// CONSTRUCTOR /////////////////////////////////////////////////////////
 	constructor(
 		@IQueryModelService _queryModelService: IQueryModelService,
 		@IModelService _modelService: IModelService,
-		@IConnectionManagementService _connectionManagementService: IConnectionManagementService
+		@IConnectionManagementService _connectionManagementService: IConnectionManagementService,
+		@IConfigurationService private _configurationService: IConfigurationService
 	) {
 		super();
 
+		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
+
+		this._register(this._configurationService.onDidChangeConfiguration((e: IConfigurationChangeEvent) => {
+			if (e.affectedKeys.includes('queryHistory.captureEnabled')) {
+				this.updateCaptureEnabled();
+			}
+		}));
+
 		this._register(_queryModelService.onQueryEvent((e: IQueryEvent) => {
-			if (e.type === 'queryStop') {
+			if (this._captureEnabled && e.type === 'queryStop') {
 				const uri: URI = URI.parse(e.uri);
 				// VS Range is 1 based so offset values by 1. The endLine we get back from SqlToolsService is incremented
 				// by 1 from the original input range sent in as well so take that into account and don't modify
@@ -63,6 +75,13 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 	}
 
 	/**
+	 * Whether Query History capture is currently enabled
+	 */
+	public get captureEnabled(): boolean {
+		return this._captureEnabled;
+	}
+
+	/**
 	 * Gets all the current query history infos
 	 */
 	public getQueryHistoryInfos(): QueryHistoryInfo[] {
@@ -71,11 +90,32 @@ export class QueryHistoryService extends Disposable implements IQueryHistoryServ
 
 	/**
 	 * Deletes infos from the cache with the same ID as the given QueryHistoryInfo
-	 * @param info TheQueryHistoryInfo to delete
+	 * @param info The QueryHistoryInfo to delete
 	 */
-	public deleteQueryHistoryInfo(info: QueryHistoryInfo) {
+	public deleteQueryHistoryInfo(info: QueryHistoryInfo): void {
 		this._infos = this._infos.filter(i => i.id !== info.id);
 		this._onInfosUpdated.fire(this._infos);
+	}
+
+	/**
+	 * Clears all infos from the cache
+	 */
+	public clearQueryHistory(): void {
+		this._infos = [];
+		this._onInfosUpdated.fire(this._infos);
+	}
+
+	public async toggleCaptureEnabled(): Promise<void> {
+		const captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
+		await this._configurationService.updateValue('queryHistory.captureEnabled', !captureEnabled);
+	}
+
+	private updateCaptureEnabled(): void {
+		const currentCaptureEnabled = this._captureEnabled;
+		this._captureEnabled = !!this._configurationService.getValue<boolean>('queryHistory.captureEnabled');
+		if (currentCaptureEnabled !== this._captureEnabled) {
+			this._onQueryHistoryCaptureChanged.fire(this._captureEnabled);
+		}
 	}
 
 	/**

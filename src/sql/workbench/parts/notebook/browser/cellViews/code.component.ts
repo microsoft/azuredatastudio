@@ -176,10 +176,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 		}));
 	}
 
-	ngAfterViewInit(): void {
-		this._layoutEmitter.fire();
-	}
-
 	get model(): NotebookModel {
 		return this._model;
 	}
@@ -225,8 +221,6 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 			this.cellModel.source = this._editorModel.getValue();
 			this.onContentChanged.emit();
 			this.checkForLanguageMagics();
-			// TODO see if there's a better way to handle reassessing size.
-			setTimeout(() => this._layoutEmitter.fire(), 250);
 		}));
 		this._register(this._configurationService.onDidChangeConfiguration(e => {
 			if (e.affectsConfiguration('editor.wordWrap') || e.affectsConfiguration('editor.fontSize')) {
@@ -311,7 +305,9 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 	}
 
 	private setFocusAndScroll(): void {
-		if (this.cellModel.id === this._activeCellId) {
+		// If offsetParent is null, the element isn't visible
+		// In this case, we don't want a cell to grab focus for an editor that isn't in the foreground
+		if (this.cellModel.id === this._activeCellId && this._editor.getContainer().offsetParent) {
 			this._editor.focus();
 			this._editor.getContainer().scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 		}

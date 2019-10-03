@@ -2,11 +2,10 @@
  *  Copyright (c) Microsoft Corporation. All rights reserved.
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
-'use strict';
 
 import * as azdata from 'azdata';
 import * as cp from 'child_process';
-import * as fs from 'fs';
+import { createWriteStream, promises as fs } from 'fs';
 import * as https from 'https';
 import * as os from 'os';
 import * as path from 'path';
@@ -15,8 +14,11 @@ import * as nls from 'vscode-nls';
 import { INotebookService } from './notebookService';
 import { IPlatformService } from './platformService';
 import { IToolsService } from './toolsService';
-import { ResourceType, ResourceTypeOption, DeploymentProvider } from '../interfaces';
-import { NotebookInputDialog } from '../ui/notebookInputDialog';
+import { ResourceType, ResourceTypeOption, NotebookInfo, DeploymentProvider, instanceOfWizardDeploymentProvider, instanceOfDialogDeploymentProvider, instanceOfNotebookDeploymentProvider, instanceOfDownloadDeploymentProvider, instanceOfWebPageDeploymentProvider, instanceOfCommandDeploymentProvider, instanceOfNotebookBasedDialogInfo } from '../interfaces';
+import { DeployClusterWizard } from '../ui/deployClusterWizard/deployClusterWizard';
+import { DeploymentInputDialog } from '../ui/deploymentInputDialog';
+import { KubeService } from './kubeService';
+import { AzdataService } from './azdataService';
 const localize = nls.loadMessageBundle();
 
 export interface IResourceTypeService {
@@ -36,29 +38,57 @@ export class ResourceTypeService implements IResourceTypeService {
 	 */
 	getResourceTypes(filterByPlatform: boolean = true): ResourceType[] {
 		if (this._resourceTypes.length === 0) {
-			const pkgJson = require('../../package.json');
-			let extensionFullName: string;
-			if (pkgJson && pkgJson.name && pkgJson.publisher) {
-				extensionFullName = `${pkgJson.publisher}.${pkgJson.name}`;
-			} else {
-				const errorMessage = localize('resourceDeployment.extensionFullNameError', 'Could not find package.json or the name/publisher is not set');
-				this.platformService.showErrorMessage(errorMessage);
-				throw new Error(errorMessage);
-			}
-
-			// If we load package.json directly using require(path) the contents won't be localized
-			this._resourceTypes = vscode.extensions.getExtension(extensionFullName)!.packageJSON.resourceTypes as ResourceType[];
-			this._resourceTypes.forEach(resourceType => {
-				resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+			vscode.extensions.all.forEach((extension) => {
+				const extensionResourceTypes = extension.packageJSON.contributes && extension.packageJSON.contributes.resourceDeploymentTypes as ResourceType[];
+				if (extensionResourceTypes) {
+					extensionResourceTypes.forEach((resourceType) => {
+						this.updatePathProperties(resourceType, extension.extensionPath);
+						resourceType.getProvider = (selectedOptions) => { return this.getProvider(resourceType, selectedOptions); };
+						this._resourceTypes.push(resourceType);
+					});
+				}
 			});
 		}
 
 		let resourceTypes = this._resourceTypes;
 		if (filterByPlatform) {
-			resourceTypes = resourceTypes.filter(resourceType => resourceType.platforms.includes(this.platformService.platform()));
+			resourceTypes = resourceTypes.filter(resourceType => (typeof resourceType.platforms === 'string' && resourceType.platforms === '*') || resourceType.platforms.includes(this.platformService.platform()));
 		}
 
 		return resourceTypes;
+	}
+
+	private updatePathProperties(resourceType: ResourceType, extensionPath: string): void {
+		resourceType.icon.dark = path.join(extensionPath, resourceType.icon.dark);
+		resourceType.icon.light = path.join(extensionPath, resourceType.icon.light);
+		resourceType.providers.forEach((provider) => {
+			if (instanceOfNotebookDeploymentProvider(provider)) {
+				this.updateNotebookPath(provider, extensionPath);
+			} else if (instanceOfDialogDeploymentProvider(provider) && instanceOfNotebookBasedDialogInfo(provider.dialog)) {
+				this.updateNotebookPath(provider.dialog, extensionPath);
+			}
+			else if ('wizard' in provider) {
+				this.updateNotebookPath(provider.wizard, extensionPath);
+			}
+		});
+	}
+
+	private updateNotebookPath(objWithNotebookProperty: { notebook: string | NotebookInfo } | undefined, extensionPath: string): void {
+		if (objWithNotebookProperty && objWithNotebookProperty.notebook) {
+			if (typeof objWithNotebookProperty.notebook === 'string') {
+				objWithNotebookProperty.notebook = path.join(extensionPath, objWithNotebookProperty.notebook);
+			} else {
+				if (objWithNotebookProperty.notebook.darwin) {
+					objWithNotebookProperty.notebook.darwin = path.join(extensionPath, objWithNotebookProperty.notebook.darwin);
+				}
+				if (objWithNotebookProperty.notebook.win32) {
+					objWithNotebookProperty.notebook.darwin = path.join(extensionPath, objWithNotebookProperty.notebook.win32);
+				}
+				if (objWithNotebookProperty.notebook.linux) {
+					objWithNotebookProperty.notebook = path.join(extensionPath, objWithNotebookProperty.notebook.linux);
+				}
+			}
+		}
 	}
 
 	/**
@@ -138,7 +168,12 @@ export class ResourceTypeService implements IResourceTypeService {
 			let providerIndex = 1;
 			resourceType.providers.forEach(provider => {
 				const providerPositionInfo = `${positionInfo}, provider index: ${providerIndex} `;
-				if (!provider.dialog && !provider.notebook && !provider.downloadUrl && !provider.webPageUrl) {
+				if (!instanceOfWizardDeploymentProvider(provider)
+					&& !instanceOfDialogDeploymentProvider(provider)
+					&& !instanceOfNotebookDeploymentProvider(provider)
+					&& !instanceOfDownloadDeploymentProvider(provider)
+					&& !instanceOfWebPageDeploymentProvider(provider)
+					&& !instanceOfCommandDeploymentProvider(provider)) {
 					errorMessages.push(`No deployment method defined for the provider, ${providerPositionInfo}`);
 				}
 
@@ -195,12 +230,15 @@ export class ResourceTypeService implements IResourceTypeService {
 
 	public startDeployment(provider: DeploymentProvider): void {
 		const self = this;
-		if (provider.dialog) {
-			const dialog = new NotebookInputDialog(this.notebookService, provider.dialog);
+		if (instanceOfWizardDeploymentProvider(provider)) {
+			const wizard = new DeployClusterWizard(provider.wizard, new KubeService(), new AzdataService(this.platformService), this.notebookService);
+			wizard.open();
+		} else if (instanceOfDialogDeploymentProvider(provider)) {
+			const dialog = new DeploymentInputDialog(this.notebookService, provider.dialog);
 			dialog.open();
-		} else if (provider.notebook) {
+		} else if (instanceOfNotebookDeploymentProvider(provider)) {
 			this.notebookService.launchNotebook(provider.notebook);
-		} else if (provider.downloadUrl) {
+		} else if (instanceOfDownloadDeploymentProvider(provider)) {
 			const taskName = localize('resourceDeployment.DownloadAndLaunchTaskName', "Download and launch installer, URL: {0}", provider.downloadUrl);
 			azdata.tasks.startBackgroundOperation({
 				displayName: taskName,
@@ -218,15 +256,17 @@ export class ResourceTypeService implements IResourceTypeService {
 					});
 				}
 			});
-		} else if (provider.webPageUrl) {
+		} else if (instanceOfWebPageDeploymentProvider(provider)) {
 			vscode.commands.executeCommand('vscode.open', vscode.Uri.parse(provider.webPageUrl));
+		} else if (instanceOfCommandDeploymentProvider(provider)) {
+			vscode.commands.executeCommand(provider.command);
 		}
 	}
 
 	private download(url: string): Promise<string> {
 		const self = this;
 		const promise = new Promise<string>((resolve, reject) => {
-			https.get(url, function (response) {
+			https.get(url, async function (response) {
 				console.log('Download installer from: ' + url);
 				if (response.statusCode === 301 || response.statusCode === 302) {
 					// Redirect and download from new location
@@ -247,19 +287,19 @@ export class ResourceTypeService implements IResourceTypeService {
 				let fileName = originalFileName;
 				const downloadFolder = os.homedir();
 				let cnt = 1;
-				while (fs.existsSync(path.join(downloadFolder, fileName + extension))) {
+				while (await exists(path.join(downloadFolder, fileName + extension))) {
 					fileName = `${originalFileName}-${cnt}`;
 					cnt++;
 				}
 				fileName = path.join(downloadFolder, fileName + extension);
-				const file = fs.createWriteStream(fileName);
+				const file = createWriteStream(fileName);
 				response.pipe(file);
 				file.on('finish', () => {
 					file.close();
 					resolve(fileName);
 				});
-				file.on('error', (err) => {
-					fs.unlink(fileName, () => { });
+				file.on('error', async (err) => {
+					await fs.unlink(fileName);
 					reject(err.message);
 				});
 			});
@@ -267,4 +307,13 @@ export class ResourceTypeService implements IResourceTypeService {
 		return promise;
 	}
 
+}
+
+async function exists(path: string): Promise<boolean> {
+	try {
+		await fs.access(path);
+		return true;
+	} catch (e) {
+		return false;
+	}
 }

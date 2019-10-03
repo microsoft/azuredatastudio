@@ -39,7 +39,7 @@ export interface SerializeDataParams {
 }
 
 export interface ISerializationService {
-	_serviceBrand: ServiceIdentifier<ISerializationService>;
+	_serviceBrand: undefined;
 
 	registerProvider(providerId: string, provider: azdata.SerializationProvider): void;
 
@@ -51,7 +51,7 @@ export interface ISerializationService {
 
 	serializeResults(request: SerializeDataParams): Promise<azdata.SerializeDataResult>;
 
-	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider;
+	getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider | undefined;
 }
 
 function getBatchSize(totalRows: number, currentIndex: number): number {
@@ -61,7 +61,7 @@ function getBatchSize(totalRows: number, currentIndex: number): number {
 
 export class SerializationService implements ISerializationService {
 
-	_serviceBrand: ServiceIdentifier<ISerializationService>;
+	_serviceBrand: undefined;
 
 	private providers: { providerId: string, provider: azdata.SerializationProvider }[] = [];
 
@@ -90,7 +90,7 @@ export class SerializationService implements ISerializationService {
 
 	}
 
-	public getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider {
+	public getSaveResultsFeatureMetadataProvider(ownerUri: string): azdata.FeatureMetadataProvider | undefined {
 		let providerId: string = this._connectionService.getProviderIdFromUri(ownerUri);
 		let providerCapabilities = this._capabilitiesService.getLegacyCapabilities(providerId);
 

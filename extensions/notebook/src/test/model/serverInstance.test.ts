@@ -57,7 +57,7 @@ describe('Jupyter server instance', function (): void {
 		// Given a server instance
 		mockUtils.setup(u => u.mkDir(TypeMoq.It.isAnyString(), TypeMoq.It.isAny())).returns(() => Promise.resolve());
 		mockUtils.setup(u => u.copy(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString())).returns(() => Promise.resolve());
-		mockUtils.setup(u => u.existsSync(TypeMoq.It.isAnyString())).returns(() => false);
+		mockUtils.setup(u => u.exists(TypeMoq.It.isAnyString())).returns(() => Promise.resolve(false));
 
 		// When I run configure
 		await serverInstance.configure();
@@ -65,7 +65,7 @@ describe('Jupyter server instance', function (): void {
 		// Then I expect a folder to have been created with config and data subdirs
 		mockUtils.verify(u => u.mkDir(TypeMoq.It.isAnyString(), TypeMoq.It.isAny()), TypeMoq.Times.exactly(5));
 		mockUtils.verify(u => u.copy(TypeMoq.It.isAnyString(), TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(3));
-		mockUtils.verify(u => u.existsSync(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(1));
+		mockUtils.verify(u => u.exists(TypeMoq.It.isAnyString()), TypeMoq.Times.exactly(1));
 	});
 
 	it('Should have URI info after start', async function (): Promise<void> {

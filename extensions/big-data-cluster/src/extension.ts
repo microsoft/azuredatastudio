@@ -56,7 +56,7 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 
 	vscode.commands.registerCommand(ManageControllerCommand, async (node: ControllerNode) => {
 		const title: string = `${localize('bdc.dashboard.title', "Big Data Cluster Dashboard -")} ${ControllerNode.toIpAndPort(node.url)}`;
-		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.url, node.username, node.password));
+		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.url, node.auth, node.username, node.password));
 		dashboard.showDashboard();
 	});
 }
@@ -92,7 +92,7 @@ async function deleteBdcController(treeDataProvider: ControllerTreeDataProvider,
 }
 
 function deleteControllerInternal(treeDataProvider: ControllerTreeDataProvider, controllerNode: ControllerNode): void {
-	let deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.username);
+	let deleted = treeDataProvider.deleteController(controllerNode.url, controllerNode.auth, controllerNode.username);
 	if (deleted) {
 		treeDataProvider.saveControllers();
 	}

@@ -75,7 +75,7 @@ export class HdfsProvider implements vscode.TreeDataProvider<TreeNode>, ITreeCha
 }
 
 export abstract class HdfsFileSourceNode extends TreeNode {
-	constructor(protected context: TreeDataContext, protected _path: string, protected fileSource: IFileSource) {
+	constructor(protected context: TreeDataContext, protected _path: string, public readonly fileSource: IFileSource) {
 		super();
 	}
 
@@ -233,9 +233,9 @@ export class ConnectionNode extends FolderNode {
 			metadata: undefined,
 			nodePath: this.generateNodePath(),
 			nodeStatus: undefined,
-			nodeType: this._nodeType,
+			nodeType: 'mssqlCluster:hdfs',
 			nodeSubType: undefined,
-			iconType: 'HDFSFolder'
+			iconType: 'Folder'
 		};
 		return nodeInfo;
 	}

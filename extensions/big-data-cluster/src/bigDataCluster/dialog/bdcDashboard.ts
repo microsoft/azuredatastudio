@@ -9,7 +9,7 @@ import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { BdcDashboardModel } from './bdcDashboardModel';
-import { IconPathHelper } from '../constants';
+import { IconPathHelper, cssStyles } from '../constants';
 import { BdcServiceStatusPage } from './bdcServiceStatusPage';
 import { BdcDashboardOverviewPage } from './bdcDashboardOverviewPage';
 import { BdcStatusModel, ServiceStatusModel } from '../controller/apiGenerated';
@@ -57,8 +57,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			// ###########
@@ -104,8 +103,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'row',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			rootContainer.addItem(this.mainAreaContainer, { flex: '0 0 100%' });
@@ -118,8 +116,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: navWidth,
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}
 			).component();
 
@@ -209,9 +206,9 @@ export class BdcDashboard {
 function createServiceNavTab(modelBuilder: azdata.ModelBuilder, serviceStatus: ServiceStatusModel): NavTab {
 	const div = modelBuilder.divContainer().withLayout({ width: navWidth, height: '30px' }).withProperties({ CSSStyles: { 'cursor': 'pointer' } }).component();
 	const innerContainer = modelBuilder.flexContainer().withLayout({ width: navWidth, height: '30px', flexFlow: 'row' }).component();
-	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none', 'color': 'red', 'font-size': '40px', 'width': '20px' } }).component();
+	const dot = modelBuilder.text().withProperties({ value: getHealthStatusDot(serviceStatus.healthStatus), CSSStyles: { 'color': 'red', 'font-size': '40px', 'width': '20px', ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(dot, { flex: '0 0 auto' });
-	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { 'margin-block-start': '0px', 'margin-block-end': '0px', 'user-select': 'none' } }).component();
+	const text = modelBuilder.text().withProperties({ value: getServiceNameDisplayText(serviceStatus.serviceName), CSSStyles: { ...cssStyles.nonSelectableText } }).component();
 	innerContainer.addItem(text, { flex: '0 0 auto' });
 	div.addItem(innerContainer);
 	return { div: div, dot: dot, text: text };

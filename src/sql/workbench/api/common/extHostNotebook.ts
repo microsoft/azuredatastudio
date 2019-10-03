@@ -285,7 +285,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		}
 	}
 
-	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => R | PromiseLike<R>): Promise<R> {
+	private _withServerManager<R>(handle: number, callback: (manager: azdata.nb.ServerManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let serverManager = notebookManager.serverManager;
 			if (!serverManager) {
@@ -295,7 +295,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => R | PromiseLike<R>): Promise<R> {
+	private _withContentManager<R>(handle: number, callback: (manager: azdata.nb.ContentManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let contentManager = notebookManager.contentManager;
 			if (!contentManager) {
@@ -305,7 +305,7 @@ export class ExtHostNotebook implements ExtHostNotebookShape {
 		});
 	}
 
-	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => R | PromiseLike<R>): Promise<R> {
+	private _withSessionManager<R>(handle: number, callback: (manager: azdata.nb.SessionManager) => PromiseLike<R>): Promise<R> {
 		return this._withNotebookManager(handle, (notebookManager) => {
 			let sessionManager = notebookManager.sessionManager;
 			if (!sessionManager) {

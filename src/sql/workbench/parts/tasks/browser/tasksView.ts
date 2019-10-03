@@ -90,10 +90,10 @@ export class TaskHistoryView extends Disposable {
 		return new Tree(treeContainer, {
 			dataSource, renderer, controller, dnd, filter, sorter, accessibilityProvider
 		}, {
-				indentPixels: 10,
-				twistiePixels: 20,
-				ariaLabel: localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, "Task history")
-			});
+			indentPixels: 10,
+			twistiePixels: 20,
+			ariaLabel: localize({ key: 'taskHistory.regTreeAriaLabel', comment: ['TaskHistory'] }, "Task history")
+		});
 	}
 
 	private updateTask(task: TaskNode): void {
