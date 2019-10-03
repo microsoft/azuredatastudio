@@ -281,6 +281,22 @@ suite('Cell Model', function (): void {
 		modelJson = model.toJSON();
 		should(modelJson.metadata.tags).not.be.undefined();
 		should(modelJson.metadata.tags).containEql('hide_input');
+
+		contents.metadata = {
+			tags: ['not_a_real_tag']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		should(modelJson.metadata.tags).not.be.undefined();
+		should(modelJson.metadata.tags).not.containEql('hide_input');
+
+		contents.metadata = {
+			tags: ['not_a_real_tag', 'hide_input']
+		};
+		model = factory.createCell(contents, { notebook: notebookModel, isTrusted: false });
+		modelJson = model.toJSON();
+		should(modelJson.metadata.tags).not.be.undefined();
+		should(modelJson.metadata.tags).containEql('hide_input');
 	});
 
 	test('Should emit event after collapsing cell', async function (): Promise<void> {
