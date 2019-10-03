@@ -107,6 +107,7 @@ export class CellModel implements ICellModel {
 	}
 
 	public set isCollapsed(value: boolean) {
+		let stateChanged = this._isCollapsed !== value;
 		this._isCollapsed = value;
 
 		let tagIndex = -1;
@@ -126,8 +127,11 @@ export class CellModel implements ICellModel {
 				this._metadata.tags.splice(tagIndex, 1);
 			}
 		}
-		this._onCollapseStateChanged.fire(this._isCollapsed);
-		this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
+
+		if (stateChanged) {
+			this._onCollapseStateChanged.fire(this._isCollapsed);
+			this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
+		}
 	}
 
 	public set isEditMode(isEditMode: boolean) {
