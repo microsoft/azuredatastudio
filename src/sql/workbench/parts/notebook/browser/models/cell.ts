@@ -49,7 +49,7 @@ export class CellModel implements ICellModel {
 	private _stdInVisible: boolean;
 	private _metadata: { language?: string; tags?: string[]; cellGuid?: string; };
 	private _isCollapsed: boolean;
-	private _onToggleStateChanged = new Emitter<boolean>();
+	private _onCollapseStateChanged = new Emitter<boolean>();
 	private _modelContentChangedEvent: IModelContentChangedEvent;
 
 	private readonly _hideInputTag = 'hide_input';
@@ -82,8 +82,8 @@ export class CellModel implements ICellModel {
 		return other && other.id === this.id;
 	}
 
-	public get onToggleStateChanged(): Event<boolean> {
-		return this._onToggleStateChanged.event;
+	public get onCollapseStateChanged(): Event<boolean> {
+		return this._onCollapseStateChanged.event;
 	}
 
 	public get onOutputsChanged(): Event<IOutputChangedEvent> {
@@ -126,7 +126,7 @@ export class CellModel implements ICellModel {
 				this._metadata.tags.splice(tagIndex, 1);
 			}
 		}
-		this._onToggleStateChanged.fire(this._isCollapsed);
+		this._onCollapseStateChanged.fire(this._isCollapsed);
 		this.sendChangeToNotebook(NotebookChangeType.CellInputVisibilityChanged);
 	}
 

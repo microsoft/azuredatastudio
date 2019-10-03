@@ -299,7 +299,7 @@ suite('Cell Model', function (): void {
 		let createCollapsePromise = () => {
 			return new Promise((resolve, reject) => {
 				setTimeout(() => reject(), 2000);
-				model.onToggleStateChanged(isCollapsed => {
+				model.onCollapseStateChanged(isCollapsed => {
 					resolve(isCollapsed);
 				});
 			});

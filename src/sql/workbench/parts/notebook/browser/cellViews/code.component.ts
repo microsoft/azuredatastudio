@@ -244,7 +244,7 @@ export class CodeComponent extends AngularDisposable implements OnInit, OnChange
 				this.setFocusAndScroll();
 			}
 		}));
-		this._register(this.cellModel.onToggleStateChanged(isCollapsed => {
+		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
 

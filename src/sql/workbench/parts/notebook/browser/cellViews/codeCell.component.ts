@@ -47,7 +47,7 @@ export class CodeCellComponent extends CellView implements OnInit, OnChanges {
 
 	ngOnInit() {
 		if (this.cellModel) {
-			this._register(this.cellModel.onToggleStateChanged((state) => {
+			this._register(this.cellModel.onCollapseStateChanged((state) => {
 				this._changeRef.detectChanges();
 			}));
 			this._register(this.cellModel.onOutputsChanged(() => {

@@ -35,7 +35,7 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	ngAfterContentInit() {
-		this._register(this.cellModel.onToggleStateChanged(isCollapsed => {
+		this._register(this.cellModel.onCollapseStateChanged(isCollapsed => {
 			this.onCellCollapse(isCollapsed);
 		}));
 		this.onCellCollapse(this.cellModel.isCollapsed);
