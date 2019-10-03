@@ -110,7 +110,7 @@ export class CellModel implements ICellModel {
 		this._isCollapsed = value;
 
 		let tagIndex = -1;
-		if (Array.isArray(this._metadata.tags)) {
+		if (this._metadata.tags) {
 			tagIndex = this._metadata.tags.findIndex(tag => tag === this._hideInputTag);
 		}
 
