@@ -44,8 +44,12 @@ export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.registerCommand('azdata.resource.sql-bdc.deploy', () => {
 		openDialog('sql-bdc');
 	});
-	vscode.commands.registerCommand('azdata.resource.deploy', (resourceType: string = 'sql-image') => {
-		openDialog(resourceType);
+	vscode.commands.registerCommand('azdata.resource.deploy', (resourceType: string) => {
+		if (typeof resourceType === 'string') {
+			openDialog(resourceType);
+		} else {
+			openDialog('sql-image');
+		}
 	});
 	vscode.commands.registerCommand('azdata.openNotebookInputDialog', (dialogInfo: NotebookBasedDialogInfo) => {
 		const dialog = new DeploymentInputDialog(notebookService, dialogInfo);

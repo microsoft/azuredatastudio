@@ -35,7 +35,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
-		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	initialize() {
@@ -259,8 +258,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	private onComplete(): void {
+	protected onComplete(): void {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
-		this.dispose();
 	}
 }
