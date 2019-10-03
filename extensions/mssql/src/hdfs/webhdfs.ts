@@ -467,8 +467,7 @@ export class WebHDFS {
 	}
 
 	/**
-	 * Get ACL status for given path
-	 * @param path The path to the file/folder to get the status of
+	 * Get all mounts for a HDFS connection
 	 * @param callback Callback to handle the response
 	 * @returns void
 	 */

@@ -183,7 +183,7 @@ export class FolderNode extends HdfsFileSourceNode {
 		return this.mountStatus === MountStatus.Mount || this.mountStatus === MountStatus.Mount_Child;
 	}
 
-	private getSubType(): string {
+	private getSubType(): string | undefined {
 		if (this.mountStatus === MountStatus.Mount) {
 			return Constants.MssqlClusterItemsSubType.Mount;
 		} else if (this.mountStatus === MountStatus.Mount_Child) {
@@ -348,7 +348,7 @@ export class FileNode extends HdfsFileSourceNode implements IFileNode {
 		});
 	}
 
-	private getSubType(): string {
+	private getSubType(): string | undefined {
 		let subType = '';
 		if (this.getDisplayName().toLowerCase().endsWith('.jar') || this.getDisplayName().toLowerCase().endsWith('.py')) {
 			subType += Constants.MssqlClusterItemsSubType.Spark;
