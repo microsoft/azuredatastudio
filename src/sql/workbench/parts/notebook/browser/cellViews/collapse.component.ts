@@ -68,14 +68,12 @@ export class CollapseComponent extends CellView implements OnInit, OnChanges {
 	}
 
 	public toggleIconVisibility(isActiveOrHovered: boolean) {
-		if (this.collapseCellButtonElement) {
-			let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
-			let buttonClass = 'icon-hide-cell';
-			if (isActiveOrHovered) {
-				collapseButton.classList.add(buttonClass);
-			} else {
-				collapseButton.classList.remove(buttonClass);
-			}
+		let collapseButton = <HTMLElement>this.collapseCellButtonElement.nativeElement;
+		let buttonClass = 'icon-hide-cell';
+		if (isActiveOrHovered) {
+			collapseButton.classList.add(buttonClass);
+		} else {
+			collapseButton.classList.remove(buttonClass);
 		}
 	}
 }
