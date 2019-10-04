@@ -6,6 +6,7 @@
 'use strict';
 
 import * as vscode from 'vscode';
+import * as azdata from 'azdata';
 import * as nls from 'vscode-nls';
 import { ControllerTreeDataProvider } from './bigDataCluster/tree/controllerTreeDataProvider';
 import { IconPathHelper } from './bigDataCluster/constants';
@@ -21,6 +22,9 @@ const AddControllerCommand = 'bigDataClusters.command.addController';
 const DeleteControllerCommand = 'bigDataClusters.command.deleteController';
 const RefreshControllerCommand = 'bigDataClusters.command.refreshController';
 const ManageControllerCommand = 'bigDataClusters.command.manageController';
+const MountHdfsCommand = 'bigDataClusters.command.mount';
+const RefreshMountCommand = 'bigDataClusters.command.refresh';
+const UnmountHdfsCommand = 'bigDataClusters.command.unmount';
 
 let throttleTimers: { [key: string]: any } = {};
 
@@ -59,6 +63,11 @@ function registerCommands(context: vscode.ExtensionContext, treeDataProvider: Co
 		const dashboard: BdcDashboard = new BdcDashboard(title, new BdcDashboardModel(node.url, node.auth, node.username, node.password));
 		dashboard.showDashboard();
 	});
+
+	vscode.commands.registerCommand(MountHdfsCommand, (explorerContext: azdata.ObjectExplorerContext) => {
+
+	});
+
 }
 
 function addBdcController(treeDataProvider: ControllerTreeDataProvider, node?: TreeNode): void {

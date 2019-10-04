@@ -170,6 +170,7 @@ export class ClusterController {
 			throw new ControllerError(error, localize('bdc.error.getBdcStatus', "Error retrieving BDC status from {0}", this._url));
 		}
 	}
+
 }
 /**
  * Fixes missing protocol and wrong character for port entered by user
