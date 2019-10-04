@@ -40,10 +40,10 @@ if [[ "$SKIP_PYTHON_INSTALL_TEST" == "1" ]]; then
 else
 	export PYTHON_TEST_PATH=$VSCODEUSERDATADIR/TestPythonInstallation
 	echo $PYTHON_TEST_PATH
-	$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --skip-getting-started --disable-inspect
+	$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 fi
 
-$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --disable-extensions --skip-getting-started --disable-inspect
+$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 
 rm -r -f $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR
