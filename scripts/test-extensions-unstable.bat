@@ -1,0 +1,11 @@
+:: Runs UNSTABLE Extension Tests
+
+setlocal
+
+set ADS_TEST_GREP=@UNSTABLE@
+
+echo Running UNSTABLE Extension Tests
+
+call %~dp0\test-extensions.bat
+
+endlocal

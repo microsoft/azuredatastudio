@@ -2,7 +2,7 @@ setlocal
 
 set ADS_TEST_GREP=@UNSTABLE@
 
-echo Running unstable tests
+echo Running UNSTABLE ADS Extension Integration tests
 
 call %~dp0\sql-test-integration.bat
 
