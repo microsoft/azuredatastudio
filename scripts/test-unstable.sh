@@ -11,6 +11,7 @@ fi
 cd $ROOT
 
 export ADS_TEST_GREP=@UNSTABLE@
+export ADS_TEST_INVERT_GREP=
 
 echo Running UNSTABLE ADS Core Tests
 
