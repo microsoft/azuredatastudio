@@ -27,7 +27,7 @@ fi
 
 CODE_ARGS=--grep %ADS_TEST_GREP%
 
-if [[ "$ADS_TEST_INVERT_GREP" == "1" ]] || [[ "$ADS_TEST_INVERT_GREP" == "1" ]]; then
+if [[ "$ADS_TEST_INVERT_GREP" == "1" ]] || [[ "$ADS_TEST_INVERT_GREP" == "true" ]]; then
 	set CODE_ARGS=$CODE_ARGS --invert
 fi
 
