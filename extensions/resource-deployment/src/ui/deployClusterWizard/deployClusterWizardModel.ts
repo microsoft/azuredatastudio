@@ -113,12 +113,27 @@ export class DeployClusterWizardModel extends Model {
 		targetDeploymentProfile.includeSpark = this.getBooleanValue(VariableNames.IncludeSpark_VariableName);
 		targetDeploymentProfile.hadrEnabled = this.getBooleanValue(VariableNames.EnableHADR_VariableName);
 
-		// port settings
-		targetDeploymentProfile.gatewayPort = this.getIntegerValue(VariableNames.GateWayPort_VariableName);
-		targetDeploymentProfile.sqlServerPort = this.getIntegerValue(VariableNames.SQLServerPort_VariableName);
-		targetDeploymentProfile.controllerPort = this.getIntegerValue(VariableNames.ControllerPort_VariableName);
-		targetDeploymentProfile.sqlServerReadableSecondaryPort = this.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName);
+		// endpoint settings
+		targetDeploymentProfile.setGatewayEndpoint(this.getIntegerValue(VariableNames.GateWayPort_VariableName), this.getStringValue(VariableNames.GatewayDNSName_VariableName));
+		targetDeploymentProfile.setSqlServerEndpoint(this.getIntegerValue(VariableNames.SQLServerPort_VariableName), this.getStringValue(VariableNames.SQLServerDNSName_VariableName));
+		targetDeploymentProfile.setControllerEndpoint(this.getIntegerValue(VariableNames.ControllerPort_VariableName), this.getStringValue(VariableNames.ControllerDNSName_VariableName));
+		targetDeploymentProfile.setSqlServerReadableSecondaryEndpoint(this.getIntegerValue(VariableNames.ReadableSecondaryPort_VariableName), this.getStringValue(VariableNames.ReadableSecondaryDNSName_VariableName));
+		targetDeploymentProfile.setServiceProxyEndpoint(this.getIntegerValue(VariableNames.ServiceProxyPort_VariableName), this.getStringValue(VariableNames.ServiceProxyDNSName_VariableName));
+		targetDeploymentProfile.setAppServiceProxyEndpoint(this.getIntegerValue(VariableNames.AppServiceProxyPort_VariableName), this.getStringValue(VariableNames.AppServiceProxyDNSName_VariableName));
 
+		targetDeploymentProfile.setAuthenticationMode(this.authenticationMode!);
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			targetDeploymentProfile.setActiveDirectorySettings({
+				organizationalUnit: this.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName)!,
+				domainControllerFQDN: this.getStringValue(VariableNames.DomainControllerFQDNName_VariableName)!,
+				domainDNSName: this.getStringValue(VariableNames.DomainDNSName_VariableName)!,
+				dnsIPAddresses: this.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName)!,
+				clusterAdmins: this.getStringValue(VariableNames.ClusterAdmins_VariableName)!,
+				clusterUsers: this.getStringValue(VariableNames.ClusterUsers_VariableName)!,
+				appOwners: this.getStringValue(VariableNames.AppOwners_VariableName),
+				appReaders: this.getStringValue(VariableNames.AppReaders_VariableName)
+			});
+		}
 		return targetDeploymentProfile;
 	}
 

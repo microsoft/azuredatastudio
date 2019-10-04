@@ -86,52 +86,63 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			fields: [
 				{
 					type: FieldType.Text,
-					label: localize('deployCluster.DistinguishedName', "Distinguished name"),
+					label: localize('deployCluster.OuDistinguishedName', "Organizational unit"),
 					required: true,
-					variableName: VariableNames.DistinguishedName_VariableName,
+					variableName: VariableNames.OrganizationalUnitDistinguishedName_VariableName,
+					useCustomValidator: true,
+					description: localize('deployCluster.OuDistinguishedNameDescription', "Distinguished name for the organizational unit. for example: OU=bdc,DC=contoso,DC=com")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DomainControllerFQDN', "Domain controller FQDN"),
+					required: true,
+					variableName: VariableNames.DomainControllerFQDNName_VariableName,
+					useCustomValidator: true,
+					description: localize('deployCluster.DomainControllerFQDNDescription', "Fully qualified domain name for the domain controller. for example: DC1.CONTOSO.COM")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DomainDNSIPAddresses', "Domain DNS IP addresses"),
+					required: true,
+					variableName: VariableNames.DomainDNSIPAddresses_VariableName,
+					useCustomValidator: true,
+					placeHolder: localize('deployCluster.DomainDNSIPAddressesPlaceHolder', "Use comma to separate the values."),
+					description: localize('deployCluster.DomainDNSIPAddressesDescription', "Domain DNS servers' IP Addresses, use comma to separate them if there are multiple IP addresses.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DomainDNSName', "Domain DNS name"),
+					required: true,
+					variableName: VariableNames.DomainDNSName_VariableName,
 					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.AdminPrincipals', "Admin principals"),
+					label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
 					required: true,
-					variableName: VariableNames.AdminPrincipals_VariableName,
-					useCustomValidator: true
+					variableName: VariableNames.ClusterAdmins_VariableName,
+					useCustomValidator: true,
+					description: localize('deployCluster.ClusterAdminsDescription', "The Active Directory group for cluster admin.")
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.UserPrincipals', "User principals"),
+					label: localize('deployCluster.ClusterUsers', "Cluster users"),
 					required: true,
-					variableName: VariableNames.UserPrincipals_VariableName,
-					useCustomValidator: true
+					variableName: VariableNames.ClusterUsers_VariableName,
+					useCustomValidator: true,
+					placeHolder: localize('deployCluster.ClusterUsersPlaceHolder', "Use comma to separate the values."),
+					description: localize('deployCluster.ClusterUsersDescription', "The Active Directory users/groups with cluster users role, use comma to separate them if there are multiple users/groups.")
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.UpstreamIPAddresses', "Upstream IP Addresses"),
-					required: true,
-					variableName: VariableNames.UpstreamIPAddresses_VariableName,
-					useCustomValidator: true
+					label: localize('deployCluster.AppOwers', "App owners"),
+					required: false,
+					variableName: VariableNames.AppOwners_VariableName,
+					useCustomValidator: true,
+					placeHolder: localize('deployCluster.AppOwnersPlaceHolder', "Use comma to separate the values."),
+					description: localize('deployCluster.AppOwnersDescription', "The Active Directory users or groups with app owners role, use comma to separate them if there are multiple users/groups.")
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.DNSName', "DNS name"),
-					required: true,
-					variableName: VariableNames.DnsName_VariableName,
-					useCustomValidator: true
-				}, {
-					type: FieldType.Text,
-					label: localize('deployCluster.Realm', "Realm"),
-					required: true,
-					variableName: VariableNames.Realm_VariableName,
-					useCustomValidator: true
-				}, {
-					type: FieldType.Text,
-					label: localize('deployCluster.AppOnwerPrincipals', "App owner principals"),
-					required: true,
-					variableName: VariableNames.AppOwnerPrincipals_VariableName,
-					useCustomValidator: true
-				}, {
-					type: FieldType.Text,
-					label: localize('deployCluster.AppReaderPrincipals', "App reader principals"),
-					required: true,
-					variableName: VariableNames.AppReaderPrincipals_VariableName,
-					useCustomValidator: true
+					label: localize('deployCluster.AppReaders', "App readers"),
+					required: false,
+					variableName: VariableNames.AppReaders_VariableName,
+					useCustomValidator: true,
+					placeHolder: localize('deployCluster.AppReadersPlaceHolder', "Use comma to separate the values."),
+					description: localize('deployCluster.AppReadersDescription', "The Active Directory users or groups of app readers, use comma as separator them if there are multiple users/groups.")
 				}
 			]
 		};
@@ -176,14 +187,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 			);
 			this.wizard.registerDisposable(authModeDropdown.onValueChanged(() => {
 				const isBasicAuthMode = (<azdata.CategoryValue>authModeDropdown.value).name === 'basic';
-
 				if (isBasicAuthMode) {
 					formBuilder.removeFormItem(activeDirectoryFormItem);
 				} else {
 					formBuilder.insertFormItem(activeDirectoryFormItem);
 				}
 			}));
-
 			const form = formBuilder.withLayout({ width: '100%' }).component();
 			return view.initializeModel(form);
 		});
@@ -212,14 +221,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPassword_VariableName, this.inputComponents))
 					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))
 					&& (!(authMode === AuthenticationMode.ActiveDirectory) || (
-						!isInputBoxEmpty(getInputBoxComponent(VariableNames.DistinguishedName_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AdminPrincipals_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.UserPrincipals_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.UpstreamIPAddresses_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DnsName_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.Realm_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppOwnerPrincipals_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.AppReaderPrincipals_VariableName, this.inputComponents))));
+						!isInputBoxEmpty(getInputBoxComponent(VariableNames.OrganizationalUnitDistinguishedName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainControllerFQDNName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterAdmins_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterUsers_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSIPAddresses_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSName_VariableName, this.inputComponents))));
 				if (!requiredFieldsFilled) {
 					messages.push(MissingRequiredInformationErrorMessage);
 				}

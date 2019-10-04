@@ -124,6 +124,69 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			]
 		};
 
+		if (this.wizard.model.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			clusterSectionInfo.rows!.push({
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.OuDistinguishedName', "Organizational unit"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName),
+						fontStyle: FontStyle.Italic
+					},
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.DomainControllerFQDN', "Domain controller FQDN"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainControllerFQDNName_VariableName),
+						fontStyle: FontStyle.Italic
+					}]
+			});
+			clusterSectionInfo.rows!.push({
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.DomainDNSIPAddresses', "Domain DNS IP addresses"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName),
+						fontStyle: FontStyle.Italic
+					},
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.DomainDNSName', "Domain DNS name"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainDNSName_VariableName),
+						fontStyle: FontStyle.Italic
+					}]
+			});
+			clusterSectionInfo.rows!.push({
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.ClusterAdmins', "Cluster admin group"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterAdmins_VariableName),
+						fontStyle: FontStyle.Italic
+					},
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.ClusterUsers', "Cluster users"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.ClusterUsers_VariableName),
+						fontStyle: FontStyle.Italic
+					}]
+			});
+			clusterSectionInfo.rows!.push({
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.AppOwers', "App owners"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AppOwners_VariableName),
+						fontStyle: FontStyle.Italic
+					},
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.AppReaders', "App readers"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.AppReaders_VariableName),
+						fontStyle: FontStyle.Italic
+					}]
+			});
+		}
+
 		const azureSectionInfo: SectionInfo = {
 			labelPosition: LabelPosition.Left,
 			labelWidth: '150px',
@@ -357,7 +420,9 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 		const endpointRows = [
 			this.createEndpointRow(localize('deployCluster.ControllerText', "Controller"), VariableNames.ControllerDNSName_VariableName, VariableNames.ControllerPort_VariableName),
 			this.createEndpointRow(localize('deployCluster.SqlServerText', "SQL Server Master"), VariableNames.SQLServerDNSName_VariableName, VariableNames.SQLServerPort_VariableName),
-			this.createEndpointRow(localize('deployCluster.GatewayText', "Gateway"), VariableNames.GatewayDNSName_VariableName, VariableNames.GateWayPort_VariableName)
+			this.createEndpointRow(localize('deployCluster.GatewayText', "Gateway"), VariableNames.GatewayDNSName_VariableName, VariableNames.GateWayPort_VariableName),
+			this.createEndpointRow(localize('deployCluster.AppServiceProxyText', "App service proxy"), VariableNames.AppServiceProxyPort_VariableName, VariableNames.AppServiceProxyPort_VariableName),
+			this.createEndpointRow(localize('deployCluster.ServiceProxyText', "Service proxy"), VariableNames.ServiceProxyDNSName_VariableName, VariableNames.ServiceProxyPort_VariableName)
 		];
 
 		if (this.wizard.model.hadrEnabled) {
