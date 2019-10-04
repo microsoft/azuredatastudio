@@ -6,7 +6,7 @@ import * as path from 'path';
 import { IPlatformService } from './platformService';
 import { BigDataClusterDeploymentProfile } from './bigDataClusterDeploymentProfile';
 
-export interface BdcConfigListOutput {
+interface BdcConfigListOutput {
 	result: string[];
 }
 
