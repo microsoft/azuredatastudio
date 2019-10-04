@@ -248,10 +248,13 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	public get activeDirectorySupported(): boolean {
+		// The profiles that highlight the AD authentication feature will have a security secion in the control.json for the AD settings.
 		return 'security' in this._controlConfig;
 	}
 
 	public setAuthenticationMode(mode: string): void {
+		// If basic authentication is picked, the security section must be removed
+		// otherwise azdata will throw validation error
 		if (mode === AuthenticationMode.Basic && 'security' in this._controlConfig) {
 			delete this._controlConfig.security;
 		}
@@ -316,6 +319,7 @@ export class BigDataClusterDeploymentProfile {
 	}
 
 	private splitByComma(value: string): string[] {
+		// split by comma, then remove trailing spaces for each item and finally remove the empty values.
 		return value.split(',').map(v => v && v.trim()).filter(v => v !== '' && v !== undefined);
 	}
 }
