@@ -391,7 +391,7 @@ export class JupyterServerInstallation {
 		let packagesToInstall: PythonPkgDetails[] = [];
 		this._expectedPackages.forEach(expectedPkg => {
 			let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
-			if (!installedPkgVersion || installedPkgVersion !== expectedPkg.version) {
+			if (!installedPkgVersion || utils.comparePackageVersions(installedPkgVersion, expectedPkg.version) < 0) {
 				packagesToInstall.push(expectedPkg);
 			}
 		});
