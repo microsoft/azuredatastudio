@@ -43,7 +43,23 @@ else
 	$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/notebook --extensionTestsPath=$ROOT/extensions/notebook/out/integrationTest --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 fi
 
-$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/integration-tests --extensionTestsPath=$ROOT/extensions/integration-tests/out --user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR --remote-debugging-port=9222 --disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
+$INTEGRATION_TEST_ELECTRON_PATH --extensionDevelopmentPath=$ROOT/extensions/admin-pack \
+--extensionDevelopmentPath=$ROOT/extensions/admin-tool-ext-win \
+--extensionDevelopmentPath=$ROOT/extensions/agent \
+--extensionDevelopmentPath=$ROOT/extensions/azurecore \
+--extensionDevelopmentPath=$ROOT/extensions/big-data-cluster \
+--extensionDevelopmentPath=$ROOT/extensions/cms \
+--extensionDevelopmentPath=$ROOT/extensions/dacpac \
+--extensionDevelopmentPath=$ROOT/extensions/import \
+--extensionDevelopmentPath=$ROOT/extensions/integration-tests \
+--extensionDevelopmentPath=$ROOT/extensions/mssql \
+--extensionDevelopmentPath=$ROOT/extensions/notebook \
+--extensionDevelopmentPath=$ROOT/extensions/profiler \
+--extensionDevelopmentPath=$ROOT/extensions/resource-deployment \
+--extensionDevelopmentPath=$ROOT/extensions/schema-compare \
+--extensionTestsPath=$ROOT/extensions/integration-tests/out \
+--user-data-dir=$VSCODEUSERDATADIR --extensions-dir=$VSCODEEXTDIR \
+--disable-telemetry --disable-crash-reporter --disable-updates --skip-getting-started --disable-inspect
 
 rm -r -f $VSCODEUSERDATADIR
 rm -r $VSCODEEXTDIR
