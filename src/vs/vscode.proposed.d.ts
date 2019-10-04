@@ -914,17 +914,15 @@ declare module 'vscode' {
 	 */
 	export class CustomExecution2 {
 		/**
+		 * Constructs a CustomExecution task object. The callback will be executed the task is run, at which point the
+		 * extension should return the Pseudoterminal it will "run in". The task should wait to do further execution until
+		 * [Pseudoterminal.open](#Pseudoterminal.open) is called. Task cancellation should be handled using
+		 * [Pseudoterminal.close](#Pseudoterminal.close). When the task is complete fire
+		 * [Pseudoterminal.onDidClose](#Pseudoterminal.onDidClose).
 		 * @param process The [Pseudoterminal](#Pseudoterminal) to be used by the task to display output.
 		 * @param callback The callback that will be called when the task is started by a user.
 		 */
 		constructor(callback: () => Thenable<Pseudoterminal>);
-
-		/**
-		 * The callback used to execute the task. Cancellation should be handled using
-		 * [Pseudoterminal.close](#Pseudoterminal.close). When the task is complete fire
-		 * [Pseudoterminal.onDidClose](#Pseudoterminal.onDidClose).
-		 */
-		callback: () => Thenable<Pseudoterminal>;
 	}
 
 	/**
@@ -1087,36 +1085,7 @@ declare module 'vscode' {
 
 	//#region Custom editors, mjbvz
 
-	export enum WebviewEditorState {
-		/**
-		 * The webview editor's content cannot be modified.
-		 *
-		 * This disables save
-		 */
-		Readonly = 1,
-
-		/**
-		 * The webview editor's content has not been changed but they can be modified and saved.
-		 */
-		Unchanged = 2,
-
-		/**
-		 * The webview editor's content has been changed and can be saved.
-		 */
-		Dirty = 3,
-	}
-
 	export interface WebviewEditor extends WebviewPanel {
-		state: WebviewEditorState;
-
-		/**
-		 * Fired when the webview editor is saved.
-		 *
-		 * Both `Unchanged` and `Dirty` editors can be saved.
-		 *
-		 * Extensions should call `waitUntil` to signal when the save operation complete
-		 */
-		readonly onWillSave: Event<{ waitUntil: (thenable: Thenable<boolean>) => void }>;
 	}
 
 	export interface WebviewEditorProvider {
@@ -1161,7 +1130,7 @@ declare module 'vscode' {
 		 *
 		 * @return A uri that can be used on the client machine.
 		 */
-		export function resolveExternalUri(target: Uri): Thenable<Uri>;
+		export function asExternalUri(target: Uri): Thenable<Uri>;
 	}
 
 	//#endregion

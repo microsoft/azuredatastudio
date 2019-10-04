@@ -196,7 +196,7 @@ configurationRegistry.registerConfiguration({
 			default: 1000
 		},
 		'terminal.integrated.detectLocale': {
-			markdownDescription: nls.localize('terminal.integrated.detectLocale', "Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since VS Code's terminal only supports UTF-8 encoded data coming from the shell."),
+			markdownDescription: nls.localize('terminal.integrated.detectLocale', "Controls whether to detect and set the `$LANG` environment variable to a UTF-8 compliant option since Azure Data Studio's terminal only supports UTF-8 encoded data coming from the shell."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'string',
 			enum: ['auto', 'off', 'on'],
 			enumDescriptions: [
@@ -210,7 +210,7 @@ configurationRegistry.registerConfiguration({
 			type: 'string',
 			enum: ['auto', 'canvas', 'dom'],
 			enumDescriptions: [
-				nls.localize('terminal.integrated.rendererType.auto', "Let VS Code guess which renderer to use."),
+				nls.localize('terminal.integrated.rendererType.auto', "Let Azure Data Studio guess which renderer to use."),// {{SQL CARBON EDIT}} Change product name to ADS
 				nls.localize('terminal.integrated.rendererType.canvas', "Use the standard GPU/canvas-based renderer"),
 				nls.localize('terminal.integrated.rendererType.dom', "Use the fallback DOM-based renderer.")
 			],
@@ -252,12 +252,12 @@ configurationRegistry.registerConfiguration({
 			default: []
 		},
 		'terminal.integrated.inheritEnv': {
-			markdownDescription: nls.localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from VS Code. This is not supported on Windows."),
+			markdownDescription: nls.localize('terminal.integrated.inheritEnv', "Whether new shells should inherit their environment from Azure Data Studio. This is not supported on Windows."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'boolean',
 			default: true
 		},
 		'terminal.integrated.env.osx': {
-			markdownDescription: nls.localize('terminal.integrated.env.osx', "Object with environment variables that will be added to the VS Code process to be used by the terminal on macOS. Set to `null` to delete the environment variable."),
+			markdownDescription: nls.localize('terminal.integrated.env.osx', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on macOS. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -265,7 +265,7 @@ configurationRegistry.registerConfiguration({
 			default: {}
 		},
 		'terminal.integrated.env.linux': {
-			markdownDescription: nls.localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the VS Code process to be used by the terminal on Linux. Set to `null` to delete the environment variable."),
+			markdownDescription: nls.localize('terminal.integrated.env.linux', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Linux. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -273,7 +273,7 @@ configurationRegistry.registerConfiguration({
 			default: {}
 		},
 		'terminal.integrated.env.windows': {
-			markdownDescription: nls.localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the VS Code process to be used by the terminal on Windows. Set to `null` to delete the environment variable."),
+			markdownDescription: nls.localize('terminal.integrated.env.windows', "Object with environment variables that will be added to the Azure Data Studio process to be used by the terminal on Windows. Set to `null` to delete the environment variable."), // {{SQL CARBON EDIT}} Change product name to ADS
 			type: 'object',
 			additionalProperties: {
 				type: ['string', 'null']
@@ -310,6 +310,11 @@ configurationRegistry.registerConfiguration({
 			description: nls.localize('terminal.integrated.experimentalUseTitleEvent', "An experimental setting that will use the terminal title event for the dropdown title. This setting will only apply to new terminals."),
 			type: 'boolean',
 			default: false
+		},
+		'terminal.integrated.enableFileLinks': {
+			description: nls.localize('terminal.integrated.enableFileLinks', "Whether to enable file links in the terminal. Links can be slow when working on a network drive in particular because each file link is verified against the file system."),
+			type: 'boolean',
+			default: true
 		}
 	}
 });

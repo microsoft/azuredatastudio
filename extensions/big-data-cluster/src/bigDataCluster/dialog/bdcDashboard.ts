@@ -57,8 +57,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			// ###########
@@ -104,8 +103,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'row',
 					width: '100%',
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}).component();
 
 			rootContainer.addItem(this.mainAreaContainer, { flex: '0 0 100%' });
@@ -118,8 +116,7 @@ export class BdcDashboard {
 				{
 					flexFlow: 'column',
 					width: navWidth,
-					height: '100%',
-					alignItems: 'left'
+					height: '100%'
 				}
 			).component();
 

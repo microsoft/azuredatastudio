@@ -4,10 +4,9 @@
  *--------------------------------------------------------------------------------------------*/
 
 import * as azdata from 'azdata';
-import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
 import { DialogBase } from './dialogBase';
-import { ResourceType, DeploymentProvider, AgreementInfo } from '../interfaces';
+import { ResourceType, AgreementInfo, DeploymentProvider } from '../interfaces';
 import { IResourceTypeService } from '../services/resourceTypeService';
 import { IToolsService } from '../services/toolsService';
 import { EOL } from 'os';
@@ -29,14 +28,13 @@ export class ResourceTypePickerDialog extends DialogBase {
 	private _agreementContainer!: azdata.DivContainer;
 	private _agreementCheckboxChecked: boolean = false;
 
-	constructor(private extensionContext: vscode.ExtensionContext,
+	constructor(
 		private toolsService: IToolsService,
 		private resourceTypeService: IResourceTypeService,
 		resourceType: ResourceType) {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
 		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
-		this._dialogObject.okButton.onClick(() => this.onComplete());
 	}
 
 	initialize() {
@@ -55,7 +53,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const tableWidth = 1126;
 			this._view = view;
 			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
-			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
+			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
@@ -125,13 +123,16 @@ export class ResourceTypePickerDialog extends DialogBase {
 		const card = this._view.modelBuilder.card().withProperties<azdata.CardProperties>({
 			cardType: azdata.CardType.VerticalButton,
 			iconPath: {
-				dark: this.extensionContext.asAbsolutePath(resourceType.icon.dark),
-				light: this.extensionContext.asAbsolutePath(resourceType.icon.light)
+				dark: resourceType.icon.dark,
+				light: resourceType.icon.light
 			},
 			label: resourceType.displayName,
-			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name)
+			selected: (this._selectedResourceType && this._selectedResourceType.name === resourceType.name),
+			width: '220px',
+			height: '180px',
+			iconWidth: '50px',
+			iconHeight: '50px'
 		}).component();
-
 		this._resourceTypeCards.push(card);
 		this._cardResourceTypeMap.set(resourceType.name, card);
 		this._toDispose.push(card.onCardSelectedChanged(() => this.selectResourceType(resourceType)));
@@ -257,8 +258,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	private onComplete(): void {
+	protected onComplete(): void {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
-		this.dispose();
 	}
 }

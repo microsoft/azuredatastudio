@@ -3,13 +3,35 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
-
 import * as nls from 'vscode-nls';
 const localize = nls.loadMessageBundle();
 
 // HDFS Constants //////////////////////////////////////////////////////////
 export const msgMissingNodeContext = localize('msgMissingNodeContext', 'Node Command called without any node passed');
+
+// HDFS Manage Access Dialog Constants ////////////////////////////////////
+
+export const manageAccessTitle = localize('mssql.manageAccessTitle', "Manage Access");
+export const permissionsHeader = localize('mssql.permissionsTitle', "Permissions");
+export const ownersHeader = localize('mssql.ownersHeader', "Owners");
+export const allOthersHeader = localize('mssql.allOthersHeader', "All Others");
+export const everyoneName = localize('mssql.everyone', "Everyone");
+export const userLabel = localize('mssql.userLabel', "User");
+export const groupLabel = localize('mssql.groupLabel', "Group");
+export const accessHeader = localize('mssql.accessHeader', "Access");
+export const defaultHeader = localize('mssql.defaultHeader', "Default");
+export const stickyHeader = localize('mssql.stickyHeader', "Sticky");
+export const readHeader = localize('mssql.readHeader', "Read");
+export const writeHeader = localize('mssql.writeHeader', "Write");
+export const executeHeader = localize('mssql.executeHeader', "Execute");
+export const addUserOrGroupHeader = localize('mssql.addUserOrGroup', "Add User or Group");
+export const enterNamePlaceholder = localize('mssql.enterNamePlaceholder', "Enter name");
+export const addLabel = localize('mssql.addLabel', "Add");
+export const namedUsersAndGroupsHeader = localize('mssql.namedUsersAndGroups', "Named Users and Groups");
+export const applyText = localize('mssql.apply', "Apply");
+export const applyRecursivelyText = localize('mssql.applyRecursively', "Apply Recursively");
+
+export function errorApplyingAclChanges(errMsg: string): string { return localize('mssql.errorApplyingAclChanges', "Unexpected error occurred while applying changes : {0}", errMsg); }
 
 // Spark Job Submission Constants //////////////////////////////////////////
 export const sparkLocalFileDestinationHint = localize('sparkJobSubmission_LocalFileDestinationHint', 'Local file will be uploaded to HDFS. ');

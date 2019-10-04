@@ -41,14 +41,14 @@ configurationRegistry.registerConfiguration({
 			default: true,
 			scope: ConfigurationScope.APPLICATION,
 			title: localize('enableWindowsBackgroundUpdatesTitle', "Enable Background Updates on Windows"),
-			description: localize('enableWindowsBackgroundUpdates', "Enable to download and install new VS Code Versions in the background on Windows"),
+			description: localize('enableWindowsBackgroundUpdates', "Enable to download and install new Azure Data Studio Versions in the background on Windows"), // {{SQL CARBON EDIT}} Change product name to ADS
 			included: isWindows && !isWeb
 		},
 		'update.showReleaseNotes': {
 			type: 'boolean',
 			default: true,
 			scope: ConfigurationScope.APPLICATION,
-			description: localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are fetched from a Microsoft online service."),
+			description: localize('showReleaseNotes', "Show Release Notes after an update. The Release Notes are opened in a new web browser window."), // {{SQL CARBON EDIT}} Update text to be correct for ADS
 			tags: ['usesOnlineServices']
 		}
 	}

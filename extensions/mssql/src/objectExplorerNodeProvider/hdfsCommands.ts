@@ -21,6 +21,7 @@ import * as utils from '../utils';
 import { AppContext } from '../appContext';
 import { TreeNode } from './treeNodes';
 import { MssqlObjectExplorerNodeProvider } from './objectExplorerNodeProvider';
+import { ManageAccessDialog } from '../hdfs/ui/hdfsManageAccessDialog';
 
 async function getSaveableUri(apiWrapper: ApiWrapper, fileName: string, isPreview?: boolean): Promise<vscode.Uri> {
 	let root = utils.getUserHome();
@@ -381,6 +382,27 @@ export class CopyPathCommand extends Command {
 		} catch (err) {
 			this.apiWrapper.showErrorMessage(
 				localize('copyPathError', 'Error on copying path: {0}', utils.getErrorMessage(err, true)));
+		}
+	}
+}
+
+export class ManageAccessCommand extends Command {
+
+	constructor(appContext: AppContext) {
+		super('mssqlCluster.manageAccess', appContext);
+	}
+
+	async execute(context: ICommandViewContext | ICommandObjectExplorerContext, ...args: any[]): Promise<void> {
+		try {
+			let node = await getNode<HdfsFileSourceNode>(context, this.appContext);
+			if (node) {
+				new ManageAccessDialog(node.hdfsPath, node.fileSource, this.apiWrapper).openDialog();
+			} else {
+				this.apiWrapper.showErrorMessage(LocalizedConstants.msgMissingNodeContext);
+			}
+		} catch (err) {
+			this.apiWrapper.showErrorMessage(
+				localize('manageAccessError', "An unexpected error occurred while opening the Manage Access dialog: {0}", utils.getErrorMessage(err, true)));
 		}
 	}
 }

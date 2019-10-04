@@ -6,7 +6,7 @@
 import * as azdata from 'azdata';
 import * as vscode from 'vscode';
 import * as nls from 'vscode-nls';
-import { DialogInfo, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
+import { DialogInfoBase, FieldType, FieldInfo, SectionInfo, LabelPosition } from '../interfaces';
 import { Model } from './model';
 
 const localize = nls.loadMessageBundle();
@@ -30,7 +30,7 @@ export const DefaultInputComponentWidth = '400px';
 export const DefaultLabelComponentWidth = '200px';
 
 export interface DialogContext extends CreateContext {
-	dialogInfo: DialogInfo;
+	dialogInfo: DialogInfoBase;
 	container: azdata.window.Dialog;
 }
 
@@ -214,7 +214,7 @@ function processFields(fieldInfoArray: FieldInfo[], components: azdata.Component
 
 export function createFlexContainer(view: azdata.ModelView, items: azdata.Component[], rowLayout: boolean = true): azdata.FlexContainer {
 	const flexFlow = rowLayout ? 'row' : 'column';
-	const alignItems = rowLayout ? 'center' : '';
+	const alignItems = rowLayout ? 'center' : undefined;
 	const itemsStyle = rowLayout ? { CSSStyles: { 'margin-right': '5px' } } : {};
 	return view.modelBuilder.flexContainer().withItems(items, itemsStyle).withLayout({ flexFlow: flexFlow, alignItems: alignItems }).component();
 }

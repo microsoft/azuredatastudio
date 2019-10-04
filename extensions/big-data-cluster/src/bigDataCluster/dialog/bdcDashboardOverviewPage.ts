@@ -53,8 +53,7 @@ export class BdcDashboardOverviewPage {
 			{
 				flexFlow: 'column',
 				width: '100%',
-				height: '100%',
-				alignItems: 'left'
+				height: '100%'
 			}).component();
 
 		// ##############
@@ -109,7 +108,7 @@ export class BdcDashboardOverviewPage {
 
 		overviewHeaderContainer.addItem(this.lastUpdatedLabel, { CSSStyles: { 'margin-left': '45px' } });
 
-		const overviewContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+		const overviewContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
 		// Service Status header row
 		const serviceStatusHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
@@ -144,7 +143,7 @@ export class BdcDashboardOverviewPage {
 			.component();
 		rootContainer.addItem(endpointsLabel, { CSSStyles: { 'padding-left': '10px', ...cssStyles.title } });
 
-		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%', alignItems: 'left' }).component();
+		const endpointsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column', width: '100%', height: '100%' }).component();
 
 		// Service endpoints header row
 		const endpointsHeaderRow = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'row' }).component();
@@ -205,6 +204,18 @@ export class BdcDashboardOverviewPage {
 		}
 
 		this.endpointsRowContainer.clearItems();
+
+		// Sort the endpoints. The sort method is that SQL Server Master is first - followed by all
+		// others in alphabetical order by endpoint
+		const sqlServerMasterEndpoints = endpoints.filter(e => e.name === Endpoint.sqlServerMaster);
+		endpoints = endpoints.filter(e => e.name !== Endpoint.sqlServerMaster)
+			.sort((e1, e2) => {
+				if (e1.endpoint < e2.endpoint) { return -1; }
+				if (e1.endpoint > e2.endpoint) { return 1; }
+				return 0;
+			});
+		endpoints.unshift(...sqlServerMasterEndpoints);
+
 		endpoints.forEach((e, i) => {
 			createServiceEndpointRow(this.modelBuilder, this.endpointsRowContainer, e, this.model, hyperlinkedEndpoints.some(he => he === e.name), i === endpoints.length - 1);
 		});

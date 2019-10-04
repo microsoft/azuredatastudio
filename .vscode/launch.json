@@ -67,15 +67,15 @@
 			"name": "Launch azuredatastudio",
 			"windows": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.bat",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"osx": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"linux": {
 				"runtimeExecutable": "${workspaceFolder}/scripts/sql.sh",
-				"timeout": 20000
+				"timeout": 45000
 			},
 			"env": {
 				"VSCODE_EXTHOST_WILL_SEND_SOCKET": null
@@ -165,7 +165,10 @@
 			"cwd": "${workspaceFolder}",
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
-			]
+			],
+			"env": {
+				"MOCHA_COLORS": "true"
+			}
 		},
 		{
 			"type": "chrome",

@@ -40,11 +40,60 @@ export class NotebookTextFileModel {
 		// convert the range to leverage offsets in the json
 		if (contentChange && contentChange.modelContentChangedEvent && areRangePropertiesPopulated(cellGuidRange)) {
 			contentChange.modelContentChangedEvent.changes.forEach(change => {
+				// When writing to JSON we need to escape double quotes and backslashes
+				let textEscapedQuotesAndBackslashes = change.text.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+				let startLineNumber = change.range.startLineNumber + cellGuidRange.startLineNumber - 1;
+				let endLineNumber = change.range.endLineNumber + cellGuidRange.startLineNumber - 1;
+				let startLineText = textEditorModel.textEditorModel.getLineContent(startLineNumber);
+				let endLineText = textEditorModel.textEditorModel.getLineContent(endLineNumber);
+
+				/* This gets the text on the start and end lines of the range where we'll be inserting text. We need to convert the escaped strings to unescaped strings.
+					Example:
+
+					Previous state
+					EDITOR:
+					""""
+
+					TEXTEDITORMODEL:
+					'        "\"\"\"\""'
+
+					Now, user wants to insert text after the 4 double quotes, like so:
+					EDITOR:
+					""""sample text
+
+					TEXTEDITORMODEL (result):
+					'        "\"\"\"\"sample text"'
+
+					Notice that we don't have a 1:1 mapping for characters from the editor to the text editor model, because the double quotes need to be escaped
+					(the same is true for backslashes).
+
+					Therefore, we need to determine (at both the start and end lines) the "real" start and end columns in the text editor model by counting escaped characters.
+
+					We do this by doing the following:
+					- Start with (escaped) text in the text editor model
+					- Unescape this text
+					- Get a substring of that text from the column in JSON until the change's startColumn (starting from the first " in the text editor model)
+					- Escape this substring
+					- Leverage the substring's length to calculate the "real" start/end columns
+				 */
+				let unescapedStartSubstring = startLineText.replace(/\\"/g, '"').replace(/\\\\/g, '\\').substr(cellGuidRange.startColumn, change.range.startColumn - 1);
+				let unescapedEndSubstring = endLineText.replace(/\\"/g, '"').replace(/\\\\/g, '\\').substr(cellGuidRange.startColumn, change.range.endColumn - 1);
+
+				// now we have the portion before the text to be inserted for both the start and end lines
+				// so next step is to escape " and \
+
+				let escapedStartSubstring = unescapedStartSubstring.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+				let escapedEndSubstring = unescapedEndSubstring.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
+				let computedStartColumn = escapedStartSubstring.length + cellGuidRange.startColumn + 1;
+				let computedEndColumn = escapedEndSubstring.length + cellGuidRange.startColumn + 1;
+
 				let convertedRange: IRange = {
-					startLineNumber: change.range.startLineNumber + cellGuidRange.startLineNumber - 1,
-					endLineNumber: change.range.endLineNumber + cellGuidRange.startLineNumber - 1,
-					startColumn: change.range.startColumn + cellGuidRange.startColumn,
-					endColumn: change.range.endColumn + cellGuidRange.startColumn
+					startLineNumber: startLineNumber,
+					endLineNumber: endLineNumber,
+					startColumn: computedStartColumn,
+					endColumn: computedEndColumn
 				};
 				// Need to subtract one because we're going from 1-based to 0-based
 				let startSpaces: string = ' '.repeat(cellGuidRange.startColumn - 1);
@@ -53,13 +102,12 @@ export class NotebookTextFileModel {
 				//     this is another string
 				textEditorModel.textEditorModel.applyEdits([{
 					range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-					text: change.text.split(this._eol).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
+					text: textEscapedQuotesAndBackslashes.split(/[\r\n]+/gm).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
 				}]);
 			});
-		} else {
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	public transformAndApplyEditForOutputUpdate(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel): boolean {
@@ -70,17 +118,23 @@ export class NotebookTextFileModel {
 			} else {
 				newOutput = '\n'.concat(newOutput).concat('\n');
 			}
-			let range = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
-			if (range) {
+
+			// Execution count will always be after the end of the outputs in JSON. This is a sanity mechanism.
+			let executionCountMatch = this.getExecutionCountRange(textEditorModel, contentChange.cells[0].cellGuid);
+			if (!executionCountMatch || !executionCountMatch.range) {
+				return false;
+			}
+
+			let endOutputsRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
+			if (endOutputsRange && endOutputsRange.startLineNumber < executionCountMatch.range.startLineNumber) {
 				textEditorModel.textEditorModel.applyEdits([{
-					range: new Range(range.startLineNumber, range.startColumn, range.startLineNumber, range.startColumn),
+					range: new Range(endOutputsRange.startLineNumber, endOutputsRange.startColumn, endOutputsRange.startLineNumber, endOutputsRange.startColumn),
 					text: newOutput
 				}]);
+				return true;
 			}
-		} else {
-			return false;
 		}
-		return true;
+		return false;
 	}
 
 	public transformAndApplyEditForCellUpdated(contentChange: NotebookContentChange, textEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel): boolean {
@@ -112,9 +166,7 @@ export class NotebookTextFileModel {
 		if (!textEditorModel || !contentChange || !contentChange.cells || !contentChange.cells[0] || !contentChange.cells[0].cellGuid) {
 			return false;
 		}
-		if (!this.getOutputNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid)) {
-			this.updateOutputBeginRange(textEditorModel, contentChange.cells[0].cellGuid);
-		}
+		this.updateOutputBeginRange(textEditorModel, contentChange.cells[0].cellGuid);
 		let outputEndRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
 		let outputStartRange = this.getOutputNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid);
 		if (outputStartRange && outputEndRange) {
@@ -248,7 +300,7 @@ export class NotebookTextFileModel {
 }
 
 function areRangePropertiesPopulated(range: Range) {
-	return range && range.startLineNumber && range.startColumn && range.endLineNumber && range.endColumn;
+	return range && range.startLineNumber !== 0 && range.startColumn !== 0 && range.endLineNumber !== 0 && range.endColumn !== 0;
 }
 
 function findOrSetCellGuidMatch(textEditorModel: TextFileEditorModel | UntitledEditorModel | ResourceEditorModel, cellGuid: string): FindMatch[] {

@@ -6,23 +6,23 @@ Adds a Query History panel for viewing and running past executed queries.
 
 Query History is displayed as a tab in the tab panel, which is toggled by the *View: Toggle Panel* command.
 
-![Query History tab](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryTab.PNG?raw=true)
+![Query History tab](https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/query-history/images/QueryHistoryTab.PNG)
 
 Initially this view will be empty but once you execute a query editor that will be captured in the window - with a separate row displayed for every query executed.
 
-![Query History tab with queries](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryTabWithQueries.PNG?raw=true)
+![Query History tab with queries](https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/query-history/images/QueryHistoryTabWithQueries.PNG)
 
-Each row consists of 3 parts :
-	1. Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌is shown.
-	2. Query Text : This is the text of the query that was executed
-	3. Connection Info : The Server and Database the query was executed against
-	4. Timestamp : The date and time the query was executed
+Each row consists of 4 parts :
+- Status icon : This will be a ✔️ if the query executed successfully. If any errors occurred a ❌ is shown.
+- Query Text : This is the text of the query that was executed
+- Connection Info : The Server and Database the query was executed against
+- Timestamp : The date and time the query was executed
 
 ### Query History row actions
 
 Right clicking on a history row will bring up a menu with a number of actions available.
 
-![Query History action menu](https://github.com/microsoft/azuredatastudio/blob/master/extensions/query-history/images/QueryHistoryActionMenu.PNG?raw=true)
+![Query History action menu](https://raw.githubusercontent.com/microsoft/azuredatastudio/master/extensions/query-history/images/QueryHistoryActionMenu.PNG)
 
 #### Open Query
 

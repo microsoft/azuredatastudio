@@ -3,7 +3,6 @@
  *  Licensed under the Source EULA. See License.txt in the project root for license information.
  *--------------------------------------------------------------------------------------------*/
 
-'use strict';
 import * as vscode from 'vscode';
 import * as fspath from 'path';
 import * as fs from 'fs';
@@ -15,7 +14,9 @@ import * as os from 'os';
 import * as nls from 'vscode-nls';
 
 import * as constants from '../constants';
-import { WebHDFS, HdfsError } from './webhdfs';
+import { WebHDFS, HdfsError } from '../hdfs/webhdfs';
+import { AclEntry, IAclStatus } from '../hdfs/aclEntry';
+import { Mount, MountStatus } from '../hdfs/mount';
 
 const localize = nls.loadMessageBundle();
 
@@ -29,9 +30,11 @@ export function joinHdfsPath(parent: string, child: string): string {
 export interface IFile {
 	path: string;
 	isDirectory: boolean;
+	mountStatus?: MountStatus;
 }
 
 export class File implements IFile {
+	public mountStatus?: MountStatus;
 	constructor(public path: string, public isDirectory: boolean) {
 
 	}
@@ -58,14 +61,27 @@ export class File implements IFile {
 }
 
 export interface IFileSource {
-
-	enumerateFiles(path: string): Promise<IFile[]>;
+	enumerateFiles(path: string, refresh?: boolean): Promise<IFile[]>;
 	mkdir(dirName: string, remoteBasePath: string): Promise<void>;
 	createReadStream(path: string): fs.ReadStream;
 	readFile(path: string, maxBytes?: number): Promise<Buffer>;
 	readFileLines(path: string, maxLines: number): Promise<Buffer>;
 	writeFile(localFile: IFile, remoteDir: string): Promise<string>;
 	delete(path: string, recursive?: boolean): Promise<void>;
+	/**
+	 * Get ACL status for given path
+	 * @param path The path to the file/folder to get the status of
+	 */
+	getAclStatus(path: string): Promise<IAclStatus>;
+	/**
+	 * Sets the ACL status for given path
+	 * @param path The path to the file/folder to set the ACL on
+	 * @param ownerEntry The entry corresponding to the path owner
+	 * @param groupEntry The entry corresponding to the path owning group
+	 * @param otherEntry The entry corresponding to default permissions for all other users
+	 * @param aclEntries The ACL entries to set
+	 */
+	setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void>;
 	exists(path: string): Promise<boolean>;
 }
 
@@ -146,18 +162,43 @@ export class FileSourceFactory {
 }
 
 export class HdfsFileSource implements IFileSource {
+	private mounts: Map<string, Mount>;
 	constructor(private client: WebHDFS) {
 	}
 
-	public enumerateFiles(path: string): Promise<IFile[]> {
+	public async enumerateFiles(path: string, refresh?: boolean): Promise<IFile[]> {
+		if (!this.mounts || refresh) {
+			await this.loadMounts();
+		}
+		return this.readdir(path);
+	}
+
+	private loadMounts(): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.getMounts((error, mounts) => {
+				this.mounts = new Map();
+				if (!error && mounts) {
+					mounts.forEach(m => this.mounts.set(m.mountPath, m));
+				}
+				resolve();
+			});
+		});
+	}
+
+	private readdir(path: string): Promise<IFile[]> {
 		return new Promise((resolve, reject) => {
 			this.client.readdir(path, (error, files) => {
 				if (error) {
 					reject(error);
-				} else {
-					let hdfsFiles: IFile[] = files.map(file => {
-						let hdfsFile = <IHdfsFileStatus>file;
-						return new File(File.createPath(path, hdfsFile.pathSuffix), hdfsFile.type === 'DIRECTORY');
+				}
+				else {
+					let hdfsFiles: IFile[] = files.map(fileStat => {
+						let hdfsFile = <IHdfsFileStatus>fileStat;
+						let file = new File(File.createPath(path, hdfsFile.pathSuffix), hdfsFile.type === 'DIRECTORY');
+						if (this.mounts && this.mounts.has(file.path)) {
+							file.mountStatus = MountStatus.Mount;
+						}
+						return file;
 					});
 					resolve(hdfsFiles);
 				}
@@ -298,6 +339,42 @@ export class HdfsFileSource implements IFileSource {
 					reject(error);
 				} else {
 					resolve(exists);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Get ACL status for given path
+	 * @param path The path to the file/folder to get the status of
+	 */
+	public getAclStatus(path: string): Promise<IAclStatus> {
+		return new Promise((resolve, reject) => {
+			this.client.getAclStatus(path, (error: HdfsError, aclStatus: IAclStatus) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve(aclStatus);
+				}
+			});
+		});
+	}
+
+	/**
+	 * Sets the ACL status for given path
+	 * @param path The path to the file/folder to set the ACL on
+	 * @param ownerEntry The entry corresponding to the path owner
+	 * @param groupEntry The entry corresponding to the path owning group
+	 * @param otherEntry The entry corresponding to default permissions for all other users
+	 * @param aclEntries The ACL entries to set
+	 */
+	public setAcl(path: string, ownerEntry: AclEntry, groupEntry: AclEntry, otherEntry: AclEntry, aclEntries: AclEntry[]): Promise<void> {
+		return new Promise((resolve, reject) => {
+			this.client.setAcl(path, ownerEntry, groupEntry, otherEntry, aclEntries, (error: HdfsError) => {
+				if (error) {
+					reject(error);
+				} else {
+					resolve();
 				}
 			});
 		});

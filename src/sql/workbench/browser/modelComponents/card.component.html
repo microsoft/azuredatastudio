@@ -10,10 +10,9 @@
 		<ng-container *ngIf="isVerticalButton">
 			<div class="card-vertical-button">
 				<div *ngIf="iconPath" class="iconContainer">
-					<div [class]="iconClass" [style.maxWidth]="iconWidth" [style.maxHeight]="iconHeight"></div>
+					<div [class]="iconClass" [style.width]="iconWidth" [style.height]="iconHeight"></div>
 				</div>
 				<h4 class="card-label">{{label}}</h4>
-				<hr />
 				<div *ngIf="descriptions.length > 0" class="model-card-description-container">
 					<div *ngFor="let desc of descriptions">
 						<div *ngIf="desc.label; else separator" [style.font-weight]="desc.fontWeight" class="model-card-list-item-description">
