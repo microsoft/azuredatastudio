@@ -165,9 +165,7 @@ export class NotebookTextFileModel {
 		if (!textEditorModel || !contentChange || !contentChange.cells || !contentChange.cells[0] || !contentChange.cells[0].cellGuid) {
 			return false;
 		}
-		if (!this.getOutputNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid)) {
-			this.updateOutputBeginRange(textEditorModel, contentChange.cells[0].cellGuid);
-		}
+		this.updateOutputBeginRange(textEditorModel, contentChange.cells[0].cellGuid);
 		let outputEndRange = this.getEndOfOutputs(textEditorModel, contentChange.cells[0].cellGuid);
 		let outputStartRange = this.getOutputNodeByGuid(textEditorModel, contentChange.cells[0].cellGuid);
 		if (outputStartRange && outputEndRange) {
