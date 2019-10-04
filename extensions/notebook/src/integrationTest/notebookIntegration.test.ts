@@ -90,7 +90,7 @@ describe('Notebook Extension Python Installation', function () {
 		let testPkgVersion = '0.24.2';
 		let expectedPkg: PythonPkgDetails = { name: testPkg, version: testPkgVersion };
 
-		await install.installPipPackage(testPkg, testPkgVersion);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}]);
 		let packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 
@@ -98,7 +98,7 @@ describe('Notebook Extension Python Installation', function () {
 		packages = await install.getInstalledPipPackages();
 		should(packages).not.containEql(expectedPkg);
 
-		await install.installPipPackage(testPkg, testPkgVersion);
+		await install.installPipPackages([{ name: testPkg, version: testPkgVersion}]);
 		packages = await install.getInstalledPipPackages();
 		should(packages).containEql(expectedPkg);
 	});

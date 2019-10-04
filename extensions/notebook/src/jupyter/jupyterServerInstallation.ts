@@ -17,6 +17,8 @@ import * as utils from '../common/utils';
 import { OutputChannel, ConfigurationTarget, window } from 'vscode';
 import { Deferred } from '../common/promise';
 import { ConfigurePythonDialog } from '../dialog/configurePythonDialog';
+import { IPrompter, IQuestion, QuestionTypes } from '../prompts/question';
+import CodeAdapter from '../prompts/adapter';
 
 const localize = nls.loadMessageBundle();
 const msgInstallPkgProgress = localize('msgInstallPkgProgress', "Notebook dependencies installation is in progress");
@@ -55,6 +57,26 @@ export class JupyterServerInstallation {
 
 	public static readonly DefaultPythonLocation = path.join(utils.getUserHome(), 'azuredatastudio-python');
 
+	private _prompter: IPrompter;
+	private readonly _expectedPackages: PythonPkgDetails[] = [
+		{
+			name: 'jupyter',
+			version: '1.0.0'
+		}, {
+			name: 'pandas',
+			version: '0.24.2'
+		}, {
+			name: 'sparkmagic',
+			version: '0.12.9'
+		}, {
+			name: 'prose-codeaccelerator',
+			version: '1.3.0'
+		}, {
+			name: 'powershell_kernel',
+			version: '0.1.0'
+		}
+	];
+
 	constructor(extensionPath: string, outputChannel: OutputChannel, apiWrapper: ApiWrapper, pythonInstallationPath?: string) {
 		this.extensionPath = extensionPath;
 		this.outputChannel = outputChannel;
@@ -64,6 +86,8 @@ export class JupyterServerInstallation {
 		this._usingConda = false;
 		this._installInProgress = false;
 		this._usingExistingPython = JupyterServerInstallation.getExistingPythonSetting(this.apiWrapper);
+
+		this._prompter = new CodeAdapter();
 	}
 
 	private async installDependencies(backgroundOperation: azdata.BackgroundOperation): Promise<void> {
@@ -356,6 +380,36 @@ export class JupyterServerInstallation {
 		}
 	}
 
+	/**
+	 * Prompts user to upgrade certain python packages if they're below the minimum expected version.
+	 */
+	public async promptForPackageUpgrade(): Promise<void> {
+		let installedPackages = await this.getInstalledPipPackages();
+		let pkgVersionMap = new Map<string, string>();
+		installedPackages.forEach(pkg => pkgVersionMap.set(pkg.name, pkg.version));
+
+		let packagesToInstall: PythonPkgDetails[] = [];
+		this._expectedPackages.forEach(expectedPkg => {
+			let installedPkgVersion = pkgVersionMap.get(expectedPkg.name);
+			if (!installedPkgVersion || installedPkgVersion !== expectedPkg.version) {
+				packagesToInstall.push(expectedPkg);
+			}
+		});
+
+		if (packagesToInstall.length > 0) {
+			let doUpgrade = await this._prompter.promptSingle<boolean>(<IQuestion>{
+				type: QuestionTypes.confirm,
+				message: localize('confirmPipUpgrade', 'Some installed pip packages need to be upgraded. Would you like to upgrade them now?'),
+				default: true
+			});
+			if (doUpgrade) {
+				return this.installPipPackages(packagesToInstall);
+			}
+		}
+
+		return Promise.resolve();
+	}
+
 	public async getInstalledPipPackages(): Promise<PythonPkgDetails[]> {
 		let cmd = `"${this.pythonExecutable}" -m pip list --format=json`;
 		let packagesInfo = await this.executeBufferedCommand(cmd);
@@ -367,10 +421,11 @@ export class JupyterServerInstallation {
 		return packagesResult;
 	}
 
-	public installPipPackage(packageName: string, version: string): Promise<void> {
+	public installPipPackages(packages: PythonPkgDetails[]): Promise<void> {
+		let packagesStr = packages.map(pkg => `${pkg.name}==${pkg.version}`).join(' ');
 		// Force reinstall in case some dependencies are split across multiple locations
 		let cmdOptions = this._usingExistingPython ? '--user --force-reinstall' : '--force-reinstall';
-		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packageName}==${version}`;
+		let cmd = `"${this.pythonExecutable}" -m pip install ${cmdOptions} ${packagesStr}`;
 		return this.executeStreamedCommand(cmd);
 	}
 
