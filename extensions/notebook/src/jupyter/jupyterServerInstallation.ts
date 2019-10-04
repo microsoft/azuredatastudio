@@ -72,7 +72,7 @@ export class JupyterServerInstallation {
 			name: 'prose-codeaccelerator',
 			version: '1.3.0'
 		}, {
-			name: 'powershell_kernel',
+			name: 'powershell-kernel',
 			version: '0.1.0'
 		}
 	];
