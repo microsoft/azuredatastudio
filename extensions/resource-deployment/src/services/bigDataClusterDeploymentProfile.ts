@@ -24,7 +24,7 @@ type EndpointName = 'Controller' | 'Master' | 'Knox' | 'MasterSecondary' | 'AppS
 
 export interface ActiveDirectorySettings {
 	organizationalUnit: string;
-	domainControllerFQDN: string;
+	domainControllerFQDNs: string;
 	dnsIPAddresses: string;
 	domainDNSName: string;
 	clusterUsers: string;
@@ -263,8 +263,9 @@ export class BigDataClusterDeploymentProfile {
 	public setActiveDirectorySettings(adSettings: ActiveDirectorySettings): void {
 		this._controlConfig.security.ouDistinguishedName = adSettings.organizationalUnit;
 		this._controlConfig.security.dnsIpAddresses = this.splitByComma(adSettings.dnsIPAddresses);
-		this._controlConfig.security.domainControllerFullyQualifiedDns = adSettings.domainControllerFQDN;
+		this._controlConfig.security.domainControllerFullyQualifiedDns = this.splitByComma(adSettings.domainControllerFQDNs);
 		this._controlConfig.security.domainDnsName = adSettings.domainDNSName;
+		this._controlConfig.security.realm = adSettings.domainDNSName.toUpperCase();
 		this._controlConfig.security.clusterAdmins = this.splitByComma(adSettings.clusterAdmins);
 		this._controlConfig.security.clusterUsers = this.splitByComma(adSettings.clusterUsers);
 		if (adSettings.appReaders) {

@@ -125,7 +125,7 @@ export class DeployClusterWizardModel extends Model {
 		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
 			targetDeploymentProfile.setActiveDirectorySettings({
 				organizationalUnit: this.getStringValue(VariableNames.OrganizationalUnitDistinguishedName_VariableName)!,
-				domainControllerFQDN: this.getStringValue(VariableNames.DomainControllerFQDNName_VariableName)!,
+				domainControllerFQDNs: this.getStringValue(VariableNames.DomainControllerFQDNs_VariableName)!,
 				domainDNSName: this.getStringValue(VariableNames.DomainDNSName_VariableName)!,
 				dnsIPAddresses: this.getStringValue(VariableNames.DomainDNSIPAddresses_VariableName)!,
 				clusterAdmins: this.getStringValue(VariableNames.ClusterAdmins_VariableName)!,
@@ -148,9 +148,12 @@ export class DeployClusterWizardModel extends Model {
 			statements.push(`azure_vm_count = '${this.getStringValue(VariableNames.VMCount_VariableName)}'`);
 			statements.push(`aks_cluster_name = '${this.getStringValue(VariableNames.AksName_VariableName)}'`);
 		} else if (this.deploymentTarget === BdcDeploymentType.ExistingAKS || this.deploymentTarget === BdcDeploymentType.ExistingKubeAdm) {
-			statements.push(`mssql_kube_config_path = '${this.getStringValue(VariableNames.KubeConfigPath_VariableName)}'`);
+			statements.push(`mssql_kube_config_path = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.KubeConfigPath_VariableName)!)}'`);
 			statements.push(`mssql_cluster_context = '${this.getStringValue(VariableNames.ClusterContext_VariableName)}'`);
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
+		}
+		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
+			statements.push(`mssql_domain_service_account = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName)!)}'`);
 		}
 		statements.push(`mssql_cluster_name = '${this.getStringValue(VariableNames.ClusterName_VariableName)}'`);
 		statements.push(`mssql_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
@@ -158,6 +161,10 @@ export class DeployClusterWizardModel extends Model {
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
 		statements.push(`print('Variables have been set successfully.')`);
 		return statements.join(EOL);
+	}
+
+	private escapeForNotebookCodeCell(original: string): string {
+		return original && original.replace('\\', '\\\\');
 	}
 }
 

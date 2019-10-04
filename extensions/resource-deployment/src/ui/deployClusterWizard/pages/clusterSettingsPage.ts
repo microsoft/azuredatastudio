@@ -94,11 +94,12 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					description: localize('deployCluster.OuDistinguishedNameDescription', "Distinguished name for the organizational unit. for example: OU=bdc,DC=contoso,DC=com")
 				}, {
 					type: FieldType.Text,
-					label: localize('deployCluster.DomainControllerFQDN', "Domain controller FQDN"),
+					label: localize('deployCluster.DomainControllerFQDNs', "Domain controller FQDNs"),
 					required: true,
-					variableName: VariableNames.DomainControllerFQDNName_VariableName,
+					variableName: VariableNames.DomainControllerFQDNs_VariableName,
 					useCustomValidator: true,
-					description: localize('deployCluster.DomainControllerFQDNDescription', "Fully qualified domain name for the domain controller. for example: DC1.CONTOSO.COM")
+					placeHolder: localize('deployCluster.DomainControllerFQDNsPlaceHolder', "Use comma to separate the values."),
+					description: localize('deployCluster.DomainControllerFQDNDescription', "Fully qualified domain names for the domain controller. for example: DC1.CONTOSO.COM, use comma to separate them if there are multiple FQDNs.")
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.DomainDNSIPAddresses', "Domain DNS IP addresses"),
@@ -128,6 +129,19 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					useCustomValidator: true,
 					placeHolder: localize('deployCluster.ClusterUsersPlaceHolder', "Use comma to separate the values."),
 					description: localize('deployCluster.ClusterUsersDescription', "The Active Directory users/groups with cluster users role, use comma to separate them if there are multiple users/groups.")
+				}, {
+					type: FieldType.Text,
+					label: localize('deployCluster.DomainServiceAccountUserName', "Domain service account username"),
+					required: true,
+					variableName: VariableNames.DomainServiceAccountUserName_VariableName,
+					useCustomValidator: true,
+					description: localize('deployCluster.DomainServiceAccountUserNameDescription', "Domain service account for Big Data Cluster")
+				}, {
+					type: FieldType.Password,
+					label: localize('deployCluster.DomainServiceAccountPassword', "Domain service account password"),
+					required: true,
+					variableName: VariableNames.DomainServiceAccountPassword_VariableName,
+					useCustomValidator: true
 				}, {
 					type: FieldType.Text,
 					label: localize('deployCluster.AppOwers', "App owners"),
@@ -223,7 +237,7 @@ export class ClusterSettingsPage extends WizardPageBase<DeployClusterWizard> {
 					&& !isInputBoxEmpty(getInputBoxComponent(ConfirmPasswordName, this.inputComponents))
 					&& (!(authMode === AuthenticationMode.ActiveDirectory) || (
 						!isInputBoxEmpty(getInputBoxComponent(VariableNames.OrganizationalUnitDistinguishedName_VariableName, this.inputComponents))
-						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainControllerFQDNName_VariableName, this.inputComponents))
+						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainControllerFQDNs_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterAdmins_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.ClusterUsers_VariableName, this.inputComponents))
 						&& !isInputBoxEmpty(getInputBoxComponent(VariableNames.DomainDNSIPAddresses_VariableName, this.inputComponents))

@@ -135,8 +135,8 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 					},
 					{
 						type: FieldType.ReadonlyText,
-						label: localize('deployCluster.DomainControllerFQDN', "Domain controller FQDN"),
-						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainControllerFQDNName_VariableName),
+						label: localize('deployCluster.DomainControllerFQDNs', "Domain controller FQDNs"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainControllerFQDNs_VariableName),
 						fontStyle: FontStyle.Italic
 					}]
 			});
@@ -182,6 +182,15 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 						type: FieldType.ReadonlyText,
 						label: localize('deployCluster.AppReaders', "App readers"),
 						defaultValue: this.wizard.model.getStringValue(VariableNames.AppReaders_VariableName),
+						fontStyle: FontStyle.Italic
+					}]
+			});
+			clusterSectionInfo.rows!.push({
+				fields: [
+					{
+						type: FieldType.ReadonlyText,
+						label: localize('deployCluster.DomainServiceAccountUserName', "Domain service account username"),
+						defaultValue: this.wizard.model.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName),
 						fontStyle: FontStyle.Italic
 					}]
 			});
