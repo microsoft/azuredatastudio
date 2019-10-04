@@ -60,6 +60,7 @@ code-component .toolbarIconStop {
 code-component .editor {
 	padding: 5px 0px 5px 0px
 }
+
 /* overview ruler */
 code-component .monaco-editor .decorationsOverviewRuler {
 	visibility: hidden;
@@ -86,7 +87,34 @@ code-component .carbon-taskbar .codicon.hideIcon.execCountHundred {
 	margin-left: -6px;
 }
 
-code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container
-{
+code-component .carbon-taskbar.monaco-toolbar .monaco-action-bar.animated .actions-container {
 	padding-left: 10px
+}
+
+code-component .hide-component-button {
+	height: 16px;
+	width: 100%;
+	box-sizing: border-box;
+	border-width: 0px;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: inherit;
+}
+
+code-component .hide-component-button.icon-hide-cell {
+	background-image: url("./media/light/chevron_up.svg");
+}
+
+code-component .hide-component-button.icon-show-cell {
+	background-image: url("./media/light/chevron_down.svg");
+}
+
+.vs-dark code-component .hide-component-button.icon-hide-cell,
+.hc-black code-component .hide-component-button.icon-hide-cell {
+	background-image: url("./media/dark/chevron_up_inverse.svg");
+}
+
+.vs-dark code-component .hide-component-button.icon-show-cell,
+.hc-black code-component .hide-component-button.icon-show-cell {
+	background-image: url("./media/dark/chevron_down_inverse.svg");
 }

@@ -56,7 +56,9 @@ export enum MssqlClusterItems {
 }
 
 export enum MssqlClusterItemsSubType {
-	Spark = 'mssqlCluster:spark'
+	Mount = ':mount:',
+	MountChild = ':mountChild:',
+	Spark = ':spark:'
 }
 
 // SPARK JOB SUBMISSION //////////////////////////////////////////////////////////

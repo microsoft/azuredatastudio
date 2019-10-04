@@ -27,26 +27,26 @@ if (suite === SuiteType.Stress) {
 	// both are set.
 	if (process.env.StressRuntime) {
 		options.timeout = (120 + 1.2 * parseInt(process.env.StressRuntime)) * 1000; // allow sufficient timeout based on StressRuntime setting
-		console.log(`setting options.timeout to:${options.timeout} based on process.env.StressRuntime value of ${process.env.StressRuntime} seconds`);
+		console.log(`setting options.timeout to: ${options.timeout} based on process.env.StressRuntime value of ${process.env.StressRuntime} seconds`);
 	}
 }
 
 // set relevant mocha options from the environment
 if (process.env.ADS_TEST_GREP) {
 	options.grep = process.env.ADS_TEST_GREP;
-	console.log(`setting options.grep to:${options.grep}`);
+	console.log(`setting options.grep to: ${options.grep}`);
 }
 if (process.env.ADS_TEST_INVERT_GREP) {
 	options.invert = parseInt(process.env.ADS_TEST_INVERT_GREP);
-	console.log(`setting options.invert to:${options.invert}`);
+	console.log(`setting options.invert to: ${options.invert}`);
 }
 if (process.env.ADS_TEST_TIMEOUT) {
 	options.timeout = parseInt(process.env.ADS_TEST_TIMEOUT);
-	console.log(`setting options.timeout to:${options.timeout}`);
+	console.log(`setting options.timeout to: ${options.timeout}`);
 }
 if (process.env.ADS_TEST_RETRIES) {
 	options.retries = parseInt(process.env.ADS_TEST_RETRIES);
-	console.log(`setting options.retries to:${options.retries}`);
+	console.log(`setting options.retries to: ${options.retries}`);
 }
 
 if (process.env.BUILD_ARTIFACTSTAGINGDIRECTORY) {

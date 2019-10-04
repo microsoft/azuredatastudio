@@ -35,7 +35,6 @@ export class ResourceTypePickerDialog extends DialogBase {
 		resourceType: ResourceType) {
 		super(localize('resourceTypePickerDialog.title', "Select the deployment options"), 'ResourceTypePickerDialog', true);
 		this._selectedResourceType = resourceType;
-		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', "Select");
 		this._dialogObject.okButton.onClick(() => this.onComplete());
 		this._installToolButton = azdata.window.createButton(localize('deploymentDialog.InstallToolsButton', "Install tools"));
 		this._toDispose.push(this._installToolButton.onClick(() => {
@@ -43,6 +42,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 		}));
 		this._dialogObject.customButtons = [this._installToolButton];
 		this._installToolButton.hidden = true;
+		this._dialogObject.okButton.label = localize('deploymentDialog.OKButtonText', 'Select');
 	}
 
 	initialize() {
@@ -61,7 +61,7 @@ export class ResourceTypePickerDialog extends DialogBase {
 			const tableWidth = 1126;
 			this._view = view;
 			this.resourceTypeService.getResourceTypes().forEach(resourceType => this.addCard(resourceType));
-			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row', alignItems: 'left' }).component();
+			const cardsContainer = view.modelBuilder.flexContainer().withItems(this._resourceTypeCards, { flex: '0 0 auto', CSSStyles: { 'margin-bottom': '10px' } }).withLayout({ flexFlow: 'row' }).component();
 			this._resourceDescriptionLabel = view.modelBuilder.text().withProperties<azdata.TextComponentProperties>({ value: this._selectedResourceType ? this._selectedResourceType.description : undefined }).component();
 			this._optionsContainer = view.modelBuilder.flexContainer().withLayout({ flexFlow: 'column' }).component();
 			this._agreementContainer = view.modelBuilder.divContainer().component();
@@ -281,9 +281,8 @@ export class ResourceTypePickerDialog extends DialogBase {
 		return this._selectedResourceType.getProvider(options)!;
 	}
 
-	private onComplete(): void {
+	protected onComplete(): void {
 		this.resourceTypeService.startDeployment(this.getCurrentProvider());
-		this.dispose();
 	}
 
 	private installTools(): void {
