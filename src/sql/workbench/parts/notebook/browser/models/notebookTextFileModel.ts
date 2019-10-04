@@ -101,7 +101,7 @@ export class NotebookTextFileModel {
 				//     this is another string
 				textEditorModel.textEditorModel.applyEdits([{
 					range: new Range(convertedRange.startLineNumber, convertedRange.startColumn, convertedRange.endLineNumber, convertedRange.endColumn),
-					text: textEscapedQuotesAndBackslashes.split(this._eol).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
+					text: textEscapedQuotesAndBackslashes.split(/[\r\n]+/gm).join('\\n\",'.concat(this._eol).concat(startSpaces).concat('\"'))
 				}]);
 			});
 			return true;

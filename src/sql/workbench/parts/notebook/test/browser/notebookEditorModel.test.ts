@@ -736,7 +736,7 @@ suite('Notebook Editor Model', function (): void {
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
 
-	test('should not replace entire text model for content change with many backslashes', async function (): Promise<void> {
+	test('should not replace entire text model for content change with many backslashes and double quotes', async function (): Promise<void> {
 		await createNewNotebookModel();
 		let notebookEditorModel = await createTextEditorModel(this);
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
@@ -819,7 +819,7 @@ suite('Notebook Editor Model', function (): void {
 		let newCell = notebookModel.addCell(CellTypes.Code);
 		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"test"\ntest""');
+		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"test"' + os.EOL + 'test""');
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(9)).equal('                "\\"test\\"\\n",');
 
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(8)).equal('            "source": [');
@@ -833,7 +833,7 @@ suite('Notebook Editor Model', function (): void {
 		should(notebookEditorModel.lastEditFullReplacement).equal(false);
 	});
 
-	test('should not replace entire text model for content change with multiline content different escaped numbers', async function (): Promise<void> {
+	test('should not replace entire text model for content change with multiline content different escaped characters', async function (): Promise<void> {
 		await createNewNotebookModel();
 		let notebookEditorModel = await createTextEditorModel(this);
 		notebookEditorModel.replaceEntireTextEditorModel(notebookModel, undefined);
@@ -841,7 +841,7 @@ suite('Notebook Editor Model', function (): void {
 		let newCell = notebookModel.addCell(CellTypes.Code);
 		setupTextEditorModelWithEmptyOutputs(notebookEditorModel, newCell);
 
-		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"""""test"\n"""""""test\\""');
+		addTextToBeginningOfTextEditorModel(notebookEditorModel, newCell, '"""""test"' + os.EOL + '"""""""test\\""');
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(9)).equal('                "\\"\\"\\"\\"\\"test\\"\\n",');
 
 		should(notebookEditorModel.editorModel.textEditorModel.getLineContent(8)).equal('            "source": [');
