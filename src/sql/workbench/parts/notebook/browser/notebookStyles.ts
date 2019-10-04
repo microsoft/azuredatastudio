@@ -144,7 +144,8 @@ export function registerNotebookThemes(overrideEditorThemeSetting: boolean, conf
 				collector.addRule(`
 					.notebook-cell:not(.active) code-component .monaco-editor,
 					.notebook-cell:not(.active) code-component .monaco-editor-background,
-					.notebook-cell:not(.active) code-component .monaco-editor .inputarea.ime-input
+					.notebook-cell:not(.active) code-component .monaco-editor .inputarea.ime-input,
+					.notebook-cell.active .hide-component-button:hover
 					{
 						background-color: ${codeBackground};
 					}`);

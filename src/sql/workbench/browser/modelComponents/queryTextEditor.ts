@@ -127,7 +127,7 @@ export class QueryTextEditor extends BaseTextEditor {
 		return editorWidget.getScrollHeight();
 	}
 
-	public setHeightToScrollHeight(configChanged?: boolean): void {
+	public setHeightToScrollHeight(configChanged?: boolean, isEditorCollapsed?: boolean, ) {
 		let editorWidget = this.getControl() as ICodeEditor;
 		let layoutInfo = editorWidget.getLayoutInfo();
 		if (!this._scrollbarHeight) {
@@ -138,7 +138,12 @@ export class QueryTextEditor extends BaseTextEditor {
 			// Not ready yet
 			return;
 		}
-		let lineCount = editorWidgetModel.getLineCount();
+		let lineCount: number;
+		if (!!isEditorCollapsed) {
+			lineCount = 1;
+		} else {
+			lineCount = editorWidgetModel.getLineCount();
+		}
 		// Need to also keep track of lines that wrap; if we just keep into account line count, then the editor's height would not be
 		// tall enough and we would need to show a scrollbar. Unfortunately, it looks like there isn't any metadata saved in a ICodeEditor
 		// around max column length for an editor (which we could leverage to see if we need to loop through every line to determine
