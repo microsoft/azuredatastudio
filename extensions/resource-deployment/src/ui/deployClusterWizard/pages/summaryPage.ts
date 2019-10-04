@@ -430,8 +430,8 @@ export class SummaryPage extends WizardPageBase<DeployClusterWizard> {
 			this.createEndpointRow(localize('deployCluster.ControllerText', "Controller"), VariableNames.ControllerDNSName_VariableName, VariableNames.ControllerPort_VariableName),
 			this.createEndpointRow(localize('deployCluster.SqlServerText', "SQL Server Master"), VariableNames.SQLServerDNSName_VariableName, VariableNames.SQLServerPort_VariableName),
 			this.createEndpointRow(localize('deployCluster.GatewayText', "Gateway"), VariableNames.GatewayDNSName_VariableName, VariableNames.GateWayPort_VariableName),
-			this.createEndpointRow(localize('deployCluster.AppServiceProxyText', "App service proxy"), VariableNames.AppServiceProxyPort_VariableName, VariableNames.AppServiceProxyPort_VariableName),
-			this.createEndpointRow(localize('deployCluster.ServiceProxyText', "Service proxy"), VariableNames.ServiceProxyDNSName_VariableName, VariableNames.ServiceProxyPort_VariableName)
+			this.createEndpointRow(localize('deployCluster.AppServiceProxyText', "Application proxy"), VariableNames.AppServiceProxyDNSName_VariableName, VariableNames.AppServiceProxyPort_VariableName),
+			this.createEndpointRow(localize('deployCluster.ServiceProxyText', "Management proxy"), VariableNames.ServiceProxyDNSName_VariableName, VariableNames.ServiceProxyPort_VariableName)
 		];
 
 		if (this.wizard.model.hadrEnabled) {

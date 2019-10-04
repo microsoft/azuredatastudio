@@ -427,16 +427,16 @@ export class ServiceSettingsPage extends WizardPageBase<DeployClusterWizard> {
 		this.inputComponents[VariableNames.GatewayDNSName_VariableName] = this.gatewayDNSInput;
 		this.inputComponents[VariableNames.GateWayPort_VariableName] = this.gatewayPortInput;
 
-		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Service proxy"), width: labelWidth, required: true });
-		this.serviceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Service proxy DNS name"), required: false, width: inputWidth });
-		this.serviceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Service proxy port"), required: true, width: PortInputWidth, min: 1 });
+		this.serviceProxyNameLabel = createLabel(view, { text: localize('deployCluster.ServiceProxyText', "Management proxy"), width: labelWidth, required: true });
+		this.serviceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.ServiceProxyDNSName', "Management proxy DNS name"), required: false, width: inputWidth });
+		this.serviceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.ServiceProxyPortName', "Management proxy port"), required: true, width: PortInputWidth, min: 1 });
 		this.serviceProxyEndpointRow = createFlexContainer(view, [this.serviceProxyNameLabel, this.serviceProxyDNSInput, this.serviceProxyPortInput]);
 		this.inputComponents[VariableNames.ServiceProxyDNSName_VariableName] = this.serviceProxyDNSInput;
 		this.inputComponents[VariableNames.ServiceProxyPort_VariableName] = this.serviceProxyPortInput;
 
-		this.appServiceProxyNameLabel = createLabel(view, { text: localize('deployCluster.AppServiceProxyText', "App service proxy"), width: labelWidth, required: true });
-		this.appServiceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "App service proxy DNS name"), required: false, width: inputWidth });
-		this.appServiceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "App service proxy port"), required: true, width: PortInputWidth, min: 1 });
+		this.appServiceProxyNameLabel = createLabel(view, { text: localize('deployCluster.AppServiceProxyText', "Application proxy"), width: labelWidth, required: true });
+		this.appServiceProxyDNSInput = createTextInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyDNSName', "Application proxy DNS name"), required: false, width: inputWidth });
+		this.appServiceProxyPortInput = createNumberInput(view, { ariaLabel: localize('deployCluster.AppServiceProxyPortName', "Application proxy port"), required: true, width: PortInputWidth, min: 1 });
 		this.appServiceProxyEndpointRow = createFlexContainer(view, [this.appServiceProxyNameLabel, this.appServiceProxyDNSInput, this.appServiceProxyPortInput]);
 		this.inputComponents[VariableNames.AppServiceProxyDNSName_VariableName] = this.appServiceProxyDNSInput;
 		this.inputComponents[VariableNames.AppServiceProxyPort_VariableName] = this.appServiceProxyPortInput;

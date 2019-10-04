@@ -153,10 +153,11 @@ export class DeployClusterWizardModel extends Model {
 			statements.push('os.environ["KUBECONFIG"] = mssql_kube_config_path');
 		}
 		if (this.authenticationMode === AuthenticationMode.ActiveDirectory) {
-			statements.push(`mssql_domain_service_account = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName)!)}'`);
+			statements.push(`mssql_domain_service_account_username = '${this.escapeForNotebookCodeCell(this.getStringValue(VariableNames.DomainServiceAccountUserName_VariableName)!)}'`);
 		}
 		statements.push(`mssql_cluster_name = '${this.getStringValue(VariableNames.ClusterName_VariableName)}'`);
 		statements.push(`mssql_username = '${this.getStringValue(VariableNames.AdminUserName_VariableName)}'`);
+		statements.push(`mssql_auth_mode = '${this.authenticationMode}'`);
 		statements.push(`bdc_json = '${profile.getBdcJson(false)}'`);
 		statements.push(`control_json = '${profile.getControlJson(false)}'`);
 		statements.push(`print('Variables have been set successfully.')`);
